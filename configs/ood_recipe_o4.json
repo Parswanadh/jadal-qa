@@ -1,0 +1,213 @@
+{
+  "name": "ood_recipe_o4",
+  "version": "1.0",
+  "status": "FROZEN",
+  "frozen_statement": "frozen before confirmatory labels; no OOD fitting",
+  "summary": "IndEgo-signed, per-domain z-score, equal-weight mean of the Z3 transferable-6 (optionally combined with the E5 stable-8). Evaluation only: the only fitted quantity is the per-feature sign, taken from IndEgo; the per-domain z-score is unsupervised; nothing is threshold-tuned or fitted on OOD labels.",
+
+  "provenance": {
+    "source_branch": "m/adapt160",
+    "source_pr": 131,
+    "source_pr_title": "[O4] Confirm transferable-feature adaptation on the 160 OOD labels",
+    "source_head_sha": "526830c74e1aec7b66b813a3498a88a3af5d2bd8",
+    "pr_base_branch": "pod/base",
+    "pr_base_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+    "source_experiments": ["O4.01", "O4.02"],
+    "source_report": "docs/reports/exp_adapt160.md",
+    "source_results": [
+      "eval/results/exp_adapt160/O4.01.json",
+      "eval/results/exp_adapt160/O4.02.json"
+    ],
+    "source_code": [
+      "eval/exp_adapt160/run_adapt160.py",
+      "eval/exp_adapt160/extract160.py",
+      "eval/exp_adapt160/z3extract.py"
+    ],
+    "dependencies": {
+      "z3_transferable_features": {
+        "branch": "m/new-features",
+        "pr": 127,
+        "head_sha": "148c9f965ba15f6fab0691057d454896bf794c22",
+        "experiments": ["Z3.01", "Z3.02", "Z3.03"],
+        "report": "docs/reports/exp_new_features.md",
+        "results": "eval/results/exp_features/Z3.03.json",
+        "contribution": "defined the 20 candidate features and selected the 6 transferable ones; defined the per-domain z-score rule"
+      },
+      "e5_stable_features": {
+        "branch": "m/fewshot160",
+        "pr": 130,
+        "head_sha": "4b7f334b5089ca5f246468e3f686821d0a26c9f1",
+        "experiments": ["O2.01", "O2.02", "O2.03"],
+        "report": "docs/reports/exp_fewshot160.md",
+        "results": "eval/results/exp_fewshot/O2.03.json",
+        "contribution": "defined the 8 sign-stable E5 per-pixel features (stable-8) on the 160 OOD labels"
+      }
+    }
+  },
+
+  "features": {
+    "z3_transferable_6": [
+      "ct_fsize_std",
+      "mo_hand_motion_excess",
+      "inv_clip_frac",
+      "inv_laplacian_var",
+      "inv_hist_entropy",
+      "inv_dct_hf_lf"
+    ],
+    "e5_stable_8": [
+      "radial_slope",
+      "hf_ratio",
+      "dct_energy",
+      "luma_p05",
+      "global_shift",
+      "illum_r",
+      "illum_b",
+      "zncc_self"
+    ],
+    "combined_14_order": [
+      "radial_slope",
+      "hf_ratio",
+      "dct_energy",
+      "luma_p05",
+      "global_shift",
+      "illum_r",
+      "illum_b",
+      "zncc_self",
+      "ct_fsize_std",
+      "mo_hand_motion_excess",
+      "inv_clip_frac",
+      "inv_laplacian_var",
+      "inv_hist_entropy",
+      "inv_dct_hf_lf"
+    ],
+    "selection_rule": "Z3 candidate class==stable AND min(|AUROC-0.5|) >= 0.03 in BOTH domains (IndEgo and OOD); E5 stable-8 = sign-stable per-pixel features under the E5.03 rule (chance iff both |AUROC-0.5|<0.05, else stable/flip by side)"
+  },
+
+  "sign_source": {
+    "domain": "IndEgo",
+    "fit_on": "IndEgo human gold, 150 windows (100 good / 50 bad, 7 clips) from $JADAL_BUNDLE/caches/gpu/features.json + labels/manifest_gold.json",
+    "never_fit_on_ood": true,
+    "rule": "sign_j = +1 if AUROC_IndEgo(feature_j) >= 0.5 else -1 (label 1 = usable/good)",
+    "indego_auroc": {
+      "radial_slope": 0.6334,
+      "hf_ratio": 0.6182,
+      "dct_energy": 0.6306,
+      "luma_p05": 0.3924,
+      "global_shift": 0.3761,
+      "illum_r": 0.4898,
+      "illum_b": 0.5278,
+      "zncc_self": 0.5738,
+      "ct_fsize_std": 0.6202,
+      "mo_hand_motion_excess": 0.6492,
+      "inv_clip_frac": 0.6564,
+      "inv_laplacian_var": 0.6412,
+      "inv_hist_entropy": 0.5342,
+      "inv_dct_hf_lf": 0.31
+    },
+    "sign_vector_14": {
+      "radial_slope": 1,
+      "hf_ratio": 1,
+      "dct_energy": 1,
+      "luma_p05": -1,
+      "global_shift": -1,
+      "illum_r": -1,
+      "illum_b": 1,
+      "zncc_self": 1,
+      "ct_fsize_std": 1,
+      "mo_hand_motion_excess": 1,
+      "inv_clip_frac": 1,
+      "inv_laplacian_var": 1,
+      "inv_hist_entropy": 1,
+      "inv_dct_hf_lf": -1
+    },
+    "sign_vector_z3_six": {
+      "ct_fsize_std": 1,
+      "mo_hand_motion_excess": 1,
+      "inv_clip_frac": 1,
+      "inv_laplacian_var": 1,
+      "inv_hist_entropy": 1,
+      "inv_dct_hf_lf": -1
+    }
+  },
+
+  "zscore": {
+    "rule": "per-domain z-score, applied per feature independently within each domain",
+    "statistics": ["mean", "std"],
+    "scope": "per feature, per domain",
+    "unsupervised": true,
+    "uses_labels": false,
+    "std_floor": 1e-9,
+    "formula": "z_j = (x_j - mean_domain(x_j)) / max(std_domain(x_j), 1e-9)",
+    "indego": "z-scored with the IndEgo sample's own mean/std",
+    "ood": "z-scored with the target OOD sample's own mean/std",
+    "batch_note": "the pooled OOD-160 is z-scored with the 160's own mean/std; when reporting q1/q2 separately each batch is z-scored with its own stats (each batch treated as its own target sample)"
+  },
+
+  "aggregation": {
+    "type": "equal-weight mean",
+    "weights": "uniform (1/n_features)",
+    "formula": "score(x) = (1/n) * sum_j( sign_j * z_j(x) )",
+    "score_is": "signed, symmetric around 0"
+  },
+
+  "threshold": {
+    "value": 0.0,
+    "applies_to": ["z3_transferable_6", "e5_stable_8+z3_transferable_6"],
+    "rule": "predict usable/good if score > 0.0 else not-usable",
+    "application": "fixed natural threshold for balanced accuracy; not calibrated, not tuned",
+    "no_ood_tuning": true,
+    "other_thresholds": {
+      "probability_scorers": 0.5
+    }
+  },
+
+  "recipes": {
+    "a": {
+      "name": "Z3 transferable-6",
+      "n_features": 6,
+      "features": "z3_transferable_6",
+      "ood_auroc_160": 0.7592,
+      "ood_auroc_160_ci95_factory_grouped": [0.5971, 0.8855],
+      "ood_balacc_160": 0.7088,
+      "indego_auroc": 0.6842
+    },
+    "b": {
+      "name": "E5 stable-8 + Z3 transferable-6",
+      "n_features": 14,
+      "features": "combined_14_order",
+      "ood_auroc_160": 0.781,
+      "ood_auroc_160_ci95_factory_grouped": [0.6344, 0.8952],
+      "ood_balacc_160": 0.7325,
+      "indego_auroc": 0.7364
+    }
+  },
+
+  "evaluation": {
+    "n_ood": 160,
+    "n_good": 138,
+    "n_bad": 22,
+    "n_factories": 47,
+    "batches": {"q1": 60, "q2": 100},
+    "label_source": "human, single labeller ($JADAL_BUNDLE/labels/ood160_labels.json)",
+    "frozen_baseline": {
+      "name": "ensemble_v1 usable_prob",
+      "ood_auroc_160": 0.566,
+      "ood_auroc_160_ci95_factory_grouped": [0.4238, 0.6999]
+    },
+    "ci": "factory-grouped bootstrap (n_boot=2000, seed=0), the honest CI",
+    "device": "CPU (numpy/sklearn; ffmpeg/cv2 decode only, no GPU)"
+  },
+
+  "unproven": [
+    "q2 alone (n=100, bad=13) is not separable from chance: AUROC 0.70 (a) / 0.73 (b), grouped CI includes 0.5",
+    "22 bad windows over 47 factories; grouped bootstrap is wide/lumpy",
+    "balanced accuracy at threshold 0 is a fixed natural threshold, not a calibrated decision boundary",
+    "review/error operating point of the adapted score is not established (requires a non-transferring calibration)"
+  ],
+
+  "reproduce": [
+    "OMP_NUM_THREADS=2 python3 eval/exp_adapt160/extract160.py",
+    "OMP_NUM_THREADS=2 python3 eval/exp_adapt160/run_adapt160.py",
+    "python3 eval/exp_adapt160/make_figure.py"
+  ]
+}
