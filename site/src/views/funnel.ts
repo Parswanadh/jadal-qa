@@ -43,8 +43,8 @@ function stageBody(stage: StageId): HTMLElement[] {
   if (stage === "s1") {
     const record = JSON.stringify(bake.reject.record, null, 2);
     return [
-      el("p", {}, `A whole-window logistic head on 26 per-pixel features. Operating threshold ${num("s1_threshold")}. Of the ${fmtInt(num("s1"))} windows S1 decided, ${fmtInt(num("accept"))} were accepted and ${fmtInt(num("reject"))} rejected.`),
-      el("p", {}, "An S1 reject carries one piece of evidence: the score against the threshold."),
+      el("p", {}, `A whole-window logistic head on 26 per-pixel features. Decision bands: reject at or below ${(0.5 - num("s1_margin")).toFixed(2)}, accept at or above ${(0.5 + num("s1_margin")).toFixed(2)}, review in between. Of the ${fmtInt(num("s1"))} windows S1 decided, ${fmtInt(num("accept"))} were accepted and ${fmtInt(num("reject"))} rejected.`),
+      el("p", {}, "An S1 reject carries one piece of evidence: the score. The threshold field in the receipt is a legacy constant that never decides a verdict; the bands above do."),
       el("pre", { className: "evidence", "aria-label": "S1 evidence format" }, '"evidence": { "feature": "s1_score", "value": 0.0013, "op": "<", "threshold": 0.6 }'),
       el("h3", { className: "subhead" }, "An excerpt of a real reject from the PoC run"),
       el("pre", { className: "receipt" }, record),
@@ -58,7 +58,7 @@ function stageBody(stage: StageId): HTMLElement[] {
     ];
   }
   return [
-    el("p", {}, `Windows whose S1 score sits inside the margin around 0.5 (|p − 0.5| < ${num("s1_margin")}) go to review rather than a verdict.`),
+    el("p", {}, `Windows whose S1 score sits inside the margin around 0.5 (|p − 0.5| < ${num("s1_margin")}, i.e. between ${(0.5 - num("s1_margin")).toFixed(2)} and ${(0.5 + num("s1_margin")).toFixed(2)}) go to review rather than a verdict.`),
     el("p", { className: "stat" }, `${num("s2")} windows handed on in the PoC run. The heavy review tier was not run in the PoC.`),
     el("p", {}, "Review is a hand-off state, not an accept. It is counted separately in every total."),
   ];
