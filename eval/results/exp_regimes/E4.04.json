@@ -1,0 +1,31 @@
+{
+ "id": "E4.04",
+ "track": "E4",
+ "title": "Profiles product layer: schema + 5 profiles + deterministic router",
+ "verdict": "adopt",
+ "n": null,
+ "label_source": "n/a \u2014 synthetic descriptors + E4.01 ranges",
+ "protocol": "unit tests on synthetic descriptors; determinism; UNSEEN_REGIME fallback; profile schema conformance",
+ "ci95": "n/a \u2014 deterministic router",
+ "device": "CPU (pod); no GPU used",
+ "cost": "10 unit tests < 0.5 s, no video, no network",
+ "command": "python3 -m pytest tests/test_exp_regimes_router.py -q",
+ "git_sha": "d07ac29ef4056c629d85ba1ae5e67ffdd3e720cd",
+ "tests_passed": 10,
+ "tests_total": 10,
+ "profiles": [
+  "blurry_lowlight",
+  "clear_stationary",
+  "default",
+  "factory_1080p30",
+  "walking_logistics"
+ ],
+ "router": "jadal/regimes/router.py::choose_profile -> {profile, margin, reasons, unseen_regime}",
+ "receipt_fields": [
+  "profile",
+  "router_margin",
+  "router_reasons",
+  "unseen_regime",
+  "descriptors_sha"
+ ]
+}

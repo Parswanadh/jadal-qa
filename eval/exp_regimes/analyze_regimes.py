@@ -23,7 +23,7 @@ KEYS = ["width", "height", "fps", "bitrate_kbps", "bytes_per_frame",
 
 def load_all():
     recs = []
-    for fn in ("desc_indego.jsonl", "desc_ood.jsonl"):
+    for fn in ("desc_indego.jsonl", "desc_ood.jsonl", "desc_ood_reenc.jsonl"):
         p = os.path.join(RES, fn)
         if not os.path.exists(p):
             continue
@@ -41,6 +41,8 @@ def cohens_d(a, b):
     b = np.asarray(b, float)
     n1, n2 = len(a), len(b)
     v = ((n1 - 1) * a.var() + (n2 - 1) * b.var()) / max(n1 + n2 - 2, 1)
+    if v < 1e-18:  # constant within each set (e.g. width/fps): exact spec gap
+        return float("inf") if a.mean() != b.mean() else 0.0
     return float((a.mean() - b.mean()) / np.sqrt(v + 1e-12))
 
 
@@ -56,18 +58,30 @@ def diagnosis(recs):
     ind = grp(recs, "indego")
     ood = grp(recs, "ood1_source") or grp(recs, "ood1_transcode")
     ego = grp(recs, "ego10k_sample")
+    def safe(x):
+        x = float(x)
+        if np.isnan(x):
+            return "nan"
+        if np.isinf(x):
+            return "+inf" if x > 0 else "-inf"
+        return round(x, 3)
+
     table = []
     for k in KEYS:
         a = [r["desc"][k] for r in ind]
         b = [r["desc"][k] for r in ood]
         row = {"descriptor": k, "indego": summarize(a), "ood60_src": summarize(b),
-               "cohens_d_ind_vs_oodsrc": round(cohens_d(a, b), 3)}
+               "cohens_d_ind_vs_oodsrc": safe(cohens_d(a, b))}
         if ego:
             c = [r["desc"][k] for r in ego]
             row["ego10k_sample"] = summarize(c)
-            row["cohens_d_ind_vs_ego10k"] = round(cohens_d(a, c), 3)
+            row["cohens_d_ind_vs_ego10k"] = safe(cohens_d(a, c))
         table.append(row)
-    table.sort(key=lambda r: -abs(r["cohens_d_ind_vs_oodsrc"]))
+    # rank by |d| (treat +-inf as dominant)
+    def _absd(r):
+        d = r["cohens_d_ind_vs_oodsrc"]
+        return float("inf") if d in ("+inf", "-inf") else abs(d)
+    table.sort(key=lambda r: -_absd(r))
     # codec mix
     def mix(rs):
         from collections import Counter
@@ -86,13 +100,23 @@ def eg2_clusters():
     from sklearn.cluster import KMeans
     di = np.load(f"/workspace/jadal_pod_bundle/caches/frames10k/segments.npz",
                  allow_pickle=True)
-    F = di["F"].astype(np.float64)
+    F = np.nan_to_num(di["F"].astype(np.float64), nan=0.0)
     Mi = F.mean(axis=1)
     nrm = Mi / (np.linalg.norm(Mi, axis=1, keepdims=True) + 1e-12)
     km = KMeans(n_clusters=6, random_state=0, n_init=10).fit(nrm)
-    do = np.load(f"/workspace/jadal_pod_bundle/caches/ensemble/ood_frames.npz",
-                 allow_pickle=True)
-    Fo = do["F"].astype(np.float64)
+    do = None
+    ood_npz = "/workspace/jadal_pod_bundle/caches/ensemble/ood_frames.npz"
+    if not os.path.exists(ood_npz):
+        out = {"k": 6, "status": "input_missing",
+               "reason": "caches/ensemble/ood_frames.npz absent from the trimmed bundle; "
+                         "OOD-60 EG2 cluster assignment cannot be recomputed here. "
+                         "Partial result carried forward is NOT used as a headline number.",
+               "indego_hist": None, "ood60_hist": None, "sym_chi2": None,
+               "cmd": "n/a — input caches/ensemble/ood_frames.npz missing"}
+        json.dump(out, open(os.path.join(RES, "eg2_clusters.json"), "w"), indent=1)
+        return out
+    do = np.load(ood_npz, allow_pickle=True)
+    Fo = np.nan_to_num(do["F"].astype(np.float64), nan=0.0)
     Mo = Fo.mean(axis=1)
     nrmo = Mo / (np.linalg.norm(Mo, axis=1, keepdims=True) + 1e-12)
     co = km.predict(nrmo)
@@ -125,7 +149,7 @@ def load_feat_matrices():
     di = np.load(f"/workspace/jadal_pod_bundle/caches/frames10k/segments.npz",
                  allow_pickle=True)
     ids = [str(x) for x in di["ids"]]
-    F = di["F"].astype(np.float64)
+    F = np.nan_to_num(di["F"].astype(np.float64), nan=0.0)
     Eg = F.mean(axis=1)
     Eg = Eg / (np.linalg.norm(Eg, axis=1, keepdims=True) + 1e-12)
     clips = {str(c) for c in di["clips"]}
@@ -147,6 +171,49 @@ def loco_auroc(X, y, groups, C=0.01):
     return float(roc_auc_score(y, proba)), proba
 
 
+def clip_bootstrap_ci(y, proba, groups, n_boot=2000, seed=0):
+    """95% CI for AUROC by resampling clips with replacement (loco-eval skill)."""
+    from sklearn.metrics import roc_auc_score
+    y = np.asarray(y)
+    proba = np.asarray(proba)
+    groups = np.asarray(groups)
+    uniq = np.unique(groups)
+    rng = np.random.RandomState(seed)
+    aucs = []
+    for _ in range(n_boot):
+        pick = rng.choice(uniq, size=len(uniq), replace=True)
+        idx = np.concatenate([np.where(groups == g)[0] for g in pick])
+        yy = y[idx]
+        if len(np.unique(yy)) < 2:
+            continue
+        aucs.append(roc_auc_score(yy, proba[idx]))
+    if len(aucs) < 100:
+        return [None, None]
+    lo, hi = np.percentile(aucs, [2.5, 97.5])
+    return [round(float(lo), 4), round(float(hi), 4)]
+
+
+def clip_bootstrap_delta_ci(y, p_reg, p_glob, groups, n_boot=2000, seed=0):
+    """95% CI for (regime AUROC - global AUROC) with paired clip resampling."""
+    from sklearn.metrics import roc_auc_score
+    y = np.asarray(y)
+    groups = np.asarray(groups)
+    uniq = np.unique(groups)
+    rng = np.random.RandomState(seed)
+    ds = []
+    for _ in range(n_boot):
+        pick = rng.choice(uniq, size=len(uniq), replace=True)
+        idx = np.concatenate([np.where(groups == g)[0] for g in pick])
+        yy = y[idx]
+        if len(np.unique(yy)) < 2:
+            continue
+        ds.append(roc_auc_score(yy, np.asarray(p_reg)[idx]) - roc_auc_score(yy, np.asarray(p_glob)[idx]))
+    if len(ds) < 100:
+        return [None, None]
+    lo, hi = np.percentile(ds, [2.5, 97.5])
+    return [round(float(lo), 4), round(float(hi), 4)]
+
+
 def regime_vs_global(recs):
     import warnings
     warnings.filterwarnings("ignore")
@@ -166,32 +233,55 @@ def regime_vs_global(recs):
     splitters = {"sharpness": "sharp_lapvar", "lighting": "luma_mean", "motion": "shift_mean"}
     for view, X in (("feat26", X26), ("eg2", Eg)):
         g_auc, g_proba = loco_auroc(X, y, groups)
-        results[view] = {"global_loco_auroc": round(g_auc, 4), "regimes": {}}
+        results[view] = {"global_loco_auroc": round(g_auc, 4),
+                         "global_loco_auroc_ci95": clip_bootstrap_ci(y, g_proba, groups),
+                         "regimes": {}}
         for rname, dkey in splitters.items():
             vals = np.array([dmap[it["id"]][dkey] for it in items])
             t1, t2 = np.percentile(vals, [100 / 3, 200 / 3])
+            results[view]["tercile_cuts"] = {**results[view].get("tercile_cuts", {}),
+                                             rname: [round(float(t1), 4), round(float(t2), 4)]}
             for ri, name in enumerate(["lo", "mid", "hi"]):
                 sel = (vals <= t1) if ri == 0 else ((vals <= t2) if ri == 1 else (vals > t2))
                 yy = y[sel]
+                gg = np.array(groups)[sel]
+                # per-clip class presence in this regime
+                per_clip = {}
+                for c in np.unique(gg):
+                    cs = yy[gg == c]
+                    per_clip[c] = {"n": int(len(cs)), "good": int((cs == 1).sum()),
+                                   "bad": int((cs == 0).sum())}
+                both = [c for c, d in per_clip.items() if d["good"] and d["bad"]]
                 if yy.min() == yy.max():
                     results[view]["regimes"][f"{rname}_{name}"] = {
-                        "n": int(sel.sum()), "skip": "single-class regime"}
+                        "n": int(sel.sum()), "n_clips": int(len(set(gg))),
+                        "clips_with_both_classes": both,
+                        "skip": "single-class regime"}
                     continue
-                XX, gg = X[sel], np.array(groups)[sel]
                 if len(set(gg)) < 2:
                     results[view]["regimes"][f"{rname}_{name}"] = {
-                        "n": int(sel.sum()), "skip": "single-clip regime"}
+                        "n": int(sel.sum()), "n_clips": int(len(set(gg))),
+                        "clips_with_both_classes": both,
+                        "skip": "single-clip regime"}
                     continue
-                r_auc, r_proba = loco_auroc(XX, yy, gg)
-                # global model's proba restricted to regime
+                r_auc, r_proba = loco_auroc(X[sel], yy, gg)
                 from sklearn.metrics import roc_auc_score
                 g_on_r = float(roc_auc_score(yy, g_proba[sel]))
                 results[view]["regimes"][f"{rname}_{name}"] = {
                     "n": int(sel.sum()), "n_bad": int((yy == 0).sum()),
+                    "n_clips": int(len(set(gg))),
+                    "clips_with_both_classes": both,
                     "regime_model_loco_auroc": round(r_auc, 4),
+                    "regime_model_ci95": clip_bootstrap_ci(yy, r_proba, gg),
                     "global_model_on_regime_auroc": round(g_on_r, 4),
-                    "delta": round(r_auc - g_on_r, 4)}
-    results["cmd"] = "nested LOCO: regime models trained only on train-clip windows of that regime"
+                    "global_on_regime_ci95": clip_bootstrap_ci(yy, g_proba[sel], gg),
+                    "delta": round(r_auc - g_on_r, 4),
+                    "delta_ci95": clip_bootstrap_delta_ci(yy, r_proba, g_proba[sel], gg),
+                    "adopt_split": bool((r_auc - g_on_r) > 0.03 and
+                                        (clip_bootstrap_delta_ci(yy, r_proba, g_proba[sel], gg)[0] or 0) > 0)}
+    results["cmd"] = ("nested LOCO: regime models trained only on train-clip windows of that "
+                      "regime; CI = 2000x clip bootstrap")
+    results["protocol"] = "leave-one-clip-out over the 7 IndEgo clips, 150 human windows"
     json.dump(results, open(os.path.join(RES, "regime_vs_global.json"), "w"), indent=1)
     return results
 
@@ -238,9 +328,46 @@ def gap_control(recs):
                "auroc": round(base_auc, 4),
                "mean_p_good": round(float(ps[ys == 1].mean()), 4),
                "mean_p_bad": round(float(ps[ys == 0].mean()), 4),
-               "note": "baseline ood_scores.json used 300 pixel frames/20 EG2 frames per 10 s window"},
+               "note": "baseline ood_scores.json used 300 pixel frames/20 EG2 frames per 10 s window; "
+                       "scores are on the queue-1 480p/30fps transcode; the re-encode to the IndEgo "
+                       "spec was NOT re-scored (frozen model pipeline unavailable) — this is a baseline audit only"},
            "p_pixel_vs_source_descriptor_corr": corr,
            "cmd": "paired transcode-vs-source descriptors + frozen ensemble score audit"}
+
+    # ---- E4.03 matching experiment: IndEgo gap across container specs ----
+    re_recs = grp(recs, "ood1_reenc10")
+    CONTENT = ["sharp_lapvar", "sharp_norm", "noise_sigma", "edge_density", "luma_mean",
+               "luma_p05", "luma_p50", "luma_p95", "dark_frac", "bright_frac", "clip_frac",
+               "blockiness", "chroma_spread", "shift_mean", "shift_max", "static_frac",
+               "temp_energy", "dup_frac"]
+    ind = grp(recs, "indego")
+    if re_recs and ind:
+        rm = {r["window_id"]: r["desc"] for r in re_recs}
+        specs = {"ood_src_1080p30": sm, "ood_tc_480p30": tm,
+                 "ood_reenc_480x480p10": rm}
+        match = []
+        for k in CONTENT:
+            a = np.array([r["desc"][k] for r in ind])
+            row = {"descriptor": k,
+                   "indego_median": round(float(np.median(a)), 4)}
+            for sname, m in specs.items():
+                common_spec = sorted(set(m))
+                b = np.array([m[i][k] for i in common_spec])
+                row[f"d_ind_vs_{sname}"] = round(np.sign(cohens_d(a, b)) *
+                                                 min(abs(cohens_d(a, b)), 1e6), 4)
+            match.append(row)
+        # gap shrink summary over content descriptors
+        shrunk = sum(1 for r in match
+                     if abs(r["d_ind_vs_ood_reenc_480x480p10"]) < abs(r["d_ind_vs_ood_src_1080p30"]))
+        out["matching_experiment"] = {
+            "n_reencoded": len(re_recs),
+            "spec": "480x480, 10 fps, H.264 (IndEgo spec)",
+            "content_separators": match,
+            "content_descriptors_with_smaller_IndEgo_gap_after_reencode":
+                f"{shrunk}/{len(match)}",
+            "note": "descriptor gap IndEgo-vs-OOD before/after re-encoding only; "
+                    "frozen ensemble scores were not recomputed on the re-encoded clips",
+        }
     json.dump(out, open(os.path.join(RES, "gap_control.json"), "w"), indent=1)
     return out
 

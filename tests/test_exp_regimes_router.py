@@ -7,9 +7,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "jadal", "regim
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from jadal.regimes.router import TRAINING_RANGES, choose_profile, receipt_fragment
 
-BASE = {"width": 854, "height": 480, "fps": 10.0, "shift_mean": 2.0,
-        "static_frac": 0.8, "sharp_norm": 300.0, "luma_mean": 0.45,
-        "clip_frac": 0.05, "noise_sigma": 0.01, "_sha256": "abc123"}
+BASE = {"width": 480, "height": 480, "fps": 10.0, "shift_mean": 10.0,
+        "static_frac": 0.8, "sharp_norm": 8000.0, "luma_mean": 0.30,
+        "clip_frac": 0.15, "noise_sigma": 0.005, "_sha256": "abc123"}
 
 
 def test_clear_stationary():
@@ -25,14 +25,19 @@ def test_factory_1080p30_by_res_and_fps():
 
 
 def test_walking_logistics_by_motion():
-    d = dict(BASE, shift_mean=12.0, static_frac=0.1)
+    d = dict(BASE, shift_mean=35.0, static_frac=0.1)
+    r = choose_profile(d)
+    assert r["profile"] == "walking_logistics", r
+
+
+def test_walking_logistics_by_temp_energy():
+    d = dict(BASE, temp_energy=0.30)
     r = choose_profile(d)
     assert r["profile"] == "walking_logistics", r
 
 
 def test_blurry_lowlight_by_sharpness():
-    d = dict(BASE, sharp_norm=10.0)
-    r = choose_profile(dict(d))["profile"] == "blurry_lowlight"
+    r = choose_profile(dict(BASE, sharp_norm=1200.0))["profile"] == "blurry_lowlight"
     assert r
 
 
