@@ -1,0 +1,224 @@
+{
+ "ids": [
+  "g000",
+  "g007",
+  "g014",
+  "g021",
+  "g028",
+  "g035",
+  "g042",
+  "g049",
+  "g056",
+  "g063",
+  "g070",
+  "g077",
+  "g084",
+  "g091",
+  "g098",
+  "g105",
+  "g112",
+  "g119",
+  "g126",
+  "g133",
+  "g140",
+  "g147",
+  "q004_s_f534db15e873",
+  "q011_s_048cec11a8fd",
+  "q018_s_0915b3f573b7",
+  "q025_s_0d56e088331b",
+  "q032_s_390d3a881a83",
+  "q039_s_041ca61bbb85"
+ ],
+ "y": [
+  0,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  0,
+  1,
+  1,
+  1,
+  1,
+  0,
+  1,
+  0,
+  1,
+  1,
+  1,
+  1,
+  0,
+  1,
+  1,
+  1,
+  1
+ ],
+ "clips": [
+  "ecu_full",
+  "ecu_full",
+  "ecu_full",
+  "ecu_full",
+  "ecu_full",
+  "ecu_full",
+  "ecu_full",
+  "ecu_late",
+  "ecu_late",
+  "desk",
+  "desk",
+  "desk",
+  "desk",
+  "pallet2",
+  "pallet",
+  "pallet",
+  "pallet",
+  "organise",
+  "organise",
+  "logistics4",
+  "logistics4",
+  "logistics4",
+  "factory_013",
+  "factory_023",
+  "factory_036",
+  "factory_044",
+  "factory_058",
+  "factory_070"
+ ],
+ "ood_mask": [
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  false,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true
+ ],
+ "features": {
+  "mosaic_N4": [
+   28,
+   768
+  ],
+  "meanframes_N4": [
+   28,
+   768
+  ],
+  "mosaic_N6": [
+   28,
+   768
+  ],
+  "meanframes_N6": [
+   28,
+   768
+  ],
+  "mosaic_N9": [
+   28,
+   768
+  ],
+  "meanframes_N9": [
+   28,
+   768
+  ],
+  "mosaic_N12": [
+   28,
+   768
+  ],
+  "meanframes_N12": [
+   28,
+   768
+  ],
+  "mosaic_N16": [
+   28,
+   768
+  ],
+  "meanframes_N16": [
+   28,
+   768
+  ],
+  "mosaic_N10": [
+   28,
+   768
+  ],
+  "meanframes_N10": [
+   28,
+   768
+  ],
+  "mosaic_N20": [
+   28,
+   768
+  ],
+  "meanframes_N20": [
+   28,
+   768
+  ],
+  "mosaic_N30": [
+   28,
+   768
+  ],
+  "meanframes_N30": [
+   28,
+   768
+  ],
+  "mosaic_N50": [
+   28,
+   768
+  ],
+  "meanframes_N50": [
+   28,
+   768
+  ],
+  "mosaic_N100": [
+   28,
+   768
+  ],
+  "meanframes_N100": [
+   28,
+   768
+  ],
+  "shuffled": [
+   28,
+   768
+  ],
+  "no_ts": [
+   28,
+   768
+  ],
+  "single_middle": [
+   28,
+   768
+  ],
+  "motion": [
+   28,
+   768
+  ],
+  "pooled_stats": [
+   28,
+   1536
+  ]
+ }
+}

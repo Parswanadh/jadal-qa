@@ -1,0 +1,59 @@
+{
+ "n": 22,
+ "n_good": 18,
+ "n_bad": 4,
+ "label_source": "human (IndEgo gold manifest, one labeller)",
+ "protocol": "in-domain LOCO over 7 IndEgo clips, logistic C=0.01 on L2-normalised features, clip-bootstrap CI B=1000 seed0; OOD = logistic frozen on all IndEgo, window bootstrap (optimistic, 1 window/factory), n_bad=9 exploratory",
+ "device": "A40",
+ "command": "bash tools/pod/gpu_run.sh python3 eval/exp_mosaic/run_variants.py",
+ "git_sha": "11b6c79",
+ "ood": {
+  "n": 6,
+  "n_good": 5,
+  "n_bad": 1,
+  "auroc": 0.8,
+  "ci95": [
+   0.4,
+   1.0
+  ]
+ },
+ "cost": {
+  "decode_ms": 55941.2,
+  "build_ms": 67931.2,
+  "embed_ms": 153099.6,
+  "frames_decoded": 4000,
+  "n_windows": 28
+ },
+ "vram_peak_mb": 2717.0,
+ "sample_rule": "t_i=(i+0.5)*10/N; src_frame_index=round(t_i*native_fps)",
+ "tile_px": 224,
+ "window_s": 10.0,
+ "cached_eg2_reference": {
+  "auroc": 0.848,
+  "ci95": [
+   0.7344,
+   0.9087
+  ],
+  "n": 150,
+  "note": "cached 0.5s-spacing EG2 window mean, 2fps recipe"
+ },
+ "tag": "shuffled",
+ "indego": {
+  "n": 22,
+  "n_good": 18,
+  "n_bad": 4,
+  "auroc": 0.9861,
+  "ci95": [
+   0.942,
+   1.0
+  ],
+  "bal_acc": 0.875
+ },
+ "experiment": "E2.03",
+ "variant": "shuffled tile order",
+ "n_frames": 9,
+ "fps_used": 0.9,
+ "embed_passes": 1,
+ "vs_mosaic_N9": 0.0139,
+ "vs_meanframes_N9": 0.0694
+}
