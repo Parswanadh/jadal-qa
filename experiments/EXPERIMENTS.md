@@ -33,9 +33,11 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 | E6.02 | E6 | done | drop | Per-clip sign calibration from unlabelled windows only (LOCO) | IndEgo human gold, 150 windows / 7 clips (one labeller) for  / 480p/10fps IndEgo mp4_480 |
 | E6.03 | E6 | done | drop | Motion cue out-of-domain on 60 human-labelled Egocentric-10K windows | Egocentric-10K queues/label_queue_random.json 480p/30fps tra / 480p/30fps transcode of 1080p/30fps HEVC factory clips, stride 3 -> ~10 fps effective |
 | E6.04 | E6 | done | drop | Motion cue conditioning robustness (quantiles vs fixed bins) + logistic controls | IndEgo human gold, 150 windows / 7 clips (one labeller), sam / 480p/10fps IndEgo mp4_480 |
-| E7.01 | E7 | running | - | Cost model: hours of video per wall-hour on the pod A40, per profile | n/a (cost model): measured timings on the pod A40 from this  / 480p/10fps H.264 IndEgo + 1080p/30fps HEVC Egocentric-10K |
+| E7.01 | E7 | done | adopt | Cost model: hours of video per wall-hour on the pod A40, per profile | n/a (cost model): measured timings on the pod A40 from this  / 480p/10fps H.264 IndEgo + 1080p/30fps HEVC Egocentric-10K |
 | E8.01 | E8 | running | - | E8.01 re-score 1,546 Egocentric-10K windows with the frozen two-view recipe + profile router | queues/manifest_scale.json: 1546 windows / 58 clips / 4.404  / factory Egocentric-10K, 1080p, 30 fps, HEVC, handheld egocentric manufacturing |
 | E9.01 | E9 | done | adopt | standard eval harness for PR comparison | IndEgo gold manifest_gold.json n=150 (100 good/50 bad, 7 cli / IndEgo 480p 10fps H264 in-domain; Egocentric-10K 1080p30 HEVC out-of-domain |
+| LB1 | B | done | adopt | Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy | IndEgo human gold 150 windows / 7 clips (human labels, READ- / 480p/10fps IndEgo in-domain LOCO (+ OOD position test, labels only) |
+| LB2 | B | done | adopt | PoC integration: adopted every-2nd window grid + 4s early exit + EG2 2fps + 26-feature pixel logistic (descriptive verdicts) |  / CPU only (GPU unavailable in the container); cached features; deterministic (fixed seeds) |
 
 ## E0.01 — Label persistence and position bias on IndEgo gold
 - **Why:** Test whether sparse window sampling or skipping clip starts is justified
@@ -391,11 +393,11 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Data / label source:** n/a (cost model): measured timings on the pod A40 from this run + source JSONs E1.01, E1.02, E1.04, E2.01, E3.04; profiles/*.json (5 profiles). No labels used.
 - **Regime:** 480p/10fps H.264 IndEgo + 1080p/30fps HEVC Egocentric-10K
 - **Method:** timed decode (CPU ffmpeg vs NVDEC cuvid), pixel26 CPU features, EmbeddingGemma-2 batch-1 image embeddings on real mosaic PNGs; arithmetic cost model per profile with stated assumptions
-- **Owner / started / finished:** experimenter / 2026-10-10 15:39 / —
-- **Verdict:** pending — 
-- **Decision:** 
-- **Cost:** 
-- **Results:** 
+- **Owner / started / finished:** experimenter / 2026-10-10 15:39 / 2026-10-10 15:59
+- **Verdict:** adopt — Cost table on A40 (contended pod): per-profile 0.51-15.22 video-h/wall-h; every-2nd+4s exit pixel26 565 ms/window -> 35.4 vs 9.1 full sampling (x3.88 wall-clock, mosaic-only x4.14); embedding-bound at batch 1 (183 ms/image, 47-94% of the window), decode-bound only for factory_1080p30 CPU (46%); NVDEC 7.37 vs 27.3 ms/frame on 1080p HEVC but slower on 480p (CI95 = window variation only, machine shared).
+- **Decision:** Use this table as the pod cost reference; keep NVDEC(1080p HEVC)/CPU(480p) separate; re-time on an idle pod and measure a pipelined multi-stream run + batch-8 eg2 feature path; policy verdicts stay with E3.01/E3.03/E3.05 (no new accuracy here; 3.88x < the 4x cost-only bar).
+- **Cost:** timed measurement ~9 min wall (decode 4 configs x 6 windows, features 12 windows, embedder 32 images, mosaic build 6 windows), peak 1.5 GB VRAM
+- **Results:** eval/results/exp_cost/E7.01.json
 
 ## E8.01 — E8.01 re-score 1,546 Egocentric-10K windows with the frozen two-view recipe + profile router
 - **Why:** B2/B4 PoC needs one contract JSONL over the whole 4.404 h scale corpus: per-window verdict, evidence op-threshold, features digest and content-hashed receipt, produced by the frozen in-domain recipe and the deterministic router
@@ -420,3 +422,27 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Decision:** Use eval/standard/run_all.py as the single comparison number for PR-triggered review; exec tier runs it in a throwaway clone behind the run-tests label.
 - **Cost:** CPU sklearn, no GPU, ~14-36 s, no network
 - **Results:** eval/results/standard/run_all.json
+
+## LB1 — Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy
+- **Why:** The adopted settings (every-2nd window, 4 s early exit, EG2 2 fps view, 26-feature logistic) drive the PoC and the submission; a second, independent re-run is the cheapest defence against a silent protocol bug.
+- **Hypothesis:** Every published number reproduces within the published precision when re-run from pod/base with the cached features and read-only gold labels.
+- **Data / label source:** IndEgo human gold 150 windows / 7 clips (human labels, READ-ONLY); caches/gpu/features.json; caches/frames10k/segments.npz; caches/ensemble/oof_probs.npz; OOD labels n=60 n_bad=9
+- **Regime:** 480p/10fps IndEgo in-domain LOCO (+ OOD position test, labels only)
+- **Method:** Re-run pinned scripts from pod/base; E1.02 additionally re-implemented from scratch; LOCO + clip-bootstrap 95% CI; exact-match tolerance at published precision
+- **Owner / started / finished:** lead-b /  / —
+- **Verdict:** adopt — 20/20 quantitative claims reproduced EXACTLY: pixel26 0.810, EG2 0.8480 [0.734,0.909], prob-avg 0.853, rank-avg 0.856; E1.01 10/5/3.33/2/1 fps 0.8086/0.7932/0.8068/0.7866/0.7736; E1.02 2/1/0.5 fps 0.8480/0.8596/0.8702 (+ independent re-implementation identical); two-view 0.8524/0.8538; E3.01 every-2 clip-error 0.0486 [0.0189,0.0872] 7/7 verdicts delay 0.286 at 0.515 of windows; E3.02 MW p=0.419/0.468 (n=60, n_bad=9); E3.03 2/4/6/8/10.5 s = 0.8038/0.8596/0.8694/0.8574/0.8480; E3.04 x1.94; E3.05 strict-pass ['every-2'].
+- **Decision:** Adopted stack is verified on the in-domain/CPU half; GPU feature-extraction half and the frozen OOD run remain UNVERIFIED (no CUDA in this container, ood_labels2.json not delivered) and are flagged as such in the report.
+- **Cost:** CPU-only, ~6 min wall (2 shards E1.01 + cached-feature LOCO); 0 GPU
+- **Results:** docs/reports/pod_verification.md + eval/results/pod_verify/
+
+## LB2 — PoC integration: adopted every-2nd window grid + 4s early exit + EG2 2fps + 26-feature pixel logistic (descriptive verdicts)
+- **Why:** E3.01/E3.05 adopted an IndEgo working policy (every-2nd window, 4s exit) but the PoC scorer path did not apply it; E1.01/E1.02 views were only measured standalone. This integrates the adopted settings in one policy module and regenerates per-window verdicts from the cached features, with LOCO numbers and DESCRIPTIVE labels only.
+- **Hypothesis:** Applying the adopted settings to the cached scorer path reproduces the adopted view quality at 4s prefixes (EG2 ~0.86, pixel ~0.80, fused >= both) and yields a deterministic per-window accept/reject/uncertain stream with no OOD or accuracy claim.
+- **Data / label source:** 
+- **Regime:** CPU only (GPU unavailable in the container); cached features; deterministic (fixed seeds)
+- **Method:** leave-one-clip-out over the 7 IndEgo clips: both logistic views re-fitted per fold at the 4s prefix (frozen ensemble_v1 C_eg2=0.003, C_px=0.3), equal-weight probability fusion, frozen verdict rule (>0.5 accept, <0.4 reject, else uncertain), every-2nd window grid per clip (range(0,n,2)), clip-bootstrap 95% CI (2000 resamples, seed 7)
+- **Owner / started / finished:** lead-b /  / —
+- **Verdict:** adopt — n=150 human gold IndEgo windows, LOCO, clip-bootstrap 95% CI. Fused 4s: AUROC 0.874 [0.742,0.942], balanced acc 0.740; EG2 2fps 4s 0.860 [0.715,0.944]; pixel26 4s 0.797 [0.658,0.860]. Full-window comparison: fused 0.849 [0.721,0.929], EG2 0.842, pixel 0.804 (4s not worse; CIs overlap, difference not established). Verdicts over 150 windows: accept 108 / reject 27 / uncertain 15. Every-2nd grid samples 77/150 windows (51.3%). Clip verdicts (sampled bad fraction >= 0.30): 5/7 agree with label-oracle truth (misses desk 0.20 vs 0.45 and pallet2 0.00 vs 0.67, n_sampled=3); E3.01's 7/7 is label-oracle, this is model-based. Cost per E3.04: every-2 x1.94; every-2 + 4s exit x4.86 (~0.907h per 4.404h corpus, 0.2059 of footage). OOD 60 windows (51 good/9 bad) included DESCRIPTIVE ONLY from frozen full-window scores (accept 17 / reject 29 / uncertain 14); no cached features exist to re-score them at 4s and NO OOD/accuracy claim is made.
+- **Decision:** Integrate the adopted settings into jadal/poc_stream/policy.py (single source of constants) and eval/poc_integrate/run_integration.py; regenerate window verdicts and summary; keep OOD rows descriptive-only. E3.05 status 'working policy on IndEgo, not validated' is quoted verbatim in results and docs.
+- **Cost:** CPU-only, cached features; policy cost ratios from E3.04 (x1.94 every-2; x4.86 every-2+4s exit) reported, not re-measured
+- **Results:** ['eval/results/poc_integrated/window_verdicts.jsonl', 'eval/results/poc_integrated/summary.json']
