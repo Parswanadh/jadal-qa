@@ -13,17 +13,20 @@ Run with::
 Env knobs (all optional; ``jadal/config.py`` is read-only so the time trigger
 lives here): ``JADAL_BATCH_MAX_AGE_S`` (30.0 s), ``JADAL_WATCH_BUCKET`` (1),
 ``JADAL_WATCH_SITE`` (site-sim), ``JADAL_WATCH_WORKER`` (w-sim),
-``JADAL_WATCH_POLL_S`` (0.25 s), ``JADAL_USE_STUBS`` (1 = allow pipeline stubs).
+``JADAL_WATCH_POLL_S`` (0.25 s), ``JADAL_USE_STUBS`` (1 = allow pipeline stubs),
+``JADAL_EVAL_RESULTS_DIR`` (eval results dir for /stats/risk_coverage),
+``JADAL_WS_RECV_TIMEOUT_S`` (60.0 s bound on every /ws receive wait).
 No network calls happen at import time; the SQLite file is created lazily.
 
 NOT DONE:
 - L0/L1/segmenter are stubs (hash-derived fakes, whole clip = one segment)
   until the real modules merge; set JADAL_USE_STUBS=1 to run on stubs.
-- /stats/risk_coverage needs calibration points (store rows, else
-  eval/results/calibration.json); with neither it returns [] -- "no measured
-  data", not a measurement of anything.
+- /stats/risk_coverage returns per-head entries from
+  eval/results/decider_baseline.json + funnel_calibration.json when present
+  (else SQLite calibration rows, else [] = no measured data, never invented).
 - /sop/search returns empty payloads until sop/ merges; /stats/sop_gaps
   counts real stored-verdict reasons until then.
+- /hub/* is mounted only when jadal.hub_api.router is importable.
 - /pico/status connects on startup when a port is configured; without hardware
   it reports connected=false.
 """
@@ -49,6 +52,16 @@ from jadal import pipeline, store as store_mod
 from jadal.config import LANGS, REASON_CODES, Config, DEFAULT
 
 log = logging.getLogger("jadal.service")
+
+# A poison clip is retried with backoff only this many times; afterwards it is
+# parked (marked done) and the terminal error stays in GET /ingest/errors.
+# Retries are for transient I/O -- an undecodable clip never retries: the
+# pipeline closes it with an UNDECODABLE reject verdict and a normal batch.
+WATCH_MAX_ATTEMPTS = 5
+
+# Every /ws receive wait is bounded by this (env-overridable); an idle client
+# simply waits again instead of blocking forever.
+WS_RECV_TIMEOUT_S = 60.0
 
 
 def _env_float(name: str, default: float) -> float:
@@ -337,17 +350,32 @@ class _Service:
                 self._done_files.add(clip.name)
             except Exception as exc:
                 # leave it out of _done_files so a later poll retries (I3),
-                # but back off exponentially so a poison file cannot spin.
+                # but back off exponentially so a poison file cannot spin --
+                # and give up after WATCH_MAX_ATTEMPTS attempts, parking the
+                # file with its terminal error in /ingest/errors.
                 with self._lock:
                     attempts = self._watch_backoff.get(clip.name, {}).get("attempts", 0) + 1
-                    self._watch_backoff[clip.name] = {
-                        "attempts": attempts,
-                        "next_ts": time.monotonic() + min(2.0 ** attempts, 30.0),
-                    }
-                    self._errors[str(Path(os.path.realpath(clip)))] = (
-                        f"{type(exc).__name__}: {exc}")
-                log.warning("watcher ingest of %s failed (attempt %d): %s",
-                            clip.name, attempts, exc)
+                    if attempts >= WATCH_MAX_ATTEMPTS:
+                        self._watch_backoff.pop(clip.name, None)
+                        self._errors[str(Path(os.path.realpath(clip)))] = (
+                            f"{type(exc).__name__}: {exc} "
+                            f"(gave up after {attempts} attempts)")
+                        parked = True
+                    else:
+                        self._watch_backoff[clip.name] = {
+                            "attempts": attempts,
+                            "next_ts": time.monotonic() + min(2.0 ** attempts, 30.0),
+                        }
+                        self._errors[str(Path(os.path.realpath(clip)))] = (
+                            f"{type(exc).__name__}: {exc}")
+                        parked = False
+                if parked:
+                    self._done_files.add(clip.name)
+                    log.warning("watcher parked %s after %d attempts: %s",
+                                clip.name, attempts, exc)
+                else:
+                    log.warning("watcher ingest of %s failed (attempt %d): %s",
+                                clip.name, attempts, exc)
                 continue
             else:
                 with self._lock:
@@ -454,12 +482,12 @@ def create_app(config: Config | None = None, *, batch_max_age_s: float | None = 
     # -- stats / sop / voice / pico ----------------------------------------
     @app.get("/stats/risk_coverage")
     def stats_risk_coverage() -> list[dict]:
-        points = svc.store.calibration_points()
-        if points:
-            return pipeline.risk_coverage(points)
-        # real eval results when the eval module has produced them; [] is the
-        # honest "no measured data" state -- never fabricated points.
-        return pipeline.risk_coverage_from_eval()
+        results_dir = os.environ.get("JADAL_EVAL_RESULTS_DIR") or None
+        return pipeline.risk_coverage_report(
+            config=cfg,
+            results_dir=results_dir,
+            store_points=svc.store.calibration_points(),
+        )
 
     @app.get("/stats/sop_gaps")
     def stats_sop_gaps() -> list[dict]:
@@ -508,18 +536,26 @@ def create_app(config: Config | None = None, *, batch_max_age_s: float | None = 
         svc.start(asyncio.get_running_loop())
         svc.register_ws(websocket, asyncio.get_running_loop())
         try:
+            recv_timeout = _env_float("JADAL_WS_RECV_TIMEOUT_S", WS_RECV_TIMEOUT_S)
             await websocket.send_json({"type": "hello",
                                        "recent": len(svc.recent_events())})
             for event in svc.recent_events():
                 await websocket.send_json(event)
             while True:
-                msg = await websocket.receive_text()
+                try:
+                    msg = await asyncio.wait_for(websocket.receive_text(),
+                                                 timeout=recv_timeout)
+                except asyncio.TimeoutError:
+                    continue  # idle client: wait again, never block forever
                 if msg == "ping":
                     await websocket.send_json({"type": "pong"})
         except WebSocketDisconnect:
             pass
         finally:
             svc.unregister_ws(websocket)
+
+    # -- optional hub router (owned by the hub worker; absent until it merges)
+    _mount_hub_router(app)
 
     # -- static dashboard ---------------------------------------------------
     web_dir = Path(cfg.web_dir)
@@ -541,6 +577,25 @@ def _sop_module():
         return sop_index
     except Exception:
         return None
+
+
+def _mount_hub_router(app: FastAPI) -> bool:
+    """Mount the optional hub router under /hub when importable.
+
+    The hub worker owns ``jadal.hub_api``; when it is absent (or exposes no
+    router) the service behaves exactly as before. Returns True when mounted.
+    """
+    try:
+        from jadal.hub_api import router as hub_router  # type: ignore
+    except Exception as exc:
+        log.info("hub router not mounted: %s", exc)
+        return False
+    try:
+        app.include_router(hub_router)
+    except Exception as exc:
+        log.warning("hub router present but failed to mount: %s", exc)
+        return False
+    return True
 
 
 app = create_app()
