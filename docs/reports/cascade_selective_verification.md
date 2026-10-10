@@ -30,6 +30,9 @@ Protocols (stated exactly, both implemented in the script)
   leave-one-clip-out; operating point `argmax(tpr+tnr-1)` over
   `linspace(0.05,0.95,37)` with `pred=(p>=t)`; `MARGIN=0.25` around `p=0.5`
   routes to S2 (interface stub).
+  Note: the `argmax` operating point is stored as a legacy `threshold` field in
+  receipts and never decides a verdict. `decide_window` in `jadal/poc/cascade.py`
+  decides with bands: reject at p <= 0.25, accept at p >= 0.75, review (S2) between.
 * **selective**: confidence `|p-0.5|`, order `np.argsort(-conf)` (stable),
   `k = int(cov*n)`, decision `p>0.5`, balanced accuracy computed on the selected
   `k` only. Two views: **nested** (`oof_probs.npz`, inner-LOCO C selection,
