@@ -46,7 +46,20 @@ hands>=1 frac=0.960, work=yes frac=0.917 (skewed — balacc at 0.5 suffers).
 
 Matryoshka truncation 768->128 loses ~0.01-0.015 AUROC; balacc drops more
 (threshold not retuned — operating point, not ranking, degrades).
-Full-6k run in progress; 10k embedding 6/10 shards done.
-
-### (3) Transfer to HUMAN labels — pending (segment embed queued after 10k)
+Full-6k run in progress; 10k embedding 8/10 shards done (partial_8k staged
+locally); segment embedding + transfer queued for GPU (lock held by another
+worker's long job since ~16:20 IST; fair queue).
 ### (4) Cost — pending (meta.json at concat)
+
+## Resource-ladder note (feeder bottleneck, orchestrator 16:43 IST)
+Machine CPU/RAM saturated while GPU starved by CPU-side JPEG decode/resize +
+oversubscribed BLAS threads. Reference measurement (orchestrator,
+`spectral_data/nvjpeg_decode_example.py`, real 1920x1080 frames):
+GPU nvjpeg + cuda resize = 192 frames/s vs CPU PIL decode+resize = 24.7
+frames/s (1 thread), 0.66 GiB peak. Compliance: new GPU-feeding stages use
+`eval/frames10k/gpu_pre.py` (nvjpeg + cuda bilinear to longest-side 512);
+every new python starts with OMP/MKL/OPENBLAS_NUM_THREADS=2; no n_jobs=-1;
+float16 + small shards (no memmap needed at these sizes). Shards 0-6 used
+the CPU PIL path (pre-existing progress); shards 7+ and segments use the
+GPU path — preprocessing differs slightly (measured gap TBD); the transfer
+comparison stays valid because all arms share the same segment embeddings.
