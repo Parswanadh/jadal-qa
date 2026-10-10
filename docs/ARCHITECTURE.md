@@ -1,26 +1,26 @@
 # Architecture
 
-This page describes the Jadal QA pipeline as it is on `origin/main` (68f85cc) on 2026-10-10, and the direction the build is moving in. The contract every merged module codes against is [`SPEC.md`](SPEC.md). `SPEC.md` predates the direction below and has not been updated in this change, so where this page and `SPEC.md` disagree, `SPEC.md` governs. The whole-video, streaming, no-frame-sampling direction below is planned, pending a `SPEC.md` amendment — it is not the current contract.
+This page is **descriptive**. It describes the Jadal QA pipeline as it is on `origin/main` (55b0654) on 2026-10-10, and the direction the build is moving in. It is not the build contract. [`SPEC.md`](SPEC.md) is the binding build contract that every merged module codes against. `SPEC.md` predates the direction below and has not been updated in this change, so where this page and `SPEC.md` disagree, `SPEC.md` governs. The whole-video, streaming, no-frame-sampling direction below is planned, pending a `SPEC.md` amendment. It is not the current contract.
 
 Status labels used below:
 
 - **merged (PR #N)**: implemented and merged to `main`.
 - **open PR #N**: implemented on a branch, not yet merged.
 - **planned**: no merged code yet.
-- **not measured**: built or designed, but no number exists yet.
+- **not measured**: built or designed, but no measurement exists in a file on this branch.
 
 ## Environment
 
 The pipeline runs in a Python 3.12 conda env with torch+cu130 (CUDA user-space wheels inside the env; the NVIDIA driver is not changed). Set the path to that env locally; it is not stored in this repo. Use `PYTHONNOUSERSITE=1` so user-site packages do not shadow the env.
 
-Measurement hardware so far (unverified builder note — no backing measurement file in this repo): an RTX 4070 laptop GPU (36 SMs, 8 GiB VRAM, power capped at 80 W by firmware, thermally limited) and x86 laptop CPU cores. There is no Raspberry Pi measurement yet.
+Measurement hardware so far: an RTX 4070 laptop GPU and x86 laptop CPU cores (hardware specifications are not recorded in a file on this branch). There is no Raspberry Pi measurement yet.
 
 ## Direction (2026-10-10)
 
 - **Edge-first.** Mentors at Awign said workers record their own video, a decentralised deployment is acceptable if it runs on a Raspberry Pi, rejection reasons can be generic, and accept/reject may be fully automated with no mandatory human. The Pi run is pending. x86 cores are a proxy.
 - **Whole-video, per-pixel analysis of every frame.** Frames are not sampled. Stage 1 streams over every frame at reduced resolution and keeps running accumulators.
-- **Streaming with early reject.** The worker analyses 2-second chunks (chunk size per unverified builder note, no backing measurement on this branch) while it records. Stage 0 is planned to reject dark, blocked, over-exposed or frozen footage in the first 1-2 seconds, with evidence (timing unverified — no backing file or measurement in this repo; see the Stage 0 note below).
-- **Mathematics-first, deterministic decisions.** Decisions come from measured signals and a transparent rule list with exact thresholds. Logistic regression and boosted trees are comparison baselines only. Every reject carries its evidence (value, comparison, threshold). The first rule list tried rejected nearly everything and was dropped.
+- **Streaming with early reject.** The worker is planned to analyse chunks while it records. The chunk size is not measured or backed by a file on this branch. Stage 0 is planned to reject dark, blocked, over-exposed or frozen footage early in the clip, with evidence. Its timing is not measured (see the Stage 0 note below).
+- **Mathematics-first, deterministic decisions.** Decisions come from measured signals and a transparent rule list with exact thresholds. Logistic regression and boosted trees are comparison baselines only. Every reject carries its evidence (value, comparison, threshold). The first rule list tried rejected nearly everything and was dropped (unverified builder note, no backing file in this repo).
 - **Signals.** Poisson-Gaussian noise model (SNR), H.264 bits per frame, frame difference against the noise floor, noise-normalised sharpness, residual optical flow after ego-motion removal, exposure clipping, histogram entropy, dHash. Heat-equation blur, colour temperature, MSCN and max-entropy were dropped.
 - **Not in the pipeline.** A generic VLM (stopped as too probabilistic), Laya (text-only) and Clef (hosted). EmbeddingGemma 2 is an optional helper for hub search, de-duplication and frame heads.
 - **RGB, not hyperspectral.** The cameras are RGB (3 bands). The analysis is per-pixel frequency and temporal-spectral analysis of RGB frames. It is not hyperspectral imaging.
@@ -62,7 +62,7 @@ Notes on the diagram:
 
 ### Stage 0 and stage 1 (direction; not yet on `main`)
 
-- **Stage 0** (first 1-2 s, tiny resolution): exact rules that reject dark, blocked, over-exposed or frozen footage immediately, with evidence. Planned direction, pending `SPEC.md` amendment; any collapse-gate timing is an unverified builder note with no backing file or command in this repo. The gate concept is blind to semantic failures (no active work, hands not visible).
+- **Stage 0** (early in the clip, tiny resolution): exact rules that reject dark, blocked, over-exposed or frozen footage immediately, with evidence. Planned direction, pending `SPEC.md` amendment; any collapse-gate timing is an unverified builder note with no backing file or command in this repo. The gate concept is blind to semantic failures (no active work, hands not visible).
 - **Stage 1** (whole video, every frame at reduced resolution, streaming accumulators): per-pixel spatial and temporal spectrum, noise model, motion after camera-motion removal. These feed the rule list and a score.
 - **Stage 2** (uncertain windows only, optional): heavier tools (MediaPipe hands, EmbeddingGemma 2).
 - Quality features are measured on RAW pixels. Activity features are measured on CLEANED video (denoised, normalised, motion-compensated). Each cleaning step has to earn its place in cross-validation.
@@ -88,11 +88,11 @@ Notes on the diagram:
 `jadal/certify.py`:
 
 - `fit_temperature` (temperature scaling), `ece` (expected calibration error).
-- `exact_binomial_upper`: Clopper-Pearson upper bound on the error rate at `delta = 0.1`.
-- `pick_threshold`: fixed-sequence testing from the strictest threshold downward, stopping at the first failure, with `min_accepted` (default 30).
+- `exact_binomial_upper`: Clopper-Pearson upper bound on the error rate, at the default `DEFAULT_DELTA` in `jadal/certify.py`.
+- `pick_threshold`: fixed-sequence testing from the strictest threshold downward, stopping at the first failure, with `min_accepted` (default `DEFAULT_MIN_ACCEPTED` in `jadal/certify.py`).
 - `risk_coverage`, and `batch_rule(verdicts, k)`, which rejects a batch when `rejected_count > k`.
 
-**These bounds are machinery, not a delivered guarantee.** With 150 human labels from 7 clips, the multiple-testing correction needs about 86 clean windows (see `reports/funnel.md`: support floor 86). Windows within a clip are correlated, so the usable independent sample is smaller than 150. No bound the current data can support is certified. Error rates are reported as observed, with n and label source.
+**These bounds are machinery, not a delivered guarantee.** With 150 human labels from 7 clips, the multiple-testing correction needs about 86 clean windows (see `docs/reports/funnel.md`: support floor 86). Windows within a clip are correlated, so the usable independent sample is smaller than 150. No bound the current data can support is certified. Error rates are reported as observed, with n and label source.
 
 Until calibration data exists, the answer threshold is a recorded placeholder (`STUB_THRESHOLD = 0.9` in `jadal/stubs.py`). No threshold on `main` is certified.
 
@@ -120,12 +120,12 @@ Known gaps:
 These come from `SPEC.md` and apply to every merged module.
 
 1. Same input plus same pinned weights and config gives the same output. No sampling, no temperature, no randomness without a fixed seed.
-2. Each model call is per segment (batch size 1). `SPEC.md` specifies fixed frame sampling; the whole-video direction above would process frames without sampling, but that change is planned, pending a `SPEC.md` amendment — `SPEC.md` governs until then. A segment must give an identical `receipt_sha256` whether it is processed alone or inside a batch of five. For torch, `use_deterministic_algorithms(True, warn_only=True)`, `cudnn.benchmark = False` and fixed seeds are required.
+2. Each model call is per segment (batch size 1). `SPEC.md` specifies fixed frame sampling; the whole-video direction above would process frames without sampling, but that change is planned, pending a `SPEC.md` amendment — `SPEC.md` governs until then. A segment must give an identical `receipt_sha256` whether it is processed alone or inside a batch (`SPEC.md` specifies a batch of 5). For torch, `use_deterministic_algorithms(True, warn_only=True)`, `cudnn.benchmark = False` and fixed seeds are required.
 3. Probabilities and other floats are rounded to 4 decimals before they enter a receipt. Dict keys and lists with no meaningful order are sorted.
 4. Versions recorded: Python, torch, model names and weight SHA-256 (or size and name if hashing is too slow), and a pipeline config hash. Only the first two and the config hash are recorded today.
 5. `segment_sha256` is the hash of the file the pipeline read (the original).
 
-What is measured: the CPU feature path's canonical-JSON digest (`sha256(canonical-json(signals+route))`) was identical across 3 repeats and across 1-core vs 4-core runs (see `reports/edge.md:81-83`). GPU numerics are not claimed identical across devices, and cross-architecture determinism is not claimed. The batch-independence tests on `main` call pure functions repeatedly and do not run a real batch. The real "alone vs batch of five" proof (10 identical receipt hashes through the real modules) is **pending**.
+What is measured: the CPU feature path's canonical-JSON digest (`sha256(canonical-json(signals+route))`) was identical across repeated runs and across 1-core vs 4-core runs (see `reports/edge.md:81-83`). GPU numerics are not claimed identical across devices, and cross-architecture determinism is not claimed. The batch-independence tests on `main` call pure functions repeatedly and do not run a real batch. The real "alone vs batch" proof through the real modules is **pending**.
 
 ## Failure modes
 
@@ -141,18 +141,18 @@ What is measured: the CPU feature path's canonical-JSON digest (`sha256(canonica
 | Permanently failing file | Watcher retries every two polls, logging each time, with no backoff | open (service deferred minor) |
 | Byte-identical clips from two workers or sites | Same `segment_id`; the second record's metadata is lost | open (signals deferred minor) |
 | Face blur misses faces | The blur is a skin-colour proxy, so it can miss faces | open (signals I3) |
-| GPU decode starves the GPU | PoC-work note (unverified here, not on `main`): CPU-side JPEG decode was noted slower than GPU JPEG decode; a 3-slot lock now shares the GPU | lock in place in PoC work (not on `main`) |
+| GPU decode starves the GPU | PoC-work note (unverified here): CPU-side JPEG decode was noted slower than GPU JPEG decode; a GPU lock was added in PoC work to share the GPU | not verified on this branch (PoC work; see `scripts/poc_demo.sh`) |
 | Pico port permissions after reflashing MicroPython | Device node is recreated with a restricted group, so the port must be re-granted | operational (ledger) |
 | Voicebank tests in an environment with the `sarvamai` SDK installed | Two tests assume the SDK is absent and fail; one also makes a real network call with an empty key | network-free test fix merged (PR #22) |
 
 ## What we deliberately do not claim
 
 - **No certified error bounds.** The machinery exists; it does not produce a usable guarantee at n = 150 from 7 clips.
-- **No accuracy claim.** The README records directions tested with results pending; no accuracy numbers are claimed on this branch. The Egocentric-10K notes below are descriptive.
-- **Egocentric-10K notes are descriptive.** Those windows have no human labels. The domain shift from the 480p/10 fps calibration data (unverified builder note — no backing file in this repo for the calibration) is untested.
+- **No accuracy claim.** The README records no accuracy numbers on this branch. The Egocentric-10K notes below are descriptive.
+- **Egocentric-10K notes are descriptive.** Those windows have no human labels. The domain shift from the calibration footage (480p IndEgo, see `reports/edge.md:69`) is untested.
 - **Labels for Egocentric-10K-Evaluation are AI-generated** (gemini-2.5-flash per ATTRIBUTIONS) and not human-checked.
-- **Thresholds are placeholders** (0.9) until calibrated on our own clips. No threshold on `main` is certified.
-- **The batch rule is a fixed rule with no statistical guarantee** at n = 5 to 10.
+- **Thresholds are placeholders** (`STUB_THRESHOLD = 0.9` in `jadal/stubs.py`) until calibrated on our own clips. No threshold on `main` is certified.
+- **The batch rule is a fixed rule with no statistical guarantee** at small batch sizes.
 - **Receipts are content-hashed, not signed.**
 - **No Raspberry Pi compute measurement.** The Pico is a status light, verified on RP2040 only.
 - **No hyperspectral imaging.** The cameras are RGB (3 bands).
