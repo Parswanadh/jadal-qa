@@ -1,0 +1,220 @@
+{
+ "ci95": {
+  "clip_bootstrap_accept_share": [
+   0.1357,
+   0.2535
+  ],
+  "clip_bootstrap_reject_share": [
+   0.0255,
+   0.0971
+  ],
+  "n_clips": 58,
+  "note": "window-level Wilson CIs are anti-conservative (windows inside a clip are correlated); the clip bootstrap is the honest one",
+  "window_level_wilson": {
+   "accept": [
+    0.1726,
+    0.2118
+   ],
+   "reject": [
+    0.0435,
+    0.0661
+   ],
+   "review": [
+    0.7328,
+    0.7756
+   ]
+  }
+ },
+ "command": "source /workspace/env.sh && export JADAL_EXP_DIR=/workspace/wt/exp-rescore/experiments OMP_NUM_THREADS=1 && cd /workspace/wt/exp-rescore && python3 eval/exp_rescore/run_e8.py --workers 4 --resume --out /workspace/artifacts/windows_rescored.jsonl && python3 eval/exp_rescore/write_results.py",
+ "contract": {
+  "body_sha256": "74495d0059e41c93ece1922327abffd9dc6a15a689ccb18a404f67aecbed7c93",
+  "features_digest_formula": "sha256(canonical features{})",
+  "header_line": true,
+  "n_lines": 1547,
+  "path": "/workspace/artifacts/windows_rescored.jsonl (not committed: artifacts/ is ignored)",
+  "receipt_formula": "receipt_sha256 = sha256(canonical JSON of the line without receipt_sha256); content-hashed, NOT signed",
+  "receipts_reverified": 1546,
+  "sidecars": {
+   "descriptors": {
+    "path": "/workspace/artifacts/exp_rescore/descriptors.jsonl",
+    "sha256": "d2c35dfd0a398796198d6cff409cb723446328c3ae018bd6c76ec82b856885e5"
+   },
+   "eg2_mean_l2": {
+    "note": "float64, 4-dp rounded to match features{}.eg2_mean_sha256",
+    "path": "/workspace/artifacts/exp_rescore/eg2_mean_l2.npy",
+    "sha256": "88381d7c493040c214de8c70eaa90dfc9cde419e3b3bb2e775788ec5187fdfe3",
+    "shape": [
+     1546,
+     768
+    ]
+   }
+  }
+ },
+ "cost": {
+  "ms_per_window_mean": 5761.4,
+  "ms_per_window_p50": 5195.0,
+  "ms_per_window_p95": 9370.8,
+  "policy_note": "E3.04 (every-2nd-window + 4 s early exit -> x4.9 less work) was NOT applied: the contract requires one verdict per window, and the profile factory_1080p30 sampling (fps=5, probe_every_k=2) was not applied to the pixel view either, because the frozen head was fit on full-window features. Reported as a measured alternative, not used.",
+  "protocol_work_per_window": {
+   "descriptor_frames": "8 native 1920x1080 (fps=0.8, (i+0.5)/8 grid)",
+   "eg2_frames": "20 at 512x288 (0.5 s grid)",
+   "ffmpeg_decodes_per_window": 1,
+   "model_forwards_per_window": 1,
+   "pixel_fps_histogram": {
+    "30.0": 1546
+   },
+   "pixel_frames": "300 x 160x90 rgb24 (30 fps)",
+   "sampling_at_inference": "none (fixed frames, fixed seed, deterministic)"
+  },
+  "stage_ms_mean": {
+   "decode": 2354.3,
+   "descriptors": 1055.1,
+   "eg2_embed": 1195.9,
+   "pixel_features": 1154.3,
+   "score": 1.7,
+   "total": 5761.4
+  },
+  "wall_s": 2263.1,
+  "windows_per_s": 0.6831,
+  "workers": 4
+ },
+ "decode_path_control": {
+  "n": 6,
+  "note": "features are NOT bit-identical across decode paths; documented, not claimed identical (verdicts are descriptive)",
+  "p_pixel_abs_delta_max": 0.0483,
+  "p_pixel_abs_delta_mean": 0.0141,
+  "rows": [
+   {
+    "clip": "factory_016/worker_002/factory016_worker002_00008.mp4",
+    "feat_abs_delta_max": 0.8087,
+    "feat_abs_delta_mean": 0.0957,
+    "n_frames_fast": 300,
+    "n_frames_frozen": 300,
+    "p_pixel_fast": 0.0,
+    "p_pixel_frozen": 0.0,
+    "window_id": "s_a63101bf9969"
+   },
+   {
+    "clip": "factory_033/worker_009/factory033_worker009_00000.mp4",
+    "feat_abs_delta_max": 1.1579,
+    "feat_abs_delta_mean": 0.0791,
+    "n_frames_fast": 300,
+    "n_frames_frozen": 300,
+    "p_pixel_fast": 0.9974,
+    "p_pixel_frozen": 0.9641,
+    "window_id": "s_0c62e4834a57"
+   },
+   {
+    "clip": "factory_053/worker_038/factory053_worker038_00154.mp4",
+    "feat_abs_delta_max": 13.9787,
+    "feat_abs_delta_mean": 0.6175,
+    "n_frames_fast": 300,
+    "n_frames_frozen": 300,
+    "p_pixel_fast": 0.1066,
+    "p_pixel_frozen": 0.1549,
+    "window_id": "s_fee2453a019e"
+   },
+   {
+    "clip": "factory_066/worker_015/factory066_worker015_00088.mp4",
+    "feat_abs_delta_max": 2.0,
+    "feat_abs_delta_mean": 0.1298,
+    "n_frames_fast": 300,
+    "n_frames_frozen": 300,
+    "p_pixel_fast": 0.0,
+    "p_pixel_frozen": 0.0,
+    "window_id": "s_5ae3a4e5c925"
+   },
+   {
+    "clip": "factory_076/worker_061/factory076_worker061_00066.mp4",
+    "feat_abs_delta_max": 6.0,
+    "feat_abs_delta_mean": 0.269,
+    "n_frames_fast": 300,
+    "n_frames_frozen": 300,
+    "p_pixel_fast": 0.0005,
+    "p_pixel_frozen": 0.0002,
+    "window_id": "s_dc1ed3ccbe9e"
+   },
+   {
+    "clip": "factory_084/worker_008/factory084_worker008_00033.mp4",
+    "feat_abs_delta_max": 0.6383,
+    "feat_abs_delta_mean": 0.0699,
+    "n_frames_fast": 300,
+    "n_frames_frozen": 300,
+    "p_pixel_fast": 0.0033,
+    "p_pixel_frozen": 0.0004,
+    "window_id": "s_a9dc06f009c3"
+   }
+  ],
+  "seed": 7,
+  "what": "NVDEC+scale_cuda(bilinear) fast decode path vs frozen ffmpeg_cpu(swscale bicubic) path, pixel view only"
+ },
+ "device": "A40",
+ "files": {
+  "contract_helper": "eval/exp_rescore/contract.py",
+  "poC_contract_not_committed": "/workspace/artifacts/windows_rescored.jsonl",
+  "report": "docs/reports/exp_rescore.md",
+  "result_writer": "eval/exp_rescore/write_results.py",
+  "runner": "eval/exp_rescore/run_e8.py",
+  "sample": "eval/results/exp_rescore/windows_rescored_sample.jsonl",
+  "tests": "tests/test_exp_rescore.py"
+ },
+ "git_sha": "d23f79e852f8309b9bbb0e45b05876cb8eb5e6b7",
+ "honesty_note": "These 1,546 Egocentric-10K windows have NO human labels: label_source is 'none' and every accept/reject/review verdict here is DESCRIPTIVE, not accuracy. IndEgo-trained models did not transfer out-of-domain (0.4-0.53 AUROC on the 60 human-labelled Egocentric-10K windows, n_bad=9), so the accept/reject share below is NOT a quality measure.",
+ "id": "E8.01",
+ "label_source": "none",
+ "n": 1546,
+ "n_failed": 0,
+ "n_requested": 1546,
+ "not_done": [
+  "no human labels for these windows -> no accuracy, no AUROC out-of-domain claim",
+  "no transfer claim: IndEgo-trained heads scored 0.4-0.53 AUROC on the 60 labelled Egocentric-10K windows (n_bad=9)",
+  "the fast NVDEC decode path is not bit-identical to the frozen ffmpeg_cpu path (see decode_path_control)",
+  "no per-window wall-clock budget on the edge device (pod A40 numbers only)"
+ ],
+ "profile_distribution": {
+  "default": 6,
+  "factory_1080p30": 1540
+ },
+ "protocol": "descriptive re-score of unlabelled Egocentric-10K windows (no human labels; verdicts are descriptive, not accuracy) + 6-window frozen-vs-fast decode-path control",
+ "recipe": {
+  "name": "ensemble_v1 (frozen): EG2 (EmbeddingGemma-2 mean embedding, 0.5 s grid, C=0.003) + pixel26 (160x90 rgb24, C=0.3) equal-weight probability average",
+  "no_router_branch_missing": false,
+  "profile_layer": "deterministic router jadal/regimes/router.py + profiles/*.json",
+  "score_auroc_in_domain_baseline": {
+   "protocol": "full-OOF, 150 IndEgo windows / 7 clips, human gold, one labeller",
+   "source": "configs/ensemble_v1.json:full_oof_auroc_resubstitution_free",
+   "value": 0.8534
+  },
+  "secondary_rule_documented": "frozen ensemble band score>0.5 accept / <0.4 reject / [0.4,0.6] review (narrower abstain) -- reported, not used",
+  "verdict_rule": "profile operating point of the selected profile (factory_1080p30: score>=0.75 accept, <=0.25 reject, else review)"
+ },
+ "regime": "factory Egocentric-10K: 1920x1080, 30 fps, HEVC, handheld, 58 clips, 4.404 h",
+ "router": {
+  "note": "all windows are 1920x1080/30, so the hires rule fires before any quality/motion rule; observed margins min=0.000 p50=1.000",
+  "unseen_regime_windows": 6,
+  "windows_routed_factory_1080p30": 1540
+ },
+ "score_stats": {
+  "frac_in_frozen_abstain_band": 0.2962,
+  "mean": 0.4858,
+  "p05": 0.2472,
+  "p50": 0.4085,
+  "p95": 0.9072
+ },
+ "secondary_verdict_distribution_frozen_band": {
+  "accept": 452,
+  "reject": 706,
+  "review": 388
+ },
+ "title": "Re-score 1,546 Egocentric-10K windows with the frozen two-view recipe plus the deterministic profile router",
+ "verdict_distribution": {
+  "accept": 296,
+  "reject": 83,
+  "review": 1167
+ },
+ "verdict_share": {
+  "accept": 0.1915,
+  "reject": 0.0537,
+  "review": 0.7549
+ }
+}
