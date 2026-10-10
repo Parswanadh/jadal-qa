@@ -185,6 +185,7 @@ def gold_task(arm: str, gold_doc: dict, gold_manifest: dict, feat_keys: list[str
         ba = float(balanced_accuracy_score(yy[ok], thr_pred[ok])) if ok.sum() else None
         results["head"] = {"auroc": round(a, 3) if a is not None else None,
                            "auroc_ci95": ci, "n_boot": nb,
+                           "n_scored": len(xids),
                            "balanced_accuracy": round(ba, 3) if ba is not None else None,
                            "folds": folds}
     if has_score:
@@ -196,7 +197,8 @@ def gold_task(arm: str, gold_doc: dict, gold_manifest: dict, feat_keys: list[str
         a = auroc(yf, s)
         ci, nb = clip_bootstrap_ci(cf, yf, s)
         results["as_is"] = {"auroc": round(a, 3) if a is not None else None,
-                            "auroc_ci95": ci, "n_boot": nb}
+                            "auroc_ci95": ci, "n_boot": nb,
+                            "n_scored": int(finite.sum())}
         X1 = s.reshape(-1, 1)
         pred, thr_pred, folds = run_loco(X1, yf, cf, sorted(set(cf)))
         ok = ~np.isnan(pred)
@@ -340,7 +342,11 @@ def main() -> None:
                             and not (s.startswith("gold") or
                                      s.startswith("manifest_gold"))]
                     tok_hits = [s for s in pool if token_match(s, tok)]
-                    hit = (tok_hits or pool or [None])[0]
+                    # fallback to the single pool candidate only in extra
+                    # (non-base) dirs; base dirs link by token so a shared
+                    # doc is scored once via orphan(), not per tier
+                    cands2 = tok_hits or (pool if key != a else [])
+                    hit = (cands2 or [None])[0]
                     if hit is not None:
                         linked_stems.add(hit)
                         return docs[hit]
@@ -560,11 +566,19 @@ def main() -> None:
         neg = [i for i, p in enumerate(pairs) if not p["is_duplicate"]]
         rng.shuffle(pos); rng.shuffle(neg)
         h1 = set(pos[:len(pos) // 2]) | set(neg[:len(neg) // 2])
-        for e in entries:
+        seen_docs: dict[int, str] = {}
+        ordered = sorted(entries, key=lambda e: ("-" in e["key"], e["key"]))
+        for e in ordered:
             key = e["key"]
             dd = e.get("dups")
             if not isinstance(dd, dict) or not dd.get("pairs"):
                 dups_res[key] = {"status": "NOT RUN"}
+                continue
+            if id(dd) in seen_docs:
+                dups_res[key] = {"status": "SHARED",
+                                 "see": seen_docs[id(dd)],
+                                 "note": "same similarity doc scored once under "
+                                         f"{seen_docs[id(dd)]}"}
                 continue
             try:
                 sims = []
@@ -619,6 +633,7 @@ def main() -> None:
                                "threshold_maxF1_half1": round(float(best_t), 4),
                                "heldout_overall": prf(h2), "per_kind": per_kind,
                                "protocol": "threshold on held-out half 1, metrics on half 2"}
+                seen_docs[id(dd)] = key
             except Exception as ex:
                 dups_res[key] = {"status": "ERROR", "error": f"{type(ex).__name__}: {ex}"}
     summary["dups"] = dups_res
@@ -864,7 +879,8 @@ def write_report(s: dict) -> None:
     L.append("| arm | gold AUROC (95% CI) | bal.acc | synth sens. (median over degs) | dups F1 | status |")
     L.append("|---|---|---|---|---|---|")
     table_arms = ["A", "A-full", "E", "B", "C", "D"] + sorted(
-        k for k in s["arms"] if "-" in k and k != "A-full") + sorted(
+        k for k in s["arms"]
+        if "-" in k and k != "A-full" and not k.startswith("P-")) + sorted(
         k for k in s["arms"] if k.startswith("P-"))
     for a in table_arms:
         e = s["arms"].get(a, {})
@@ -976,12 +992,33 @@ def partial_recommendation(s: dict) -> str:
         ai = (e.get("gold") or {}).get("results", {}).get("as_is", {})
         if g.get("auroc") is not None:
             flag = " (PROVISIONAL filename)" if e.get("provisional") else ""
-            cell = f"{a}: head {g['auroc']} CI {g.get('auroc_ci95')}{flag}"
+            if e.get("partial"):
+                flag += " PARTIAL"
+            nsc = g.get("n_scored", "?")
+            cell = f"{a}: head {g['auroc']} CI {g.get('auroc_ci95')} n={nsc}{flag}"
             if ai.get("auroc") is not None:
-                cell += f" / as-is {ai['auroc']} CI {ai.get('auroc_ci95')}"
+                cell += (f" / as-is {ai['auroc']} CI {ai.get('auroc_ci95')} "
+                         f"n={ai.get('n_scored', '?')}")
             bits.append(cell)
-    out = ("Partial (arms B-final/D pending): " + "; ".join(bits) + "." if bits
-           else "No arms scored yet.")
+    out = ("FINAL 150-label read (100 good / 50 bad, 7 clips). "
+           + ("Headline LOCO AUROCs: " + "; ".join(bits) + "." if bits
+              else "No arms scored yet.")
+           + " VERDICT: no arm demonstrates usable-work detection above chance — "
+             "every LOCO CI either spans 0.5 or sits within ~0.1 of it, including the "
+             "per-pixel table (P-all 121 features), GPU features (P-G), arm-B T1 on all "
+             "150 windows (B-T1-150), EG2 (E), and the MediaPipe baseline (A). The only "
+             "above-chance numbers are provisional as-is scores (D-SmolVLM interim, "
+             "B-tier scores possibly tuned in-sample) with CIs touching 0.5. "
+             "Near-duplicate detection is the opposite story: constructed-dup F1 "
+             "0.87–0.95 across pHash/EG2/spectral-signature, but recall on REAL "
+             "human duplicates is 0.5 @1 (perpixel report) — synthetic dup performance "
+             "does not transfer. Throughput: nothing reaches 50x edge on 1 core; "
+             "cheapest whole-video tier (A-full, RTF ~12) needs ~417 cores for "
+             "10k h/2 h; EG2 needs 0.19 GPU-years per 10k h. RECOMMENDATION for Jadal: "
+             "do not ship any of these as the usable-footage decider; keep the cheap "
+             "whole-video tier only as a capture-quality pre-filter (dark/frozen/black "
+             "detection, where sensitivity is real), and revisit activity judgement "
+             "with more labels and clip-diverse data (Awign footage, not IndEgo).")
     prov = [a for a, e in s["arms"].items() if e.get("provisional")]
     if prov:
         asis = {a: (s["arms"][a].get("gold") or {}).get("results", {}).get("as_is", {}).get("auroc")
@@ -990,18 +1027,14 @@ def partial_recommendation(s: dict) -> str:
                 "and may be tuned in-sample (optimistic); the LOCO-clean head on the same "
                 "features scores lower — treat the head number as the honest one until arm B "
                 "publishes its final protocol.")
-    out += (" Arm A at chance (CI spans 0.5) means the 16-frame MediaPipe baseline carries "
-            "no usable-activity signal on current labels; A-full (whole-video cheap signals) "
-            "leads but its synth profile (catches darken only) shows it keys on activity/motion, "
-            "not capture quality.")
     bad_transfer = []
     for k, v in (s.get("synth") or {}).items():
-        if k.startswith("B-") and v.get("status") == "RUN":
+        if v.get("status") == "RUN":
             cf = ((v.get("per_degradation") or {}).get("clean") or {}).get("control_FAR")
             if cf is not None and cf > 0.2:
                 bad_transfer.append(f"{k} clean-FAR {cf}")
     if bad_transfer:
-        out += (" Spectral-gold-to-synth transfer warning (" + "; ".join(bad_transfer) +
+        out += (" Gold-to-synth transfer warning (" + "; ".join(bad_transfer) +
                 " at the 5%-gold-FAR threshold): scores shift between gold originals "
                 "and re-encoded synth mp4s, so those sensitivity numbers are not a usable "
                 "operating point.")

@@ -1,8 +1,8 @@
 {
- "created_utc": "2026-10-10T10:36:14Z",
+ "created_utc": "2026-10-10T11:32:15Z",
  "label_source": "human gold (IndEgo workers; NOT Awign footage)",
  "gold_snapshot": {
-  "snapshot_utc": "2026-10-10T10:14:34Z",
+  "snapshot_utc": "2026-10-10T10:53:24.018553+00:00",
   "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
   "n_good": 100,
   "n_bad": 50
@@ -18,37 +18,58 @@
     "cost.json": true
    },
    "gold": {
-    "n": 79,
-    "n_good": 65,
-    "n_bad": 14,
-    "n_clips": 3,
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "n_clips": 7,
     "protocol": "leave-one-clip-out",
     "n_features": 9,
     "n_dropped_nonfinite": 0,
     "results": {
      "head": {
-      "auroc": 0.457,
+      "auroc": 0.594,
       "auroc_ci95": [
-       0.375,
-       0.521
+       0.446,
+       0.721
       ],
       "n_boot": 1000,
-      "balanced_accuracy": 0.509,
+      "n_scored": 150,
+      "balanced_accuracy": 0.545,
       "folds": [
        {
         "test_clip": "desk",
-        "n_test": 17,
-        "train_threshold": 0.781
+        "n_test": 29,
+        "train_threshold": 0.6495
        },
        {
         "test_clip": "ecu_full",
         "n_test": 48,
-        "train_threshold": 0.7298
+        "train_threshold": 0.575
        },
        {
         "test_clip": "ecu_late",
         "n_test": 14,
+        "train_threshold": 0.6634
+       },
+       {
+        "test_clip": "logistics4",
+        "n_test": 17,
         "train_threshold": 0.7882
+       },
+       {
+        "test_clip": "organise",
+        "n_test": 19,
+        "train_threshold": 0.6469
+       },
+       {
+        "test_clip": "pallet",
+        "n_test": 17,
+        "train_threshold": 0.7293
+       },
+       {
+        "test_clip": "pallet2",
+        "n_test": 6,
+        "train_threshold": 0.6917
        }
       ]
      }
@@ -132,7 +153,78 @@
      "g075",
      "g076",
      "g077",
-     "g078"
+     "g078",
+     "g079",
+     "g080",
+     "g081",
+     "g082",
+     "g083",
+     "g084",
+     "g085",
+     "g086",
+     "g087",
+     "g088",
+     "g089",
+     "g090",
+     "g091",
+     "g092",
+     "g093",
+     "g094",
+     "g095",
+     "g096",
+     "g097",
+     "g098",
+     "g099",
+     "g100",
+     "g101",
+     "g102",
+     "g103",
+     "g104",
+     "g105",
+     "g106",
+     "g107",
+     "g108",
+     "g109",
+     "g110",
+     "g111",
+     "g112",
+     "g113",
+     "g114",
+     "g115",
+     "g116",
+     "g117",
+     "g118",
+     "g119",
+     "g120",
+     "g121",
+     "g122",
+     "g123",
+     "g124",
+     "g125",
+     "g126",
+     "g127",
+     "g128",
+     "g129",
+     "g130",
+     "g131",
+     "g132",
+     "g133",
+     "g134",
+     "g135",
+     "g136",
+     "g137",
+     "g138",
+     "g139",
+     "g140",
+     "g141",
+     "g142",
+     "g143",
+     "g144",
+     "g145",
+     "g146",
+     "g147",
+     "g148",
+     "g149"
     ]
    },
    "feature_keys": [
@@ -157,37 +249,58 @@
     "cost.json": true
    },
    "gold": {
-    "n": 79,
-    "n_good": 65,
-    "n_bad": 14,
-    "n_clips": 3,
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "n_clips": 7,
     "protocol": "leave-one-clip-out",
     "n_features": 768,
     "n_dropped_nonfinite": 0,
     "results": {
      "head": {
-      "auroc": 0.596,
+      "auroc": 0.496,
       "auroc_ci95": [
-       0.505,
-       0.817
+       0.335,
+       0.639
       ],
       "n_boot": 1000,
-      "balanced_accuracy": 0.553,
+      "n_scored": 150,
+      "balanced_accuracy": 0.505,
       "folds": [
        {
         "test_clip": "desk",
-        "n_test": 17,
-        "train_threshold": 0.9788
+        "n_test": 29,
+        "train_threshold": 0.9591
        },
        {
         "test_clip": "ecu_full",
         "n_test": 48,
-        "train_threshold": 0.9744
+        "train_threshold": 0.9334
        },
        {
         "test_clip": "ecu_late",
         "n_test": 14,
-        "train_threshold": 0.9757
+        "train_threshold": 0.9457
+       },
+       {
+        "test_clip": "logistics4",
+        "n_test": 17,
+        "train_threshold": 0.9425
+       },
+       {
+        "test_clip": "organise",
+        "n_test": 19,
+        "train_threshold": 0.9392
+       },
+       {
+        "test_clip": "pallet",
+        "n_test": 17,
+        "train_threshold": 0.945
+       },
+       {
+        "test_clip": "pallet2",
+        "n_test": 6,
+        "train_threshold": 0.9437
        }
       ]
      }
@@ -271,7 +384,78 @@
      "g075",
      "g076",
      "g077",
-     "g078"
+     "g078",
+     "g079",
+     "g080",
+     "g081",
+     "g082",
+     "g083",
+     "g084",
+     "g085",
+     "g086",
+     "g087",
+     "g088",
+     "g089",
+     "g090",
+     "g091",
+     "g092",
+     "g093",
+     "g094",
+     "g095",
+     "g096",
+     "g097",
+     "g098",
+     "g099",
+     "g100",
+     "g101",
+     "g102",
+     "g103",
+     "g104",
+     "g105",
+     "g106",
+     "g107",
+     "g108",
+     "g109",
+     "g110",
+     "g111",
+     "g112",
+     "g113",
+     "g114",
+     "g115",
+     "g116",
+     "g117",
+     "g118",
+     "g119",
+     "g120",
+     "g121",
+     "g122",
+     "g123",
+     "g124",
+     "g125",
+     "g126",
+     "g127",
+     "g128",
+     "g129",
+     "g130",
+     "g131",
+     "g132",
+     "g133",
+     "g134",
+     "g135",
+     "g136",
+     "g137",
+     "g138",
+     "g139",
+     "g140",
+     "g141",
+     "g142",
+     "g143",
+     "g144",
+     "g145",
+     "g146",
+     "g147",
+     "g148",
+     "g149"
     ]
    },
    "feature_keys": []
@@ -307,6 +491,7 @@
        0.683
       ],
       "n_boot": 1000,
+      "n_scored": 79,
       "balanced_accuracy": 0.448,
       "folds": [
        {
@@ -332,7 +517,8 @@
        0.467,
        0.693
       ],
-      "n_boot": 1000
+      "n_boot": 1000,
+      "n_scored": 79
      },
      "score_logistic": {
       "auroc": 0.324,
@@ -478,7 +664,9 @@
     "wav_HH",
     "wav_HL",
     "wav_LH"
-   ]
+   ],
+   "partial": true,
+   "partial_note": "PARTIAL: scored n=79 of 150 labelled windows; missing windows not re-run (features-worker re-run infeasible in budget) \u2014 treat as provisional"
   },
   "B-T1": {
    "status": "RUN",
@@ -511,6 +699,7 @@
        0.667
       ],
       "n_boot": 1000,
+      "n_scored": 79,
       "balanced_accuracy": 0.448,
       "folds": [
        {
@@ -536,7 +725,8 @@
        0.5,
        0.684
       ],
-      "n_boot": 1000
+      "n_boot": 1000,
+      "n_scored": 79
      },
      "score_logistic": {
       "auroc": 0.364,
@@ -682,7 +872,9 @@
     "wav_HH",
     "wav_HL",
     "wav_LH"
-   ]
+   ],
+   "partial": true,
+   "partial_note": "PARTIAL: scored n=79 of 150 labelled windows; missing windows not re-run (features-worker re-run infeasible in budget) \u2014 treat as provisional"
   },
   "B": {
    "status": "NOT RUN",
@@ -705,7 +897,7 @@
    }
   },
   "D-SmolVLM2-2.2B-Instruct": {
-   "status": "RUN",
+   "status": "STOPPED",
    "files": {
     "gold.json": false,
     "synth.json": false,
@@ -713,8 +905,7 @@
     "chunks.json": false,
     "cost.json": false
    },
-   "provisional": true,
-   "note": "non-contract filename/dir scored as-is; final numbers wait for arms/D/gold.json etc.",
+   "note": "STOPPED by human decision (too probabilistic). Interim 8-frame numbers below; do not wait for D.",
    "variant_files": [
     "D_SmolVLM2-2.2B-Instruct/manifest_gold"
    ],
@@ -735,6 +926,7 @@
        0.7
       ],
       "n_boot": 1000,
+      "n_scored": 79,
       "balanced_accuracy": 0.509,
       "folds": [
        {
@@ -760,7 +952,8 @@
        0.517,
        0.972
       ],
-      "n_boot": 1000
+      "n_boot": 1000,
+      "n_scored": 79
      },
      "score_logistic": {
       "auroc": 0.569,
@@ -873,7 +1066,9 @@
     "p_usable_logprob",
     "parsed_score",
     "peak_vram_gb"
-   ]
+   ],
+   "partial": true,
+   "partial_note": "PARTIAL: scored n=79 of 150 labelled windows; missing windows not re-run (features-worker re-run infeasible in budget) \u2014 treat as provisional"
   },
   "A-full": {
    "status": "RUN",
@@ -885,37 +1080,58 @@
     "cost.json": true
    },
    "gold": {
-    "n": 79,
-    "n_good": 65,
-    "n_bad": 14,
-    "n_clips": 3,
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "n_clips": 7,
     "protocol": "leave-one-clip-out",
     "n_features": 8,
     "n_dropped_nonfinite": 0,
     "results": {
      "head": {
-      "auroc": 0.675,
+      "auroc": 0.578,
       "auroc_ci95": [
-       0.6,
-       0.8
+       0.509,
+       0.641
       ],
       "n_boot": 1000,
-      "balanced_accuracy": 0.642,
+      "n_scored": 150,
+      "balanced_accuracy": 0.57,
       "folds": [
        {
         "test_clip": "desk",
-        "n_test": 17,
-        "train_threshold": 0.7085
+        "n_test": 29,
+        "train_threshold": 0.6538
        },
        {
         "test_clip": "ecu_full",
         "n_test": 48,
-        "train_threshold": 0.7639
+        "train_threshold": 0.56
        },
        {
         "test_clip": "ecu_late",
         "n_test": 14,
-        "train_threshold": 0.8258
+        "train_threshold": 0.5615
+       },
+       {
+        "test_clip": "logistics4",
+        "n_test": 17,
+        "train_threshold": 0.5713
+       },
+       {
+        "test_clip": "organise",
+        "n_test": 19,
+        "train_threshold": 0.7966
+       },
+       {
+        "test_clip": "pallet",
+        "n_test": 17,
+        "train_threshold": 0.7372
+       },
+       {
+        "test_clip": "pallet2",
+        "n_test": 6,
+        "train_threshold": 0.6526
        }
       ]
      }
@@ -999,7 +1215,78 @@
      "g075",
      "g076",
      "g077",
-     "g078"
+     "g078",
+     "g079",
+     "g080",
+     "g081",
+     "g082",
+     "g083",
+     "g084",
+     "g085",
+     "g086",
+     "g087",
+     "g088",
+     "g089",
+     "g090",
+     "g091",
+     "g092",
+     "g093",
+     "g094",
+     "g095",
+     "g096",
+     "g097",
+     "g098",
+     "g099",
+     "g100",
+     "g101",
+     "g102",
+     "g103",
+     "g104",
+     "g105",
+     "g106",
+     "g107",
+     "g108",
+     "g109",
+     "g110",
+     "g111",
+     "g112",
+     "g113",
+     "g114",
+     "g115",
+     "g116",
+     "g117",
+     "g118",
+     "g119",
+     "g120",
+     "g121",
+     "g122",
+     "g123",
+     "g124",
+     "g125",
+     "g126",
+     "g127",
+     "g128",
+     "g129",
+     "g130",
+     "g131",
+     "g132",
+     "g133",
+     "g134",
+     "g135",
+     "g136",
+     "g137",
+     "g138",
+     "g139",
+     "g140",
+     "g141",
+     "g142",
+     "g143",
+     "g144",
+     "g145",
+     "g146",
+     "g147",
+     "g148",
+     "g149"
     ]
    },
    "feature_keys": [
@@ -1012,17 +1299,1417 @@
     "skin_mean",
     "skin_std"
    ]
+  },
+  "B-T1-150": {
+   "status": "RUN",
+   "files": {
+    "gold.json": false,
+    "synth.json": false,
+    "dups.json": true,
+    "chunks.json": false,
+    "cost.json": false
+   },
+   "provisional": true,
+   "note": "merged: gold_T1.json (79) + harness T1 gap-fill (71 new windows, same extract(), harness-owned file); LOCO head refit",
+   "gold": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "n_clips": 7,
+    "protocol": "leave-one-clip-out",
+    "n_features": 40,
+    "n_dropped_nonfinite": 0,
+    "n_dropped_nanscore": 71,
+    "results": {
+     "head": {
+      "auroc": 0.474,
+      "auroc_ci95": [
+       0.371,
+       0.643
+      ],
+      "n_boot": 1000,
+      "n_scored": 150,
+      "balanced_accuracy": 0.465,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 29,
+        "train_threshold": 0.7146
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.6644
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.7555
+       },
+       {
+        "test_clip": "logistics4",
+        "n_test": 17,
+        "train_threshold": 0.675
+       },
+       {
+        "test_clip": "organise",
+        "n_test": 19,
+        "train_threshold": 0.7099
+       },
+       {
+        "test_clip": "pallet",
+        "n_test": 17,
+        "train_threshold": 0.6283
+       },
+       {
+        "test_clip": "pallet2",
+        "n_test": 6,
+        "train_threshold": 0.7586
+       }
+      ]
+     },
+     "as_is": {
+      "auroc": 0.678,
+      "auroc_ci95": [
+       0.5,
+       0.684
+      ],
+      "n_boot": 1000,
+      "n_scored": 79
+     },
+     "score_logistic": {
+      "auroc": 0.364,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 17,
+        "train_threshold": 0.8584
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.7265
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.8926
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078",
+     "g079",
+     "g080",
+     "g081",
+     "g082",
+     "g083",
+     "g084",
+     "g085",
+     "g086",
+     "g087",
+     "g088",
+     "g089",
+     "g090",
+     "g091",
+     "g092",
+     "g093",
+     "g094",
+     "g095",
+     "g096",
+     "g097",
+     "g098",
+     "g099",
+     "g100",
+     "g101",
+     "g102",
+     "g103",
+     "g104",
+     "g105",
+     "g106",
+     "g107",
+     "g108",
+     "g109",
+     "g110",
+     "g111",
+     "g112",
+     "g113",
+     "g114",
+     "g115",
+     "g116",
+     "g117",
+     "g118",
+     "g119",
+     "g120",
+     "g121",
+     "g122",
+     "g123",
+     "g124",
+     "g125",
+     "g126",
+     "g127",
+     "g128",
+     "g129",
+     "g130",
+     "g131",
+     "g132",
+     "g133",
+     "g134",
+     "g135",
+     "g136",
+     "g137",
+     "g138",
+     "g139",
+     "g140",
+     "g141",
+     "g142",
+     "g143",
+     "g144",
+     "g145",
+     "g146",
+     "g147",
+     "g148",
+     "g149"
+    ]
+   },
+   "feature_keys": [
+    "brightness",
+    "cb_mean",
+    "cb_std",
+    "colorfulness",
+    "contrast",
+    "cr_mean",
+    "cr_std",
+    "dct_dcmean",
+    "dct_hfenergy",
+    "frame_size_std",
+    "i_size",
+    "lap_var",
+    "motion_energy",
+    "motion_std",
+    "mv_per_frame",
+    "opp_rg_mean",
+    "opp_rg_std",
+    "over_frac",
+    "p_count_frac",
+    "p_size_mean",
+    "pb_size_ratio",
+    "skin_centroid_motion",
+    "skin_frac_mean",
+    "skin_frac_std",
+    "skin_maxfrac",
+    "sobel_energy",
+    "spec_hfenergy",
+    "spec_hfratio",
+    "spec_slope",
+    "spec_total",
+    "temp_flicker",
+    "temp_frozen_frac",
+    "temp_hi",
+    "temp_lo",
+    "temp_mid",
+    "temp_period",
+    "under_frac",
+    "wav_HH",
+    "wav_HL",
+    "wav_LH"
+   ]
+  },
+  "P-all": {
+   "status": "RUN",
+   "files": {},
+   "gold": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "n_clips": 7,
+    "protocol": "leave-one-clip-out",
+    "n_features": 121,
+    "n_dropped_nonfinite": 0,
+    "results": {
+     "head": {
+      "auroc": 0.468,
+      "auroc_ci95": [
+       0.39,
+       0.629
+      ],
+      "n_boot": 1000,
+      "n_scored": 150,
+      "balanced_accuracy": 0.505,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 29,
+        "train_threshold": 0.55
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.5149
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.4694
+       },
+       {
+        "test_clip": "logistics4",
+        "n_test": 17,
+        "train_threshold": 0.5437
+       },
+       {
+        "test_clip": "organise",
+        "n_test": 19,
+        "train_threshold": 0.5338
+       },
+       {
+        "test_clip": "pallet",
+        "n_test": 17,
+        "train_threshold": 0.6991
+       },
+       {
+        "test_clip": "pallet2",
+        "n_test": 6,
+        "train_threshold": 0.6517
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078",
+     "g079",
+     "g080",
+     "g081",
+     "g082",
+     "g083",
+     "g084",
+     "g085",
+     "g086",
+     "g087",
+     "g088",
+     "g089",
+     "g090",
+     "g091",
+     "g092",
+     "g093",
+     "g094",
+     "g095",
+     "g096",
+     "g097",
+     "g098",
+     "g099",
+     "g100",
+     "g101",
+     "g102",
+     "g103",
+     "g104",
+     "g105",
+     "g106",
+     "g107",
+     "g108",
+     "g109",
+     "g110",
+     "g111",
+     "g112",
+     "g113",
+     "g114",
+     "g115",
+     "g116",
+     "g117",
+     "g118",
+     "g119",
+     "g120",
+     "g121",
+     "g122",
+     "g123",
+     "g124",
+     "g125",
+     "g126",
+     "g127",
+     "g128",
+     "g129",
+     "g130",
+     "g131",
+     "g132",
+     "g133",
+     "g134",
+     "g135",
+     "g136",
+     "g137",
+     "g138",
+     "g139",
+     "g140",
+     "g141",
+     "g142",
+     "g143",
+     "g144",
+     "g145",
+     "g146",
+     "g147",
+     "g148",
+     "g149"
+    ]
+   },
+   "feature_keys": [
+    "B_brightness",
+    "B_cb_mean",
+    "B_cb_std",
+    "B_colorfulness",
+    "B_contrast",
+    "B_cr_mean",
+    "B_cr_std",
+    "B_dct_dcmean",
+    "B_dct_hfenergy",
+    "B_frame_size_std",
+    "B_i_size",
+    "B_lap_var",
+    "B_motion_energy",
+    "B_motion_std",
+    "B_mv_per_frame",
+    "B_opp_rg_mean",
+    "B_opp_rg_std",
+    "B_over_frac",
+    "B_p_count_frac",
+    "B_p_size_mean",
+    "B_pb_size_ratio",
+    "B_skin_centroid_motion",
+    "B_skin_frac_mean",
+    "B_skin_frac_std",
+    "B_skin_maxfrac",
+    "B_sobel_energy",
+    "B_spec_hfenergy",
+    "B_spec_hfratio",
+    "B_spec_slope",
+    "B_spec_total",
+    "B_temp_flicker",
+    "B_temp_frozen_frac",
+    "B_temp_hi",
+    "B_temp_lo",
+    "B_temp_mid",
+    "B_temp_period",
+    "B_under_frac",
+    "B_wav_HH",
+    "B_wav_HL",
+    "B_wav_LH",
+    "G_bright_frac",
+    "G_dark_frac",
+    "G_dct_energy",
+    "G_dup_hash_mean",
+    "G_flicker_idx",
+    "G_frozen_frac",
+    "G_global_shift",
+    "G_hf_ratio",
+    "G_illum_b",
+    "G_illum_g",
+    "G_illum_r",
+    "G_luma_mean",
+    "G_luma_p05",
+    "G_luma_p50",
+    "G_luma_p95",
+    "G_motion_energy",
+    "G_pca_resid",
+    "G_pca_top1_share",
+    "G_radial_slope",
+    "G_rppg_pulse",
+    "G_skin_frac",
+    "G_temp_b0",
+    "G_temp_b1",
+    "G_temp_b2",
+    "G_temp_b3",
+    "G_zncc_self",
+    "P_dct_hf_mean",
+    "P_dct_hf_std",
+    "P_diff_e_ac_lag",
+    "P_diff_e_ac_peak",
+    "P_diff_e_band_hi",
+    "P_diff_e_band_lo",
+    "P_diff_e_band_mid",
+    "P_diff_e_burst",
+    "P_diff_e_max",
+    "P_diff_e_mean",
+    "P_diff_e_min",
+    "P_diff_e_spec_ent",
+    "P_diff_e_std",
+    "P_fps",
+    "P_lap_var_ac_lag",
+    "P_lap_var_ac_peak",
+    "P_lap_var_band_hi",
+    "P_lap_var_band_lo",
+    "P_lap_var_band_mid",
+    "P_lap_var_burst",
+    "P_lap_var_max",
+    "P_lap_var_mean",
+    "P_lap_var_min",
+    "P_lap_var_spec_ent",
+    "P_lap_var_std",
+    "P_luma_mean_ac_lag",
+    "P_luma_mean_ac_peak",
+    "P_luma_mean_band_hi",
+    "P_luma_mean_band_lo",
+    "P_luma_mean_band_mid",
+    "P_luma_mean_burst",
+    "P_luma_mean_max",
+    "P_luma_mean_mean",
+    "P_luma_mean_min",
+    "P_luma_mean_spec_ent",
+    "P_luma_mean_std",
+    "P_motion_floor",
+    "P_motion_frac_above",
+    "P_nframes",
+    "P_over_mean",
+    "P_shift_max",
+    "P_shift_mean",
+    "P_skin_frac_ac_lag",
+    "P_skin_frac_ac_peak",
+    "P_skin_frac_band_hi",
+    "P_skin_frac_band_lo",
+    "P_skin_frac_band_mid",
+    "P_skin_frac_burst",
+    "P_skin_frac_max",
+    "P_skin_frac_mean",
+    "P_skin_frac_min",
+    "P_skin_frac_spec_ent",
+    "P_skin_frac_std",
+    "P_still_run_frac",
+    "P_under_mean"
+   ]
+  },
+  "P-B": {
+   "status": "RUN",
+   "files": {},
+   "gold": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "n_clips": 7,
+    "protocol": "leave-one-clip-out",
+    "n_features": 40,
+    "n_dropped_nonfinite": 0,
+    "results": {
+     "head": {
+      "auroc": 0.472,
+      "auroc_ci95": [
+       0.372,
+       0.642
+      ],
+      "n_boot": 1000,
+      "n_scored": 150,
+      "balanced_accuracy": 0.485,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 29,
+        "train_threshold": 0.7211
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.6645
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.754
+       },
+       {
+        "test_clip": "logistics4",
+        "n_test": 17,
+        "train_threshold": 0.6736
+       },
+       {
+        "test_clip": "organise",
+        "n_test": 19,
+        "train_threshold": 0.7977
+       },
+       {
+        "test_clip": "pallet",
+        "n_test": 17,
+        "train_threshold": 0.6286
+       },
+       {
+        "test_clip": "pallet2",
+        "n_test": 6,
+        "train_threshold": 0.7571
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078",
+     "g079",
+     "g080",
+     "g081",
+     "g082",
+     "g083",
+     "g084",
+     "g085",
+     "g086",
+     "g087",
+     "g088",
+     "g089",
+     "g090",
+     "g091",
+     "g092",
+     "g093",
+     "g094",
+     "g095",
+     "g096",
+     "g097",
+     "g098",
+     "g099",
+     "g100",
+     "g101",
+     "g102",
+     "g103",
+     "g104",
+     "g105",
+     "g106",
+     "g107",
+     "g108",
+     "g109",
+     "g110",
+     "g111",
+     "g112",
+     "g113",
+     "g114",
+     "g115",
+     "g116",
+     "g117",
+     "g118",
+     "g119",
+     "g120",
+     "g121",
+     "g122",
+     "g123",
+     "g124",
+     "g125",
+     "g126",
+     "g127",
+     "g128",
+     "g129",
+     "g130",
+     "g131",
+     "g132",
+     "g133",
+     "g134",
+     "g135",
+     "g136",
+     "g137",
+     "g138",
+     "g139",
+     "g140",
+     "g141",
+     "g142",
+     "g143",
+     "g144",
+     "g145",
+     "g146",
+     "g147",
+     "g148",
+     "g149"
+    ]
+   },
+   "feature_keys": [
+    "B_brightness",
+    "B_cb_mean",
+    "B_cb_std",
+    "B_colorfulness",
+    "B_contrast",
+    "B_cr_mean",
+    "B_cr_std",
+    "B_dct_dcmean",
+    "B_dct_hfenergy",
+    "B_frame_size_std",
+    "B_i_size",
+    "B_lap_var",
+    "B_motion_energy",
+    "B_motion_std",
+    "B_mv_per_frame",
+    "B_opp_rg_mean",
+    "B_opp_rg_std",
+    "B_over_frac",
+    "B_p_count_frac",
+    "B_p_size_mean",
+    "B_pb_size_ratio",
+    "B_skin_centroid_motion",
+    "B_skin_frac_mean",
+    "B_skin_frac_std",
+    "B_skin_maxfrac",
+    "B_sobel_energy",
+    "B_spec_hfenergy",
+    "B_spec_hfratio",
+    "B_spec_slope",
+    "B_spec_total",
+    "B_temp_flicker",
+    "B_temp_frozen_frac",
+    "B_temp_hi",
+    "B_temp_lo",
+    "B_temp_mid",
+    "B_temp_period",
+    "B_under_frac",
+    "B_wav_HH",
+    "B_wav_HL",
+    "B_wav_LH"
+   ]
+  },
+  "P-G": {
+   "status": "RUN",
+   "files": {},
+   "gold": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "n_clips": 7,
+    "protocol": "leave-one-clip-out",
+    "n_features": 26,
+    "n_dropped_nonfinite": 0,
+    "results": {
+     "head": {
+      "auroc": 0.505,
+      "auroc_ci95": [
+       0.394,
+       0.688
+      ],
+      "n_boot": 1000,
+      "n_scored": 150,
+      "balanced_accuracy": 0.53,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 29,
+        "train_threshold": 0.6692
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.4229
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.8096
+       },
+       {
+        "test_clip": "logistics4",
+        "n_test": 17,
+        "train_threshold": 0.7472
+       },
+       {
+        "test_clip": "organise",
+        "n_test": 19,
+        "train_threshold": 0.7905
+       },
+       {
+        "test_clip": "pallet",
+        "n_test": 17,
+        "train_threshold": 0.838
+       },
+       {
+        "test_clip": "pallet2",
+        "n_test": 6,
+        "train_threshold": 0.8361
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078",
+     "g079",
+     "g080",
+     "g081",
+     "g082",
+     "g083",
+     "g084",
+     "g085",
+     "g086",
+     "g087",
+     "g088",
+     "g089",
+     "g090",
+     "g091",
+     "g092",
+     "g093",
+     "g094",
+     "g095",
+     "g096",
+     "g097",
+     "g098",
+     "g099",
+     "g100",
+     "g101",
+     "g102",
+     "g103",
+     "g104",
+     "g105",
+     "g106",
+     "g107",
+     "g108",
+     "g109",
+     "g110",
+     "g111",
+     "g112",
+     "g113",
+     "g114",
+     "g115",
+     "g116",
+     "g117",
+     "g118",
+     "g119",
+     "g120",
+     "g121",
+     "g122",
+     "g123",
+     "g124",
+     "g125",
+     "g126",
+     "g127",
+     "g128",
+     "g129",
+     "g130",
+     "g131",
+     "g132",
+     "g133",
+     "g134",
+     "g135",
+     "g136",
+     "g137",
+     "g138",
+     "g139",
+     "g140",
+     "g141",
+     "g142",
+     "g143",
+     "g144",
+     "g145",
+     "g146",
+     "g147",
+     "g148",
+     "g149"
+    ]
+   },
+   "feature_keys": [
+    "G_bright_frac",
+    "G_dark_frac",
+    "G_dct_energy",
+    "G_dup_hash_mean",
+    "G_flicker_idx",
+    "G_frozen_frac",
+    "G_global_shift",
+    "G_hf_ratio",
+    "G_illum_b",
+    "G_illum_g",
+    "G_illum_r",
+    "G_luma_mean",
+    "G_luma_p05",
+    "G_luma_p50",
+    "G_luma_p95",
+    "G_motion_energy",
+    "G_pca_resid",
+    "G_pca_top1_share",
+    "G_radial_slope",
+    "G_rppg_pulse",
+    "G_skin_frac",
+    "G_temp_b0",
+    "G_temp_b1",
+    "G_temp_b2",
+    "G_temp_b3",
+    "G_zncc_self"
+   ]
+  },
+  "P-P": {
+   "status": "RUN",
+   "files": {},
+   "gold": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "n_clips": 7,
+    "protocol": "leave-one-clip-out",
+    "n_features": 55,
+    "n_dropped_nonfinite": 0,
+    "results": {
+     "head": {
+      "auroc": 0.514,
+      "auroc_ci95": [
+       0.433,
+       0.666
+      ],
+      "n_boot": 1000,
+      "n_scored": 150,
+      "balanced_accuracy": 0.515,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 29,
+        "train_threshold": 0.7415
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.6295
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.611
+       },
+       {
+        "test_clip": "logistics4",
+        "n_test": 17,
+        "train_threshold": 0.6401
+       },
+       {
+        "test_clip": "organise",
+        "n_test": 19,
+        "train_threshold": 0.6494
+       },
+       {
+        "test_clip": "pallet",
+        "n_test": 17,
+        "train_threshold": 0.6304
+       },
+       {
+        "test_clip": "pallet2",
+        "n_test": 6,
+        "train_threshold": 0.6545
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078",
+     "g079",
+     "g080",
+     "g081",
+     "g082",
+     "g083",
+     "g084",
+     "g085",
+     "g086",
+     "g087",
+     "g088",
+     "g089",
+     "g090",
+     "g091",
+     "g092",
+     "g093",
+     "g094",
+     "g095",
+     "g096",
+     "g097",
+     "g098",
+     "g099",
+     "g100",
+     "g101",
+     "g102",
+     "g103",
+     "g104",
+     "g105",
+     "g106",
+     "g107",
+     "g108",
+     "g109",
+     "g110",
+     "g111",
+     "g112",
+     "g113",
+     "g114",
+     "g115",
+     "g116",
+     "g117",
+     "g118",
+     "g119",
+     "g120",
+     "g121",
+     "g122",
+     "g123",
+     "g124",
+     "g125",
+     "g126",
+     "g127",
+     "g128",
+     "g129",
+     "g130",
+     "g131",
+     "g132",
+     "g133",
+     "g134",
+     "g135",
+     "g136",
+     "g137",
+     "g138",
+     "g139",
+     "g140",
+     "g141",
+     "g142",
+     "g143",
+     "g144",
+     "g145",
+     "g146",
+     "g147",
+     "g148",
+     "g149"
+    ]
+   },
+   "feature_keys": [
+    "P_dct_hf_mean",
+    "P_dct_hf_std",
+    "P_diff_e_ac_lag",
+    "P_diff_e_ac_peak",
+    "P_diff_e_band_hi",
+    "P_diff_e_band_lo",
+    "P_diff_e_band_mid",
+    "P_diff_e_burst",
+    "P_diff_e_max",
+    "P_diff_e_mean",
+    "P_diff_e_min",
+    "P_diff_e_spec_ent",
+    "P_diff_e_std",
+    "P_fps",
+    "P_lap_var_ac_lag",
+    "P_lap_var_ac_peak",
+    "P_lap_var_band_hi",
+    "P_lap_var_band_lo",
+    "P_lap_var_band_mid",
+    "P_lap_var_burst",
+    "P_lap_var_max",
+    "P_lap_var_mean",
+    "P_lap_var_min",
+    "P_lap_var_spec_ent",
+    "P_lap_var_std",
+    "P_luma_mean_ac_lag",
+    "P_luma_mean_ac_peak",
+    "P_luma_mean_band_hi",
+    "P_luma_mean_band_lo",
+    "P_luma_mean_band_mid",
+    "P_luma_mean_burst",
+    "P_luma_mean_max",
+    "P_luma_mean_mean",
+    "P_luma_mean_min",
+    "P_luma_mean_spec_ent",
+    "P_luma_mean_std",
+    "P_motion_floor",
+    "P_motion_frac_above",
+    "P_nframes",
+    "P_over_mean",
+    "P_shift_max",
+    "P_shift_mean",
+    "P_skin_frac_ac_lag",
+    "P_skin_frac_ac_peak",
+    "P_skin_frac_band_hi",
+    "P_skin_frac_band_lo",
+    "P_skin_frac_band_mid",
+    "P_skin_frac_burst",
+    "P_skin_frac_max",
+    "P_skin_frac_mean",
+    "P_skin_frac_min",
+    "P_skin_frac_spec_ent",
+    "P_skin_frac_std",
+    "P_still_run_frac",
+    "P_under_mean"
+   ]
   }
  },
  "synth": {
   "A": {
    "status": "RUN",
-   "threshold_5pct_FAR_on_gold_good": 0.5695,
+   "threshold_5pct_FAR_on_gold_good": 0.3766,
    "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
    "per_degradation": {
     "black": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.0,
+     "sensitivity_at_5pct_FAR": 1.0,
      "control_FAR": null
     },
     "blur": {
@@ -1037,7 +2724,7 @@
     },
     "darken": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 1.0,
+     "sensitivity_at_5pct_FAR": 0.0,
      "control_FAR": null
     },
     "frozen": {
@@ -1047,34 +2734,34 @@
     },
     "lowbitrate": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.333,
+     "sensitivity_at_5pct_FAR": 0.167,
      "control_FAR": null
     },
     "noise": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 1.0,
+     "sensitivity_at_5pct_FAR": 0.0,
      "control_FAR": null
     },
     "overexpose": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.0,
+     "sensitivity_at_5pct_FAR": 0.167,
      "control_FAR": null
     },
     "shake": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.167,
+     "sensitivity_at_5pct_FAR": 0.0,
      "control_FAR": null
     },
     "static": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 1.0,
+     "sensitivity_at_5pct_FAR": 0.0,
      "control_FAR": null
     }
    }
   },
   "E": {
    "status": "RUN",
-   "threshold_5pct_FAR_on_gold_good": 0.976,
+   "threshold_5pct_FAR_on_gold_good": 0.9611,
    "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
    "per_degradation": {
     "black": {
@@ -1084,13 +2771,13 @@
     },
     "blur": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.667,
+     "sensitivity_at_5pct_FAR": 0.833,
      "control_FAR": null
     },
     "clean": {
      "n": 6,
      "sensitivity_at_5pct_FAR": null,
-     "control_FAR": 0.167
+     "control_FAR": 0.0
     },
     "darken": {
      "n": 6,
@@ -1099,27 +2786,27 @@
     },
     "frozen": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.667,
+     "sensitivity_at_5pct_FAR": 0.333,
      "control_FAR": null
     },
     "lowbitrate": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.333,
+     "sensitivity_at_5pct_FAR": 0.5,
      "control_FAR": null
     },
     "noise": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.333,
+     "sensitivity_at_5pct_FAR": 0.833,
      "control_FAR": null
     },
     "overexpose": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.333,
+     "sensitivity_at_5pct_FAR": 0.167,
      "control_FAR": null
     },
     "shake": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.5,
+     "sensitivity_at_5pct_FAR": 0.333,
      "control_FAR": null
     },
     "static": {
@@ -1308,7 +2995,235 @@
   },
   "A-full": {
    "status": "RUN",
-   "threshold_5pct_FAR_on_gold_good": 0.5478,
+   "threshold_5pct_FAR_on_gold_good": 0.4586,
+   "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
+   "per_degradation": {
+    "black": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "blur": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "clean": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": null,
+     "control_FAR": 0.167
+    },
+    "darken": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "frozen": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "lowbitrate": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.167,
+     "control_FAR": null
+    },
+    "noise": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.333,
+     "control_FAR": null
+    },
+    "overexpose": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "shake": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "static": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    }
+   }
+  },
+  "B-T1-150": {
+   "status": "RUN",
+   "threshold_5pct_FAR_on_gold_good": 0.4102,
+   "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
+   "per_degradation": {
+    "black": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "blur": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.333,
+     "control_FAR": null
+    },
+    "clean": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": null,
+     "control_FAR": 0.0
+    },
+    "darken": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.667,
+     "control_FAR": null
+    },
+    "frozen": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "lowbitrate": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "noise": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "overexpose": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.167,
+     "control_FAR": null
+    },
+    "shake": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "static": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    }
+   }
+  },
+  "P-all": {
+   "status": "RUN",
+   "threshold_5pct_FAR_on_gold_good": 0.6628,
+   "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
+   "per_degradation": {
+    "black": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "blur": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "clean": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": null,
+     "control_FAR": 0.0
+    },
+    "darken": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "frozen": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "lowbitrate": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "noise": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.833,
+     "control_FAR": null
+    },
+    "overexpose": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "shake": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "static": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    }
+   }
+  },
+  "P-B": {
+   "status": "RUN",
+   "threshold_5pct_FAR_on_gold_good": 0.4047,
+   "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
+   "per_degradation": {
+    "black": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "blur": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.333,
+     "control_FAR": null
+    },
+    "clean": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": null,
+     "control_FAR": 0.0
+    },
+    "darken": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.667,
+     "control_FAR": null
+    },
+    "frozen": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.5,
+     "control_FAR": null
+    },
+    "lowbitrate": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "noise": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "overexpose": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.167,
+     "control_FAR": null
+    },
+    "shake": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "static": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    }
+   }
+  },
+  "P-G": {
+   "status": "RUN",
+   "threshold_5pct_FAR_on_gold_good": 0.3793,
    "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
    "per_degradation": {
     "black": {
@@ -1328,12 +3243,12 @@
     },
     "darken": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 1.0,
+     "sensitivity_at_5pct_FAR": 0.833,
      "control_FAR": null
     },
     "frozen": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.0,
+     "sensitivity_at_5pct_FAR": 1.0,
      "control_FAR": null
     },
     "lowbitrate": {
@@ -1343,7 +3258,7 @@
     },
     "noise": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.667,
+     "sensitivity_at_5pct_FAR": 0.167,
      "control_FAR": null
     },
     "overexpose": {
@@ -1353,7 +3268,64 @@
     },
     "shake": {
      "n": 6,
-     "sensitivity_at_5pct_FAR": 0.667,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "static": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    }
+   }
+  },
+  "P-P": {
+   "status": "RUN",
+   "threshold_5pct_FAR_on_gold_good": 0.5247,
+   "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
+   "per_degradation": {
+    "black": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "blur": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.833,
+     "control_FAR": null
+    },
+    "clean": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": null,
+     "control_FAR": 0.167
+    },
+    "darken": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.833,
+     "control_FAR": null
+    },
+    "frozen": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "lowbitrate": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.167,
+     "control_FAR": null
+    },
+    "noise": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "overexpose": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "shake": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
      "control_FAR": null
     },
     "static": {
@@ -1409,6 +3381,53 @@
    },
    "protocol": "threshold on held-out half 1, metrics on half 2"
   },
+  "B": {
+   "status": "RUN",
+   "method": null,
+   "threshold_maxF1_half1": 0.9149,
+   "heldout_overall": {
+    "n": 64,
+    "P": 1.0,
+    "R": 0.9,
+    "F1": 0.947
+   },
+   "per_kind": {
+    "bright": {
+     "n": 3,
+     "recall_detect_rate": 1.0
+    },
+    "crop5": {
+     "n": 5,
+     "recall_detect_rate": 1.0
+    },
+    "easy_negative": {
+     "n": 25,
+     "false_positive_rate": 0.0,
+     "specificity": 1.0
+    },
+    "hard_negative": {
+     "n": 19,
+     "false_positive_rate": 0.0,
+     "specificity": 1.0
+    },
+    "offset1": {
+     "n": 5,
+     "recall_detect_rate": 0.6
+    },
+    "reencode": {
+     "n": 4,
+     "recall_detect_rate": 1.0
+    },
+    "speed11": {
+     "n": 3,
+     "recall_detect_rate": 1.0
+    }
+   },
+   "protocol": "threshold on held-out half 1, metrics on half 2"
+  },
+  "C": {
+   "status": "NOT RUN"
+  },
   "E": {
    "status": "RUN",
    "method": "eg2_cosine",
@@ -1453,104 +3472,31 @@
    },
    "protocol": "threshold on held-out half 1, metrics on half 2"
   },
-  "B-T0": {
-   "status": "RUN",
-   "method": null,
-   "threshold_maxF1_half1": 0.9149,
-   "heldout_overall": {
-    "n": 64,
-    "P": 1.0,
-    "R": 0.9,
-    "F1": 0.947
-   },
-   "per_kind": {
-    "bright": {
-     "n": 3,
-     "recall_detect_rate": 1.0
-    },
-    "crop5": {
-     "n": 5,
-     "recall_detect_rate": 1.0
-    },
-    "easy_negative": {
-     "n": 25,
-     "false_positive_rate": 0.0,
-     "specificity": 1.0
-    },
-    "hard_negative": {
-     "n": 19,
-     "false_positive_rate": 0.0,
-     "specificity": 1.0
-    },
-    "offset1": {
-     "n": 5,
-     "recall_detect_rate": 0.6
-    },
-    "reencode": {
-     "n": 4,
-     "recall_detect_rate": 1.0
-    },
-    "speed11": {
-     "n": 3,
-     "recall_detect_rate": 1.0
-    }
-   },
-   "protocol": "threshold on held-out half 1, metrics on half 2"
-  },
-  "B-T1": {
-   "status": "RUN",
-   "method": null,
-   "threshold_maxF1_half1": 0.9149,
-   "heldout_overall": {
-    "n": 64,
-    "P": 1.0,
-    "R": 0.9,
-    "F1": 0.947
-   },
-   "per_kind": {
-    "bright": {
-     "n": 3,
-     "recall_detect_rate": 1.0
-    },
-    "crop5": {
-     "n": 5,
-     "recall_detect_rate": 1.0
-    },
-    "easy_negative": {
-     "n": 25,
-     "false_positive_rate": 0.0,
-     "specificity": 1.0
-    },
-    "hard_negative": {
-     "n": 19,
-     "false_positive_rate": 0.0,
-     "specificity": 1.0
-    },
-    "offset1": {
-     "n": 5,
-     "recall_detect_rate": 0.6
-    },
-    "reencode": {
-     "n": 4,
-     "recall_detect_rate": 1.0
-    },
-    "speed11": {
-     "n": 3,
-     "recall_detect_rate": 1.0
-    }
-   },
-   "protocol": "threshold on held-out half 1, metrics on half 2"
-  },
-  "B": {
+  "A-full": {
    "status": "NOT RUN"
   },
-  "C": {
+  "B-T0": {
+   "status": "NOT RUN"
+  },
+  "B-T1": {
+   "status": "NOT RUN"
+  },
+  "B-T1-150": {
    "status": "NOT RUN"
   },
   "D-SmolVLM2-2.2B-Instruct": {
    "status": "NOT RUN"
   },
-  "A-full": {
+  "P-B": {
+   "status": "NOT RUN"
+  },
+  "P-G": {
+   "status": "NOT RUN"
+  },
+  "P-P": {
+   "status": "NOT RUN"
+  },
+  "P-all": {
    "status": "NOT RUN"
   }
  },
@@ -1651,7 +3597,7 @@
      "face_model_sha256": "b4578f35940bf5a1a655214a1cce5cab13eba73c1297cd78e1a04c2380b0152f",
      "hand_model_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1"
     },
-    "note": "single-core pinned; full L0 incl mediapipe hands+face. Unpinned runs are faster (cv2/TFLite thread internally) \u2014 pinned is the honest 1-core number.",
+    "note": "single-core pinned; full L0 incl mediapipe hands+face. Rerun calibration was unpinned/contended and is superseded by these pinned numbers.",
     "cores_10kh_in_2h": 561,
     "cores_10kh_in_3h": 374,
     "edge_50x_feasible": false,
@@ -1660,20 +3606,15 @@
    },
    "E": {
     "status": "RUN",
-    "latency_s_per_segment_GPU": 1.629,
+    "latency_s_per_segment_GPU": null,
     "gpu_only": true,
-    "rtf_incl_decode": 6.14,
+    "rtf_incl_decode": null,
     "peak_ram_mb": null,
     "backend": null,
     "note": "GPU-only; CPU fallback does not exist for EG2",
-    "cores_10kh_in_2h": 815,
-    "cores_10kh_in_3h": 543,
-    "edge_50x_feasible": false,
-    "live_1x_feasible": true,
-    "rtf_excl_decode": null,
-    "eg2_segments_per_hour": 2209,
-    "eg2_hours_for_10kh": 1629.7,
-    "eg2_years_for_10kh": 0.19,
+    "eg2_segments_per_hour": 2364,
+    "eg2_hours_for_10kh": 1522.8,
+    "eg2_years_for_10kh": 0.17,
     "peak_vram_mb": 1548.5
    },
    "B": {
@@ -1698,20 +3639,72 @@
     "edge_50x_feasible": false,
     "live_1x_feasible": true,
     "rtf_excl_decode": 13.77
+   },
+   "P-all": {
+    "status": "RUN",
+    "latency_s_per_segment_1core": 0.366,
+    "gpu_only": false,
+    "rtf_incl_decode": 27.32,
+    "rtf_excl_decode": null,
+    "peak_ram_mb": null,
+    "cores_10kh_in_2h": 184,
+    "cores_10kh_in_3h": 122,
+    "edge_50x_feasible": false,
+    "live_1x_feasible": true,
+    "note": "perpixel worker meta.json table-build (150 windows incl decode, single-process, NOT taskset-pinned; GPU-feature cost not separately measured)"
+   },
+   "P-B": {
+    "status": "RUN",
+    "latency_s_per_segment_1core": 0.366,
+    "gpu_only": false,
+    "rtf_incl_decode": 27.32,
+    "rtf_excl_decode": null,
+    "peak_ram_mb": null,
+    "cores_10kh_in_2h": 184,
+    "cores_10kh_in_3h": 122,
+    "edge_50x_feasible": false,
+    "live_1x_feasible": true,
+    "note": "perpixel worker meta.json table-build (150 windows incl decode, single-process, NOT taskset-pinned; GPU-feature cost not separately measured)"
+   },
+   "P-G": {
+    "status": "RUN",
+    "latency_s_per_segment_1core": 0.366,
+    "gpu_only": false,
+    "rtf_incl_decode": 27.32,
+    "rtf_excl_decode": null,
+    "peak_ram_mb": null,
+    "cores_10kh_in_2h": 184,
+    "cores_10kh_in_3h": 122,
+    "edge_50x_feasible": false,
+    "live_1x_feasible": true,
+    "note": "perpixel worker meta.json table-build (150 windows incl decode, single-process, NOT taskset-pinned; GPU-feature cost not separately measured)"
+   },
+   "P-P": {
+    "status": "RUN",
+    "latency_s_per_segment_1core": 0.366,
+    "gpu_only": false,
+    "rtf_incl_decode": 27.32,
+    "rtf_excl_decode": null,
+    "peak_ram_mb": null,
+    "cores_10kh_in_2h": 184,
+    "cores_10kh_in_3h": 122,
+    "edge_50x_feasible": false,
+    "live_1x_feasible": true,
+    "note": "perpixel worker meta.json table-build (150 windows incl decode, single-process, NOT taskset-pinned; GPU-feature cost not separately measured)"
    }
   }
  },
  "streaming": {
   "A": {
    "status": "RUN",
-   "operating_threshold": 0.5695,
-   "per_chunk_latency_s_mean": 1.84,
-   "realtime_capable": true,
+   "operating_threshold": 0.3766,
+   "per_chunk_latency_s_mean": 4.865,
+   "realtime_capable": false,
    "ttd_per_degradation": {
     "black": {
      "n": 6,
-     "median_ttd_s": null,
-     "never_decided": 6
+     "median_ttd_s": 2.0,
+     "never_decided": 0
     },
     "blur": {
      "n": 6,
@@ -1720,8 +3713,8 @@
     },
     "darken": {
      "n": 6,
-     "median_ttd_s": 2.0,
-     "never_decided": 0
+     "median_ttd_s": null,
+     "never_decided": 6
     },
     "frozen": {
      "n": 6,
@@ -1735,13 +3728,13 @@
     },
     "noise": {
      "n": 6,
-     "median_ttd_s": 2.0,
-     "never_decided": 0
+     "median_ttd_s": null,
+     "never_decided": 6
     },
     "overexpose": {
      "n": 6,
-     "median_ttd_s": null,
-     "never_decided": 6
+     "median_ttd_s": 2.0,
+     "never_decided": 1
     },
     "shake": {
      "n": 6,
@@ -1750,16 +3743,16 @@
     },
     "static": {
      "n": 6,
-     "median_ttd_s": 2.0,
-     "never_decided": 0
+     "median_ttd_s": null,
+     "never_decided": 6
     }
    },
    "note": "prefix-recompute latency is an UPPER bound; true incremental is cheaper"
   },
   "E": {
    "status": "RUN",
-   "operating_threshold": 0.976,
-   "per_chunk_latency_s_mean": 0.144,
+   "operating_threshold": 0.9611,
+   "per_chunk_latency_s_mean": 0.088,
    "realtime_capable": true,
    "ttd_per_degradation": {
     "black": {
@@ -1780,7 +3773,7 @@
     "frozen": {
      "n": 6,
      "median_ttd_s": 2.0,
-     "never_decided": 2
+     "never_decided": 4
     },
     "lowbitrate": {
      "n": 6,
@@ -1790,7 +3783,7 @@
     "noise": {
      "n": 6,
      "median_ttd_s": 2.0,
-     "never_decided": 1
+     "never_decided": 0
     },
     "overexpose": {
      "n": 6,
@@ -1800,7 +3793,7 @@
     "shake": {
      "n": 6,
      "median_ttd_s": 2.0,
-     "never_decided": 2
+     "never_decided": 4
     },
     "static": {
      "n": 6,
@@ -1831,13 +3824,148 @@
   "A-full": {
    "status": "NOT STREAMABLE",
    "reason": "no chunk scores exposed"
+  },
+  "B-T1-150": {
+   "status": "NOT STREAMABLE",
+   "reason": "no chunk scores exposed"
+  },
+  "P-all": {
+   "status": "NOT STREAMABLE",
+   "reason": "no chunk scores exposed"
+  },
+  "P-B": {
+   "status": "NOT STREAMABLE",
+   "reason": "no chunk scores exposed"
+  },
+  "P-G": {
+   "status": "NOT STREAMABLE",
+   "reason": "no chunk scores exposed"
+  },
+  "P-P": {
+   "status": "NOT STREAMABLE",
+   "reason": "no chunk scores exposed"
   }
  },
  "hyperspectral_verdict": {
-  "status": "NOT RUN"
+  "status": "FOUND",
+  "path": "/home/parshu/projects/jadal-qa-wt/spectral-features/docs/reports/spectral_features.md",
+  "excerpt": "# Arm B \u2014 spectral features (RGB whole-video) + Arm C (hyperspectral check)\n\nWorker: spectral-features branch (`feat/spectral-features`).\nMethod code: `jadal/spectral/{features,stream,dup}.py`. Runners:\n`eval/spectral_features/{run_arm,run_dups,icvl_check}.py`.\nReproduce: `PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python\neval/spectral_features/run_arm.py --tiers T0,T1` (gold),\n`--manifest manifest_synth.json --train-manifest manifest_gold.json` (synth),\n`eval/spectral_features/run_dups.py` (dups).\n\n## Method (arm B)\n\n- **Whole-video, single pass.** One ffmpeg subprocess per segment (fast input\n  seek + accurate output trim), scaled in C to the tier resolution, rgb24 pipe.\n  **Every decoded frame** updates streaming accumulators (running spectra,\n  Welford-style sums, per-frame scalars). No frame sampling.\n- **T0** = 64\u00d764 working resolution (cheapest). **T1** = 160\u00d7160.\n  (Contract suggested 64\u00d736/160\u00d790 for 16:9; source here is square 480\u00d7480, so\n  same pixel budgets in square form.)\n- 40 scalar features in 8 families: `spatial_fft` (radial power slope, HF\n  ratio), `spatial_dct` (whole-frame DCT HF energy), `wavelet` (db1 band\n  ratios), `basic` (Laplacian/Sobel/brightness/contrast/under/over),\n  `temporal` (per-pixel rFFT over time in 0.15\u20131/1\u20133/3\u20138 Hz bands, frozen\n  fraction, flicker, global periodicity, frame-diff motion energy),\n  `chroma` (Cr/Cb + R-G opponent + colorfulness), `skin` (YCrCb-rule area,\n  its std/max, centroid motion \u2014 hand proxy, no MediaPipe), `c"
  },
  "vlm_verdict": {
-  "status": "NOT RUN"
+  "status": "FOUND",
+  "path": "/home/parshu/projects/jadal-qa-wt/spectral-features/docs/reports/spectral_features.md",
+  "excerpt": "# Arm B \u2014 spectral features (RGB whole-video) + Arm C (hyperspectral check)\n\nWorker: spectral-features branch (`feat/spectral-features`).\nMethod code: `jadal/spectral/{features,stream,dup}.py`. Runners:\n`eval/spectral_features/{run_arm,run_dups,icvl_check}.py`.\nReproduce: `PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python\neval/spectral_features/run_arm.py --tiers T0,T1` (gold),\n`--manifest manifest_synth.json --train-manifest manifest_gold.json` (synth),\n`eval/spectral_features/run_dups.py` (dups).\n\n## Method (arm B)\n\n- **Whole-video, single pass.** One ffmpeg subprocess per segment (fast input\n  seek + accurate output trim), scaled in C to the tier resolution, rgb24 pipe.\n  **Every decoded frame** updates streaming accumulators (running spectra,\n  Welford-style sums, per-frame scalars). No frame sampling.\n- **T0** = 64\u00d764 working resolution (cheapest). **T1** = 160\u00d7160.\n  (Contract suggested 64\u00d736/160\u00d790 for 16:9; source here is square 480\u00d7480, so\n  same pixel budgets in square form.)\n- 40 scalar features in 8 families: `spatial_fft` (radial power slope, HF\n  ratio), `spatial_dct` (whole-frame DCT HF energy), `wavelet` (db1 band\n  ratios), `basic` (Laplacian/Sobel/brightness/contrast/under/over),\n  `temporal` (per-pixel rFFT over time in 0.15\u20131/1\u20133/3\u20138 Hz bands, frozen\n  fraction, flicker, global periodicity, frame-diff motion energy),\n  `chroma` (Cr/Cb + R-G opponent + colorfulness), `skin` (YCrCb-rule area,\n  its std/max, centroid motion \u2014 hand proxy, no MediaPipe), `c"
  },
- "scorer_wall_s": 12.2
+ "perpixel_reported": {
+  "source": "perpixel-accuracy worker m2.json (THEIR protocol, not harness LOCO)",
+  "quality_rule_auroc": 0.8485714285714286,
+  "quality_rule_ci": [
+   0.53125,
+   1.0
+  ],
+  "quality_sens_at_5pctFAR": 0.0,
+  "quality_synth_per_degradation": {
+   "black": {
+    "n": 6,
+    "det_at_5pctFAR": 1.0,
+    "auroc_vs_clean": 1.0
+   },
+   "blur": {
+    "n": 6,
+    "det_at_5pctFAR": 1.0,
+    "auroc_vs_clean": 1.0
+   },
+   "clean": {
+    "n": 6,
+    "det_at_5pctFAR": 0.16666666666666666,
+    "auroc_vs_clean": NaN
+   },
+   "darken": {
+    "n": 6,
+    "det_at_5pctFAR": 1.0,
+    "auroc_vs_clean": 1.0
+   },
+   "frozen": {
+    "n": 6,
+    "det_at_5pctFAR": 0.3333333333333333,
+    "auroc_vs_clean": 0.5277777777777778
+   },
+   "lowbitrate": {
+    "n": 6,
+    "det_at_5pctFAR": 0.6666666666666666,
+    "auroc_vs_clean": 0.9166666666666667
+   },
+   "noise": {
+    "n": 6,
+    "det_at_5pctFAR": 0.0,
+    "auroc_vs_clean": 0.22222222222222224
+   },
+   "overexpose": {
+    "n": 6,
+    "det_at_5pctFAR": 1.0,
+    "auroc_vs_clean": 1.0
+   },
+   "shake": {
+    "n": 6,
+    "det_at_5pctFAR": 0.16666666666666666,
+    "auroc_vs_clean": 0.6111111111111112
+   },
+   "static": {
+    "n": 6,
+    "det_at_5pctFAR": 0.0,
+    "auroc_vs_clean": 0.0
+   }
+  },
+  "dups_constructed": {
+   "threshold": 0.8410791366906474,
+   "n_test": 64,
+   "precision": 0.9565217391304348,
+   "recall": 1.0,
+   "auroc": 1.0
+  },
+  "dups_human": {
+   "dup_ids": [
+    "g072",
+    "g077",
+    "g088",
+    "g089",
+    "g090",
+    "g149"
+   ],
+   "recall_at1": 0.5,
+   "recall_at3": 0.5,
+   "precision_top": 0.047619047619047616,
+   "n_flagged": 63
+  },
+  "activity_lr_auroc": 0.6727027027027028,
+  "activity_lr_ci": [
+   0.5501089324618736,
+   0.8233124357957465
+  ],
+  "activity_hgb_auroc": 0.7578378378378379,
+  "activity_hgb_ci": [
+   0.5731272294887039,
+   0.8739398814833693
+  ],
+  "activity_per_reason_lr": {
+   "GOOD": 0.95,
+   "HANDS_NOT_VISIBLE": 0.2857142857142857,
+   "NO_ACTIVE_WORK": 0.21739130434782608
+  },
+  "activity_per_clip_lr": {
+   "desk": 0.9285714285714286,
+   "ecu_full": 0.8697674418604651,
+   "ecu_late": 0.425,
+   "logistics4": 0.8571428571428571,
+   "organise": 0.9074074074074074,
+   "pallet": 0.4074074074074074,
+   "pallet2": 0.5
+  },
+  "series_conv_auroc": 0.7824324324324324,
+  "series_conv_ci": [
+   0.6272716463085072,
+   0.8598277471908303
+  ]
+ },
+ "scorer_wall_s": 57.4
 }
