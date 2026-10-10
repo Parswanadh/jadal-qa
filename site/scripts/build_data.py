@@ -71,18 +71,28 @@ E101 = "eval/results/exp_fps/e1_01.json"
 
 
 def registry_rows():
-    rows = []
-    latest = {}
-    order = []
+    """Latest line per id wins. The id-count check runs on the raw lines before
+    the dedupe, so it can fail if the dedupe ever drops or invents ids."""
+    raw_ids = []
+    records = []
     with open(os.path.join(REPO, REG), encoding="utf-8") as fh:
         for lineno, raw in enumerate(fh, 1):
             if not raw.strip():
                 continue
             rec = json.loads(raw)
-            rid = rec["id"]
-            if rid not in latest:
-                order.append(rid)
-            latest[rid] = (lineno, rec)
+            raw_ids.append(rec["id"])
+            records.append((lineno, rec))
+    distinct = len(set(raw_ids))
+    latest = {}
+    order = []
+    for lineno, rec in records:
+        rid = rec["id"]
+        if rid not in latest:
+            order.append(rid)
+        latest[rid] = (lineno, rec)
+    if len(order) != distinct:
+        raise SystemExit(f"registry dedupe dropped ids: {distinct} distinct raw, {len(order)} kept")
+    rows = []
     for rid in order:
         lineno, rec = latest[rid]
         rows.append({
@@ -204,8 +214,6 @@ def main():
     ]
     reg = registry_rows()
     reg_lines = sum(1 for raw in read(REG).splitlines() if raw.strip())
-    if len({r["id"] for r in reg}) != len(reg):
-        raise SystemExit("registry ids not unique after dedupe")
 
     bake = {
         "figures": figures,

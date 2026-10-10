@@ -1,7 +1,7 @@
 import { el, svg } from "../dom";
 import { bake } from "../data";
 import { fmt3 } from "../lib/format";
-import { repoHref } from "../lib/links";
+import { sourceNode } from "../lib/links";
 
 const W = 640;
 const H = 300;
@@ -85,14 +85,14 @@ export function efficiencyView(): HTMLElement {
           el("tbody", {}, ...tableRows),
         ),
       ),
-      el("p", { className: "fineprint" }, `${bake.e101.claim_status}. Source: `, el("a", { href: repoHref(bake.e101.source.file) }, bake.e101.source.file), "."),
+      el("p", { className: "fineprint" }, `${bake.e101.claim_status}. Source: `, sourceNode(bake.e101.source.file), "."),
     ),
     el(
       "section",
       { className: "chart-card" },
       el("h2", { className: "eyebrow" }, `RES.03 · ${bake.res03.title}`),
       el("p", {}, bake.res03.summary),
-      el("p", { className: "fineprint" }, "Source: ", el("a", { href: repoHref("experiments/registry.jsonl", bake.res03.line) }, `experiments/registry.jsonl:${bake.res03.line}`), " (registry line; results JSON not in repo)."),
+      el("p", { className: "fineprint" }, "Source: ", sourceNode("experiments/registry.jsonl", bake.res03.line), " (registry line; results JSON not in repo)."),
     ),
   );
 }

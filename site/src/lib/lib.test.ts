@@ -5,6 +5,7 @@ import { countBy, matchesFilter, matchesQuery } from "./filters";
 import { fmtCI, fmtInt, fmtPct } from "./format";
 import { stateToHash, readState } from "../views/experiments";
 import type { RegistryRow } from "../data/types";
+import { REPO_BLOB, sourceHref } from "./links";
 
 function row(id: string, over: Partial<RegistryRow> = {}): RegistryRow {
   return {
@@ -103,5 +104,12 @@ describe("formatting", () => {
   it("formats integers with separators and shares as percents", () => {
     expect(fmtInt(1587)).toBe("1,587");
     expect(fmtPct(0.4423)).toBe("44.2%");
+  });
+});
+
+describe("source links", () => {
+  it("are off unless VITE_REPO_BLOB is set at build time", () => {
+    expect(REPO_BLOB).toBe("");
+    expect(sourceHref("README.md", 89)).toBeNull();
   });
 });

@@ -1,4 +1,4 @@
-import { repoHref } from "../lib/links";
+import { sourceNode } from "../lib/links";
 import { el } from "../dom";
 import { bake, figure, num } from "../data";
 import { fmtInt } from "../lib/format";
@@ -20,7 +20,7 @@ function ruleTable(): HTMLElement {
       el("td", {}, el("code", {}, r.code)),
       el("td", {}, el("code", {}, r.feature)),
       el("td", {}, `${r.op} ${r.threshold}`),
-      el("td", {}, el("a", { href: repoHref(r.source.file, r.source.line), className: "src" }, `${r.source.file}:${r.source.line ?? ""}`)),
+      el("td", {}, sourceNode(r.source.file, r.source.line)),
     ),
   );
   return el(
@@ -43,16 +43,16 @@ function stageBody(stage: StageId): HTMLElement[] {
   if (stage === "s1") {
     const record = JSON.stringify(bake.reject.record, null, 2);
     return [
-      el("p", {}, `A whole-window logistic head on 26 per-pixel spectral and temporal features. Operating threshold ${num("s1_threshold")}. Of the ${fmtInt(num("s1"))} windows S1 decided, ${fmtInt(num("accept"))} were accepted and ${fmtInt(num("reject"))} rejected.`),
+      el("p", {}, `A whole-window logistic head on 26 per-pixel features. Operating threshold ${num("s1_threshold")}. Of the ${fmtInt(num("s1"))} windows S1 decided, ${fmtInt(num("accept"))} were accepted and ${fmtInt(num("reject"))} rejected.`),
       el("p", {}, "An S1 reject carries one piece of evidence: the score against the threshold."),
       el("pre", { className: "evidence", "aria-label": "S1 evidence format" }, '"evidence": { "feature": "s1_score", "value": 0.0013, "op": "<", "threshold": 0.6 }'),
-      el("h3", { className: "subhead" }, "A real reject from the PoC run"),
+      el("h3", { className: "subhead" }, "An excerpt of a real reject from the PoC run"),
       el("pre", { className: "receipt" }, record),
       el(
         "p",
         { className: "fineprint" },
         "Receipts are content-hashed, not signed. Source: ",
-        el("a", { href: repoHref(bake.reject.source.file, bake.reject.source.line) }, `${bake.reject.source.file}:${bake.reject.source.line}`),
+        sourceNode(bake.reject.source.file, bake.reject.source.line),
         ". Full PoC file is local and not in this repo.",
       ),
     ];
@@ -68,12 +68,14 @@ export function funnelView(still: number | null, stage: StageId): HTMLElement {
   const current = STAGES.find((s) => s.id === stage) ?? STAGES[0]!;
   const tabs = STAGES.map((s) =>
     el(
-      "a",
+      "button",
       {
+        type: "button",
         className: "stage-tab",
-        href: `#/funnel?stage=${s.id}`,
-        "aria-current": s.id === current.id ? "true" : undefined,
         "aria-pressed": s.id === current.id ? "true" : "false",
+        onclick: () => {
+          location.hash = `#/funnel?stage=${s.id}`;
+        },
       },
       el("span", { className: "stage-id" }, s.id.toUpperCase()),
       el("span", {}, s.short),
@@ -87,7 +89,7 @@ export function funnelView(still: number | null, stage: StageId): HTMLElement {
       { className: "intro" },
       el("p", { className: "kicker" }, "How a window is decided"),
       el("h1", {}, "Three stages, and every reject names its reason"),
-      el("p", { className: "pitch" }, "Select a stage to see its rules, its evidence format and a real reject. Windows move left to right; a window leaves at the stage that decides it."),
+      el("p", { className: "pitch" }, "Select a stage to see its rules, its evidence format and an excerpt of a real reject. Windows move left to right; a window leaves at the stage that decides it."),
     ),
     funnelStrip(still),
     el("nav", { className: "stage-tabs", "aria-label": "Funnel stages" }, ...tabs),
@@ -101,7 +103,7 @@ export function funnelView(still: number | null, stage: StageId): HTMLElement {
       "p",
       { className: "fineprint" },
       `Counts: ${fmtInt(num("windows"))} windows = ${num("accept")} accept + ${num("reject")} reject + ${num("review")} review. Source: `,
-      el("a", { href: repoHref(figure("windows").source.file) }, figure("windows").source.file),
+      sourceNode(figure("windows").source.file),
       ".",
     ),
   );

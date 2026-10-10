@@ -28,7 +28,7 @@ export function homeView(still: number | null): HTMLElement {
   const r = bake.reject.record;
   const receipt = el(
     "figure",
-    { className: "receipt-card", "aria-label": "A real reject record from the PoC run" },
+    { className: "receipt-card", "aria-label": "An excerpt of a real reject record from the PoC run" },
     el("figcaption", {}, el("span", { className: "mono" }, r.window_id), el("span", { className: "pill reject" }, "reject")),
     el(
       "pre",
@@ -38,7 +38,7 @@ export function homeView(still: number | null): HTMLElement {
       `evidence  s1_score ${r.reasons[0]?.evidence.value} ${r.reasons[0]?.evidence.op} ${r.reasons[0]?.evidence.threshold}\n`,
       `receipt   ${r.receipt_sha256}   content hash, not a signature`,
     ),
-    el("p", { className: "fineprint" }, "Real record from the 1,587-window PoC run; the full file is local."),
+    el("p", { className: "fineprint" }, "Excerpt of a real reject from the 1,587-window PoC run; the full file is local."),
   );
 
   return el(

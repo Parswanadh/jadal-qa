@@ -57,6 +57,13 @@ describe("other baked blocks trace to the repo", () => {
     expect(bake.reject.record.receipt_sha256).toBe("ca3ae717…");
   });
 
+  it("the reject excerpt's pointer line in README.md contains the window id", () => {
+    const lines = text(bake.reject.source.file).split("\n");
+    const line = bake.reject.source.line;
+    expect(line).not.toBeNull();
+    expect(lines[(line ?? 0) - 1]).toContain(bake.reject.record.window_id);
+  });
+
   it("fps sweep rows equal eval/results/exp_fps/e1_01.json", () => {
     const raw = JSON.parse(text(bake.e101.source.file)) as { rows: { fps: number; auroc: number; ci95: number[] }[] };
     expect(bake.e101.rows.map((r) => r.fps)).toEqual(raw.rows.map((r) => r.fps));

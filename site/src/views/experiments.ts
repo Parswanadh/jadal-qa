@@ -71,17 +71,29 @@ function rowView(row: RegistryRow, open: boolean, state: ExpState): HTMLElement 
   );
 }
 
+const FILTER_LABEL: Record<Filter, string> = {
+  all: "all",
+  adopted: "adopted",
+  maybe: "maybe",
+  negative: "negative",
+  inconclusive: "inconclusive",
+  open: "open (status)",
+};
+
 /** Renders the filter chips and search box; `onChange` receives the new state. */
 export function controls(state: ExpState, onChange: (next: ExpState) => void): HTMLElement {
   const chips = FILTERS.map((f) =>
     el(
-      "a",
+      "button",
       {
+        type: "button",
         className: "fchip",
-        href: stateToHash({ ...state, filter: f, id: null }),
         "aria-pressed": f === state.filter ? "true" : "false",
+        onclick: () => {
+          location.hash = stateToHash({ ...state, filter: f, id: null });
+        },
       },
-      `${f} `,
+      `${FILTER_LABEL[f]} `,
       el("span", { className: "count" }, String(countBy(registry, f))),
     ),
   );
@@ -99,6 +111,11 @@ export function controls(state: ExpState, onChange: (next: ExpState) => void): H
     "div",
     { className: "exp-controls" },
     el("div", { className: "chips", role: "group", "aria-label": "Filter" }, ...chips),
+    el(
+      "p",
+      { className: "fineprint" },
+      "Chips overlap. 'open (status)' counts rows by status; the other chips count by verdict, so the counts can sum to more than the total.",
+    ),
     input,
   );
 }

@@ -94,9 +94,9 @@ img, svg { max-width: 100%; }
 
 /* funnel explorer */
 .stage-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 14px; }
-.stage-tab { display: flex; flex-direction: column; gap: 2px; min-width: 130px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--rad); background: var(--card); color: var(--ink); text-decoration: none; font-weight: 600; }
+.stage-tab { display: flex; flex-direction: column; gap: 2px; min-width: 130px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--rad); background: var(--card); color: var(--ink); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
 .stage-tab .stage-id { font-family: var(--mono); font-size: 12px; color: var(--clay); }
-.stage-tab[aria-current="true"] { border-color: var(--clay); box-shadow: 0 0 0 1px var(--clay); }
+.stage-tab[aria-pressed="true"] { border-color: var(--clay); box-shadow: 0 0 0 1px var(--clay); }
 .stage-panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--rad); padding: 20px; }
 .panel-title { margin-bottom: 10px; }
 .stat { font-weight: 600; }
@@ -141,7 +141,7 @@ table { border-collapse: collapse; width: 100%; font-size: 14px; }
 /* experiment log */
 .exp-controls { display: flex; flex-direction: column; gap: 12px; margin: 14px 0; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.fchip { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 13px; font-size: 14px; color: var(--ink); text-decoration: none; }
+.fchip { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 13px; font: inherit; font-size: 14px; color: var(--ink); cursor: pointer; }
 .fchip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .fchip .count { font-family: var(--mono); font-size: 12px; opacity: 0.75; }
 input[type="search"] { font: inherit; font-size: 15px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); width: 100%; max-width: 480px; }

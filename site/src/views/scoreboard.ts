@@ -1,4 +1,4 @@
-import { repoHref } from "../lib/links";
+import { sourceNode } from "../lib/links";
 import { el } from "../dom";
 import { figure, num, flag } from "../data";
 import { fmt3 } from "../lib/format";
@@ -93,7 +93,7 @@ function row(r: Row): HTMLElement {
       ` [${fmt3(r.lo)}, ${fmt3(r.hi)}]`,
       el("span", { className: "note" }, ` · ${r.note}`),
     ),
-    el("p", { className: "fineprint" }, "Source: ", el("a", { href: repoHref(r.source) }, r.source)),
+    el("p", { className: "fineprint" }, "Source: ", sourceNode(r.source)),
   );
 }
 

@@ -6,11 +6,11 @@
 
 ![Launch video: QA that shows its work, including where it fails](docs/assets/brag_preview.gif)
 
-*Launch video (35 s). Full video with sound: see the Releases page / upload placeholder.* Poster: [`docs/assets/brag_poster.jpg`](docs/assets/brag_poster.jpg).
+*Launch video (35 s).* Poster: [`docs/assets/brag_poster.jpg`](docs/assets/brag_poster.jpg).
 
-[![Jadal QA results explorer: funnel, scoreboard and experiment log](docs/assets/ui_hero.png)](https://parswanadh.github.io/jadal-qa/)
+[![Jadal QA results explorer: funnel, scoreboard and experiment log](docs/assets/ui_hero.png)](site/)
 
-*The explorer is a static TypeScript app in [`site/`](site/). It is live at the link above once GitHub Pages is enabled for this repository.*
+*Explorer: a static TypeScript app in [`site/`](site/); run it with [Run the explorer locally](#run-the-explorer-locally). Live site: once the repository is public and GitHub Pages is enabled (not enabled yet).*
 
 ![Explorer tour: funnel stages, scoreboard, experiment log](docs/assets/ui_tour.gif)
 
@@ -79,7 +79,7 @@ clip/factory correlation, so they are optimistic.
 
 ## What a rejection looks like
 
-A real record from the 1,587-window PoC run (`poc_data/windows.jsonl`, produced by
+An excerpt of a real record from the 1,587-window PoC run (`poc_data/windows.jsonl`, produced by
 `scripts/poc_run.py`; the file is local and not in this repo). In that run S0 fired 0 times,
 so all 702 rejects are stage-S1 `S1_UNUSABLE`, whose evidence is the `s1_score` against
 the 0.6 threshold (not a per-feature explanation):
