@@ -468,7 +468,7 @@ __REASON_ROWS__
 <video id="vid" autoplay muted playsinline controls preload="auto"></video>
 <div id="vstate" style="font-weight:600;min-height:1.4em;margin:2px 0 6px 0;">&nbsp;</div>
 <div>Speed: <select id="speed">
-<option value="1">1x</option><option value="1.5">1.5x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option>
+<option value="1">1x</option><option value="1.5">1.5x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option>
 </select></div>
 </div>
 <div>
