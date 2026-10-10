@@ -8,7 +8,7 @@ is therefore *not* covered here — the ``PONG <ticks>`` wire format is covered
 by ``parse_pong`` in ``test_pico_link.py`` instead).
 
 Run from the repo root:
-    python3 -m unittest discover -s tests -v
+    /home/parshu/envs/jadal/bin/python -m unittest discover -s tests -v
 """
 import importlib.util
 import os

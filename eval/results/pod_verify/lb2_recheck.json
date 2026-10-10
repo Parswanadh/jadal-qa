@@ -1,0 +1,340 @@
+{
+ "C_used": {
+  "eg2_claimed": 0.003,
+  "eg2_published": 0.01,
+  "pixel26": 0.3
+ },
+ "auroc_impl_check": {
+  "eg2_4s_C0.003": {
+   "abs_diff": 0.0,
+   "auroc_mw": 0.8598,
+   "auroc_sklearn": 0.8598
+  },
+  "fused_4s_C0.003": {
+   "abs_diff": 0.0,
+   "auroc_mw": 0.8736,
+   "auroc_sklearn": 0.8736
+  },
+  "pixel26_4s": {
+   "abs_diff": 0.0,
+   "auroc_mw": 0.797,
+   "auroc_sklearn": 0.797
+  }
+ },
+ "c_sensitivity": {
+  "eg2_4s_delta_auroc_published_minus_claimed": 0.0,
+  "eg2_4s_delta_ci95": [
+   -0.0114,
+   0.0052
+  ],
+  "fused_4s_P_delta_lt_0": 0.475,
+  "fused_4s_delta_auroc_published_minus_claimed": -0.0002,
+  "fused_4s_delta_ci95": [
+   -0.0133,
+   0.0095
+  ]
+ },
+ "claim_under_test": "PR #92 (b/poc-integrate): {\"eg2_2fps_4s\": 0.86, \"eg2_2fps_4s_ci95\": [0.715, 0.944], \"fused_4s_auroc\": 0.874, \"fused_4s_ci95\": [0.742, 0.942], \"fused_full\": 0.849, \"pixel26_4s\": 0.797, \"pixel26_4s_ci95\": [0.658, 0.86], \"sampled\": 77, \"verdicts\": {\"accept\": 108, \"reject\": 27, \"uncertain\": 15}}",
+ "clip_verdicts": [
+  {
+   "C_eg2": 0.003,
+   "clip": "desk",
+   "clip_verdict": "accept",
+   "n_sampled": 15,
+   "n_windows": 29,
+   "sampled_bad_fraction": 0.2,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "C_eg2": 0.003,
+   "clip": "ecu_full",
+   "clip_verdict": "accept",
+   "n_sampled": 24,
+   "n_windows": 48,
+   "sampled_bad_fraction": 0.0,
+   "truth_clip_verdict": "accept"
+  },
+  {
+   "C_eg2": 0.003,
+   "clip": "ecu_late",
+   "clip_verdict": "accept",
+   "n_sampled": 7,
+   "n_windows": 14,
+   "sampled_bad_fraction": 0.0,
+   "truth_clip_verdict": "accept"
+  },
+  {
+   "C_eg2": 0.003,
+   "clip": "logistics4",
+   "clip_verdict": "accept",
+   "n_sampled": 9,
+   "n_windows": 17,
+   "sampled_bad_fraction": 0.1111,
+   "truth_clip_verdict": "accept"
+  },
+  {
+   "C_eg2": 0.003,
+   "clip": "organise",
+   "clip_verdict": "reject",
+   "n_sampled": 10,
+   "n_windows": 19,
+   "sampled_bad_fraction": 0.3,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "C_eg2": 0.003,
+   "clip": "pallet",
+   "clip_verdict": "reject",
+   "n_sampled": 9,
+   "n_windows": 17,
+   "sampled_bad_fraction": 0.6667,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "C_eg2": 0.003,
+   "clip": "pallet2",
+   "clip_verdict": "accept",
+   "n_sampled": 3,
+   "n_windows": 6,
+   "sampled_bad_fraction": 0.0,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "C_eg2": 0.01,
+   "clip": "desk",
+   "clip_verdict": "accept",
+   "n_sampled": 15,
+   "n_windows": 29,
+   "sampled_bad_fraction": 0.2,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "C_eg2": 0.01,
+   "clip": "ecu_full",
+   "clip_verdict": "accept",
+   "n_sampled": 24,
+   "n_windows": 48,
+   "sampled_bad_fraction": 0.0,
+   "truth_clip_verdict": "accept"
+  },
+  {
+   "C_eg2": 0.01,
+   "clip": "ecu_late",
+   "clip_verdict": "accept",
+   "n_sampled": 7,
+   "n_windows": 14,
+   "sampled_bad_fraction": 0.0,
+   "truth_clip_verdict": "accept"
+  },
+  {
+   "C_eg2": 0.01,
+   "clip": "logistics4",
+   "clip_verdict": "accept",
+   "n_sampled": 9,
+   "n_windows": 17,
+   "sampled_bad_fraction": 0.1111,
+   "truth_clip_verdict": "accept"
+  },
+  {
+   "C_eg2": 0.01,
+   "clip": "organise",
+   "clip_verdict": "reject",
+   "n_sampled": 10,
+   "n_windows": 19,
+   "sampled_bad_fraction": 0.3,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "C_eg2": 0.01,
+   "clip": "pallet",
+   "clip_verdict": "reject",
+   "n_sampled": 9,
+   "n_windows": 17,
+   "sampled_bad_fraction": 0.6667,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "C_eg2": 0.01,
+   "clip": "pallet2",
+   "clip_verdict": "accept",
+   "n_sampled": 3,
+   "n_windows": 6,
+   "sampled_bad_fraction": 0.0,
+   "truth_clip_verdict": "reject"
+  }
+ ],
+ "conclusion": "reproduced; C_eg2 sensitivity immaterial (delta = -0.0002, CI [-0.0133, 0.0095])",
+ "generated_utc": "2026-10-10T16:11:51Z",
+ "grid": {
+  "n_sampled": 77,
+  "of": 150,
+  "rule": "range(0, n_windows, 2) per clip, manifest order"
+ },
+ "independence": "own script eval/poc_integrate/lb2_independent_recheck.py; does not import or re-run eval/poc_integrate/run_integration.py; own Mann-Whitney AUROC cross-checked against sklearn (<1e-9) and own bootstrap seed 20261010",
+ "inputs": {
+  "ensemble": "/workspace/jadal_pod_bundle/caches/ensemble/ensemble_v1.json",
+  "features": "/workspace/jadal_pod_bundle/caches/gpu/features.json",
+  "manifest": "/workspace/jadal_pod_bundle/labels/manifest_gold.json",
+  "segments": "/workspace/jadal_pod_bundle/caches/frames10k/segments.npz"
+ },
+ "label_source": "human gold (single labeller, 100 good / 50 bad), labels/manifest_gold.json",
+ "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+ "metrics": {
+  "eg2_2fps_4s_C0.003": {
+   "auroc": 0.8598,
+   "auroc_ci95": [
+    0.7241,
+    0.9453
+   ],
+   "bootstrap_reps_used": 2000,
+   "n": 150,
+   "protocol": "LOCO 7 clips; clip-bootstrap 2000 resamples seed 20261010"
+  },
+  "eg2_2fps_4s_C0.01": {
+   "auroc": 0.8598,
+   "auroc_ci95": [
+    0.7223,
+    0.9378
+   ],
+   "bootstrap_reps_used": 2000,
+   "n": 150,
+   "protocol": "LOCO 7 clips; clip-bootstrap 2000 resamples seed 20261010"
+  },
+  "eg2_2fps_full_C0.003": {
+   "auroc": 0.8422,
+   "auroc_ci95": [
+    0.7254,
+    0.9112
+   ],
+   "bootstrap_reps_used": 2000,
+   "n": 150,
+   "protocol": "LOCO 7 clips; clip-bootstrap 2000 resamples seed 20261010"
+  },
+  "eg2_2fps_full_C0.01": {
+   "auroc": 0.842,
+   "auroc_ci95": [
+    0.7211,
+    0.9058
+   ],
+   "bootstrap_reps_used": 2000,
+   "n": 150,
+   "protocol": "LOCO 7 clips; clip-bootstrap 2000 resamples seed 20261010"
+  },
+  "fused_4s_C_eg2_0.003": {
+   "auroc": 0.8736,
+   "auroc_ci95": [
+    0.7521,
+    0.9417
+   ],
+   "bootstrap_reps_used": 2000,
+   "n": 150,
+   "protocol": "LOCO 7 clips; clip-bootstrap 2000 resamples seed 20261010"
+  },
+  "fused_4s_C_eg2_0.01": {
+   "auroc": 0.8734,
+   "auroc_ci95": [
+    0.7479,
+    0.9436
+   ],
+   "bootstrap_reps_used": 2000,
+   "n": 150,
+   "protocol": "LOCO 7 clips; clip-bootstrap 2000 resamples seed 20261010"
+  },
+  "fused_full_C_eg2_0.003": {
+   "auroc": 0.8488,
+   "auroc_ci95": [
+    0.7311,
+    0.925
+   ],
+   "bootstrap_reps_used": 2000,
+   "n": 150,
+   "protocol": "LOCO 7 clips; clip-bootstrap 2000 resamples seed 20261010"
+  },
+  "fused_full_C_eg2_0.01": {
+   "auroc": 0.8482,
+   "auroc_ci95": [
+    0.7347,
+    0.923
+   ],
+   "bootstrap_reps_used": 2000,
+   "n": 150,
+   "protocol": "LOCO 7 clips; clip-bootstrap 2000 resamples seed 20261010"
+  },
+  "pixel26_4s": {
+   "auroc": 0.797,
+   "auroc_ci95": [
+    0.6674,
+    0.8615
+   ],
+   "bootstrap_reps_used": 2000,
+   "n": 150,
+   "protocol": "LOCO 7 clips; clip-bootstrap 2000 resamples seed 20261010"
+  },
+  "pixel26_full": {
+   "auroc": 0.8036,
+   "auroc_ci95": [
+    0.6914,
+    0.8839
+   ],
+   "bootstrap_reps_used": 2000,
+   "n": 150,
+   "protocol": "LOCO 7 clips; clip-bootstrap 2000 resamples seed 20261010"
+  }
+ },
+ "n": 150,
+ "n_clips": 7,
+ "preexisting_artifact_note": "an untracked eval/results/pod_verify/lb2_recheck.json (sha256 6998f8ee1737826adc682d347a23bf8ff5ffe97d1dc59b5a0677e95758d657c3) and an untracked verify_lb2_recheck.py were present in this worktree before this run; they were NOT read for the computation and were overwritten by this file",
+ "protocol": "LOCO over the 7 IndEgo clips; StandardScaler+LogisticRegression refit per held-out clip; eg2_2fps = L2-normalised mean of first 8 frames (4 s, 2 fps) or 21 frames (full); pixel26 = features.json prefix[1] (4 s) / prefix[4] (full); fused = equal-weight probability average; verdicts >0.5 accept, <0.4 reject else uncertain; clip-bootstrap 2000, seed 20261010",
+ "published_reference": {
+  "eg2_full_inner_oof_by_C": {
+   "0.003": 0.8514,
+   "0.01": 0.848,
+   "0.03": 0.8402000000000001,
+   "0.1": 0.8288,
+   "0.3": 0.8190000000000001,
+   "1.0": 0.8124
+  },
+  "note": "published EG2 number 0.848 is at C=0.01 (0.8514 at C=0.003); published pixel 0.810 at C=0.3. The 4 s prefix LOCO values above are re-derived at both C_eg2 values under the identical protocol.",
+  "pixel_full_inner_oof_by_C": {
+   "0.003": 0.6184,
+   "0.01": 0.7120000000000001,
+   "0.03": 0.7789999999999999,
+   "0.1": 0.8061999999999999,
+   "0.3": 0.8099999999999998,
+   "1.0": 0.8082
+  },
+  "source": "caches/ensemble/ensemble_v1.json -> views.<view>.full_inner_oof_auroc_by_C"
+ },
+ "regenerate": "OMP_NUM_THREADS=2 python eval/poc_integrate/lb2_independent_recheck.py",
+ "reproduced_claim_branch": true,
+ "verdict_counts": {
+  "claimed_0.003": {
+   "all_150": {
+    "accept": 108,
+    "reject": 27,
+    "uncertain": 15
+   },
+   "clip_verdict_agreement": "5/7",
+   "every_2nd_grid_77": {
+    "accept": 57,
+    "reject": 13,
+    "uncertain": 7
+   }
+  },
+  "published_0.01": {
+   "all_150": {
+    "accept": 106,
+    "reject": 31,
+    "uncertain": 13
+   },
+   "clip_verdict_agreement": "5/7",
+   "every_2nd_grid_77": {
+    "accept": 56,
+    "reject": 13,
+    "uncertain": 8
+   }
+  }
+ },
+ "verifier_branch": "b/verify-lb2",
+ "verifier_git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+}

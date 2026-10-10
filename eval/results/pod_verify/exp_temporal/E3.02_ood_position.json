@@ -1,0 +1,20 @@
+{
+ "n_windows": 60,
+ "n_bad": 9,
+ "n_good": 51,
+ "labels2_present": false,
+ "n2": 0,
+ "label_source": "human OOD labels (labels.json) + queue source_start_s + manifest durations",
+ "protocol": "Mann-Whitney bad-vs-good positions (raw s + normalised); logistic bad~pos_norm",
+ "mw_raw_U": 190.0,
+ "mw_raw_p": 0.4185346562530734,
+ "mw_norm_U": 194.0,
+ "mw_norm_p": 0.46847993095714036,
+ "median_pos_bad_s": 70.0,
+ "median_pos_good_s": 90.0,
+ "median_posnorm_bad": 0.3888888888888889,
+ "median_posnorm_good": 0.4444444444444444,
+ "logreg_coef_posnorm": -0.3134182584528628,
+ "logreg_intercept": -1.600409206097441,
+ "command": "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 python3 eval/exp_temporal/run_e3.py --out eval/results/exp_temporal"
+}
