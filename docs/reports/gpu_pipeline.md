@@ -117,12 +117,25 @@ Corpus: `ego10k_scale/clips/factory_*/worker_*/*.mp4` (20-min 1920×1080 HEVC
 30 fps; complete files only, downloader still running; 37/47 shards at
 16:55). F1 sweep = CPU-1core HEVC baseline vs NVDEC 1/2/4 sessions +
 batch/VRAM sweep at T=300 (proc ≤4.5 GiB); F2 = ≥12-min sustained end-to-end
-(NVDEC → GPU convert → kernels → S0 exact + S1 exploratory). Numbers land here
-when the lock frees (queued 16:57 behind harness EG2 job).
+(NVDEC → GPU convert → kernels → S0 exact + S1 exploratory).
+
+STATUS 17:20 — BLOCKED ON GPU LOCK (jobs stay queued; this section updates if
+they fire before 17:40): F1 queued 16:57, still waiting ~17:20 (frames10k
+embed + harness holds ahead; 5 flock waiters at last check). No F1/F2 numbers
+yet — the ladder below keeps measured 480p-tier rungs + the CPU HEVC baseline
+as the honest interim. Fixed targets: `factory.py --sweep/--sustain` →
+`factory.json`.
 
 INTERIM (measured, no lock needed): single-core CPU HEVC 1080p→160×90 =
 **52 fps, RTF 1.74** (`factory_cpu_baseline.json`, exact bytes). NVDEC must
 beat this; 480p-H.264 CPU did 710 fps (RTF 71) — HEVC/1080p is the demanding case.
+
+UPDATE 17:30 scope-stop: STILL BLOCKED (F1 queued 16:57, unfired; jobs stay
+queued — this section updates from `factory.json` if they fire pre-PR).
+
+STATUS 17:30 scope-stop: F1/F2 never fired (lock held by other workers all
+evening). Queued jobs remain; this section updates from `factory.json` if they
+land before the 17:50 PR. Until then: no estimates presented as measurements.
 
 ## 7. Telemetry (1 Hz, `logs/gpu_telemetry.csv`; columns: timestamp, power.draw,
 
