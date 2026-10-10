@@ -2,16 +2,24 @@
 
 **Claim.** A *fully deterministic* rule list — fixed integer thresholds, no
 learned weights, no probabilities — separates usable from unusable IndEgo
-windows as well as the logistic baseline (AUROC **0.822**, 95% CI 0.715–0.861)
-and only 0.023 behind the two-view ensemble (0.846). The cost of determinism
-versus the logistic baseline is **−0.021** (the rule list is *better*); versus
-the learned ensemble it is **+0.023**.
+windows with LOCO AUROC **0.822** (95% CI 0.715–0.861). This AUROC is an
+**optimistic in-domain estimate**: the candidate rule list, the features and the
+directions were chosen by the author with all 150 labels visible (the *Leakage*
+section below; only the thresholds and the operating point are nested in LOCO).
+
+The **honest full-population headline** is balanced accuracy **0.710**
+(REVIEW counted as accept) / **0.590** (REVIEW as reject) at 40 % coverage. The
+0.808 figure is **decided-only** and must not be the headline.
+
+Against the **like-for-like** 42-feature logistic (26 full + 16 physics, AUROC
+0.787) the rule list leads by **+0.035**, but the paired clip-bootstrap CI
+contains 0 — **no difference is established** at n=150.
 
 Code: `eval/exp_phys/phys_rules.py`, `eval/exp_phys/run_exp_phys.py`.
 Results: `eval/results/exp_phys/Q1.01.json`, `rule_table.json`, `roc_phys.png`.
 Protocol: leave-one-clip-out (LOCO) over the 7 IndEgo clips, 150 human-labelled
 windows (100 good / 50 bad), clip-bootstrap 95% CI (2,000 resamples).
-Data root: `/workspace/jadal_pod_bundle` (cached features only, no GPU, no decode).
+Data root: `$JADAL_DATA` (required; cached features only, no GPU, no decode).
 
 ## Why this model
 The product spec requires transparent, mathematics-first decisions ("rule list
@@ -51,11 +59,15 @@ motion_energy, luma_p05) scores 10⁶ and forces REJECT. It fires 0 times in
 domain (the single labelled UNDECODABLE window has finite cached features — a
 documented limitation of the cached view) and exists to guard the decode path.
 
-**Direction justification (data, not weights).** Residual optical flow after
-ego-motion removal (`flow_act`/`flow_med`, physics spec 6) is *higher* on bad
-windows (median 0.59 vs 0.27 good): camera/head motion without stable work.
-This is the opposite sign to the ALGO_SPEC's `flow_act` claim, so the direction
-was set by the training-fold univariate sign, not assumed.
+**Direction justification (data, not weights) — with a caveat.** Residual optical
+flow after ego-motion removal (`flow_act`/`flow_med`, physics spec 6) is *higher*
+on bad windows (all-window median 0.59 bad vs 0.27 good): camera/head motion
+without stable work. This is the opposite sign to the ALGO_SPEC's `flow_act`
+claim. **Caveat:** this evidence is an *all-window* statistic and the direction
+was fixed in `CANDIDATE_RULES` with the labels visible — it is **not** a
+training-fold sign, so the LOCO comparison is optimistic. The fully nested
+per-fold sign+feature selection is the `loco_selected` ablation (0.762), which is
+worse.
 
 ## Decision
 ```
@@ -69,26 +81,40 @@ else:                                                        ACCEPT
 windows (per fold). Every decision emits `{rule, feature, value, op, threshold}`.
 
 ## LOCO results
+
 | metric | value |
 |---|---|
-| **AUROC deterministic score** | **0.8224** (95% CI 0.7149–0.8605) |
-| logistic 26-feat, same folds | 0.8016 |
+| **AUROC deterministic score (optimistic)** | **0.8224** (95% CI 0.7149–0.8605) |
+| logistic 26-feat, same folds (not like-for-like) | 0.8016 |
+| logistic 42-feat (26 full + 16 physics, like-for-like) | 0.7870 |
 | EG2 two-view ensemble (cached) | 0.8458 |
 | per-pixel conv (cached) | 0.7916 |
-| **determinism cost vs logistic** | **−0.0208** (rules better) |
-| determinism cost vs EG2 | +0.0234 |
+| two-view rank-avg ensemble (cached) | 0.8336 |
 
-Two deterministic operating points:
+**Paired clip-grouped bootstrap on the AUROC difference** (2,000 shared
+resamples, seed 0; delta = rules − baseline, both oriented higher = more bad).
+Every CI contains 0, so **no difference is established** at n=150:
 
-| operating point | BA (decided) | REVIEW share | coverage | false-reject (good) | bad recall |
-|---|---|---|---|---|---|
-| fr5 conservative (5 % FR budget) | **0.808** | 0.60 | 0.40 | 0.10 | 0.52 |
-| ba balanced (max train BA) | 0.678 | 0.38 | 0.62 | 0.32 | 0.74 |
+| comparison | delta | 95% CI |
+|---|---|---|
+| rules − logistic 26-feat | +0.0208 | [−0.1014, +0.0921] |
+| rules − logistic 42-feat | +0.0354 | [−0.0846, +0.1108] |
+| rules − EG2 ensemble | −0.0234 | [−0.1393, +0.0650] |
+| rules − rank-avg ensemble | −0.0112 | [−0.1355, +0.0605] |
 
-The conservative point gives the *best test* balanced accuracy: the
-training-BA-optimal threshold (6–8) over-rejects on held-out clips (FR 0.32),
-an honest example of why an operating point must be chosen with a
-false-reject budget, not by maximising training BA.
+### Honest headline: full-population balanced accuracy
+
+| operating point | BA (review-as-accept) | BA (review-as-reject) | BA (decided only) | REVIEW share | coverage | false-reject (good) | bad recall |
+|---|---|---|---|---|---|---|---|
+| fr5 conservative (5 % FR budget) | **0.710** | **0.590** | 0.808 | 0.60 | 0.40 | 0.10 | 0.52 |
+| ba balanced (max train BA) | 0.710 | 0.590 | 0.678 | 0.38 | 0.62 | 0.32 | 0.74 |
+
+The headline is **0.710 / 0.590** (REVIEW counted, 40 % coverage); **0.808 is
+decided-only** (the 60 % REVIEW windows are excluded) and overstates the model.
+The conservative point still beats the training-BA-optimal threshold on
+*decided-only* accuracy: the BA-optimal threshold (6–8) over-rejects on held-out
+clips (FR 0.32). **Caveat:** both operating points were selected on the same 150
+windows, so this is a descriptive, not a held-out, comparison.
 
 ## Per-rule signal (LOCO)
 | rule | fires | precision | recall | indicator AUROC | AUROC if dropped |
@@ -115,23 +141,58 @@ Selecting the top-12 features *per fold* by training univariate AUROC gives
 inside a training fold and do not transfer. The fixed, spec-justified candidate
 list is what generalises.
 
+## Leakage (what was fit where)
+
+This is the most important caveat in the report. Read it before quoting any
+number:
+
+* **Not nested (optimistic):** the candidate rule list (`CANDIDATE_RULES`), the
+  choice of features, and every `op`/`side` direction were chosen by the author
+  **with all 150 gold labels visible**. The evidence for the `flow_act`/
+  `flow_med` direction is an all-window median (0.59 bad vs 0.27 good), not a
+  training-fold sign. Only the **thresholds** and the **operating point** are
+  re-derived inside each LOCO fold. So **0.8224 is an optimistic in-domain
+  estimate**, not a nested-LOCO number.
+* **Nested alternative:** a fully nested per-fold feature + sign selection
+  (`loco_selected`, top-12 by training univariate AUROC) gives **0.7618** — the
+  honest nested number, and it is *worse*. The fixed, spec-justified candidate
+  list is what generalises; the fixed list is not what is being validated.
+* **Like-for-like:** the rule list uses 26 full + 16 physics features. The
+  `logistic_26feat` baseline uses only the 26 full features, so it is **not**
+  like-for-like; the `logistic_42feat` baseline (same 42 features, median
+  imputation for the 3 `snr_db` NaNs fit on the train fold) is. Against the
+  like-for-like baseline the paired delta is +0.035, CI [−0.085, +0.111].
+* **What is clean:** labels are never read by the scorer; the reject threshold
+  uses a pre-registered 5 % training-good false-reject budget; all thresholds
+  are training-fold quantiles.
+
 ## Honest limits and cost of determinism
 * **In-domain only.** 150 windows, 7 clips, one labeller. No OOD transfer was
   tested; prior evidence says IndEgo-trained scorers do not transfer to
   Egocentric-10K (0.4–0.53 AUROC).
-* The candidate list is fixed a priori (the task's named rules + physics-feature
-  docs); only thresholds and the operating point are data-derived. A fully
-  per-fold feature-selected variant is reported above and is worse.
+* **Full-population accuracy is 0.710 / 0.590**, not 0.808; 60 % of windows are
+  REVIEW at the conservative point. The decided-only 0.808 covers only 40 % of
+  windows.
+* **No AUROC difference is established** vs any baseline at n=150 (all paired
+  CIs contain 0). Do not claim the rule list beats the logistic baseline; do not
+  claim the ensemble beats it.
 * Integer scores create ties, which cost a little AUROC versus a continuous
-  learned score; the ensemble still leads by 0.023.
+  learned score.
 * REVIEW share is high (0.60) at the conservative point because most windows
   cross at least one mild threshold; this is the intended abstain behaviour, not
   a decision.
-* Determinism cost is **negative** vs logistic: the rule list is not a
-  downgrade, and it is explainable per window.
+
+## Per-window scores (traceability)
+
+`Q1.01.json:per_window_scores` has one row per gold window —
+`{id, clip, y, score, decision_fr5, decision_ba, p_logistic26, p_logistic42,
+p_eg2, p_pixel, p_ens}`. Every number above (LOCO AUROC, clip-bootstrap CI,
+paired delta, balanced accuracy) is re-derivable from those rows plus the `clip`
+field. The paired deltas are in
+`Q1.01.json:paired_clip_bootstrap_auroc_difference`.
 
 ## Reproduce
 ```bash
-OMP_NUM_THREADS=2 python3 eval/exp_phys/run_exp_phys.py
+JADAL_DATA=/path/to/pod_bundle OMP_NUM_THREADS=2 python3 eval/exp_phys/run_exp_phys.py
 OMP_NUM_THREADS=2 python3 -m pytest tests/test_exp_phys_rules.py -q
 ```

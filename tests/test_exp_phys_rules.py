@@ -93,3 +93,37 @@ def test_all_decisions_carry_evidence_shape():
         if d["decision"] != "ACCEPT":
             assert d["evidence"] is not None
             assert set(d["evidence"]) >= {"rule", "feature", "value", "op", "threshold"}
+
+
+def test_paired_clip_bootstrap_shape():
+    import numpy as np
+    from run_exp_phys import paired_clip_bootstrap
+    rng = np.random.default_rng(0)
+    n = 40
+    y = np.array([1, 0] * (n // 2))
+    clips = np.array(["a"] * 10 + ["b"] * 10 + ["c"] * 10 + ["d"] * 10)
+    s_a = rng.normal(0, 1, n)
+    s_b = rng.normal(0, 1, n)
+    r = paired_clip_bootstrap(y, s_a, s_b, clips, n_boot=200)
+    assert set(r) >= {"delta", "ci95", "n_boot"}
+    assert r["ci95"][0] <= r["ci95"][1]
+
+
+def test_results_have_per_window_scores_and_honest_headline():
+    import json
+    p = os.path.join(ROOT, "eval", "results", "exp_phys", "Q1.01.json")
+    if not os.path.exists(p):
+        return
+    d = json.load(open(p))
+    pws = d["per_window_scores"]
+    assert len(pws) == d["data"]["n"] == 150
+    for row in pws:
+        assert set(row) >= {"id", "clip", "y", "score", "decision_fr5",
+                            "decision_ba", "p_logistic26", "p_eg2"}
+    pb = d["paired_clip_bootstrap_auroc_difference"]
+    for k in ("rules_minus_logistic26", "rules_minus_logistic42",
+              "rules_minus_eg2", "rules_minus_ens"):
+        assert len(pb[k]["ci95"]) == 2
+    assert d["headline"]["balanced_acc_review_as_accept"] == 0.71
+    assert d["headline"]["balanced_acc_review_as_reject"] == 0.59
+    assert d["headline"]["balanced_acc_decided_only"] == 0.808

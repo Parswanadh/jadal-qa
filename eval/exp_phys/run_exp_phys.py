@@ -26,7 +26,7 @@ sys.path.insert(0, THIS)
 from phys_rules import (CANDIDATE_RULES, Q, build_rule_table, choose_reject_threshold,  # noqa: E402
                         choose_reject_threshold_ba, decide, derive_thresholds, score_window)
 
-DATA = os.environ["JADAL_DATA"]
+DATA = os.environ.get("JADAL_DATA")  # required at run time; see load_data()
 OUT = os.path.join(ROOT, "eval", "results", "exp_phys")
 FR_BUDGET = 0.05          # pre-registered false-reject budget on training-good
 BOOT = 2000
@@ -35,6 +35,8 @@ SEED = 0
 
 # --------------------------------------------------------------------------
 def load_data():
+    if not DATA:
+        raise SystemExit("JADAL_DATA is required (path to the pod data bundle)")
     manifest = json.load(open(os.path.join(DATA, "labels", "manifest_gold.json")))["items"]
     W = json.load(open(os.path.join(DATA, "caches", "gpu", "features.json")))["windows"]
     gold = np.load(os.path.join(DATA, "caches", "perpixel", "gold.npz"), allow_pickle=True)
@@ -160,18 +162,47 @@ def clip_bootstrap_ci(y, s, clips, n_boot=BOOT, seed=SEED):
     return [float(np.percentile(out, 2.5)), float(np.percentile(out, 97.5))] if out else [None, None]
 
 
-def logistic_loco(feats, y, clips, names):
+def logistic_loco(feats, y, clips, keys, impute=False):
     from sklearn.linear_model import LogisticRegression
     from sklearn.preprocessing import StandardScaler
-    X = np.array([[feats[i][f"full.{n}"] for n in names] for i in range(len(y))])
+    from sklearn.pipeline import Pipeline
+    from sklearn.impute import SimpleImputer
+    X = np.array([[feats[i][k] for k in keys] for i in range(len(y))])
+    steps = []
+    if impute and np.isnan(X).any():
+        # median imputation fit on the TRAIN fold only (physics snr_db has 3 NaNs)
+        steps.append(("impute", SimpleImputer(strategy="median")))
+    steps += [("scale", StandardScaler()), ("clf", LogisticRegression(max_iter=2000))]
     p = np.zeros(len(y))
     for c in sorted(set(clips)):
         te = clips == c
         tr = ~te
-        sc = StandardScaler().fit(X[tr])
-        clf = LogisticRegression(max_iter=2000).fit(sc.transform(X[tr]), y[tr])
-        p[te] = clf.predict_proba(sc.transform(X[te]))[:, 1]
+        pipe = Pipeline(steps).fit(X[tr], y[tr])
+        p[te] = pipe.predict_proba(X[te])[:, 1]
     return p
+
+
+def paired_clip_bootstrap(y, s_a, s_b, clips, n_boot=BOOT, seed=SEED):
+    """Paired clip-grouped bootstrap on AUROC(a) - AUROC(b), shared resamples.
+
+    ``s_a``/``s_b`` are both oriented higher = more bad, so the difference is
+    on the same AUROC scale. Returns the full-sample delta and the 95% CI.
+    """
+    rng = np.random.default_rng(seed)
+    uc = sorted(set(clips))
+    deltas = []
+    for _ in range(n_boot):
+        cs = rng.choice(uc, size=len(uc), replace=True)
+        idx = np.concatenate([np.where(clips == c)[0] for c in cs])
+        if len(set(y[idx])) < 2:
+            continue
+        deltas.append(auc(y[idx], s_a[idx]) - auc(y[idx], s_b[idx]))
+    if not deltas:
+        return {"delta": None, "ci95": [None, None], "n_boot": 0}
+    lo, hi = np.percentile(deltas, [2.5, 97.5])
+    return {"delta": round(float(auc(y, s_a) - auc(y, s_b)), 4),
+            "ci95": [round(float(lo), 4), round(float(hi), 4)],
+            "n_boot": len(deltas)}
 
 
 def main():
@@ -262,12 +293,23 @@ def main():
     a_sel = auc(y, s_sel)
 
     # baselines under the same folds (probability-of-GOOD; direction positive)
-    p_log = logistic_loco(feats, y, clips, meta["full_names"])
+    full_keys = [f"full.{n}" for n in meta["full_names"]]
+    phys_keys = [f"phys.{n}" for n in meta["phys_names"]]
+    p_log = logistic_loco(feats, y, clips, full_keys)
+    p_log42 = logistic_loco(feats, y, clips, full_keys + phys_keys, impute=True)
     from sklearn.metrics import roc_auc_score as _ras
     a_log = float(_ras(y, p_log))
+    a_log42 = float(_ras(y, p_log42))
     a_eg2 = float(_ras(y, oof_p["p_eg2"]))
     a_pixel = float(_ras(y, oof_p["p_pixel"]))
     a_ens = float(_ras(y, oof_p["p_ens"]))
+
+    # paired clip-grouped bootstrap on the AUROC difference (rules - baseline)
+    # with shared resamples, so the difference is paired (not two independent CIs).
+    pb_log = paired_clip_bootstrap(y, scores, -p_log, clips)
+    pb_log42 = paired_clip_bootstrap(y, scores, -p_log42, clips)
+    pb_eg2 = paired_clip_bootstrap(y, scores, -oof_p["p_eg2"], clips)
+    pb_ens = paired_clip_bootstrap(y, scores, -oof_p["p_ens"], clips)
 
     # frozen all-clip rule table (deployment) + evidence example
     all_feats = {k: np.array([feats[i].get(k, np.nan) for i in range(n)])
@@ -302,13 +344,53 @@ def main():
             "operating_points": {"fr5_conservative": m_fr5, "ba_balanced": m_ba},
             "per_fold": per_fold,
         },
+        "headline": {
+            "balanced_acc_review_as_accept": m_fr5["balanced_acc_review_as_accept"],
+            "balanced_acc_review_as_reject": m_fr5["balanced_acc_review_as_reject"],
+            "coverage_decided": m_fr5["coverage_decided"],
+            "review_share": m_fr5["review_share"],
+            "balanced_acc_decided_only": m_fr5["balanced_acc_decided"],
+            "note": ("headline BA counts REVIEW in the denominator: 0.710 "
+                     "(review-as-accept) / 0.590 (review-as-reject) at 40% coverage; "
+                     "0.808 is decided-only and must not be the headline"),
+        },
+        "leakage": {
+            "candidate_rule_list_and_signs": ("the candidate rule list, the feature "
+                                              "choice and the directions were chosen by "
+                                              "the author with all 150 gold labels "
+                                              "visible; the LOCO thresholds are nested, "
+                                              "but this selection is not, so 0.8224 is an "
+                                              "OPTIMISTIC in-domain estimate"),
+            "sign_evidence_is_all_windows": ("the flow_act/flow_med direction cites an "
+                                             "all-window median (0.59 bad vs 0.27 good), "
+                                             "not a training-fold sign"),
+            "nested_alternative": ("a fully nested per-fold feature+sign selection "
+                                   "(loco_selected, top-12) gives "
+                                   f"{round(a_sel, 4)}"),
+            "operating_point": ("both operating points are chosen on the same 150 "
+                                "windows; the fr5 point is chosen with a pre-registered "
+                                "5% training-good false-reject budget"),
+        },
         "baselines_same_folds": {
             "logistic_26feat_auroc": round(a_log, 4),
+            "logistic_42feat_auroc": round(a_log42, 4),
             "eg2_ensemble_auroc_cached": round(a_eg2, 4),
             "pixel_conv_auroc_cached": round(a_pixel, 4),
             "ens_auroc_cached": round(a_ens, 4),
             "determinism_cost_vs_logistic": round(a_log - a_phys, 4),
+            "determinism_cost_vs_logistic42": round(a_log42 - a_phys, 4),
             "determinism_cost_vs_eg2": round(a_eg2 - a_phys, 4),
+            "like_for_like_note": ("the rule list uses 26 full + 16 physics features; "
+                                   "logistic_26feat is NOT like-for-like, "
+                                   "logistic_42feat is"),
+        },
+        "paired_clip_bootstrap_auroc_difference": {
+            "rules_minus_logistic26": pb_log,
+            "rules_minus_logistic42": pb_log42,
+            "rules_minus_eg2": pb_eg2,
+            "rules_minus_ens": pb_ens,
+            "note": ("paired clip-grouped bootstrap (2,000 shared resamples, seed 0); "
+                     "delta is AUROC(rules) - AUROC(baseline), both oriented higher=bad"),
         },
         "per_rule": rule_stats,
         "leave_one_rule_out_auroc": l1o,
@@ -321,6 +403,21 @@ def main():
         "decisions_examples": examples[:40],
         "n_false_rejects": len(false_rejects),
         "false_rejects": false_rejects,
+        "per_window_scores": [
+            {"id": ids[i], "clip": str(clips[i]), "y": int(y[i]),
+             "score": int(scores[i]),
+             "decision_fr5": dec_by_pol["fr5"][i],
+             "decision_ba": dec_by_pol["ba"][i],
+             "p_logistic26": round(float(p_log[i]), 6),
+             "p_logistic42": round(float(p_log42[i]), 6),
+             "p_eg2": round(float(oof_p["p_eg2"][i]), 6),
+             "p_pixel": round(float(oof_p["p_pixel"][i]), 6),
+             "p_ens": round(float(oof_p["p_ens"][i]), 6)}
+            for i in range(n)
+        ],
+        "per_window_scores_note": ("one row per gold window; every reported metric "
+                                   "(LOCO AUROC, CIs, paired deltas, BA) is derivable "
+                                   "from these rows + the clip field"),
         "wall_s": round(time.perf_counter() - t0, 2),
     }
 

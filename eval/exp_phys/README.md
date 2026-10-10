@@ -20,8 +20,9 @@ and the score is an integer count of crossed thresholds.
 OMP_NUM_THREADS=2 python3 eval/exp_phys/run_exp_phys.py
 OMP_NUM_THREADS=2 python3 -m pytest tests/test_exp_phys_rules.py -q
 ```
-Data root defaults to `/workspace/jadal_pod_bundle`; override with `JADAL_DATA`.
-Reads cached features only (no GPU, no decode). Never edits labels.
+Data root is read from the `JADAL_DATA` environment variable (required; no
+hardcoded default). Reads cached features only (no GPU, no decode). Never edits
+labels.
 
 ## Method in one paragraph
 For each named rule and physics feature we take the p01/p05/p10/p25 quantiles
