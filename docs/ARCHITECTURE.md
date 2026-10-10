@@ -1,6 +1,6 @@
 # Architecture
 
-This page describes the Jadal QA pipeline as it is on `origin/main` (f58e0a1) on 2026-10-10, and the direction the build is moving in. The contract every merged module codes against is [`SPEC.md`](SPEC.md). `SPEC.md` predates the direction below and has not been updated in this change, so where this page and `SPEC.md` disagree, `SPEC.md` governs. The whole-video, streaming, no-frame-sampling direction below is planned, pending a `SPEC.md` amendment — it is not the current contract.
+This page describes the Jadal QA pipeline as it is on `origin/main` (68f85cc) on 2026-10-10, and the direction the build is moving in. The contract every merged module codes against is [`SPEC.md`](SPEC.md). `SPEC.md` predates the direction below and has not been updated in this change, so where this page and `SPEC.md` disagree, `SPEC.md` governs. The whole-video, streaming, no-frame-sampling direction below is planned, pending a `SPEC.md` amendment — it is not the current contract.
 
 Status labels used below:
 
@@ -19,7 +19,7 @@ Measurement hardware so far (unverified builder note — no backing measurement 
 
 - **Edge-first.** Mentors at Awign said workers record their own video, a decentralised deployment is acceptable if it runs on a Raspberry Pi, rejection reasons can be generic, and accept/reject may be fully automated with no mandatory human. The Pi run is pending. x86 cores are a proxy.
 - **Whole-video, per-pixel analysis of every frame.** Frames are not sampled. Stage 1 streams over every frame at reduced resolution and keeps running accumulators.
-- **Streaming with early reject.** The worker analyses 2-second chunks while it records. Stage 0 is planned to reject dark, blocked, over-exposed or frozen footage in the first 1-2 seconds, with evidence (timing unverified — no backing file or measurement in this repo; see the Stage 0 note below).
+- **Streaming with early reject.** The worker analyses 2-second chunks (chunk size per unverified builder note, no backing measurement on this branch) while it records. Stage 0 is planned to reject dark, blocked, over-exposed or frozen footage in the first 1-2 seconds, with evidence (timing unverified — no backing file or measurement in this repo; see the Stage 0 note below).
 - **Mathematics-first, deterministic decisions.** Decisions come from measured signals and a transparent rule list with exact thresholds. Logistic regression and boosted trees are comparison baselines only. Every reject carries its evidence (value, comparison, threshold). The first rule list tried rejected nearly everything and was dropped.
 - **Signals.** Poisson-Gaussian noise model (SNR), H.264 bits per frame, frame difference against the noise floor, noise-normalised sharpness, residual optical flow after ego-motion removal, exposure clipping, histogram entropy, dHash. Heat-equation blur, colour temperature, MSCN and max-entropy were dropped.
 - **Not in the pipeline.** A generic VLM (stopped as too probabilistic), Laya (text-only) and Clef (hosted). EmbeddingGemma 2 is an optional helper for hub search, de-duplication and frame heads.
@@ -149,7 +149,7 @@ What is measured: the CPU feature path's canonical-JSON digest (`sha256(canonica
 
 - **No certified error bounds.** The machinery exists; it does not produce a usable guarantee at n = 150 from 7 clips.
 - **No accuracy claim.** The README records directions tested with results pending; no accuracy numbers are claimed on this branch. The Egocentric-10K notes below are descriptive.
-- **Egocentric-10K notes are descriptive.** Those windows have no human labels. The domain shift from the 480p/10 fps calibration data is untested.
+- **Egocentric-10K notes are descriptive.** Those windows have no human labels. The domain shift from the 480p/10 fps calibration data (unverified builder note — no backing file in this repo for the calibration) is untested.
 - **Labels for Egocentric-10K-Evaluation are AI-generated** (gemini-2.5-flash per ATTRIBUTIONS) and not human-checked.
 - **Thresholds are placeholders** (0.9) until calibrated on our own clips. No threshold on `main` is certified.
 - **The batch rule is a fixed rule with no statistical guarantee** at n = 5 to 10.

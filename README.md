@@ -11,7 +11,7 @@ The build contract is [`docs/SPEC.md`](docs/SPEC.md). The architecture and the s
 Planned direction, pending a `docs/SPEC.md` amendment: where this direction and `docs/SPEC.md` disagree, `SPEC.md` governs.
 
 - **Edge-first.** The target is analysis on the capture device, with no mandatory human in the loop. Running on a Raspberry Pi is **not yet measured**. The only speed numbers are on x86 laptop cores, as a proxy. A real Pi run is pending.
-- **Whole-video, per-pixel analysis of every frame.** No sampled frames. Streaming: 2-second chunks are analysed while the worker records. Dark, blocked or frozen footage is rejected in the first 1-2 seconds (timing unverified — no backing file or measurement in this repo, cf. ARCHITECTURE.md Stage 0 note).
+- **Whole-video, per-pixel analysis of every frame.** No sampled frames. Streaming: 2-second chunks (chunk size per unverified builder note, no backing measurement on this branch) are analysed while the worker records. Dark, blocked or frozen footage is rejected in the first 1-2 seconds (timing unverified — no backing file or measurement in this repo, cf. ARCHITECTURE.md Stage 0 note).
 - **Deterministic, mathematics-first decisions.** The inputs are measured signals: noise level, sharpness, exposure, frame difference against the noise floor, residual motion after camera-motion removal, and rhythm tests. The intended decision is a transparent rule list with exact thresholds, and every reject carries its evidence (value, comparison, threshold). Logistic regression and boosted trees are comparison baselines only. The current scorer direction is a logistic head over per-pixel features (unverified builder note — no backing file or command in this repo). The first threshold rule list rejected nearly everything and was dropped, so the rule-list form is not yet working.
 - **Not in the pipeline.** A generic vision-language model was tried and stopped as too probabilistic. Unverified builder note (no backing file or command in this repo): an interim SmolVLM2 run at about 1 s per segment scale, cost extrapolation withheld until backing files land. Laya (text-only) and Clef (hosted) are not in the pipeline.
 - **EmbeddingGemma 2 is an optional helper**, used for hub search, de-duplication and frame heads. It is not the core.
@@ -19,7 +19,7 @@ Planned direction, pending a `docs/SPEC.md` amendment: where this direction and 
 
 ## Status and preliminary builder notes (unverified here)
 
-The rows below are UNVERIFIED builder notes (2026-10-10), not results: no backing file or re-runnable command for any row exists in this repo (`eval/results/BASELINE.json` does not exist; per `docs/BASELINE.md` pitch claims come only from that file). No point estimates are given and no intervals are claimed until backing files land. Rows about the per-pixel scorer, GPU pipeline, and Egocentric-10K PoC describe unmerged, off-branch work (open PRs #52, #57, #61, #66-#73; PoC demo on `integration/poc`, pending merge) — there is no commit, file, or reproduce command on this branch to check out and re-run. Do not cite these as measured results.
+The rows below are UNVERIFIED builder notes (2026-10-10), not results: no backing file or re-runnable command for any row exists in this repo (`eval/results/BASELINE.json` does not exist; per `docs/BASELINE.md` pitch claims come only from that file). No point estimates are given and no intervals are claimed until backing files land. Rows about the per-pixel scorer (except the spectral-features arm, merged PR #52 and recorded here as direction-tested with result pending, no point estimate claimed), GPU pipeline, and Egocentric-10K PoC describe unmerged, off-branch work (open PRs #57, #61, #66-#73; PoC demo on `integration/poc`, pending merge) — there is no commit, file, or reproduce command on this branch to check out and re-run for those rows. Do not cite these as measured results.
 
 | What was noted (unverified, unmerged where stated) | Status | n and label source (as noted, unverified) |
 |---|---|---|
@@ -39,8 +39,8 @@ The rows below are UNVERIFIED builder notes (2026-10-10), not results: no backin
 What this means:
 
 - **Accuracy is not yet shown.** No accuracy number is claimed on this branch; the directions above are recorded as tested-with-result-pending. Unverified builder note (no backing file in this repo): two clips (pallet, pallet2) were noted at chance for every model tried.
-- **The human set is small.** 150 windows: 100 usable, 50 bad (NO_ACTIVE_WORK 23, HANDS_NOT_VISIBLE 14, DUPLICATE 6, TOO_DARK 6, UNDECODABLE 1) (see `docs/reports/funnel.md:421-422`; `eval/results/gold_labels_snapshot.json`). It comes from 7 IndEgo videos (Fraunhofer IPK), 480p at about 10 fps. The file names suggest only about 3 wearers. It is not Awign footage.
-- **Egocentric-10K has no human labels.** Its frame labels come from an AI model. The proof of concept shows the pipeline runs on footage described in an unverified builder note (no backing file in this repo) as 1080p/30 fps HEVC. Its verdicts are not accuracy results. The scorer was calibrated on 480p/10 fps IndEgo, so the domain shift is untested. Unverified builder note (no backing file in this repo): an earlier partial run had a higher reject share; a small out-of-domain labelling queue is ready for the builder to label.
+- **The human set is small.** 150 windows: 100 usable, 50 bad (NO_ACTIVE_WORK 23, HANDS_NOT_VISIBLE 14, DUPLICATE 6, TOO_DARK 6, UNDECODABLE 1) (see `docs/reports/funnel.md:421-422`; `eval/results/gold_labels_snapshot.json`). It comes from 7 IndEgo videos (Fraunhofer IPK), 480p at about 10 fps (see `docs/reports/edge.md:69`). The file names suggest only about 3 wearers. It is not Awign footage.
+- **Egocentric-10K has no human labels.** Its frame labels come from an AI model. The proof of concept shows the pipeline runs on footage described in an unverified builder note (no backing file in this repo) as 1080p/30 fps HEVC. Its verdicts are not accuracy results. The scorer is described in an unverified builder note (no backing file in this repo) as calibrated on 480p/10 fps IndEgo, so the domain shift is untested. Unverified builder note (no backing file in this repo): an earlier partial run had a higher reject share; a small out-of-domain labelling queue is ready for the builder to label.
 - **Speed (unverified builder note — no backing file or single end-to-end measurement in this repo; not a Pi).** Laptop CPU/GPU decode and kernel rates were noted informally on x86 hardware; end-to-end throughput is decode-bound and is not yet measured as one number.
 
 Still in progress or not claimed:
@@ -66,7 +66,7 @@ Still in progress or not claimed:
 - **SOP and voice.** The SOP is a labelled sample. Voice messages are pre-recorded machine-draft translations.
 - **Not yet run on Awign footage, cameras or criteria.**
 
-## Data flow (status on `origin/main`, f58e0a1, 2026-10-10)
+## Data flow (status on `origin/main`, 68f85cc, 2026-10-10)
 
 ```
  head camera -> auto-sync -> ingestion bucket          (outside this repo)
@@ -108,7 +108,8 @@ The whole-video, streaming direction above is not yet on `main`. See [`docs/ARCH
 | Freshness (nonce-LED liveness check) | `jadal/freshness.py`, `tests/test_freshness.py`, `scripts/freshness_demo.py` | #24 | open, PR #25. Live trials not run. |
 | Video hub (EmbeddingGemma 2 search and clusters) | (see PR) | n/a | open, PR #28 |
 | Baseline scoreboard (B1-B8) | (see PR) | n/a | open, PR #30 |
-| Per-pixel scorer, GPU pipeline, PoC demo and dashboard | (see PRs) | n/a | open, PRs #52, #57, #61, #66-#73. PoC demo on `integration/poc`, pending merge. |
+| Spectral features arm | `jadal/spectral/`, `eval/spectral_features/`, `docs/reports/spectral_features.md`, `tests/test_spectral_*.py` | n/a | merged, PR #52 |
+| Per-pixel scorer (rest), GPU pipeline, PoC demo and dashboard | (see PRs) | n/a | open, PRs #57, #61, #66-#73. PoC demo on `integration/poc`, pending merge. |
 | Laya fusion | (none) | #9 | not in the pipeline. Stretch idea only. |
 
 ## Repo layout
@@ -129,7 +130,8 @@ Matches `origin/main`.
 │   ├── reports/          certify, verify, edge, funnel, dashboard, pico, service, voicebank, and more
 │   ├── screens/          dashboard screenshots
 │   └── process/          how the repo was built: workflow, reviews, decision log
-├── jadal/                core package
+├── jadal/                core package (incl. spectral/ arm, merged PR #52)
+├── eval/                 harness, spectral_features arm (merged PR #52), gold labels
 ├── models/               README only; model weights are git-ignored
 ├── pico/                 Raspberry Pi Pico MicroPython firmware (main.py; RP2040 tested)
 ├── sim/dock_sim.py       copies clips into the bucket and posts ingest events

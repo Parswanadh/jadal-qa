@@ -157,3 +157,73 @@ OK (skipped=8)
 
 Suite fast and hang-free (unittest with timeout; every wait already timed out
 — docs-only diff, no waits added).
+
+## Fix round 3 (2026-10-10, answer to PR #74 REFUSE review)
+
+Review verdict was SPEC: FAIL, QUALITY: CHANGES NEEDED with no Criticals and
+two Importants. Both Importants plus all three Minors verified correct against
+the repo — no pushback, all fixed in owned files only (README.md,
+docs/ARCHITECTURE.md, docs/reports/claims_poc.md (this report); jadal/config.py,
+jadal/__init__.py, docs/SPEC.md and other workers' files untouched).
+`git fetch origin && git merge origin/main` first: already up to date
+(`origin/main` HEAD `68f85cc`, merge of PR #52, already an ancestor).
+
+- I1 (stale main pin: PR #52 merged, still listed as open) — confirmed:
+  `origin/main` HEAD is `68f85cc` (2026-10-10) while README:69 / ARCH:3 pinned
+  `f58e0a1`, and README:22 / README:111 listed #52 as open. Fix applied: pin
+  moved to `68f85cc` in both files; #52 dropped from both open-PR ranges;
+  Modules table re-verified against the new tree (`git ls-tree origin/main`
+  shows the 14 new #52 files) — new row "Spectral features arm
+  (`jadal/spectral/`, `eval/spectral_features/`,
+  `docs/reports/spectral_features.md`, `tests/test_spectral_*.py`) | merged,
+  PR #52", remainder row narrowed to open PRs #57, #61, #66-#73; repo-layout
+  sketch gained `eval/` + spectral lines so "Matches `origin/main`" is checkable
+  at `68f85cc`. Table intro reworded to carve the merged spectral arm out of
+  the "no backing file for any row / unmerged off-branch" sentence (the merged
+  files exist on-branch; the row still claims no point estimate).
+- I2 (unqualified "scorer was calibrated on 480p/10 fps IndEgo") — confirmed:
+  the clause read as fact while the branch's own disclaimer admits no backing
+  file for the calibration (provenance of 480p/10fps itself is backed,
+  edge.md:69). Fix applied verbatim as suggested: README now reads "The scorer
+  is described in an unverified builder note (no backing file in this repo) as
+  calibrated on 480p/10 fps IndEgo, so the domain shift is untested"; ARCH:152
+  now reads "The domain shift from the 480p/10 fps calibration data (unverified
+  builder note — no backing file in this repo for the calibration) is untested."
+- M1 ("2-second chunks" bare fact) — confirmed. Fix applied: both README:14
+  and ARCH:22 now carry "(chunk size per unverified builder note, no backing
+  measurement on this branch)".
+- M2 (RTX 4070 specs under an "unverified" note) — qualifier retained, no
+  `nvidia-smi` backing added deliberately: this machine has `nvidia-smi`
+  (`/usr/bin/nvidia-smi`) but its output would describe the wrong machine, not
+  the measurement laptop, so citing it here would be false backing.
+- M3 (480p/10fps clause lacks pointer) — confirmed. Fix applied: README human-set
+  bullet now cites `docs/reports/edge.md:69` ("480x480, 10 fps IndEgo").
+
+Verification probes (all short, real outputs):
+
+```
+$ git rev-parse origin/main && git log -1 --format='%ad' --date=short origin/main
+68f85cc9c546aa8faa3c21ec3a300d3dbc194768
+2026-10-10
+
+$ grep -n "f58e0a1\|#52, #57\|was calibrated on 480p\|from the 480p/10 fps calibration data is" README.md docs/ARCHITECTURE.md
+(no hits — exit 1: stale pin, stale open-PR range, and both bare calibration clauses gone)
+
+$ sed -n '69p' docs/reports/edge.md
+Conditions: 30 segments x 10 s (480x480, 10 fps IndEgo, read-only),
+
+$ git status --short
+ M README.md
+ M docs/ARCHITECTURE.md
+(owned files only; no protected or other-worker files)
+```
+
+Tests (real command output):
+
+```
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 582 tests in 31.855s
+OK (skipped=8)
+```
+
+Suite fast and hang-free (unittest with timeout; no waits added — docs-only diff).
