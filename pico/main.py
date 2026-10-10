@@ -1,4 +1,4 @@
-"""Jadal QA Pico 2 firmware (MicroPython, RP2350, USB serial only - no Wi-Fi).
+"""Jadal QA Raspberry Pi Pico firmware (MicroPython, RP2040 tested; RP2350 should also work; USB serial only - no Wi-Fi).
 
 Implements the firmware half of the protocol in ``docs/SPEC.md`` at 115200 baud,
 newline-terminated ASCII:
@@ -19,7 +19,7 @@ flowing during a flash. Unknown or malformed frames are silently ignored.
 file: stock MicroPython must be able to boot it with zero extra modules.)
 
 NOT DONE (no hardware in CI, so none of this is measured/verified on-device):
-  * Never executed on a real Pico 2 from this repo; only syntax-checked and
+  * Never executed on a real Raspberry Pi Pico (RP2040 tested; RP2350 should also work) from this repo; only syntax-checked and
     logic-verified against stubs on the host (see tests/test_pico_protocol.py
     for the pure helpers, which run on CPython).
   * ``time.ticks_*`` wraparound (~2**30 ms) is handled for the flash/HB timers
@@ -32,7 +32,7 @@ import sys
 import time
 
 # ---- configuration (edit to taste) --------------------------------------- #
-ONBOARD_LED_PIN = 25             # Pico 2 built-in LED (GPIO 25)
+ONBOARD_LED_PIN = 25             # Raspberry Pi Pico (RP2040 tested; RP2350 should also work) built-in LED (GPIO 25)
 RGB_PINS = None                  # None = onboard LED only; else (r_pin, g_pin, b_pin)
                                  #   e.g. (17, 16, 18) wires an external RGB LED.
 HEARTBEAT_S = 1.0                # seconds between HB frames
