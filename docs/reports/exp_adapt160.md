@@ -114,6 +114,32 @@ the frozen baseline with a factory-grouped CI excluding 0.5 and a paired grouped
 - No **few-shot** calibration or self-training was re-run here; those numbers remain
   exploratory from Z1/Z3.
 
+## Review point (step 3) — attempted, not completed in the timebox
+
+The published review policy (Y1/Y2) is defined on the frozen **probability** `usable_prob`
+(symmetric band half-width `w = 0.16`; gate deciding the top `c = 0.45` by margin
+`|p − 0.5|`). The adapted Z3 score is an **uncalibrated signed z-score** (boundary 0), so
+re-deriving the review point on it requires a calibration to `[0,1]` — and Z3.03 showed a
+logistic calibration of these features **does not transfer** (raw logistic OOD AUROC ≈ 0.50).
+Any review% quoted on the uncalibrated score would therefore be either trivial (a percentile
+re-mapping) or misleading (a non-transferring calibration).
+
+To do it properly one must score the **1,546 unlabelled E8 windows** with the Z3 extractor.
+That needs a full-file `ffprobe` (for `ct_fsize_std`) plus a native-fps decode per window;
+under the 40-min timebox and the current pod load this exceeded budget and was stopped after
+the probe phase. Ready-to-run tooling is committed
+(`eval/exp_adapt160/extract_e8_sample.py`, `review_point.py`):
+
+```
+OMP_NUM_THREADS=2 python3 eval/exp_adapt160/extract_e8_sample.py --n 100
+OMP_NUM_THREADS=2 python3 eval/exp_adapt160/review_point.py
+```
+
+**Consequence for the claim:** the adapted score is currently a **ranking** contribution
+(AUROC), not an operating-point contribution. The review/error trade-off of the shipped
+system is unchanged and remains the frozen policy's (review 53–75%, OOD BA near chance).
+This is the main item left unproven.
+
 ## Caveats
 
 - Single human labeller; 160 windows / 47 factories; `n_bad = 22`. Egocentric-10K and
