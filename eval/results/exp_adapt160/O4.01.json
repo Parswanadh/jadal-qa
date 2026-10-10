@@ -11,7 +11,7 @@
  "protocol": "evaluation only. Per-domain z-score = target-domain mean/std (unsupervised); sign from the 150 IndEgo gold windows. Factory-grouped bootstrap CI (n_boot=2000, seed=0) is the honest CI; window bootstrap is optimistic (correlated within factory).",
  "threshold_rule": "balanced accuracy at a fixed natural threshold: 0 for the z-score combos (symmetric signed mean), 0.5 for probability heads / frozen ensemble. No OOD threshold tuning.",
  "device": "CPU (numpy/sklearn; ffmpeg/cv2 decode only, no GPU)",
- "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "git_sha": "90e4c5c0655551f141c6d6823e9934f8eb0a4c63",
  "command": "OMP_NUM_THREADS=2 python3 eval/exp_adapt160/extract160.py && OMP_NUM_THREADS=2 python3 eval/exp_adapt160/run_adapt160.py",
  "gain_vs_frozen_paired_factory_grouped_bootstrap": {
   "(a) Z3 transferable-6": {

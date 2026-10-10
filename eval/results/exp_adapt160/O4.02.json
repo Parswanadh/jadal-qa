@@ -6,7 +6,7 @@
  "label_source": "human (labels/ood160_labels.json; merge of ood_labels.json q1=60 and ood_labels2.json q2=100, single labeller; 138 good / 22 bad, 47 factories)",
  "protocol": "evaluation only. Per-domain z-score = target-domain mean/std (unsupervised); sign from the 150 IndEgo gold windows. Factory-grouped bootstrap CI (n_boot=2000, seed=0) is the honest CI; window bootstrap is optimistic (correlated within factory).",
  "device": "CPU (numpy/sklearn; ffmpeg/cv2 decode only, no GPU)",
- "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "git_sha": "90e4c5c0655551f141c6d6823e9934f8eb0a4c63",
  "z3_six": [
   {
    "feature": "ct_fsize_std",
