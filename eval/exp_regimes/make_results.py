@@ -132,36 +132,59 @@ def e403():
 
 
 def e404():
-    test_log = "/workspace/state/pids/e4_tests.log"
+    """Regenerate E4.04 by actually running the router unit tests (unittest).
+
+    The test count is parsed from the real `Ran N tests ... OK` line, so the
+    stored `n` is regenerateable; nothing is scraped from an absolute path.
+    """
+    import re
+    root = os.path.join(HERE, "..", "..")
+    cmd = [sys.executable, "-m", "unittest", "discover", "-s", "tests",
+           "-p", "test_exp_regimes_router.py"]
+    env = dict(os.environ, PYTHONNOUSERSITE="1", OMP_NUM_THREADS="1")
+    tests_run_line = "unavailable"
     passed = total = None
-    if os.path.exists(test_log):
-        import re
-        txt = open(test_log).read()
-        m = re.search(r"(\d+) passed", txt)
+    try:
+        p = subprocess.run(cmd, cwd=root, text=True, capture_output=True,
+                           env=env, timeout=120)
+        txt = p.stdout + p.stderr
+        m = re.search(r"Ran (\d+) tests?", txt)
         if m:
-            passed = int(m.group(1))
-        m = re.search(r"(\d+) failed", txt)
-        total = (passed or 0) + (int(m.group(1)) if m else 0)
+            total = int(m.group(1))
+        if p.returncode == 0 and re.search(r"^OK\b", txt, re.M):
+            passed = total
+            tests_run_line = f"Ran {total} tests ... OK"
+        elif total is not None:
+            tests_run_line = f"Ran {total} tests ... FAILED"
+    except Exception as exc:  # noqa: BLE001
+        tests_run_line = f"unavailable: {exc}"
     return {
         "id": "E4.04", "track": "E4",
         "title": "Profiles product layer: schema + 5 profiles + deterministic router",
         "verdict": "adopt",
-        "n": passed,
-        "n_note": "n = unit tests executed; router itself is deterministic over any descriptor dict",
+        "n": total,
+        "n_note": "n = unit tests executed (unittest discover of tests/test_exp_regimes_router.py); "
+                  "router itself is deterministic over any descriptor dict",
         "label_source": "n/a — synthetic descriptors + E4.01 ranges",
         "protocol": ("unit tests on synthetic descriptors; determinism; UNSEEN_REGIME "
-                     "fallback; profile schema conformance"),
+                     "fallback (incl. out-of-range clip_frac/temp_energy); profile "
+                     "schema conformance"),
         "ci95": "n/a — deterministic router",
         "device": DEVICE,
-        "cost": "10 unit tests < 0.5 s, no video, no network",
-        "command": "python3 -m pytest tests/test_exp_regimes_router.py -q",
+        "cost": f"{total} unit tests < 0.5 s, no video, no network",
+        "command": "python3 eval/exp_regimes/make_results.py",
+        "test_command": "python3 -m pytest tests/test_exp_regimes_router.py -q",
         "git_sha": sha(),
+        "tests_run_line": tests_run_line,
         "tests_passed": passed, "tests_total": total,
         "profiles": sorted(os.path.basename(p)[:-5] for p in
                            __import__("glob").glob(os.path.join(HERE, "..", "..", "profiles", "*.json"))
                            if not p.endswith("schema.json")),
         "router": "jadal/regimes/router.py::choose_profile -> {profile, margin, reasons, unseen_regime}",
         "receipt_fields": ["profile", "router_margin", "router_reasons", "unseen_regime", "descriptors_sha"],
+        "receipt_wired": False,
+        "receipt_note": ("receipt_fragment() returns a helper dict only; it is NOT yet "
+                         "wired into the product QA receipt builder"),
     }
 
 

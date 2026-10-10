@@ -17,7 +17,7 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 | E4.01 | E4 | done | adopt | Regime descriptors: IndEgo vs Egocentric-10K domain-shift diagnosis (re-derived) | 150 IndEgo gold windows (human) + 60 OOD labelled (human, 9  / 480x480/10fps H264 (IndEgo) vs 1080p/30 HEVC (OOD src) vs 854x480/30 (OOD tc) vs 854x480/10 (queue2) |
 | E4.02 | E4 | done | drop | Regime-specific vs global models within IndEgo (nested LOCO) | 150 IndEgo gold windows, human labels, leave-one-clip-out ov / terciles of sharpness/lighting/motion |
 | E4.03 | E4 | done | drop | Domain-gap control: re-encode to the IndEgo spec (480x480/10fps) | 60 OOD queue-1 windows (human labels, 9 bad); paired source  / 480x480/10 H264 vs 1080p/30 HEVC vs 854x480/30 H264 |
-| E4.04 | E4 | done | adopt | Profiles product layer: schema + 5 profiles + deterministic router | synthetic descriptors + E4.01 descriptor ranges (n=670) / all |
+| E4.04 | E4 | done | adopt | Profiles product layer: schema + 5 profiles + deterministic router | synthetic descriptors + E4.01 descriptor ranges (n=730, from / all |
 
 ## E0.01 — Label persistence and position bias on IndEgo gold
 - **Why:** Test whether sparse window sampling or skipping clip starts is justified
@@ -178,11 +178,11 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 ## E4.04 — Profiles product layer: schema + 5 profiles + deterministic router
 - **Why:** Builder requires a customisable product that adapts pipeline to whatever data type it receives
 - **Hypothesis:** Rule-based router on descriptors selects the right profile with a margin and falls back safely on unseen regimes
-- **Data / label source:** synthetic descriptors + E4.01 descriptor ranges (n=670)
+- **Data / label source:** synthetic descriptors + E4.01 descriptor ranges (n=730, from eval/results/exp_regimes/E4.01.json; matches the 150+60+60+100+300+60 pool incl. the 60 E4.03 IndEgo-spec re-encodes)
 - **Regime:** all
 - **Method:** profiles/schema.json, 5 profiles, jadal/regimes/router.py::choose_profile, >=9 unit tests (<30s, no video)
-- **Owner / started / finished:** experimenter-a3 / 2026-10-10 15:18 / 2026-10-10 15:30
-- **Verdict:** adopt — Deterministic router choose_profile + 5 profiles + schema; 10/10 unit tests pass in 0.09 s (synthetic descriptors, determinism, UNSEEN_REGIME -> default, schema conformance). Receipt records profile, margin, reasons, unseen_regime, descriptors_sha. Thresholds calibrated on E4.01 ranges (n=730).
-- **Decision:** Ship router + profiles; product selects profile per descriptor regime per window
-- **Cost:** 10 unit tests <0.5 s, no video, no network
+- **Owner / started / finished:** experimenter-a3 / 2026-10-10 15:18 / 2026-10-10 15:50
+- **Verdict:** adopt — Deterministic router choose_profile + 5 profiles + schema; 13/13 unit tests pass ('Ran 13 tests ... OK', unittest.TestCase + pytest, regenerateable via eval/exp_regimes/make_results.py). UNSEEN_REGIME fallback now range-checks the descriptors the rules decide on (clip_frac<=0.85, temp_energy<=0.40, static_frac in [0,1]) so e.g. clip_frac=0.9 or temp_energy=2.0 -> default. receipt_fragment() returns a helper dict; it is NOT yet wired into the product QA receipt. Thresholds calibrated on the E4.01 pool n=730 (from E4.01.json; includes the 60 E4.03 re-encodes).
+- **Decision:** Ship router + profiles; product selects profile per descriptor regime per window; wire receipt_fragment into the receipt builder in a later change
+- **Cost:** 13 unit tests <0.5 s, no video, no network
 - **Results:** eval/results/exp_regimes/E4.04.json

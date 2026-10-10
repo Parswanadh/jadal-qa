@@ -18,7 +18,7 @@
  "device": "CPU (pod); no GPU used",
  "cost": "730 windows x 8 frames; CPU only; no GPU",
  "command": "python3 eval/exp_regimes/analyze_regimes.py --part diagnosis",
- "git_sha": "8b08bc0373db63c65d312ec09e2b03728c9dcae3",
+ "git_sha": "4db730a9c542e2ce63f8cd138f7de3cc931afc02",
  "codec_mix": {
   "indego": {
    "h264": 150

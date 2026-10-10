@@ -26,7 +26,9 @@ deterministic descriptors`.
 
 **Ranked separators, IndEgo vs OOD-source (Cohen's d).** Container descriptors
 separate *exactly by construction* (width/height/fps `d = +inf`, codec
-H.264↔HEVC). The interesting separators are content:
+H.264↔HEVC). The OOD side is the human-labelled OOD-60 set (**n = 60,
+n_bad = 9 — exploratory**); these are *descriptor* differences, not evidence of
+a transfer improvement. The interesting separators are content:
 
 | descriptor | d(IndEgo vs OOD-src) | d(IndEgo vs Ego10K) |
 |---|---|---|
@@ -81,9 +83,13 @@ the container does not fix the content gap.
 `profiles/schema.json` + 5 profiles (`clear_stationary`, `blurry_lowlight`,
 `walking_logistics`, `factory_1080p30`, `default`) and the deterministic router
 `jadal/regimes/router.py::choose_profile(descriptors) -> {profile, margin,
-reasons, unseen_regime}`. Out-of-training-range descriptors →
-`UNSEEN_REGIME` → `default`. `receipt_fragment()` records profile, margin,
-reasons, unseen flag and the descriptor `_sha256` in the QA receipt.
+reasons, unseen_regime}`. Any descriptor outside the E4.01-observed ranges →
+`UNSEEN_REGIME` → `default`; the checked ranges now cover the keys the rules
+decide on (`clip_frac` ≤ 0.85, `temp_energy` ≤ 0.40, `static_frac` ∈ [0, 1]),
+so out-of-pool values such as `clip_frac = 0.9` or `temp_energy = 2.0` fall
+back instead of silently routing. **`receipt_fragment()` returns a helper dict
+(profile, margin, reasons, unseen flag, descriptor `_sha256`) but is NOT yet
+wired into the product QA receipt builder** — no receipt records it today.
 
 **How the product selects a profile per data type (builder requirement d):**
 each 10-s window is described once (E4.01 descriptors, ~8 frames, no GPU); the
@@ -93,11 +99,14 @@ router then applies ordered rules — (1) native high-res/high-fps
 (`sharp_norm≤2500` or `luma_mean≤0.24` or `clip_frac≥0.30`) → `blurry_lowlight`;
 (4) otherwise → `clear_stationary`; any descriptor outside the observed ranges →
 `default` + `UNSEEN_REGIME`. `margin` reports the distance to the deciding
-boundary. Thresholds were calibrated on the E4.01 ranges (n = 730).
+boundary. Thresholds were calibrated on the E4.01 window pool, **n = 730**
+(from `E4.01.json`; that count includes the 60 E4.03 IndEgo-spec re-encodes).
 
-Unit tests: **10/10 pass in 0.09 s** (`python3 -m pytest
-tests/test_exp_regimes_router.py -q`; synthetic descriptors, determinism,
-unseen fallback, schema conformance; no video, no network).
+Unit tests: **13/13 pass in 0.08 s** (`python3 -m pytest
+tests/test_exp_regimes_router.py -q`; also `python3 -m unittest discover -s
+tests` collects them — `unittest.TestCase` classes, paths anchored to
+`__file__`; synthetic descriptors, determinism, out-of-range `clip_frac` /
+`temp_energy` fallback, schema conformance; no video, no network).
 
 ## Verdicts
 
@@ -105,13 +114,14 @@ unseen fallback, schema conformance; no video, no network).
 |----|---------|----------|
 | E4.01 | adopt | content separators exist but sharpness overlaps; container is by construction |
 | E4.02 | drop | no regime split beats global under the same folds (best +0.125 [−0.10,0.35]) |
-| E4.03 | drop | IndEgo-spec re-encode shrinks only 6/18 content gaps; frozen OOD AUROC 0.415 (n_bad=9) |
-| E4.04 | adopt | 5 profiles + deterministic router + 10/10 tests |
+| E4.03 | drop | IndEgo-spec re-encode shrinks only 6/18 content gaps; frozen OOD AUROC 0.415 (n=60, n_bad=9, exploratory) |
+| E4.04 | adopt | 5 profiles + deterministic router + 13/13 tests (receipt fragment not yet wired) |
 
 ## Limitations
 
-- OOD set is small (n_bad = 9) and window-level CIs there would be optimistic;
-  no OOD AUROC is claimed as a quality measure.
+- OOD set is small (n = 60, n_bad = 9) and window-level CIs there would be
+  optimistic; no OOD AUROC is claimed as a quality measure, and descriptor
+  differences are not claimed as a transfer improvement.
 - The E4.02 global AUROC (feat26 0.712) uses this experiment's fixed C=0.01 and
   is not the same setting as the documented 0.810 baseline (CI overlaps it).
 - `ood_frames.npz` is missing, so the EG2 cluster-distance view was not rerun.

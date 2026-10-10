@@ -3,17 +3,19 @@
  "track": "E4",
  "title": "Profiles product layer: schema + 5 profiles + deterministic router",
  "verdict": "adopt",
- "n": 10,
- "n_note": "n = unit tests executed; router itself is deterministic over any descriptor dict",
+ "n": 13,
+ "n_note": "n = unit tests executed (unittest discover of tests/test_exp_regimes_router.py); router itself is deterministic over any descriptor dict",
  "label_source": "n/a \u2014 synthetic descriptors + E4.01 ranges",
- "protocol": "unit tests on synthetic descriptors; determinism; UNSEEN_REGIME fallback; profile schema conformance",
+ "protocol": "unit tests on synthetic descriptors; determinism; UNSEEN_REGIME fallback (incl. out-of-range clip_frac/temp_energy); profile schema conformance",
  "ci95": "n/a \u2014 deterministic router",
  "device": "CPU (pod); no GPU used",
- "cost": "10 unit tests < 0.5 s, no video, no network",
- "command": "python3 -m pytest tests/test_exp_regimes_router.py -q",
- "git_sha": "20f768c318f24773807f87f9a9632aecae5ff8f1",
- "tests_passed": 10,
- "tests_total": 10,
+ "cost": "13 unit tests < 0.5 s, no video, no network",
+ "command": "python3 eval/exp_regimes/make_results.py",
+ "test_command": "python3 -m pytest tests/test_exp_regimes_router.py -q",
+ "git_sha": "4db730a9c542e2ce63f8cd138f7de3cc931afc02",
+ "tests_run_line": "Ran 13 tests ... OK",
+ "tests_passed": 13,
+ "tests_total": 13,
  "profiles": [
   "blurry_lowlight",
   "clear_stationary",
@@ -28,5 +30,7 @@
   "router_reasons",
   "unseen_regime",
   "descriptors_sha"
- ]
+ ],
+ "receipt_wired": false,
+ "receipt_note": "receipt_fragment() returns a helper dict only; it is NOT yet wired into the product QA receipt builder"
 }

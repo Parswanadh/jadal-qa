@@ -1,4 +1,11 @@
-# E4 regimes + profiles — experiment report
+# E4 regimes + profiles — experiment report (SUPERSEDED)
+
+> **SUPERSEDED — do not cite.** This laptop-era draft predates the pod re-run
+> and is kept only for history. It still marks E4.01–E4.03 "pending" and
+> incorrectly calls the queue-1 set a "480p/10fps transcode" (it is
+> **480p/30fps**). The authoritative, finished report is
+> **[`docs/reports/exp_regimes_pod.md`](exp_regimes_pod.md)** (results in
+> `eval/results/exp_regimes/E4.01.json` … `E4.04.json`).
 
 Track E4 (exp-regimes). Builder intent: "for blurry data one algorithm/model,
 for clear data another; we should be able to differentiate or select between

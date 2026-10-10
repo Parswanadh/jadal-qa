@@ -1,15 +1,18 @@
 """Deterministic profile router (E4.04).
 
 choose_profile(descriptors) -> dict(profile, margin, reasons, unseen_flag).
-Rule-based, thresholds calibrated on E4.01 data (n=670 windows: 150 IndEgo
-gold + 60 OOD paired transcode/source + 100 queue-2 + 300 Ego10K sample;
-see eval/results/exp_regimes/diagnosis.json).
+Rule-based, thresholds calibrated on the E4.01 window pool
+(n=730 = 150 IndEgo gold + 60 OOD-60 on the 480p/30 transcode + 60 OOD-60 on
+the 1080p/30 source + 100 queue-2 transcodes + 300 Ego10K sample + 60 E4.03
+IndEgo-spec re-encodes; the single source of truth for n is
+eval/results/exp_regimes/E4.01.json).
 Falls back to 'default' + UNSEEN_REGIME when descriptors are out of training range.
-The decision (profile + margin + descriptors sha) is part of the receipt.
+receipt_fragment() returns a helper dict for a future QA receipt; it is NOT yet
+wired into the product receipt builder.
 """
 from __future__ import annotations
 
-# E4.01 calibration notes (combined n=670 unless noted):
+# E4.01 calibration notes (combined n=730, from E4.01.json, unless noted):
 #  sharp_norm: IndEgo p10=4345, OOD-src p33=2394 -> lo=2500 catches the soft tail
 #  luma_mean: datasets separate at ~0.40 (IndEgo p90=0.387, OOD p10=0.407);
 #             within-480p darkness = IndEgo p10 -> lo=0.24
@@ -28,20 +31,24 @@ THRESHOLDS = {
     "clip_hi": 0.30,           # clip_frac >= -> blurry_lowlight
 }
 
-# Observed [min, max] over the E4.01 window pool (rounded outward).
-# A window outside ANY of these is UNSEEN_REGIME -> 'default'.
+# Observed [min, max] over the E4.01 window pool (rounded outward). Bounds for
+# the descriptor keys that the rules actually decide on are included, not only
+# the container keys: a window outside ANY listed range is UNSEEN_REGIME ->
+# 'default' (clip_frac observed [0.0037, 0.822] -> hi 0.85;
+#  temp_energy observed [0.0217, 0.376] -> hi 0.40; static_frac is a fraction,
+#  structurally within [0, 1]). See eval/results/exp_regimes/E4.01.json.
 TRAINING_RANGES = {
     "width": [480, 1920],
     "height": [480, 1080],
     "fps": [10.0, 30.0],
     "sharp_norm": [150.0, 55000.0],
     "luma_mean": [0.05, 0.65],
+    "clip_frac": [0.0, 0.85],
+    "temp_energy": [0.0, 0.40],
+    "static_frac": [0.0, 1.0],
     "shift_mean": [0.0, 230.0],
     "noise_sigma": [0.0, 0.015],
 }
-
-KEYS = ("width", "fps", "shift_mean", "static_frac",
-        "sharp_norm", "luma_mean", "clip_frac")
 
 
 def _get(d, k, default=0.0):
@@ -60,7 +67,6 @@ def choose_profile(d):
     reasons = []
     unseen = []
     for k, (lo, hi) in TRAINING_RANGES.items():
-        v = _get(d, k, None if k in d else lo)
         if k in d and not (lo <= _get(d, k) <= hi):
             unseen.append(f"{k}={_get(d, k):.4g} outside [{lo},{hi}]")
     if unseen:
@@ -112,7 +118,7 @@ def choose_profile(d):
 
 
 def receipt_fragment(d, decision):
-    """Evidence fragment for the QA receipt."""
+    """Helper fragment for a future QA receipt (NOT yet wired in)."""
     return {"profile": decision["profile"],
             "router_margin": decision["margin"],
             "router_reasons": decision["reasons"],
