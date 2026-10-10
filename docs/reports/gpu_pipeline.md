@@ -120,6 +120,10 @@ batch/VRAM sweep at T=300 (proc ≤4.5 GiB); F2 = ≥12-min sustained end-to-end
 (NVDEC → GPU convert → kernels → S0 exact + S1 exploratory). Numbers land here
 when the lock frees (queued 16:57 behind harness EG2 job).
 
+INTERIM (measured, no lock needed): single-core CPU HEVC 1080p→160×90 =
+**52 fps, RTF 1.74** (`factory_cpu_baseline.json`, exact bytes). NVDEC must
+beat this; 480p-H.264 CPU did 710 fps (RTF 71) — HEVC/1080p is the demanding case.
+
 ## 7. Telemetry (1 Hz, `logs/gpu_telemetry.csv`; columns: timestamp, power.draw,
 
 R3a window (≈16:19–16:26 IST, n=394 rows): power mean **9.9 W** (max 33.9),
