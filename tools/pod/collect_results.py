@@ -71,9 +71,22 @@ def result_files(wt: str):
     return seen
 
 
+def bundle_lookup(rf: str, bundle: str) -> str | None:
+    """The historical (laptop) registry points at absolute laptop paths. The same JSON files
+    are shipped inside the data bundle; find them by basename under <bundle>/local_work."""
+    if not rf or not bundle:
+        return None
+    base = os.path.basename(rf)
+    for root in (os.path.join(bundle, "local_work"), os.path.join(bundle, "experiments_local"), bundle):
+        for p in glob.glob(os.path.join(root, "**", base), recursive=True):
+            return p
+    return None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--wt", nargs="+", required=True)
+    ap.add_argument("--bundle", default=os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle"))
     ap.add_argument("--json-out", default=None)
     a = ap.parse_args()
 
@@ -102,10 +115,22 @@ def main() -> int:
                     nums = flatten_numbers(d)
                 except Exception as ex:  # noqa: BLE001
                     problems.append(f"{name}:{eid}: unreadable results file {cand} ({ex})")
-            if e.get("status") == "done" and not exists:
-                problems.append(f"{name}:{eid}: status=done but NO results file ({rf!r})")
-            if exists and "n" not in nums and "n." not in " ".join(nums):
-                problems.append(f"{name}:{eid}: results file has no n")
+            elif rf:
+                found = bundle_lookup(rf, a.bundle)
+                if found:
+                    cand = found
+                    exists = True
+                    try:
+                        nums = flatten_numbers(json.load(open(found)))
+                    except Exception:  # noqa: BLE001
+                        pass
+                    problems.append(f"{name}:{eid}: results file relocated to the bundle: {found}")
+                else:
+                    problems.append(f"{name}:{eid}: status={e.get('status')} but NO results file ({rf!r})")
+            elif e.get("status") == "done":
+                problems.append(f"{name}:{eid}: status=done but no results path recorded")
+            if exists and not nums:
+                problems.append(f"{name}:{eid}: results file has no recognised numbers (n/auroc/...)")
             rows.append(
                 {
                     "worktree": name,
@@ -114,8 +139,10 @@ def main() -> int:
                     "status": e.get("status"),
                     "verdict": e.get("verdict"),
                     "title": (e.get("title") or "")[:60],
-                    "results_file": os.path.relpath(cand, wt) if cand and os.path.exists(cand) else None,
-                    "numbers": nums,
+                    "results_file": (
+                        os.path.relpath(cand, wt) if cand and os.path.exists(cand) and str(cand).startswith(wt)
+                        else (cand if cand and os.path.exists(cand) else None)
+                    ),                    "numbers": nums,
                     "summary": (e.get("summary") or "")[:200],
                 }
             )
