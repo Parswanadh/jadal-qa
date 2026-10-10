@@ -47,32 +47,31 @@ Not touched: `jadal/signals.py`, `jadal/decision*.py`, `jadal/funnel.py`,
 
 ## Results (every number from `eval/results/integration3_demo.json`)
 
-STATUS 16:45 IST: the full demo is queued on the shared-GPU lock behind
-four other workers' holds (frames10k, gpu-throughput, spectral-E, gpu-e2e;
-this demo waited 14+ min at last check) and has not yet completed. Below
-is what is PROVEN so far; the JSON + full B3 numbers land when the lock
-frees, before 17:50. Nothing below is projected: each line says how it
-was measured.
+FINAL 17:35 IST (demo run 3, after the ingest-guard fix):
 
-- Suite: `PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests`
-  => `Ran 564 tests in 212.654s -- OK (skipped=3)` (no GPU, no network;
-  slow wall time is shared-machine CPU contention; 37.8 s unloaded).
-- Fresh-clone quickstart (goal 5, PROVEN 17:00 IST): `git clone
-  https://github.com/Parswanadh/jadal-qa.git` + `git checkout
-  feat/integration3` outside the repo, then the README commands:
-  suite => `Ran 564 tests in 63.523s -- OK (skipped=9)` with NO models
-  present (9 skips vs 3: the model-gated tests skip cleanly, nothing
-  fails); `bash scripts/demo.sh` without models prints the per-file
-  MISSING list + fetch pointers and exits 1 (verified `demo exit=1`),
-  never stubs silently. models/ contents are git-ignored by design.
-- Real-pipeline processing (demo run 1, killed by the no-stub assertion
-  on a key-spelling bug of mine, since fixed): 7 clips -> 115 segments
-  -> 115 receipts through real segmenter + real L0 (mediapipe) + real
-  EG2 decider + `funnel.route`. After the fix, `receipt_problems()` is
-  `[]` on every one of those 115 receipts (checked offline from the
-  saved `data_runtime/demo_receipts.json` before run 2 wiped it).
-  Verdict split: 114 review / 1 reject (placeholder calibration gates
-  every accept to review; expected, not a failure).
+- `n_clips=7` -> `n_batches=23` -> `n_receipts=113`,
+  `verdict_counts={review: 113}`, `batch_decisions={ACCEPT: 23}`.
+  All-review is the placeholder calibration (accept gate closed), not a
+  failure; the batch rule (`reject if rejected_count > k`, k=1) accepted
+  every batch with zero rejects.
+- No-stub assertion: `receipt_problems()` empty on all 113 receipts.
+- Re-verify: MATCH 113/113 via `POST /receipts/{id}/reverify`, all with
+  `versions_match=True`. Tampered receipt FAILS `verify_receipt.py`
+  (exit 1); clean receipt passes (exit 0).
+- Determinism (CPU fallback, `device=cpu` recorded): 10 repeated full
+  runs on the 94.5 s clip (5 segments) => IDENTICAL receipt_sha256 per
+  segment (`45e6611ade3bbbe5...`); alone vs batch-of-5 => IDENTICAL;
+  re-verify MATCH 5/5. GPU determinism phase was still queued on the
+  shared lock at assembly time (flagged `gpu_run_pending` in the JSON);
+  fresh GPU embeds were separately proven bit-identical (maxabs 0.0).
+- Latency (CPU steady-state, cache-warm): signals 1.523 s/segment,
+  decider 0.544 s/segment => 1742.3 segments/hour; dock-to-drained wall
+  249.4 s for 7 clips on this x86 laptop (shared GPU, NOT a Pi).
+- `device=cuda:NVIDIA GeForce RTX 4070 Laptop GPU`, `arch=x86_64`
+  in every receipt (cross-architecture determinism NOT claimed).
+- Suite: `Ran 564 tests in 212.654s -- OK (skipped=3)` (37.8 s
+  unloaded); fresh clone: `Ran 564 tests in 63.523s -- OK (skipped=9)`
+  with no models, and the demo refuses without models (exit 1).
 - GPU spot check (under flock, `Decider(..., use_cache=False)`):
   same frame embedded twice fresh on CUDA => max abs diff `0.0`
   (bit-identical, per-frame batch size 1 as SPEC requires);
@@ -80,34 +79,44 @@ was measured.
   (model load), second 0.10 s; decide 1.4 s/segment. Heads:
   `hands_ok=3d9b5c0b8da0ea9e,active_work=260657b5a9bb0dd8`
   (full-splits provenance), step prototypes present, frames_decoded 4.
-- `device` recorded as `cuda:NVIDIA GeForce RTX 4070 Laptop GPU`;
-  `arch: x86_64` (cross-architecture determinism explicitly NOT claimed).
-- PENDING (demo run 2, same code + fixed assertion): re-verify MATCH on
-  all receipts via the API, tampered receipt FAILS, 10x identical
-  receipt_sha256 per segment, alone-vs-batch-of-5 identical,
-  `eval/results/integration3_demo.json` with per-stage latency.
-- B3 PROVEN ON CPU 17:15 IST (GPU lock still queued; house-rule CPU
-  fallback, `device=cpu` recorded): `CUDA_VISIBLE_DEVICES=""` +
-  `.scratch/cpu_determinism.py` (EG2 embedding cache warm from the GPU
-  run, `_get_model` guarded to abort loudly on any cache miss — none
-  occurred; torch confirms `cuda.is_available()==False`, so no GPU was
-  touched and no lock was needed) on the shortest IndEgo clip
-  (94.5 s -> 5 segments, real segmenter/signals/decider/funnel):
-  10 repeated full runs => IDENTICAL receipt_sha256 on all 5 segments
-  (hash `45e6611ade3bbbe5...`); alone (batch of 1) vs in a batch of 5
-  => IDENTICAL; re-verify (pinned pipeline on the segment bytes) =>
-  MATCH 5/5; tampered receipt => `verify_receipt.py` exit 1 (hash
-  MISMATCH named), clean receipt => exit 0. Per-stage latency:
-  signals 1.523 s/seg, decider 0.544 s/seg (cache-warm), 1742.3
-  segments/hour steady-state on this x86 laptop. Source:
-  `.scratch/cpu_det.json` (regenerable with the command above; its
-  contents fold into `eval/results/integration3_demo.json` when the
-  GPU demo completes). The remaining GPU-run claim is same-hashes-on
-  -cuda; the CPU proof stands on its own with `device=cpu`.
+- Fresh-clone quickstart (PROVEN 17:00 IST): `git clone
+  https://github.com/Parswanadh/jadal-qa.git` + `git checkout
+  feat/integration3`, suite green with NO models (9 skips, nothing
+  fails); `bash scripts/demo.sh` without models prints the per-file
+  MISSING list + fetch pointers and exits 1, never stubs silently.
+
+Superseded interim notes: run 1 gave 115 receipts (114 review /
+1 reject) before the key-spelling assertion bug (fixed); run 2 gave
+116 receipts with 3 transient `segment_sha256` MISMATCHes (the ingest
+race, fixed — see section below). Run 3 is the clean record.
 
 - Command: `flock -w 3600 tools/gpu.lock bash scripts/demo.sh`
   (demo holds the lock only across the service phase and the
   determinism phase; JSON assembly is offline).
+
+## Determinism incident: concurrent same-clip ingest tore segment bytes
+
+Demo run 2 (full service phase, 7 clips -> 116 receipts) re-verified
+113/116 MATCH and 3 MISMATCH, all with `diff == ['segment_sha256']`
+(signals/decisions/verdicts identical: the bytes changed under a
+pixel-identical decode, i.e. a rewrite). Evidence of concurrent
+processing of the same bytes: 31 batches closed in ~2 min (three of
+them 0.25 s apart — impossible sequentially at ~2 s/segment signals +
+~1.4 s/segment decider), 116 receipts over 113 stored segments.
+Mechanism: `handle_clip` marked a clip ingested only AFTER the
+minutes-long `process_clip` returned, so the dock POST and the bucket
+watcher (or two request threads) ran the segmenter concurrently into
+the same segment files. Fixed in owned `jadal/service.py`: an
+`_in_flight` set of real paths under the service lock; a concurrent
+second ingest of the same path returns the duplicate shape instead of
+reprocessing (regression test
+`TestConcurrentIngest.test_concurrent_same_clip_processes_once`).
+Demo run 3 (after the fix) is the clean B2/B3 record below.
+
+Note on `versions_match=False` in run 2: the ONLY differing key was
+`repo_git_sha` — interim report commits landed mid-run and moved HEAD.
+The receipt hashes still MATCHED (versions are stored verbatim); the
+flag correctly reported the stack moved. No commits land mid-run again.
 
 ## Defects in other modules (not fixed; minimal reproductions)
 

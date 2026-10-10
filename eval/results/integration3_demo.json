@@ -1,0 +1,81 @@
+{
+  "baseline": "B2/B3/B5/B7",
+  "batch_decisions": {
+    "ACCEPT": 23
+  },
+  "commands": [
+    "flock -w 3600 tools/gpu.lock bash scripts/demo.sh",
+    "PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests"
+  ],
+  "created_utc": "2026-10-10T12:03:22.549967+00:00",
+  "determinism": {
+    "alone_vs_batch5_identical": true,
+    "device": "cpu (fallback; CUDA_VISIBLE_DEVICES empty, EG2 cache warm)",
+    "gpu_run_pending": true,
+    "note": "CPU proof from .scratch/cpu_determinism.py; GPU determinism phase queued on the shared lock at assembly time",
+    "ten_runs_hash_prefix": "45e6611ade3bbbe5",
+    "ten_runs_identical": true,
+    "ten_runs_n_segments": 5
+  },
+  "device_label": "x86 laptop, shared GPU, NOT a Pi",
+  "dock_to_batches_wall_s": 249.4,
+  "latency": {
+    "decider_s_per_seg": 0.544,
+    "note": "CPU steady-state, EG2 embedding cache warm (GPU-computed)",
+    "segments_per_hour": 1742.3,
+    "signals_s_per_seg": 1.523
+  },
+  "n_batches": 23,
+  "n_clips": 7,
+  "n_receipts": 113,
+  "notes": [
+    "Every receipt ran on real modules: receipt_problems() is empty for all receipts.",
+    "Cross-architecture determinism is NOT claimed (arch recorded in versions).",
+    "Thresholds are placeholders (configs/funnel_thresholds.json, status placeholder)."
+  ],
+  "reverify": {
+    "matched": 113,
+    "note": "all MATCH via the API with versions_match=True (no mid-run commits)",
+    "total": 113,
+    "versions_match": true
+  },
+  "tamper": {
+    "clean_receipt_passes": true,
+    "tampered_receipt_fails": true
+  },
+  "verdict_counts": {
+    "review": 113
+  },
+  "versions": {
+    "arch": "x86_64",
+    "certify": "jadal.certify",
+    "certify_git_sha": "c6f60f1e5b4341be1c82b4a58d2643920538f327",
+    "decider_decider_hands": "decider_hands.npz:sha256:3d9b5c0b8da0ea9e34bc4cd064baf04c4cafdf7ab172004f69b6446772ce9d4f",
+    "decider_decider_step_prototypes": "decider_step_prototypes.npz:sha256:dbf6b5ca8e480e5fe04bb44ec4f9128a60e0abe91a98cb0143055e27cec30e07",
+    "decider_decider_work": "decider_work.npz:sha256:260657b5a9bb0dd8240afed8a862c9065ffa533f48fb3f0969facc4df2ce8395",
+    "decision": "jadal.decision",
+    "decision_git_sha": "2fb259bd445c1debbbfcebc510f831e9f6a05fb7",
+    "device": "cuda",
+    "eg2_weights": "model.safetensors:sha256:197a32965d4b1105faf060417baa899e193fb73cd401f42ec9295234d5553d79",
+    "face_detector_task": "blaze_face_short_range.tflite:sha256:b4578f35940bf5a1a655214a1cce5cab13eba73c1297cd78e1a04c2380b0152f",
+    "funnel": "jadal.funnel",
+    "funnel_git_sha": "5c0d7b4ab111abb159ac4baf19942d56702a4c18",
+    "gpu_name": "NVIDIA GeForce RTX 4070 Laptop GPU",
+    "hand_landmarker_task": "hand_landmarker.task:sha256:fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+    "mediapipe_version": "1.1.0",
+    "numpy_version": "2.5.2",
+    "opencv_version": "5.0.0",
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "python": "3.12.15",
+    "receipts": "jadal.receipts",
+    "receipts_git_sha": "5919760860f940f9e2e97144321d492443e9225f",
+    "repo_git_sha": "4f76f8c207e3177fd0e91a7dda94bda29550952a",
+    "segmenter": "jadal.segmenter",
+    "segmenter_git_sha": "e78a9e69933dd36a856c97387995f90cbfb2bd07",
+    "signals": "jadal.signals",
+    "signals_backend": "{\"face_model_sha256\":\"b4578f35940bf5a1a655214a1cce5cab13eba73c1297cd78e1a04c2380b0152f\",\"faces_backend\":\"mediapipe\",\"hand_model_sha256\":\"fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1\",\"hands_backend\":\"mediapipe\",\"mediapipe_version\":\"1.1.0\",\"opencv_version\":\"5.0.0\"}",
+    "signals_git_sha": "63de6ced9efa9cef2bc9ebd32995bd8fdecb96ae",
+    "torch_version": "2.14.1+cu130",
+    "transformers_version": "5.19.0"
+  }
+}
