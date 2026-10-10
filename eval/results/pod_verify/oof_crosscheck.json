@@ -1,0 +1,43 @@
+{
+ "source": "caches/ensemble/oof_probs.npz (independent of features.json/segments.npz)",
+ "n": 150,
+ "n_bad": 50,
+ "label_source": "human gold IndEgo",
+ "protocol": "AUROC of stored OOF probabilities vs gold labels; rank-avg recomputed here",
+ "auroc": {
+  "p_eg2": 0.8458,
+  "p_pixel": 0.7916,
+  "p_ens": 0.8336,
+  "p_platt": 0.7988,
+  "p_isotonic": 0.805
+ },
+ "rank_avg_recomputed": 0.844,
+ "claimed": {
+  "p_eg2": 0.848,
+  "p_pixel": 0.81,
+  "p_ens": 0.853,
+  "rank_avg": 0.856
+ },
+ "cross_artifact_agreement": true,
+ "interpretation": "oof_probs.npz holds the NESTED OOF probabilities (C chosen by inner LOCO per outer fold), not the fixed-hyperparameter ones. Recomputing AUROC straight from these stored probabilities reproduces the published NESTED values exactly: EG2 0.8458 (published 0.846), pixel 0.7916 (0.792), prob-avg 0.8336 (0.834), rank-avg recomputed here 0.8440 (0.844). The slightly higher non-nested figures (0.848 / 0.810 / 0.853 / 0.856) come from the fixed-C experiment (tools/port/ensemble_views_exploratory.py) which I verified separately. So BOTH families are now reproduced: the nested set from raw probabilities (this file), the non-nested set from the feature/embedding caches. The earlier caveat that the nested AUROCs 'could not be recomputed from scratch because the raw probs are not in the artifact' is RETRACTED - they are, and they agree.",
+ "nested_reproduced": {
+  "p_eg2": 0.8458,
+  "p_pixel": 0.7916,
+  "p_ens": 0.8336,
+  "rank_avg_recomputed": 0.844,
+  "claimed_nested": {
+   "eg2": 0.846,
+   "pixel": 0.792,
+   "prob_avg": 0.834,
+   "rank_avg": 0.844
+  },
+  "match": true
+ },
+ "non_nested_reference": {
+  "eg2": 0.848,
+  "pixel": 0.81,
+  "prob_avg": 0.853,
+  "rank_avg": 0.856,
+  "source": "ensemble_views_exploratory.py, verified separately"
+ }
+}
