@@ -192,7 +192,7 @@ def retrain_variants(flagged_ids):
     out["auroc_drop"] = run(drop)
     out["auroc_downweight025"] = run(np.ones(len(ida), bool),
                                      weight_flagged=0.25)
-    out["auroc_all_sameproto"] = run(np.ones(len(ida), bool), soft=False)
+    out["auroc_all_sameproto"] = run(np.ones(len(ida), bool))
     out["auroc_all_m2_LR"] = float(m2["activity"]["auroc_lr"])
     return out
 
