@@ -27,7 +27,7 @@
  "decode_ms_per_frame": 5.688,
  "device": "A40 (pod host); decode=CPU cv2 160x90, features=CPU float64",
  "command": "OMP_NUM_THREADS=1 eval/exp_fps/run_fps.py --mode select --shard {0,1}/2 && python3 eval/exp_fps/merge_e1_04.py",
- "git_sha": "f20013b",
+ "git_sha": "3c6d713",
  "rows": [
   {
    "strategy": "uniform20",

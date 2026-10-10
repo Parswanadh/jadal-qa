@@ -1,0 +1,403 @@
+{
+ "experiment": "E1.cost",
+ "n_rows": 16,
+ "device": "A40 (pod host); decode=CPU cv2 160x90 (cv2 threads=1), features=CPU float64 reference, OMP_NUM_THREADS=1",
+ "cost_note": "clean_ms = min over 3 reps x 3 bench runs of one representative window (OMP_NUM_THREADS=1, cv2 threads=1); the shard-run means in E1.01/E1.03/E1.04.json are 2-4x slower because the pod is shared. Host load average at bench: 15.8",
+ "bench_spread": {
+  "n_bench_runs": 3,
+  "n_reps_each": 3,
+  "indego_decode_ms_per_frame": [
+   1.2911,
+   3.7127
+  ],
+  "ood_decode_ms_per_frame": [
+   10.0119,
+   10.1277
+  ],
+  "indego_feat_ms_per_frame": [
+   2.5225,
+   3.1534
+  ],
+  "ood_feat_ms_per_frame": [
+   2.4346,
+   4.1238
+  ]
+ },
+ "feat_fit": {
+  "indego": {
+   "slope_ms_per_frame": 2.4762,
+   "intercept_ms": 4.58,
+   "r2": 0.9995
+  },
+  "ood": {
+   "slope_ms_per_frame": 2.6398,
+   "intercept_ms": -5.91,
+   "r2": 0.9982
+  }
+ },
+ "git_sha": "3c6d713",
+ "command": "python3 eval/exp_fps/pareto.py --reps 3",
+ "regimes": {
+  "indego_480p_10fps_in_domain": "150 IndEgo human-labelled windows, 7 clips, LOCO",
+  "ego10k_1080p_30fps_ood": "60 human-labelled Egocentric-10K windows (51 good / 9 bad; n_bad=9 exploratory, CI by window is optimistic); frozen IndEgo model -> AUROC not usable for a regime choice"
+ },
+ "clean_bench_indego": {
+  "10": {
+   "n_frames": 100,
+   "decode_ms": 129.1,
+   "decode_ms_per_frame": 1.2911,
+   "feat_ms": 252.3,
+   "feat_ms_per_frame": 2.5225
+  },
+  "5": {
+   "n_frames": 50,
+   "decode_ms": 129.1,
+   "decode_ms_per_frame": 1.2911,
+   "feat_ms": 130.0,
+   "feat_ms_per_frame": 2.5991
+  },
+  "3.33": {
+   "n_frames": 34,
+   "decode_ms": 129.1,
+   "decode_ms_per_frame": 1.2911,
+   "feat_ms": 86.2,
+   "feat_ms_per_frame": 2.5359
+  },
+  "2": {
+   "n_frames": 20,
+   "decode_ms": 129.1,
+   "decode_ms_per_frame": 1.2911,
+   "feat_ms": 52.9,
+   "feat_ms_per_frame": 2.6473
+  },
+  "1": {
+   "n_frames": 10,
+   "decode_ms": 129.1,
+   "decode_ms_per_frame": 1.2911,
+   "feat_ms": 31.4,
+   "feat_ms_per_frame": 3.1358
+  }
+ },
+ "clean_bench_ood": {
+  "30": {
+   "n_frames": 300,
+   "decode_ms": 3003.6,
+   "decode_ms_per_frame": 10.0119,
+   "feat_ms": 798.2,
+   "feat_ms_per_frame": 2.6606
+  },
+  "15": {
+   "n_frames": 150,
+   "decode_ms": 3003.6,
+   "decode_ms_per_frame": 10.0119,
+   "feat_ms": 374.3,
+   "feat_ms_per_frame": 2.4952
+  },
+  "10": {
+   "n_frames": 100,
+   "decode_ms": 3003.6,
+   "decode_ms_per_frame": 10.0119,
+   "feat_ms": 243.5,
+   "feat_ms_per_frame": 2.4346
+  },
+  "5": {
+   "n_frames": 50,
+   "decode_ms": 3003.6,
+   "decode_ms_per_frame": 10.0119,
+   "feat_ms": 122.5,
+   "feat_ms_per_frame": 2.4492
+  },
+  "3": {
+   "n_frames": 30,
+   "decode_ms": 3003.6,
+   "decode_ms_per_frame": 10.0119,
+   "feat_ms": 75.7,
+   "feat_ms_per_frame": 2.5244
+  },
+  "2": {
+   "n_frames": 20,
+   "decode_ms": 3003.6,
+   "decode_ms_per_frame": 10.0119,
+   "feat_ms": 55.1,
+   "feat_ms_per_frame": 2.7571
+  },
+  "1": {
+   "n_frames": 10,
+   "decode_ms": 3003.6,
+   "decode_ms_per_frame": 10.0119,
+   "feat_ms": 31.6,
+   "feat_ms_per_frame": 3.1633
+  }
+ },
+ "pareto_fronts": {
+  "ego10k_1080p_30fps_ood": [
+   "2fps",
+   "1fps"
+  ],
+  "indego_480p_10fps_in_domain": [
+   "10fps",
+   "3.33fps",
+   "2fps",
+   "1fps",
+   "uniform20"
+  ]
+ },
+ "rows": [
+  {
+   "regime": "indego_480p_10fps_in_domain",
+   "tag": "10fps",
+   "frames_per_window": 100,
+   "auroc": 0.8086,
+   "ci95": [
+    0.6933,
+    0.8895
+   ],
+   "decode_ms_per_window": 129.1,
+   "feat_ms_per_window": 252.3,
+   "total_ms_per_window": 381.4,
+   "accuracy_meaningful": true,
+   "source": "E1.01",
+   "pareto_front": true
+  },
+  {
+   "regime": "indego_480p_10fps_in_domain",
+   "tag": "5fps",
+   "frames_per_window": 50,
+   "auroc": 0.7932,
+   "ci95": [
+    0.665,
+    0.8782
+   ],
+   "decode_ms_per_window": 129.1,
+   "feat_ms_per_window": 130.0,
+   "total_ms_per_window": 259.1,
+   "accuracy_meaningful": true,
+   "source": "E1.01",
+   "pareto_front": false
+  },
+  {
+   "regime": "indego_480p_10fps_in_domain",
+   "tag": "3.33fps",
+   "frames_per_window": 34,
+   "auroc": 0.8068,
+   "ci95": [
+    0.6967,
+    0.8726
+   ],
+   "decode_ms_per_window": 129.1,
+   "feat_ms_per_window": 86.2,
+   "total_ms_per_window": 215.3,
+   "accuracy_meaningful": true,
+   "source": "E1.01",
+   "pareto_front": true
+  },
+  {
+   "regime": "indego_480p_10fps_in_domain",
+   "tag": "2fps",
+   "frames_per_window": 20,
+   "auroc": 0.7866,
+   "ci95": [
+    0.6504,
+    0.8657
+   ],
+   "decode_ms_per_window": 129.1,
+   "feat_ms_per_window": 52.9,
+   "total_ms_per_window": 182.0,
+   "accuracy_meaningful": true,
+   "source": "E1.01",
+   "pareto_front": true
+  },
+  {
+   "regime": "indego_480p_10fps_in_domain",
+   "tag": "1fps",
+   "frames_per_window": 10,
+   "auroc": 0.7736,
+   "ci95": [
+    0.6306,
+    0.8494
+   ],
+   "decode_ms_per_window": 129.1,
+   "feat_ms_per_window": 31.4,
+   "total_ms_per_window": 160.5,
+   "accuracy_meaningful": true,
+   "source": "E1.01",
+   "pareto_front": true
+  },
+  {
+   "regime": "indego_480p_10fps_in_domain",
+   "tag": "uniform20",
+   "frames_per_window": 20,
+   "auroc": 0.7866,
+   "ci95": [
+    0.6504,
+    0.8657
+   ],
+   "decode_ms_per_window": 129.1,
+   "feat_ms_per_window": 52.9,
+   "total_ms_per_window": 182.0,
+   "accuracy_meaningful": true,
+   "source": "E1.04",
+   "pareto_front": true
+  },
+  {
+   "regime": "indego_480p_10fps_in_domain",
+   "tag": "motion20",
+   "frames_per_window": 20,
+   "auroc": 0.762,
+   "ci95": [
+    0.6752,
+    0.8017
+   ],
+   "decode_ms_per_window": 129.1,
+   "feat_ms_per_window": 52.9,
+   "total_ms_per_window": 182.0,
+   "accuracy_meaningful": true,
+   "source": "E1.04",
+   "pareto_front": false
+  },
+  {
+   "regime": "indego_480p_10fps_in_domain",
+   "tag": "random20",
+   "frames_per_window": 20,
+   "auroc": 0.7386,
+   "ci95": [
+    0.586,
+    0.8055
+   ],
+   "decode_ms_per_window": 129.1,
+   "feat_ms_per_window": 52.9,
+   "total_ms_per_window": 182.0,
+   "accuracy_meaningful": true,
+   "source": "E1.04",
+   "pareto_front": false
+  },
+  {
+   "regime": "indego_480p_10fps_in_domain",
+   "tag": "keyframe",
+   "frames_per_window": 20,
+   "auroc": 0.7798,
+   "ci95": [
+    0.6622,
+    0.8352
+   ],
+   "decode_ms_per_window": 129.1,
+   "feat_ms_per_window": 52.9,
+   "total_ms_per_window": 182.0,
+   "accuracy_meaningful": true,
+   "source": "E1.04",
+   "pareto_front": false
+  },
+  {
+   "regime": "ego10k_1080p_30fps_ood",
+   "tag": "30fps",
+   "frames_per_window": 300.0,
+   "auroc": 0.3595,
+   "ci95": [
+    0.1799,
+    0.554
+   ],
+   "decode_ms_per_window": 3003.6,
+   "feat_ms_per_window": 798.2,
+   "total_ms_per_window": 3801.8,
+   "accuracy_meaningful": false,
+   "source": "E1.03",
+   "pareto_front": false
+  },
+  {
+   "regime": "ego10k_1080p_30fps_ood",
+   "tag": "15fps",
+   "frames_per_window": 150.0,
+   "auroc": 0.4096,
+   "ci95": [
+    0.2222,
+    0.6057
+   ],
+   "decode_ms_per_window": 3003.6,
+   "feat_ms_per_window": 374.3,
+   "total_ms_per_window": 3377.9,
+   "accuracy_meaningful": false,
+   "source": "E1.03",
+   "pareto_front": false
+  },
+  {
+   "regime": "ego10k_1080p_30fps_ood",
+   "tag": "10fps",
+   "frames_per_window": 100.0,
+   "auroc": 0.4314,
+   "ci95": [
+    0.2373,
+    0.6271
+   ],
+   "decode_ms_per_window": 3003.6,
+   "feat_ms_per_window": 243.5,
+   "total_ms_per_window": 3247.1,
+   "accuracy_meaningful": false,
+   "source": "E1.03",
+   "pareto_front": false
+  },
+  {
+   "regime": "ego10k_1080p_30fps_ood",
+   "tag": "5fps",
+   "frames_per_window": 50.0,
+   "auroc": 0.4989,
+   "ci95": [
+    0.32,
+    0.6776
+   ],
+   "decode_ms_per_window": 3003.6,
+   "feat_ms_per_window": 122.5,
+   "total_ms_per_window": 3126.1,
+   "accuracy_meaningful": false,
+   "source": "E1.03",
+   "pareto_front": false
+  },
+  {
+   "regime": "ego10k_1080p_30fps_ood",
+   "tag": "3fps",
+   "frames_per_window": 30.0,
+   "auroc": 0.5468,
+   "ci95": [
+    0.3731,
+    0.7146
+   ],
+   "decode_ms_per_window": 3003.6,
+   "feat_ms_per_window": 75.7,
+   "total_ms_per_window": 3079.3,
+   "accuracy_meaningful": false,
+   "source": "E1.03",
+   "pareto_front": false
+  },
+  {
+   "regime": "ego10k_1080p_30fps_ood",
+   "tag": "2fps",
+   "frames_per_window": 20.0,
+   "auroc": 0.5512,
+   "ci95": [
+    0.375,
+    0.7168
+   ],
+   "decode_ms_per_window": 3003.6,
+   "feat_ms_per_window": 55.1,
+   "total_ms_per_window": 3058.7,
+   "accuracy_meaningful": false,
+   "source": "E1.03",
+   "pareto_front": true
+  },
+  {
+   "regime": "ego10k_1080p_30fps_ood",
+   "tag": "1fps",
+   "frames_per_window": 10.0,
+   "auroc": 0.5468,
+   "ci95": [
+    0.3791,
+    0.7081
+   ],
+   "decode_ms_per_window": 3003.6,
+   "feat_ms_per_window": 31.6,
+   "total_ms_per_window": 3035.2,
+   "accuracy_meaningful": false,
+   "source": "E1.03",
+   "pareto_front": true
+  }
+ ]
+}

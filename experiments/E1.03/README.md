@@ -14,3 +14,11 @@
 
 ## Results
 (pending — `exp.py finish` fills the registry; put figures/JSON in this folder)
+
+**Verdict (2026-10-10 15:49): maybe.** OOD n=60 (51 good/9 bad human; n_bad=9 EXPLORATORY, CI by window optimistic): frozen IndEgo logistic AUROC 0.3595 [0.180,0.554] at 30fps, 0.4314 [0.237,0.627] at 10fps, 0.5468 [0.373,0.715] at 3fps, 0.5512 [0.375,0.717] at 2fps, 0.5468 [0.379,0.708] at 1fps - every CI95 includes 0.5, no transfer at any fps. Label-free score rank stability (spearman) 3vs2 0.9949, 5vs1 0.9813, 10vs5 0.9763, 30vs1 0.8285. Per-feature direct AUROC is fps-invariant for middle-frame features (dct_energy 0.6993, hf_ratio 0.6863, radial_slope 0.6449, range 0.0000) and collapses for band/rPPG features (rppg_pulse 0.706->0.285). 100 queue-2 windows UNLABELLED: descriptive stability only, no accuracy claimed.
+
+Results file: eval/results/exp_fps/E1.03.json
+
+Decision: Do NOT choose the OOD fps from an IndEgo-trained model. OOD fps stays open until an Egocentric-10K-trained head exists (n_bad=9 cannot fit one). For descriptive scoring a cheap fps is acceptable because the frozen ranking is stable below 10fps (rho>=0.98 for 5vs1), with no accuracy claimed. The OOD cost lever is DECODE (3004 ms/window), not fps.
+
+Cost: decode 3004 ms/window clean (10.0 ms/frame; 21.7 ms/frame in the loaded shard run) + features 798 -> 32 ms/window from 30 -> 1 fps; 60 windows x 7 fps; CPU only, no GPU used

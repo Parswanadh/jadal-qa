@@ -14,3 +14,11 @@
 
 ## Results
 (pending — `exp.py finish` fills the registry; put figures/JSON in this folder)
+
+**Verdict (2026-10-10 15:49): drop.** n=150 IndEgo human windows, LOCO logistic C=0.3, equal 20-frame budget: uniform-20 0.7866 [0.650,0.866] bal 0.725 vs motion-adaptive 0.7620 [0.675,0.802], keyframe-only 0.7798 [0.662,0.835], seeded random 0.7386 [0.586,0.805]; all CI95 overlap, no arm beats uniform at equal cost. Motion picks different frames (mean Jaccard vs uniform 0.1347, score rho 0.733) and is worse; keyframe has mean 1.23 I-frames/window and 150/150 windows below the 20-frame budget, so it is always padded back to uniform (Jaccard 0.9244, 63/150 identical). Corrected the bundle's partial e1_04.json, whose keyframe arm silently equalled uniform (ffprobe 6.x: pkt_pts_time is empty).
+
+Results file: eval/results/exp_fps/E1.04.json
+
+Decision: Keep uniform sampling (arange(0,T,5)) at the equal 20-frame budget; do not implement motion-adaptive, keyframe-only or random selection. No arm reduces cost: the full native window is decoded in every arm (decode 129 ms/window clean), so selection only changes which 20 frames the features see.
+
+Cost: feature 53 ms/window clean (220 ms/window in the loaded run) at 20 frames/window, identical for all four arms; decode 129 ms/window clean; 0 GPU

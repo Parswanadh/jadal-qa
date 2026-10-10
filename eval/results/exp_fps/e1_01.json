@@ -8,7 +8,7 @@
  "subsample_rule": "decode once native ~10fps via POS_MSEC seek + consecutive reads at 160x90; idx=arange(0,T,step), step {10:1,5:2,3.33:3,2:5,1:10}; cpu_window_features with TRUE effective fps (10/step)",
  "command": "eval/exp_fps/run_fps.py --mode sweep --shard {0,1}/2, merged by merge_e1_01.py",
  "device": "A40 (pod host); decode=CPU cv2 160x90, features=CPU float64",
- "git_sha": "f20013b",
+ "git_sha": "3c6d713",
  "rows": [
   {
    "fps": 10,
