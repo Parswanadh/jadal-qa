@@ -1,0 +1,149 @@
+{
+ "verified_by": "lead-b (LB1)",
+ "ood": {
+  "n": 60,
+  "n_good": 51,
+  "n_bad": 9,
+  "label_source": "human-labelled Egocentric-10K windows (labels/ood_labels.json, 'latest')",
+  "protocol": "frozen IndEgo-calibrated cascade scores from caches/ensemble/ood_scores.json; AUROC of usable_prob vs human good/bad; window-bootstrap 95% CI (optimistic, windows within a clip are correlated)",
+  "auroc": 0.415,
+  "ci95_window_bootstrap": [
+   0.2069,
+   0.6295
+  ],
+  "rejected_good": 26,
+  "rejected_good_of": 51,
+  "rejected_good_share": 0.5098,
+  "rejected_bad": 3,
+  "rejected_bad_of": 9,
+  "balanced_accuracy_at_shipped_rule": 0.4118,
+  "claimed_reference": {
+   "auroc": 0.529,
+   "ci": [
+    0.32,
+    0.74
+   ],
+   "rejected_good": 21,
+   "rejected_bad": 5,
+   "balanced_accuracy": 0.51
+  },
+  "note": "frozen ensemble_v1 only; NOT the 0.529 figure. Balanced accuracy: 0.412 with review counted as pass for good windows, 0.304 under strict accept-only. The 0.529 belongs to the PoC cascade (PR #100)."
+ },
+ "nested": {
+  "n": 150,
+  "protocol": "outer LOCO (7 clips); inner LOCO on 6 train clips picks C; Platt/isotonic + thresholds fit on inner-OOF train probs only; equal-weight probability average, no learned stacking",
+  "label_source": "human gold (single labeller)",
+  "keys": [
+   "C_grid",
+   "chosen_C",
+   "clips",
+   "coverage_curve",
+   "gates",
+   "label_source",
+   "labels_sha256",
+   "n",
+   "per_clip",
+   "per_reason",
+   "protocol",
+   "views"
+  ],
+  "verified_from_artifact": {
+   "eg2_nested": 0.8458,
+   "pixel_nested": 0.7916,
+   "ensemble_probavg": 0.8336,
+   "ensemble_rankavg": 0.844,
+   "gates": {
+    "AUROC>=0.85": false,
+    "CI_low>=0.72": false,
+    "no_clip<0.60": true,
+    "min_clip_auroc": 0.6061
+   },
+   "coverage_curve_100pct": {
+    "balacc": 0.795,
+    "good_wrongly_rejected": "19/100"
+   },
+   "coverage_curve_80pct": {
+    "balacc": 0.8418,
+    "good_wrongly_rejected": "13/82"
+   },
+   "claimed_reference": {
+    "eg2": 0.846,
+    "pixel": 0.792,
+    "probavg": 0.834,
+    "rankavg": 0.844,
+    "min_clip": 0.606
+   },
+   "reproduced": true,
+   "note": "values read from caches/ensemble/nested_loco.json (per-fold C chosen by inner LOCO); raw OOF probs are not in the artifact, so AUROCs were not recomputed from scratch, but every published value matches the stored one and the gates match."
+  }
+ },
+ "artifact_integrity": {
+  "audited": "SHA256SUMS.txt vs on-disk bytes",
+  "n_ok": 302,
+  "n_mismatch": 14,
+  "n_missing": 4,
+  "frozen_ensemble": {
+   "recorded": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+   "computed_on_disk": "cf7fd7d34df2c3ca654c730d518b5aa6c341f6476b41fb3e4d29326b3c18004b",
+   "canonical_json_variants_tried": [
+    "sorted-compact",
+    "sorted-default",
+    "compact-unsorted"
+   ],
+   "matched": false,
+   "explanation": "ensemble_v1.json contains the path string /workspace/jadal_pod_bundle/data/eg2, i.e. the pod bootstrap rewrote absolute paths inside the JSON after the checksum was recorded; LB4 recovered the byte-exact frozen file from git blob 0ede3b83d93ce23dc5b68cd20fb7de0af703ad27 and verified sha == recorded."
+  },
+  "labels_manifest": {
+   "recorded": "44c7217b839accf0b441...",
+   "computed": "b1524455f61a49625e93...",
+   "matched": false
+  },
+  "verdict": "The published OOD AUROC 0.529 cannot be reproduced from the artifacts shipped in this bundle; artifact drift is established independently by the checksum audit (14/316 files)."
+ },
+ "conclusion_ood": "RESOLVED / CORRECTED: 0.529 IS reproducible - it is the PoC CASCADE (origin/main:eval/results/poc/ood_check_60.json): AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513 vs published 0.51 (all five sub-numbers match). The FROZEN two-view ensemble_v1 gives a DIFFERENT number: 0.415 [0.207,0.630], 26/51 good rejected, 3/9 bad. FACTS.md attributes 0.529 to the 'PoC cascade as shipped', not to the ensemble; my first pass conflated the two scorers. No artifact drift is involved here (the shipped OOD score file is byte-identical to origin/main, sha256 300c1eda...); the PoC artifact is simply not in the bundle. Both scorers are at chance with heavy false rejects, so the finding the submission rests on is confirmed twice. See eval/results/pod_verify/ood_0529_archaeology.json (PR #100).",
+ "gold_manifest_verified": {
+  "n": 150,
+  "n_good": 100,
+  "n_bad": 50,
+  "n_clips": 7,
+  "reasons": {
+   "NO_ACTIVE_WORK": 23,
+   "HANDS_NOT_VISIBLE": 14,
+   "DUPLICATE": 6,
+   "TOO_DARK": 6,
+   "UNDECODABLE": 1
+  },
+  "per_clip": {
+   "desk": {
+    "n": 29,
+    "bad": 13
+   },
+   "ecu_full": {
+    "n": 48,
+    "bad": 5
+   },
+   "ecu_late": {
+    "n": 14,
+    "bad": 4
+   },
+   "logistics4": {
+    "n": 17,
+    "bad": 3
+   },
+   "organise": {
+    "n": 19,
+    "bad": 10
+   },
+   "pallet": {
+    "n": 17,
+    "bad": 11
+   },
+   "pallet2": {
+    "n": 6,
+    "bad": 4
+   }
+  },
+  "label_source": "single human labeller",
+  "matches_FACTS": true
+ }
+}
