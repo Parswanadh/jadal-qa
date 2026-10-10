@@ -1,0 +1,144 @@
+{
+ "candidates": {
+  "ens (baseline)": {
+   "gold_auroc": 0.8336,
+   "ood_auroc": 0.566,
+   "ood_auroc_ci95_grouped": [
+    0.4238,
+    0.6999
+   ]
+  },
+  "ens+flow": {
+   "gain_vs_baseline_gold_paired": {
+    "ci95": [
+     -0.0517,
+     -0.0099
+    ],
+    "frac_gt0": 0.004,
+    "mean": -0.0275
+   },
+   "gain_vs_baseline_ood_paired": {
+    "ci95": [
+     -0.0586,
+     0.1637
+    ],
+    "frac_gt0": 0.7365,
+    "mean": 0.038
+   },
+   "gold_auroc": 0.809,
+   "ood_auroc": 0.6001,
+   "ood_auroc_ci95_grouped": [
+    0.47,
+    0.7406
+   ]
+  },
+  "ens+flow+hand": {
+   "gain_vs_baseline_gold_paired": {
+    "ci95": [
+     -0.1048,
+     0.0208
+    ],
+    "frac_gt0": 0.139,
+    "mean": -0.0319
+   },
+   "gain_vs_baseline_ood_paired": {
+    "ci95": [
+     -0.038,
+     0.2359
+    ],
+    "frac_gt0": 0.8955,
+    "mean": 0.0825
+   },
+   "gold_auroc": 0.8066,
+   "ood_auroc": 0.6433,
+   "ood_auroc_ci95_grouped": [
+    0.5221,
+    0.7806
+   ]
+  },
+  "ens+flow+hand+fullres": {
+   "gain_vs_baseline_gold_paired": {
+    "ci95": [
+     -0.1531,
+     -0.0006
+    ],
+    "frac_gt0": 0.0235,
+    "mean": -0.0686
+   },
+   "gain_vs_baseline_ood_paired": {
+    "ci95": [
+     -0.2166,
+     0.2016
+    ],
+    "frac_gt0": 0.3985,
+    "mean": -0.0189
+   },
+   "gold_auroc": 0.7746,
+   "ood_auroc": 0.5395,
+   "ood_auroc_ci95_grouped": [
+    0.3825,
+    0.7101
+   ]
+  },
+  "ens+fullres": {
+   "gain_vs_baseline_gold_paired": {
+    "ci95": [
+     -0.1836,
+     -0.0194
+    ],
+    "frac_gt0": 0.002,
+    "mean": -0.1002
+   },
+   "gain_vs_baseline_ood_paired": {
+    "ci95": [
+     -0.1552,
+     0.1328
+    ],
+    "frac_gt0": 0.399,
+    "mean": -0.0167
+   },
+   "gold_auroc": 0.7318,
+   "ood_auroc": 0.5445,
+   "ood_auroc_ci95_grouped": [
+    0.4144,
+    0.6978
+   ]
+  },
+  "ens+hand": {
+   "gain_vs_baseline_gold_paired": {
+    "ci95": [
+     -0.0694,
+     0.0527
+    ],
+    "frac_gt0": 0.3765,
+    "mean": -0.0099
+   },
+   "gain_vs_baseline_ood_paired": {
+    "ci95": [
+     -0.0326,
+     0.1506
+    ],
+    "frac_gt0": 0.865,
+    "mean": 0.0501
+   },
+   "gold_auroc": 0.8268,
+   "ood_auroc": 0.6126,
+   "ood_auroc_ci95_grouped": [
+    0.5131,
+    0.7242
+   ]
+  }
+ },
+ "device": "CPU (numpy/sklearn; MediaPipe HandLandmarker + Farneback flow extracted separately)",
+ "experiment": "A2.03",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "mean_domain_auroc": {
+  "ens (baseline)": 0.6998,
+  "ens+flow": 0.7046,
+  "ens+flow+hand": 0.7249,
+  "ens+flow+hand+fullres": 0.657,
+  "ens+fullres": 0.6381,
+  "ens+hand": 0.7197
+ },
+ "title": "Best combined signal set vs the ensemble baseline"
+}
