@@ -13,12 +13,17 @@
 set -u
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PY=/home/parshu/envs/jadal/bin/python
+# Environment overrides (documented defaults):
+#   JADAL_PY         interpreter (default: python3 on PATH)
+#   JADAL_POC_DATA   real PoC data dir (default: <repo>/../poc_data)
+#   JADAL_CLIP_ROOT  Egocentric-10K clips for --replay
+#                    (default: <repo>/../../awing/data/ego10k_scale/clips)
+PY="${JADAL_PY:-python3}"
 export PYTHONNOUSERSITE=1
 export OMP_NUM_THREADS=2
 
 PORT=8840
-DATA=/home/parshu/projects/jadal-qa-wt/poc_data
+DATA="${JADAL_POC_DATA:-$ROOT/../poc_data}"
 EVENTS="$DATA/stream_events.jsonl"
 REPLAY=0
 NO_WAIT=0
@@ -46,9 +51,10 @@ cleanup() {
 trap cleanup INT TERM
 
 port_pid() {
-  # owning PID of TCP :8840 via /proc scan (no lsof/ss dependency for parse)
+  # owning PID of TCP :$PORT via /proc scan (no lsof/ss dependency for parse)
   "$PY" -c "
-import os, re
+import os, re, sys
+port_hex = '%04X' % int(sys.argv[1])
 inodes = set()
 for f in ('/proc/net/tcp', '/proc/net/tcp6'):
     try: lines = open(f).readlines()[1:]
@@ -57,7 +63,7 @@ for f in ('/proc/net/tcp', '/proc/net/tcp6'):
         p = ln.split()
         if len(p) < 10: continue
         local, state, inode = p[1], p[3], p[9]
-        if state == '0A' and local.split(':')[1] == '2288':
+        if state == '0A' and local.split(':')[1] == port_hex:
             inodes.add(inode)
 for pid in filter(str.isdigit, os.listdir('/proc')):
     try: fds = os.listdir(f'/proc/{pid}/fd')
@@ -67,7 +73,7 @@ for pid in filter(str.isdigit, os.listdir('/proc')):
         except OSError: continue
         if t.startswith('socket:[') and t[8:-1] in inodes:
             print(pid); raise SystemExit
-" 2>/dev/null
+" "$PORT" 2>/dev/null
 }
 
 echo "== jadal PoC =="
@@ -102,7 +108,7 @@ echo "  live:     $BASE/#/live"
 echo "  about:    $BASE/#/about"
 
 if [[ "$REPLAY" == "1" ]]; then
-  CLIP="${CLIP:-$(find /home/parshu/projects/awing/data/ego10k_scale/clips -name '*.mp4' | head -n 1)}"
+  CLIP="${CLIP:-$(find "${JADAL_CLIP_ROOT:-$ROOT/../../awing/data/ego10k_scale/clips}" -name '*.mp4' | head -n 1)}"
   echo "-- replay: live 2 s chunks with scripted blackout (watch $BASE/#/live) --"
   echo "clip: $CLIP"
   "$PY" "$ROOT/scripts/poc_stream_replay.py" --clip "$CLIP" \

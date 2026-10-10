@@ -35,8 +35,12 @@ from eval.gpu.decode import clip_duration  # noqa: E402
 from jadal.poc import cascade as C  # noqa: E402
 from jadal.poc import receipts as R  # noqa: E402
 
-POC_DATA = "/home/parshu/projects/jadal-qa-wt/poc_data"
-CLIP_ROOT = "/home/parshu/projects/awing/data/ego10k_scale/clips"
+# Documented env overrides; defaults assume the sibling-worktree layout
+# (<projects>/jadal-qa-wt/poc_data and <projects>/awing/data/ego10k_scale/clips).
+ROOT = os.path.normpath(os.path.join(HERE, ".."))
+POC_DATA = os.environ.get("JADAL_POC_DATA", os.path.normpath(os.path.join(ROOT, "..", "poc_data")))
+CLIP_ROOT = os.environ.get("JADAL_CLIP_ROOT", os.path.normpath(
+    os.path.join(ROOT, "..", "..", "awing", "data", "ego10k_scale", "clips")))
 WINDOWS = os.path.join(POC_DATA, "windows.jsonl")
 SUMMARY = os.path.join(POC_DATA, "summary.json")
 THUMBS = os.path.join(POC_DATA, "thumbs")
@@ -55,17 +59,16 @@ def ffmpeg_version():
                            timeout=15)
         return q.stdout.splitlines()[0][:120]
     except Exception:
-        return "?"
+        return "unknown"
 
 
 def code_sha():
     try:
-        q = subprocess.run(["git", "--git-dir=/home/parshu/projects/jadal-qa/.git/worktrees/poc-run",
-                            "rev-parse", "--short", "HEAD"],
+        q = subprocess.run(["git", "-C", ROOT, "rev-parse", "--short", "HEAD"],
                            capture_output=True, text=True, timeout=15)
-        return q.stdout.strip() or "?"
+        return q.stdout.strip() or "unknown"
     except Exception:
-        return "?"
+        return "unknown"
 
 
 def torch_version():
@@ -73,7 +76,7 @@ def torch_version():
         import torch
         return f"{torch.__version__}/cuda={torch.cuda.is_available()}"
     except Exception:
-        return "?"
+        return "unknown"
 
 
 def vram_peak_mib():
@@ -505,8 +508,11 @@ def main():
 
     os.makedirs(THUMBS, exist_ok=True)
     done = set(recs)
-    versions = {"code_sha": code_sha(), "device": "RTX 4070 Laptop",
-                "torch": torch_version(), "ffmpeg": ffmpeg_version(),
+    code, torch_v, ffm = code_sha(), torch_version(), ffmpeg_version()
+    versions = {"code_sha": code, "device": "RTX 4070 Laptop",
+                "torch": torch_v, "ffmpeg": ffm,
+                # false when any metadata lookup failed ("unknown" above)
+                "env_ok": all(v != "unknown" for v in (code, torch_v, ffm)),
                 "head_sha256": head_sha, "threshold": C.THRESHOLD,
                 "margin": C.MARGIN, "work_res": [C.WORK_W, C.WORK_H],
                 "effective_fps": C.EFFECTIVE_FPS, "temporal": "3-tap boxcar + decimate",
