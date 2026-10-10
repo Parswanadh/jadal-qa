@@ -359,7 +359,7 @@ def main():
         "device": DEV, "git_sha": sha,
         "command": "OMP_NUM_THREADS=2 python3 eval/exp_acc/run_n1.py",
         "unlabelled": {"n": int(fok_all.sum()), "source":
-                       "/workspace/artifacts/windows_rescored.jsonl (label_source none)",
+                       os.path.join(os.environ.get("JADAL_ARTIFACTS", "artifacts"), 'windows_rescored.jsonl (label_source none)'),
                        "features": n8, "n_factories": int(len(set(fu_all.tolist())))},
         "protocol_self_train": ("For each outer grouped fold, pseudo-label the unlabelled "
                                 "windows whose factory is NOT in the test fold, using the "

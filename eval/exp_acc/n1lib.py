@@ -6,7 +6,7 @@ protocol / CI. Reuses frozen artefacts (no re-decode):
   * 160 OOD Z3-20   : m/adapt160 eval/results/exp_adapt160/inputs/z3_160.npz
   * 160 OOD pixel26 : m/fewshot160 eval/results/exp_fewshot/inputs/ood160_pixel.npz
   * 150 IndEgo gold : bundle caches/gpu/features.json (26 pixel) + z3_160.npz (Z3-20)
-  * 1546 unlabelled : /workspace/artifacts/windows_rescored.jsonl (26 pixel, no labels)
+  * 1546 unlabelled : $JADAL_POD_ROOT/artifacts/windows_rescored.jsonl (26 pixel, no labels)
 """
 from __future__ import annotations
 
@@ -16,13 +16,13 @@ import os
 import numpy as np
 from scipy.stats import rankdata
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
-WT = os.environ.get("JADAL_WT", "/workspace/wt")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
+WT = os.environ.get("JADAL_WT", "wt")
 Z3_160 = os.path.join(WT, "m-adapt160", "eval", "results", "exp_adapt160",
                       "inputs", "z3_160.npz")
 PIX160 = os.path.join(WT, "m-fewshot160", "eval", "results", "exp_fewshot",
                       "inputs", "ood160_pixel.npz")
-UNL_JSONL = "/workspace/artifacts/windows_rescored.jsonl"
+UNL_JSONL = os.path.join(os.environ.get("JADAL_ARTIFACTS", "artifacts"), 'windows_rescored.jsonl')
 
 Z3_SIX = ["ct_fsize_std", "mo_hand_motion_excess", "inv_clip_frac",
           "inv_laplacian_var", "inv_hist_entropy", "inv_dct_hf_lf"]
