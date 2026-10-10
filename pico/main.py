@@ -15,6 +15,16 @@ an *optional external RGB LED* can be wired and enabled via ``RGB_PINS``
 non-blocking schedule while a FLASH pattern plays out, so heartbeats keep
 flowing during a flash. Unknown or malformed frames are silently ignored.
 
+Idle/attract mode (pure logic in ``pico/idle.py``): after ``IDLE_AFTER_S``
+(see ``idle.py``) of host silence the board plays a visible ambient animation
+(PWM breathing on the onboard LED, then an ACCEPT/REVIEW/REJECT verdict tour;
+colour fade/patterns on the external RGB LED when wired). ANY received host
+frame -- even an unknown or malformed one -- stops the animation immediately,
+restores the plain-output pins and the last host-set LED colour, and idle mode
+restarts only after another ``IDLE_AFTER_S`` of silence. While idle, the HB
+line reports ``led_state`` as ``IDLE`` (read-only diagnostic; the host can
+never *set* IDLE and ``parse_hb`` accepts it like any other state).
+
 (No ``from __future__`` import and no function annotations anywhere in this
 file: stock MicroPython must be able to boot it with zero extra modules.)
 
@@ -45,6 +55,14 @@ try:
     _ON_HARDWARE = True
 except ImportError:           # allows import/py_compile on a normal CPython box
     _ON_HARDWARE = False
+
+try:
+    import idle               # board layout: main.py + idle.py side by side
+except ImportError:           # repo checkout: pico/idle.py (needs repo root on sys.path)
+    try:
+        from pico import idle
+    except ImportError:
+        idle = None           # degraded: host protocol still works, no attract mode
 
 VALID_LED = ("G", "A", "R", "OFF")
 _HEX = "0123456789abcdef"
@@ -130,6 +148,49 @@ class Leds:
     def state(self):
         return self._state
 
+    # -- idle/attract mode: PWM drive, hardware only (never called on CPython).
+    # GPIO25 supports machine.PWM on the non-W Pico; RGB pins too when wired.
+    def idle_begin(self):
+        self._pwm = machine.PWM(self._onboard, freq=1000)
+        self._pwm_rgb = None
+        if self._r is not None:
+            self._pwm_rgb = (
+                machine.PWM(self._r, freq=1000),
+                machine.PWM(self._g, freq=1000),
+                machine.PWM(self._b, freq=1000),
+            )
+        self.idle_write(0.0, (0.0, 0.0, 0.0))
+
+    def idle_write(self, brightness, rgb):
+        duty = int(brightness * 65535)
+        if duty < 0:
+            duty = 0
+        elif duty > 65535:
+            duty = 65535
+        self._pwm.duty_u16(duty)
+        if self._pwm_rgb is not None:
+            for pwm, level in zip(self._pwm_rgb, rgb):
+                d = int(level * 65535)
+                if d < 0:
+                    d = 0
+                elif d > 65535:
+                    d = 65535
+                pwm.duty_u16(d)
+
+    def idle_end(self):
+        # Back to plain outputs + the last host-set colour (host always wins).
+        self._pwm.deinit()
+        if self._pwm_rgb is not None:
+            for pwm in self._pwm_rgb:
+                pwm.deinit()
+            self._pwm_rgb = None
+        self._onboard = machine.Pin(ONBOARD_LED_PIN, machine.Pin.OUT)
+        if self._r is not None:
+            self._r = machine.Pin(RGB_PINS[0], machine.Pin.OUT)
+            self._g = machine.Pin(RGB_PINS[1], machine.Pin.OUT)
+            self._b = machine.Pin(RGB_PINS[2], machine.Pin.OUT)
+        self._write_state(self._state)
+
 
 class Flasher:
     """Non-blocking MSB-first bit player for FLASH patterns.
@@ -199,17 +260,32 @@ def main():
     next_hb = time.ticks_add(time.ticks_ms(), 0)
     hb_period_ms = int(HEARTBEAT_S * 1000)
 
+    # Idle/attract mode: last_host_ms tracks ANY received host frame (even an
+    # unknown/malformed one); None = no frame ever (fresh power-up -> idle now).
+    use_idle = idle is not None
+    last_host_ms = None
+    idle_on = False
+    idle_start_ms = 0
+
     while True:
         now = time.ticks_ms()
         flasher.tick()
 
         if time.ticks_diff(now, next_hb) >= 0:
-            _send("HB %d %s\n" % (time.ticks_ms(), leds.state()))
+            if idle_on:
+                hb_state = "IDLE"
+            else:
+                hb_state = leds.state()
+            _send("HB %d %s\n" % (time.ticks_ms(), hb_state))
             next_hb = time.ticks_add(now, hb_period_ms)
 
         # Non-blocking input: only read when poll says bytes are ready, one
         # byte at a time, buffering until a newline. A partial line never
-        # stalls the loop, so HB and FLASH timing keep running.
+        # stalls the loop, so HB and FLASH timing keep running. Every
+        # completed line (and even an overlong dropped one: the host is
+        # clearly talking) counts as host activity and stops idle mode
+        # BEFORE the frame is handled, so a FLASH starting here drives plain
+        # output pins with no added latency beyond this tick.
         if poll.poll(0):
             chunk = sys.stdin.read(1)
             if chunk:
@@ -218,12 +294,37 @@ def main():
                 rx += chunk
                 if len(rx) > MAX_LINE:
                     rx = b""  # overlong line without newline: drop, stay live
+                    last_host_ms = now
+                    if idle_on:
+                        leds.idle_end()
+                        idle_on = False
                 else:
                     while b"\n" in rx:
                         line, rx = rx.split(b"\n", 1)
+                        last_host_ms = now
+                        if idle_on:
+                            leds.idle_end()
+                            idle_on = False
                         _handle(line.decode("ascii", "ignore"), leds, flasher)
         else:
             time.sleep_ms(1)
+
+        # Idle animation: non-blocking, one drive step per tick; never runs
+        # while a FLASH pattern is playing (belt-and-braces: a FLASH command
+        # always implies a host frame well inside IDLE_AFTER_S anyway).
+        if use_idle:
+            if idle.idle_state(now, last_host_ms) and flasher.pattern is None:
+                if not idle_on:
+                    leds.idle_begin()
+                    idle_on = True
+                    idle_start_ms = now
+                elapsed = idle.ticks_diff(now, idle_start_ms)
+                name, level = idle.tour_phase(elapsed)
+                r, g, b = idle.phase_rgb(name, elapsed)
+                leds.idle_write(level, (r * level, g * level, b * level))
+            elif idle_on:
+                leds.idle_end()
+                idle_on = False
 
 
 if __name__ == "__main__":
