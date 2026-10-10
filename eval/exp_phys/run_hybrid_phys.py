@@ -27,7 +27,7 @@ ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, ROOT)
 from tools.phys import model  # noqa: E402
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE")
 RES = os.path.join(ROOT, "eval", "results", "exp_phys")
 QUANTILES = (0.01, 0.05, 0.10, 0.25)
 Q = 4

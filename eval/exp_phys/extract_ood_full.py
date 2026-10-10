@@ -20,7 +20,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, ROOT)
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE")
 OUT = os.path.join(ROOT, "eval", "results", "exp_phys", "inputs")
 
 
