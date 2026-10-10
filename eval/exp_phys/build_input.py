@@ -25,7 +25,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
-B = "/workspace/jadal_pod_bundle"
+B = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
 CACHE = os.path.join(B, "caches", "perpixel")
 OOD_FEATS = "/tmp/opencode/ood_feats.json"
 OUT = os.path.join(HERE, "input_windows.json")
