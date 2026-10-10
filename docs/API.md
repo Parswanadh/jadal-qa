@@ -91,6 +91,10 @@ order — resolve segment → receipt via each receipt's `verdict.segment_id`.
 - `receipt_sha256` = SHA-256 of canonical JSON (sorted keys, `(",", ":")`,
   UTF-8) of the receipt **without** `receipt_sha256`, `receipt_id`,
   `created_utc`. `receipt_id` = first 16 hex chars. Do not change this rule.
+- `verdict` gains the optional `evidence` list (SPEC funnel contract:
+  `[{check, value, op, threshold, code}]`) **only** on the funnel path (when
+  `jadal.funnel.route` decided the verdict); it is included in the hash when
+  present and never added by the inline path, so existing hashes are stable.
 - `versions.*` names the implementation per stage (`stubs.*` until the real
   modules merge; then `jadal.signals` etc. plus backend/model versions).
 - `404 {"detail": "receipt not found"}` when unknown.
@@ -120,19 +124,42 @@ Last ingest error per clip path (watcher retries with exponential backoff:
 Real example: `{"errors": {"/…/data_runtime/bucket/poison.mp4":
 "RuntimeError: cannot decode"}}`. Empty object when nothing has failed.
 
-## GET /stats/risk_coverage → RiskPoint[]
+## GET /stats/risk_coverage → RiskHead[]
 
-Bare certify list, strictest threshold first. Sources in order: (1) `calibration`
-rows in SQLite, (2) `eval/results/calibration.json` (`risk_coverage` key,
-validated row-by-row) when the eval module has produced it. `[]` means **no
-measured data** — never fabricated points.
+Per-head calibration report (real output below, produced by running the
+service with stubs and fixture `decider_baseline.json` +
+`funnel_calibration.json` in `JADAL_EVAL_RESULTS_DIR`). Sources in order:
+(1) `eval/results/decider_baseline.json` (one entry per L1 head; the
+`decider_baseline*.json` fallback only ever surfaces real measurement
+files), (2) `eval/results/funnel_calibration.json` (`accept` entry plus one
+`reject:<rule>` entry per enabled hard-reject rule), (3) SQLite `calibration`
+rows (head `"answer"`), (4) legacy `eval/results/calibration.json`.
+`[]` means **no measured data** — never fabricated points.
 
 ```json
-[{"threshold": 0.9, "coverage": 0.8, "error": 0.05}]
+[
+  {"head": "hands_ok", "points": [], "chosen_threshold": null, "upper_bound": 0.1404, "target_err": 0.05, "delta": 0.1, "n_calibration": 300, "n_test": 300, "label_source": "gemini"},
+  {"head": "accept", "points": [], "chosen_threshold": 0.4, "upper_bound": 0.0355, "target_err": 0.05, "delta": 0.1, "n_calibration": 600, "n_test": 600, "label_source": "synthetic"},
+  {"head": "reject:blur_var_min", "points": [], "chosen_threshold": 90.5116, "upper_bound": 0.0291, "target_err": 0.05, "delta": 0.1, "n_calibration": 600, "n_test": 600, "label_source": "synthetic"}
+]
 ```
 
-Shape per point: `{threshold: float, coverage: float, error: float}`.
-No bound/threshold metadata is returned today (see "Missing" §2).
+- `head: str` — L1 head (`hands_ok`, …), funnel `accept`, or
+  `reject:<rule>`, or `answer` for the store/legacy fallbacks.
+- `points: [{threshold, coverage, error}]` — the risk/coverage curve when the
+  file carries per-sample conf/correct arrays, else `[]` (curve unmeasured;
+  the entry's scalar fields are still real measurements).
+- `chosen_threshold: float|null` — `null` means the head was measured but is
+  explicitly NOT certified; the key is **absent** only when nothing about a
+  threshold was measured.
+- `upper_bound: float|null` — exact-binomial upper bound at the chosen
+  threshold (`null` when uncertified).
+- `target_err/delta: float` — certification parameters (file targets, else
+  the service config).
+- `n_calibration/n_test: int` — measured set sizes (`n_test` omitted when no
+  test set was measured; store rows report `n_test: 0`).
+- `label_source: "gemini"|"human_gold"|"synthetic"` — omitted when the file
+  states no provenance.
 
 ## GET /stats/sop_gaps → SopGap[]
 
@@ -170,6 +197,13 @@ Offline shape (no hardware): `{connected: false, reason: str}`.
 Online shape = `PicoLink.status()`: `{connected: true, port: str,
 last_hb_age_s: float, last_hb_ticks_ms: int, last_hb_led: str}`.
 
+## /hub/* (optional)
+
+Mounted only when `jadal.hub_api.router` is importable (hub worker owns
+it); no behaviour change when absent (no `/hub` routes at all — verified
+`hub_routes: []` on the running service above). Every `/ws` receive wait is
+bounded (`JADAL_WS_RECV_TIMEOUT_S`, default 60 s); idle clients wait again.
+
 ## WS /ws (events)
 
 Connect → server sends `{"type": "hello", "recent": 1}`, then replays recent
@@ -197,8 +231,8 @@ Full batch payload plus `receipt_ids`. Client `ping` → server
    /segments/{segment_id}` returning the stored Segment row
    (`segment_id, source_clip, worker_id, site_id, start_s, end_s, path,
    sha256`).
-2. **Risk metadata** (`upper_bound`, `chosen_threshold`, `n`, `errors`,
-   `target_error`, `delta`) next to the points — not returned today.
+2. **Risk metadata** — returned per head since integration round 2 (see
+   `/stats/risk_coverage` above).
 3. **SOP gap rows** — endpoint returns `[]`; shape above is the contract.
 4. **`blurred_sha256`** — not emitted on receipts yet (faces-blur artifact
    lands with the real signals module).
