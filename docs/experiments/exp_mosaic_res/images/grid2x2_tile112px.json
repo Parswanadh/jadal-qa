@@ -1,0 +1,64 @@
+{
+ "builder_version": "mosaic-1.0.0",
+ "font": {
+  "file": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+  "size": 12
+ },
+ "fps_used": 0.4,
+ "grid": [
+  2,
+  2
+ ],
+ "mosaic_sha256": "",
+ "source": "indego",
+ "tile_px": 112,
+ "tiles": [
+  {
+   "h": 112,
+   "index": 0,
+   "src_frame_index": 12,
+   "t_s": 1.25,
+   "w": 112,
+   "x": 2,
+   "y": 2
+  },
+  {
+   "h": 112,
+   "index": 1,
+   "src_frame_index": 38,
+   "t_s": 3.75,
+   "w": 112,
+   "x": 116,
+   "y": 2
+  },
+  {
+   "h": 112,
+   "index": 2,
+   "src_frame_index": 62,
+   "t_s": 6.25,
+   "w": 112,
+   "x": 2,
+   "y": 116
+  },
+  {
+   "h": 112,
+   "index": 3,
+   "src_frame_index": 88,
+   "t_s": 8.75,
+   "w": 112,
+   "x": 116,
+   "y": 116
+  }
+ ],
+ "view": {
+  "clip": "ecu_full",
+  "cols": 2,
+  "label": 1,
+  "rows": 2,
+  "sample_rule": "t_i=(i+0.5)*10/N; src_frame_index=round(t_i*native_fps)",
+  "tile_px": 112,
+  "timestamps": "top-right, FONT_SIZE=12px",
+  "window_id": "g001"
+ },
+ "window_id": "g001"
+}
