@@ -465,7 +465,8 @@ __REASON_ROWS__
 </table>
 </details>
 <div>
-<video id="vid" autoplay loop muted playsinline controls preload="auto"></video>
+<video id="vid" autoplay muted playsinline controls preload="auto"></video>
+<div id="vstate" style="font-weight:600;min-height:1.4em;margin:2px 0 6px 0;">&nbsp;</div>
 <div>Speed: <select id="speed">
 <option value="1">1x</option><option value="1.5">1.5x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option>
 </select></div>
@@ -499,6 +500,12 @@ speedSel.value = localStorage.getItem('gold_speed') || '1';
 function applySpeed() { const r = parseFloat(speedSel.value) || 1; vid.defaultPlaybackRate = r; vid.playbackRate = r; }
 speedSel.onchange = () => { localStorage.setItem('gold_speed', speedSel.value); applySpeed(); };
 ['loadstart', 'loadedmetadata', 'canplay', 'playing'].forEach(ev => vid.addEventListener(ev, applySpeed));
+const vstate = document.getElementById('vstate');
+function setVState(txt, color) { vstate.textContent = txt; vstate.style.color = color; }
+vid.addEventListener('loadstart', () => setVState('\u25b6 playing (plays once)', '#064'));
+vid.addEventListener('playing', () => setVState('\u25b6 playing (plays once)', '#064'));
+vid.addEventListener('ended', () => setVState('\u25a0 VIDEO ENDED \u2014 press R or Space to replay', '#a40'));
+function replay() { vid.currentTime = 0; vid.play().catch(() => {}); }
 const defn = document.getElementById('defn');
 if (localStorage.getItem('gold_defn_seen')) { defn.open = false; } else { defn.open = true; }
 defn.addEventListener('toggle', () => { if (!defn.open) localStorage.setItem('gold_defn_seen', '1'); });
@@ -592,7 +599,8 @@ document.getElementById('next').onclick = () => step(1);
 document.getElementById('first').onclick = () => { idx = firstUnlabeled(); render(); };
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-  if (e.key === ' ') { e.preventDefault(); if (vid.paused) vid.play(); else vid.pause(); }
+  if (e.key === ' ') { e.preventDefault(); if (vid.ended) replay(); else if (vid.paused) vid.play(); else vid.pause(); }
+  else if (e.key === 'r' || e.key === 'R') replay();
   else if (e.key === 'g') send('good');
   else if (e.key === 'b') send('bad');
   else if (e.key === 's') { nSkip++; step(1); }
