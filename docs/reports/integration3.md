@@ -47,19 +47,43 @@ Not touched: `jadal/signals.py`, `jadal/decision*.py`, `jadal/funnel.py`,
 
 ## Results (every number from `eval/results/integration3_demo.json`)
 
-(TBD — filled when the demo finishes; commands below regenerate it.)
+STATUS 16:45 IST: the full demo is queued on the shared-GPU lock behind
+four other workers' holds (frames10k, gpu-throughput, spectral-E, gpu-e2e;
+this demo waited 14+ min at last check) and has not yet completed. Below
+is what is PROVEN so far; the JSON + full B3 numbers land when the lock
+frees, before 17:50. Nothing below is projected: each line says how it
+was measured.
+
+- Suite: `PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests`
+  => `Ran 564 tests in 212.654s -- OK (skipped=3)` (no GPU, no network;
+  slow wall time is shared-machine CPU contention; 37.8 s unloaded).
+  A fresh `git clone` + `git checkout feat/integration3` runs the same
+  suite (in progress at time of writing; result to be appended).
+- Real-pipeline processing (demo run 1, killed by the no-stub assertion
+  on a key-spelling bug of mine, since fixed): 7 clips -> 115 segments
+  -> 115 receipts through real segmenter + real L0 (mediapipe) + real
+  EG2 decider + `funnel.route`. After the fix, `receipt_problems()` is
+  `[]` on every one of those 115 receipts (checked offline from the
+  saved `data_runtime/demo_receipts.json` before run 2 wiped it).
+  Verdict split: 114 review / 1 reject (placeholder calibration gates
+  every accept to review; expected, not a failure).
+- GPU spot check (under flock, `Decider(..., use_cache=False)`):
+  same frame embedded twice fresh on CUDA => max abs diff `0.0`
+  (bit-identical, per-frame batch size 1 as SPEC requires);
+  `Decider.decide` twice => identical dicts. First encode 8.96 s
+  (model load), second 0.10 s; decide 1.4 s/segment. Heads:
+  `hands_ok=3d9b5c0b8da0ea9e,active_work=260657b5a9bb0dd8`
+  (full-splits provenance), step prototypes present, frames_decoded 4.
+- `device` recorded as `cuda:NVIDIA GeForce RTX 4070 Laptop GPU`;
+  `arch: x86_64` (cross-architecture determinism explicitly NOT claimed).
+- PENDING (demo run 2, same code + fixed assertion): re-verify MATCH on
+  all receipts via the API, tampered receipt FAILS, 10x identical
+  receipt_sha256 per segment, alone-vs-batch-of-5 identical,
+  `eval/results/integration3_demo.json` with per-stage latency.
 
 - Command: `flock -w 3600 tools/gpu.lock bash scripts/demo.sh`
   (demo holds the lock only across the service phase and the
   determinism phase; JSON assembly is offline).
-- Suite: `PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests`
-  => `Ran 553 tests in 37.785s -- OK (skipped=3)` (no GPU, no network).
-- GPU spot check (under flock, before the demo):
-  same frame embedded twice fresh on CUDA => max abs diff `0.0`
-  (bit-identical); `Decider.decide` twice => identical dicts.
-  First encode 8.96 s (model load), second 0.10 s; decide 1.4 s/segment.
-- `device` recorded as `cuda:NVIDIA GeForce RTX 4070 Laptop GPU`;
-  `arch: x86_64` (cross-architecture determinism explicitly NOT claimed).
 
 ## Defects in other modules (not fixed; minimal reproductions)
 
