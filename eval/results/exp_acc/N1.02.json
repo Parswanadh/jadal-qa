@@ -1,0 +1,114 @@
+{
+ "experiment": "N1.02",
+ "title": "Self-training on the 1,546 unlabelled Egocentric-10K windows",
+ "n": 160,
+ "n_bad": 22,
+ "label_source": "human, single labeller: labels/ood160_labels.json (160 Egocentric-10K windows, 138 good / 22 bad, 47 factories, q1=60 + q2=100) + labels/manifest_gold.json (150 IndEgo, 100/50)",
+ "protocol": "factory-grouped StratifiedGroupKFold(5, shuffle, seed=0) OOF; per-domain z-score (unsupervised target mean/std); sign from IndEgo gold; factory-grouped bootstrap 95% CI (n_boot=2000, seed=0) on the OOF scores; paired grouped bootstrap for gains. No OOD threshold tuning (0 for signed-z, 0.5 for probs).",
+ "device": "CPU (numpy/sklearn, OMP_NUM_THREADS=2; no GPU, no decode)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_acc/run_n1.py",
+ "unlabelled": {
+  "n": 1546,
+  "source": "/workspace/artifacts/windows_rescored.jsonl (label_source none)",
+  "features": [
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy",
+   "luma_p05",
+   "global_shift",
+   "illum_r",
+   "illum_b",
+   "zncc_self"
+  ],
+  "n_factories": 47
+ },
+ "protocol_self_train": "For each outer grouped fold, pseudo-label the unlabelled windows whose factory is NOT in the test fold, using the zero-shot IndEgo-signed stable-8 z-score; add the confident ones to the train set; retrain; evaluate on the held-out factories.",
+ "blocks": [
+  {
+   "recipe": "stable8 logistic (no self-train)",
+   "method": "base model, grouped CV",
+   "threshold": 0.5,
+   "ood_auroc": 0.7319,
+   "ood_balacc": 0.6561,
+   "ood_error": 0.3439,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6088,
+    0.8479
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5248,
+    0.781
+   ]
+  },
+  {
+   "recipe": "self-train stable8 |z|>0.0",
+   "method": "pseudo-label unlabelled 1546 (test factories excluded), retrain logistic",
+   "threshold": 0.5,
+   "ood_auroc": 0.7273,
+   "ood_balacc": 0.6426,
+   "ood_error": 0.3574,
+   "ood_auroc_ci95_factory_grouped": [
+    0.5942,
+    0.8453
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5051,
+    0.7782
+   ],
+   "mean_pseudo_labels": 1236.8
+  },
+  {
+   "recipe": "self-train stable8 |z|>0.3",
+   "method": "pseudo-label unlabelled 1546 (test factories excluded), retrain logistic",
+   "threshold": 0.5,
+   "ood_auroc": 0.7299,
+   "ood_balacc": 0.6752,
+   "ood_error": 0.3248,
+   "ood_auroc_ci95_factory_grouped": [
+    0.5994,
+    0.8486
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5419,
+    0.8022
+   ],
+   "mean_pseudo_labels": 736.0
+  },
+  {
+   "recipe": "self-train stable8 |z|>0.5",
+   "method": "pseudo-label unlabelled 1546 (test factories excluded), retrain logistic",
+   "threshold": 0.5,
+   "ood_auroc": 0.7276,
+   "ood_balacc": 0.6624,
+   "ood_error": 0.3376,
+   "ood_auroc_ci95_factory_grouped": [
+    0.5985,
+    0.8438
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5136,
+    0.7966
+   ],
+   "mean_pseudo_labels": 462.4
+  },
+  {
+   "recipe": "self-train stable8 |z|>0.8",
+   "method": "pseudo-label unlabelled 1546 (test factories excluded), retrain logistic",
+   "threshold": 0.5,
+   "ood_auroc": 0.725,
+   "ood_balacc": 0.6186,
+   "ood_error": 0.3814,
+   "ood_auroc_ci95_factory_grouped": [
+    0.5952,
+    0.8416
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.4911,
+    0.7394
+   ],
+   "mean_pseudo_labels": 140.8
+  }
+ ],
+ "note": "Self-training does not help: the unlabelled 1546 windows are shifted from the OOD-160 (domain classifier AUROC 0.902) and the base stable-8 model is weaker than the 14-feature zero-shot score, so pseudo-labels add noise."
+}
