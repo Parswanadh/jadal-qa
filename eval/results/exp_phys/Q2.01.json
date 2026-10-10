@@ -1,0 +1,870 @@
+{
+ "experiment": "Q2.01",
+ "title": "Deterministic physics rule-list transfer on 160 OOD human labels",
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "n_factories": 47,
+ "label_source": "human (labels/ood160_labels.json; 138 good / 22 bad, 47 factories, single labeller; q1=60 + q2=100)",
+ "protocol": "evaluation only. Frozen IndEgo rule thresholds (Q=4), no OOD fitting/re-thresholding. Factory-grouped bootstrap CI (n_boot=2000, seed=0) is the honest CI; window bootstrap is optimistic (~1 window/factory).",
+ "rule_source": "frozen deterministic rule table reused read-only from the verified B/verify-rules artefact (configs/perpixel_v1.json quality stage + eval/results/perpixel/rulelist.json), the same method as Q1 (fixed thresholds from IndEgo training clips only, quantised, no per-window fitting)",
+ "feature_extraction": "jadal/perpixel/{series,physics,theory}.py (vendored from b/verify-lb2-main), 160x90 ffmpeg decode, extract_physics + extract_theory per window",
+ "threshold_rule": "binary: BAD if any rule fires (OR); graded score = max normalised margin over the rule set (positive = fires); usable_score = -score_bad (higher = more usable)",
+ "device": "CPU (numpy/cv2/scipy; ffmpeg decode only, no GPU)",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_phys/extract_ood.py --jobs 2 && OMP_NUM_THREADS=2 python3 eval/exp_phys/run_phys_ood.py",
+ "cost": "CPU; 160 windows; 170 s extraction (2 workers); no GPU",
+ "git_sha": "f20013b",
+ "baseline_frozen_logistic": {
+  "scorer": "ensemble_v1 usable_prob (frozen, no refit)",
+  "auroc": 0.5660408432147562,
+  "auroc_ci95_factory_grouped": [
+   0.42382279304229425,
+   0.699915746230494
+  ],
+  "balacc_at_0.5": 0.5464426877470355,
+  "balacc_ci95_factory_grouped": [
+   0.44398969808241534,
+   0.6607373969314267
+  ],
+  "auroc_ci95_window": [
+   0.43741392878221524,
+   0.6939664482699552
+  ]
+ },
+ "rule_sets": {
+  "perpixel_v1_quality_stage": {
+   "rules": [
+    "lowent",
+    "blur",
+    "ten"
+   ],
+   "ood_auroc": 0.4749670619235836,
+   "ood_auroc_ci95_factory_grouped": [
+    0.32722403420615903,
+    0.6304291324394206
+   ],
+   "ood_auroc_ci95_window": [
+    0.36891609977324263,
+    0.5874412158584819
+   ],
+   "ood_balacc": 0.4407114624505929,
+   "ood_balacc_ci95_factory_grouped": [
+    0.324773794723028,
+    0.5814437742930612
+   ],
+   "reject_count": 60,
+   "accept_count": 100,
+   "review_share": 0.0,
+   "false_accept": 16,
+   "false_reject": 54,
+   "true_accept_good": 84,
+   "true_reject_bad": 6,
+   "good_reject_rate": 0.391304347826087,
+   "bad_accept_rate": 0.7272727272727273
+  },
+  "active_rules": {
+   "rules": [
+    "blur",
+    "lowent",
+    "madfroz",
+    "pbytes",
+    "ten"
+   ],
+   "ood_auroc": 0.4927536231884058,
+   "ood_auroc_ci95_factory_grouped": [
+    0.349109421838911,
+    0.6357906891495599
+   ],
+   "ood_auroc_ci95_window": [
+    0.3871785897179622,
+    0.6101628096537548
+   ],
+   "ood_balacc": 0.45619235836627137,
+   "ood_balacc_ci95_factory_grouped": [
+    0.33733771502758847,
+    0.597328818287083
+   ],
+   "reject_count": 63,
+   "accept_count": 97,
+   "review_share": 0.0,
+   "false_accept": 15,
+   "false_reject": 56,
+   "true_accept_good": 82,
+   "true_reject_bad": 7,
+   "good_reject_rate": 0.4057971014492754,
+   "bad_accept_rate": 0.6818181818181818
+  }
+ },
+ "review_band_frontier_active_rules": [
+  {
+   "band": 0.0,
+   "review_share": 0.0,
+   "review_count": 0,
+   "accept": 97,
+   "reject": 63,
+   "balacc_review_as_miss": 0.45619235836627137,
+   "error_on_decided": 0.44375
+  },
+  {
+   "band": 0.02,
+   "review_share": 0.0375,
+   "review_count": 6,
+   "accept": 93,
+   "reject": 61,
+   "balacc_review_as_miss": 0.441699604743083,
+   "error_on_decided": 0.44805194805194803
+  },
+  {
+   "band": 0.05,
+   "review_share": 0.1375,
+   "review_count": 22,
+   "accept": 84,
+   "reject": 54,
+   "balacc_review_as_miss": 0.39361001317523053,
+   "error_on_decided": 0.4420289855072464
+  },
+  {
+   "band": 0.1,
+   "review_share": 0.3,
+   "review_count": 48,
+   "accept": 69,
+   "reject": 43,
+   "balacc_review_as_miss": 0.28194993412384717,
+   "error_on_decided": 0.44642857142857145
+  },
+  {
+   "band": 0.15,
+   "review_share": 0.53125,
+   "review_count": 85,
+   "accept": 42,
+   "reject": 33,
+   "balacc_review_as_miss": 0.20586297760210803,
+   "error_on_decided": 0.4533333333333333
+  },
+  {
+   "band": 0.2,
+   "review_share": 0.8375,
+   "review_count": 134,
+   "accept": 1,
+   "reject": 25,
+   "balacc_review_as_miss": 0.04907773386034256,
+   "error_on_decided": 0.8846153846153846
+  },
+  {
+   "band": 0.3,
+   "review_share": 0.9125,
+   "review_count": 146,
+   "accept": 0,
+   "reject": 14,
+   "balacc_review_as_miss": 0.022727272727272728,
+   "error_on_decided": 0.9285714285714286
+  }
+ ],
+ "per_rule_transfer": [
+  {
+   "rule": "dark",
+   "class": "quality",
+   "src": "th",
+   "feature": "p05",
+   "op": "<",
+   "threshold": 0.009,
+   "train_J": -0.03,
+   "train_frr": 0.03,
+   "active_frozen": false,
+   "fires_ood": 29,
+   "fires_good": 25,
+   "fires_bad": 4,
+   "ood_precision_bad": 0.13793103448275862,
+   "ood_recall_bad": 0.18181818181818182,
+   "ood_good_false_alarm": 0.18115942028985507,
+   "ood_safety": "UNSAFE (precision<0.25, must abstain)"
+  },
+  {
+   "rule": "overexp",
+   "class": "quality",
+   "src": "th",
+   "feature": "p95",
+   "op": ">",
+   "threshold": 0.6053,
+   "train_J": -0.4343,
+   "train_frr": 0.72,
+   "active_frozen": false,
+   "fires_ood": 159,
+   "fires_good": 137,
+   "fires_bad": 22,
+   "ood_precision_bad": 0.13836477987421383,
+   "ood_recall_bad": 1.0,
+   "ood_good_false_alarm": 0.9927536231884058,
+   "ood_safety": "UNSAFE (precision<0.25, must abstain)"
+  },
+  {
+   "rule": "blur",
+   "class": "quality",
+   "src": "th",
+   "feature": "blur_norm",
+   "op": "<",
+   "threshold": 95.0933,
+   "train_J": 0.4286,
+   "train_frr": 0.0,
+   "active_frozen": true,
+   "fires_ood": 37,
+   "fires_good": 33,
+   "fires_bad": 4,
+   "ood_precision_bad": 0.10810810810810811,
+   "ood_recall_bad": 0.18181818181818182,
+   "ood_good_false_alarm": 0.2391304347826087,
+   "ood_safety": "UNSAFE (precision<0.25, must abstain)"
+  },
+  {
+   "rule": "ten",
+   "class": "quality",
+   "src": "ph",
+   "feature": "ten_norm",
+   "op": "<",
+   "threshold": 339.2751,
+   "train_J": 0.3986,
+   "train_frr": 0.03,
+   "active_frozen": true,
+   "fires_ood": 34,
+   "fires_good": 31,
+   "fires_bad": 3,
+   "ood_precision_bad": 0.08823529411764706,
+   "ood_recall_bad": 0.13636363636363635,
+   "ood_good_false_alarm": 0.2246376811594203,
+   "ood_safety": "UNSAFE (precision<0.25, must abstain)"
+  },
+  {
+   "rule": "frozen",
+   "class": "activity",
+   "src": "th",
+   "feature": "frozen_idx",
+   "op": "<",
+   "threshold": 1.5,
+   "train_J": 0.0,
+   "train_frr": 0.0,
+   "active_frozen": false,
+   "fires_ood": 0,
+   "fires_good": 0,
+   "fires_bad": 0,
+   "ood_precision_bad": null,
+   "ood_recall_bad": 0.0,
+   "ood_good_false_alarm": 0.0,
+   "ood_safety": "abstains (0 fires, no OOD harm)"
+  },
+  {
+   "rule": "madfroz",
+   "class": "activity",
+   "src": "ph",
+   "feature": "mad_frozen_frac",
+   "op": ">",
+   "threshold": 0.6,
+   "train_J": 0.1429,
+   "train_frr": 0.0,
+   "active_frozen": true,
+   "fires_ood": 6,
+   "fires_good": 4,
+   "fires_bad": 2,
+   "ood_precision_bad": 0.3333333333333333,
+   "ood_recall_bad": 0.09090909090909091,
+   "ood_good_false_alarm": 0.028985507246376812,
+   "ood_safety": "weak (0.25<=precision<0.5)"
+  },
+  {
+   "rule": "ffroz",
+   "class": "activity",
+   "src": "ph",
+   "feature": "frm_frozen_frac",
+   "op": ">",
+   "threshold": 0.05,
+   "train_J": 0.0,
+   "train_frr": 0.0,
+   "active_frozen": false,
+   "fires_ood": 0,
+   "fires_good": 0,
+   "fires_bad": 0,
+   "ood_precision_bad": null,
+   "ood_recall_bad": 0.0,
+   "ood_good_false_alarm": 0.0,
+   "ood_safety": "abstains (0 fires, no OOD harm)"
+  },
+  {
+   "rule": "pbytes",
+   "class": "activity",
+   "src": "ph",
+   "feature": "p_size_med",
+   "op": "<",
+   "threshold": 2183.6,
+   "train_J": 0.2457,
+   "train_frr": 0.04,
+   "active_frozen": true,
+   "fires_ood": 2,
+   "fires_good": 2,
+   "fires_bad": 0,
+   "ood_precision_bad": 0.0,
+   "ood_recall_bad": 0.0,
+   "ood_good_false_alarm": 0.014492753623188406,
+   "ood_safety": "UNSAFE (precision<0.25, must abstain)"
+  },
+  {
+   "rule": "clipfrac",
+   "class": "activity",
+   "src": "ph",
+   "feature": "clip_frac",
+   "op": ">",
+   "threshold": 0.2,
+   "train_J": 0.0,
+   "train_frr": 0.0,
+   "active_frozen": false,
+   "fires_ood": 17,
+   "fires_good": 14,
+   "fires_bad": 3,
+   "ood_precision_bad": 0.17647058823529413,
+   "ood_recall_bad": 0.13636363636363635,
+   "ood_good_false_alarm": 0.10144927536231885,
+   "ood_safety": "UNSAFE (precision<0.25, must abstain)"
+  },
+  {
+   "rule": "lowent",
+   "class": "quality",
+   "src": "ph",
+   "feature": "hist_ent",
+   "op": "<",
+   "threshold": 6.4861,
+   "train_J": 0.7043,
+   "train_frr": 0.01,
+   "active_frozen": true,
+   "fires_ood": 0,
+   "fires_good": 0,
+   "fires_bad": 0,
+   "ood_precision_bad": null,
+   "ood_recall_bad": 0.0,
+   "ood_good_false_alarm": 0.0,
+   "ood_safety": "abstains (0 fires, no OOD harm)"
+  },
+  {
+   "rule": "lowsnr",
+   "class": "quality",
+   "src": "ph",
+   "feature": "snr_db",
+   "op": "<",
+   "threshold": 8.1401,
+   "train_J": -0.03,
+   "train_frr": 0.03,
+   "active_frozen": false,
+   "fires_ood": 33,
+   "fires_good": 32,
+   "fires_bad": 1,
+   "ood_precision_bad": 0.030303030303030304,
+   "ood_recall_bad": 0.045454545454545456,
+   "ood_good_false_alarm": 0.2318840579710145,
+   "ood_safety": "UNSAFE (precision<0.25, must abstain)"
+  },
+  {
+   "rule": "still",
+   "class": "activity",
+   "src": "th",
+   "feature": "still_run",
+   "op": ">",
+   "threshold": 0.7,
+   "train_J": 0.0,
+   "train_frr": 0.0,
+   "active_frozen": false,
+   "fires_ood": 0,
+   "fires_good": 0,
+   "fires_bad": 0,
+   "ood_precision_bad": null,
+   "ood_recall_bad": 0.0,
+   "ood_good_false_alarm": 0.0,
+   "ood_safety": "abstains (0 fires, no OOD harm)"
+  }
+ ],
+ "batch_split_active_rules": {
+  "q1": {
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.5010893246187363,
+   "balacc": 0.5261437908496731,
+   "reject_count": 24
+  },
+  "q2": {
+   "n": 100,
+   "n_good": 87,
+   "n_bad": 13,
+   "auroc": 0.4792219274977895,
+   "balacc": 0.4084880636604774,
+   "reject_count": 39
+  }
+ },
+ "conclusion": {
+  "deterministic_rule_list_viable_ood": false,
+  "headline": "The frozen IndEgo deterministic rule list does NOT transfer: AUROC below chance, BA below chance, and it rejects more GOOD than BAD windows. The review-band frontier gets WORSE as review increases (the score is anti-correlated OOD), so review cannot rescue it.",
+  "safe_rules_ood": [
+   "frozen",
+   "ffroz",
+   "lowent",
+   "still"
+  ],
+  "must_abstain_ood": [
+   "dark",
+   "overexp",
+   "blur",
+   "ten",
+   "pbytes",
+   "clipfrac",
+   "lowsnr"
+  ],
+  "vs_frozen_logistic": "worse than the frozen ensemble_v1 usable_prob baseline (AUROC 0.566, BA 0.546)."
+ },
+ "evidence_examples": [
+  {
+   "id": "q000_s_a558ea238cac",
+   "y": 1,
+   "factory": "factory_001",
+   "batch": "q1",
+   "score_bad": 0.1746,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=78.4925)"
+   ]
+  },
+  {
+   "id": "q001_s_822aea16dbaf",
+   "y": 1,
+   "factory": "factory_003",
+   "batch": "q1",
+   "score_bad": 0.1514,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=80.6967)"
+   ]
+  },
+  {
+   "id": "q005_s_1f058ff76496",
+   "y": 0,
+   "factory": "factory_014",
+   "batch": "q1",
+   "score_bad": 0.0805,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=311.9783)"
+   ]
+  },
+  {
+   "id": "q006_s_e8b7ea33e4f6",
+   "y": 1,
+   "factory": "factory_016",
+   "batch": "q1",
+   "score_bad": 0.5073,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=84.4248)",
+    "ten:ten_norm < 339.2751 (v=167.1737)"
+   ]
+  },
+  {
+   "id": "q011_s_048cec11a8fd",
+   "y": 0,
+   "factory": "factory_023",
+   "batch": "q1",
+   "score_bad": 0.0495,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=90.3851)"
+   ]
+  },
+  {
+   "id": "q014_s_5a620a9e8223",
+   "y": 1,
+   "factory": "factory_028",
+   "batch": "q1",
+   "score_bad": 0.3408,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=223.6379)"
+   ]
+  },
+  {
+   "id": "q016_s_2fb6da454aeb",
+   "y": 1,
+   "factory": "factory_033",
+   "batch": "q1",
+   "score_bad": 0.6667,
+   "verdict": "BAD",
+   "evidence": [
+    "madfroz:mad_frozen_frac > 0.6000 (v=1.0000)",
+    "pbytes:p_size_med < 2183.6000 (v=1983.5000)"
+   ]
+  },
+  {
+   "id": "q020_s_7787ab1e1ebc",
+   "y": 1,
+   "factory": "factory_038",
+   "batch": "q1",
+   "score_bad": 0.1302,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=82.7150)"
+   ]
+  },
+  {
+   "id": "q021_s_ec1c0dfee234",
+   "y": 1,
+   "factory": "factory_039",
+   "batch": "q1",
+   "score_bad": 0.2347,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=259.6305)"
+   ]
+  },
+  {
+   "id": "q022_s_de54d8ed082e",
+   "y": 1,
+   "factory": "factory_040",
+   "batch": "q1",
+   "score_bad": 0.0059,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=94.5327)"
+   ]
+  },
+  {
+   "id": "q025_s_0d56e088331b",
+   "y": 1,
+   "factory": "factory_044",
+   "batch": "q1",
+   "score_bad": 0.6081,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=132.9509)"
+   ]
+  },
+  {
+   "id": "q028_s_645225e10dd6",
+   "y": 1,
+   "factory": "factory_053",
+   "batch": "q1",
+   "score_bad": 0.1878,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=86.5003)",
+    "ten:ten_norm < 339.2751 (v=275.5547)"
+   ]
+  },
+  {
+   "id": "q031_s_356f97f7b0cb",
+   "y": 1,
+   "factory": "factory_057",
+   "batch": "q1",
+   "score_bad": 0.0408,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=325.4377)"
+   ]
+  },
+  {
+   "id": "q033_s_cd12c28514db",
+   "y": 1,
+   "factory": "factory_060",
+   "batch": "q1",
+   "score_bad": 0.0938,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=90.7573)",
+    "ten:ten_norm < 339.2751 (v=307.4486)"
+   ]
+  },
+  {
+   "id": "q041_s_67113a8ebd04",
+   "y": 0,
+   "factory": "factory_076",
+   "batch": "q1",
+   "score_bad": 0.0809,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=87.3984)"
+   ]
+  },
+  {
+   "id": "q043_s_b266142c6511",
+   "y": 1,
+   "factory": "factory_079",
+   "batch": "q1",
+   "score_bad": 0.3207,
+   "verdict": "BAD",
+   "evidence": [
+    "madfroz:mad_frozen_frac > 0.6000 (v=0.7273)",
+    "ten:ten_norm < 339.2751 (v=230.4782)"
+   ]
+  },
+  {
+   "id": "q047_s_9f55cc02f28e",
+   "y": 1,
+   "factory": "factory_001",
+   "batch": "q1",
+   "score_bad": 0.0954,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=86.0235)"
+   ]
+  },
+  {
+   "id": "q048_s_266b4df041d8",
+   "y": 1,
+   "factory": "factory_003",
+   "batch": "q1",
+   "score_bad": 0.1119,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=84.4508)",
+    "ten:ten_norm < 339.2751 (v=310.3279)"
+   ]
+  },
+  {
+   "id": "q050_s_046e5f4a3b2d",
+   "y": 1,
+   "factory": "factory_010",
+   "batch": "q1",
+   "score_bad": 0.0832,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=311.0372)"
+   ]
+  },
+  {
+   "id": "q052_s_19c3652de7e0",
+   "y": 1,
+   "factory": "factory_014",
+   "batch": "q1",
+   "score_bad": 0.3084,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=234.6408)"
+   ]
+  },
+  {
+   "id": "q053_s_3d56d59af728",
+   "y": 1,
+   "factory": "factory_016",
+   "batch": "q1",
+   "score_bad": 0.1727,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=280.6777)"
+   ]
+  },
+  {
+   "id": "q057_s_ebb845b1e4e3",
+   "y": 1,
+   "factory": "factory_022",
+   "batch": "q1",
+   "score_bad": 0.145,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=290.0808)"
+   ]
+  },
+  {
+   "id": "q058_s_6f5c3773acf9",
+   "y": 0,
+   "factory": "factory_023",
+   "batch": "q1",
+   "score_bad": 0.0717,
+   "verdict": "BAD",
+   "evidence": [
+    "madfroz:mad_frozen_frac > 0.6000 (v=0.6364)",
+    "ten:ten_norm < 339.2751 (v=314.9625)"
+   ]
+  },
+  {
+   "id": "q059_s_35815736920e",
+   "y": 1,
+   "factory": "factory_024",
+   "batch": "q1",
+   "score_bad": 0.0606,
+   "verdict": "BAD",
+   "evidence": [
+    "madfroz:mad_frozen_frac > 0.6000 (v=0.6364)",
+    "pbytes:p_size_med < 2183.6000 (v=2107.5000)"
+   ]
+  },
+  {
+   "id": "r003_98e16bbfb9d2",
+   "y": 1,
+   "factory": "factory_003",
+   "batch": "q2",
+   "score_bad": 0.0215,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=93.0484)"
+   ]
+  },
+  {
+   "id": "r006_6db1f41d78a6",
+   "y": 1,
+   "factory": "factory_084",
+   "batch": "q2",
+   "score_bad": 0.0157,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=333.9573)"
+   ]
+  },
+  {
+   "id": "r018_dfbe86bff923",
+   "y": 1,
+   "factory": "factory_039",
+   "batch": "q2",
+   "score_bad": 0.3182,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=231.3127)"
+   ]
+  },
+  {
+   "id": "r019_53c94542d028",
+   "y": 1,
+   "factory": "factory_003",
+   "batch": "q2",
+   "score_bad": 0.0267,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=92.5568)"
+   ]
+  },
+  {
+   "id": "r021_3e5089786db1",
+   "y": 0,
+   "factory": "factory_001",
+   "batch": "q2",
+   "score_bad": 0.1921,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=76.8271)"
+   ]
+  },
+  {
+   "id": "r022_f1570b6279cf",
+   "y": 1,
+   "factory": "factory_040",
+   "batch": "q2",
+   "score_bad": 0.2799,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=68.4774)"
+   ]
+  },
+  {
+   "id": "r023_4b4b4ed1a0e2",
+   "y": 1,
+   "factory": "factory_057",
+   "batch": "q2",
+   "score_bad": 0.3216,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=230.1804)"
+   ]
+  },
+  {
+   "id": "r025_84efec641e36",
+   "y": 1,
+   "factory": "factory_009",
+   "batch": "q2",
+   "score_bad": 0.0218,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=331.8672)"
+   ]
+  },
+  {
+   "id": "r027_13c96d8a4d10",
+   "y": 1,
+   "factory": "factory_028",
+   "batch": "q2",
+   "score_bad": 0.1177,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=299.3324)"
+   ]
+  },
+  {
+   "id": "r030_e5b5bc1cfd47",
+   "y": 1,
+   "factory": "factory_040",
+   "batch": "q2",
+   "score_bad": 0.1103,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=84.6073)"
+   ]
+  },
+  {
+   "id": "r032_59774e22b6e0",
+   "y": 1,
+   "factory": "factory_001",
+   "batch": "q2",
+   "score_bad": 0.2597,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=70.3940)"
+   ]
+  },
+  {
+   "id": "r033_16ef18b96846",
+   "y": 1,
+   "factory": "factory_040",
+   "batch": "q2",
+   "score_bad": 0.0862,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=86.8970)"
+   ]
+  },
+  {
+   "id": "r036_31ac0501dc0f",
+   "y": 1,
+   "factory": "factory_040",
+   "batch": "q2",
+   "score_bad": 0.0754,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=87.9217)"
+   ]
+  },
+  {
+   "id": "r037_d61f3c72f928",
+   "y": 1,
+   "factory": "factory_001",
+   "batch": "q2",
+   "score_bad": 0.2857,
+   "verdict": "BAD",
+   "evidence": [
+    "blur:blur_norm < 95.0933 (v=67.9241)",
+    "ten:ten_norm < 339.2751 (v=281.8447)"
+   ]
+  },
+  {
+   "id": "r051_ea57136540c8",
+   "y": 1,
+   "factory": "factory_053",
+   "batch": "q2",
+   "score_bad": 0.2795,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=244.4320)"
+   ]
+  },
+  {
+   "id": "r056_f53d8c6f5535",
+   "y": 1,
+   "factory": "factory_039",
+   "batch": "q2",
+   "score_bad": 0.3082,
+   "verdict": "BAD",
+   "evidence": [
+    "ten:ten_norm < 339.2751 (v=234.7162)"
+   ]
+  }
+ ]
+}
