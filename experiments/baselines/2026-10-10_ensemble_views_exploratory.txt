@@ -1,0 +1,12 @@
+# tools/port/ensemble_views_exploratory.py - pod verification 2026-10-10T15:19:34Z - A40 pod, CPU only, PYTHONNOUSERSITE=1, OMP_NUM_THREADS=1
+n=150 clips=7
+EG2 mean-embedding logistic (C=0.01)     AUROC 0.848 [0.734,0.909]  bal.acc@0.5 0.770
+26 per-pixel feats logistic (C=0.3)      AUROC 0.810 [0.694,0.889]  bal.acc@0.5 0.740
+prob-average of both                     AUROC 0.853 [0.731,0.922]  bal.acc@0.5 0.790
+rank-average of both                     AUROC 0.856 [0.722,0.925]
+per-clip AUROC (prob-average): {np.str_('desk'): 0.84, np.str_('ecu_full'): 0.98, np.str_('ecu_late'): 0.68, np.str_('logistics4'): 0.9, np.str_('organise'): 0.97, np.str_('pallet'): 0.59, np.str_('pallet2'): 0.75}
+selective (prob-average, threshold 0.5): coverage -> balanced acc, good wrongly rejected
+  100%: 0.790  18/100
+   80%: 0.831  11/80
+   60%: 0.889  7/63
+   50%: 0.880  6/50
