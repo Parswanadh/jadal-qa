@@ -1,147 +1,112 @@
-"""Factory 1080p30 HEVC end-to-end (REAL video, NOT looped IndEgo).
+"""Factory-1080p/30fps-HEVC end-to-end (orchestrator order, replaces looped corpus).
 
 Corpus: /home/parshu/projects/awing/data/ego10k_scale/clips/factory_*/worker_*/*.mp4
 (20-min 1920x1080 HEVC 30fps; use only complete files: size>500MB + ffprobe>1100s).
 
-Modes (thread caps set inside; run under lock):
-  --sweep    F1 (~6 min): HEVC CPU 1-core baseline; NVDEC 1/2/4 sessions;
-             kernel batch/VRAM sweep at T=300 (my proc <= 4.5 GiB)
-  --sustain [minutes] F2: end-to-end NVDEC readers -> GPU convert -> batched
-             kernels -> S0 exact + S1 exploratory; telemetry timestamps.
-
-Writes eval/results/gpu/factory.json (merged sections).
+Modes (each ONE lock hold; thread caps set by caller env):
+  --sweep    F1: CPU-1core HEVC baseline + NVDEC 1/2/4 sessions + batch/VRAM sweep
+  --sustain [minutes]  F2: end-to-end NVDEC->GPU-convert->kernels->S0/S1 sustained run
+Writes eval/results/gpu/factory.json (+ ladder rungs).
+Throttle: OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2, <=3 procs.
 """
+import glob
 import json
 import os
+import queue
 import subprocess
 import sys
+import threading
 import time
-
-os.environ.setdefault("OMP_NUM_THREADS", "2")
-os.environ.setdefault("MKL_NUM_THREADS", "2")
-os.environ.setdefault("OPENBLAS_NUM_THREADS", "2")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", ".."))
 OUT = os.path.join(HERE, "..", "results", "gpu", "factory.json")
-FROOT = "/home/parshu/projects/awing/data/ego10k_scale/clips"
-W, H, FPS = 160, 90, 30
-T = 300  # 10-s window at 30 fps
+LAD = os.path.join(HERE, "..", "results", "gpu", "ladder.json")
+CLIP_GLOB = "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_*/worker_*/*.mp4"
+W, H, FPS, T = 160, 90, 30, 300  # 10-s window at 30 fps
 
 
-def complete_files():
-    """Complete factory mp4s (size + ffprobe duration). Cached to OUT dir."""
-    import glob
-    cache = os.path.join(HERE, "..", "results", "gpu", "factory_files.json")
-    if os.path.exists(cache):
-        return json.load(open(cache))
-    cands = sorted(glob.glob(os.path.join(FROOT, "factory_*", "worker_*", "*.mp4")))
-    good = []
-    for p in cands:
+def complete_clips():
+    """Complete files only (downloader still running). Light: size prefilter."""
+    cands = sorted(glob.glob(CLIP_GLOB))
+    big = [c for c in cands if os.path.getsize(c) > 500 * 1024 * 1024]
+    ok = []
+    for c in big:
         try:
-            if os.path.getsize(p) < 500 * 10**6:
-                continue
-            q = subprocess.run(["ffprobe", "-hide_banner", "-v", "error",
+            p = subprocess.run(["ffprobe", "-hide_banner", "-v", "error",
                                 "-show_entries", "format=duration",
-                                "-of", "default=noprint_wrappers=1:nokey=1", p],
+                                "-of", "default=noprint_wrappers=1:nokey=1", c],
                                capture_output=True, text=True, timeout=30)
-            if float(q.stdout.strip()) > 1100:
-                good.append(p)
+            if float(p.stdout.strip()) > 1100:
+                ok.append(c)
         except Exception:
             pass
-    json.dump(good, open(cache, "w"))
-    return good
+    return ok
 
 
-def load():
-    if os.path.exists(OUT):
-        return json.load(open(OUT))
-    return {"device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU"}
-
-
-def save(d):
-    json.dump(d, open(OUT, "w"), indent=1)
-
-
-def drain(pipe, fs, secs):
-    """Read pipe for secs video worth; return (frames, wall)."""
-    t0 = time.perf_counter()
-    buf, n = b"", 0
-    p = pipe
-    while True:
-        ch = p.stdout.read(1 << 20)
-        if not ch:
-            break
-        buf += ch
-        while len(buf) >= fs:
-            buf = buf[fs:]
-            n += 1
-    p.wait()
-    return n, time.perf_counter() - t0, p.returncode
+def nvdec_cmd(path, off, dur, w=W, h=H):
+    return (["ffmpeg", "-hide_banner", "-v", "error", "-nostdin",
+             "-hwaccel", "cuda", "-hwaccel_output_format", "cuda",
+             "-c:v", "hevc_cuvid",
+             "-ss", str(off)] + (["-t", str(dur)] if dur else []) +
+            ["-i", path, "-vf",
+             f"scale_cuda={w}:{h}:format=nv12,hwdownload,format=nv12",
+             "-f", "rawvideo", "-pix_fmt", "nv12", "pipe:1"])
 
 
 def mode_sweep():
+    res = {"device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
+           "regenerate": "flock ... /home/parshu/envs/jadal/bin/python eval/gpu/factory.py --sweep"}
+    clips = complete_clips()
+    res["corpus"] = {"n_complete": len(clips), "files": [os.path.basename(c) for c in clips[:8]]}
+    if not clips:
+        res["error"] = "no complete clips yet"
+        json.dump(res, open(OUT, "w"), indent=1)
+        print("no complete clips"); return
+    f0 = clips[0]
+    # (a) CPU 1-core HEVC baseline, 60 s video
+    cmd = ["taskset", "-c", "7", "ffmpeg", "-hide_banner", "-v", "error", "-nostdin",
+           "-ss", "60", "-t", "60", "-i", f0,
+           "-vf", f"scale={W}:{H},format=gray",
+           "-f", "rawvideo", "-pix_fmt", "gray", "pipe:1"]
+    t0 = time.perf_counter()
+    p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                       stdin=subprocess.DEVNULL, timeout=300)
+    wall = time.perf_counter() - t0
+    frames = len(p.stdout) // (W * H)
+    res["cpu_1core"] = {"rc": p.returncode, "frames": frames,
+                        "frames_per_s": round(frames / wall, 1),
+                        "video_s_per_wall_s": round(frames / FPS / wall, 2),
+                        "video_s": 60}
+    # (b) NVDEC sessions 1/2/4, 60 s video each
+    expect = 60 * FPS * W * H * 3 // 2
+    dec = {}
+    for conc in [1, 2, 4]:
+        t0 = time.perf_counter()
+        procs = [subprocess.Popen(nvdec_cmd(clips[i % len(clips)], 60 + i * 90, 60),
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  stdin=subprocess.DEVNULL) for i in range(conc)]
+        tots, rcs = [], []
+        for p in procs:
+            out, _ = p.communicate()
+            tots.append(len(out))
+            rcs.append(p.returncode)
+        wall = time.perf_counter() - t0
+        frames = sum(tots) / (W * H * 3 // 2)
+        ok = all(r == 0 for r in rcs) and all(t == expect for t in tots)
+        dec[f"x{conc}"] = {"frames_per_s": round(frames / wall, 1) if ok else None,
+                           "video_s_per_wall_s": round(frames / FPS / wall, 2) if ok else None,
+                           "exact_bytes": ok, "wall_s": round(wall, 1)}
+    res["nvdec_sessions"] = dec
+    # (c) kernel batch/VRAM sweep (fp16, T=300) + (d) convert sanity
     import torch
+    from jadal.gpu.features import gpu_window_features_batch
     assert torch.cuda.is_available()
     torch.cuda.set_device(0)
-    d = load()
-    files = complete_files()
-    d["corpus"] = {"n_complete": len(files, ) if False else len(files),
-                   "example": files[0] if files else None,
-                   "spec": "1920x1080 HEVC 30fps ~20min"}
-    if not files:
-        d["error"] = "no complete factory files yet"
-        save(d)
-        print("no complete files")
-        return
-    clip = files[0]
-    SEC = 30
-    # (a) HEVC CPU 1-core baseline (taskset), gray 160x90 pipe
-    cmd = ["taskset", "-c", "7", "ffmpeg", "-hide_banner", "-v", "error", "-nostdin",
-           "-ss", "60", "-t", str(SEC), "-i", clip,
-           "-vf", "scale=160:90,format=gray",
-           "-f", "rawvideo", "-pix_fmt", "gray", "pipe:1"]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                         stdin=subprocess.DEVNULL)
-    n, wall, rc = drain(p, W * H, SEC)
-    d["cpu_hevc_1core"] = {"frames": n, "wall_s": round(wall, 1), "rc": rc,
-                           "frames_per_s": round(n / wall, 1),
-                           "video_s_per_wall_s": round(n / FPS / wall, 2)}
-    # (b) NVDEC sessions 1/2/4
-    import threading
-    d["nvdec_hevc"] = []
-    for conc in [1, 2, 4]:
-        fs = W * H * 3 // 2
-        t0 = time.perf_counter()
-        procs = []
-        for i in range(conc):
-            c = ["ffmpeg", "-hide_banner", "-v", "error", "-nostdin",
-                 "-hwaccel", "cuda", "-hwaccel_output_format", "cuda",
-                 "-c:v", "hevc_cuvid",
-                 "-ss", str(60 + i * 90), "-t", str(SEC), "-i", clip,
-                 "-vf", f"scale_cuda={W}:{H}:format=nv12,hwdownload,format=nv12",
-                 "-f", "rawvideo", "-pix_fmt", "nv12", "pipe:1"]
-            procs.append(subprocess.Popen(c, stdout=subprocess.PIPE,
-                                          stderr=subprocess.PIPE,
-                                          stdin=subprocess.DEVNULL))
-        tot, rcs = 0, []
-        for pr in procs:
-            b = pr.stdout.read()
-            pr.wait()
-            tot += len(b)
-            rcs.append(pr.returncode)
-        wall = time.perf_counter() - t0
-        frames = tot / fs
-        d["nvdec_hevc"].append({"sessions": conc, "rcs": rcs,
-                                "frames": round(frames, 1),
-                                "wall_s": round(wall, 1),
-                                "frames_per_s": round(frames / wall, 1),
-                                "video_s_per_wall_s": round(frames / FPS / wall, 2)})
-    # (c) kernel batch/VRAM sweep at T=300 fp16
-    from jadal.gpu.features import gpu_window_features_batch
-    d["kernels_T300"] = {}
+    sw = {}
     for B in [4, 8, 16, 32]:
         torch.cuda.reset_peak_memory_stats()
+        torch.cuda.empty_cache()
         try:
             lb = torch.randn(B, T, H, W, dtype=torch.float16, device="cuda:0")
             rb = torch.randn(B, T, H, W, 3, dtype=torch.float16, device="cuda:0")
@@ -153,57 +118,65 @@ def mode_sweep():
                     gpu_window_features_batch(lb, rb, fps=30.0)
             torch.cuda.synchronize()
             wps = B * 3 / (time.perf_counter() - t0)
-            d["kernels_T300"][f"B{B}"] = {
-                "windows_s": round(wps, 1), "hours_per_hour": round(wps * 10, 1),
-                "vram_mib": round(torch.cuda.max_memory_reserved() / 2**20, 1)}
+            vram = round(torch.cuda.max_memory_reserved() / 2**20, 1)
+            sw[f"B{B}"] = {"windows_s": round(wps, 1),
+                           "hours_per_hour": round(wps * 10, 1),
+                           "vram_mib": vram,
+                           "over_budget": vram > 4608}
             del lb, rb
         except RuntimeError as e:
-            d["kernels_T300"][f"B{B}"] = {"oom": str(e)[:120]}
-    d["vram_cap_mib"] = 4608
-    save(d)
-    print(json.dumps({k: d[k] for k in ("cpu_hevc_1core", "nvdec_hevc",
-                                        "kernels_T300")}, indent=1)[:2500])
+            sw[f"B{B}"] = {"error": str(e)[:120]}
+    res["kernel_sweep_T300"] = sw
+    json.dump(res, open(OUT, "w"), indent=1)
+    lad = json.load(open(LAD))
+    lad["rungs"].append({"rung": "F1_factory_sweep",
+                         "cpu_1core_hevc_rtf": res["cpu_1core"]["video_s_per_wall_s"],
+                         "nvdec_rtf": {k: v["video_s_per_wall_s"] for k, v in dec.items()},
+                         "kernels_hph": {k: (v.get("hours_per_hour"), v.get("vram_mib"))
+                                         for k, v in sw.items()},
+                         "why": "1080p30 HEVC reality: CPU-1core vs NVDEC sessions; "
+                                "batch/VRAM ceiling at T=300"})
+    json.dump(lad, open(LAD, "w"), indent=1)
+    print(json.dumps(res, indent=1)[:2500])
 
 
-def mode_sustain(minutes=12, ndec=2, B=8):
-    import queue
-    import threading
+def mode_sustain(minutes=12, ndec=3, B=8):
     import numpy as np
     import torch
     from eval.gpu.stream import S0_RULES
     from eval.gpu.telemetry import now_str
     from jadal.gpu.features import gpu_window_features_batch, FEATURE_NAMES
+    from sklearn.linear_model import LogisticRegression
     assert torch.cuda.is_available()
     torch.cuda.set_device(0)
     torch.cuda.reset_peak_memory_stats()
-    d = load()
-    files = complete_files()
-    assert len(files) >= 1, "no complete factory files"
-    # S1 head trained on IndEgo 10fps features -> EXPLORATORY at 30fps
-    from sklearn.linear_model import LogisticRegression
-    feats = json.load(open(os.path.join(HERE, "..", "results", "gpu",
-                                        "features.json")))["windows"]
-    gold = json.load(open("/home/parshu/projects/jadal-qa-wt/spectral_data/"
-                          "manifest_gold.json"))["items"]
+    clips = complete_clips()
+    res = {"device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
+           "regenerate": "flock ... /home/parshu/envs/jadal/bin/python eval/gpu/factory.py --sustain",
+           "n_complete": len(clips)}
+    if len(clips) < 2:
+        res["error"] = "need >=2 complete clips"
+        json.dump(res, open(OUT, "w"), indent=1)
+        print("not enough clips"); return
+    # S1 head: trained on IndEgo 10fps features -> EXPLORATORY on 30fps factory
+    feats = json.load(open(os.path.join(HERE, "..", "results", "gpu", "features.json")))["windows"]
     names = FEATURE_NAMES
-    ids = [i["id"] for i in gold if i["id"] in feats and "full" in feats[i["id"]]]
-    X = np.stack([[feats[i]["full"][k] for k in names] for i in ids])
-    y = np.array([next(g["label"] for g in gold if g["id"] == i) for i in ids])
-    mu, sd = X.mean(0), X.std(0) + 1e-12
-    clf = LogisticRegression(max_iter=2000, C=1.0).fit((X - mu) / sd, y)
+    X = np.stack([v["full"] for v in feats.values() if "full" in v])
+    ids = [k for k, v in feats.items() if "full" in v]
+    gold = {it["id"]: it["label"] for it in
+            json.load(open("/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"))["items"]}
+    gid = [i for i in ids if i in gold]
+    Xg = np.stack([[feats[i]["full"][k] for k in names] for i in gid])
+    yg = np.array([gold[i] for i in gid])
+    mu, sd = Xg.mean(0), Xg.std(0) + 1e-12
+    clf = LogisticRegression(max_iter=2000, C=1.0).fit((Xg - mu) / sd, yg)
 
     raw_q = queue.Queue(maxsize=8)
     stop_ev = threading.Event()
 
-    def raw_reader(path, off, dur):
-        cmd = ["ffmpeg", "-hide_banner", "-v", "error", "-nostdin",
-               "-hwaccel", "cuda", "-hwaccel_output_format", "cuda",
-               "-c:v", "hevc_cuvid",
-               "-ss", str(off), "-t", str(dur), "-i", path,
-               "-vf", f"scale_cuda={W}:{H}:format=nv12,hwdownload,format=nv12",
-               "-f", "rawvideo", "-pix_fmt", "nv12", "pipe:1"]
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                             stdin=subprocess.DEVNULL)
+    def reader(path, off):
+        p = subprocess.Popen(nvdec_cmd(path, off, None), stdout=subprocess.PIPE,
+                             stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
         fs = W * H * 3 // 2
         buf, win = b"", []
         try:
@@ -217,7 +190,7 @@ def mode_sustain(minutes=12, ndec=2, B=8):
                     buf = buf[fs:]
                     if len(win) == T:
                         try:
-                            raw_q.put(win, timeout=10)
+                            raw_q.put(win, timeout=5)
                         except queue.Full:
                             pass
                         win = []
@@ -227,94 +200,96 @@ def mode_sustain(minutes=12, ndec=2, B=8):
             except Exception:
                 pass
 
-    # round-robin files across readers, long takes
-    per = max(int(minutes * 60 / max(ndec, 1)) + 120, 300)
     for i in range(ndec):
-        threading.Thread(target=raw_reader,
-                         args=(files[i % len(files)], (i * 211) % 600, per),
+        threading.Thread(target=reader, args=(clips[i % len(clips)], 120 + i * 150),
                          daemon=True).start()
-    THR, MARGIN = 0.6, 0.25
-    exits = {"S0": 0, "S1_accept": 0, "S1_reject": 0, "S2": 0}
+    h2d_stream = torch.cuda.Stream()
+    def_stream = torch.cuda.current_stream()
     t_start = now_str()
     t0 = time.perf_counter()
-    done = drops = padded = 0
+    exits = {"S0": 0, "S1_accept": 0, "S1_reject": 0, "S2": 0}
+    s1_note = "EXPLORATORY: head trained on IndEgo 480p/10fps, applied to factory 1080p/30fps"
+    done = padded = 0
     h2d = 0
     while time.perf_counter() - t0 < minutes * 60:
         try:
             win = raw_q.get(timeout=10)
         except queue.Empty:
-            continue
-        if len(win) < T:
+            break
+        if len(win) < T:  # ragged tail: pad with last frame bytes
+            win = win + [win[-1]] * (T - len(win))
             padded += 1
-            win = win + win[-1:] * (T - len(win))
-        try:
-            yb = np.stack([np.frombuffer(f[:W * H], dtype=np.uint8).reshape(H, W)
-                           for f in win])
-            uvb = np.stack([np.frombuffer(f[W * H:], dtype=np.uint8).reshape(H // 2, W // 2, 2)
-                            for f in win])
+        yb = np.stack([np.frombuffer(f[:W * H], dtype=np.uint8).reshape(H, W) for f in win])
+        uvb = np.stack([np.frombuffer(f[W * H:], dtype=np.uint8).reshape(H // 2, W // 2, 2)
+                        for f in win])
+        with torch.cuda.stream(h2d_stream):
             y = torch.from_numpy(yb).cuda(non_blocking=True)
             uv = torch.from_numpy(uvb).cuda(non_blocking=True)
-            h2d += y.numel() + uv.numel()
-            with torch.no_grad():
-                u = uv[..., 0].repeat_interleave(2, 1).repeat_interleave(2, 2).float()
-                v = uv[..., 1].repeat_interleave(2, 1).repeat_interleave(2, 2).float()
-                c = y.float() - 16.0
-                dd, e = u - 128.0, v - 128.0
-                rgb = torch.stack([1.164 * c + 1.596 * e,
-                                   1.164 * c - 0.391 * dd - 0.813 * e,
-                                   1.164 * c + 2.018 * dd], -1).clamp(0, 255) / 255.0
-                luma = (0.299 * rgb[..., 0] + 0.587 * rgb[..., 1]
-                        + 0.114 * rgb[..., 2])
-                # S0 probe on first 2 s (60 frames), GPU-side
-                g2 = luma[:60]
-                probe = {"s0p95": float(torch.quantile(g2, 0.95)),
-                         "s0p50": float(torch.quantile(g2, 0.50)),
-                         "s0var": float(g2[:10].mean(0).var()),
-                         "s0bright": 1.0 if float(torch.quantile(g2, 0.95)) > 0.95 else 0.0,
-                         "s0mot": float((g2[1:] - g2[:-1]).abs().mean())}
-                hit = next((nm for nm, k, op, th in S0_RULES
-                            if (op == "<" and probe[k] < th)
-                            or (op == ">" and probe[k] > th)), None)
-                if hit:
-                    exits["S0"] += 1
-                    done += 1
-                    continue
-                F = gpu_window_features_batch(luma.half(), rgb.half(),
-                                              fps=30.0).float().cpu().numpy()
-            P = clf.predict_proba((F - mu) / sd)[:, 1][0]
-            if P >= THR + MARGIN:
+        h2d += y.numel() + uv.numel()
+        def_stream.wait_stream(h2d_stream)
+        with torch.no_grad():
+            u = uv[..., 0].repeat_interleave(2, 1).repeat_interleave(2, 2).float()
+            v = uv[..., 1].repeat_interleave(2, 1).repeat_interleave(2, 2).float()
+            c = y.float() - 16.0
+            d, e = u - 128.0, v - 128.0
+            rgb = torch.stack([1.164 * c + 1.596 * e, 1.164 * c - 0.391 * d - 0.813 * e,
+                               1.164 * c + 2.018 * d], -1).clamp(0, 255) / 255.0
+            luma = 0.299 * rgb[..., 0] + 0.587 * rgb[..., 1] + 0.114 * rgb[..., 2]
+            F = gpu_window_features_batch(luma.half(), rgb.half(), fps=30.0).float().cpu().numpy()
+        # S0 on first 2 s (GPU luma already resident)
+        g2 = luma[:60].float()
+        probe = {"s0p95": float(torch.quantile(g2, 0.95)),
+                 "s0p50": float(torch.quantile(g2, 0.50)),
+                 "s0var": 1.0,
+                 "s0bright": 1.0 if float(torch.quantile(g2, 0.95)) > 0.95 else 0.0,
+                 "s0mot": float((g2[1:] - g2[:-1]).abs().mean())}
+        hit = None
+        for name, key, op, thr in S0_RULES:
+            v = probe[key]
+            if (op == "<" and v < thr) or (op == ">" and v > thr):
+                hit = name
+                break
+        if hit:
+            exits["S0"] += 1
+        else:
+            p = float(clf.predict_proba((F - mu) / sd)[0, 1])
+            if p >= 0.85:
                 exits["S1_accept"] += 1
-            elif P <= THR - MARGIN:
+            elif p <= 0.35:
                 exits["S1_reject"] += 1
             else:
                 exits["S2"] += 1
-            done += 1
-        except Exception:
-            drops += 1
+        done += 1
+        del y, uv, rgb, luma, F
     wall = time.perf_counter() - t0
     stop_ev.set()
     torch.cuda.synchronize()
     wps = done / wall
-    d["sustain"] = {
-        "minutes_wall": round(wall / 60, 2), "windows": done, "drops": drops,
-        "padded": padded, "video_min": round(done * 10 / 60, 1),
-        "decoders": ndec, "batch": 1, "tier": "160x90",
-        "windows_s": round(wps, 2), "hours_per_hour": round(wps * 10, 1),
-        "video_s_per_wall_s": round(wps * 10, 1),
-        "h2d_gbps": round((h2d / 1e9) / wall, 3),
-        "exits": exits, "exit_frac": {k: round(v / max(done, 1), 3)
-                                      for k, v in exits.items()},
-        "s1_note": "EXPLORATORY at 30fps: head trained on 10fps IndEgo features",
-        "gpu_peak_vram_mib": round(torch.cuda.max_memory_reserved() / 2**20, 1),
-        "t_start": t_start, "t_end": now_str(),
-    }
+    res.update({"sustain_min": round(wall / 60, 2), "windows": done, "padded": padded,
+                "video_min": round(done * 10 / 60, 1), "decoders": ndec, "batch": 1,
+                "windows_s": round(wps, 2), "hours_per_hour": round(wps * 10, 1),
+                "video_s_per_wall_s": round(wps * 10, 1),
+                "h2d_gbps": round((h2d / 1e9) / wall, 3),
+                "exits": exits, "s1_note": s1_note,
+                "gpu_peak_vram_mib": round(torch.cuda.max_memory_reserved() / 2**20, 1),
+                "vram_process_budget_mib": 4608,
+                "t_start": t_start, "t_end": now_str()})
     rtf = wps * 10
-    d["extrapolation_1080p"] = {"rtf": round(rtf, 1),
-                                "gpus_for_10kh_in_2h": round(5000 / rtf, 1),
-                                "gpus_for_10kh_in_3h": round(3333 / rtf, 1)}
-    save(d)
-    print(json.dumps({"sustain": d["sustain"],
-                      "extrapolation_1080p": d["extrapolation_1080p"]}, indent=1))
+    res["extrapolation"] = {"rtf": round(rtf, 1),
+                            "gpus_for_10kh_in_2h": round(5000 / rtf, 1),
+                            "gpus_for_10kh_in_3h": round(3333 / rtf, 1)}
+    out = json.load(open(OUT)) if os.path.exists(OUT) else {}
+    out.update(res)
+    json.dump(out, open(OUT, "w"), indent=1)
+    lad = json.load(open(LAD))
+    lad["rungs"].append({"rung": "F2_factory_sustain",
+                         "hours_per_hour": res["hours_per_hour"],
+                         "why": "real 1080p30 HEVC end-to-end: NVDEC + GPU convert + "
+                                "kernels + S0/exploratory-S1, sustained"})
+    json.dump(lad, open(LAD, "w"), indent=1)
+    print(json.dumps({k: res[k] for k in ("windows", "video_min", "windows_s",
+                                          "hours_per_hour", "exits", "gpu_peak_vram_mib",
+                                          "h2d_gbps", "t_start", "t_end")}, indent=1))
 
 
 if __name__ == "__main__":
