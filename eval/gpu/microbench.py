@@ -153,7 +153,11 @@ def bench_decode():
     dur = 15  # seconds of video per process (keeps one lock hold short)
     for scale in ["160:90", "320:180"]:
         w, h = (int(x) for x in scale.split(":"))
-        frame_bytes = w * h * 3 // 2  # NV12 (chain B, proven in nvdec_probe.json)
+        # NVDEC variant (parallel worker's): scale_cuda nv12 + hwdownload, then
+        # in-filter gray conversion -> pipe carries gray (w*h bytes/frame).
+        # PENDING VERIFICATION under lock (exact-bytes check); chain B (NV12
+        # pipe, frame_bytes = w*h*1.5) is the measured reference.
+        frame_bytes = w * h  # gray (their variant); chain B used w*h*1.5
         # GPU path
         for conc in [1, 2, 4, 8]:
             sampler = DecSampler()
@@ -165,9 +169,12 @@ def bench_decode():
                 cmd = [
                     "ffmpeg", "-hide_banner", "-v", "error", "-nostdin",
                     "-hwaccel", "cuda", "-hwaccel_output_format", "cuda",
+                    "-c:v", "h264_cuvid",
                     "-ss", str(off), "-t", str(dur), "-i", clips[i % len(clips)],
-                    "-vf", f"scale_cuda={scale}:format=nv12,hwdownload,format=nv12",
-                    "-f", "rawvideo", "-pix_fmt", "nv12", "pipe:1",
+                    # NOTE: hwdownload cannot output gray directly (NVDEC gives
+                    # NV12-family frames); download as nv12 then convert in sw.
+                    "-vf", f"scale_cuda={scale}:format=nv12,hwdownload,format=nv12,format=gray",
+                    "-f", "rawvideo", "-pix_fmt", "gray", "pipe:1",
                 ]
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE, stdin=subprocess.DEVNULL)
