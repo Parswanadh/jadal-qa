@@ -189,23 +189,32 @@ frozen heads 0.468. Read: refitting just the fusion on ~100 more OOD labels
 cannot rescue the inverted views (0.44–0.47); the feasible path is the
 in-domain head features (~0.8), to be confirmed when the 100 extra labels land.
 
-## 9. Next round: 160-window re-evaluation (pending labels)
+## 9. Next round: 160-window re-evaluation (scores cached, labels pending)
 
-`eval/ensemble/eval_ood.py` accepts `--labels2 <labels2.json> --scores2
-<ood_scores2.json>` and evaluates the merged 160 windows with the frozen model
-unchanged. Queue-2 scoring command (run once `labels2.json` exists; EG2 under
-the GPU lock, pixel features CPU-only):
+Queue 2 (`label_queue_random2.json`, 100 windows) is scored with the frozen
+model, cached at `eval/results/ensemble/ood_scores2.json` (merged from
+`ood_scores2a/b.json`, 100/100, 0 errors, cache config sha matches frozen
+`4da1068a…`). `labels2.json` had not appeared at push time. When it lands,
+run the frozen model unchanged with:
 
 ```
-/home/parshu/.local/bin/flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock \
-  /home/parshu/envs/jadal/bin/python eval/ensemble_embed_ood.py --queue <queue2.json> --out eval/results/ensemble/ood2_frames.npz
-OMP_NUM_THREADS=2 .../python eval/ensemble_score_windows.py --windows <queue2_as_windows.json> --out eval/results/ensemble/ood_scores2.json
-OMP_NUM_THREADS=2 .../python eval/ensemble/eval_ood.py --labels ood_labels/labels.json --labels2 ood_labels/labels2.json --scores2 eval/results/ensemble/ood_scores2.json
+OMP_NUM_THREADS=2 PYTHONNOUSERSITE=1 PYTHONPATH=. /home/parshu/envs/jadal/bin/python \
+  eval/ensemble/eval_ood.py --labels /home/parshu/projects/jadal-qa-wt/ood_labels/labels.json \
+  --labels2 /home/parshu/projects/jadal-qa-wt/ood_labels/labels2.json \
+  --scores2 eval/results/ensemble/ood_scores2.json
 ```
 
-(`--queue/--out` flags do not exist yet — queue 2 had not appeared at push
-time; they will be added when `label_queue_random2.json` lands, or the queue
-path stays hardcoded with a one-line edit.)
+Queue-2 scoring commands used (frozen model; no labels touched — repeatable):
+
+```
+OMP_NUM_THREADS=2 PYTHONNOUSERSITE=1 PYTHONPATH=. /home/parshu/envs/jadal/bin/python \
+  eval/ensemble_score_windows.py --windows /tmp/ood2a_windows.json --out eval/results/ensemble/ood_scores2a.json
+# same under /home/parshu/.local/bin/flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock for the EG2 part
+```
+
+(`/tmp/ood2*_windows.json` are `{id,path,start_s,end_s}` projections of the
+queue file; rebuild with the one-liner in `eval/ensemble_score_windows.py`
+docstring if needed.)
 
 ## 10. Regenerating commands (all with OMP_NUM_THREADS=2)
 
