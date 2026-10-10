@@ -5,7 +5,7 @@ Reads eval/results/exp_corpus/selection_more.json. For each tar:
   byte-size check vs the selection metadata; tar member scan; extract mp4+json
   sidecars to $DATA/clips_more/<factory>/<worker>/; ffprobe every mp4;
   sha256 the tar; append a provenance row; then DELETE the tar to save disk.
-A hard disk guard stops the loop (recording partial state) before /workspace
+A hard disk guard stops the loop (recording partial state) before $JADAL_POD_ROOT
 drops below MIN_FREE_BYTES. Resumable: tars already in provenance are skipped.
 Progress is rewritten to download_status_more.json after every tar.
 
@@ -22,7 +22,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
-DATA = "/workspace/jadal_pod_bundle/data/ego10k_scale"
+DATA = os.path.join(os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle"), 'data/ego10k_scale')
 TARDIR = os.path.join(DATA, "tars_more")
 CLIPDIR = os.path.join(DATA, "clips_more")
 SEL = "eval/results/exp_corpus/selection_more.json"
@@ -168,7 +168,7 @@ def main():
                 if nxt["path"] in done:
                     idx += 1
                     continue
-                free = shutil.disk_usage("/workspace").free
+                free = shutil.disk_usage('$JADAL_POD_ROOT').free
                 if free - nxt["size_bytes"] < MIN_FREE_BYTES:
                     log(f"STOP: disk guard {free / 1e9:.1f} GB free; cannot queue {nxt['path']}")
                     stopped_early = True

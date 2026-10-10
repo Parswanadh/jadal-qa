@@ -15,7 +15,7 @@ import json
 import random
 
 LISTING = "eval/results/exp_corpus/repo_listing_more.json"
-EXISTING = "/workspace/jadal_pod_bundle/queues/selection_small.json"
+EXISTING = os.path.join(os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle"), 'queues/selection_small.json')
 OUT = "eval/results/exp_corpus/selection_more.json"
 SEED = 42
 BUDGET_BYTES = 42_000_000_000

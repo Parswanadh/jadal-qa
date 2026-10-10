@@ -11,7 +11,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-BUNDLE = "/workspace/jadal_pod_bundle"
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 EC = "eval/results/exp_corpus"
 PROV = f"{EC}/provenance.jsonl"
 VERIFY = f"{EC}/download_verify_more.json"
@@ -116,7 +116,7 @@ _Generated {result['created_utc']} by `eval/scale/make_exp_corpus_report.py`._
 
 Dataset: `{result['dataset']}` (gated). Selection rule: {result['selection_rule']}
 (seed {result['selection_seed']}). Media lives under
-`/workspace/jadal_pod_bundle/data/ego10k_scale/` and is **not** committed.
+`$JADAL_POD_ROOT/jadal_pod_bundle/data/ego10k_scale/` and is **not** committed.
 
 ## New footage
 

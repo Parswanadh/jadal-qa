@@ -16,8 +16,8 @@ import os
 import subprocess
 from datetime import datetime, timezone
 
-CLIPDIR = "/workspace/jadal_pod_bundle/data/ego10k_scale/clips_more"
-EXISTING = "/workspace/jadal_pod_bundle/queues/manifest_scale.json"
+CLIPDIR = os.path.join(os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle"), 'data/ego10k_scale/clips_more')
+EXISTING = os.path.join(os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle"), 'queues/manifest_scale.json')
 OUT_EXT = "queues/manifest_scale_ext.json"
 OUT_ALL = "queues/manifest_scale_all.json"
 WIN = 10.0
