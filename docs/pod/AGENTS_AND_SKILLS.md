@@ -1,0 +1,6 @@
+# Agents, skills, commands (opencode v2; project-local files)
+**Agents** (`.opencode/agents/*.md`, name = file name): `lead` (primary orchestrator), subagents `experimenter` (one experiment end to end), `explorer` (read-only), `reviewer` (read-only adversarial review), `tester` (tests + standard eval), `docs` (documentation steward), `infra` (pod + automation). Permissions are per agent (`permission.bash` globs: the LAST matching rule wins; `permission.edit` globs; `permission.task` limits which subagents may be invoked).
+**Skills** (`.opencode/skills/<name>/SKILL.md`; frontmatter `name` must equal the folder, lowercase-hyphen, description <= 1024 chars; loaded on demand through the `skill` tool): jadal-context, jadal-data-map, jadal-experiment-protocol, jadal-loco-evaluation, jadal-git-workflow, jadal-pod-resources, jadal-honesty, jadal-review-format, jadal-parallel-agents, jadal-mosaic-spec.
+**Commands** (`.opencode/commands/*.md`): /exp-new, /exp-finish, /status, /review-pr, /sync-data.
+**Add one**: create the file, run `opencode debug agents` (agents) or start a session and ask it to list available skills, then document it here.
+**Verify on the pod** (opencode versions differ): `opencode --version`; `opencode debug agents`; `opencode debug config`. If `default agent` is not `lead`, start with `opencode run --agent lead`.
