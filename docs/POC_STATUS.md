@@ -63,7 +63,7 @@ event in the footage.
 
 Accuracy on labelled IndEgo data (`eval/results/gpu/cascade.json`, the shipped
 S1 logistic head): leave-one-clip-out AUROC **0.80** (95% CI 0.71-0.87), n = 150,
-threshold 0.6. Not certified; n is small. A different model, the 1D-conv
+decision bands reject <= 0.25 / accept >= 0.75. Not certified; n is small. A different model, the 1D-conv
 (`eval/results/perpixel/compare.json`, AUROC 0.782, CI 0.63-0.86), is not shipped.
 
 ## Human-labelled out-of-domain check
@@ -113,8 +113,9 @@ Verdict rates on this footage are descriptive, not quality.
 - Receipts content-hashed (sha256), not signed; no certificate chain.
 - RGB only — no hyperspectral. Certified bounds not achievable at n=150.
 - Reject reasons are generic codes (`S1_UNUSABLE`/`S1_USABLE`/`UNCERTAIN`);
-  per-reject evidence is the deciding score vs threshold (the actual rule),
-  not a certified diagnosis. Per-feature deviation explanations were skipped
+  per-reject evidence is the deciding score (the S1 decision bands are the actual
+  rule; the legacy `threshold` field in the evidence never decides), not a
+  certified diagnosis. Per-feature deviation explanations were skipped
   to preserve receipt-hash integrity.
 - `stream_events.jsonl` is a shared live file (demo worker also appends);
   Live panel content varies with the latest replay.
