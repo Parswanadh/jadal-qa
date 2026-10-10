@@ -1,0 +1,17 @@
+{
+ "repeats": 5,
+ "feature": "spec",
+ "target": "hands",
+ "device": "cpu",
+ "sha256": [
+  "e8af4bb87c0c3c2e7b2a05fee93c24164df8c909dc6b8b44035029d8e24a284d",
+  "e8af4bb87c0c3c2e7b2a05fee93c24164df8c909dc6b8b44035029d8e24a284d",
+  "e8af4bb87c0c3c2e7b2a05fee93c24164df8c909dc6b8b44035029d8e24a284d",
+  "e8af4bb87c0c3c2e7b2a05fee93c24164df8c909dc6b8b44035029d8e24a284d",
+  "e8af4bb87c0c3c2e7b2a05fee93c24164df8c909dc6b8b44035029d8e24a284d"
+ ],
+ "bit_identical_weights": true,
+ "identical_window_outputs": true,
+ "not_claimed": "no claim across devices, drivers, or library versions",
+ "vram_peak_GiB": 0.0
+}

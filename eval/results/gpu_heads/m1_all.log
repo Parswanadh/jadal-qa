@@ -1,0 +1,151 @@
+=== START feat=spec target=hands 2026-10-10T11:24:33Z ===
+=== START feat=spec target=hands 2026-10-10T11:26:46Z ===
+=== EXIT(143) feat=spec target=hands 2026-10-10T11:38:34Z ===
+=== START feat=spec target=work 2026-10-10T11:38:34Z ===
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Traceback (most recent call last):
+  File "/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py", line 193, in <module>
+    main()
+  File "/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py", line 153, in main
+    from jadal.gpuheads.config import build_grid
+ModuleNotFoundError: No module named 'jadal'
+=== EXIT(1) feat=spec target=work 2026-10-10T11:45:43Z ===
+=== START feat=eg2 target=hands 2026-10-10T11:45:43Z ===
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Traceback (most recent call last):
+  File "/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py", line 193, in <module>
+    main()
+  File "/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py", line 153, in main
+    from jadal.gpuheads.config import build_grid
+ModuleNotFoundError: No module named 'jadal'
+=== EXIT(1) feat=eg2 target=hands 2026-10-10T11:49:29Z ===
+=== START feat=eg2 target=work 2026-10-10T11:49:29Z ===
+=== START feat=spec target=hands 2026-10-10T11:49:38Z ===
+configs=36 feature=spec target=hands device=cuda
+N=10000 D=53 pos_rate=0.964 files=['spec53']
+{
+ "auroc": 0.823519135903328,
+ "auroc_ci95": [
+  0.801587684956979,
+  0.8451642676724819
+ ],
+ "bal_acc": 0.7544961579866483,
+ "f1": 0.8765496165599954,
+ "single_logistic_auroc": 0.5028150236569756,
+ "delta_many_minus_single": 0.3207041122463524,
+ "n": 10000,
+ "n_pos": 9642,
+ "wall_s": 24.49334406852722,
+ "vram_peak_GiB": 0.16187429428100586,
+ "heads_per_s": 16.552686651097833
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m1_spec_hands.json
+=== EXIT(0) feat=spec target=hands 2026-10-10T11:50:20Z ===
+=== START feat=spec target=work 2026-10-10T11:50:20Z ===
+configs=36 feature=spec target=work device=cuda
+N=10000 D=53 pos_rate=0.917 files=['spec53']
+{
+ "auroc": 0.7700103500006017,
+ "auroc_ci95": [
+  0.7527799122094058,
+  0.7864526893160324
+ ],
+ "bal_acc": 0.7047514508576425,
+ "f1": 0.8252227553118574,
+ "single_logistic_auroc": 0.49109837157548675,
+ "delta_many_minus_single": 0.27891197842511495,
+ "n": 10000,
+ "n_pos": 9166,
+ "wall_s": 19.96551203727722,
+ "vram_peak_GiB": 0.16187429428100586,
+ "heads_per_s": 20.67952231214129
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m1_spec_work.json
+=== EXIT(0) feat=spec target=work 2026-10-10T11:50:57Z ===
+=== START feat=eg2 target=hands 2026-10-10T11:50:57Z ===
+configs=36 feature=eg2 target=hands device=cuda
+N=10000 D=768 pos_rate=0.964 files=['eg2-768']
+{
+ "auroc": 0.9552178898418118,
+ "auroc_ci95": [
+  0.9440432282070756,
+  0.9647301802398092
+ ],
+ "bal_acc": 0.8578182741010871,
+ "f1": 0.9813729593972373,
+ "single_logistic_auroc": 0.503481770281091,
+ "delta_many_minus_single": 0.4517361195607208,
+ "n": 10000,
+ "n_pos": 9642,
+ "wall_s": 21.48100757598877,
+ "vram_peak_GiB": 0.2582864761352539,
+ "heads_per_s": 20.8052846357448
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m1_eg2_hands.json
+=== EXIT(0) feat=eg2 target=hands 2026-10-10T11:51:38Z ===
+=== START feat=eg2 target=work 2026-10-10T11:51:38Z ===
+configs=36 feature=eg2 target=work device=cuda
+N=10000 D=768 pos_rate=0.917 files=['eg2-768']
+{
+ "auroc": 0.9277250902747145,
+ "auroc_ci95": [
+  0.9177632092944387,
+  0.9361920011288104
+ ],
+ "bal_acc": 0.7796880976562848,
+ "f1": 0.963915839965115,
+ "single_logistic_auroc": 0.4826178332917345,
+ "delta_many_minus_single": 0.44510725698298,
+ "n": 10000,
+ "n_pos": 9166,
+ "wall_s": 20.335896492004395,
+ "vram_peak_GiB": 0.2582864761352539,
+ "heads_per_s": 21.83409755907145
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m1_eg2_work.json
+=== EXIT(0) feat=eg2 target=work 2026-10-10T11:53:24Z ===
+=== START feat=both target=hands 2026-10-10T11:53:24Z ===
+configs=36 feature=both target=hands device=cuda
+N=10000 D=821 pos_rate=0.964 files=['eg2-768+spec53']
+{
+ "auroc": 0.9760961992400565,
+ "auroc_ci95": [
+  0.9686343380940078,
+  0.9814485722004396
+ ],
+ "bal_acc": 0.9345921996294146,
+ "f1": 0.9672560226483629,
+ "single_logistic_auroc": 0.5034639536756671,
+ "delta_many_minus_single": 0.47263224556438943,
+ "n": 10000,
+ "n_pos": 9642,
+ "wall_s": 18.168522596359253,
+ "vram_peak_GiB": 0.2668881416320801,
+ "heads_per_s": 24.244730679713232
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m1_both_hands.json
+=== EXIT(0) feat=both target=hands 2026-10-10T11:54:01Z ===
+=== START feat=both target=work 2026-10-10T11:54:01Z ===
+configs=36 feature=both target=work device=cuda
+N=10000 D=821 pos_rate=0.917 files=['eg2-768+spec53']
+{
+ "auroc": 0.8967958297555715,
+ "auroc_ci95": [
+  0.8849037732443197,
+  0.9081653425568575
+ ],
+ "bal_acc": 0.7990726336670135,
+ "f1": 0.9454687674600514,
+ "single_logistic_auroc": 0.48151827654176027,
+ "delta_many_minus_single": 0.4152775532138112,
+ "n": 10000,
+ "n_pos": 9166,
+ "wall_s": 18.606606245040894,
+ "vram_peak_GiB": 0.2668881416320801,
+ "heads_per_s": 24.031561049462066
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m1_both_work.json
+=== EXIT(0) feat=both target=work 2026-10-10T11:54:42Z ===
+=== ALL DONE 2026-10-10T11:54:42Z ===

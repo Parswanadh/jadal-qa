@@ -1,0 +1,129 @@
+{
+ "n_windows": 150,
+ "n_clips": 7,
+ "n_usable": 100,
+ "n_bad": 50,
+ "label_source": "human gold (150 windows)",
+ "protocol": "LOCO over 7 clips; frame head selected on AI frame labels only",
+ "frame_head": {
+  "hidden": 64,
+  "wd": 0.0,
+  "lr": 0.05,
+  "seed": 1,
+  "class_weight": true,
+  "frame_target": "work",
+  "inner_auc": 0.7457371654498353
+ },
+ "auroc": 0.4084,
+ "auroc_ci95_segboot": [
+  0.31660750360750367,
+  0.5096103160729422
+ ],
+ "auroc_ci95_clipboot": [
+  0.36076817558299035,
+  0.5771889400921659
+ ],
+ "bal_acc": 0.5,
+ "f1": 0.8,
+ "per_clip": [
+  {
+   "clip": "desk",
+   "n": 29,
+   "n_usable": 16,
+   "auroc": 0.5625,
+   "bal_acc": 0.5
+  },
+  {
+   "clip": "ecu_full",
+   "n": 48,
+   "n_usable": 43,
+   "auroc": 0.5441860465116279,
+   "bal_acc": 0.5
+  },
+  {
+   "clip": "ecu_late",
+   "n": 14,
+   "n_usable": 10,
+   "auroc": 0.05,
+   "bal_acc": 0.5
+  },
+  {
+   "clip": "logistics4",
+   "n": 17,
+   "n_usable": 14,
+   "auroc": 0.5476190476190477,
+   "bal_acc": 0.5
+  },
+  {
+   "clip": "organise",
+   "n": 19,
+   "n_usable": 9,
+   "auroc": 0.8333333333333331,
+   "bal_acc": 0.5
+  },
+  {
+   "clip": "pallet",
+   "n": 17,
+   "n_usable": 6,
+   "auroc": 0.8787878787878788,
+   "bal_acc": 0.5
+  },
+  {
+   "clip": "pallet2",
+   "n": 6,
+   "n_usable": 2,
+   "auroc": 0.125,
+   "bal_acc": 0.5
+  }
+ ],
+ "per_reason_recall": {
+  "DUPLICATE": {
+   "n": 6,
+   "recall_bad": 0.0
+  },
+  "HANDS_NOT_VISIBLE": {
+   "n": 14,
+   "recall_bad": 0.0
+  },
+  "NO_ACTIVE_WORK": {
+   "n": 23,
+   "recall_bad": 0.0
+  },
+  "None": {
+   "n": 100,
+   "recall_bad": 0.0
+  },
+  "TOO_DARK": {
+   "n": 6,
+   "recall_bad": 0.0
+  },
+  "UNDECODABLE": {
+   "n": 1,
+   "recall_bad": 0.0
+  }
+ },
+ "wall_s": 12.342594623565674,
+ "ms_per_window": 0.024789174397786457,
+ "per_reason_heads": {
+  "HANDS_NOT_VISIBLE": {
+   "n_reason": 14,
+   "n_usable": 100,
+   "auroc_reason_vs_usable": 0.2142857142857143
+  },
+  "NO_ACTIVE_WORK": {
+   "n_reason": 23,
+   "n_usable": 100,
+   "auroc_reason_vs_usable": 0.5843478260869565
+  },
+  "TOO_DARK": {
+   "n_reason": 6,
+   "n_usable": 100,
+   "auroc_reason_vs_usable": 0.24333333333333337
+  },
+  "DUPLICATE": {
+   "n_reason": 6,
+   "n_usable": 100,
+   "auroc_reason_vs_usable": 0.10999999999999999
+  }
+ }
+}
