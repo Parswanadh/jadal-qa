@@ -1,0 +1,76 @@
+{
+  "backbone": "embeddinggemma2:budget=140:bfloat16",
+  "created_utc": "2026-10-10T06:42:52+00:00",
+  "heads": {
+    "active_work": {
+      "calibration": {
+        "accuracy": 0.8667,
+        "ece": 0.0353,
+        "n": 300,
+        "probs_mean": 0.7739,
+        "temperature": 0.6509,
+        "threshold_pick": {
+          "accepted": 300,
+          "coverage": 1.0,
+          "errors": 40,
+          "threshold": null,
+          "upper_bound": 0.162
+        }
+      },
+      "head_file": "decider_work.npz",
+      "head_sha256": "195bd55bac3119939b96fa88453c47a2480fdfdc738861de117c8ba2ae3b0b18",
+      "held_out_bound_at_cal_threshold": {
+        "accepted": 0,
+        "errors": 0,
+        "threshold": null,
+        "upper_bound": null
+      },
+      "provenance": "DEV_ONLY",
+      "test": {
+        "accuracy": 0.9,
+        "ece": 0.0444,
+        "n": 300,
+        "probs_mean": 0.7943,
+        "temperature": 0.6509
+      }
+    },
+    "hands_ok": {
+      "calibration": {
+        "accuracy": 0.8867,
+        "ece": 0.0517,
+        "n": 300,
+        "probs_mean": 0.8724,
+        "temperature": 0.6834,
+        "threshold_pick": {
+          "accepted": 300,
+          "coverage": 1.0,
+          "errors": 34,
+          "threshold": null,
+          "upper_bound": 0.1404
+        }
+      },
+      "head_file": "decider_hands.npz",
+      "head_sha256": "981e17fabe96d6ba4d792553e4f8b7b280da51e3256f2e5b7d73e56164b5c1cc",
+      "held_out_bound_at_cal_threshold": {
+        "accepted": 0,
+        "errors": 0,
+        "threshold": null,
+        "upper_bound": null
+      },
+      "provenance": "DEV_ONLY",
+      "test": {
+        "accuracy": 0.9067,
+        "ece": 0.0591,
+        "n": 300,
+        "probs_mean": 0.8823,
+        "temperature": 0.6834
+      }
+    }
+  },
+  "label_caveat": "labels by gemini-2.5-flash, not human-checked",
+  "label_caveat_long": "hand_count / active_labor labels were produced by gemini-2.5-flash auto-labelling and were NOT human-checked: every accuracy / calibration number here is model-vs-model agreement, not ground-truth performance.",
+  "mode": "DEV_ONLY",
+  "provenance": "DEV_ONLY",
+  "seed": 1234,
+  "split_source": "DEV_ONLY: first 1500 frames round-robined across 3 parquet files, sorted by frame_id, 60/20/20"
+}

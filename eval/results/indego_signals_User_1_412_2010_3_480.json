@@ -1,0 +1,378 @@
+{
+ "attribution": "IndEgo, Fraunhofer IPK, CC BY 4.0, https://huggingface.co/datasets/FraunhoferIPK/IndEgo",
+ "backend_versions": {
+  "face_model_sha256": "b4578f35940bf5a1a655214a1cce5cab13eba73c1297cd78e1a04c2380b0152f",
+  "faces_backend": "mediapipe",
+  "hand_model_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+  "hands_backend": "mediapipe",
+  "mediapipe_version": "1.1.0",
+  "opencv_version": "5.0.0"
+ },
+ "clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+ "seg_seconds": 20.0,
+ "segments": [
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 20.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0000.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0000",
+    "sha256": "b081a89ab9be45a6e844a1b36ae76ea041b4ac8188ba8db2ed4ee9695aaa2920",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 0.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1229.852,
+    "brightness_mean": 57.4424,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 7,
+    "faces_found": 7,
+    "hand_count_mode": 2,
+    "hands_visible_frac": 1.0,
+    "motion_mean": 5.942,
+    "over_exposed_frac": 0.0008,
+    "phash": "91b7584a2eb0bd65",
+    "under_exposed_frac": 0.3251
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 40.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0001.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0001",
+    "sha256": "0665946e15c1f0c3279d9aaf9747a9d81a0d5d85964cac54b2a9a47d699ab176",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 20.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1158.2741,
+    "brightness_mean": 58.5721,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 8,
+    "faces_found": 8,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 1.0,
+    "motion_mean": 3.5827,
+    "over_exposed_frac": 0.0003,
+    "phash": "97b4465e6ae0534b",
+    "under_exposed_frac": 0.2915
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 60.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0002.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0002",
+    "sha256": "2489dc19892bc9d3377dcbb635c376f75d6b557f22e14c60dabe95a72cea7e29",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 40.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1587.1958,
+    "brightness_mean": 60.4523,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 4,
+    "faces_found": 4,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 0.75,
+    "motion_mean": 7.0563,
+    "over_exposed_frac": 0.0008,
+    "phash": "909b4df092de7a49",
+    "under_exposed_frac": 0.3123
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 80.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0003.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0003",
+    "sha256": "73f6275e3629544738b59e5018b3a7f0a819d1fcea100dec6d02c8b8cc693e68",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 60.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1731.0312,
+    "brightness_mean": 64.3672,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 4,
+    "faces_found": 4,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 1.0,
+    "motion_mean": 6.4723,
+    "over_exposed_frac": 0.0006,
+    "phash": "911a71c796f14b4d",
+    "under_exposed_frac": 0.3106
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 100.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0004.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0004",
+    "sha256": "6728ffd3ebffec6d38c2232c883f79e0d44430f3dc48457d86d7829a4e523874",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 80.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1510.1103,
+    "brightness_mean": 61.6583,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 0,
+    "faces_found": 0,
+    "hand_count_mode": 2,
+    "hands_visible_frac": 1.0,
+    "motion_mean": 6.1674,
+    "over_exposed_frac": 0.0001,
+    "phash": "919d7863c7b8b047",
+    "under_exposed_frac": 0.321
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 120.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0005.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0005",
+    "sha256": "046ac4389c57fad1a30423793bb0d24cde066f970639d236b72b3dc229742a42",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 100.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1155.61,
+    "brightness_mean": 64.6811,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 4,
+    "faces_found": 4,
+    "hand_count_mode": 2,
+    "hands_visible_frac": 0.9375,
+    "motion_mean": 4.6238,
+    "over_exposed_frac": 0.0004,
+    "phash": "84187dc592b67b4b",
+    "under_exposed_frac": 0.3168
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 140.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0006.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0006",
+    "sha256": "dffd2efa409e097ee896fcc893c7e89a56a64335c724e140b57fa4bde6612ced",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 120.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1394.702,
+    "brightness_mean": 61.6071,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 1,
+    "faces_found": 1,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 1.0,
+    "motion_mean": 7.1663,
+    "over_exposed_frac": 0.0001,
+    "phash": "95d26786ce714a2d",
+    "under_exposed_frac": 0.3235
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 160.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0007.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0007",
+    "sha256": "761e5871bc251ae367495352200506a54730c7e8c8c87d762621b4872631bedb",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 140.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 605.2034,
+    "brightness_mean": 65.3743,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 2,
+    "faces_found": 2,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 0.6875,
+    "motion_mean": 5.445,
+    "over_exposed_frac": 0.0,
+    "phash": "85c0479d1a16afe7",
+    "under_exposed_frac": 0.2475
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 180.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0008.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0008",
+    "sha256": "9716a83cb410c7290170cadbafb50f5ab49378269b0dcf4a191eb3878bde9db5",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 160.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1611.1418,
+    "brightness_mean": 52.4518,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 2,
+    "faces_found": 2,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 1.0,
+    "motion_mean": 6.3669,
+    "over_exposed_frac": 0.0002,
+    "phash": "919b76c6ca693985",
+    "under_exposed_frac": 0.3586
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 200.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0009.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0009",
+    "sha256": "c52797ab787137ab900727e0c949f45f5fdbe43d4298ac9593dcff55dc445fe7",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 180.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1494.5725,
+    "brightness_mean": 63.6912,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 6,
+    "faces_found": 6,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 0.8125,
+    "motion_mean": 6.369,
+    "over_exposed_frac": 0.001,
+    "phash": "959513666b194b6b",
+    "under_exposed_frac": 0.244
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 1.8072289156626506
+   },
+   "segment": {
+    "end_s": 208.4,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_412_2010_3_480-51aaeea9-0010.mp4",
+    "segment_id": "User_1_412_2010_3_480-51aaeea9-0010",
+    "sha256": "c617fa130d90cb7734dacb6e78e967a827ed03ccbb45f83badcf55a41a2b4e60",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "start_s": 200.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1100.0586,
+    "brightness_mean": 66.1665,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 2,
+    "faces_found": 2,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 0.75,
+    "motion_mean": 15.673,
+    "over_exposed_frac": 0.0005,
+    "phash": "916a46863b3b0f3d",
+    "under_exposed_frac": 0.2368
+   }
+  }
+ ]
+}

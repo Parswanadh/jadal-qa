@@ -153,3 +153,261 @@ The 1 failure + 1 error are both in `tests/test_voicebank.py`, which this
 branch does not touch; they are pre-existing on `origin/main` (confirmed in
 the review) and are being fixed separately by another worker. Owned suites:
 52/52 OK (38 service + 14 integration).
+
+## Integration round 2 (issue #17 follow-up, branch `feat/integration2`)
+
+Hazard (found by a trial merge of the real `jadal.signals`): with the real
+decoder importable, `test_websocket_pushes_batch_event` hung forever -- fake
+mp4 bytes hit the real decoder (`moov atom not found`), no batch was emitted
+and no wait timed out. Fixed (1)-(7) in owned files only (`jadal/service.py`, `jadal/pipeline.py`,
+`Makefile`, `docs/API.md`, both test files, this report; `jadal/store.py`,
+`jadal/stubs.py`, `sim/dock_sim.py`, `scripts/**` needed no changes; NOT
+touched: `jadal/config.py`, `jadal/__init__.py`, `docs/SPEC.md`).
+
+1. **Forced stubs in tests** -- `BucketCase`/`IntegrationCase` now inject
+   stub callables (the three pipeline resolvers are mock-patched to
+   `stubs.*`) on top of `JADAL_USE_STUBS=1`, so results never depend on which
+   modules are importable. New `TestStubIndependence` installs a fake
+   `jadal.signals`/`decision`/`segmenter` stack whose entry points RAISE on
+   any call and asserts batch verdicts are byte-identical to the no-fake run
+   with zero fake calls.
+2. **Bounded waits** -- every wait has a timeout: `/ws` server receives use
+   `asyncio.wait_for(..., JADAL_WS_RECV_TIMEOUT_S=60 s)` (idle clients wait
+   again, never block); tests read through `recv_json_with_timeout` (thread
+   + join, raises `TimeoutError` with a clear message -- starlette 1.7's
+   TestClient offers no timeout knob); `TestWsTimeout` proves the fast
+   failure. No queue/thread waits exist besides the worker `_stop.wait(poll)`.
+3. **UNDECODABLE, never a silent loop** -- `process_clip` returns a
+   deterministic whole-clip placeholder when the segmenter fails on the
+   bytes (or yields zero segments); only `OSError` propagates as transient.
+   `run_batch`/`reverify_receipt` decode via `_compute_signals_safe`: capped
+   retries (`_SIGNAL_IO_RETRIES=3`) for `OSError`, then raise (existing
+   requeue + `/ingest/errors` path); any other decoder failure synthesises
+   `decodable=False` signals so the segment closes with a reject verdict
+   with reason UNDECODABLE and a normal batch event. The watcher still backs
+   off, but parks a poison file after `WATCH_MAX_ATTEMPTS=5` with a terminal
+   "gave up after N attempts" error (`TestWatcherCap`).
+4. **Per-head `/stats/risk_coverage`** -- `pipeline.risk_coverage_report`
+   returns `[{head, points, chosen_threshold, upper_bound, target_err, delta,
+   n_calibration, n_test, label_source}]` from
+   `eval/results/decider_baseline.json` (per L1 head) and
+   `eval/results/funnel_calibration.json` (`accept` + `reject:<rule>`),
+   then SQLite rows (head `"answer"`), then legacy `calibration.json`; `[]`
+   when nothing was measured. `chosen_threshold: null` = measured but
+   explicitly NOT certified; the key is absent only when nothing about a
+   threshold was measured. `label_source` is `gemini|human_gold|synthetic`
+   (an explicit labeller mention wins: "labels by gemini-2.5-flash, not
+   human-checked" -> `gemini`) and is omitted when provenance is unstated.
+   `docs/API.md` shows the real service output.
+5. **Funnel seam** -- `pipeline.route_verdict` resolves `jadal.funnel.route`
+   at runtime on every call (never cached) with the SPEC signature
+   `route(signals, decisions, thresholds)`; absent -> inline `make_verdict`
+   (unchanged). The funnel path carries optional `verdict.evidence`, which
+   the receipt hash includes only when present (proven by hash comparison in
+   `TestFunnelSeam`); funnel logic itself is NOT implemented here.
+6. **Hub mount** -- `create_app` includes `jadal.hub_api.router` under `/hub`
+   when importable, guarded (absent -> zero `/hub` routes, verified on the
+   running service); `TestHubMount` covers both sides with a fake router.
+7. **Suite under 120 s** -- `make test` runs both suites with `timeout 120`.
+
+Commands and REAL output tails (this branch, stubs):
+
+```sh
+$ make test
+# Ran 271 tests in 14.675s -- OK (skipped=2: the real-signals trial tests)
+# Ran 19 tests in 0.227s -- OK   (web suite via `discover -s web`;
+#   the `-t .` form in web/test_dashboard.py's docstring fails with
+#   "Start directory is not importable" -- dashboard worker's doc issue)
+
+$ timeout 300 make demo   # IndEgo clips, stubs
+# all receipts reverify MATCH (7/7, versions_match=True)
+# determinism: same clip 10x -> identical a333ed9af8f9142f...
+# determinism: alone vs batch-of-5 -> IDENTICAL receipt_sha256
+# batch latency: dock-to-batches wall time = 10.2s
+# demo OK
+```
+
+Trial merge proof (throwaway worktree `/tmp/jadal_trial_signals`, removed
+after; `git merge origin/feat/signals` into round-2 HEAD, real decoder live):
+
+```sh
+$ python -m unittest tests.test_integration.TestRealSignalsTrial -v
+# test_garbage_file_yields_undecodable_reject ... ok
+# test_real_mp4_decodes_and_batches ... ok   (tiny mp4 via cv2.VideoWriter)
+# Ran 2 tests in 2.061s -- OK
+
+$ python -m unittest tests.test_service tests.test_integration
+# Ran 69 tests in 5.598s -- OK (skipped=1: test_stubs_require_flag,
+#   correctly skipped with real modules present)
+
+$ python -m unittest discover -s tests   # x4 consecutive runs
+# Ran 295 tests in 26-40s -- OK (skipped=1) each time
+```
+
+Honesty note: one earlier trial `discover -s tests` run reported
+`FAILED (errors=20)`; the next four consecutive runs were fully green and it
+did not reproduce (suspected transient mediapipe/resource flake in the
+signals worker's own 24 slow tests, which this branch does not own). The
+owned 69/69 pass deterministically in both trees.
+
+NOT DONE / gaps: funnel thresholds/logic belong to the funnel worker (seam
+only here); `jadal.decision.Decider` still absent so L1 stays on stubs;
+`points` curves stay `[]` until a measurement file carries per-sample
+conf/correct arrays; web `-t .` docstring untouched (not owned).
+
+## Fix round 1 (review of PR #34)
+
+Started by merging `origin/main` (funnel, certify, eval harness now in).
+The merged real `jadal.funnel.route` decides all `run_batch` verdicts, which
+changed four test expectations (L0 rules hard-reject, L1 outputs only demote
+to review, uncalibrated placeholder thresholds route clean clips to review
+with evidence). All five Important findings fixed in owned files:
+
+1. **Hub prefix exactly once** (`jadal/service.py` `_mount_hub_router`): a
+   router already carrying `/hub` is included as-is, any other router with
+   `prefix="/hub"`. `TestHubMount` covers both fake-router cases (`/hub/ping`
+   200, `/ping` 404) plus the absent case (no `/hub` routes).
+2. **Capped batch-timeout flush** (`jadal/service.py` `_tick` /
+   `_record_flush_failure`): per-site attempts with 1, 2, 4, 8, 16 s
+   backoff (`FLUSH_MAX_ATTEMPTS=5`, injectable `svc._clock`), every failure
+   recorded under `batch:<site>` in `GET /ingest/errors`; after the cap the
+   segments park at the new `GET /batches/failed` (with `failed_segments` in
+   `/health`) -- never dropped, never retried forever. `TestFlushCap` uses a
+   failing save + fake clock (attempts, exact backoff schedule, error text,
+   failed endpoint, no-op further ticks).
+3. **Head-first `label_source`** (`jadal/pipeline.py` `_label_source`): the
+   head's own provenance decides; a file-level disagreement reports
+   `'conflict:<head>|<file>'` (the review's live probe -- human-gold head vs
+   gemini file -- now yields `conflict:human_gold|gemini`, covered by test).
+4. **No invented numbers** (`risk_coverage_report` + docs): the store-backed
+   `answer` head omits `n_test` (was `0`); audit rule documented in the
+   docstring and `docs/API.md` (`null` = measured-but-uncertified only where
+   a measurement exists; absent key = nothing measured; `upper_bound` kept
+   when measured even if uncertified).
+5. **Exact docs** (`docs/API.md`): `target_err`/`delta` source per path
+   (funnel file targets vs service config), uncertified-`upper_bound`
+   semantics, regenerated examples. Committed fixtures
+   `docs/api_examples/decider_baseline.json` +
+   `funnel_calibration.json` with expected `risk_coverage.json`; the test
+   `test_committed_examples_match_live_responses` fails on any drift.
+
+Seam hardening alongside the fixes: `thresholds_snapshot` overlays the
+service Config on the hash-verified funnel thresholds file (router keys
+`accept_conf`/`motion_min`/`min_duration_s`/`under_exposed_frac_max`/
+`calibration` now reach `route`; stored verbatim with
+`funnel_thresholds_sha256`, so re-verify replays exactly); a raising
+`funnel.route` propagates (never swallowed); signal I/O retries use doubling
+backoff. Minors closed: temp-dir empty test, signals-blocked independence
+test. `Makefile` uses `timeout 150` per suite.
+
+Commands and REAL output tails:
+
+```sh
+$ timeout 150 make test
+# Ran 332 tests in 11.644s -- OK (skipped=3)
+# Ran 19 tests in 0.119s -- OK (web)
+
+$ timeout 150 python -m unittest tests.test_service tests.test_integration
+# Ran 80 tests in 5.336s -- OK (skipped=3)
+
+$ timeout 300 make demo
+# all receipts reverify MATCH (7/7, versions_match=True)
+# determinism: same clip 10x -> identical 2052f35308948842f...
+# determinism: alone vs batch-of-5 -> IDENTICAL receipt_sha256
+# batch latency: dock-to-batches wall time = 10.1s (7 clips, 2 batches)
+# demo OK   (both batches REJECT: stub bytes trip L0 hard rules via funnel)
+
+$ # throwaway signals trial (merged origin/feat/signals, worktree removed after)
+$ python -m unittest discover -s tests
+# Ran 356 tests in 30.283s -- FAILED (failures=1, skipped=2)
+# FAIL: test_funnel.TestGoldRecordsBuild.test_missing_signals_module_raises_clearly
+```
+
+The single trial failure is pre-existing and unowned: that funnel test
+assumes `jadal.signals` is absent without blocking it, so it fails whenever
+signals is importable. Proof of independence: neither
+`tests/test_funnel.py` nor `eval/calibrate_funnel.py` imports
+`jadal.pipeline`/`service`/`stubs` (grep-verified), and the test fails
+identically as a single-test run. The owned 80/80 pass in both trees.
+
+Hazard reproduced on pristine `origin/main` + signals (no round-2 code):
+the suite spews `moov atom not found` and hangs until the 150 s timeout
+kills it (exit 124) -- exactly the round-2 report's hazard; with this
+branch's fixes the same tree finishes in ~30 s.
+
+## Fix round 2 (rereview4)
+
+All four items fixed in owned files (`jadal/pipeline.py`,
+`jadal/service.py`, `jadal/stubs.py`, `scripts/gen_api_examples.py`,
+`docs/api_examples/`, `docs/API.md`, `tests/test_service.py`, this report).
+
+1. **Fail-closed thresholds** -- `thresholds_snapshot` raises the new
+   `pipeline.ThresholdsError` on a hash-mismatched (tampered/corrupt)
+   funnel thresholds file; only a missing file (nothing configured to
+   verify) or a missing funnel module keeps the documented Config-only
+   fallback. `run_batch` catches it per batch and closes review verdicts
+   with `evidence.check == "thresholds"` / value `"hash mismatch"` (never
+   an accept, never a silent fallback); the batch carries
+   `thresholds_error`, which `flush_site` records under `batch:<site>` in
+   `GET /ingest/errors`. `TestThresholdsFailClosed` covers tampered (raises
+   + review batch + recorded error), missing (Config-only, no raise) and
+   valid (enriched snapshot) files end to end through HTTP ingest.
+2. **Exact backoff** -- the flush schedule is now exactly 1, 2, 4, 8, 16 s
+   (`2**(failure-1)` after failures 1..5; `FLUSH_MAX_FAILURES=6` parks on
+   the 6th), matching the docs; `TestFlushCap` asserts the full sequence
+   `[1.0, 2.0, 4.0, 8.0, 16.0]` with a fake clock. A recovered site clears
+   its `batch:<site>` error (tested).
+3. **Fixtures for every endpoint** -- `scripts/gen_api_examples.py`
+   `build_examples()` exercises health, batches, batch_detail, receipt,
+   reverify, risk_coverage, sop_gaps, pico_status, ingest_errors and
+   batches_failed in stub mode with fixed clip bytes; committed under
+   `docs/api_examples/` (volatile timestamps dropped,
+   hashes/ids/impl-versions canonicalized to tokens with key presence and
+   list lengths pinned). `test_all_committed_examples_match_live_responses`
+   rebuilds all live and fails on any drift (`pico_status` pins shape only:
+   live Pico hardware on `/dev/ttyACM0` answers heartbeats, so its values
+   vary -- found while writing the test).
+4. **Signals trial green** -- fresh throwaway tree (no `data_runtime/`, no
+   models) merged with `origin/feat/signals`: first run showed their 20
+   `test_signals` errors (`mkdtemp(dir=data_runtime)` in a fresh checkout)
+   plus the known unowned funnel/democlips fresh-tree failures; polled
+   `git fetch` once and their fix `a731265` ("fresh-checkout tempdirs and
+   model skipUnless") had landed, merged it, full suite green (below). No
+   owned test/script writes under `data_runtime` without creating it first
+   (all use temp dirs; `demo.sh` mkdirs; verified by grep).
+
+Debugging note (worth keeping): the trial drift first failed on receipt
+`versions.signals_backend` even with `sys.modules` blocking active. Root
+cause: once the real `jadal.signals` is imported anywhere, the parent
+package keeps it as an attribute, and `from jadal import signals` (used by
+`impl_versions`) resolves through that attribute without consulting
+`sys.modules`. Fixed with `stubs.blocked_imports()` (clears both, restores
+both), used by the generator, the fake stacks and the blocked test, plus a
+regression test. Production code needs no change (no blocking there).
+
+Commands and REAL output tails:
+
+```sh
+$ timeout 150 make test
+# Ran 425 tests in 11.945s -- OK (skipped=3)
+# Ran 19 tests in 0.109s -- OK (web)
+
+$ timeout 150 python -m unittest tests.test_service tests.test_integration
+# Ran 86 tests in 5.270s -- OK (skipped=3)
+
+$ timeout 300 make demo
+# all receipts reverify MATCH (7/7, versions_match=True)
+# determinism: same clip 10x -> identical 2052f35308948842f...
+# determinism: alone vs batch-of-5 -> IDENTICAL receipt_sha256
+# batch latency: dock-to-batches wall time = 9.9s
+# demo OK
+
+$ # fresh signals trial (throwaway, removed after; signals @ a731265)
+$ python -m unittest discover -s tests
+# Ran 425 tests in 12.032s -- OK (skipped=3)
+$ python -m unittest discover -s web
+# Ran 19 tests in 0.127s -- OK
+```
+
+Owned 86/86 pass in both trees; the whole suite (425 + 19) is green both
+ways. No merge-gate blocker remains.
