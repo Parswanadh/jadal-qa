@@ -1,71 +1,101 @@
 {
-  "note": "GPU job must run under flock gpu.lock",
+  "note": "GPU job must run under flock gpu.lock; wall = OpenCV decode + GPU model call",
   "rows": [
     {
       "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
       "data": "real IndEgo clip",
+      "decode_s_median": 0.067,
       "device": "cuda",
-      "gpu_s_per_segment_median": 0.447,
+      "model_s_median": 0.157,
       "n_frames": 4,
       "peak_vram_GB": 1.66,
-      "reps": 2,
+      "reps": 3,
+      "route": "{\"text\": \"<|video|>\", \"video\": [N PIL RGB frames]}",
+      "runtime_dtype": "bfloat16",
       "seg_len_s": 5,
-      "segments_per_hour": 8054.0
+      "segments_per_hour_wall": 16094.4,
+      "wall_s_per_segment_median": 0.224,
+      "warmup_excluded": true
     },
     {
       "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
       "data": "real IndEgo clip",
+      "decode_s_median": 0.119,
       "device": "cuda",
-      "gpu_s_per_segment_median": 0.591,
+      "model_s_median": 0.401,
       "n_frames": 8,
       "peak_vram_GB": 1.809,
-      "reps": 2,
+      "reps": 3,
+      "route": "{\"text\": \"<|video|>\", \"video\": [N PIL RGB frames]}",
+      "runtime_dtype": "bfloat16",
       "seg_len_s": 5,
-      "segments_per_hour": 6089.0
+      "segments_per_hour_wall": 6919.6,
+      "wall_s_per_segment_median": 0.52,
+      "warmup_excluded": true
     },
     {
       "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
       "data": "real IndEgo clip",
+      "decode_s_median": 0.131,
       "device": "cuda",
-      "gpu_s_per_segment_median": 0.295,
+      "model_s_median": 0.157,
       "n_frames": 4,
       "peak_vram_GB": 1.66,
-      "reps": 2,
+      "reps": 3,
+      "route": "{\"text\": \"<|video|>\", \"video\": [N PIL RGB frames]}",
+      "runtime_dtype": "bfloat16",
       "seg_len_s": 10,
-      "segments_per_hour": 12183.7
+      "segments_per_hour_wall": 12507.3,
+      "wall_s_per_segment_median": 0.288,
+      "warmup_excluded": true
     },
     {
       "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
       "data": "real IndEgo clip",
+      "decode_s_median": 0.229,
       "device": "cuda",
-      "gpu_s_per_segment_median": 0.605,
+      "model_s_median": 0.398,
       "n_frames": 8,
       "peak_vram_GB": 1.809,
-      "reps": 2,
+      "reps": 3,
+      "route": "{\"text\": \"<|video|>\", \"video\": [N PIL RGB frames]}",
+      "runtime_dtype": "bfloat16",
       "seg_len_s": 10,
-      "segments_per_hour": 5945.6
+      "segments_per_hour_wall": 5739.8,
+      "wall_s_per_segment_median": 0.627,
+      "warmup_excluded": true
     },
     {
       "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
       "data": "real IndEgo clip",
+      "decode_s_median": 0.14,
       "device": "cuda",
-      "gpu_s_per_segment_median": 0.299,
+      "model_s_median": 0.163,
       "n_frames": 4,
       "peak_vram_GB": 1.66,
-      "reps": 2,
+      "reps": 3,
+      "route": "{\"text\": \"<|video|>\", \"video\": [N PIL RGB frames]}",
+      "runtime_dtype": "bfloat16",
       "seg_len_s": 20,
-      "segments_per_hour": 12043.4
+      "segments_per_hour_wall": 11870.1,
+      "wall_s_per_segment_median": 0.303,
+      "warmup_excluded": true
     },
     {
       "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
       "data": "real IndEgo clip",
+      "decode_s_median": 0.285,
       "device": "cuda",
-      "gpu_s_per_segment_median": 0.666,
+      "model_s_median": 0.397,
       "n_frames": 8,
       "peak_vram_GB": 1.809,
-      "reps": 2,
+      "reps": 3,
+      "route": "{\"text\": \"<|video|>\", \"video\": [N PIL RGB frames]}",
+      "runtime_dtype": "bfloat16",
       "seg_len_s": 20,
-      "segments_per_hour": 5407.7
+      "segments_per_hour_wall": 5277.6,
+      "wall_s_per_segment_median": 0.682,
+      "warmup_excluded": true
     }
   ]
 }

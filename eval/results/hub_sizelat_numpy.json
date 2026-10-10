@@ -1,0 +1,60 @@
+{
+  "bytes_formula": "segments * dim * 2 (float16 MATRIX bytes only; excludes .npz compression and meta.jsonl)",
+  "latency_ms": {
+    "dim128_N10000": {
+      "backend": "numpy",
+      "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+      "k": 5,
+      "median_ms": 6.0,
+      "p95_ms": 6.11,
+      "repeats": 20
+    },
+    "dim128_N100000": {
+      "backend": "numpy",
+      "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+      "k": 5,
+      "median_ms": 30.12,
+      "p95_ms": 33.48,
+      "repeats": 20
+    },
+    "dim128_N1000000": {
+      "backend": "numpy",
+      "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+      "k": 5,
+      "median_ms": 405.36,
+      "p95_ms": 450.36,
+      "repeats": 20
+    },
+    "dim256_N10000": {
+      "backend": "numpy",
+      "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+      "k": 5,
+      "median_ms": 5.55,
+      "p95_ms": 7.25,
+      "repeats": 20
+    },
+    "dim256_N100000": {
+      "backend": "numpy",
+      "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+      "k": 5,
+      "median_ms": 72.46,
+      "p95_ms": 85.2,
+      "repeats": 20
+    },
+    "dim256_N1000000": {
+      "backend": "numpy",
+      "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+      "k": 5,
+      "median_ms": 656.13,
+      "p95_ms": 722.85,
+      "repeats": 20
+    }
+  },
+  "matrix_bytes_per_1000h_fp16": {
+    "128": 92160000,
+    "256": 184320000
+  },
+  "n": "segments counted exactly; latency vectors SYNTHETIC",
+  "seg_seconds": 10.0,
+  "segments_per_1000h": 360000
+}

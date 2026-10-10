@@ -1,0 +1,40 @@
+{
+  "real": {
+    "data": "measured 768-d IndEgo ECU segment embeddings (91 fixed 10 s segments)",
+    "dim": 768,
+    "n_segments": 91,
+    "thresholds": {
+      "0.9": {
+        "dup_fraction": 0.989,
+        "n_clusters": 1,
+        "wall_s": 0.001
+      },
+      "0.95": {
+        "dup_fraction": 0.8791,
+        "n_clusters": 11,
+        "wall_s": 0.001
+      },
+      "0.99": {
+        "dup_fraction": 0.0,
+        "n_clusters": 91,
+        "wall_s": 0.001
+      }
+    }
+  },
+  "scale_synthetic": {
+    "10000": {
+      "data": "SYNTHETIC random unit vectors",
+      "dup_fraction": 0.0,
+      "n_clusters": 10000,
+      "threshold": 0.95,
+      "wall_s": 0.44
+    },
+    "100000": {
+      "data": "SYNTHETIC random unit vectors",
+      "dup_fraction": 0.0,
+      "n_clusters": 100000,
+      "threshold": 0.95,
+      "wall_s": 26.61
+    }
+  }
+}

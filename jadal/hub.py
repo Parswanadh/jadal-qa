@@ -1,19 +1,29 @@
 """Deterministic video-hub index (GitHub issue #27).
 
 Storage: float16 matrix (N, D) + ids + metadata, saved as
-``index.npz`` + ``meta.jsonl`` under ``data_runtime/hub/`` (git-ignored).
-Build order is canonical (sorted by segment id); ``index_hash`` is the
-sha256 over the float16 matrix bytes plus canonical metadata JSON.
-Search is exact cosine via blocked float32 matmul; ties break by
-segment_id. Every search returns a ``results_hash`` (sha256 of canonical
-JSON of ids + scores rounded to 4 decimals) so a search is re-verifiable.
+``index.npz`` (plain unicode + float16 arrays, NO pickle) + ``meta.jsonl``
+under ``data_runtime/hub/`` (git-ignored). ``load()`` recomputes and verifies
+``index_hash`` (mismatch => error).
+
+Performance layout: the canonical ordered ids and the CONTIGUOUS float16 /
+float32 matrices are built ONCE (rebuilt only when ``add()`` dirties them) —
+``search_*`` and ``index_hash`` never re-sort or re-stack per query.
+Search is exact cosine over the cached float32 matrix with a vectorised
+filter mask and an exact top-k (threshold + id tie-break, no full sort).
+``dedup_clusters`` refuses N above ``max_clusters_n`` (service protection;
+the API maps this to HTTP 413).
+
+Canonical build order is sorted by segment id; ``index_hash`` is the sha256
+over the float16 matrix bytes plus canonical metadata JSON. Every search
+returns a ``results_hash`` (sha256 of canonical JSON of ids + scores rounded
+to 4 decimals) so a search is re-verifiable.
 
 Metadata per segment: clip, start_s, end_s, worker_id, site_id, verdict,
-reasons (list), step (optional).
+reasons (list), step (optional), path.
 
 NOT DONE:
-- No ANN index (exact search only; ANN needs a MEASURED latency reason —
-  see docs/reports/hub.md).
+- No ANN index (exact search only; measured latencies in docs/reports/hub.md
+  state the N each claim holds for).
 - No incremental re-sharding; rebuild from ``add()`` + ``save()``.
 """
 
@@ -41,15 +51,27 @@ META_FIELDS = ("clip", "start_s", "end_s", "worker_id", "site_id",
                "verdict", "reasons", "step", "path")
 
 
+class ClusterLimitError(ValueError):
+    """Raised when dedup_clusters is asked to cluster more than
+    max_clusters_n segments (protects the service from O(N^2) blowups)."""
+
+
 class Index:
     """Exact-search hub index. Hardware-free (embed_fn injected)."""
 
     def __init__(self, dim: int = 256,
-                 embed_fn: Callable[[str], np.ndarray] | None = None) -> None:
+                 embed_fn: Callable[[str], np.ndarray] | None = None,
+                 max_clusters_n: int = 20000) -> None:
         self.dim = dim
         self._embed_fn = embed_fn
+        self.max_clusters_n = max_clusters_n
         self._vecs: dict[str, np.ndarray] = {}
         self._meta: dict[str, dict] = {}
+        # Cached canonical layout (rebuilt only when dirty).
+        self._dirty = True
+        self._ids: list[str] = []
+        self._mat16 = np.zeros((0, dim), dtype=np.float16)
+        self._mat32 = np.zeros((0, dim), dtype=np.float32)
 
     # -- build ---------------------------------------------------------
     def add(self, segment_id: str, vector: np.ndarray, meta: dict) -> None:
@@ -66,36 +88,59 @@ class Index:
         else:
             m["reasons"] = list(m["reasons"])
         self._meta[segment_id] = m
+        self._dirty = True
+
+    def get_meta(self, segment_id: str) -> dict | None:
+        """Public metadata accessor (None when unknown)."""
+        m = self._meta.get(segment_id)
+        return dict(m) if m is not None else None
+
+    def get_vector(self, segment_id: str) -> np.ndarray:
+        """Stored unit vector as float32 (KeyError when unknown)."""
+        self._ensure_ordered()
+        return self._mat32[self._ids.index(segment_id)].copy()
 
     def __len__(self) -> int:
         return len(self._vecs)
 
-    def ids_sorted(self) -> list[str]:
-        return sorted(self._vecs.keys())
+    def _ensure_ordered(self) -> None:
+        """Rebuild cached canonical arrays iff dirty. All mutation of
+        _vecs/_meta must go through add() (which sets the flag)."""
+        if not self._dirty and len(self._ids) == len(self._vecs):
+            return
+        ids = sorted(self._vecs.keys())
+        if ids:
+            mat = np.stack([self._vecs[i] for i in ids]).astype(np.float16)
+        else:
+            mat = np.zeros((0, self.dim), dtype=np.float16)
+        self._ids = ids
+        self._mat16 = np.ascontiguousarray(mat, dtype=np.float16)
+        self._mat32 = np.ascontiguousarray(mat, dtype=np.float32)
+        self._dirty = False
 
-    def _ordered_matrix(self) -> tuple[list[str], np.ndarray]:
-        ids = self.ids_sorted()
-        if not ids:
-            return ids, np.zeros((0, self.dim), dtype=np.float16)
-        mat = np.stack([self._vecs[i] for i in ids]).astype(np.float16)
-        return ids, mat
+    def ids_sorted(self) -> list[str]:
+        self._ensure_ordered()
+        return list(self._ids)
 
     def index_hash(self) -> str:
-        ids, mat = self._ordered_matrix()
+        self._ensure_ordered()
         h = hashlib.sha256()
-        h.update(mat.tobytes())
-        h.update(canonical_json([{"id": i, "meta": self._meta[i]} for i in ids]))
+        h.update(self._mat16.tobytes())
+        h.update(canonical_json(
+            [{"id": i, "meta": self._meta[i]} for i in self._ids]))
         return h.hexdigest()
 
     # -- persistence ----------------------------------------------------
     def save(self, directory: str | os.PathLike) -> Path:
+        self._ensure_ordered()
         d = Path(directory)
         d.mkdir(parents=True, exist_ok=True)
-        ids, mat = self._ordered_matrix()
         np.savez_compressed(d / "index.npz",
-                            ids=np.array(ids), matrix=mat, dim=self.dim)
+                            ids=np.array(self._ids, dtype=np.str_),
+                            matrix=self._mat16,
+                            dim=np.int64(self.dim))
         with open(d / "meta.jsonl", "w", encoding="utf-8") as f:
-            for i in ids:
+            for i in self._ids:
                 f.write(json.dumps({"id": i, "meta": self._meta[i]},
                                    sort_keys=True) + "\n")
         with open(d / "index_hash.txt", "w") as f:
@@ -104,12 +149,15 @@ class Index:
 
     @classmethod
     def load(cls, directory: str | os.PathLike,
-             embed_fn: Callable | None = None) -> "Index":
+             embed_fn: Callable | None = None,
+             max_clusters_n: int = 20000) -> "Index":
         d = Path(directory)
-        z = np.load(d / "index.npz", allow_pickle=True)
+        # allow_pickle=False: ids are plain unicode, matrix is float16 —
+        # an index shared between hosts must never be an arbitrary-code path.
+        z = np.load(d / "index.npz", allow_pickle=False)
         ids = [str(i) for i in z["ids"].tolist()]
-        mat = np.asarray(z["matrix"], dtype=np.float16)
-        idx = cls(dim=int(z["dim"]), embed_fn=embed_fn)
+        mat = np.ascontiguousarray(z["matrix"], dtype=np.float16)
+        dim = int(z["dim"])
         metas: dict[str, dict] = {}
         with open(d / "meta.jsonl", encoding="utf-8") as f:
             for line in f:
@@ -117,9 +165,20 @@ class Index:
                 if line:
                     rec = json.loads(line)
                     metas[rec["id"]] = rec["meta"]
+        if set(ids) != set(metas.keys()):
+            raise ValueError("index.npz ids do not match meta.jsonl ids")
+        idx = cls(dim=dim, embed_fn=embed_fn, max_clusters_n=max_clusters_n)
         for i, row in zip(ids, mat):
-            idx._vecs[i] = row.astype(np.float16)
+            idx._vecs[i] = np.ascontiguousarray(row, dtype=np.float16)
             idx._meta[i] = metas[i]
+        idx._dirty = True
+        idx._ensure_ordered()
+        expected = (d / "index_hash.txt").read_text().strip()
+        actual = idx.index_hash()
+        if expected != actual:
+            raise ValueError(
+                f"index integrity check failed in {d}: stored hash "
+                f"{expected[:16]}... != recomputed {actual[:16]}...")
         return idx
 
     # -- filters ---------------------------------------------------------
@@ -150,54 +209,105 @@ class Index:
                 return False
         return True
 
+    def _filter_mask(self, f: dict) -> np.ndarray:
+        """Boolean mask over the canonical order. Literal equality/overlap
+        only — filter values are never interpreted (no injection)."""
+        if not f:
+            return np.ones(len(self._ids), dtype=bool)
+        return np.fromiter((self._passes(self._meta[i], f) for i in self._ids),
+                           dtype=bool, count=len(self._ids))
+
     # -- search ----------------------------------------------------------
+    def _matvec(self, mat: np.ndarray, q: np.ndarray,
+                use_torch: bool = False) -> np.ndarray:
+        if use_torch:
+            import torch
+            if torch.cuda.is_available():
+                t = torch.from_numpy(mat).to("cuda")
+                qq = torch.from_numpy(q).to("cuda")
+                out = (t @ qq).to("cpu").numpy()
+                torch.cuda.synchronize()
+                return np.asarray(out, dtype=np.float32)
+            t = torch.from_numpy(mat)
+            return np.asarray(t @ torch.from_numpy(q), dtype=np.float32)
+        return mat @ q
+
     def search_by_vector(self, qvec: np.ndarray, k: int = 5,
-                         filters: dict | None = None) -> dict:
+                         filters: dict | None = None,
+                         use_torch: bool = False) -> dict:
+        """Exact cosine top-k over the cached matrix.
+
+        Deterministic: scores rounded to 9 decimals, order is
+        (-score, segment_id). Boundary ties at rank k resolve by id, so the
+        result is identical for the numpy and torch backends.
+        """
+        self._ensure_ordered()
         q = np.asarray(qvec, dtype=np.float32).reshape(-1)
         if q.shape[0] != self.dim:
             raise ValueError("query dim mismatch")
         n = float(np.linalg.norm(q))
         if n == 0:
             raise ValueError("zero query vector")
-        q = q / n
+        q = np.ascontiguousarray(q / n, dtype=np.float32)
         f = filters or {}
-        ids, mat = self._ordered_matrix()
-        if not ids:
+        if not self._ids:
             return {"hits": [], "results_hash": hashlib.sha256(
                 canonical_json([])).hexdigest()}
-        scores = mat.astype(np.float32) @ q
-        scored = [(float(scores[j]), ids[j]) for j in range(len(ids))
-                  if self._passes(self._meta[ids[j]], f)]
-        # Ties broken by segment_id (score rounded to 9 decimals for grouping).
-        scored.sort(key=lambda t: (-round(t[0], 9), t[1]))
+        mask = self._filter_mask(f)
+        pos = np.nonzero(mask)[0]
+        if pos.size == 0:
+            return {"hits": [], "results_hash": hashlib.sha256(
+                canonical_json([])).hexdigest()}
+        scores = self._matvec(self._mat32[pos], q, use_torch=use_torch)
+        rscores = np.round(scores.astype(np.float64), 9)
+        m = pos.size
+        kk = min(max(k, 0), m)
+        if m <= kk or kk == 0:
+            order = sorted(range(m),
+                           key=lambda r: (-rscores[r], self._ids[pos[r]]))
+            sel = order[:kk]
+        else:
+            kth = -np.partition(-rscores, kk - 1)[kk - 1]
+            gt = [r for r in range(m) if rscores[r] > kth]
+            need = kk - len(gt)
+            eq = sorted((r for r in range(m) if rscores[r] == kth),
+                        key=lambda r: self._ids[pos[r]])[:need]
+            sel = sorted(gt + eq,
+                         key=lambda r: (-rscores[r], self._ids[pos[r]]))
         hits = []
-        for s, i in scored[:max(k, 0)]:
-            m = self._meta[i]
-            hits.append({"segment_id": i, "score": _round4(s),
-                         "clip": m.get("clip"), "start_s": m.get("start_s"),
-                         "end_s": m.get("end_s"), "worker_id": m.get("worker_id"),
-                         "site_id": m.get("site_id"), "verdict": m.get("verdict"),
-                         "reasons": m.get("reasons"), "step": m.get("step")})
+        for r in sel:
+            i = self._ids[pos[r]]
+            md = self._meta[i]
+            hits.append({"segment_id": i, "score": _round4(float(scores[r])),
+                         "clip": md.get("clip"), "start_s": md.get("start_s"),
+                         "end_s": md.get("end_s"), "worker_id": md.get("worker_id"),
+                         "site_id": md.get("site_id"), "verdict": md.get("verdict"),
+                         "reasons": md.get("reasons"), "step": md.get("step")})
         rh = hashlib.sha256(canonical_json(
             [{"id": h["segment_id"], "score": h["score"]} for h in hits])).hexdigest()
         return {"hits": hits, "results_hash": rh}
 
     def search_text(self, query: str, k: int = 5,
-                    filters: dict | None = None) -> dict:
+                    filters: dict | None = None,
+                    use_torch: bool = False) -> dict:
         if self._embed_fn is None:
             raise RuntimeError("no embed_fn: construct Index(embed_fn=...)")
-        return self.search_by_vector(np.asarray(self._embed_fn(query)), k, filters)
+        return self.search_by_vector(np.asarray(self._embed_fn(query)), k,
+                                     filters, use_torch=use_torch)
 
     def search_similar(self, segment_id: str | None = None,
                        vector: np.ndarray | None = None, k: int = 5,
-                       filters: dict | None = None) -> dict:
+                       filters: dict | None = None,
+                       use_torch: bool = False) -> dict:
         """Find segments similar to an example. The query segment itself is
         excluded from hits (documented in docs/reports/hub.md)."""
+        self._ensure_ordered()
         if vector is None:
             if segment_id is None or segment_id not in self._vecs:
                 raise KeyError(f"unknown segment_id: {segment_id}")
-            vector = self._vecs[segment_id].astype(np.float32)
-        res = self.search_by_vector(np.asarray(vector), k=k + 1, filters=filters)
+            vector = self._mat32[self._ids.index(segment_id)]
+        res = self.search_by_vector(np.asarray(vector), k=k + 1,
+                                    filters=filters, use_torch=use_torch)
         if segment_id is not None:
             res["hits"] = [h for h in res["hits"]
                            if h["segment_id"] != segment_id][:k]
@@ -213,16 +323,25 @@ class Index:
                        block: int = 2048) -> dict:
         """Connected components over cosine >= threshold (exact, blocked).
 
+        Refuses N > max_clusters_n (ClusterLimitError) — the pairwise graph
+        is O(N^2) and a giant cluster's medoid is O(m^2); the API surface
+        maps this to HTTP 413. No cap on cluster SIZE below the limit.
+
         Returns {"clusters": [{"representative", "members", "size"}],
         "n_segments", "n_clusters", "dup_fraction"}. Representative = medoid
-        (max in-cluster similarity sum; ties by id). No cap on cluster size.
+        (max in-cluster similarity sum, blockwise; ties by id).
         """
-        ids, mat = self._ordered_matrix()
+        self._ensure_ordered()
+        ids, f32 = self._ids, self._mat32
         n = len(ids)
         if n == 0:
             return {"clusters": [], "n_segments": 0, "n_clusters": 0,
                     "dup_fraction": 0.0}
-        f32 = mat.astype(np.float32)
+        if n > self.max_clusters_n:
+            raise ClusterLimitError(
+                f"dedup_clusters refuses N={n} > max_clusters_n="
+                f"{self.max_clusters_n} (O(N^2) pairwise graph); "
+                f"raise max_clusters_n explicitly or shard the index")
         parent = list(range(n))
 
         def find(a: int) -> int:
@@ -236,9 +355,10 @@ class Index:
             if ra != rb:
                 parent[max(ra, rb)] = min(ra, rb)
 
+        # Upper triangle only (halves the blocked matmuls).
         for i0 in range(0, n, block):
             a = f32[i0:i0 + block]
-            for j0 in range(0, n, block):
+            for j0 in range(i0, n, block):
                 sims = a @ f32[j0:j0 + block].T
                 ii, jj = np.nonzero(sims >= threshold)
                 for di, dj in zip(ii.tolist(), jj.tolist()):
@@ -250,9 +370,13 @@ class Index:
             groups.setdefault(find(i), []).append(i)
         clusters = []
         for members in groups.values():
-            sub = f32[members] @ f32[members].T
-            sums = sub.sum(axis=1)
-            best = min(range(len(members)),
+            B = f32[members]  # (m, D)
+            mlen = len(members)
+            sums = np.zeros(mlen, dtype=np.float64)
+            cb = 512  # blockwise: O(m*cb) memory, never O(m^2)
+            for c0 in range(0, mlen, cb):
+                sums += (B @ B[c0:c0 + cb].T).sum(axis=1)
+            best = min(range(mlen),
                        key=lambda r: (-round(float(sums[r]), 9), ids[members[r]]))
             rep = ids[members[best]]
             mem_ids = sorted(ids[m] for m in members)
