@@ -1,0 +1,401 @@
+{
+ "base_scorers": [
+  "pixel",
+  "eg2",
+  "frozen",
+  "rules",
+  "z3"
+ ],
+ "device": "CPU (numpy/sklearn; cached features only, no GPU)",
+ "domains": {
+  "gold": {
+   "clears_0.95_indomain": false,
+   "n": 150,
+   "rows": {
+    "eg2": {
+     "auroc": 0.8458,
+     "auroc_ci95_grouped": [
+      0.7152,
+      0.9147
+     ],
+     "balacc_0.5": 0.77,
+     "parts": [
+      "eg2"
+     ]
+    },
+    "frozen_two_view": {
+     "auroc": 0.8336,
+     "auroc_ci95_grouped": [
+      0.7185,
+      0.9133
+     ],
+     "balacc_0.5": 0.785,
+     "parts": [
+      "frozen"
+     ]
+    },
+    "pixel": {
+     "auroc": 0.7916,
+     "auroc_ci95_grouped": [
+      0.6735,
+      0.8817
+     ],
+     "balacc_0.5": 0.77,
+     "parts": [
+      "pixel"
+     ]
+    },
+    "rank_all5": {
+     "auroc": 0.844,
+     "auroc_ci95_grouped": [
+      0.722,
+      0.9162
+     ],
+     "balacc_0.5": 0.77,
+     "parts": [
+      "pixel",
+      "eg2",
+      "frozen",
+      "rules",
+      "z3"
+     ]
+    },
+    "rank_frozen+z3": {
+     "auroc": 0.8076,
+     "auroc_ci95_grouped": [
+      0.6729,
+      0.8979
+     ],
+     "balacc_0.5": 0.755,
+     "parts": [
+      "frozen",
+      "z3"
+     ]
+    },
+    "rank_pixel+eg2": {
+     "auroc": 0.8443,
+     "auroc_ci95_grouped": [
+      0.7249,
+      0.9216
+     ],
+     "balacc_0.5": 0.785,
+     "parts": [
+      "pixel",
+      "eg2"
+     ]
+    },
+    "rank_pixel+eg2+frozen": {
+     "auroc": 0.8415,
+     "auroc_ci95_grouped": [
+      0.7266,
+      0.9199
+     ],
+     "balacc_0.5": 0.785,
+     "parts": [
+      "pixel",
+      "eg2",
+      "frozen"
+     ]
+    },
+    "rank_pixel+eg2+z3": {
+     "auroc": 0.8298,
+     "auroc_ci95_grouped": [
+      0.6955,
+      0.915
+     ],
+     "balacc_0.5": 0.785,
+     "gain_vs_frozen_paired": {
+      "ci95": [
+       -0.0274,
+       0.0183
+      ],
+      "frac_gt0": 0.2715,
+      "mean": -0.0057
+     },
+     "parts": [
+      "pixel",
+      "eg2",
+      "z3"
+     ]
+    },
+    "rank_pixel+eg2+z3+frozen": {
+     "auroc": 0.8322,
+     "auroc_ci95_grouped": [
+      0.7071,
+      0.9141
+     ],
+     "balacc_0.5": 0.785,
+     "parts": [
+      "pixel",
+      "eg2",
+      "z3",
+      "frozen"
+     ]
+    },
+    "rules": {
+     "auroc": 0.8222,
+     "auroc_ci95_grouped": [
+      0.7126,
+      0.855
+     ],
+     "balacc_0.5": 0.72,
+     "parts": [
+      "rules"
+     ]
+    },
+    "stack_meta_logistic5": {
+     "auroc": 0.8356,
+     "auroc_ci95_grouped": [
+      0.741,
+      0.8855
+     ],
+     "balacc_0.5": 0.725,
+     "gain_vs_frozen_paired": {
+      "ci95": [
+       -0.0647,
+       0.0456
+      ],
+      "frac_gt0": 0.5555,
+      "mean": -0.0009
+     },
+     "parts": [
+      "pixel",
+      "eg2",
+      "frozen",
+      "rules",
+      "z3"
+     ]
+    },
+    "stack_meta_pixel_eg2_z3": {
+     "auroc": 0.8196,
+     "auroc_ci95_grouped": [
+      0.7091,
+      0.9033
+     ],
+     "balacc_0.5": 0.77,
+     "gain_vs_frozen_paired": {
+      "ci95": [
+       -0.0367,
+       0.0072
+      ],
+      "frac_gt0": 0.093,
+      "mean": -0.0131
+     },
+     "parts": [
+      "pixel",
+      "eg2",
+      "z3"
+     ]
+    },
+    "z3": {
+     "auroc": 0.762,
+     "auroc_ci95_grouped": [
+      0.6244,
+      0.8436
+     ],
+     "balacc_0.5": 0.695,
+     "parts": [
+      "z3"
+     ]
+    }
+   }
+  },
+  "ood": {
+   "clears_0.95_indomain": false,
+   "n": 160,
+   "rows": {
+    "eg2": {
+     "auroc": 0.5891,
+     "auroc_ci95_grouped": [
+      0.4099,
+      0.7434
+     ],
+     "balacc_0.5": 0.5527,
+     "parts": [
+      "eg2"
+     ]
+    },
+    "frozen_two_view": {
+     "auroc": 0.566,
+     "auroc_ci95_grouped": [
+      0.4238,
+      0.6999
+     ],
+     "balacc_0.5": 0.5527,
+     "parts": [
+      "frozen"
+     ]
+    },
+    "pixel": {
+     "auroc": 0.5203,
+     "auroc_ci95_grouped": [
+      0.3919,
+      0.6499
+     ],
+     "balacc_0.5": 0.5264,
+     "parts": [
+      "pixel"
+     ]
+    },
+    "rank_all5": {
+     "auroc": 0.6207,
+     "auroc_ci95_grouped": [
+      0.4666,
+      0.7515
+     ],
+     "balacc_0.5": 0.6054,
+     "parts": [
+      "pixel",
+      "eg2",
+      "frozen",
+      "rules",
+      "z3"
+     ]
+    },
+    "rank_frozen+z3": {
+     "auroc": 0.7421,
+     "auroc_ci95_grouped": [
+      0.5903,
+      0.8701
+     ],
+     "balacc_0.5": 0.6845,
+     "parts": [
+      "frozen",
+      "z3"
+     ]
+    },
+    "rank_pixel+eg2": {
+     "auroc": 0.5634,
+     "auroc_ci95_grouped": [
+      0.4006,
+      0.7037
+     ],
+     "balacc_0.5": 0.5264,
+     "parts": [
+      "pixel",
+      "eg2"
+     ]
+    },
+    "rank_pixel+eg2+frozen": {
+     "auroc": 0.5634,
+     "auroc_ci95_grouped": [
+      0.4069,
+      0.7
+     ],
+     "balacc_0.5": 0.5264,
+     "parts": [
+      "pixel",
+      "eg2",
+      "frozen"
+     ]
+    },
+    "rank_pixel+eg2+z3": {
+     "auroc": 0.6989,
+     "auroc_ci95_grouped": [
+      0.5345,
+      0.8319
+     ],
+     "balacc_0.5": 0.6581,
+     "gain_vs_frozen_paired": {
+      "ci95": [
+       0.0586,
+       0.2115
+      ],
+      "frac_gt0": 1.0,
+      "mean": 0.1312
+     },
+     "parts": [
+      "pixel",
+      "eg2",
+      "z3"
+     ]
+    },
+    "rank_pixel+eg2+z3+frozen": {
+     "auroc": 0.6474,
+     "auroc_ci95_grouped": [
+      0.4885,
+      0.7847
+     ],
+     "balacc_0.5": 0.6054,
+     "parts": [
+      "pixel",
+      "eg2",
+      "z3",
+      "frozen"
+     ]
+    },
+    "rules": {
+     "auroc": 0.4272,
+     "auroc_ci95_grouped": [
+      0.2687,
+      0.562
+     ],
+     "balacc_0.5": 0.4209,
+     "parts": [
+      "rules"
+     ]
+    },
+    "stack_meta_logistic5": {
+     "auroc": 0.7082,
+     "auroc_ci95_grouped": [
+      0.5417,
+      0.8448
+     ],
+     "balacc_0.5": 0.7108,
+     "gain_vs_frozen_paired": {
+      "ci95": [
+       0.0247,
+       0.2676
+      ],
+      "frac_gt0": 0.9905,
+      "mean": 0.141
+     },
+     "parts": [
+      "pixel",
+      "eg2",
+      "frozen",
+      "rules",
+      "z3"
+     ]
+    },
+    "stack_meta_pixel_eg2_z3": {
+     "auroc": 0.7236,
+     "auroc_ci95_grouped": [
+      0.5579,
+      0.8608
+     ],
+     "balacc_0.5": 0.7108,
+     "gain_vs_frozen_paired": {
+      "ci95": [
+       0.0436,
+       0.2797
+      ],
+      "frac_gt0": 0.996,
+      "mean": 0.1566
+     },
+     "parts": [
+      "pixel",
+      "eg2",
+      "z3"
+     ]
+    },
+    "z3": {
+     "auroc": 0.7688,
+     "auroc_ci95_grouped": [
+      0.6487,
+      0.8733
+     ],
+     "balacc_0.5": 0.7635,
+     "parts": [
+      "z3"
+     ]
+    }
+   }
+  }
+ },
+ "experiment": "A1.02",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "protocol": "base scores are out-of-fold by construction (frozen OOF two-view; LOCO rules; grouped-CV logistic on Z3-20); meta-learner = logistic on standardised base scores, nested grouped CV (fit on all-but-group, predict group). Rank-average = mean of per-domain rank01 good-scores. Paired grouped bootstrap gains.",
+ "title": "Ensembling / stacking: two views x adapted x rules x new features",
+ "wall_s": 112.9
+}

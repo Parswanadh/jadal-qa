@@ -1,0 +1,238 @@
+{
+ "compute_cost": {
+  "device": "CPU (numpy/sklearn; cached features only, no GPU)",
+  "feature_extraction_s_per_window": {
+   "eg2_gpu_encode": 7.5,
+   "note": "pixel26/phys16 from cached CPU kernels (~tens of ms); EG2 encode is the GPU-dominated term (~7-9 s/window measured in ood_scores latency_ms, n_frames_eg2=20); Z3 decode ~0.3 s/window. Values are order-of-magnitude from the cached-run latency_ms fields, not a fresh benchmark.",
+   "phys16_cpu": 0.02,
+   "pixel26_cpu": 0.05,
+   "z3_decode_cpu": 0.3
+  },
+  "model_train_s": {
+   "gold|all42|logistic_cv": 0.04,
+   "gold|all62|logistic_cv": 0.04,
+   "gold|eg2_768|logistic_cv": 0.11,
+   "gold|phys16|logistic_cv": 0.03,
+   "gold|pixel26|logistic_cv": 0.04,
+   "gold|theory18|logistic_cv": 0.04,
+   "gold|z3_20|logistic_cv": 0.04,
+   "ood|all42|logistic_cv": 0.06,
+   "ood|all62|logistic_cv": 0.06,
+   "ood|phys16|logistic_cv": 0.05,
+   "ood|pixel26|logistic_cv": 0.05,
+   "ood|z3_20|logistic_cv": 0.05
+  },
+  "total_run_s": null
+ },
+ "device": "CPU (numpy/sklearn; cached features only, no GPU)",
+ "experiment": "A1.03",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "holdout108": {
+  "eg2_view": {
+   "auroc": 0.7334,
+   "auroc_ci95_grouped": [
+    0.5645,
+    0.8743
+   ],
+   "balacc_median_thr": 0.6467
+  },
+  "frozen_two_view": {
+   "auroc": 0.6895,
+   "auroc_ci95_grouped": [
+    0.5341,
+    0.8227
+   ],
+   "balacc_median_thr": 0.6101
+  },
+  "logit_all42_trained_ood160": {
+   "auroc": 0.659,
+   "auroc_ci95_grouped": [
+    0.4416,
+    0.8633
+   ],
+   "balacc_median_thr": 0.6101,
+   "gain_vs_frozen_paired": {
+    "ci95": [
+     -0.3123,
+     0.2747
+    ],
+    "frac_gt0": 0.4505,
+    "mean": -0.0202
+   }
+  },
+  "logit_z3_20_trained_ood160": {
+   "auroc": 0.7942,
+   "auroc_ci95_grouped": [
+    0.6729,
+    0.8936
+   ],
+   "balacc_median_thr": 0.7201
+  },
+  "pixel_view": {
+   "auroc": 0.6247,
+   "auroc_ci95_grouped": [
+    0.474,
+    0.7647
+   ],
+   "balacc_median_thr": 0.6467
+  },
+  "rank_pixel+eg2": {
+   "auroc": 0.7337,
+   "auroc_ci95_grouped": [
+    0.5909,
+    0.8453
+   ],
+   "balacc_median_thr": 0.6834
+  },
+  "rank_pixel+eg2+z3six": {
+   "auroc": 0.7568,
+   "auroc_ci95_grouped": [
+    0.6126,
+    0.8726
+   ],
+   "balacc_median_thr": 0.7201,
+   "gain_vs_frozen_paired": {
+    "ci95": [
+     -0.0348,
+     0.1735
+    ],
+    "frac_gt0": 0.9075,
+    "mean": 0.0674
+   }
+  },
+  "rules_frozen": {
+   "auroc": 0.5061,
+   "auroc_ci95_grouped": [
+    0.3155,
+    0.6829
+   ],
+   "balacc_median_thr": 0.5231
+  },
+  "stack_meta_trained_ood160": {
+   "auroc": 0.7154,
+   "auroc_ci95_grouped": [
+    0.5704,
+    0.847
+   ],
+   "balacc_median_thr": 0.7201,
+   "gain_vs_frozen_paired": {
+    "ci95": [
+     -0.1434,
+     0.2006
+    ],
+    "frac_gt0": 0.633,
+    "mean": 0.0302
+   }
+  },
+  "z3_six_signed": {
+   "auroc": 0.6746,
+   "auroc_ci95_grouped": [
+    0.523,
+    0.8224
+   ],
+   "balacc_median_thr": 0.6467,
+   "gain_vs_frozen_paired": {
+    "ci95": [
+     -0.1887,
+     0.1734
+    ],
+    "frac_gt0": 0.462,
+    "mean": -0.0105
+   }
+  }
+ },
+ "protocol": "E4-descriptor regimes; per-regime routing; best frozen recipe applied ONCE to the 108 confirmatory hold-out (factory-grouped CI, n_boot=2000); measured compute cost.",
+ "regimes": {
+  "gold": {
+   "n": 150,
+   "n_quality_desc": 21,
+   "n_wide": 0,
+   "per_regime_heads_quality": {
+    "auroc": 0.742,
+    "auroc_ci95_grouped": [
+     0.5995,
+     0.826
+    ]
+   },
+   "route_aspect_wide": {
+    "auroc": 0.8222,
+    "auroc_ci95_grouped": [
+     0.7126,
+     0.855
+    ],
+    "route_share_adapted": 0.0
+   },
+   "route_quality_desc": {
+    "auroc": 0.7589,
+    "auroc_ci95_grouped": [
+     0.5876,
+     0.8617
+    ],
+    "route_share_rules": 0.14
+   }
+  },
+  "ood": {
+   "n": 160,
+   "n_quality_desc": 45,
+   "n_wide": 160,
+   "per_regime_heads_quality": {
+    "auroc": 0.719,
+    "auroc_ci95_grouped": [
+     0.5879,
+     0.8357
+    ]
+   },
+   "route_aspect_wide": {
+    "auroc": 0.7688,
+    "auroc_ci95_grouped": [
+     0.6487,
+     0.8733
+    ],
+    "route_share_adapted": 1.0
+   },
+   "route_quality_desc": {
+    "auroc": 0.6849,
+    "auroc_ci95_grouped": [
+     0.5722,
+     0.7944
+    ],
+    "route_share_rules": 0.2812
+   }
+  }
+ },
+ "title": "Regime-specific heads + routing, hold-out 108, compute cost, verdict",
+ "verdict": {
+  "best_holdout108": {
+   "auroc": 0.7942,
+   "ci95": [
+    0.6729,
+    0.8936
+   ],
+   "recipe": "logit_z3_20_trained_ood160"
+  },
+  "best_in_domain": {
+   "auroc": 0.8458,
+   "balacc": 0.77,
+   "ci95": [
+    0.7152,
+    0.9147
+   ],
+   "gap_to_0.95": 0.1042,
+   "recipe": "stack:eg2"
+  },
+  "best_ood": {
+   "auroc": 0.7688,
+   "balacc": 0.6841,
+   "ci95": [
+    0.6487,
+    0.8733
+   ],
+   "gap_to_0.95": 0.1812,
+   "recipe": "z3_20|logistic"
+  },
+  "clears_0.95_indomain": false,
+  "clears_0.95_ood": false,
+  "reason": "in-domain is limited by the semantic sub-problem (NO_ACTIVE_WORK / HANDS_NOT_VISIBLE) and n=150 from 7 clips; OOD is limited by domain shift (IndEgo->Egocentric-10K) and n_bad=22 over 47 factories. Capacity and stacking add little over the frozen two-view because the ceiling is the labels/domain, not model capacity."
+ },
+ "wall_s": 67.4
+}
