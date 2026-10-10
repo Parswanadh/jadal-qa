@@ -1,0 +1,137 @@
+{
+  "accept_conf": null,
+  "blur_var_min": null,
+  "brightness_min": null,
+  "calibration": {
+    "accept_certify": {
+      "errors": 0,
+      "fired": 0,
+      "n_certify": 84,
+      "note": "no candidate selected: auto-accept stays disabled",
+      "provenance": {
+        "delta_per_rule": 0.0125,
+        "label_source": "human_gold",
+        "n_clips": 7,
+        "n_labellers": "unknown",
+        "n_segments": 150,
+        "n_wearers": 3
+      },
+      "upper_bound": null
+    },
+    "disabled_rules": [
+      "blur_var_min",
+      "brightness_min",
+      "hands_visible_frac_min",
+      "min_duration_s",
+      "motion_max",
+      "motion_min",
+      "over_exposed_frac_max",
+      "under_exposed_frac_max"
+    ],
+    "human_provenance": {
+      "file": "/home/parshu/projects/jadal-qa-wt/funnel3/eval/results/gold_labels_snapshot.json",
+      "labellers": "unknown",
+      "n_entries": 150,
+      "ok": true,
+      "schema": "gold-labels-v1",
+      "sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc"
+    },
+    "label_source": "human_gold",
+    "n": 150,
+    "n_certify": 84,
+    "n_select": 66,
+    "note": "Provisional (label_source=human_gold): no L0 quality rule certified \u2014 Bonferroni support floor 86 exceeds CERTIFY n=84, so no rule could pass; accept_conf null (no decider scores exist for these windows: spectral_data/arms/E/gold.json carries 79 embeddings, all score null); union fired 0 (no measurable bound); autonomous union rejects 84/84 CERTIFY with 58 false (UCB 0.757): without a confidence signal autonomous mode rejects everything, goods included. All quality thresholds nulled (disabled).",
+    "provenance": {
+      "delta_per_rule": 0.0125,
+      "label_source": "human_gold",
+      "n_clips": 7,
+      "n_labellers": "unknown",
+      "n_segments": 150,
+      "n_wearers": 3
+    },
+    "seed": 1234,
+    "status": "provisional",
+    "support_floor": 86,
+    "targets": {
+      "accept_step": 0.05,
+      "bonferroni": true,
+      "delta": 0.1,
+      "min_accepted": 30,
+      "min_support": 10,
+      "target_alpha": 0.05,
+      "target_beta": 0.05
+    },
+    "union_autonomous_certify": {
+      "errors": 58,
+      "fired": 84,
+      "n_certify": 84,
+      "note": "union of evidence rejects and LOW_CONFIDENCE fallback rejects as route() with mode 'autonomous' applies them (profile 'default'); this bound includes the fallback rejects and is the safety claim with no human backstop",
+      "policy": "autonomous",
+      "profile": "default",
+      "provenance": {
+        "delta_per_rule": 0.0125,
+        "label_source": "human_gold",
+        "n_clips": 7,
+        "n_labellers": "unknown",
+        "n_segments": 150,
+        "n_wearers": 3
+      },
+      "upper_bound": 0.757
+    },
+    "union_certify": {
+      "errors": 0,
+      "fired": 0,
+      "n_certify": 84,
+      "note": "union of all selected reject rules as route() applies them under this policy (profile 'default', no profiles map: legacy hands enforcement); per-rule bounds do not bound this",
+      "policy": "evidence_reject",
+      "profile": "default",
+      "provenance": {
+        "delta_per_rule": 0.0125,
+        "label_source": "human_gold",
+        "n_clips": 7,
+        "n_labellers": "unknown",
+        "n_segments": 150,
+        "n_wearers": 3
+      },
+      "upper_bound": null
+    },
+    "union_integrity_only_certify": {
+      "errors": 0,
+      "fired": 0,
+      "n_certify": 84,
+      "note": "union of all selected reject rules as route() applies them under this policy (profile 'default', no profiles map: legacy hands enforcement); per-rule bounds do not bound this",
+      "policy": "integrity_only",
+      "profile": "default",
+      "provenance": {
+        "delta_per_rule": 0.0125,
+        "label_source": "human_gold",
+        "n_clips": 7,
+        "n_labellers": "unknown",
+        "n_segments": 150,
+        "n_wearers": 3
+      },
+      "upper_bound": null
+    }
+  },
+  "hands_visible_frac_min": null,
+  "hard_reject_policy": "integrity_only",
+  "min_duration_s": null,
+  "mode": "supervised",
+  "motion_max": null,
+  "motion_min": null,
+  "over_exposed_frac_max": null,
+  "profiles": {
+    "assembly": {
+      "requires_hands": true
+    },
+    "default": {
+      "requires_hands": false
+    },
+    "logistics": {
+      "requires_hands": false
+    }
+  },
+  "sha256": "530c2c2b976ff5ffb7df66dae29325ae1c88ceddadc4988712a263efffadc651",
+  "under_exposed_frac_max": null,
+  "version": "funnel-v1-human-gold150-provisional"
+}
