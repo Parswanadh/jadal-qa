@@ -1,0 +1,299 @@
+{
+ "experiment": "Z1.02",
+ "title": "Unsupervised alignment + per-clip normalisation for zero-shot OOD transfer",
+ "n_indego": 150,
+ "n_ood": 60,
+ "n_bad_ood": 9,
+ "label_source": {
+  "indego": "human (labels/manifest_gold.json, single labeller, n=150: 100 good / 50 bad)",
+  "ood": "human (labels/ood_labels.json, single labeller, n=60: 51 good / 9 bad, n_bad=9 exploratory)"
+ },
+ "protocol": {
+  "indego": "leave-one-clip-out (LOCO) over 7 IndEgo clips; clip-bootstrap CI (2000)",
+  "ood": "head fit on IndEgo (all 7 clips); OOD-60 = 60 human-labelled Egocentric-10K windows (51 good / 9 bad), ~1 window/factory; window-bootstrap CI (optimistic, exploratory)"
+ },
+ "alignment": {
+  "methods": [
+   "raw",
+   "domain_std",
+   "domain_whiten (ZCA per domain)",
+   "coral_s2t",
+   "coral_t2s"
+  ],
+  "no_labels_used": true,
+  "target_distributions": [
+   "unlabelled OOD-60 features (60)",
+   "unlabelled Ego10K E8 corpus (1546)"
+  ]
+ },
+ "caveat": "OOD n_bad=9 exploratory. Per-clip norm is fitted on IndEgo clips; OOD has ~1 window/factory so per-factory norm is degenerate -> OOD block normalised globally. Ego10K corpus is native ~30fps vs IndEgo ~10fps (fps confound).",
+ "device": "CPU (numpy/sklearn); GPU not used",
+ "rows": [
+  {
+   "method": "raw \u00b7 OOD=10fps",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood_auroc": 0.5337690631808278,
+   "ood_balacc": 0.46405228758169936,
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-60",
+   "ood_ci95": [
+    0.3153227014076071,
+    0.7427982811714431
+   ]
+  },
+  {
+   "method": "domain_std \u00b7 OOD=10fps",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood_auroc": 0.5098039215686274,
+   "ood_balacc": 0.6372549019607843,
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-60",
+   "ood_ci95": [
+    0.30282451923076925,
+    0.7142857142857142
+   ]
+  },
+  {
+   "method": "domain_whiten \u00b7 OOD=10fps",
+   "indego_auroc": 0.7509999999999999,
+   "indego_balacc": 0.72,
+   "ood_auroc": 0.3714596949891068,
+   "ood_balacc": 0.4509803921568627,
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-60",
+   "ood_ci95": [
+    0.15482948970672186,
+    0.6094651442307693
+   ]
+  },
+  {
+   "method": "coral_s2t \u00b7 OOD=10fps",
+   "indego_auroc": 0.6739999999999999,
+   "indego_balacc": 0.635,
+   "ood_auroc": 0.5185185185185185,
+   "ood_balacc": 0.6372549019607843,
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-60",
+   "ood_ci95": [
+    0.24510353821015587,
+    0.7597648148148152
+   ]
+  },
+  {
+   "method": "coral_t2s \u00b7 OOD=10fps",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood_auroc": 0.5468409586056644,
+   "ood_balacc": 0.48039215686274506,
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-60",
+   "ood_ci95": [
+    0.3381449792038027,
+    0.7569605287569574
+   ]
+  },
+  {
+   "method": "perclip_z \u00b7 OOD=10fps (global target norm)",
+   "indego_auroc": 0.5878,
+   "indego_balacc": 0.5700000000000001,
+   "ood_auroc": 0.2832244008714597,
+   "ood_balacc": 0.3594771241830065,
+   "note": "IndEgo z/rank-normed within each clip (pallet/pallet2 shift removed)",
+   "ood_ci95": [
+    0.11305513682745826,
+    0.46551277480689246
+   ]
+  },
+  {
+   "method": "perclip_rank \u00b7 OOD=10fps (global target norm)",
+   "indego_auroc": 0.5262,
+   "indego_balacc": 0.5349999999999999,
+   "ood_auroc": 0.5119825708061002,
+   "ood_balacc": 0.38562091503267976,
+   "note": "IndEgo z/rank-normed within each clip (pallet/pallet2 shift removed)",
+   "ood_ci95": [
+    0.36055228738652656,
+    0.6730258938592273
+   ]
+  },
+  {
+   "method": "stable8+domain_whiten \u00b7 OOD=10fps",
+   "indego_auroc": 0.5852,
+   "indego_balacc": 0.475,
+   "ood_auroc": 0.5337690631808278,
+   "ood_balacc": 0.6013071895424837,
+   "note": "sign-stable features + unsupervised alignment",
+   "ood_ci95": [
+    0.3198544474393531,
+    0.7404113247863249
+   ]
+  },
+  {
+   "method": "stable8+coral_s2t \u00b7 OOD=10fps",
+   "indego_auroc": 0.6454,
+   "indego_balacc": 0.6100000000000001,
+   "ood_auroc": 0.6775599128540304,
+   "ood_balacc": 0.630718954248366,
+   "note": "sign-stable features + unsupervised alignment",
+   "ood_ci95": [
+    0.4972170686456401,
+    0.8382949376684636
+   ]
+  },
+  {
+   "method": "raw \u00b7 OOD=native",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood_auroc": 0.3790849673202615,
+   "ood_balacc": 0.4673202614379085,
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-60",
+   "ood_ci95": [
+    0.18518518518518517,
+    0.5983958700497616
+   ]
+  },
+  {
+   "method": "domain_std \u00b7 OOD=native",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood_auroc": 0.49891067538126366,
+   "ood_balacc": 0.6013071895424837,
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-60",
+   "ood_ci95": [
+    0.29314903846153845,
+    0.7018678332537027
+   ]
+  },
+  {
+   "method": "domain_whiten \u00b7 OOD=native",
+   "indego_auroc": 0.7509999999999999,
+   "indego_balacc": 0.72,
+   "ood_auroc": 0.33006535947712423,
+   "ood_balacc": 0.33006535947712423,
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-60",
+   "ood_ci95": [
+    0.2222222222222222,
+    0.47222222222222227
+   ]
+  },
+  {
+   "method": "coral_s2t \u00b7 OOD=native",
+   "indego_auroc": 0.6824,
+   "indego_balacc": 0.66,
+   "ood_auroc": 0.40958605664488024,
+   "ood_balacc": 0.4411764705882353,
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-60",
+   "ood_ci95": [
+    0.16021921248370527,
+    0.6515795206971678
+   ]
+  },
+  {
+   "method": "coral_t2s \u00b7 OOD=native",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood_auroc": 0.4684095860566449,
+   "ood_balacc": 0.48039215686274506,
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-60",
+   "ood_ci95": [
+    0.27594302884615385,
+    0.6700963050314467
+   ]
+  },
+  {
+   "method": "perclip_z \u00b7 OOD=native (global target norm)",
+   "indego_auroc": 0.5878,
+   "indego_balacc": 0.5700000000000001,
+   "ood_auroc": 0.28540305010893247,
+   "ood_balacc": 0.34967320261437906,
+   "note": "IndEgo z/rank-normed within each clip (pallet/pallet2 shift removed)",
+   "ood_ci95": [
+    0.11595384615384616,
+    0.46658423180593017
+   ]
+  },
+  {
+   "method": "perclip_rank \u00b7 OOD=native (global target norm)",
+   "indego_auroc": 0.5262,
+   "indego_balacc": 0.5349999999999999,
+   "ood_auroc": 0.5119825708061003,
+   "ood_balacc": 0.5620915032679739,
+   "note": "IndEgo z/rank-normed within each clip (pallet/pallet2 shift removed)",
+   "ood_ci95": [
+    0.3380585664335664,
+    0.6819525556553858
+   ]
+  },
+  {
+   "method": "stable8+domain_whiten \u00b7 OOD=native",
+   "indego_auroc": 0.5852,
+   "indego_balacc": 0.475,
+   "ood_auroc": 0.5337690631808278,
+   "ood_balacc": 0.6013071895424837,
+   "note": "sign-stable features + unsupervised alignment",
+   "ood_ci95": [
+    0.3194444444444445,
+    0.7367116071428571
+   ]
+  },
+  {
+   "method": "stable8+coral_s2t \u00b7 OOD=native",
+   "indego_auroc": 0.6452,
+   "indego_balacc": 0.6100000000000001,
+   "ood_auroc": 0.6775599128540305,
+   "ood_balacc": 0.630718954248366,
+   "note": "sign-stable features + unsupervised alignment",
+   "ood_ci95": [
+    0.5028211379899024,
+    0.8351392361111113
+   ]
+  },
+  {
+   "method": "coral_s2t\u2192Ego10K-corpus \u00b7 OOD=10fps",
+   "indego_auroc": 0.5754,
+   "indego_balacc": 0.5700000000000001,
+   "ood_auroc": 0.3681917211328976,
+   "ood_balacc": 0.522875816993464,
+   "note": "unlabelled Ego10K corpus (n=1546, 47 factories, native 30fps) as target; fps confound vs IndEgo ~10fps",
+   "ood_ci95": [
+    0.1808074618736384,
+    0.5741536323346466
+   ]
+  },
+  {
+   "method": "coral_s2t\u2192Ego10K-corpus \u00b7 OOD=native",
+   "indego_auroc": 0.5754,
+   "indego_balacc": 0.5700000000000001,
+   "ood_auroc": 0.36601307189542487,
+   "ood_balacc": 0.4509803921568627,
+   "note": "unlabelled Ego10K corpus (n=1546, 47 factories, native 30fps) as target; fps confound vs IndEgo ~10fps",
+   "ood_ci95": [
+    0.1839466307277628,
+    0.5677317391603106
+   ]
+  },
+  {
+   "method": "coral_t2s\u2192Ego10K-corpus \u00b7 OOD=10fps",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood_auroc": 0.5119825708061003,
+   "ood_balacc": 0.4640522875816993,
+   "note": "unlabelled Ego10K corpus (n=1546, 47 factories, native 30fps) as target; fps confound vs IndEgo ~10fps",
+   "ood_ci95": [
+    0.3017943026267111,
+    0.7115584935897437
+   ]
+  },
+  {
+   "method": "coral_t2s\u2192Ego10K-corpus \u00b7 OOD=native",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood_auroc": 0.44226579520697173,
+   "ood_balacc": 0.5,
+   "note": "unlabelled Ego10K corpus (n=1546, 47 factories, native 30fps) as target; fps confound vs IndEgo ~10fps",
+   "ood_ci95": [
+    0.2837198515769945,
+    0.6177478082579186
+   ]
+  }
+ ],
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_adapt/run_adapt.py",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+}

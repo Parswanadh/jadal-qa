@@ -1,0 +1,325 @@
+{
+ "experiment": "Z1.03",
+ "title": "Few-shot calibration curve + honest self-training",
+ "n_indego": 150,
+ "n_ood": 60,
+ "n_bad_ood": 9,
+ "label_source": {
+  "indego": "human (labels/manifest_gold.json, single labeller, n=150: 100 good / 50 bad)",
+  "ood": "human (labels/ood_labels.json, single labeller, n=60: 51 good / 9 bad, n_bad=9 exploratory)"
+ },
+ "protocol": {
+  "indego": "leave-one-clip-out (LOCO) over 7 IndEgo clips; clip-bootstrap CI (2000)",
+  "ood": "head fit on IndEgo (all 7 clips); OOD-60 = 60 human-labelled Egocentric-10K windows (51 good / 9 bad), ~1 window/factory; window-bootstrap CI (optimistic, exploratory)"
+ },
+ "fewshot_protocol": "factory-grouped: whole factories are either train or test; k = sampled labelled windows; C by inner grouped CV; test = all remaining factories; POST-HOC (fits on OOD labels)",
+ "self_train_protocol": "head trained on IndEgo; pseudo-label high-confidence unlabelled Ego10K corpus windows (E8, n=1546); add once with weight 0.5; re-evaluate on OOD-60 (no OOD labels used for training)",
+ "fewshot_curve": [
+  {
+   "k": 5,
+   "view": "native",
+   "repeats": 36,
+   "auroc_mean": 0.6548743263879712,
+   "auroc_std": 0.1471456043303821,
+   "frac_gt_0.6": 0.7222222222222222,
+   "n_train_mean": 5.333333333333333,
+   "min_n_bad_train": 1,
+   "class_weight": "balanced"
+  },
+  {
+   "k": 5,
+   "view": "10fps",
+   "repeats": 36,
+   "auroc_mean": 0.649350371251389,
+   "auroc_std": 0.1518080859209047,
+   "frac_gt_0.6": 0.75,
+   "n_train_mean": 5.333333333333333,
+   "min_n_bad_train": 1,
+   "class_weight": "balanced"
+  },
+  {
+   "k": 12,
+   "view": "native",
+   "repeats": 53,
+   "auroc_mean": 0.7167371042796119,
+   "auroc_std": 0.09902145249220923,
+   "frac_gt_0.6": 0.8490566037735849,
+   "n_train_mean": 12.245283018867925,
+   "min_n_bad_train": 1,
+   "class_weight": "balanced"
+  },
+  {
+   "k": 12,
+   "view": "10fps",
+   "repeats": 53,
+   "auroc_mean": 0.7115903251624818,
+   "auroc_std": 0.09892039364170452,
+   "frac_gt_0.6": 0.8867924528301887,
+   "n_train_mean": 12.245283018867925,
+   "min_n_bad_train": 1,
+   "class_weight": "balanced"
+  },
+  {
+   "k": 24,
+   "view": "native",
+   "repeats": 60,
+   "auroc_mean": 0.7628000804240472,
+   "auroc_std": 0.08763817289977352,
+   "frac_gt_0.6": 0.95,
+   "n_train_mean": 24.266666666666666,
+   "min_n_bad_train": 1,
+   "class_weight": "balanced"
+  },
+  {
+   "k": 24,
+   "view": "10fps",
+   "repeats": 60,
+   "auroc_mean": 0.7573039893217233,
+   "auroc_std": 0.09931239996507081,
+   "frac_gt_0.6": 0.9333333333333333,
+   "n_train_mean": 24.266666666666666,
+   "min_n_bad_train": 1,
+   "class_weight": "balanced"
+  }
+ ],
+ "self_training": [
+  {
+   "method": "self-train\u00b7raw",
+   "tau": 0.8,
+   "view": "native",
+   "n_pseudo": 1520,
+   "pseudo_pos": 191,
+   "ood_auroc": 0.3986928104575163,
+   "ood_balacc": 0.4215686274509804,
+   "ood_ci95": [
+    0.2004030501089325,
+    0.6145482954545454
+   ],
+   "source_head_ood_auroc": 0.3790849673202615,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5; fps confound IndEgo~10 vs corpus~30"
+  },
+  {
+   "method": "self-train\u00b7raw",
+   "tau": 0.8,
+   "view": "10fps",
+   "n_pseudo": 1520,
+   "pseudo_pos": 191,
+   "ood_auroc": 0.514161220043573,
+   "ood_balacc": 0.4934640522875817,
+   "ood_ci95": [
+    0.2999393530997305,
+    0.725207349302744
+   ],
+   "source_head_ood_auroc": 0.5337690631808278,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5; fps confound IndEgo~10 vs corpus~30"
+  },
+  {
+   "method": "self-train\u00b7raw",
+   "tau": 0.9,
+   "view": "native",
+   "n_pseudo": 1487,
+   "pseudo_pos": 174,
+   "ood_auroc": 0.40522875816993464,
+   "ood_balacc": 0.477124183006536,
+   "ood_ci95": [
+    0.2090890522875817,
+    0.621607905982906
+   ],
+   "source_head_ood_auroc": 0.3790849673202615,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5; fps confound IndEgo~10 vs corpus~30"
+  },
+  {
+   "method": "self-train\u00b7raw",
+   "tau": 0.9,
+   "view": "10fps",
+   "n_pseudo": 1487,
+   "pseudo_pos": 174,
+   "ood_auroc": 0.514161220043573,
+   "ood_balacc": 0.4934640522875817,
+   "ood_ci95": [
+    0.2999393530997305,
+    0.725207349302744
+   ],
+   "source_head_ood_auroc": 0.5337690631808278,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5; fps confound IndEgo~10 vs corpus~30"
+  },
+  {
+   "method": "self-train\u00b7domain_std",
+   "tau": 0.8,
+   "view": "native",
+   "n_pseudo": 1034,
+   "pseudo_pos": 598,
+   "ood_auroc": 0.48801742919389973,
+   "ood_balacc": 0.542483660130719,
+   "ood_ci95": [
+    0.2691773504273504,
+    0.7129629629629629
+   ],
+   "source_head_ood_auroc": 0.477124183006536,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5; fps confound IndEgo~10 vs corpus~30"
+  },
+  {
+   "method": "self-train\u00b7domain_std",
+   "tau": 0.8,
+   "view": "10fps",
+   "n_pseudo": 1034,
+   "pseudo_pos": 598,
+   "ood_auroc": 0.607843137254902,
+   "ood_balacc": 0.6339869281045751,
+   "ood_ci95": [
+    0.3747276688453159,
+    0.8258169934640524
+   ],
+   "source_head_ood_auroc": 0.5904139433551199,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5; fps confound IndEgo~10 vs corpus~30"
+  },
+  {
+   "method": "self-train\u00b7domain_std",
+   "tau": 0.9,
+   "view": "native",
+   "n_pseudo": 779,
+   "pseudo_pos": 456,
+   "ood_auroc": 0.47058823529411764,
+   "ood_balacc": 0.49673202614379086,
+   "ood_ci95": [
+    0.2534645009733453,
+    0.6929530385872298
+   ],
+   "source_head_ood_auroc": 0.477124183006536,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5; fps confound IndEgo~10 vs corpus~30"
+  },
+  {
+   "method": "self-train\u00b7domain_std",
+   "tau": 0.9,
+   "view": "10fps",
+   "n_pseudo": 779,
+   "pseudo_pos": 456,
+   "ood_auroc": 0.5991285403050108,
+   "ood_balacc": 0.6143790849673203,
+   "ood_ci95": [
+    0.3676553073152338,
+    0.8170615468409587
+   ],
+   "source_head_ood_auroc": 0.5904139433551199,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5; fps confound IndEgo~10 vs corpus~30"
+  }
+ ],
+ "recommendation": {
+  "best_zero_shot": {
+   "method": "raw \u00b7 sharpness-3 \u00b7 OOD=10fps",
+   "ood_auroc": 0.7058823529411764,
+   "ood_ci95": [
+    0.518,
+    0.8673376543209877
+   ]
+  },
+  "best_fewshot": {
+   "k": 24,
+   "view": "native",
+   "ood_auroc_mean": 0.7628000804240472,
+   "ood_auroc_std": 0.08763817289977352
+  },
+  "note_sharpness3_fewshot": "sharpness-3 few-shot curve added post-hoc; compare with pixel-26"
+ },
+ "caveat": "n_bad=9, ~1 window/factory: few-shot and OOD estimates are exploratory/optimistic. The few-shot curve is POST-HOC; self-training uses no OOD labels.",
+ "device": "CPU (numpy/sklearn); GPU not used",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_adapt/run_adapt.py",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "fewshot_curve_sharpness3": [
+  {
+   "k": 5,
+   "view": "native",
+   "feats": "sharpness3",
+   "repeats": 36,
+   "auroc_mean": 0.5723019421562437,
+   "auroc_std": 0.16043509014350923,
+   "frac_gt_0.6": 0.7222222222222222,
+   "min_n_bad_train": 1
+  },
+  {
+   "k": 12,
+   "view": "native",
+   "feats": "sharpness3",
+   "repeats": 53,
+   "auroc_mean": 0.5675362543091421,
+   "auroc_std": 0.13178776298608544,
+   "frac_gt_0.6": 0.5849056603773585,
+   "min_n_bad_train": 1
+  },
+  {
+   "k": 24,
+   "view": "native",
+   "feats": "sharpness3",
+   "repeats": 60,
+   "auroc_mean": 0.6258762271591736,
+   "auroc_std": 0.10384496143356094,
+   "frac_gt_0.6": 0.6333333333333333,
+   "min_n_bad_train": 1
+  },
+  {
+   "k": 5,
+   "view": "10fps",
+   "feats": "sharpness3",
+   "repeats": 36,
+   "auroc_mean": 0.5723019421562437,
+   "auroc_std": 0.16043509014350923,
+   "frac_gt_0.6": 0.7222222222222222,
+   "min_n_bad_train": 1
+  },
+  {
+   "k": 12,
+   "view": "10fps",
+   "feats": "sharpness3",
+   "repeats": 53,
+   "auroc_mean": 0.5675362543091421,
+   "auroc_std": 0.13178776298608544,
+   "frac_gt_0.6": 0.5849056603773585,
+   "min_n_bad_train": 1
+  },
+  {
+   "k": 24,
+   "view": "10fps",
+   "feats": "sharpness3",
+   "repeats": 60,
+   "auroc_mean": 0.6258762271591736,
+   "auroc_std": 0.10384496143356094,
+   "frac_gt_0.6": 0.6333333333333333,
+   "min_n_bad_train": 1
+  }
+ ],
+ "fewshot_blend_zeroshot": {
+  "native": {
+   "k12": {
+    "repeats": 53,
+    "auroc_pixel26": 0.7167371042796119,
+    "auroc_zeroshot_sharp3": 0.704799076669361,
+    "auroc_blend": 0.7237108399914483,
+    "blend_std": 0.04869906653874031
+   },
+   "k24": {
+    "repeats": 60,
+    "auroc_pixel26": 0.7628000804240472,
+    "auroc_zeroshot_sharp3": 0.698909094457521,
+    "auroc_blend": 0.7398850990528093,
+    "blend_std": 0.064604771472016
+   }
+  },
+  "10fps": {
+   "k12": {
+    "repeats": 53,
+    "auroc_pixel26": 0.7115903251624818,
+    "auroc_zeroshot_sharp3": 0.704799076669361,
+    "auroc_blend": 0.7221815970602278,
+    "blend_std": 0.05760670321148212
+   },
+   "k24": {
+    "repeats": 60,
+    "auroc_pixel26": 0.7573039893217233,
+    "auroc_zeroshot_sharp3": 0.698909094457521,
+    "auroc_blend": 0.7348560808808671,
+    "blend_std": 0.06706357880373573
+   }
+  },
+  "protocol": "POST-HOC: 0.5*(pixel-26 few-shot prob + sharpness-3 zero-shot prob), factory-grouped; zero-shot head fit on all IndEgo (fixed), few-shot head on the k grouped train windows"
+ }
+}
