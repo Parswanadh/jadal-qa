@@ -1,0 +1,677 @@
+{
+ "res": {
+  "h1080_3x3_t224": {
+   "n": 80,
+   "n_good": 58,
+   "n_bad": 22,
+   "auroc": 0.8166,
+   "ci95": [
+    0.7041,
+    0.9086
+   ],
+   "bal_acc": 0.7006
+  },
+  "h1080_3x3_t168": {
+   "n": 80,
+   "n_good": 58,
+   "n_bad": 22,
+   "auroc": 0.8103,
+   "ci95": [
+    0.6918,
+    0.9025
+   ],
+   "bal_acc": 0.6865
+  },
+  "h1080_3x3_t112": {
+   "n": 80,
+   "n_good": 58,
+   "n_bad": 22,
+   "auroc": 0.7986,
+   "ci95": [
+    0.6467,
+    0.9118
+   ],
+   "bal_acc": 0.7092
+  },
+  "h1080_4x4_t168": {
+   "n": 80,
+   "n_good": 58,
+   "n_bad": 22,
+   "auroc": 0.7625,
+   "ci95": [
+    0.6195,
+    0.8646
+   ],
+   "bal_acc": 0.6466
+  },
+  "h1080_4x4_t112": {
+   "n": 80,
+   "n_good": 58,
+   "n_bad": 22,
+   "auroc": 0.7453,
+   "ci95": [
+    0.6016,
+    0.8732
+   ],
+   "bal_acc": 0.6552
+  },
+  "h480_4x4_t168": {
+   "n": 80,
+   "n_good": 58,
+   "n_bad": 22,
+   "auroc": 0.7923,
+   "ci95": [
+    0.657,
+    0.8855
+   ],
+   "bal_acc": 0.6834
+  },
+  "h480_3x3_t224": {
+   "n": 80,
+   "n_good": 58,
+   "n_bad": 22,
+   "auroc": 0.7955,
+   "ci95": [
+    0.6393,
+    0.9207
+   ],
+   "bal_acc": 0.732
+  },
+  "mean1080_N9": {
+   "n": 80,
+   "n_good": 58,
+   "n_bad": 22,
+   "auroc": 0.8033,
+   "ci95": [
+    0.6438,
+    0.9126
+   ],
+   "bal_acc": 0.692
+  },
+  "mean1080_N16": {
+   "n": 80,
+   "n_good": 58,
+   "n_bad": 22,
+   "auroc": 0.8088,
+   "ci95": [
+    0.6531,
+    0.9073
+   ],
+   "bal_acc": 0.7092
+  }
+ },
+ "per_cfg": {
+  "h1080_3x3_t224": {
+   "canvas_px": 462400,
+   "grid": [
+    3,
+    3
+   ],
+   "tile_px": 224,
+   "src": "1080p",
+   "build_ms_per_win": 229.6,
+   "embed_ms_per_win": 50.3
+  },
+  "h1080_3x3_t168": {
+   "canvas_px": 262144,
+   "grid": [
+    3,
+    3
+   ],
+   "tile_px": 168,
+   "src": "1080p",
+   "build_ms_per_win": 229.6,
+   "embed_ms_per_win": 33.8
+  },
+  "h1080_3x3_t112": {
+   "canvas_px": 118336,
+   "grid": [
+    3,
+    3
+   ],
+   "tile_px": 112,
+   "src": "1080p",
+   "build_ms_per_win": 229.6,
+   "embed_ms_per_win": 30.1
+  },
+  "h1080_4x4_t168": {
+   "canvas_px": 465124,
+   "grid": [
+    4,
+    4
+   ],
+   "tile_px": 168,
+   "src": "1080p",
+   "build_ms_per_win": 229.6,
+   "embed_ms_per_win": 41.0
+  },
+  "h1080_4x4_t112": {
+   "canvas_px": 209764,
+   "grid": [
+    4,
+    4
+   ],
+   "tile_px": 112,
+   "src": "1080p",
+   "build_ms_per_win": 229.6,
+   "embed_ms_per_win": 32.2
+  },
+  "h480_4x4_t168": {
+   "canvas_px": 465124,
+   "grid": [
+    4,
+    4
+   ],
+   "tile_px": 168,
+   "src": "480p",
+   "build_ms_per_win": 229.6,
+   "embed_ms_per_win": 39.4
+  },
+  "h480_3x3_t224": {
+   "canvas_px": 462400,
+   "grid": [
+    3,
+    3
+   ],
+   "tile_px": 224,
+   "src": "480p",
+   "build_ms_per_win": 229.6,
+   "embed_ms_per_win": 42.7
+  }
+ },
+ "n": 80,
+ "ids": [
+  "q000_s_a558ea238cac",
+  "q002_s_009623b09fa7",
+  "q003_s_86dc2a624dc6",
+  "q005_s_1f058ff76496",
+  "q006_s_e8b7ea33e4f6",
+  "q008_s_52c046b21322",
+  "q010_s_0d6da1b626c8",
+  "q011_s_048cec11a8fd",
+  "q013_s_aba3dd5e872f",
+  "q015_s_8794095f235c",
+  "q017_s_348f54487c38",
+  "q019_s_35c124048082",
+  "q021_s_ec1c0dfee234",
+  "q023_s_43c511da5f99",
+  "q024_s_1f5e156cb521",
+  "q026_s_1a26944a211e",
+  "q028_s_645225e10dd6",
+  "q030_s_995e555ad42c",
+  "q032_s_390d3a881a83",
+  "q034_s_9f68944b2d57",
+  "q036_s_3c13ccbfbaef",
+  "q038_s_aeed2a166e35",
+  "q039_s_041ca61bbb85",
+  "q040_s_932a44d77f37",
+  "q041_s_67113a8ebd04",
+  "q043_s_b266142c6511",
+  "q044_s_2749e2d1c769",
+  "q046_s_329c246e78f3",
+  "q048_s_266b4df041d8",
+  "q050_s_046e5f4a3b2d",
+  "q052_s_19c3652de7e0",
+  "q054_s_879c9e0d0dd5",
+  "q056_s_18046a07308a",
+  "q058_s_6f5c3773acf9",
+  "q059_s_35815736920e",
+  "r000_53a83eb4b7f1",
+  "r002_723638f6282c",
+  "r004_e94354798331",
+  "r005_368ceae20bcc",
+  "r007_6f16b156f13e",
+  "r009_1b45cd4c304f",
+  "r011_79829a545ce0",
+  "r013_47b593f6887e",
+  "r014_4364be38ce08",
+  "r016_f807d41f3e5d",
+  "r018_dfbe86bff923",
+  "r020_10db36458056",
+  "r021_3e5089786db1",
+  "r023_4b4b4ed1a0e2",
+  "r025_84efec641e36",
+  "r027_13c96d8a4d10",
+  "r029_bf9be9bba179",
+  "r031_811af7fe4ded",
+  "r033_16ef18b96846",
+  "r035_f28a10e90b74",
+  "r037_d61f3c72f928",
+  "r038_b7ca36a9c264",
+  "r039_b0812e0095a1",
+  "r040_32c42216af3d",
+  "r042_7c945354292e",
+  "r044_b2c07f712e09",
+  "r046_348f259bfd88",
+  "r048_c4e85ab6b82a",
+  "r050_1bde66997568",
+  "r052_d59c4853a37d",
+  "r053_4cf8c915e6ab",
+  "r054_99a5fa118087",
+  "r056_f53d8c6f5535",
+  "r058_272475b0679e",
+  "r060_054d1660dfa9",
+  "r062_46bd9c2db0af",
+  "r064_bf034be5a59c",
+  "r066_6826242dd954",
+  "r068_98101f114eb0",
+  "r070_2ab9743ff4d4",
+  "r071_d5b9af92b3d5",
+  "r073_b378876ebeb1",
+  "r075_a6b2458154f8",
+  "r080_69738f91a8c1",
+  "r083_0a75087f8ff6"
+ ],
+ "meta": {
+  "q000_s_a558ea238cac": {
+   "y": 1,
+   "factory": "factory_001",
+   "reason": ""
+  },
+  "q002_s_009623b09fa7": {
+   "y": 0,
+   "factory": "factory_009",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "q003_s_86dc2a624dc6": {
+   "y": 1,
+   "factory": "factory_010",
+   "reason": ""
+  },
+  "q005_s_1f058ff76496": {
+   "y": 0,
+   "factory": "factory_014",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "q006_s_e8b7ea33e4f6": {
+   "y": 1,
+   "factory": "factory_016",
+   "reason": ""
+  },
+  "q008_s_52c046b21322": {
+   "y": 1,
+   "factory": "factory_020",
+   "reason": ""
+  },
+  "q010_s_0d6da1b626c8": {
+   "y": 1,
+   "factory": "factory_022",
+   "reason": ""
+  },
+  "q011_s_048cec11a8fd": {
+   "y": 0,
+   "factory": "factory_023",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "q013_s_aba3dd5e872f": {
+   "y": 1,
+   "factory": "factory_026",
+   "reason": ""
+  },
+  "q015_s_8794095f235c": {
+   "y": 1,
+   "factory": "factory_029",
+   "reason": ""
+  },
+  "q017_s_348f54487c38": {
+   "y": 1,
+   "factory": "factory_035",
+   "reason": ""
+  },
+  "q019_s_35c124048082": {
+   "y": 1,
+   "factory": "factory_037",
+   "reason": ""
+  },
+  "q021_s_ec1c0dfee234": {
+   "y": 1,
+   "factory": "factory_039",
+   "reason": ""
+  },
+  "q023_s_43c511da5f99": {
+   "y": 0,
+   "factory": "factory_041",
+   "reason": "SHAKY"
+  },
+  "q024_s_1f5e156cb521": {
+   "y": 1,
+   "factory": "factory_042",
+   "reason": ""
+  },
+  "q026_s_1a26944a211e": {
+   "y": 1,
+   "factory": "factory_046",
+   "reason": ""
+  },
+  "q028_s_645225e10dd6": {
+   "y": 1,
+   "factory": "factory_053",
+   "reason": ""
+  },
+  "q030_s_995e555ad42c": {
+   "y": 1,
+   "factory": "factory_056",
+   "reason": ""
+  },
+  "q032_s_390d3a881a83": {
+   "y": 1,
+   "factory": "factory_058",
+   "reason": ""
+  },
+  "q034_s_9f68944b2d57": {
+   "y": 1,
+   "factory": "factory_061",
+   "reason": ""
+  },
+  "q036_s_3c13ccbfbaef": {
+   "y": 1,
+   "factory": "factory_066",
+   "reason": ""
+  },
+  "q038_s_aeed2a166e35": {
+   "y": 0,
+   "factory": "factory_069",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "q039_s_041ca61bbb85": {
+   "y": 1,
+   "factory": "factory_070",
+   "reason": ""
+  },
+  "q040_s_932a44d77f37": {
+   "y": 0,
+   "factory": "factory_073",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "q041_s_67113a8ebd04": {
+   "y": 0,
+   "factory": "factory_076",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "q043_s_b266142c6511": {
+   "y": 1,
+   "factory": "factory_079",
+   "reason": ""
+  },
+  "q044_s_2749e2d1c769": {
+   "y": 0,
+   "factory": "factory_080",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "q046_s_329c246e78f3": {
+   "y": 1,
+   "factory": "factory_085",
+   "reason": ""
+  },
+  "q048_s_266b4df041d8": {
+   "y": 1,
+   "factory": "factory_003",
+   "reason": ""
+  },
+  "q050_s_046e5f4a3b2d": {
+   "y": 1,
+   "factory": "factory_010",
+   "reason": ""
+  },
+  "q052_s_19c3652de7e0": {
+   "y": 1,
+   "factory": "factory_014",
+   "reason": ""
+  },
+  "q054_s_879c9e0d0dd5": {
+   "y": 1,
+   "factory": "factory_019",
+   "reason": ""
+  },
+  "q056_s_18046a07308a": {
+   "y": 1,
+   "factory": "factory_021",
+   "reason": ""
+  },
+  "q058_s_6f5c3773acf9": {
+   "y": 0,
+   "factory": "factory_023",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "q059_s_35815736920e": {
+   "y": 1,
+   "factory": "factory_024",
+   "reason": ""
+  },
+  "r000_53a83eb4b7f1": {
+   "y": 0,
+   "factory": "factory_009",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "r002_723638f6282c": {
+   "y": 1,
+   "factory": "factory_061",
+   "reason": ""
+  },
+  "r004_e94354798331": {
+   "y": 1,
+   "factory": "factory_003",
+   "reason": ""
+  },
+  "r005_368ceae20bcc": {
+   "y": 0,
+   "factory": "factory_069",
+   "reason": "HANDS_NOT_VISIBLE"
+  },
+  "r007_6f16b156f13e": {
+   "y": 1,
+   "factory": "factory_024",
+   "reason": ""
+  },
+  "r009_1b45cd4c304f": {
+   "y": 1,
+   "factory": "factory_077",
+   "reason": ""
+  },
+  "r011_79829a545ce0": {
+   "y": 1,
+   "factory": "factory_009",
+   "reason": ""
+  },
+  "r013_47b593f6887e": {
+   "y": 0,
+   "factory": "factory_061",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "r014_4364be38ce08": {
+   "y": 1,
+   "factory": "factory_009",
+   "reason": ""
+  },
+  "r016_f807d41f3e5d": {
+   "y": 1,
+   "factory": "factory_069",
+   "reason": ""
+  },
+  "r018_dfbe86bff923": {
+   "y": 1,
+   "factory": "factory_039",
+   "reason": ""
+  },
+  "r020_10db36458056": {
+   "y": 1,
+   "factory": "factory_024",
+   "reason": ""
+  },
+  "r021_3e5089786db1": {
+   "y": 0,
+   "factory": "factory_001",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "r023_4b4b4ed1a0e2": {
+   "y": 1,
+   "factory": "factory_057",
+   "reason": ""
+  },
+  "r025_84efec641e36": {
+   "y": 1,
+   "factory": "factory_009",
+   "reason": ""
+  },
+  "r027_13c96d8a4d10": {
+   "y": 1,
+   "factory": "factory_028",
+   "reason": ""
+  },
+  "r029_bf9be9bba179": {
+   "y": 1,
+   "factory": "factory_036",
+   "reason": ""
+  },
+  "r031_811af7fe4ded": {
+   "y": 1,
+   "factory": "factory_062",
+   "reason": ""
+  },
+  "r033_16ef18b96846": {
+   "y": 1,
+   "factory": "factory_040",
+   "reason": ""
+  },
+  "r035_f28a10e90b74": {
+   "y": 1,
+   "factory": "factory_020",
+   "reason": ""
+  },
+  "r037_d61f3c72f928": {
+   "y": 1,
+   "factory": "factory_001",
+   "reason": ""
+  },
+  "r038_b7ca36a9c264": {
+   "y": 0,
+   "factory": "factory_069",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "r039_b0812e0095a1": {
+   "y": 0,
+   "factory": "factory_003",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "r040_32c42216af3d": {
+   "y": 0,
+   "factory": "factory_076",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "r042_7c945354292e": {
+   "y": 1,
+   "factory": "factory_016",
+   "reason": ""
+  },
+  "r044_b2c07f712e09": {
+   "y": 1,
+   "factory": "factory_077",
+   "reason": ""
+  },
+  "r046_348f259bfd88": {
+   "y": 1,
+   "factory": "factory_061",
+   "reason": ""
+  },
+  "r048_c4e85ab6b82a": {
+   "y": 1,
+   "factory": "factory_037",
+   "reason": ""
+  },
+  "r050_1bde66997568": {
+   "y": 1,
+   "factory": "factory_022",
+   "reason": ""
+  },
+  "r052_d59c4853a37d": {
+   "y": 0,
+   "factory": "factory_009",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "r053_4cf8c915e6ab": {
+   "y": 1,
+   "factory": "factory_009",
+   "reason": ""
+  },
+  "r054_99a5fa118087": {
+   "y": 0,
+   "factory": "factory_066",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "r056_f53d8c6f5535": {
+   "y": 1,
+   "factory": "factory_039",
+   "reason": ""
+  },
+  "r058_272475b0679e": {
+   "y": 1,
+   "factory": "factory_042",
+   "reason": ""
+  },
+  "r060_054d1660dfa9": {
+   "y": 1,
+   "factory": "factory_040",
+   "reason": ""
+  },
+  "r062_46bd9c2db0af": {
+   "y": 1,
+   "factory": "factory_003",
+   "reason": ""
+  },
+  "r064_bf034be5a59c": {
+   "y": 1,
+   "factory": "factory_041",
+   "reason": ""
+  },
+  "r066_6826242dd954": {
+   "y": 1,
+   "factory": "factory_001",
+   "reason": ""
+  },
+  "r068_98101f114eb0": {
+   "y": 1,
+   "factory": "factory_003",
+   "reason": ""
+  },
+  "r070_2ab9743ff4d4": {
+   "y": 1,
+   "factory": "factory_079",
+   "reason": ""
+  },
+  "r071_d5b9af92b3d5": {
+   "y": 0,
+   "factory": "factory_069",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "r073_b378876ebeb1": {
+   "y": 1,
+   "factory": "factory_061",
+   "reason": ""
+  },
+  "r075_a6b2458154f8": {
+   "y": 0,
+   "factory": "factory_014",
+   "reason": "NO_ACTIVE_WORK"
+  },
+  "r080_69738f91a8c1": {
+   "y": 0,
+   "factory": "factory_001",
+   "reason": "HANDS_NOT_VISIBLE"
+  },
+  "r083_0a75087f8ff6": {
+   "y": 0,
+   "factory": "factory_073",
+   "reason": "NO_ACTIVE_WORK"
+  }
+ },
+ "cost": {
+  "decode_ms": 646138.5,
+  "build_ms": 128559.8,
+  "mosaic_embed_ms": 21561.4,
+  "frame_embed_ms": 62666.2
+ },
+ "decode_paths": {
+  "nvdec+nvdec": 80
+ },
+ "mean_ms_per_win": 486.6
+}
