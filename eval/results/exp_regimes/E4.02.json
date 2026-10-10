@@ -10,7 +10,7 @@
  "device": "CPU (pod); no GPU used",
  "cost": "150 windows; logistic on 26 feats / EG2 768-d; CPU",
  "command": "python3 eval/exp_regimes/analyze_regimes.py --part regimes",
- "git_sha": "d07ac29ef4056c629d85ba1ae5e67ffdd3e720cd",
+ "git_sha": "8b08bc0373db63c65d312ec09e2b03728c9dcae3",
  "results": {
   "feat26": {
    "global_loco_auroc": 0.712,
