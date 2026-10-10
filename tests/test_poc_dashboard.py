@@ -147,10 +147,17 @@ class PocServerTest(unittest.TestCase):
         status, body = post("/api/reverify/bad!id/here")
         self.assertEqual(status, 400)
         status, body = post("/api/reverify/ok_window-1.2")
-        # run worker has not provided scripts/poc_run.py -> clear 503
-        self.assertEqual(status, 503)
-        self.assertEqual(body["status"], "unavailable")
-        self.assertIn("not available yet", body["message"])
+        # Pre-integration the run worker had not provided scripts/poc_run.py
+        # (-> clear 503). Post-integration poc_run.py exists, so the server
+        # attempts verification and reports ok|mismatch with HTTP 200.
+        # Accept either, but validate the shape of each.
+        if status == 503:
+            self.assertEqual(body["status"], "unavailable")
+            self.assertIn("not available yet", body["message"])
+        else:
+            self.assertEqual(status, 200)
+            self.assertIn(body["status"], ("ok", "mismatch"))
+            self.assertIn("returncode", body)
 
     def test_index_served_offline(self):
         status, ctype, blob = get("/")
