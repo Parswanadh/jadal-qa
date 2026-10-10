@@ -272,6 +272,14 @@ def queue_rank_key(segment_id: str, queue_priority: float | None) -> tuple:
 # --------------------------------------------------------------------------
 HARD_REJECT_POLICIES = ("integrity_only", "evidence_reject")
 
+# Router mode (round 3, issue #56, BASELINE amendment): 'supervised' (the
+# DEFAULT when absent: review bucket intact, all existing behaviour) vs
+# 'autonomous' (no review bucket: accept/reject fully automated, no
+# mandatory human — a clip that is neither confidently accepted nor
+# evidence-rejected is rejected with LOW_CONFIDENCE, and that count is
+# INCLUDED in the false-reject bound). Anything else raises ValueError.
+MODES = ("supervised", "autonomous")
+
 # L0 quality rules: may hard-reject ONLY under hard_reject_policy ==
 # 'evidence_reject' (with certified thresholds). Under the default
 # 'integrity_only' they demote to review with their evidence. Integrity
@@ -329,7 +337,8 @@ def route(signals: Mapping[str, Any] | None,
           thresholds: Mapping[str, Any],
           allow_uncalibrated_accept: bool = False,
           allow_provisional_accept: bool = False,
-          profile: str = "default") -> dict:
+          profile: str = "default",
+          mode: str | None = None) -> dict:
     """Route one segment to accept | reject | review (pure, deterministic).
 
     Returns ``{"verdict", "reasons", "evidence", "answer_conf",
@@ -376,10 +385,29 @@ def route(signals: Mapping[str, Any] | None,
     evidence); ``'placeholder'``/missing routes to ``review`` unless the
     caller passes ``allow_uncalibrated_accept=True`` (the demo sets it;
     the evidence then carries the flag).
+
+    Autonomous mode (round 3, issue #56): ``thresholds['mode']`` (or the
+    ``mode`` argument, which wins) is ``'supervised'`` (DEFAULT when
+    absent: everything above stands) or ``'autonomous'`` (anything else
+    raises ``ValueError``). Autonomous has no ``review`` bucket: accepts
+    (L0 pass + confidence + open gate) and evidence rejects are unchanged,
+    and every clip that supervised mode would review instead rejects with
+    ``LOW_CONFIDENCE`` (kept soft codes ride along as context, plus an
+    ``autonomous`` marker evidence entry with a value/op/threshold
+    triple). L1 outputs still never hard-reject; non-boolean
+    ``decodable`` and missing L0 measurements still fail closed (now to
+    reject, never accept).
     """
     signals = dict(signals) if isinstance(signals, Mapping) else {}
     decisions = dict(decisions) if isinstance(decisions, Mapping) else {}
     thresh = dict(thresholds)
+
+    mode_eff = mode if mode is not None else thresh.get("mode", "supervised")
+    if mode_eff not in MODES:
+        raise ValueError(
+            f"mode must be one of {MODES}, got {mode_eff!r} "
+            f"(thresholds['mode'] or the mode argument)")
+    autonomous = (mode_eff == "autonomous")
 
     policy = thresh.get("hard_reject_policy", "integrity_only")
     if policy not in HARD_REJECT_POLICIES:
@@ -655,6 +683,25 @@ def route(signals: Mapping[str, Any] | None,
         elif calib_status != "calibrated":
             evidence.append(_evidence("allow_uncalibrated_accept", 1,
                                       "==", 1, "LOW_CONFIDENCE"))
+
+    if autonomous and verdict == "review":
+        # No review bucket: uncertain clips reject with LOW_CONFIDENCE.
+        # L1 soft codes ride along as uncertainty context (M4), exactly as
+        # on evidence rejects — they never read as the hard cause. The
+        # marker entry guarantees every autonomous reject carries evidence
+        # with a value/op/threshold triple, and the UNION bound measured
+        # with mode autonomous (union_autonomous) counts these rejects.
+        verdict = "reject"
+        reasons = sorted(set(reasons) | {"LOW_CONFIDENCE"},
+                         key=lambda c: _REASON_RANK.get(c, len(REASON_ORDER)))
+        evidence.append({
+            "check": "autonomous",
+            "value": "no-confident-accept-no-evidence-reject",
+            "op": "==",
+            "threshold": "reject-LOW_CONFIDENCE",
+            "code": "LOW_CONFIDENCE",
+        })
+        queue_priority = 0.0
 
     return {
         "verdict": verdict,
@@ -1043,6 +1090,39 @@ def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
         }
     union = unions["evidence_reject"]
 
+    # -- (d) autonomous unions: route() with mode 'autonomous' has no
+    # review bucket, so every non-accepted CERTIFY clip rejects (evidence
+    # rejects PLUS LOW_CONFIDENCE fallbacks). These bounds INCLUDE the
+    # fallback rejects and ARE the safety claim for autonomous operation
+    # (round 3, issue #56: no human backstop). Measured under BOTH
+    # policies on CERTIFY at full delta, like the supervised unions (fix
+    # round 1, PR #59 review Important 2: route() permits
+    # autonomous+integrity_only, whose larger fallback reject set needs
+    # its own bound).
+    auto_unions: dict[str, dict] = {}
+    for auto_policy in ("evidence_reject", "integrity_only"):
+        auto_thresh = {k: v for k, v in updates.items()}
+        auto_thresh["hard_reject_policy"] = auto_policy
+        auto_thresh["mode"] = "autonomous"
+        auto_rejected = [
+            r for r in certify
+            if route(r["signals"], r["decisions"], auto_thresh,
+                     allow_uncalibrated_accept=True)["verdict"] == "reject"]
+        auto_stats = _rate_bound([r["label"] for r in auto_rejected], delta)
+        auto_unions[auto_policy] = {
+            **auto_stats, "n_certify": len(certify),
+            "policy": "autonomous", "profile": "default",
+            "provenance": dict(provenance),
+            "note": ("union of evidence rejects and LOW_CONFIDENCE "
+                     "fallback rejects as route() with mode 'autonomous' "
+                     f"and hard_reject_policy '{auto_policy}' applies them "
+                     "(profile 'default'); this bound includes the fallback "
+                     "rejects and is the safety claim with no human "
+                     "backstop"),
+        }
+    union_autonomous = auto_unions["evidence_reject"]
+    union_autonomous_integrity_only = auto_unions["integrity_only"]
+
     select_groups = sorted({r["group"] for r in select
                             if r["group"] is not None})
     certify_groups = sorted({r["group"] for r in certify
@@ -1060,6 +1140,8 @@ def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
         "reject_rules": reject_out,
         "union": union,
         "union_integrity_only": unions["integrity_only"],
+        "union_autonomous": union_autonomous,
+        "union_autonomous_integrity_only": union_autonomous_integrity_only,
         "threshold_updates": updates,
     }
 
@@ -1170,7 +1252,7 @@ def calibrate_two_sided(records: list[dict],
 __all__ = [
     "REASON_ORDER", "CHECK_ORDER", "DEFAULT_THRESHOLDS_PATH",
     "LABEL_SOURCES", "REJECT_RULES", "DEFAULT_TARGETS",
-    "HARD_REJECT_POLICIES", "QUALITY_RULE_CODES",
+    "HARD_REJECT_POLICIES", "QUALITY_RULE_CODES", "MODES",
     "canonical_json", "thresholds_hash", "load_thresholds",
     "queue_rank_key", "route", "calibrate_two_sided",
     "calibration_content_hash",
