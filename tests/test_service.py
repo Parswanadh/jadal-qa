@@ -44,7 +44,7 @@ PASSING = {
         "decodable": True, "blur_var": 120.0, "brightness_mean": 90.0,
         "under_exposed_frac": 0.0, "over_exposed_frac": 0.02, "motion_mean": 2.0,
         "hands_visible_frac": 0.8, "hand_count_mode": 2, "faces_found": 0,
-        "faces_blurred": 0, "phash": "aaaaaaaaaaaaaaaa", "dup_of": None,
+        "faces_blurred": 0, "dup_of": None,
     },
     "decisions": {
         "hands_ok": {"p_yes": 0.97},
@@ -92,6 +92,7 @@ class ServiceAcceptanceCase(unittest.TestCase):
     # -- helpers -----------------------------------------------------------
     def fake_clip(self, name: str, payload: dict | None = None) -> str:
         body = dict_merge(PASSING, payload)
+        body["clip"] = name  # keeps file bytes (and so ids) distinct per clip
         path = self.clips / name
         path.write_text(FAKE_MAGIC + json.dumps(body), encoding="utf-8")
         return str(path)
@@ -180,7 +181,9 @@ class TestStubsAndStore(unittest.TestCase):
         }
         receipt = {
             "receipt_id": "r-1", "segment_sha256": "ab", "receipt_sha256": "cd",
-            "created_utc": "now", "signals": {}, "decisions": {}, "verdict": {},
+            "created_utc": "now",
+            "signals": {}, "decisions": {},
+            "verdict": {"segment_id": "seg-1", "verdict": "accept", "reasons": []},
             "config": {},
         }
         segment = {
@@ -216,6 +219,7 @@ class TestPipeline(unittest.TestCase):
 
     def fake_clip(self, name: str, payload: dict | None = None) -> str:
         body = dict_merge(PASSING, payload)
+        body["clip"] = name  # keeps file bytes (and so ids) distinct per clip
         p = self.clips / name
         p.write_text(FAKE_MAGIC + json.dumps(body), encoding="utf-8")
         return str(p)
@@ -267,10 +271,10 @@ class TestPipeline(unittest.TestCase):
         segs = self.flat_segments(p1, p2)
         batch, _ = pipeline.run_batch(segs, self.cfg)
         by_id = {v["segment_id"]: v for v in batch["verdicts"]}
-        first, second = sorted(by_id.values(), key=lambda v: v["reasons"] == [])
-        # first occurrence keeps its verdict; second carries DUPLICATE
-        self.assertIn("DUPLICATE", second["reasons"])
-        self.assertEqual(second["verdict"], "reject")
+        first_id, second_id = [s["segment_id"] for s in segs]
+        self.assertEqual(by_id[first_id]["reasons"], [])
+        self.assertEqual(by_id[second_id]["verdict"], "reject")
+        self.assertIn("DUPLICATE", by_id[second_id]["reasons"])
 
     def test_batch_rule_two_rejects_beats_k1(self) -> None:
         paths = [
