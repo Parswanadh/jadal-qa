@@ -406,3 +406,62 @@ The `ablations` track also tested and FALSIFIED the reason-mix explanation: pall
 is 45% NO_ACTIVE_WORK vs 48.6% elsewhere (Fisher p=0.758), and HANDS_NOT_VISIBLE
 is the third-EASIEST reason (0.852) yet pallet scores far below the other five
 clips. **pallet is a clip-level (scene/wearer) shift, not a reason-level effect.**
+
+## Full ablation matrix (measured, not estimated)
+
+All rows share IDENTICAL settings except the named change: K=32, top-M=16, 4
+epochs, batch 8, no synthetic negatives, LOCO over 7 clips, pooled AUROC with
+clip-bootstrap 95% CI (2000). They are directly comparable to each other.
+
+| ablation | pooled AUROC | 95% CI | pallet |
+|---|---|---|---|
+| control_4ep | 0.799 | 0.703-0.847 | 0.530 |
+| no_ego_motion | 0.794 | 0.693-0.845 | 0.530 |
+| no_skin_channel | 0.795 | 0.695-0.845 | 0.530 |
+| G=8 | 0.790 | 0.674-0.846 | 0.530 |
+| G=4 | 0.785 | 0.683-0.837 | 0.530 |
+| single_member | 0.783 | 0.649-0.831 | 0.515 |
+| no_augmentation | 0.772 | 0.663-0.830 | 0.530 |
+| single_no_aug | 0.768 | 0.638-0.818 | 0.515 |
+| **reference: headline run, 25 epochs** | 0.753 | 0.651-0.813 | - |
+
+### What the matrix says
+
+1. **Every CI overlaps every other CI.** No ablation is distinguishable from the
+   control at n=150. Removing ego-motion compensation, removing the skin channel,
+   changing the grid from 4x4 to 8x8, removing augmentation, and collapsing the
+   ensemble to a single member all land between 0.768 and 0.799 against a control
+   of 0.799. **Nothing in the architecture is individually load-bearing**, which
+   is consistent with the model not having learned a spatial-rhythm signal in the
+   first place.
+2. **The control at 4 epochs (0.799) scores ABOVE the
+   25-epoch headline run (0.753).** The extra epochs
+   did not help; if anything the longer schedule overfits. This is a training-budget
+   artefact, not a modelling insight, and it means the 0.753 headline is not the
+   best number this architecture produced under this protocol.
+3. **pallet is stuck at 0.515-0.530 in every configuration.** No ablation moves it.
+   Combined with the finding that pallet is a clip-level scene/wearer shift, this
+   confirms it needs cross-clip adaptation, not a better feature or architecture.
+4. **Ablations that should matter, do not.** `no_ego_motion` (0.794) is
+   statistically indistinguishable from the control (0.799) -- despite
+   ego-motion compensation being the design's stated core contribution. Given the
+   motion-cue inversion finding (translation-only warping fails when the wearer
+   walks), this is coherent: the compensation is not doing what it was intended to do.
+
+## Determinism proof (measured)
+
+`eval/results/rhythm/determinism.json`, reproducible with
+`eval/rhythm/determinism.py`. Five windows spanning clips and labels:
+
+- **10 repeated `score()` calls per window**: identical `features_digest`,
+  `usable_prob` and `verdict` every time. 5/5 windows stable.
+- **Representation byte-stability**: extracting the same window twice from scratch
+  gives identical tensor digests. 5/5 identical.
+- **OMP_NUM_THREADS=1 vs 8**: **0 differing fields across 5 windows**
+  (`n_differing_fields: 0`). Verdict: IDENTICAL across thread counts.
+
+Scope of the claim: **same machine, pinned stack, CPU reference path only.**
+Cross-device identity and GPU-vs-CPU identity are NOT claimed and were not
+measured. Receipts in this project are content-hashed (SHA-256 of canonical
+JSON); they are **not** cryptographically signed. This proves reproducibility,
+not authenticity.

@@ -1,0 +1,9 @@
+{
+ "threads_a": "1",
+ "threads_b": "8",
+ "n_windows_compared": 5,
+ "n_differing_fields": 0,
+ "differences": [],
+ "verdict": "IDENTICAL across thread counts",
+ "claim_scope": "same machine, pinned stack, CPU reference path. Cross-device and GPU-vs-CPU identity are NOT claimed."
+}

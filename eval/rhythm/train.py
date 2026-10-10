@@ -337,20 +337,28 @@ def main() -> int:
     ap.add_argument("--tag", default="")
     ap.add_argument("--out", default=None)
     ap.add_argument("--no-ego", action="store_true")
-    ap.add_argument("--no-aug", action="store_true")
+    ap.add_argument("--no-aug", action="store_true", help="ablation: disable all augmentation")
     ap.add_argument("--no-synth", action="store_true")
-    ap.add_argument("--single", action="store_true", help="ablation: K=1, no augmentation")
+    ap.add_argument("--single", action="store_true",
+                    help="ablation: K=1 (one member). Keeps augmentation unless --no-aug is also given.")
     args = ap.parse_args()
 
+    # `--single` only changes the member count; augmentation is controlled solely
+    # by `--no-aug`. The two are separate axes of the ablation matrix.
     cfg = {
         "K": 1 if args.single else args.K,
         "epochs": args.epochs,
         "lr": 3e-3, "wd": 1e-2, "dropout": 0.1, "label_smooth": 0.05,
-        "mixup": 0.2, "aux_weight": 0.3, "batch": args.batch,
-        "aug": {} if (args.no_aug or args.single) else
+        "mixup": 0.0 if (args.no_aug or args.single) else 0.2,
+        "aux_weight": 0.3, "batch": args.batch,
+        "aug": {} if args.no_aug else
                {"crop": True, "reverse": True, "speed": True, "hflip": True,
                 "cell_drop": True, "noise": True, "shake": True},
     }
+    # mixup needs more than one member to have anything to mix across in the
+    # per-member sense; keep it only for real ensembles.
+    if cfg["K"] == 1:
+        cfg["mixup"] = 0.0
     tag = args.tag or ("main" if not args.no_ego else "noego")
 
     data = load_gold(G=args.G, tag=tag)

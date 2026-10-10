@@ -75,6 +75,7 @@ def main() -> int:
     ap.add_argument("--cache", type=Path, default=CACHE)
     ap.add_argument("--no-ego", action="store_true", help="ablation: no ego-motion compensation")
     ap.add_argument("--no-flow", action="store_true", help="ablation: no optical-flow channels")
+    ap.add_argument("--no-skin", action="store_true", help="ablation: zero the skin chromaticity channel")
     ap.add_argument("--tag", default="", help="suffix for the cache subdir (ablations)")
     args = ap.parse_args()
 
@@ -102,6 +103,8 @@ def main() -> int:
         out = F.extract_window(it["path"], it["start_s"], it["end_s"], G=args.G,
                                ego_compensate=not args.no_ego, use_flow=not args.no_flow)
         X, g = out["X"], out["g"]
+        if args.no_skin:
+            X[:, :, :, 2] = 0.0   # ablation: skin_frac channel removed
         if it.get("kind"):
             X, g = synth_from_tensor(X, g, it["kind"])
         dig = F.tensor_digest(X, g)
