@@ -30,3 +30,4 @@ tests/fixtures/poc/thumbs/
 
 # local scratch (screenshots, chrome profiles)
 .scratch/
+site/dist/
