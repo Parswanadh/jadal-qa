@@ -19,7 +19,7 @@ import torch
 from sklearn.model_selection import StratifiedKFold
 from sklearn.linear_model import LogisticRegression
 
-OUT = Path(__file__).resolve().parents[2] / "results" / "gpu_heads"
+OUT = Path(__file__).resolve().parents[1] / "results" / "gpu_heads"
 OUT.mkdir(parents=True, exist_ok=True)
 
 
