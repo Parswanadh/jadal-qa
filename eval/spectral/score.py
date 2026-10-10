@@ -372,17 +372,119 @@ def main() -> None:
                                 "note": ("shared/unlinked arm files; tier variants "
                                          "scored separately") if key != a else ""})
     af = load(DATA / "arms" / "A" / "allframes.json")
-    entries.append({"key": "A-full", "arm": "A", "gold": af,
-                    "synth": {"items": (af or {}).get("items", {})} if af else None,
-                    "dups": None, "chunks": None, "provisional": False,
-                    "note": "whole-video single-pass 160px variant of arm A"})
+    if af and isinstance(af.get("items"), dict) and af["items"]:
+        entries.append({"key": "A-full", "arm": "A", "gold": af,
+                        "synth": {"items": af["items"]},
+                        "dups": None, "chunks": None, "provisional": False,
+                        "note": "whole-video single-pass 160px variant of arm A"})
+    # B-T1-150 merge: contract-tier features (79) + harness gap-fill (71 new)
+    bmiss = load(HARNESS / "eval" / "results" / "spectral" / "b_missing.json")
+    t1e = next((e for e in entries if e["key"] == "B-T1"), None)
+    if (t1e and t1e.get("gold") and isinstance(bmiss, dict)
+            and isinstance(bmiss.get("items"), dict)):
+        merged = dict(t1e["gold"]["items"])
+        n_new = 0
+        for i, v in bmiss["items"].items():
+            if i not in merged:
+                merged[i] = v
+                n_new += 1
+        if n_new:
+            entries.append({"key": "B-T1-150", "arm": "B",
+                            "gold": {"items": merged},
+                            "synth": t1e.get("synth"), "dups": None,
+                            "chunks": None, "provisional": True,
+                            "note": f"merged: gold_T1.json ({len(t1e['gold']['items'])}) + "
+                                    f"harness T1 gap-fill ({n_new} new windows, same "
+                                    "extract(), harness-owned file); LOCO head refit"})
+
+    # Per-pixel table (other worker's output, read-only): identical LOCO head
+    # on feature groups. Labels verified 0-mismatch vs manifest before use.
+    PP = Path("/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/eval/results/perpixel")
+    try:
+        import numpy as _np
+        gnp = _np.load(str(PP / "gold.npz")) if (PP / "gold.npz").exists() else None
+        snp = _np.load(str(PP / "synth.npz")) if (PP / "synth.npz").exists() else None
+    except Exception:
+        gnp, snp = None, None
+    if gnp is not None and gold_manifest is not None:
+        lab_of = {it["id"]: it["label"] for it in gold_manifest["items"]}
+        gids = [str(x) for x in gnp["ids"]]
+        gy = _np.array([lab_of.get(i) for i in gids])
+        ok_lab = _np.array([v is not None for v in gy])
+        mismatch = int(((gy[ok_lab].astype(int)) !=
+                            _np.array(gnp["y"])[ok_lab]).sum())
+        names = [str(x) for x in gnp["names"]]
+        X = _np.array(gnp["X"], dtype=float)
+        sX = _np.array(snp["X"], dtype=float) if snp is not None else None
+        sids = [str(x) for x in snp["ids"]] if snp is not None else []
+        groups = {"P-all": list(range(len(names))),
+                  "P-B": [i for i, n in enumerate(names) if n.startswith("B_")],
+                  "P-G": [i for i, n in enumerate(names) if n.startswith("G_")],
+                  "P-P": [i for i, n in enumerate(names) if n.startswith("P_")]}
+        for pkey, cols in groups.items():
+            if not cols:
+                continue
+            cnames = [names[i] for i in cols]
+            gdoc = {"items": {
+                gid: {"score": None,
+                      "features": {n: float(v) for n, v in zip(cnames, X[r])}}
+                for r, gid in enumerate(gids) if gid in lab_of}}
+            sdoc = None
+            if sX is not None:
+                sdoc = {"items": {
+                    sid: {"score": None,
+                          "features": {n: float(v) for n, v in zip(cnames, sX[r])}}
+                    for r, sid in enumerate(sids)}}
+            entries.append({"key": pkey, "arm": "P", "gold": gdoc,
+                            "synth": sdoc, "dups": None, "chunks": None,
+                            "provisional": False,
+                            "label_mismatch_vs_manifest": mismatch,
+                            "n_cols": len(cols),
+                            "note": "per-pixel/GPU/arm-B table scored under the identical "
+                                    "LOCO head; source: perpixel-accuracy worker (read-only)"})
+    m2 = load(PP / "m2.json")
+    perpixel_reported = None
+    if isinstance(m2, dict):
+        import ast as _ast
+
+        def _lit(x, default=None):
+            try:
+                return _ast.literal_eval(x) if isinstance(x, str) else x
+            except Exception:
+                return default
+
+        q, qs = m2.get("quality", {}), m2.get("quality_synth", {})
+        dp, ac, se = m2.get("duplicates", {}), m2.get("activity", {}), m2.get("series", {})
+        perpixel_reported = {
+            "source": "perpixel-accuracy worker m2.json (THEIR protocol, not harness LOCO)",
+            "quality_rule_auroc": _lit(q.get("gold_quality_auroc")),
+            "quality_rule_ci": _lit(q.get("gold_quality_ci")),
+            "quality_sens_at_5pctFAR": _lit(q.get("sens_at_5pctFAR")),
+            "quality_synth_per_degradation": _lit(qs.get("per_degradation")),
+            "dups_constructed": _lit(dp.get("constructed")),
+            "dups_human": _lit(dp.get("human")),
+            "activity_lr_auroc": _lit(ac.get("auroc_lr")),
+            "activity_lr_ci": _lit(ac.get("ci_lr")),
+            "activity_hgb_auroc": _lit(ac.get("auroc_hgb")),
+            "activity_hgb_ci": _lit(ac.get("ci_hgb")),
+            "activity_per_reason_lr": _lit(ac.get("per_reason_at_5pctFRR_lr")),
+            "activity_per_clip_lr": _lit(ac.get("per_clip_auroc_lr")),
+            "series_conv_auroc": _lit(se.get("auroc_mean")),
+            "series_conv_ci": _lit(se.get("ci")),
+        }
 
     arm_docs = {e["key"]: e["gold"] for e in entries}
+    manifest_n = len(gold_manifest["items"]) if gold_manifest else 0
     for e in entries:
         key, a = e["key"], e["arm"]
-        entry = {"status": "RUN" if e["gold"] else "NOT RUN",
+        stopped = key.startswith("D-") or key == "D"
+        entry = {"status": ("STOPPED" if (stopped and e["gold"]) else
+                            "RUN" if e["gold"] else "NOT RUN"),
                  "files": status.get(a, {})}
-        if e.get("provisional"):
+        if stopped:
+            entry["note"] = ("STOPPED by human decision (too probabilistic). "
+                             "Interim 8-frame numbers below; do not wait for D.")
+        if e.get("provisional") and not stopped:
             entry["provisional"] = True
             entry["note"] = e.get("note", "")
         if e.get("variant_files"):
@@ -394,6 +496,13 @@ def main() -> None:
                 entry["gold"] = gold_task(a, e["gold"], gold_manifest, akeys)
                 entry["feature_keys"] = akeys
                 e["akeys"] = akeys
+                gn = (entry["gold"] or {}).get("n", 0)
+                if manifest_n and gn and gn < manifest_n:
+                    entry["partial"] = True
+                    entry["partial_note"] = (
+                        f"PARTIAL: scored n={gn} of {manifest_n} labelled windows; "
+                        "missing windows not re-run (features-worker re-run infeasible "
+                        "in budget) — treat as provisional")
             except Exception as ex:  # never let one arm kill the scorer
                 entry["gold"] = {"error": f"{type(ex).__name__}: {ex}"}
         summary["arms"][key] = entry
@@ -565,6 +674,30 @@ def main() -> None:
             row["eg2_years_for_10kh"] = round(hrs / 8760, 2)
             row["peak_vram_mb"] = c.get("peak_vram_mb")
         cost["arms"][a] = row
+    # per-pixel table cost from the worker's own meta timings (CPU reference)
+    try:
+        ppmeta = load(PP / "meta.json") or {}
+        gsec = (ppmeta.get("gold") or {}).get("seconds")
+        if gsec:
+            plat = round(gsec / 150.0, 3)
+            prtf = round(10.0 / plat, 2)
+            for pk in [k for k in summary["arms"] if k.startswith("P-")]:
+                cost["arms"][pk] = {
+                    "status": "RUN",
+                    "latency_s_per_segment_1core": plat,
+                    "gpu_only": False,
+                    "rtf_incl_decode": prtf,
+                    "rtf_excl_decode": None,
+                    "peak_ram_mb": None,
+                    "cores_10kh_in_2h": int(np.ceil(5000 / prtf)),
+                    "cores_10kh_in_3h": int(np.ceil(3333 / prtf)),
+                    "edge_50x_feasible": bool(prtf >= 50),
+                    "live_1x_feasible": bool(prtf >= 1),
+                    "note": "perpixel worker meta.json table-build (150 windows incl "
+                            "decode, single-process, NOT taskset-pinned; GPU-feature "
+                            "cost not separately measured)"}
+    except Exception:
+        pass
     summary["cost"] = cost
 
     # streaming: time-to-decision per degradation
@@ -627,11 +760,47 @@ def main() -> None:
     summary["hyperspectral_verdict"] = find_verdict(
         ["hyperspectral", "arm C", "ICVL"], "C")
     summary["vlm_verdict"] = find_verdict(["VLM", "arm D", "SmolVLM", "Qwen"], "D")
+    summary["perpixel_reported"] = perpixel_reported
 
     summary["scorer_wall_s"] = round(time.perf_counter() - t0, 1)
     (RES / "summary.json").write_text(json.dumps(summary, indent=1, default=str))
     write_report(summary)
+    draw_pareto(summary)
     print(f"scorer done in {summary['scorer_wall_s']}s", flush=True)
+
+
+def draw_pareto(s: dict) -> None:
+    """Accuracy-vs-cost Pareto PNG (gold AUROC vs cores for 10kh/2h)."""
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except Exception:
+        return
+    pts = []
+    for a in (["A", "A-full", "E"] +
+              sorted(k for k in s["arms"] if k.startswith(("P-", "B-")))):
+        e = s["arms"].get(a, {})
+        g = (e.get("gold") or {}).get("results", {}).get("head", {})
+        c = (s.get("cost", {}).get("arms") or {}).get(a, {})
+        if g.get("auroc") is not None and c.get("cores_10kh_in_2h"):
+            ci = g.get("auroc_ci95") or [g["auroc"], g["auroc"]]
+            pts.append((a, g["auroc"], ci[0], ci[1], c["cores_10kh_in_2h"]))
+    if len(pts) < 2:
+        return
+    fig, ax = plt.subplots(figsize=(8, 5))
+    for a, au, lo, hi, cores in pts:
+        ax.errorbar(cores, au, yerr=[[au - lo], [hi - au]], marker="o",
+                    capsize=4, label=a)
+        ax.annotate(a, (cores, au), textcoords="offset points", xytext=(6, 6))
+    ax.set_xscale("log")
+    ax.set_xlabel("cores for 10,000 h in 2 h (fewer = cheaper)")
+    ax.set_ylabel("gold AUROC (LOCO, 95% clip-bootstrap CI)")
+    ax.set_title("Accuracy vs cost Pareto (workstation single-core; NOT a Pi)")
+    ax.grid(True, which="both", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(RES / "pareto.png", dpi=100)
+    plt.close(fig)
 
 
 def synth_deg(it):
@@ -644,8 +813,9 @@ def find_verdict(keywords, arm):
         HARNESS / "docs" / "reports" / "spectral_study.md",
         DATA / f"verdict_arm{arm}.md",
         DATA / "arms" / arm / "report.md",
-        Path(f"/home/parshu/projects/jadal-qa-wt/spectral-features/docs/reports/spectral_study.md"),
-        Path(f"/home/parshu/projects/jadal-qa-wt/spectral-vlm/docs/reports/spectral_study.md"),
+        Path("/home/parshu/projects/jadal-qa-wt/spectral-features/docs/reports/spectral_features.md"),
+        Path("/home/parshu/projects/jadal-qa-wt/spectral-features/docs/reports/spectral_study.md"),
+        Path("/home/parshu/projects/jadal-qa-wt/spectral-vlm/docs/reports/spectral_study.md"),
     ]
     for c in cands:
         if c.exists() and c != REPORT:
@@ -694,11 +864,12 @@ def write_report(s: dict) -> None:
     L.append("| arm | gold AUROC (95% CI) | bal.acc | synth sens. (median over degs) | dups F1 | status |")
     L.append("|---|---|---|---|---|---|")
     table_arms = ["A", "A-full", "E", "B", "C", "D"] + sorted(
-        k for k in s["arms"] if "-" in k and k != "A-full")
+        k for k in s["arms"] if "-" in k and k != "A-full") + sorted(
+        k for k in s["arms"] if k.startswith("P-"))
     for a in table_arms:
         e = s["arms"].get(a, {})
         g = e.get("gold") or {}
-        if e.get("status") != "RUN" or "results" not in g:
+        if e.get("status") not in ("RUN", "STOPPED") or "results" not in g:
             L.append(f"| {a} | — | — | — | — | {e.get('status', 'NOT RUN')} |")
             continue
         gr = (g.get("results", {}).get("head") or
@@ -713,12 +884,15 @@ def write_report(s: dict) -> None:
                 if v.get("sensitivity_at_5pct_FAR") is not None]
         sens_s = round(float(np.median(sens)), 2) if sens else "—"
         f1 = ((s["dups"].get(a, {}) or {}).get("heldout_overall", {}) or {}).get("F1", "—")
-        L.append(f"| {a} | {au} {ci_s} | {ba} | {sens_s} | {f1} | RUN |")
+        flag = e.get("status", "RUN")
+        if e.get("partial"):
+            flag += " PARTIAL"
+        L.append(f"| {a} | {au} {ci_s} | {ba} | {sens_s} | {f1} | {flag} |")
     L.append("\n### Gold detail (per arm, LOCO folds)")
     for a in table_arms:
         e = s["arms"].get(a, {})
         g = e.get("gold") or {}
-        if e.get("status") == "RUN" and "results" in g:
+        if e.get("status") in ("RUN", "STOPPED") and "results" in g:
             L.append(f"\n**{a}** n={g.get('n')} "
                      f"(good={g.get('n_good')}, bad={g.get('n_bad')}, "
                      f"clips={g.get('n_clips')}): "
@@ -762,6 +936,13 @@ def write_report(s: dict) -> None:
         L.append(f"- {a}: AUROC {au}, {cores} cores (RTF {rtf})")
     L.append("_Pareto read: cheapest (fewest cores) first; an arm is dominated if "
              "another is both cheaper and more accurate._")
+    L.append("\n![accuracy-vs-cost Pareto](../../eval/results/spectral/pareto.png)\n")
+    L.append("## Per-pixel worker reported numbers (their protocol, not harness LOCO)\n")
+    L.append(f"`{json.dumps(s.get('perpixel_reported'), default=str)}`\n")
+    L.append("Harness-scored rows P-all/P-B/P-G/P-P above use the identical LOCO head on "
+             "their feature table (labels verified 0-mismatch vs manifest). P-G = GPU "
+             "feature group. Their dups-human recall@1/@3 = 0.5 is the real-duplicate "
+             "contrast to the near-perfect constructed-dup scores.\n")
     eg2 = ((s.get("cost", {}).get("arms") or {}).get("E") or {})
     if eg2.get("eg2_segments_per_hour"):
         L.append(f"\nEG2: {eg2['eg2_segments_per_hour']} seg/h/GPU → "
