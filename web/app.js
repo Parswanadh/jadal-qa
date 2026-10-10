@@ -71,6 +71,7 @@ var state = {
   segBatch: null,         // batch detail the displayed receipt was opened from
   rv: { status: 'idle', result: null, error: null }, // re-verify
   rvSeq: 0,               // invalidates stale re-verify responses
+  hubSeq: 0,              // invalidates stale hub-search responses
   risk: null, riskError: null,
   gaps: null, gapsError: null,
   pico: null,
@@ -305,25 +306,48 @@ function syncControlsFromState() {
   }
 }
 
+function langExtra() {
+  return state.lang !== A.LANGS[0] ? { lang: state.lang } : null;
+}
+
+// Merge the shared language extra into a route's own extras, dropping
+// empties the way buildHash does. Every hash built in this file goes
+// through here so tab switches and filter reroutes never silently reset
+// the language (or the queue/hub state they carry).
+function withLang(extra) {
+  var out = {};
+  [extra, langExtra()].forEach(function (e) {
+    if (!e) return;
+    Object.keys(e).forEach(function (k) { if (e[k]) out[k] = e[k]; });
+  });
+  return Object.keys(out).length ? out : null;
+}
+
+function queueExtra() {
+  return state.queueReason ? { qr: state.queueReason } : null;
+}
+
+function hubExtra() {
+  var hx = {};
+  if (state.hubQ) hx.hq = state.hubQ;
+  if (state.hubSite) hx.hsite = state.hubSite;
+  if (state.hubVerdict) hx.hverdict = state.hubVerdict;
+  if (state.hubReason) hx.hreason = state.hubReason;
+  return Object.keys(hx).length ? hx : null;
+}
+
 function pushHash() {
-  var extra = { lang: state.lang !== A.LANGS[0] ? state.lang : '' };
-  if (state.route === 'insights' && state.head) extra.head = state.head;
   var h;
   if (state.route === 'segment' && state.segmentId) {
-    h = A.buildHash('segment', state.segmentId, null, { lang: state.lang !== A.LANGS[0] ? state.lang : '' });
+    h = A.buildHash('segment', state.segmentId, null, withLang(null));
   } else if (state.route === 'insights') {
-    h = A.buildHash('insights', null, null, extra.head ? { head: state.head } : null);
+    h = A.buildHash('insights', null, null, withLang(state.head ? { head: state.head } : null));
   } else if (state.route === 'queue') {
-    h = A.buildHash('queue', null, null, state.queueReason ? { qr: state.queueReason } : null);
+    h = A.buildHash('queue', null, null, withLang(queueExtra()));
   } else if (state.route === 'videos') {
-    var hx = {};
-    if (state.hubQ) hx.hq = state.hubQ;
-    if (state.hubSite) hx.hsite = state.hubSite;
-    if (state.hubVerdict) hx.hverdict = state.hubVerdict;
-    if (state.hubReason) hx.hreason = state.hubReason;
-    h = A.buildHash('videos', null, null, Object.keys(hx).length ? hx : null);
+    h = A.buildHash('videos', null, null, withLang(hubExtra()));
   } else {
-    h = A.buildHash('batches', null, state.filters, state.lang !== A.LANGS[0] ? { lang: state.lang } : null);
+    h = A.buildHash('batches', null, state.filters, withLang(null));
   }
   if (location.hash !== h) location.hash = h;
   else routeFromHash();
@@ -344,7 +368,7 @@ function bindFilterbar() {
       state.filters.reason = $('#f-reason').value;
       state.lang = $('#f-lang').value;
       if (state.route === 'batches') pushHash();
-      else location.hash = A.buildHash('batches', null, state.filters, null);
+      else location.hash = A.buildHash('batches', null, state.filters, withLang(null));
       renderBatches();
     });
   });
@@ -354,7 +378,7 @@ function bindFilterbar() {
     state.searchTimer = setTimeout(function () {
       state.filters.q = $('#f-q').value.trim();
       if (state.route !== 'batches') {
-        location.hash = A.buildHash('batches', null, state.filters, null);
+        location.hash = A.buildHash('batches', null, state.filters, withLang(null));
       } else pushHash();
       renderBatches();
     }, SEARCH_DEBOUNCE_MS);
@@ -363,7 +387,7 @@ function bindFilterbar() {
     ev.preventDefault();
     clearTimeout(state.searchTimer);
     state.filters.q = $('#f-q').value.trim();
-    if (state.route !== 'batches') location.hash = A.buildHash('batches', null, state.filters, null);
+    if (state.route !== 'batches') location.hash = A.buildHash('batches', null, state.filters, withLang(null));
     else pushHash();
     renderBatches();
   });
@@ -566,7 +590,7 @@ function renderSegment() {
   $('#open-form').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var v = $('#open-id').value.trim();
-    if (v) location.hash = A.buildHash('segment', v, null, null);
+    if (v) location.hash = A.buildHash('segment', v, null, withLang(null));
   });
 
   if (!state.segmentId) {
@@ -1524,6 +1548,9 @@ function renderVideos() {
 }
 
 async function loadHub() {
+  // Stale-response guard mirroring runReverify's rvSeq: a rapid second
+  // search invalidates the first, so out-of-order resolves are dropped.
+  var my = ++state.hubSeq;
   state.hubKeyFor = hubKey();
   state.hub = { status: 'busy', items: [], error: null };
   renderVideos();
@@ -1531,8 +1558,10 @@ async function loadHub() {
     var res = await client.hubSearch(state.hubQ || '', {
       site: state.hubSite || '', verdict: state.hubVerdict || '', reason: state.hubReason || '',
     });
+    if (my !== state.hubSeq) return;
     state.hub = { status: 'done', items: res.items || [], total: res.total, mock: !!res.mock, error: null };
   } catch (e) {
+    if (my !== state.hubSeq) return;
     state.hub = { status: 'error', items: [], error: e };
   }
   renderVideos();
@@ -1779,15 +1808,17 @@ function bindStatic() {
       var route = tab.getAttribute('data-route');
       if (route === state.route) return;
       if (route === 'segment' && state.segmentId) {
-        location.hash = A.buildHash('segment', state.segmentId, null, null);
+        location.hash = A.buildHash('segment', state.segmentId, null, withLang(null));
       } else if (route === 'segment') {
-        location.hash = '#/segment';
+        location.hash = A.buildHash('segment', null, null, withLang(null));
       } else if (route === 'insights') {
-        location.hash = A.buildHash('insights', null, null, state.head ? { head: state.head } : null);
-      } else if (route === 'queue' || route === 'videos') {
-        location.hash = '#/' + route;
+        location.hash = A.buildHash('insights', null, null, withLang(state.head ? { head: state.head } : null));
+      } else if (route === 'queue') {
+        location.hash = A.buildHash('queue', null, null, withLang(queueExtra()));
+      } else if (route === 'videos') {
+        location.hash = A.buildHash('videos', null, null, withLang(hubExtra()));
       } else {
-        location.hash = A.buildHash('batches', null, state.filters, null);
+        location.hash = A.buildHash('batches', null, state.filters, withLang(null));
       }
     });
     tab.addEventListener('keydown', function (ev) {
@@ -1850,6 +1881,10 @@ function bindStatic() {
   $('#videos-reset').addEventListener('click', function () {
     state.hubQ = ''; state.hubSite = ''; state.hubVerdict = ''; state.hubReason = '';
     syncHubControls();
+    // Push the cleared state first (yields a clean #/videos, lang kept):
+    // the follow-up hashchange finds hubKeyFor already on the cleared key,
+    // so it re-renders without refetching.
+    pushHash();
     loadHub();
   });
 

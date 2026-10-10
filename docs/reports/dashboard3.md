@@ -170,3 +170,42 @@ Screenshots were not re-taken this round: pixels are unchanged for contract
 data (funnel `other` is zero-width, CSS deletions only remove unused rules)
 and the fixed behaviors (hash restore, meta clearing) need
 interaction/reload, not pixels.
+
+## Fix round 2 (review round 2 of PR #32, reviews/pr32-review.md)
+
+All findings were in owned files; none disputed. Fixed on `feat/dashboard3`
+(working tree was already up to date with `origin/main`), no new branch/PR:
+
+- I-1a (Reset): the `videos-reset` handler now calls `pushHash()` before
+  `loadHub()` — the cleared state yields a clean `#/videos` (language
+  kept), and the follow-up hashchange finds `hubKeyFor` already on the
+  cleared key, so it re-renders without refetching. Pinned by
+  `test_videos_reset_pushes_hash`.
+- I-1b (lang): one shared `withLang()`/`langExtra()` helper in `web/app.js`
+  merges the language extra into EVERY hash built in the file — `pushHash`
+  branches (insights/queue/videos/segment/batches), the three filterbar
+  reroutes, all five tab clicks (which now also preserve queue `qr` and hub
+  `hq/...` state instead of bare `#/queue`/`#/videos`), and the receipt-id
+  open form. Fixed two more droppers of the same class that the review did
+  not list (tab clicks, open form). Pinned by
+  `test_no_lang_dropping_hash_builds` plus lang round-trips on
+  `#/queue`/`#/videos`/`#/insights` in `HASH-OK`.
+- M-1 (`loadHub` races): `state.hubSeq` mirrors `rvSeq` — each search takes
+  a sequence number and stale resolves/rejects return early. Pinned by
+  `test_hub_search_has_stale_guard`.
+
+REAL command outputs (fix round 2):
+
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s web -t web
+Ran 31 tests in 0.646s
+OK
+$ node --check web/api.js && node --check web/app.js
+node --check: api.js + app.js OK
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 553 tests in 94.891s
+OK (skipped=8)
+```
+
+Screenshots not re-taken: no pixel-affecting change for contract data
+(lang/hub keys only alter the hash; the `hubSeq` guard is behavior-only).

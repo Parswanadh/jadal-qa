@@ -567,6 +567,16 @@ class Dashboard3(unittest.TestCase):
             "assert.strictEqual(A.buildHash('queue', null, null, null), '#/queue');\n"
             "assert.strictEqual(A.parseHash('#/queue').queueReason, '');\n"
             "assert.strictEqual(A.parseHash('#/batches?verdict=accept').queueReason, '');\n"
+            "// language survives alongside queue/hub keys on every route\n"
+            "p = A.parseHash('#/queue?qr=BLUR&lang=ta-IN');\n"
+            "assert.strictEqual(p.queueReason, 'BLUR');\n"
+            "assert.strictEqual(p.lang, 'ta-IN');\n"
+            "assert.deepStrictEqual(A.parseHash(A.buildHash('queue', null, null, {qr: 'BLUR', lang: 'ta-IN'})), p);\n"
+            "p = A.parseHash('#/videos?hq=x&lang=ta-IN');\n"
+            "assert.strictEqual(p.hub.q, 'x');\n"
+            "assert.strictEqual(p.lang, 'ta-IN');\n"
+            "assert.deepStrictEqual(A.parseHash(A.buildHash('videos', null, null, {hq: 'x', lang: 'ta-IN'})), p);\n"
+            "assert.strictEqual(A.parseHash('#/insights?lang=kn-IN').lang, 'kn-IN');\n"
             "console.log('HASH-OK');\n"
         )
         r = subprocess.run([node, "-e", script],
@@ -596,6 +606,30 @@ class Dashboard3(unittest.TestCase):
         self.assertEqual(r.returncode, 0,
                          f"caption node cases failed:\n{r.stdout}\n{r.stderr}")
         self.assertIn("CAPTION-OK", r.stdout)
+
+    def test_videos_reset_pushes_hash(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        m = re.search(r"\$\('#videos-reset'\)\.addEventListener\('click', function \(\) \{(.*?)\}\);",
+                      app, re.S)
+        self.assertIsNotNone(m, "videos-reset handler missing")
+        self.assertIn("pushHash()", m.group(1),
+                      "reset must push the cleared hub state to the hash")
+
+    def test_no_lang_dropping_hash_builds(self):
+        """Every hash built in app.js carries the shared language extra."""
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        for dropped in ["buildHash('batches', null, state.filters, null)",
+                        "buildHash('segment', state.segmentId, null, null)",
+                        "location.hash = '#/' + route",
+                        "location.hash = '#/segment'"]:
+            self.assertNotIn(dropped, app,
+                             f"hash build drops lang/route state: {dropped}")
+        self.assertIn("withLang(", app)
+
+    def test_hub_search_has_stale_guard(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("hubSeq", app, "loadHub needs an rvSeq-style stale guard")
+        self.assertIn("my !== state.hubSeq", app)
 
     def test_funnel_counts_other(self):
         app = (WEB / "app.js").read_text(encoding="utf-8")
