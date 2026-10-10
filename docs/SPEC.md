@@ -38,6 +38,9 @@ Receipt: `{"receipt_id": str, "segment_sha256": str, "signals": Signals, "decisi
 `receipt_sha256` = SHA-256 of the canonical JSON (sorted keys, separators `(",", ":")`, UTF-8) of the receipt **without** `receipt_sha256`, `receipt_id`, and `created_utc`. `receipt_id` = first 16 hex chars of `receipt_sha256`.
 Re-verify = re-run the pipeline on the stored segment with the stored config and compare `receipt_sha256`; return `{"match": bool, "expected": hex, "actual": hex, "diff": [field paths]}`.
 
+### Optional receipt field: `freshness` (added after the research gate; integration wires it in only after baseline-v1 is tagged)
+`freshness`: `{"nonce_hash": hex, "status": "fresh"|"stale"|"inconclusive", "lag_ms": float|null, "z": float|null, "bits_matched": int, "bits_total": int}` — produced by `jadal/freshness.py`. When present it is part of the receipt (included in `receipt_sha256`); when absent the hash is unchanged. It only supports the claim "a party that did not know the nonce during its validity window could not have produced a clip that shows it"; it does NOT prove the clip is unforgeable (an attacker who watches the nonce live can render it).
+
 ## Module ownership and interfaces
 - `jadal/certify.py` — `fit_temperature(logits, y) -> float`; `ece(probs, y, bins=15) -> float`; `exact_binomial_upper(errors, n, delta=0.1) -> float` (Clopper-Pearson); `pick_threshold(conf, correct, target_err, delta=0.1, min_accepted=30) -> {"threshold": float|None, "accepted": int, "errors": int, "upper_bound": float|None, "coverage": float}` using fixed-sequence testing from strictest threshold downward; `risk_coverage(conf, correct) -> list[{"threshold","coverage","error"}]`; `batch_rule(verdicts, k) -> str`.
 - `jadal/receipts.py` — `canonical_json(obj) -> bytes`; `make_receipt(segment, signals, decisions, verdict, config) -> Receipt`; `receipt_hash(receipt) -> hex`; `verify_receipt(receipt, recompute_fn) -> dict` (as above).
