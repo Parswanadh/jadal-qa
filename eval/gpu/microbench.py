@@ -342,7 +342,9 @@ def bench_kernels():
             for nn in range(N):
                 dctm[k, nn] = (2.0 / N) ** 0.5 * (0.70710678 if k == 0 else 1.0) * \
                     torch.cos(torch.tensor(3.14159265 * k * (2 * nn + 1) / (2 * N))).item()
-        xb = x.float()[:, :1].reshape(B, H // N, N, W // N, N).permute(0, 1, 3, 2, 4).reshape(-1, N, N)
+        xb = x.float()[:, :1]
+        Hc, Wc = (H // N) * N, (W // N) * N
+        xb = xb[:, :, :Hc, :Wc].reshape(B, Hc // N, N, Wc // N, N).permute(0, 1, 3, 2, 4).reshape(-1, N, N)
         def f_dct():
             C = dctm @ xb @ dctm.T
             e = (C.pow(2).sum(dim=(1, 2)))
