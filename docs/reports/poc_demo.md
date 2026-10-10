@@ -50,7 +50,7 @@ budget), 16-chunk demo wall 41–56 s for 32 s of video. Decode backend
 - `scripts/poc_demo.sh` — one command: dashboard `:8840` if
   `scripts/poc_server.py` exists (it does not on any branch yet → stub line),
   scripted blackout replay, prints URLs, kills only PIDs it started.
-- `tests/test_poc_demo.py` — 15 tests, <30 s, no GPU/network/real video.
+- `tests/test_poc_demo.py` — 17 tests, <30 s, no GPU/network/real video.
 
 ## Caveats
 
@@ -97,7 +97,7 @@ Blur has no S0 rule by design — blurry-but-bright footage is an S1/S2 job.
   16 lines, sha256
   `f5f9a97af6dd615ab8e9a43df09cfbfc85f3b61441b4224f4a19e0a23a8d17f4`,
   decisions continue×4, accept, continue, early_reject×10 (blackout t=12 s),
-  latency 345.7–783.2 ms, RAM 79.4–171.1 MB this run. Backup mp4 re-rendered
+  latency 409.9–820.9 ms, RAM 78.6–170.6 MB this run. Backup mp4 re-rendered
   (80 s, 16 cards).
 
 Real command outputs:
@@ -137,9 +137,41 @@ Real command outputs:
 
 Real command outputs:
 - `python -m unittest tests.test_poc_demo` → `Ran 15 tests in 0.302s` / `OK`
-  (includes the new window-id test)
+  (round 2; now 17 with the truncation tests)
 - `PYTHONNOUSERSITE=1 timeout 250 python -m unittest discover -s tests`
   → `Ran 597 tests in 36.383s` / `OK (skipped=8)`
 - TTR after round-2 changes (16-chunk blackout@12 run): `time_to_reject_s:
   0.0`, `mean_latency_ms: 534.9`, wall 8.6 s. Backup mp4 re-rendered
+  (80 s, 16 cards).
+
+## Fix round 3 (round-3 review of PR #66 — both Important + all Minors fixed)
+
+- I1 (silent mid-stream truncation): `replay()` now carries
+  `"truncated": True, "error": "<first 200 chars>"` in the summary and prints
+  `replay: TRUNCATED at t=...` (clean runs report `"truncated": false,
+  "error": null`). A corrupt chunk can no longer pass as a clean short run.
+  New tests: `test_midstream_decode_failure_is_flagged` (mocked corrupt 3rd
+  chunk → 2 events, `truncated` true, error mentions cause) and
+  `test_clean_run_not_truncated`. DEMO.md failure table documents the row.
+- I2 (stale events on failure): `poc_demo.sh` now wraps the replay in
+  `if ! ...; then echo "demo: REPLAY FAILED ..."; exit 1; fi` — a failed
+  replay (e.g. missing clip, raises at n==0) exits nonzero instead of
+  tailing the previous run's events. The EXIT trap still stops only PIDs the
+  script started.
+- M1: latency/RAM range updated to the regenerated deliverable
+  (409.9–820.9 ms / 78.6–170.6 MB; per-event values remain the source of
+  truth).
+- M2: comment corrected — `scale=160:90` stretches, not letterboxes.
+- M3: smoke-test uses a throwaway `SpectralStream`; the returned stream is
+  fresh, so chunk 1's `spectral` display values no longer include a black
+  probe frame. (Display-only; never gated a verdict. Regenerated deliverable
+  digest `edc3abe9...` reproduces byte-identically, confirming the S0 path is
+  unaffected.)
+
+Real command outputs:
+- `python -m unittest tests.test_poc_demo` → `Ran 17 tests` / `OK`
+- `PYTHONNOUSERSITE=1 timeout 250 python -m unittest discover -s tests`
+  → `Ran 599 tests in 34.069s` / `OK (skipped=8)`
+- Regenerated 16-chunk blackout@12 run: `time_to_reject_s: 0.0`,
+  `mean_latency_ms: 606.1`, `"truncated": false`. Backup mp4 re-rendered
   (80 s, 16 cards).

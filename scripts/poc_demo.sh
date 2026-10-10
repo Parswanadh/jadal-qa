@@ -51,9 +51,12 @@ fi
 
 # -- 2. scripted replay: clean start, then a blackout the funnel must catch --
 echo "-- replay: 6 clean chunks, then blackout at t=12s --"
-"$PY" "$ROOT/scripts/poc_stream_replay.py" --clip "$CLIP" \
+if ! "$PY" "$ROOT/scripts/poc_stream_replay.py" --clip "$CLIP" \
   --speed 4 --max-chunks 16 --degrade blackout --degrade-at 12 \
-  --out "$EVENTS" ${PICO:+--pico}
+  --out "$EVENTS" ${PICO:+--pico}; then
+  echo "demo: REPLAY FAILED (exit $?) -- NOT showing stale events" >&2
+  exit 1
+fi
 
 echo "-- last verdicts --"
 tail -n 6 "$EVENTS"

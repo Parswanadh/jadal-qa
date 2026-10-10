@@ -95,10 +95,12 @@ def make_spectral_stream():
         return None, f"local-fallback (import: {type(exc).__name__}: {exc})"
     try:
         stream = SpectralStream(tier="T1")
-        # Smoke-test on a dummy chunk so a broken import fails here, not
-        # mid-demo.
+        # Smoke-test a THROWAWAY instance so a broken import fails here, not
+        # mid-demo — feed() is stateful, so never reuse the probe as the
+        # returned stream (its first chunk would include one black frame).
+        probe = SpectralStream(tier="T1")
         dummy = [np.zeros((90, 160, 3), np.uint8)]
-        feats = stream.feed(dummy)
+        feats = probe.feed(dummy)
         if not isinstance(feats, dict) or not feats:
             raise ValueError("SpectralStream.feed returned no features")
         return stream, "jadal.spectral.stream.SpectralStream (in-tree)"
@@ -120,8 +122,8 @@ def decode_chunk(clip, start_s, chunk_s, fps=5, width=160, use_cuda=False):
     """
     height = max(2, int(round(width * 9 / 16)) // 2 * 2)
     # Exact scale (not scale=-1): the raw-byte slicing below assumes a fixed
-    # frame size, so non-16:9 sources are letterboxed by aspect distortion
-    # rather than silently garbled. Aspect is irrelevant to S0 luma rules.
+    # frame size, so non-16:9 sources are stretched (aspect not preserved;
+    # irrelevant to the S0 luma rules) rather than silently garbled.
     vf = f"scale={width}:{height},fps={fps}"
     backend = "cpu"
     pre = []
@@ -321,6 +323,8 @@ def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
     gray_window = []
     degraded_seen_at = None
     rejected_at = None
+    truncated = False
+    error = None
     decisions = []
     lat_ms = []
     t0 = time.perf_counter()
@@ -336,9 +340,14 @@ def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
         except Exception as exc:
             if n == 0:
                 raise
-            print(f"replay: end of clip at t={t:.0f}s ({exc})", flush=True)
+            # Mid-stream decode failure: never silently pass as a clean short
+            # run — flag it in the summary (and stdout) for judges/operators.
+            truncated, error = True, str(exc)[:200]
+            print(f"replay: TRUNCATED at t={t:.0f}s ({error})", flush=True)
             break
         if not frames:
+            truncated, error = True, f"zero frames decoded at t={t:.0f}s"
+            print(f"replay: TRUNCATED at t={t:.0f}s ({error})", flush=True)
             break
         degraded = (degrade not in (None, "none") and degrade_at is not None
                     and t >= degrade_at)
@@ -421,4 +430,5 @@ def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
             "degrade": degrade, "degrade_at": degrade_at,
             "mean_latency_ms": round(float(np.mean(lat_ms)), 1) if lat_ms else -1,
             "wall_s": round(wall, 1), "events": out_path,
-            "engine": engine, "s0_source": s0_source}
+            "engine": engine, "s0_source": s0_source,
+            "truncated": truncated, "error": error}

@@ -55,6 +55,7 @@ accuracy. Accuracy is measured only on 150 human-labelled windows
 | `poc_server.py` missing | `poc_demo.sh` prints a stub line and continues; `tail -f` the events file instead |
 | Pico absent | Hook logs `pico: not connected`; demo continues (tested with `FakePicoSerial`) |
 | Slow machine (latency >2 s/chunk) | Normal under load: decode of 1080p HEVC dominates; per-chunk latency is printed honestly — never hidden |
+| Corrupt chunk mid-stream | Replay prints `TRUNCATED at t=...` and the summary carries `"truncated": true` + `error` — never shown as a clean run; `poc_demo.sh` exits 1 instead of tailing stale events |
 | No network/clip missing | Play `docs/screens/poc_demo_backup.mp4` (80 s, pre-rendered from real events) |
 
 ## Claims to avoid (binding)

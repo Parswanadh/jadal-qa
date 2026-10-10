@@ -143,6 +143,36 @@ class TestReplayDriver(unittest.TestCase):
             self.assertIn(e["decision"], ("continue", "early_reject", "accept"))
         self.assertIn("accept", [e["decision"] for e in evs])
 
+    def test_midstream_decode_failure_is_flagged(self):
+        from unittest import mock
+        calls = []
+
+        def flaky_decode(clip, start_s, chunk_s, **kw):
+            calls.append(start_s)
+            if len(calls) >= 3:
+                raise RuntimeError("mocked corrupt chunk")
+            f = np.full((90, 160, 3), 110, np.uint8)
+            return [f.copy() for _ in range(4)], "cpu"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            out = os.path.join(tmp, "e.jsonl")
+            with mock.patch.object(R, "decode_chunk",
+                                   side_effect=flaky_decode), \
+                 mock.patch.object(R, "make_spectral_stream",
+                                   return_value=(None, "test-stub")):
+                summary = R.replay("fake.mp4", out, speed=1000.0,
+                                   max_chunks=6)
+            with open(out) as f:
+                self.assertEqual(sum(1 for _ in f), 2)
+        self.assertEqual(summary["chunks"], 2)
+        self.assertTrue(summary["truncated"])
+        self.assertIn("corrupt", summary["error"])
+
+    def test_clean_run_not_truncated(self):
+        summary, _ = self._run()
+        self.assertFalse(summary["truncated"])
+        self.assertIsNone(summary["error"])
+
     def test_window_id_advances_per_window(self):
         _, evs = self._run()  # 6 chunks of 2 s, 10 s window = 5 per window
         ids = [e["window_id"] for e in evs]
