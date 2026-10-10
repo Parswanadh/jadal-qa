@@ -5,11 +5,13 @@
 <!-- BRAG_VIDEO_URL: paste the GitHub user-attachments URL of brag.mp4 here -->
 
 ![Launch video: QA that shows its work, including where it fails](docs/assets/brag_preview.gif)
+
+
 ![`docs/assets/brag_poster.jpg`](docs/assets/brag_poster.jpg).
 
 [![Jadal QA results explorer: funnel, scoreboard and experiment log](docs/assets/ui_hero.png)](site/)
 
-*Explorer: a static TypeScript app in [`site/`](site/); run it with [Run the explorer locally](#run-the-explorer-locally). Live site: once the repository is public and GitHub Pages is enabled (not enabled yet).*
+
 
 ![Explorer tour: funnel stages, scoreboard, experiment log](docs/assets/ui_tour.gif)
 
