@@ -1,6 +1,6 @@
 # Y3 — Review reduction by making the score more separable (cheap cached-view ensembling)
 
-**Branch:** `m/review-score` · **Owner:** Y3 (claim Y3) · **Device:** CPU, `OMP_NUM_THREADS=2`
+**Branch:** `m/review-score` (PR #120) · **Owner:** Y3 (claim Y3) · **Device:** CPU, `OMP_NUM_THREADS=2`
 **Timebox:** 30 min · **Status:** complete (clean negative + one cheap positive)
 **Results:** `eval/results/exp_review/Y3.01.json`, `eval/results/exp_review/Y3.02.json`
 **Code:** `eval/exp_review/run_y3.py` (deterministic, seed 7, all inputs read-only from `/workspace/jadal_pod_bundle`)
