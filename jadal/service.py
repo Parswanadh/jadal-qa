@@ -19,8 +19,10 @@ lives here): ``JADAL_BATCH_MAX_AGE_S`` (30.0 s), ``JADAL_WATCH_BUCKET`` (1),
 No network calls happen at import time; the SQLite file is created lazily.
 
 NOT DONE:
-- L0/L1/segmenter are stubs (hash-derived fakes, whole clip = one segment)
-  until the real modules merge; set JADAL_USE_STUBS=1 to run on stubs.
+- L0/L1/segmenter run on the REAL modules when importable (preferred); the
+  deterministic stubs in ``jadal/stubs.py`` engage ONLY under
+  ``JADAL_USE_STUBS=1``. ``scripts/demo.sh`` unsets the flag and fails closed
+  on any stub-named ``config.versions`` (see ``pipeline.receipt_problems``).
 - /stats/risk_coverage returns per-head entries from
   eval/results/decider_baseline.json + funnel_calibration.json when present
   (else SQLite calibration rows, else [] = no measured data, never invented).

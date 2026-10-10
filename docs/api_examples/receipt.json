@@ -40,12 +40,31 @@
    "version": "funnel-v1-placeholder"
   },
   "versions": {
+   "arch": "<version>",
    "certify": "<version>",
+   "certify_git_sha": "<version>",
    "decision": "<version>",
+   "decision_git_sha": "<version>",
+   "device": "<version>",
+   "face_detector_task": "<version>",
+   "funnel": "<version>",
+   "funnel_git_sha": "<version>",
+   "gpu_name": "<version>",
+   "hand_landmarker_task": "<version>",
+   "mediapipe_version": "<version>",
+   "numpy_version": "<version>",
+   "opencv_version": "<version>",
+   "platform": "<version>",
    "python": "<version>",
    "receipts": "<version>",
+   "receipts_git_sha": "<version>",
+   "repo_git_sha": "<version>",
    "segmenter": "<version>",
-   "signals": "<version>"
+   "segmenter_git_sha": "<version>",
+   "signals": "<version>",
+   "signals_git_sha": "<version>",
+   "torch_version": "<version>",
+   "transformers_version": "<version>"
   }
  },
  "decisions": {
@@ -68,9 +87,9 @@
  },
  "receipt_id": "<receipt-id>",
  "receipt_sha256": "<sha256>",
- "segment_sha256": "3e6cc9ce2f5074ae29a6f1dc1f9ba1e60e9e28ae604fc5efd92923d131f63469",
+ "segment_sha256": "3beacaf56065c3fc6606ae12eecb122c13f006ec5d6b39fc170ed3522e5885d4",
  "signals": {
-  "blur_var": 2.0,
+  "blur_var": 120.0,
   "brightness_mean": 90.0,
   "decodable": true,
   "dup_of": null,
@@ -80,7 +99,7 @@
   "hands_visible_frac": 0.8,
   "motion_mean": 2.0,
   "over_exposed_frac": 0.02,
-  "phash": "ef68f35fb5f5a5a1",
+  "phash": "6cd952f89e5f709c",
   "under_exposed_frac": 0.0
  },
  "verdict": {
@@ -105,7 +124,7 @@
     "code": "BLUR",
     "op": ">=",
     "threshold": 60.0,
-    "value": 2.0
+    "value": 120.0
    },
    {
     "check": "brightness_mean",
@@ -179,11 +198,10 @@
    }
   ],
   "reasons": [
-   "BLUR",
    "NO_ACTIVE_WORK",
    "LOW_CONFIDENCE"
   ],
-  "segment_id": "seg-3e6cc9ce2f50-0000",
+  "segment_id": "seg-3beacaf56065-0000",
   "threshold": 0.9,
   "verdict": "review"
  }

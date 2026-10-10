@@ -1096,6 +1096,9 @@ class TestFunnelSeam(BucketCase):
 ENV_DEPENDENT_VERSION_KEYS = frozenset({
     "face_detector_task", "hand_landmarker_task",  # weight-file tokens
     "signals_backend",  # only present when the real signals module imports
+    "eg2_weights",  # backbone token: only present with the EG2 weights file
+    "decider_decider_hands", "decider_decider_work",  # head tokens: models/ only
+    "decider_decider_step_prototypes",
 })
 
 
@@ -1106,7 +1109,8 @@ def _env_free(obj):
         for k, v in obj.items():
             if k == "versions" and isinstance(v, dict):
                 v = {vk: vv for vk, vv in v.items()
-                     if vk not in ENV_DEPENDENT_VERSION_KEYS}
+                     if vk not in ENV_DEPENDENT_VERSION_KEYS
+                     and not vk.startswith(("eg2_", "decider_"))}
             out[k] = _env_free(v)
         return out
     if isinstance(obj, list):
