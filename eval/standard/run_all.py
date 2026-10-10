@@ -24,7 +24,7 @@ Inputs (all read-only, never copied into the repo):
   $JADAL_BUNDLE/local_work/.../ood_shard_*.json  26 OOD features (cached)
   $JADAL_BUNDLE/local_work/.../shard_sweep_*.json IndEgo 26-feature sweep (E1.01 protocol)
 
-Exit codes: 0 ok, 2 missing input, 3 not enough classes in a split.
+Exit codes: 0 ok, 2 missing input.
 """
 import argparse
 import json
@@ -192,7 +192,7 @@ def eg2_matrix(bundle, ids):
     return X / norm
 
 
-def load_ood(bundle, names):
+def load_ood(bundle):
     """Return ids, y, and the 26-feature matrix at fps tag '10' from cached shards."""
     shard_dir = os.path.join(bundle, "local_work", "exp-fps", "eval", "results", "exp_fps")
     shards = []
@@ -221,7 +221,7 @@ def load_ood(bundle, names):
             "n_bad": int((1 - y).sum()), "names": shards[0]["names"]}
 
 
-def load_e103_indego_features(bundle, names):
+def load_e103_indego_features(bundle):
     """IndEgo 26 features decoded by the E1.01 sweep (matches the OOD features' pipeline)."""
     shard_dir = os.path.join(bundle, "local_work", "exp-fps", "eval", "results", "exp_fps")
     shards = []
@@ -317,7 +317,7 @@ def build(bundle=DEFAULT_BUNDLE):
     }
 
     # --- OOD: frozen IndEgo pixel26 model -> OOD windows ---------------------
-    ood = load_ood(bundle, names)
+    ood = load_ood(bundle)
     sc, m = frozen_fit(X26, y)
     p_ood = m.predict_proba(sc.transform(ood["X"]))[:, 1]
     saturated = bool(np.allclose(p_ood, p_ood[0]))
@@ -335,7 +335,7 @@ def build(bundle=DEFAULT_BUNDLE):
         "documented_range": "0.4-0.53 (IndEgo-trained models did NOT transfer)",
     }
     # E1.03 reference: same model but trained on the E1.01-decoded IndEgo features
-    ref = load_e103_indego_features(bundle, names)
+    ref = load_e103_indego_features(bundle)
     if ref is not None:
         sc2, m2 = frozen_fit(ref["X"], ref["y"])
         p_ref = m2.predict_proba(sc2.transform(ood["X"]))[:, 1]
