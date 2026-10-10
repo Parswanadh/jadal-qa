@@ -20,11 +20,18 @@ strict path — missing, non-numeric, NaN/inf or garbage yields `review` with
 reject. Only `decodable` explicitly false rejects. Static motion =>
 `NO_ACTIVE_WORK`, too-short/undecodable => `UNDECODABLE` (no new reason codes).
 
-Auto-accept additionally requires `thresholds['calibration']['status']` in
-(`calibrated`, `provisional`), unless the caller passes
-`allow_uncalibrated_accept=True` (demo pattern; the flag lands in evidence).
-The shipped config has `accept_conf: null` and status `placeholder`, with a
-real pinned `sha256` that `load_thresholds()` verifies (tampering raises).
+Auto-accept additionally requires `thresholds['calibration']['status']` ==
+`calibrated`, unless the caller passes `allow_provisional_accept=True`
+(provisional: synthetic/Gemini labels; every such accept carries
+`accept_status` evidence with the label source) or
+`allow_uncalibrated_accept=True` (placeholder/demo pattern; the flag lands
+in evidence). The shipped config has `accept_conf: null` and status
+`placeholder`, with a real pinned `sha256` that `load_thresholds()` verifies
+(tampering raises). `hard_reject_policy` defaults to `integrity_only`
+(only undecodable/too-short reject; quality rules review — a false reject
+costs worker pay plus a re-shoot); `evidence_reject` enables calibrated
+quality rejects. The hands rule is task-scoped via `profiles`
+(`assembly` requires hands; `logistics`/`default` review instead).
 
 Choices, all documented in the module docstring: `answer_conf` = min of
 available L1 head probs; `queue_priority` = mean per-head `1 - |2p - 1|` for
@@ -43,12 +50,21 @@ that rule; `null` accept_conf disables auto-accept.
 ## Phase 2 — two-sided calibration (machinery DONE, gold numbers PENDING)
 
 `calibrate_two_sided(records, targets)` + `eval/calibrate_funnel.py`. Per
-label source, never pooled: group-based SELECT/CERTIFY split (same clip never
-spans the split), select with fixed-sequence on SELECT, WRITE only on CERTIFY
-gates (reject: bound <= beta and support >= min_support; accept: bound <=
-alpha and accepted >= min_support), else threshold null + reason. Union
+label source, never pooled: clip-group-based SELECT/CERTIFY split (same clip
+never spans the split — with 7 clips a 4-clip SELECT / 3-clip CERTIFY
+partition by hash order), select with fixed-sequence on SELECT, WRITE only
+on CERTIFY gates (reject: bound <= beta at Bonferroni delta/m and support
+>= min_support; accept: bound <= alpha and accepted >= min_support), else
+threshold null + reason (certification stopped a bad rule). Beside EVERY
+bound the output stores provenance: n_segments / n_clips / n_wearers
+(parsed from clip names, else `unknown`) / n_labellers (gold file ids;
+synthetic/gemini => 0) / label_source / per-rule delta. Union
 false-reject rate of route() measured on CERTIFY with its exact bound
-(no Bonferroni; per-rule bounds do not bound the union — stated).
+(per-rule bounds do not bound the union — stated). I5: `min_accepted` can
+leave `accept_conf` null on low-prevalence data — when SELECT holds fewer
+than `min_accepted` high-confidence clips, no candidate is selected and
+auto-accept stays disabled (threshold null + note); that is the honest
+output, not a failure to look.
 
 Gold path (proven end-to-end in a throwaway worktree with real
 `jadal.signals` from `origin/feat/signals`): `--from-gold` cuts exactly
@@ -79,8 +95,10 @@ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python tools/gold_label/label_ser
   then open http://127.0.0.1:8811/ — 6-frame contact sheets, GOOD/BAD +
   g/b/s/u keys, reason dropdown (required for BAD), note, progress + ETA, NO
   model verdict shown. Clicks save atomically to `eval/gold/labels.json`.
-- Verified live: label POST → 200, undo round-trip, frame JPEGs, Playwright
-  screenshots (system Chrome) inspected.
+- Verified live: label POST → 200, undo round-trip, frame JPEGs served.
+  (M9: the earlier draft claimed Playwright screenshots were inspected —
+  no screenshot is on the branch, so the claim is removed. The server is
+  another worker's file; only the join contract above is funnel-owned.)
 
 ## Phase 4 — scale + funnel report (DONE on fixtures)
 
@@ -172,3 +190,120 @@ fixtures — real gold labels will populate all three bins.
 - Throwaway-worktree `--from-gold` with real `jadal.signals`: 2/2 records
   built with full SPEC signals (fake labels lived only in /tmp; the branch's
   `eval/gold/` untouched, no `git clean`, no resets).
+
+---
+
+## Round 2 (audit L3/L5/L8/L9, N1; open items I5, M3, M4, M9)
+
+Shipped config `configs/funnel_thresholds.json` now carries
+`hard_reject_policy: integrity_only` and a `profiles` map
+(`assembly` requires hands; `logistics`/`default` do not), still
+`accept_conf: null` + status `placeholder`, sha
+`9a707f41b65a5ff3f453e15ff2660585d1b4723b98631a946b934bb32dd0dc8a`
+(verified by `load_thresholds()`).
+
+1. PROVISIONAL ACCEPT SAFETY (N1): `route()` auto-accepts by default only
+   on `status == 'calibrated'`. `provisional` reviews unless
+   `allow_provisional_accept=True` is passed, and every such accept
+   carries `{check: 'accept_status', value: 'provisional', label_source}`
+   evidence (pinned by test). `--write-config` from a non-human source
+   refuses to set `accept_conf` unless `--allow-provisional` is given
+   (then status stays `provisional`, source stated, `accept_conf` written).
+2. TASK-SCOPED HANDS RULE (L8): `route(..., profile=...)` hard-rejects a
+   hands violation only where the profile requires hands; elsewhere it
+   reviews with evidence, never rejects (walking with a pallet IS the
+   task). No `profiles` map keeps legacy enforcement.
+3. POLICY SWITCH (L9): `integrity_only` (default — only
+   undecodable/too-short reject; a false reject costs worker pay plus a
+   re-shoot) vs `evidence_reject` (calibrated L0 quality rejects).
+   Unknown policy values raise `ValueError`.
+4. DUPLICATE (L5): never rejects on a degenerate 64-bit phash (all-zero
+   hex, popcount <= 4 / >= 60) and never in `integrity_only` mode —
+   review with evidence either way.
+5. CALIBRATION PROVENANCE (L3/L7): split is by CLIP GROUP (7 clips ->
+   deterministic 4-SELECT / 3-CERTIFY partition, pinned by test);
+   `provenance` (n_segments / n_clips / n_wearers / n_labellers /
+   label_source / delta_per_rule) is printed and stored beside EVERY
+   bound; reject rules are tested at Bonferroni `delta/m` by default
+   (`delta_per_rule=0.0125`, support floor 86; `--no-bonferroni` recovers
+   round-1, stated as not family-wise). A rule uncertifiable on held-out
+   clips is DISABLED and the tables say `STOPPED (...)` plainly.
+   `eval/calibrate_funnel.py` takes `--gold PATH` (default
+   `eval/gold/labels.json`); with no labels it exits saying `no human
+   gold labels yet` and everything stays provisional/synthetic.
+   M3: `produced_utc` moved to a `sidecar` field excluded from every hash
+   (`calibration_content_hash`, pinned by test). M4: reject `reasons` are
+   `sorted(hard | soft)` — L1 soft codes ride along as uncertainty
+   context, documented in `route()` (pinned by test).
+
+### Calibration artifact (regenerated): eval/results/funnel_calibration_synthetic.json
+
+`eval/calibrate_funnel.py --synthetic 1200 --seed 7`
+(provenance=synthetic-fixtures — machinery check, never human-grade;
+Bonferroni default, `delta_per_rule=0.0125`):
+
+records=1200 sources={'synthetic': 1200} seed=7 bonferroni=True delta_per_rule=0.0125
+
+## source=synthetic (N=1200, select=600, certify=600; n_segments=1200, n_clips=0, n_wearers=unknown, n_labellers=0, label_source=synthetic, delta_per_rule=0.0125)
+| side | threshold | certify fired | certify errors | certify UCB | gate |
+|---|---|---|---|---|---|
+| accept | 0.4 | 364 | 9 | 0.0387 | WRITTEN |
+| rule | threshold | disabled | certify fired | certify errors | certify UCB |
+|---|---|---|---|---|---|
+| blur_var_min | None | True | 0 | 0 | None |
+| brightness_min | 80.1498 | False | 88 | 0 | 0.0486 |
+| under_exposed_frac_max | None | True | 0 | 0 | None |
+| over_exposed_frac_max | None | True | 0 | 0 | None |
+| motion_max | None | True | 0 | 0 | None |
+| motion_min | None | True | 0 | 0 | None |
+| hands_visible_frac_min | None | True | 0 | 0 | None |
+| min_duration_s | None | True | 0 | 0 | None |
+union CERTIFY: rejected=0 errors=0 UCB=None (n_certify=600)
+
+Read it plainly: family-wise control at this N certifies almost nothing
+— only the accept side and brightness survive; every other rule is
+DISABLED with its reason (certification stopped bad rules, and the
+support floor 86 says this N cannot support family-wise quality
+rejects). The union is 0 because the shipped default policy is
+`integrity_only` (quality rules review). The live config was NOT
+overwritten (placeholders stay until human gold).
+
+### Funnel report artifact (regenerated): eval/results/funnel_report_synthetic.json
+
+`eval/funnel_report.py --synthetic 1200 --seed 7 --allow-uncalibrated`
+(shipped placeholder config, `integrity_only`): split accept=0 /
+reject=0 / review=1200 (100%). Placeholders reject nothing and accept
+nothing — the whole queue goes to humans (FR n/a, defect n/a, QA
+workload reduction 0.0). That is the safe default working as designed.
+
+Demo-only illustration (NOT shipped: provisional synthetic thresholds
+with `--allow-provisional`, `evidence_reject`, `--profile logistics`,
+all in /tmp): split accept=719 (59.92%) / reject=175 (14.58%) /
+review=306 (25.5%); false_reject 0/175 → UCB 0.0131; defect among
+accepted 8/719 → UCB 0.018; queue defect rate 0.3063 vs unfiltered
+0.4075; QA workload reduction 0.745.
+
+### Scale artifact (regenerated): eval/results/funnel_scale.json
+
+`eval/scale_bench.py --limit 150` (L0 = documented PROXY;
+`jadal.decision` absent so L1 skipped; GPU at 30% from another worker):
+
+| workers | seg/h | decode mean | l0_proxy mean | route mean |
+|---|---|---|---|---|
+| 1 | 15907.1 | 223.154 ms | 2.76 ms | 0.078 ms |
+| 2 | 21338.7 | 332.608 ms | 3.552 ms | 0.092 ms |
+| 4 | 26065.8 | 542.074 ms | 4.514 ms | 0.117 ms |
+| 8 | 25236.2 | 1120.804 ms | 5.781 ms | 0.225 ms |
+
+Decode-bound; little gain past P=4. Cross-process determinism: IDENTICAL
+route() hashes, 150 segments x 4 worker counts. Bench verdict mix is
+150 review (safe-default artifact: placeholder + `integrity_only`).
+
+### Verification commands (all ran)
+
+- `python -m unittest discover -s tests -p 'test_funnel*'` → Ran 90
+  tests, OK (50 round-1 + 40 round-2; three round-1 calibration tests now
+  run with explicit `bonferroni: False` as mechanics tests, and the
+  provisional test asserts the new N1 gating — noted, not hidden).
+- `python -m unittest discover -s tests` → Ran 344 tests, OK (whole
+  suite green in this worktree).

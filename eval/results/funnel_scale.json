@@ -1,7 +1,7 @@
 {
   "n_segments": 150,
   "frames_per_segment": 10,
-  "gpu_note": "GPU utilisation [17.0]% \u2014 another worker is on it",
+  "gpu_note": "GPU utilisation [30.0]% \u2014 another worker is on it",
   "l1_note": "jadal.decision is NOT importable in this worktree: L1 embedding stage skipped",
   "l0_note": "PROXY stage (jadal.signals not on main): fixed-frame OpenCV stats; decode + route numbers are real",
   "scale_model": "segments processed one at a time; scale-out by more processes, never by batching",
@@ -9,117 +9,117 @@
     {
       "workers": 1,
       "n_segments": 150,
-      "wall_s": 41.663,
-      "segments_per_hour": 12961.0,
+      "wall_s": 33.947,
+      "segments_per_hour": 15907.1,
       "per_stage": {
         "decode_s": {
-          "mean_ms": 273.663,
-          "p50_ms": 247.338,
-          "max_ms": 971.243
+          "mean_ms": 223.154,
+          "p50_ms": 202.442,
+          "max_ms": 468.118
         },
         "l0_proxy_s": {
-          "mean_ms": 3.332,
-          "p50_ms": 2.794,
-          "max_ms": 8.925
+          "mean_ms": 2.76,
+          "p50_ms": 2.281,
+          "max_ms": 5.62
         },
         "route_s": {
-          "mean_ms": 0.074,
-          "p50_ms": 0.065,
-          "max_ms": 0.176
+          "mean_ms": 0.078,
+          "p50_ms": 0.067,
+          "max_ms": 0.179
         }
       },
       "distinct_output_hashes": 150,
       "verdicts": {
         "accept": 0,
-        "reject": 146,
-        "review": 4
+        "reject": 0,
+        "review": 150
       }
     },
     {
       "workers": 2,
       "n_segments": 150,
-      "wall_s": 29.704,
-      "segments_per_hour": 18179.5,
+      "wall_s": 25.306,
+      "segments_per_hour": 21338.7,
       "per_stage": {
         "decode_s": {
-          "mean_ms": 391.156,
-          "p50_ms": 359.697,
-          "max_ms": 858.45
+          "mean_ms": 332.608,
+          "p50_ms": 304.123,
+          "max_ms": 796.79
         },
         "l0_proxy_s": {
-          "mean_ms": 4.04,
-          "p50_ms": 3.993,
-          "max_ms": 7.459
+          "mean_ms": 3.552,
+          "p50_ms": 3.577,
+          "max_ms": 5.532
         },
         "route_s": {
-          "mean_ms": 0.091,
-          "p50_ms": 0.092,
-          "max_ms": 0.27
+          "mean_ms": 0.092,
+          "p50_ms": 0.087,
+          "max_ms": 0.225
         }
       },
       "distinct_output_hashes": 150,
       "verdicts": {
         "accept": 0,
-        "reject": 146,
-        "review": 4
+        "reject": 0,
+        "review": 150
       }
     },
     {
       "workers": 4,
       "n_segments": 150,
-      "wall_s": 23.297,
-      "segments_per_hour": 23179.1,
+      "wall_s": 20.717,
+      "segments_per_hour": 26065.8,
       "per_stage": {
         "decode_s": {
-          "mean_ms": 612.987,
-          "p50_ms": 551.371,
-          "max_ms": 1236.711
+          "mean_ms": 542.074,
+          "p50_ms": 486.175,
+          "max_ms": 1036.702
         },
         "l0_proxy_s": {
-          "mean_ms": 5.147,
-          "p50_ms": 5.099,
-          "max_ms": 9.728
+          "mean_ms": 4.514,
+          "p50_ms": 4.466,
+          "max_ms": 7.144
         },
         "route_s": {
-          "mean_ms": 0.112,
-          "p50_ms": 0.109,
-          "max_ms": 0.396
+          "mean_ms": 0.117,
+          "p50_ms": 0.107,
+          "max_ms": 1.366
         }
       },
       "distinct_output_hashes": 150,
       "verdicts": {
         "accept": 0,
-        "reject": 146,
-        "review": 4
+        "reject": 0,
+        "review": 150
       }
     },
     {
       "workers": 8,
       "n_segments": 150,
-      "wall_s": 21.686,
-      "segments_per_hour": 24901.1,
+      "wall_s": 21.398,
+      "segments_per_hour": 25236.2,
       "per_stage": {
         "decode_s": {
-          "mean_ms": 1135.069,
-          "p50_ms": 1021.561,
-          "max_ms": 2766.244
+          "mean_ms": 1120.804,
+          "p50_ms": 1006.898,
+          "max_ms": 2500.709
         },
         "l0_proxy_s": {
-          "mean_ms": 6.321,
-          "p50_ms": 5.758,
-          "max_ms": 16.238
+          "mean_ms": 5.781,
+          "p50_ms": 5.381,
+          "max_ms": 11.951
         },
         "route_s": {
-          "mean_ms": 0.162,
-          "p50_ms": 0.115,
-          "max_ms": 2.232
+          "mean_ms": 0.225,
+          "p50_ms": 0.113,
+          "max_ms": 5.094
         }
       },
       "distinct_output_hashes": 150,
       "verdicts": {
         "accept": 0,
-        "reject": 146,
-        "review": 4
+        "reject": 0,
+        "review": 150
       }
     }
   ],
