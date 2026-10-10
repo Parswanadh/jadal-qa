@@ -152,22 +152,27 @@ def measure_decode(clips, offsets=(37.0, 91.0, 143.0), durs=(4.0, 10.0)):
 
 # ------------------------------------------------------------- features ----
 def measure_features(n_windows=12):
+    """pixel26 ms/window at fps {10,5,2} over the full 10 s window AND the 4 s
+    early-exit prefix (the feature code is called with the frames it observes)."""
     from eval.exp_fps.fps_lib import decode_window, load_manifest, subsample_idx
     from jadal.gpu import features as gf
     items = [it for it in load_manifest() if it["clip"] in
              ("ecu_full", "desk", "pallet", "organise", "logistics4")][:n_windows]
     cfgs = {"10": (1, 10.0), "5": (2, 5.0), "2": (5, 2.0)}
-    ms = {k: [] for k in cfgs}
+    spans = {"10": None, "4": 40}          # None = whole decoded window
+    ms = {f"{k}@{s}": [] for k in cfgs for s in spans}
     dec_ms = []
     for it in items:
         rgb, luma, dms = decode_window(it["path"], it["start_s"])
         dec_ms.append(dms)
         T = len(luma)
         for k, (step, feff) in cfgs.items():
-            idx = subsample_idx(T, step)
-            t0 = time.perf_counter()
-            gf.cpu_window_features(luma[idx].copy(), rgb[idx].copy(), fps=feff)
-            ms[k].append((time.perf_counter() - t0) * 1000.0)
+            for s, cap in spans.items():
+                n = min(T, cap) if cap else T
+                idx = subsample_idx(n, step)
+                t0 = time.perf_counter()
+                gf.cpu_window_features(luma[idx].copy(), rgb[idx].copy(), fps=feff)
+                ms[f"{k}@{s}"].append((time.perf_counter() - t0) * 1000.0)
     return {
         "n_windows": len(items),
         "decode_160x90_ms_per_window": float(np.mean(dec_ms)),
@@ -175,7 +180,65 @@ def measure_features(n_windows=12):
         "features_ms_per_window": {k: {"mean": float(np.mean(v)),
                                        "ci95": boot_ci(v),
                                        "n": len(v)} for k, v in ms.items()},
+        "note": "key = fps@observed_span_s; 4 s = early-exit prefix (first 40 native frames)",
     }
+
+
+# ---------------------------------------------------------- mosaic build ----
+def measure_mosaic_build(n_windows=6, n_tiles=REF_N, tile_px=TILE_PX):
+    """Time the real mosaic builder + PNG encode on real IndEgo windows.
+
+    Imports jadal/mosaic/build.py from this repo or, if absent (it is being
+    written on the mosaic branch), from a sibling worktree; the path and git
+    sha used are recorded.
+    """
+    import glob as _glob
+    cands = [os.path.join(ROOT, "jadal", "mosaic", "build.py")]
+    cands += sorted(_glob.glob("/workspace/wt/*/jadal/mosaic/build.py"))
+    bpath = next((c for c in cands if os.path.exists(c)), None)
+    if bpath is None:
+        return {"status": "not measured",
+                "why": "jadal/mosaic/build.py not found on this pod"}
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("e7_mosaic_build", bpath)
+    B = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(B)
+    from eval.exp_fps.fps_lib import load_manifest
+    import cv2
+    items = [it for it in load_manifest() if it["clip"] in ("desk", "pallet",
+                                                            "organise")][:n_windows]
+    build_ms, enc_ms = [], []
+    for it in items:
+        cap = cv2.VideoCapture(it["path"])
+        cap.set(cv2.CAP_PROP_POS_MSEC, it["start_s"] * 1000.0)
+        frames = []
+        while len(frames) < 100:
+            ok, fr = cap.read()
+            if not ok:
+                break
+            frames.append(fr[..., ::-1].copy())
+        cap.release()
+        if not frames:
+            continue
+        t0 = time.perf_counter()
+        img, _sc = B.build_window(it["id"], it["path"], frames, 10.0,
+                                  n_tiles=n_tiles, tile_px=tile_px)
+        build_ms.append((time.perf_counter() - t0) * 1000.0)
+        t0 = time.perf_counter()
+        B.png_bytes(img)
+        enc_ms.append((time.perf_counter() - t0) * 1000.0)
+    if not build_ms:
+        return {"status": "not measured", "why": "no decodable windows"}
+    return {"status": "measured", "builder_path": bpath,
+            "builder_git_sha": git_sha(bpath.split("/jadal/")[0]),
+            "n_windows": len(build_ms), "n_tiles": n_tiles, "tile_px": tile_px,
+            "layout_ms_mean": float(np.mean(build_ms)),
+            "layout_ms_ci95": boot_ci(build_ms),
+            "png_encode_ms_mean": float(np.mean(enc_ms)),
+            "png_encode_ms_ci95": boot_ci(enc_ms),
+            "note": ("layout = grid + letterbox + timestamps + sidecar; encode = "
+                     "PNG bytes (compress_level=6). Decoded frames come from cv2 "
+                     "at native 480x480, not charged here")}
 
 
 # ------------------------------------------------------------ embedding ----
@@ -232,11 +295,14 @@ def measure_embedding(n_timed=8, n_warm=2):
         "mosaic_4x4_906x906": [_canvas(tiles, 4, 4)],
     }
     torch.cuda.reset_peak_memory_stats()
+    # warm up EVERY group first (the first group otherwise pays CUDA init and
+    # the ordering biases the timings -- observed on the first run)
+    for _ in range(n_warm):
+        for pils in inputs.values():
+            encode([pils[0]])
+    torch.cuda.synchronize()
     res = {}
     for name, pils in inputs.items():
-        for p in pils[:n_warm]:
-            encode([p])
-        torch.cuda.synchronize()
         # cycle the images so every group gets the same number of timed reps
         seq = [pils[i % len(pils)] for i in range(n_timed)]
         ts = []
@@ -289,6 +355,7 @@ def stage_measure(args):
     out["decode"] = measure_decode(clips)
     out["features_pixel26"] = measure_features(args.feature_windows)
     out["embedding_eg2"] = measure_embedding()
+    out["mosaic_build"] = measure_mosaic_build()
     out["head_logistic"] = measure_head()
     os.makedirs(RESULTS, exist_ok=True)
     json.dump(out, open(MEASURE_JSON, "w"), indent=1)
@@ -316,13 +383,44 @@ def decode_rate_fps(dec, fam, hw, dur_key="4.0"):
         return None, None
 
 
+def decode_fit(dec, fam, hw):
+    """Linear fit wall_s = startup_s + b * n_frames over the 4 s and 10 s runs.
+
+    The marginal slope b is the steady-state decode rate (per-invocation
+    startup, keyframe seek and NVDEC session init cancel out of the slope);
+    the intercept is reported as per-invocation startup.  For a stream kept
+    open across windows only the slope is paid per window, so the model uses
+    b.  If the slope is <= 0 (startup noise dominates, e.g. NVDEC on a small
+    480p clip) the fit is unusable and the 10 s end-to-end rate is used with
+    ``usable_marginal_fit=False``.
+    """
+    try:
+        by = dec[f"{fam}__{hw.lower()}"]["by_duration_s"]
+    except (KeyError, TypeError):
+        return None
+    try:
+        w4, f4 = by["4.0"]["wall_s_mean"], by["4.0"]["frames_mean"]
+        w10, f10 = by["10.0"]["wall_s_mean"], by["10.0"]["frames_mean"]
+    except (KeyError, TypeError):
+        return None
+    b = (w10 - w4) / (f10 - f4)
+    a = w4 - b * f4
+    usable = b > 0
+    if not usable:
+        b = w10 / f10
+    return {"ms_per_frame": b * 1000.0,
+            "startup_ms": a * 1000.0,
+            "fps_marginal": (1.0 / b) if usable else None,
+            "usable_marginal_fit": usable}
+
+
 def decode_ms_for(dec, fam, hw, obs_s):
     """ms to decode the observed span (all native frames inside it)."""
     native_fps = FAMILIES[fam]["native_fps"]
-    rate, _ = decode_rate_fps(dec, fam, hw)
-    if not rate:
+    fit = decode_fit(dec, fam, hw)
+    if not fit:
         return None
-    return obs_s * native_fps / rate * 1000.0
+    return obs_s * native_fps * fit["ms_per_frame"]
 
 
 def find_source(relpath):
@@ -379,6 +477,11 @@ def stage_model(args):
 
     ms_tile = emb_ms("tile_224x224")
     ms_mosaic = emb_ms("mosaic_3x3_680x680_real")
+    mos_build = meas.get("mosaic_build", {}) or {}
+    mos_layout_ms = (mos_build.get("layout_ms_mean") or 0.0) if \
+        mos_build.get("status") == "measured" else 0.0
+    mos_enc_ms = (mos_build.get("png_encode_ms_mean") or 0.0) if \
+        mos_build.get("status") == "measured" else 0.0
 
     # E1.01 fallback (measured on the same pod, OMP_NUM_THREADS=2) if a local
     # feature measurement is missing for an fps
@@ -414,14 +517,20 @@ def stage_model(args):
         # decode: all native frames inside the observed span (samplers cannot
         # skip frames during decode; E1.04 measured selection after decode)
         dec_ms = {hw: decode_ms_for(dec, fam, hw, obs_s) for hw in ("CPU", "NVDEC")}
+        fit = {hw: decode_fit(dec, fam, hw) for hw in ("CPU", "NVDEC")}
         rate_ref = {hw: decode_rate_fps(dec, fam, hw) for hw in ("CPU", "NVDEC")}
-        # feature cost: pixel26 measured ms/window at the profile fps
-        fpix = feat["features_ms_per_window"].get(str(int(fps))) or \
-            feat["features_ms_per_window"].get(f"{fps:g}")
+        # feature cost: pixel26 measured ms/window at the profile fps, for the
+        # observed span when measured (4 s early-exit prefix), else the 10 s span
+        fkeys = [f"{int(fps)}@{int(obs_s)}", f"{int(fps)}@10"]
+        fpix = next((feat["features_ms_per_window"][k] for k in fkeys
+                     if k in feat["features_ms_per_window"]), None)
+        fpix_span = next((k for k in fkeys if k in feat["features_ms_per_window"]),
+                         None)
         if fpix is None and e101_feat.get(str(int(fps))):
             # fallback to the E1.01 pod measurement (OMP_NUM_THREADS=2 run)
             fpix = {"mean": e101_feat[str(int(fps))], "ci95": None,
-                    "source": "E1.01"} if str(int(fps)) in e101_feat else None
+                    "source": "E1.01"}
+            fpix_span = "10s (E1.01)"
         pix_ms = fpix["mean"] if (fpix and fset in ("pixel26", "pixel26_lite",
                                                     "both")) else 0.0
         if fset in ("pixel26", "pixel26_lite", "both") and fpix is None:
@@ -432,9 +541,12 @@ def stage_model(args):
                                             and ms_tile) else 0.0
         if fset in ("eg2", "both") and ms_tile is None:
             not_measured.append(f"{pr['name']}: eg2 ms/frame")
-        # mosaic evidence: one mosaic image per processed window
+        # mosaic evidence: one mosaic image per processed window (build + embed)
         mosaic_on = bool(pr.get("evidence", {}).get("mosaic"))
-        mos_ms = ms_mosaic if (mosaic_on and ms_mosaic) else 0.0
+        mos_embed_ms = ms_mosaic if (mosaic_on and ms_mosaic) else 0.0
+        mos_ms = (mos_layout_ms + mos_enc_ms + mos_embed_ms) if mosaic_on else 0.0
+        if mosaic_on and mos_build.get("status") != "measured":
+            not_measured.append("mosaic build (layout + PNG encode) per window")
 
         for hw in ("CPU", "NVDEC"):
             dms = dec_ms[hw]
@@ -451,10 +563,20 @@ def stage_model(args):
                                            if rate_ref[hw][0] else None),
                 "decode_rate_fps_check_10s": (round(rate_ref[hw][1], 1)
                                               if rate_ref[hw][1] else None),
+                "decode_ms_per_frame_marginal": (round(fit[hw]["ms_per_frame"], 2)
+                                                 if fit[hw] else None),
+                "decode_startup_ms_per_invocation": (round(fit[hw]["startup_ms"], 0)
+                                                     if fit[hw] else None),
+                "decode_marginal_fit_usable": (fit[hw]["usable_marginal_fit"]
+                                               if fit[hw] else None),
                 "ms_per_window": {
                     "decode": round(dms, 1) if dms is not None else None,
                     "features_pixel26": round(pix_ms, 1),
+                    "features_span_used": fpix_span,
                     "embedding_eg2": round(eg2_ms, 1),
+                    "mosaic_build_layout": round(mos_layout_ms, 1),
+                    "mosaic_png_encode": round(mos_enc_ms, 1),
+                    "mosaic_embed": round(mos_embed_ms, 1),
                     "mosaic_evidence": round(mos_ms, 1),
                     "head": round(head_ms, 3),
                     "total": round(total, 1),
@@ -468,20 +590,28 @@ def stage_model(args):
             })
 
     # reference rows: full sampling (baseline) vs adopted E3 policy, IndEgo source
+    mosaic_on_any = True          # reference rows include the mosaic evidence artefact
+
     def synthetic_row(name, fam, fps, k, exit_s, fset, hw):
         obs = float(exit_s) if exit_s else WINDOW_S
         dec_ms = decode_ms_for(dec, fam, hw, obs)
-        fpix = feat["features_ms_per_window"].get(str(int(fps)))
+        fkey = f"{int(fps)}@{int(obs)}"
+        fkey = fkey if fkey in feat["features_ms_per_window"] else f"{int(fps)}@10"
+        fpix = feat["features_ms_per_window"].get(fkey)
         pix_ms = fpix["mean"] if (fpix and fset in ("pixel26", "both")) else 0.0
         eg2_ms = fps * obs * ms_tile if (fset == "eg2" and ms_tile) else 0.0
-        total = (dec_ms or 0) + pix_ms + eg2_ms + (ms_mosaic or 0) + head_ms
+        mos_ms = (mos_layout_ms + mos_enc_ms + (ms_mosaic or 0.0)) if mosaic_on_any else 0.0
+        total = (dec_ms or 0) + pix_ms + eg2_ms + mos_ms + head_ms
         return {"profile": name, "source_family": fam, "decode_path": hw,
                 "fps": fps, "probe_every_k_windows": k, "early_exit_s": exit_s,
-                "observed_s": obs, "mosaic": True, "features_set": fset,
+                "observed_s": obs, "mosaic": mosaic_on_any, "features_set": fset,
+                "features_span_used": fkey,
                 "ms_per_window": {"decode": round(dec_ms, 1) if dec_ms else None,
                                   "features_pixel26": round(pix_ms, 1),
                                   "embedding_eg2": round(eg2_ms, 1),
-                                  "mosaic_evidence": round(ms_mosaic or 0, 1),
+                                  "mosaic_build_layout": round(mos_layout_ms, 1),
+                                  "mosaic_png_encode": round(mos_enc_ms, 1),
+                                  "mosaic_embed": round(ms_mosaic or 0.0, 1),
                                   "head": round(head_ms, 3),
                                   "total": round(total, 1)},
                 "decode_share_of_total": round((dec_ms or 0) / total, 3) if total else None,
