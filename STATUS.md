@@ -4,7 +4,8 @@ Updated: 2026-10-10 22:05 IST (16:35 UTC) · branch `pod/kit` (lead) · A40 pod
 
 ## Environment (verified this session)
 - opencode v2.0.26; agents present: lead, experimenter, explorer, reviewer, tester, docs, infra.
-- A40 46 GB, `nproc`=4, RAM 503 GB, `/workspace` 78 GB free. NVDEC present.
+- A40 46 GB, RAM 503 GB, `/workspace` 78 GB free. NVDEC present. `nproc` prints 4 (it honours `OMP_NUM_THREADS`
+  from `env.sh`); the real cgroup quota is ≈7.65 cores (`/sys/fs/cgroup/cpu.max` `765000 100000`).
 - Baselines reproduce: `tools/port/baseline_logistic_loco.py` → raw LOCO AUROC **0.810**;
   `tools/port/ensemble_views_exploratory.py` → EG2 **0.848**, prob-avg **0.853**. See `docs/pod/ENVIRONMENT.md`.
 - Autosave running (`tmux ls` → `autosave`). GPU slots: `bash tools/pod/gpu_run.sh <cmd>` (2 slots).
