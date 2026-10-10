@@ -13,7 +13,7 @@
 
 Picked #1 because it states what it is (QA), the differentiator (evidence),
 and the honesty brand in one line, with no banned words. Rejected #3 (over-sells
-S1 rejects: they carry only s1_score vs the 0.6 threshold) and #4 (softened to
+S1 rejects: they carry only s1_score against the S1 decision bands) and #4 (softened to
 'scores above chance in-domain on 7 clips, exploratory; weakest clip 0.606').
 
 ## Claim -> file -> status
@@ -26,7 +26,7 @@ S1 rejects: they carry only s1_score vs the 0.6 threshold) and #4 (softened to
 | Ensemble prob-average AUROC 0.834 [0.715, 0.914] in-domain; pre-registered gates NOT met (AUROC>=0.85, CI-low>=0.72) | `eval/results/ensemble/nested_loco.json:182-189`, `docs/reports/ensemble_views.md:21` | measured (exploratory, one labeller) |
 | EG2 view 0.846 [0.728, 0.913]; pixel view 0.792 [0.666, 0.882] | `eval/results/ensemble/nested_loco.json:166-181`, `docs/reports/ensemble_views.md:19-20` | measured in-domain |
 | Rank-average 0.844 [0.717, 0.919]; gates AUROC>=0.85 FAIL, CI-low>=0.72 FAIL | `eval/results/ensemble/nested_loco.json:190-238`, `docs/reports/ensemble_views.md:26-28` | measured |
-| S1 head (retrained deterministically in-process from a recorded recipe on the 150 IndEgo windows; head sha256 in each receipt) LOCO AUC 0.802 [0.710, 0.870], thr 0.6, margin 0.25, n=150 | `eval/results/gpu/cascade.json:5-16`, `docs/reports/poc_run.md:5-7,28-33` | measured in-domain |
+| S1 head (retrained deterministically in-process from a recorded recipe on the 150 IndEgo windows; head sha256 in each receipt) LOCO AUC 0.802 [0.710, 0.870], decision bands reject <= 0.25 / accept >= 0.75 (review margin 0.25), n=150 | `eval/results/gpu/cascade.json:5-16`, `docs/reports/poc_run.md:5-7,28-33` | measured in-domain |
 | Per-pixel conv1d 0.782 [0.627, 0.860] vs HGB 0.758 vs physics-LR 0.715 vs m1-LR 0.673; rule list 0.589 rejected as decider | `eval/results/perpixel/compare.json`, `docs/reports/perpixel_accuracy.md:47-56,196-197` | measured in-domain |
 | OOD 160 windows, 138 good / 22 bad, 47 factories, one labeller | `docs/pod/SYNC_UPDATE_2026-10-10_2145.md:6` | measured (labels in pod bundle, txt files absent from this branch) |
 | Frozen ensemble OOD AUROC 0.566 (0.433-0.693), balacc 0.546, 75/138 good below 0.5 | `docs/pod/SYNC_UPDATE_2026-10-10_2145.md:22` (source `docs/ood_eval_ensemble_v1_160.txt`, absent from branch) | measured on 160; CIs window-bootstrap, optimistic |
