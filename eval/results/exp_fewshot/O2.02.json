@@ -1,0 +1,286 @@
+{
+ "experiment": "O2.02",
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "n_factories": 47,
+ "label_source": "human, single labeller (labels/ood160_labels.json; 138 good / 22 bad)",
+ "protocol": "factory-grouped CV only: StratifiedGroupKFold(5, groups=factory) for the all-160 point; repeated (20x) factory-grouped subsampling (train ~k windows / test the factory-disjoint complement) for k in {10,20,40,80}; inner leave-one-factory-out on train picks C in {0.01,0.1,1,10}; class_weight=balanced",
+ "ci_kind": "factory-grouped cluster bootstrap (2000) for the all-160 point",
+ "device": "CPU (numpy/sklearn)",
+ "cost": {
+  "n_windows": 160,
+  "recipes": 4,
+  "repeats_per_k": 20
+ },
+ "ks": [
+  10,
+  20,
+  40,
+  80,
+  160
+ ],
+ "arms": {
+  "frozen_usable_prob_0labels": {
+   "recipe": "frozen ensemble_v1 usable_prob, threshold fixed at 0.5 (no labels)",
+   "curve": [
+    {
+     "k_target": 0,
+     "k_train_mean": 0,
+     "repeats": 1,
+     "dropped": 0,
+     "auroc_mean": 0.5660408432147562,
+     "auroc_std": 0.0,
+     "balacc_mean": 0.5464426877470355,
+     "balacc_std": 0.0,
+     "error_mean": 0.4535573122529645,
+     "min_n_bad_train": null,
+     "protocol": "no training; frozen threshold"
+    }
+   ]
+  },
+  "frozen_platt_calibrator": {
+   "recipe": "Platt calibrator (1 feature = logit(usable_prob)) trained on k labels",
+   "curve": [
+    {
+     "k_target": 10,
+     "k_train_mean": 12.846153846153847,
+     "repeats": 13,
+     "dropped": 7,
+     "auroc_mean": 0.4961628237908098,
+     "auroc_std": 0.06858514115187313,
+     "balacc_mean": 0.48781661829072687,
+     "balacc_std": 0.040413159844869956,
+     "error_mean": 0.5121833817092731,
+     "min_n_bad_train": 1,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 20,
+     "k_train_mean": 20.842105263157894,
+     "repeats": 19,
+     "dropped": 1,
+     "auroc_mean": 0.49377984401171876,
+     "auroc_std": 0.0798849460928475,
+     "balacc_mean": 0.4896598342880356,
+     "balacc_std": 0.04675020395419289,
+     "error_mean": 0.5103401657119644,
+     "min_n_bad_train": 1,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 40,
+     "k_train_mean": 42.1,
+     "repeats": 20,
+     "dropped": 0,
+     "auroc_mean": 0.5178675907839935,
+     "auroc_std": 0.07301848971296822,
+     "balacc_mean": 0.5042337922138319,
+     "balacc_std": 0.05385975034438022,
+     "error_mean": 0.4957662077861681,
+     "min_n_bad_train": 2,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 80,
+     "k_train_mean": 82.9,
+     "repeats": 20,
+     "dropped": 0,
+     "auroc_mean": 0.5219178568495375,
+     "auroc_std": 0.10572624567814282,
+     "balacc_mean": 0.5194398492587367,
+     "balacc_std": 0.08357475102949923,
+     "error_mean": 0.48056015074126335,
+     "min_n_bad_train": 7,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 160,
+     "k_train_mean": 128.0,
+     "repeats": 1,
+     "dropped": 0,
+     "auroc_mean": 0.560935441370224,
+     "auroc_std": 0.0,
+     "balacc_mean": 0.5619235836627141,
+     "balacc_std": 0.0,
+     "error_mean": 0.4380764163372859,
+     "min_n_bad_train": 17,
+     "protocol": "all-160 grouped-CV OOF (StratifiedGroupKFold 5, factory groups)",
+     "auroc_ci95_factory_grouped": [
+      0.421322706935123,
+      0.6983919461650906
+     ],
+     "balacc_ci95_factory_grouped": [
+      0.45208157350826744,
+      0.6709096468930263
+     ]
+    }
+   ]
+  },
+  "two_view_logistic": {
+   "recipe": "logistic on frozen view scores [p_eg2, p_pixel]",
+   "curve": [
+    {
+     "k_target": 10,
+     "k_train_mean": 12.846153846153847,
+     "repeats": 13,
+     "dropped": 7,
+     "auroc_mean": 0.48950095867233795,
+     "auroc_std": 0.07364638077580819,
+     "balacc_mean": 0.4961056554668337,
+     "balacc_std": 0.03812677550278012,
+     "error_mean": 0.5038943445331663,
+     "min_n_bad_train": 1,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 20,
+     "k_train_mean": 20.842105263157894,
+     "repeats": 19,
+     "dropped": 1,
+     "auroc_mean": 0.47487540057109806,
+     "auroc_std": 0.08547636743052144,
+     "balacc_mean": 0.47708883838656024,
+     "balacc_std": 0.0643866579760498,
+     "error_mean": 0.5229111616134398,
+     "min_n_bad_train": 1,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 40,
+     "k_train_mean": 42.1,
+     "repeats": 20,
+     "dropped": 0,
+     "auroc_mean": 0.472927647755183,
+     "auroc_std": 0.08573772356550421,
+     "balacc_mean": 0.46447143414700937,
+     "balacc_std": 0.06385627050847398,
+     "error_mean": 0.5355285658529907,
+     "min_n_bad_train": 2,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 80,
+     "k_train_mean": 82.9,
+     "repeats": 20,
+     "dropped": 0,
+     "auroc_mean": 0.4963137307660527,
+     "auroc_std": 0.08428426548553151,
+     "balacc_mean": 0.49365961309618084,
+     "balacc_std": 0.060853324038344626,
+     "error_mean": 0.5063403869038192,
+     "min_n_bad_train": 7,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 160,
+     "k_train_mean": 128.0,
+     "repeats": 1,
+     "dropped": 0,
+     "auroc_mean": 0.5207509881422925,
+     "auroc_std": 0.0,
+     "balacc_mean": 0.47266139657444006,
+     "balacc_std": 0.0,
+     "error_mean": 0.5273386034255599,
+     "min_n_bad_train": 17,
+     "protocol": "all-160 grouped-CV OOF (StratifiedGroupKFold 5, factory groups)",
+     "auroc_ci95_factory_grouped": [
+      0.3610638667129468,
+      0.6643816914858227
+     ],
+     "balacc_ci95_factory_grouped": [
+      0.34864355616280107,
+      0.5851105590988046
+     ]
+    }
+   ]
+  },
+  "pixel26_logistic": {
+   "recipe": "logistic on 26 per-pixel features (10 fps-effective)",
+   "curve": [
+    {
+     "k_target": 10,
+     "k_train_mean": 12.846153846153847,
+     "repeats": 13,
+     "dropped": 7,
+     "auroc_mean": 0.5444072585216757,
+     "auroc_std": 0.17955435257687982,
+     "balacc_mean": 0.5113644604628428,
+     "balacc_std": 0.11079220926514266,
+     "error_mean": 0.4886355395371572,
+     "min_n_bad_train": 1,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 20,
+     "k_train_mean": 20.842105263157894,
+     "repeats": 19,
+     "dropped": 1,
+     "auroc_mean": 0.6092939352090714,
+     "auroc_std": 0.14371460773609407,
+     "balacc_mean": 0.548342928138784,
+     "balacc_std": 0.10385712727379713,
+     "error_mean": 0.45165707186121595,
+     "min_n_bad_train": 1,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 40,
+     "k_train_mean": 42.1,
+     "repeats": 20,
+     "dropped": 0,
+     "auroc_mean": 0.6498098818185809,
+     "auroc_std": 0.10923182522989501,
+     "balacc_mean": 0.5847693376967329,
+     "balacc_std": 0.09054006710774364,
+     "error_mean": 0.4152306623032671,
+     "min_n_bad_train": 2,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 80,
+     "k_train_mean": 82.9,
+     "repeats": 20,
+     "dropped": 0,
+     "auroc_mean": 0.7011331210208626,
+     "auroc_std": 0.05195070785535347,
+     "balacc_mean": 0.6113770930373291,
+     "balacc_std": 0.071929111683297,
+     "error_mean": 0.3886229069626709,
+     "min_n_bad_train": 7,
+     "protocol": "train ~k (factory-grouped) / test complement (factory-disjoint)"
+    },
+    {
+     "k_target": 160,
+     "k_train_mean": 128.0,
+     "repeats": 1,
+     "dropped": 0,
+     "auroc_mean": 0.689064558629776,
+     "auroc_std": 0.0,
+     "balacc_mean": 0.605072463768116,
+     "balacc_std": 0.0,
+     "error_mean": 0.39492753623188404,
+     "min_n_bad_train": 17,
+     "protocol": "all-160 grouped-CV OOF (StratifiedGroupKFold 5, factory groups)",
+     "auroc_ci95_factory_grouped": [
+      0.5102030094824814,
+      0.8465348490273302
+     ],
+     "balacc_ci95_factory_grouped": [
+      0.4825995505099982,
+      0.7529338918467479
+     ]
+    }
+   ]
+  }
+ },
+ "recommended_recipe": "pixel26_logistic",
+ "recommended_measured": {
+  "k": 160,
+  "ood_auroc": 0.689064558629776,
+  "error": 0.39492753623188404,
+  "error_per_label_note": "error = 1 - balanced accuracy @0.5"
+ },
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_fewshot/run_o2.py o2_02",
+ "git_sha": "f20013b"
+}

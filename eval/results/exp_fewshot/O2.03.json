@@ -1,0 +1,658 @@
+{
+ "experiment": "O2.03 (refreshes E5.03)",
+ "n": 310,
+ "n_indego": 150,
+ "n_good_indego": 100,
+ "n_ood160": 160,
+ "n_good_ood160": 138,
+ "n_bad_ood160": 22,
+ "n_ood60_old": 60,
+ "n_bad_ood60_old": 9,
+ "label_source": "human, single labeller each: IndEgo manifest_gold (150) + Egocentric-10K ood160_labels.json (160, merge of 60 + 100); n_bad 22 now vs 9 before",
+ "protocol": "signed AUROC per feature (label 1 = usable/good); IndEgo CI = clip-bootstrap (7 clips); OOD160 CI = FACTORY-GROUPED bootstrap; OOD60 CI = window bootstrap (optimistic). Same classification rule as E5.03 (classify_transfer).",
+ "regime": "both decoded 160x90 with the frozen recipe; IndEgo native ~10fps; OOD 10 fps-effective (batch-1 every 3rd frame of the 30fps transcode, batch-2 native 10fps)",
+ "device": "CPU (numpy)",
+ "cost": {
+  "features": 26,
+  "indego_windows": 150,
+  "ood160_windows": 160
+ },
+ "classification_rule": "chance iff BOTH |AUROC-0.5| < 0.05; otherwise stable if both AUROCs are on the same side of 0.5, flip if opposite",
+ "counts_160": {
+  "stable": 8,
+  "flip": 14,
+  "chance": 4
+ },
+ "counts_60_old": {
+  "stable": 8,
+  "flip": 14,
+  "chance": 4
+ },
+ "class_changes_vs60": [
+  {
+   "feature": "frozen_frac",
+   "class_60": "flip",
+   "class_160": "stable",
+   "ood60_auroc": 0.49673202614379086,
+   "ood160_auroc": 0.5324440052700923
+  },
+  {
+   "feature": "global_shift",
+   "class_60": "stable",
+   "class_160": "flip",
+   "ood60_auroc": 0.4607843137254902,
+   "ood160_auroc": 0.5090579710144928
+  }
+ ],
+ "transferable_subset": [
+  "illum_r",
+  "dct_energy",
+  "illum_b",
+  "hf_ratio",
+  "radial_slope",
+  "luma_p05",
+  "frozen_frac"
+ ],
+ "table_sorted_by_ood160_signal": [
+  {
+   "feature": "illum_r",
+   "indego_auroc": 0.4898,
+   "indego_ci95": [
+    0.3220108695652174,
+    0.6977365138357371
+   ],
+   "ood160_auroc": 0.25494071146245056,
+   "ood160_ci95_grouped": [
+    0.13993055555555556,
+    0.38062567486318677
+   ],
+   "ood60_auroc": 0.16339869281045752,
+   "ood60_ci95_window": [
+    0.06009615384615385,
+    0.2880307277628033
+   ],
+   "class": "stable",
+   "class_60": "stable",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "low-usable"
+  },
+  {
+   "feature": "pca_resid",
+   "indego_auroc": 0.4492,
+   "indego_ci95": [
+    0.289733524460107,
+    0.7279875939804483
+   ],
+   "ood160_auroc": 0.7170619235836627,
+   "ood160_ci95_grouped": [
+    0.5431024564147907,
+    0.8559689382999575
+   ],
+   "ood60_auroc": 0.6928104575163399,
+   "ood60_ci95_window": [
+    0.41830065359477125,
+    0.9215884466994344
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "dct_energy",
+   "indego_auroc": 0.6305999999999999,
+   "indego_ci95": [
+    0.519327731092437,
+    0.7051421282798833
+   ],
+   "ood160_auroc": 0.6996047430830038,
+   "ood160_ci95_grouped": [
+    0.5548509316770186,
+    0.8307187704381949
+   ],
+   "ood60_auroc": 0.701525054466231,
+   "ood60_ci95_window": [
+    0.5288053338171262,
+    0.858001851851852
+   ],
+   "class": "stable",
+   "class_60": "stable",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "luma_p95",
+   "indego_auroc": 0.4991,
+   "indego_ci95": [
+    0.340628507295174,
+    0.6925385084419323
+   ],
+   "ood160_auroc": 0.689064558629776,
+   "ood160_ci95_grouped": [
+    0.5331691456777539,
+    0.829713616623744
+   ],
+   "ood60_auroc": 0.7233115468409587,
+   "ood60_ci95_window": [
+    0.5271738048852019,
+    0.9006335282651073
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "illum_b",
+   "indego_auroc": 0.5278,
+   "indego_ci95": [
+    0.34266245608041324,
+    0.6494597839135654
+   ],
+   "ood160_auroc": 0.686429512516469,
+   "ood160_ci95_grouped": [
+    0.5422949938574939,
+    0.8158143284695436
+   ],
+   "ood60_auroc": 0.7625272331154684,
+   "ood60_ci95_window": [
+    0.5953688392352988,
+    0.9017857142857143
+   ],
+   "class": "stable",
+   "class_60": "stable",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "bright_frac",
+   "indego_auroc": 0.3708,
+   "indego_ci95": [
+    0.2378246753246753,
+    0.6242795064885854
+   ],
+   "ood160_auroc": 0.6785243741765482,
+   "ood160_ci95_grouped": [
+    0.47526719786015664,
+    0.8515536254184213
+   ],
+   "ood60_auroc": 0.6775599128540305,
+   "ood60_ci95_window": [
+    0.4155539772727273,
+    0.9123141945773525
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "luma_p50",
+   "indego_auroc": 0.5169,
+   "indego_ci95": [
+    0.2957894736842105,
+    0.7006592997392906
+   ],
+   "ood160_auroc": 0.3231225296442688,
+   "ood160_ci95_grouped": [
+    0.16507988694489653,
+    0.5091762326073802
+   ],
+   "ood60_auroc": 0.22440087145969495,
+   "ood60_ci95_window": [
+    0.07438850948579723,
+    0.40625
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "low-usable"
+  },
+  {
+   "feature": "skin_frac",
+   "indego_auroc": 0.6669999999999999,
+   "indego_ci95": [
+    0.5054554079696395,
+    0.8192722910835666
+   ],
+   "ood160_auroc": 0.335638998682477,
+   "ood160_ci95_grouped": [
+    0.19985328987872594,
+    0.4716676344450821
+   ],
+   "ood60_auroc": 0.2570806100217865,
+   "ood60_ci95_window": [
+    0.10570690883190884,
+    0.43509615384615385
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "low-usable"
+  },
+  {
+   "feature": "hf_ratio",
+   "indego_auroc": 0.6182000000000001,
+   "indego_ci95": [
+    0.5169592648380106,
+    0.7518773303309594
+   ],
+   "ood160_auroc": 0.6574440052700922,
+   "ood160_ci95_grouped": [
+    0.5047799011666604,
+    0.7986734767883381
+   ],
+   "ood60_auroc": 0.6928104575163399,
+   "ood60_ci95_window": [
+    0.4335125369592282,
+    0.8980111111111111
+   ],
+   "class": "stable",
+   "class_60": "stable",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "motion_energy",
+   "indego_auroc": 0.30820000000000003,
+   "indego_ci95": [
+    0.1632341723874905,
+    0.5220864661654134
+   ],
+   "ood160_auroc": 0.6462450592885376,
+   "ood160_ci95_grouped": [
+    0.5242949778825626,
+    0.7782718394686479
+   ],
+   "ood60_auroc": 0.7211328976034859,
+   "ood60_ci95_window": [
+    0.5488963293650794,
+    0.8646138901529737
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "illum_g",
+   "indego_auroc": 0.40080000000000005,
+   "indego_ci95": [
+    0.20227920227920226,
+    0.6710316405374916
+   ],
+   "ood160_auroc": 0.6436100131752306,
+   "ood160_ci95_grouped": [
+    0.5003677822367758,
+    0.7946551042983565
+   ],
+   "ood60_auroc": 0.6949891067538126,
+   "ood60_ci95_window": [
+    0.5206448801742919,
+    0.8517520215633423
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "luma_mean",
+   "indego_auroc": 0.5087999999999999,
+   "indego_ci95": [
+    0.29025578581431344,
+    0.7036187344913151
+   ],
+   "ood160_auroc": 0.35968379446640314,
+   "ood160_ci95_grouped": [
+    0.19292805766880117,
+    0.5396362168483388
+   ],
+   "ood60_auroc": 0.29193899782135074,
+   "ood60_ci95_window": [
+    0.11867099465883661,
+    0.48767880460588797
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "low-usable"
+  },
+  {
+   "feature": "temp_b2",
+   "indego_auroc": 0.28680000000000005,
+   "indego_ci95": [
+    0.15878048748049367,
+    0.4956053185902015
+   ],
+   "ood160_auroc": 0.63866930171278,
+   "ood160_ci95_grouped": [
+    0.5151095657240999,
+    0.7831885429960179
+   ],
+   "ood60_auroc": 0.6949891067538126,
+   "ood60_ci95_window": [
+    0.5183916488603988,
+    0.8557692307692308
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "pca_top1_share",
+   "indego_auroc": 0.5394,
+   "indego_ci95": [
+    0.4006312140240712,
+    0.6356130586525632
+   ],
+   "ood160_auroc": 0.3619894598155468,
+   "ood160_ci95_grouped": [
+    0.17773291925465837,
+    0.5667857105197253
+   ],
+   "ood60_auroc": 0.3485838779956427,
+   "ood60_ci95_window": [
+    0.10879824151882976,
+    0.624
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "low-usable"
+  },
+  {
+   "feature": "radial_slope",
+   "indego_auroc": 0.6334,
+   "indego_ci95": [
+    0.5502016017695174,
+    0.7428403384287194
+   ],
+   "ood160_auroc": 0.6347167325428196,
+   "ood160_ci95_grouped": [
+    0.4797939443720614,
+    0.780943088047286
+   ],
+   "ood60_auroc": 0.644880174291939,
+   "ood60_ci95_window": [
+    0.4005230813499404,
+    0.8510076976594835
+   ],
+   "class": "stable",
+   "class_60": "stable",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "temp_b0",
+   "indego_auroc": 0.5338,
+   "indego_ci95": [
+    0.3319562295014548,
+    0.7099143827742393
+   ],
+   "ood160_auroc": 0.37220026350461133,
+   "ood160_ci95_grouped": [
+    0.20102696634209238,
+    0.5478409057284884
+   ],
+   "ood60_auroc": 0.23965141612200436,
+   "ood60_ci95_window": [
+    0.07268138111888112,
+    0.44304074074074085
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "low-usable"
+  },
+  {
+   "feature": "luma_p05",
+   "indego_auroc": 0.39239999999999997,
+   "indego_ci95": [
+    0.25308392315470174,
+    0.6753086419753086
+   ],
+   "ood160_auroc": 0.44202898550724634,
+   "ood160_ci95_grouped": [
+    0.27644106949965147,
+    0.5884358608940652
+   ],
+   "ood60_auroc": 0.47276688453159044,
+   "ood60_ci95_window": [
+    0.26796510270774976,
+    0.6842454545454546
+   ],
+   "class": "stable",
+   "class_60": "stable",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "low-usable"
+  },
+  {
+   "feature": "rppg_pulse",
+   "indego_auroc": 0.4704,
+   "indego_ci95": [
+    0.31879699248120297,
+    0.5781412223961766
+   ],
+   "ood160_auroc": 0.5566534914361001,
+   "ood160_ci95_grouped": [
+    0.44933614387858206,
+    0.6649270971826527
+   ],
+   "ood60_auroc": 0.6753812636165578,
+   "ood60_ci95_window": [
+    0.47685727762803237,
+    0.8605769230769231
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "frozen_frac",
+   "indego_auroc": 0.6239999999999999,
+   "indego_ci95": [
+    0.5463955284552846,
+    0.6749258088560565
+   ],
+   "ood160_auroc": 0.5324440052700923,
+   "ood160_ci95_grouped": [
+    0.47473958333333327,
+    0.5780141843971631
+   ],
+   "ood60_auroc": 0.49673202614379086,
+   "ood60_ci95_window": [
+    0.35817307692307687,
+    0.5816326530612245
+   ],
+   "class": "stable",
+   "class_60": "flip",
+   "class_changed_vs60": true,
+   "indego_sign": "high-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "dark_frac",
+   "indego_auroc": 0.47979999999999995,
+   "indego_ci95": [
+    0.30079325458606915,
+    0.6617539218076475
+   ],
+   "ood160_auroc": 0.5243741765480896,
+   "ood160_ci95_grouped": [
+    0.37876956611570245,
+    0.6971448736533161
+   ],
+   "ood60_auroc": 0.4509803921568627,
+   "ood60_ci95_window": [
+    0.2243118775287893,
+    0.6837458479020979
+   ],
+   "class": "chance",
+   "class_60": "chance",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "zncc_self",
+   "indego_auroc": 0.5738000000000001,
+   "indego_ci95": [
+    0.41197868797868803,
+    0.6995920745920745
+   ],
+   "ood160_auroc": 0.5174571805006588,
+   "ood160_ci95_grouped": [
+    0.4085302137183205,
+    0.6300330930999328
+   ],
+   "ood60_auroc": 0.5446623093681917,
+   "ood60_ci95_window": [
+    0.3045822102425876,
+    0.7837222222222222
+   ],
+   "class": "stable",
+   "class_60": "stable",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "temp_b1",
+   "indego_auroc": 0.3372,
+   "indego_ci95": [
+    0.19820274419592965,
+    0.5478927203065134
+   ],
+   "ood160_auroc": 0.511528326745718,
+   "ood160_ci95_grouped": [
+    0.3666253394343349,
+    0.7027749688463971
+   ],
+   "ood60_auroc": 0.5838779956427015,
+   "ood60_ci95_window": [
+    0.4044071999429143,
+    0.7561728395061728
+   ],
+   "class": "flip",
+   "class_60": "flip",
+   "class_changed_vs60": false,
+   "indego_sign": "low-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "global_shift",
+   "indego_auroc": 0.3761,
+   "indego_ci95": [
+    0.2799808334346667,
+    0.48414820473644005
+   ],
+   "ood160_auroc": 0.5090579710144928,
+   "ood160_ci95_grouped": [
+    0.38386482758620694,
+    0.6476045684113866
+   ],
+   "ood60_auroc": 0.4607843137254902,
+   "ood60_ci95_window": [
+    0.25329051002905456,
+    0.6825030687397708
+   ],
+   "class": "flip",
+   "class_60": "stable",
+   "class_changed_vs60": true,
+   "indego_sign": "low-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "temp_b3",
+   "indego_auroc": 0.5,
+   "indego_ci95": [
+    0.5,
+    0.5
+   ],
+   "ood160_auroc": 0.5,
+   "ood160_ci95_grouped": [
+    0.5,
+    0.5
+   ],
+   "ood60_auroc": 0.5,
+   "ood60_ci95_window": [
+    0.5,
+    0.5
+   ],
+   "class": "chance",
+   "class_60": "chance",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "flicker_idx",
+   "indego_auroc": 0.5,
+   "indego_ci95": [
+    0.5,
+    0.5
+   ],
+   "ood160_auroc": 0.5,
+   "ood160_ci95_grouped": [
+    0.5,
+    0.5
+   ],
+   "ood60_auroc": 0.5,
+   "ood60_ci95_window": [
+    0.5,
+    0.5
+   ],
+   "class": "chance",
+   "class_60": "chance",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "high-usable"
+  },
+  {
+   "feature": "dup_hash_mean",
+   "indego_auroc": 0.5,
+   "indego_ci95": [
+    0.5,
+    0.5
+   ],
+   "ood160_auroc": 0.5,
+   "ood160_ci95_grouped": [
+    0.5,
+    0.5
+   ],
+   "ood60_auroc": 0.5,
+   "ood60_ci95_window": [
+    0.5,
+    0.5
+   ],
+   "class": "chance",
+   "class_60": "chance",
+   "class_changed_vs60": false,
+   "indego_sign": "high-usable",
+   "ood160_sign": "high-usable"
+  }
+ ],
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_fewshot/run_o2.py o2_03",
+ "git_sha": "f20013b"
+}
