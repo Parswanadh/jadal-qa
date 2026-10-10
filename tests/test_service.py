@@ -762,6 +762,7 @@ class TestStubIndependence(BucketCase):
     def _install_raising_stack(self):
         import sys
         import types
+        from jadal import pipeline as _pipeline_mod
         calls = {"signals": 0, "segmenter": 0}
         fake_sig = types.ModuleType("jadal.signals")
 
@@ -779,18 +780,36 @@ class TestStubIndependence(BucketCase):
             raise AssertionError("real segmenter must not run under forced stubs")
 
         fake_seg.split_clip = _seg_boom
-        names = ("jadal.signals", "jadal.decision", "jadal.segmenter")
-        old = {name: sys.modules.get(name) for name in names}
-        sys.modules["jadal.signals"] = fake_sig
-        sys.modules["jadal.decision"] = fake_dec
-        sys.modules["jadal.segmenter"] = fake_seg
+        names = {"jadal.signals": fake_sig, "jadal.decision": fake_dec,
+                 "jadal.segmenter": fake_seg}
+        old_modules = {name: sys.modules.get(name) for name in names}
+        parent = sys.modules.get("jadal")
+        old_attrs = {}
+        if parent is not None:
+            for name, mod in names.items():
+                attr = name.rpartition(".")[2]
+                if hasattr(parent, attr):
+                    old_attrs[attr] = getattr(parent, attr)
+                setattr(parent, attr, mod)
+        for name, mod in names.items():
+            sys.modules[name] = mod
 
         def _restore():
             for name in names:
-                if old[name] is None:
+                if old_modules[name] is None:
                     sys.modules.pop(name, None)
                 else:
-                    sys.modules[name] = old[name]
+                    sys.modules[name] = old_modules[name]
+            if parent is not None:
+                for name in names:
+                    attr = name.rpartition(".")[2]
+                    if attr in old_attrs:
+                        setattr(parent, attr, old_attrs[attr])
+                    else:
+                        try:
+                            delattr(parent, attr)
+                        except AttributeError:
+                            pass
 
         self.addCleanup(_restore)
         return calls
@@ -820,21 +839,39 @@ class TestStubIndependence(BucketCase):
     def test_verdicts_identical_with_signals_blocked(self) -> None:
         # Stronger: with jadal.signals made unimportable, the suite behaves
         # exactly as with it importable (stub injection, never the decoder).
-        import sys
         store_mod.init_db(self.cfg.db_path)
         app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
         with TestClient(app) as client:
             plain = self._ingest_five(client, "blk_plain", "blk-a")
-            old = sys.modules.get("jadal.signals")
-            sys.modules["jadal.signals"] = None
-            try:
+            with stubs.blocked_imports("jadal.signals"):
                 blocked = self._ingest_five(client, "blk_faked", "blk-b")
-            finally:
-                if old is None:
-                    sys.modules.pop("jadal.signals", None)
-                else:
-                    sys.modules["jadal.signals"] = old
         self.assertEqual(plain, blocked)
+
+    def test_blocked_imports_clear_stale_parent_attrs(self) -> None:
+        # Regression: `from jadal import signals` resolves through the parent
+        # package attribute, so blocking must clear it too -- otherwise a
+        # previously imported real module leaks back in.
+        import sys
+        import jadal
+        real = sys.modules.get("jadal.signals")
+        try:
+            sys.modules["jadal.signals"] = real
+            setattr(jadal, "signals", real)
+            with stubs.blocked_imports("jadal.signals"):
+                with self.assertRaises(ImportError):
+                    __import__("jadal.signals", fromlist=["compute_signals"])
+                with self.assertRaises(ImportError):
+                    __import__("jadal", fromlist=["signals"])
+        finally:
+            if real is None:
+                sys.modules.pop("jadal.signals", None)
+                try:
+                    delattr(jadal, "signals")
+                except AttributeError:
+                    pass
+            else:
+                sys.modules["jadal.signals"] = real
+                setattr(jadal, "signals", real)
 
 
 class TestUndecodablePath(BucketCase):
@@ -910,16 +947,27 @@ class TestFunnelSeam(BucketCase):
     def _install_fake_funnel(self, route_fn):
         import sys
         import types
+        import jadal
         mod = types.ModuleType("jadal.funnel")
         mod.route = route_fn
         old = sys.modules.get("jadal.funnel")
+        old_attr = getattr(jadal, "funnel", None)
+        had_attr = hasattr(jadal, "funnel")
         sys.modules["jadal.funnel"] = mod
+        setattr(jadal, "funnel", mod)
 
         def _restore():
             if old is None:
                 sys.modules.pop("jadal.funnel", None)
             else:
                 sys.modules["jadal.funnel"] = old
+            if had_attr:
+                setattr(jadal, "funnel", old_attr)
+            else:
+                try:
+                    delattr(jadal, "funnel")
+                except AttributeError:
+                    pass
 
         self.addCleanup(_restore)
         return mod
