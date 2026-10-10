@@ -1,0 +1,626 @@
+{
+ "rule": "SELECT-MORE: new-factories-first seeded round-robin, smallest-first, 42 GB cap",
+ "seed": 42,
+ "budget_bytes": 42000000000,
+ "status": "downloading",
+ "n_files": 153,
+ "total_bytes": 41915791360,
+ "total_GB": 41.92,
+ "n_factories": 38,
+ "n_new_factories": 38,
+ "n_workers": 147,
+ "files": [
+  {
+   "path": "factory_025/workers/worker_034/factory025_worker034_part07.tar",
+   "size_bytes": 90030080
+  },
+  {
+   "path": "factory_075/workers/worker_008/factory075_worker008_part06.tar",
+   "size_bytes": 90204160
+  },
+  {
+   "path": "factory_018/workers/worker_018/factory018_worker018_part10.tar",
+   "size_bytes": 90152960
+  },
+  {
+   "path": "factory_074/workers/worker_009/factory074_worker009_part05.tar",
+   "size_bytes": 541399040
+  },
+  {
+   "path": "factory_078/workers/worker_011/factory078_worker011_part06.tar",
+   "size_bytes": 90071040
+  },
+  {
+   "path": "factory_067/workers/worker_006/factory067_worker006_part08.tar",
+   "size_bytes": 90091520
+  },
+  {
+   "path": "factory_027/workers/worker_042/factory027_worker042_part10.tar",
+   "size_bytes": 90030080
+  },
+  {
+   "path": "factory_008/workers/worker_006/factory008_worker006_part02.tar",
+   "size_bytes": 599613440
+  },
+  {
+   "path": "factory_059/workers/worker_022/factory059_worker022_part09.tar",
+   "size_bytes": 90009600
+  },
+  {
+   "path": "factory_071/workers/worker_023/factory071_worker023_part08.tar",
+   "size_bytes": 90122240
+  },
+  {
+   "path": "factory_064/workers/worker_004/factory064_worker004_part07.tar",
+   "size_bytes": 90204160
+  },
+  {
+   "path": "factory_007/workers/worker_001/factory007_worker001_part11.tar",
+   "size_bytes": 524001280
+  },
+  {
+   "path": "factory_017/workers/worker_002/factory017_worker002_part01.tar",
+   "size_bytes": 810414080
+  },
+  {
+   "path": "factory_047/workers/worker_052/factory047_worker052_part12.tar",
+   "size_bytes": 90071040
+  },
+  {
+   "path": "factory_006/workers/worker_003/factory006_worker003_part03.tar",
+   "size_bytes": 599623680
+  },
+  {
+   "path": "factory_055/workers/worker_072/factory055_worker072_part04.tar",
+   "size_bytes": 90163200
+  },
+  {
+   "path": "factory_048/workers/worker_015/factory048_worker015_part06.tar",
+   "size_bytes": 90398720
+  },
+  {
+   "path": "factory_050/workers/worker_014/factory050_worker014_part14.tar",
+   "size_bytes": 90071040
+  },
+  {
+   "path": "factory_034/workers/worker_003/factory034_worker003_part10.tar",
+   "size_bytes": 180162560
+  },
+  {
+   "path": "factory_083/workers/worker_007/factory083_worker007_part01.tar",
+   "size_bytes": 90132480
+  },
+  {
+   "path": "factory_072/workers/worker_069/factory072_worker069_part04.tar",
+   "size_bytes": 90040320
+  },
+  {
+   "path": "factory_063/workers/worker_002/factory063_worker002_part02.tar",
+   "size_bytes": 90204160
+  },
+  {
+   "path": "factory_002/workers/worker_010/factory002_worker010_part00.tar",
+   "size_bytes": 599613440
+  },
+  {
+   "path": "factory_082/workers/worker_010/factory082_worker010_part04.tar",
+   "size_bytes": 90337280
+  },
+  {
+   "path": "factory_030/workers/worker_015/factory030_worker015_part03.tar",
+   "size_bytes": 90030080
+  },
+  {
+   "path": "factory_045/workers/worker_015/factory045_worker015_part07.tar",
+   "size_bytes": 90183680
+  },
+  {
+   "path": "factory_005/workers/worker_002/factory005_worker002_part00.tar",
+   "size_bytes": 502661120
+  },
+  {
+   "path": "factory_081/workers/worker_009/factory081_worker009_part01.tar",
+   "size_bytes": 90060800
+  },
+  {
+   "path": "factory_065/workers/worker_003/factory065_worker003_part09.tar",
+   "size_bytes": 271185920
+  },
+  {
+   "path": "factory_052/workers/worker_085/factory052_worker085_part15.tar",
+   "size_bytes": 89968640
+  },
+  {
+   "path": "factory_049/workers/worker_004/factory049_worker004_part07.tar",
+   "size_bytes": 90060800
+  },
+  {
+   "path": "factory_011/workers/worker_024/factory011_worker024_part09.tar",
+   "size_bytes": 88391680
+  },
+  {
+   "path": "factory_015/workers/worker_010/factory015_worker010_part07.tar",
+   "size_bytes": 270264320
+  },
+  {
+   "path": "factory_031/workers/worker_017/factory031_worker017_part12.tar",
+   "size_bytes": 90112000
+  },
+  {
+   "path": "factory_032/workers/worker_017/factory032_worker017_part00.tar",
+   "size_bytes": 90071040
+  },
+  {
+   "path": "factory_043/workers/worker_014/factory043_worker014_part06.tar",
+   "size_bytes": 180295680
+  },
+  {
+   "path": "factory_004/workers/worker_004/factory004_worker004_part04.tar",
+   "size_bytes": 599644160
+  },
+  {
+   "path": "factory_012/workers/worker_004/factory012_worker004_part17.tar",
+   "size_bytes": 89948160
+  },
+  {
+   "path": "factory_025/workers/worker_023/factory025_worker023_part10.tar",
+   "size_bytes": 90040320
+  },
+  {
+   "path": "factory_075/workers/worker_021/factory075_worker021_part07.tar",
+   "size_bytes": 90265600
+  },
+  {
+   "path": "factory_018/workers/worker_026/factory018_worker026_part09.tar",
+   "size_bytes": 180070400
+  },
+  {
+   "path": "factory_074/workers/worker_003/factory074_worker003_part05.tar",
+   "size_bytes": 631470080
+  },
+  {
+   "path": "factory_078/workers/worker_015/factory078_worker015_part06.tar",
+   "size_bytes": 90071040
+  },
+  {
+   "path": "factory_067/workers/worker_004/factory067_worker004_part06.tar",
+   "size_bytes": 180224000
+  },
+  {
+   "path": "factory_027/workers/worker_053/factory027_worker053_part03.tar",
+   "size_bytes": 90060800
+  },
+  {
+   "path": "factory_008/workers/worker_007/factory008_worker007_part07.tar",
+   "size_bytes": 599613440
+  },
+  {
+   "path": "factory_059/workers/worker_006/factory059_worker006_part10.tar",
+   "size_bytes": 90091520
+  },
+  {
+   "path": "factory_071/workers/worker_009/factory071_worker009_part07.tar",
+   "size_bytes": 90347520
+  },
+  {
+   "path": "factory_064/workers/worker_002/factory064_worker002_part06.tar",
+   "size_bytes": 180469760
+  },
+  {
+   "path": "factory_007/workers/worker_001/factory007_worker001_part05.tar",
+   "size_bytes": 599582720
+  },
+  {
+   "path": "factory_017/workers/worker_001/factory017_worker001_part05.tar",
+   "size_bytes": 900884480
+  },
+  {
+   "path": "factory_047/workers/worker_041/factory047_worker041_part09.tar",
+   "size_bytes": 90122240
+  },
+  {
+   "path": "factory_006/workers/worker_004/factory006_worker004_part01.tar",
+   "size_bytes": 599654400
+  },
+  {
+   "path": "factory_055/workers/worker_034/factory055_worker034_part03.tar",
+   "size_bytes": 90234880
+  },
+  {
+   "path": "factory_048/workers/worker_002/factory048_worker002_part03.tar",
+   "size_bytes": 270305280
+  },
+  {
+   "path": "factory_050/workers/worker_021/factory050_worker021_part14.tar",
+   "size_bytes": 90081280
+  },
+  {
+   "path": "factory_034/workers/worker_001/factory034_worker001_part09.tar",
+   "size_bytes": 180183040
+  },
+  {
+   "path": "factory_083/workers/worker_012/factory083_worker012_part03.tar",
+   "size_bytes": 90306560
+  },
+  {
+   "path": "factory_072/workers/worker_039/factory072_worker039_part03.tar",
+   "size_bytes": 90050560
+  },
+  {
+   "path": "factory_063/workers/worker_003/factory063_worker003_part09.tar",
+   "size_bytes": 90388480
+  },
+  {
+   "path": "factory_002/workers/worker_004/factory002_worker004_part00.tar",
+   "size_bytes": 599623680
+  },
+  {
+   "path": "factory_082/workers/worker_011/factory082_worker011_part00.tar",
+   "size_bytes": 361082880
+  },
+  {
+   "path": "factory_030/workers/worker_020/factory030_worker020_part03.tar",
+   "size_bytes": 90030080
+  },
+  {
+   "path": "factory_045/workers/worker_013/factory045_worker013_part07.tar",
+   "size_bytes": 180357120
+  },
+  {
+   "path": "factory_005/workers/worker_010/factory005_worker010_part00.tar",
+   "size_bytes": 599633920
+  },
+  {
+   "path": "factory_081/workers/worker_011/factory081_worker011_part00.tar",
+   "size_bytes": 90142720
+  },
+  {
+   "path": "factory_065/workers/worker_015/factory065_worker015_part07.tar",
+   "size_bytes": 361000960
+  },
+  {
+   "path": "factory_052/workers/worker_064/factory052_worker064_part11.tar",
+   "size_bytes": 89978880
+  },
+  {
+   "path": "factory_049/workers/worker_014/factory049_worker014_part15.tar",
+   "size_bytes": 180193280
+  },
+  {
+   "path": "factory_011/workers/worker_018/factory011_worker018_part13.tar",
+   "size_bytes": 89958400
+  },
+  {
+   "path": "factory_015/workers/worker_011/factory015_worker011_part07.tar",
+   "size_bytes": 270336000
+  },
+  {
+   "path": "factory_031/workers/worker_010/factory031_worker010_part12.tar",
+   "size_bytes": 90214400
+  },
+  {
+   "path": "factory_032/workers/worker_012/factory032_worker012_part02.tar",
+   "size_bytes": 90132480
+  },
+  {
+   "path": "factory_043/workers/worker_016/factory043_worker016_part06.tar",
+   "size_bytes": 180305920
+  },
+  {
+   "path": "factory_004/workers/worker_011/factory004_worker011_part03.tar",
+   "size_bytes": 599654400
+  },
+  {
+   "path": "factory_012/workers/worker_016/factory012_worker016_part17.tar",
+   "size_bytes": 90009600
+  },
+  {
+   "path": "factory_025/workers/worker_009/factory025_worker009_part04.tar",
+   "size_bytes": 90142720
+  },
+  {
+   "path": "factory_075/workers/worker_012/factory075_worker012_part07.tar",
+   "size_bytes": 180695040
+  },
+  {
+   "path": "factory_018/workers/worker_003/factory018_worker003_part09.tar",
+   "size_bytes": 180193280
+  },
+  {
+   "path": "factory_074/workers/worker_006/factory074_worker006_part05.tar",
+   "size_bytes": 631756800
+  },
+  {
+   "path": "factory_078/workers/worker_001/factory078_worker001_part08.tar",
+   "size_bytes": 90152960
+  },
+  {
+   "path": "factory_067/workers/worker_013/factory067_worker013_part07.tar",
+   "size_bytes": 180510720
+  },
+  {
+   "path": "factory_027/workers/worker_009/factory027_worker009_part11.tar",
+   "size_bytes": 90163200
+  },
+  {
+   "path": "factory_008/workers/worker_009/factory008_worker009_part00.tar",
+   "size_bytes": 599664640
+  },
+  {
+   "path": "factory_059/workers/worker_003/factory059_worker003_part09.tar",
+   "size_bytes": 270110720
+  },
+  {
+   "path": "factory_071/workers/worker_001/factory071_worker001_part06.tar",
+   "size_bytes": 90419200
+  },
+  {
+   "path": "factory_064/workers/worker_003/factory064_worker003_part06.tar",
+   "size_bytes": 450570240
+  },
+  {
+   "path": "factory_007/workers/worker_018/factory007_worker018_part01.tar",
+   "size_bytes": 599592960
+  },
+  {
+   "path": "factory_017/workers/worker_002/factory017_worker002_part00.tar",
+   "size_bytes": 990402560
+  },
+  {
+   "path": "factory_047/workers/worker_053/factory047_worker053_part14.tar",
+   "size_bytes": 179988480
+  },
+  {
+   "path": "factory_006/workers/worker_003/factory006_worker003_part04.tar",
+   "size_bytes": 599695360
+  },
+  {
+   "path": "factory_055/workers/worker_030/factory055_worker030_part03.tar",
+   "size_bytes": 90245120
+  },
+  {
+   "path": "factory_048/workers/worker_005/factory048_worker005_part03.tar",
+   "size_bytes": 360796160
+  },
+  {
+   "path": "factory_050/workers/worker_046/factory050_worker046_part03.tar",
+   "size_bytes": 180029440
+  },
+  {
+   "path": "factory_034/workers/worker_005/factory034_worker005_part05.tar",
+   "size_bytes": 270039040
+  },
+  {
+   "path": "factory_083/workers/worker_005/factory083_worker005_part03.tar",
+   "size_bytes": 269434880
+  },
+  {
+   "path": "factory_072/workers/worker_075/factory072_worker075_part03.tar",
+   "size_bytes": 90081280
+  },
+  {
+   "path": "factory_063/workers/worker_001/factory063_worker001_part04.tar",
+   "size_bytes": 361379840
+  },
+  {
+   "path": "factory_002/workers/worker_001/factory002_worker001_part01.tar",
+   "size_bytes": 599633920
+  },
+  {
+   "path": "factory_082/workers/worker_009/factory082_worker009_part01.tar",
+   "size_bytes": 361256960
+  },
+  {
+   "path": "factory_030/workers/worker_012/factory030_worker012_part11.tar",
+   "size_bytes": 180008960
+  },
+  {
+   "path": "factory_045/workers/worker_014/factory045_worker014_part05.tar",
+   "size_bytes": 180449280
+  },
+  {
+   "path": "factory_005/workers/worker_009/factory005_worker009_part00.tar",
+   "size_bytes": 599644160
+  },
+  {
+   "path": "factory_081/workers/worker_007/factory081_worker007_part01.tar",
+   "size_bytes": 90368000
+  },
+  {
+   "path": "factory_065/workers/worker_013/factory065_worker013_part08.tar",
+   "size_bytes": 361093120
+  },
+  {
+   "path": "factory_052/workers/worker_005/factory052_worker005_part13.tar",
+   "size_bytes": 89989120
+  },
+  {
+   "path": "factory_049/workers/worker_008/factory049_worker008_part14.tar",
+   "size_bytes": 360028160
+  },
+  {
+   "path": "factory_011/workers/worker_013/factory011_worker013_part10.tar",
+   "size_bytes": 89968640
+  },
+  {
+   "path": "factory_015/workers/worker_003/factory015_worker003_part07.tar",
+   "size_bytes": 450979840
+  },
+  {
+   "path": "factory_031/workers/worker_014/factory031_worker014_part12.tar",
+   "size_bytes": 180203520
+  },
+  {
+   "path": "factory_032/workers/worker_010/factory032_worker010_part07.tar",
+   "size_bytes": 179968000
+  },
+  {
+   "path": "factory_043/workers/worker_019/factory043_worker019_part06.tar",
+   "size_bytes": 180531200
+  },
+  {
+   "path": "factory_004/workers/worker_002/factory004_worker002_part05.tar",
+   "size_bytes": 599664640
+  },
+  {
+   "path": "factory_012/workers/worker_014/factory012_worker014_part15.tar",
+   "size_bytes": 90050560
+  },
+  {
+   "path": "factory_025/workers/worker_007/factory025_worker007_part11.tar",
+   "size_bytes": 90316800
+  },
+  {
+   "path": "factory_075/workers/worker_015/factory075_worker015_part06.tar",
+   "size_bytes": 270479360
+  },
+  {
+   "path": "factory_018/workers/worker_001/factory018_worker001_part08.tar",
+   "size_bytes": 230809600
+  },
+  {
+   "path": "factory_074/workers/worker_004/factory074_worker004_part06.tar",
+   "size_bytes": 721735680
+  },
+  {
+   "path": "factory_078/workers/worker_012/factory078_worker012_part08.tar",
+   "size_bytes": 90152960
+  },
+  {
+   "path": "factory_067/workers/worker_009/factory067_worker009_part08.tar",
+   "size_bytes": 271073280
+  },
+  {
+   "path": "factory_027/workers/worker_007/factory027_worker007_part12.tar",
+   "size_bytes": 90173440
+  },
+  {
+   "path": "factory_008/workers/worker_006/factory008_worker006_part04.tar",
+   "size_bytes": 599674880
+  },
+  {
+   "path": "factory_059/workers/worker_025/factory059_worker025_part09.tar",
+   "size_bytes": 270366720
+  },
+  {
+   "path": "factory_071/workers/worker_007/factory071_worker007_part07.tar",
+   "size_bytes": 180316160
+  },
+  {
+   "path": "factory_064/workers/worker_006/factory064_worker006_part07.tar",
+   "size_bytes": 451420160
+  },
+  {
+   "path": "factory_007/workers/worker_032/factory007_worker032_part02.tar",
+   "size_bytes": 599592960
+  },
+  {
+   "path": "factory_017/workers/worker_001/factory017_worker001_part00.tar",
+   "size_bytes": 990566400
+  },
+  {
+   "path": "factory_047/workers/worker_001/factory047_worker001_part14.tar",
+   "size_bytes": 180131840
+  },
+  {
+   "path": "factory_006/workers/worker_005/factory006_worker005_part01.tar",
+   "size_bytes": 599715840
+  },
+  {
+   "path": "factory_055/workers/worker_063/factory055_worker063_part03.tar",
+   "size_bytes": 90296320
+  },
+  {
+   "path": "factory_048/workers/worker_016/factory048_worker016_part04.tar",
+   "size_bytes": 450867200
+  },
+  {
+   "path": "factory_050/workers/worker_019/factory050_worker019_part14.tar",
+   "size_bytes": 180336640
+  },
+  {
+   "path": "factory_034/workers/worker_006/factory034_worker006_part08.tar",
+   "size_bytes": 360161280
+  },
+  {
+   "path": "factory_083/workers/worker_006/factory083_worker006_part02.tar",
+   "size_bytes": 360949760
+  },
+  {
+   "path": "factory_072/workers/worker_036/factory072_worker036_part03.tar",
+   "size_bytes": 90091520
+  },
+  {
+   "path": "factory_063/workers/worker_005/factory063_worker005_part08.tar",
+   "size_bytes": 451153920
+  },
+  {
+   "path": "factory_002/workers/worker_006/factory002_worker006_part02.tar",
+   "size_bytes": 599644160
+  },
+  {
+   "path": "factory_082/workers/worker_001/factory082_worker001_part03.tar",
+   "size_bytes": 784230400
+  },
+  {
+   "path": "factory_030/workers/worker_013/factory030_worker013_part11.tar",
+   "size_bytes": 180008960
+  },
+  {
+   "path": "factory_045/workers/worker_008/factory045_worker008_part06.tar",
+   "size_bytes": 180510720
+  },
+  {
+   "path": "factory_005/workers/worker_009/factory005_worker009_part01.tar",
+   "size_bytes": 599654400
+  },
+  {
+   "path": "factory_081/workers/worker_010/factory081_worker010_part00.tar",
+   "size_bytes": 180695040
+  },
+  {
+   "path": "factory_065/workers/worker_001/factory065_worker001_part06.tar",
+   "size_bytes": 361953280
+  },
+  {
+   "path": "factory_052/workers/worker_069/factory052_worker069_part08.tar",
+   "size_bytes": 89999360
+  },
+  {
+   "path": "factory_049/workers/worker_010/factory049_worker010_part15.tar",
+   "size_bytes": 360140800
+  },
+  {
+   "path": "factory_011/workers/worker_025/factory011_worker025_part13.tar",
+   "size_bytes": 90009600
+  },
+  {
+   "path": "factory_015/workers/worker_004/factory015_worker004_part07.tar",
+   "size_bytes": 451010560
+  },
+  {
+   "path": "factory_031/workers/worker_018/factory031_worker018_part10.tar",
+   "size_bytes": 180213760
+  },
+  {
+   "path": "factory_032/workers/worker_009/factory032_worker009_part05.tar",
+   "size_bytes": 180162560
+  },
+  {
+   "path": "factory_043/workers/worker_021/factory043_worker021_part05.tar",
+   "size_bytes": 270387200
+  },
+  {
+   "path": "factory_004/workers/worker_005/factory004_worker005_part00.tar",
+   "size_bytes": 599674880
+  },
+  {
+   "path": "factory_012/workers/worker_013/factory012_worker013_part16.tar",
+   "size_bytes": 179947520
+  },
+  {
+   "path": "factory_025/workers/worker_018/factory025_worker018_part09.tar",
+   "size_bytes": 180049920
+  }
+ ]
+}
