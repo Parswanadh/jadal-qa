@@ -724,6 +724,9 @@ function renderReverify(out) {
       (((res.diff || []).length)
         ? '<ul class="rv-diff">' + res.diff.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ul>'
         : '<p class="rv-detail">no differing fields</p>') +
+      (res.version_match === undefined || res.version_match === null ? '' :
+        '<p class="rv-detail">code versions ' + (res.version_match ? 'match' :
+          'differ' + (((res.version_diff || []).length) ? ' (' + res.version_diff.map(esc).join(', ') + ')' : '')) + '</p>') +
     '</div>');
   out.appendChild(banner);
 }
@@ -737,6 +740,14 @@ function stepTimelineCard(r) {
   var conf = Number(r.step_conf);
   var thr = Number(r.threshold);
   var confTxt = isFinite(conf) ? conf.toFixed(2) : '—';
+
+  // top candidate (for the "no step detected" note when choice is null)
+  var topName = null, topP = -1;
+  names.forEach(function (name) {
+    var p = Number(probs[name]);
+    if (isFinite(p) && p > topP) { topP = p; topName = name; }
+  });
+  topP = topP >= 0 ? topP.toFixed(2) : '—';
 
   var track = el('<ol class="timeline" aria-label="SOP step timeline"></ol>');
   names.forEach(function (name) {
@@ -762,6 +773,11 @@ function stepTimelineCard(r) {
       '<div class="card-head"><h2 class="card-title">Step timeline</h2>' +
       '<span class="card-note">SOP steps · detected step marked, shaded by confidence</span></div>' +
       '<div class="card-body"><div class="tl-scroll"></div>' +
+      (choice
+        ? ''
+        : '<p class="state-note" style="margin-bottom:var(--s3);">No step detected — top candidate ' +
+          esc(topName) + ' (' + esc(topP) + '), confidence ' + esc(confTxt +
+          (isFinite(thr) ? ', threshold ' + thr : '')) + ').</p>') +
       '<p class="state-note">Hands p(yes) ' +
         esc(r.raw.decisions && r.raw.decisions.hands_ok && r.raw.decisions.hands_ok.p_yes !== undefined ? num(r.raw.decisions.hands_ok.p_yes) : '—') +
         ' · active-work p(yes) ' +

@@ -184,6 +184,8 @@ function normReverify(raw) {
     expected: first(raw, ['expected']),
     actual: first(raw, ['actual']),
     diff: asArray(first(raw, ['diff', 'diffs', 'fields'])),
+    version_match: first(raw, ['version_match', 'versionMatch']),
+    version_diff: asArray(first(raw, ['version_diff', 'versionDiff'])),
   };
 }
 
