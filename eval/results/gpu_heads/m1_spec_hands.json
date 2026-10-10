@@ -1,7 +1,7 @@
 {
- "auroc": 0.8236806441557478,
- "bal_acc": 0.7545998709092784,
- "f1": 0.8766791582588642,
+ "auroc": 0.823519135903328,
+ "bal_acc": 0.7544961579866483,
+ "f1": 0.8765496165599954,
  "n": 10000,
  "n_pos": 9642,
  "chosen": [
@@ -12,7 +12,7 @@
    "lr": 0.05,
    "seed": 1,
    "class_weight": true,
-   "inner_auc": 0.7978322728623926
+   "inner_auc": 0.7978368055348017
   },
   {
    "fold": 1,
@@ -30,7 +30,7 @@
    "lr": 0.05,
    "seed": 0,
    "class_weight": true,
-   "inner_auc": 0.7983939835119509
+   "inner_auc": 0.7983459371844126
   },
   {
    "fold": 3,
@@ -39,7 +39,7 @@
    "lr": 0.05,
    "seed": 0,
    "class_weight": true,
-   "inner_auc": 0.8296168441359004
+   "inner_auc": 0.8296159376014185
   },
   {
    "fold": 4,
@@ -51,23 +51,21 @@
    "inner_auc": 0.8001381558550342
   }
  ],
- "t_train_s": 45.27058506011963,
+ "t_train_s": 22.050801038742065,
  "n_heads_trained": 365,
- "heads_per_s": 8.062630503124216,
+ "heads_per_s": 16.552686651097833,
  "feature": "spec",
  "target": "hands",
  "label_source": "AI (EG2 worker)",
  "protocol": "5-fold stratified CV, nested selection inside train folds",
  "auroc_ci95": [
-  0.8017582078611172,
-  0.8453090946744546
+  0.801587684956979,
+  0.8451642676724819
  ],
- "wall_s": 50.9639196395874,
- "vram_peak_GiB": 0.0,
+ "wall_s": 24.49334406852722,
+ "vram_peak_GiB": 0.16187429428100586,
  "epochs": 20,
  "seed": 0,
- "single_logistic_auroc": 0.8182978565609722,
- "delta_many_minus_single": 0.005382787594775618,
- "single_logistic_balanced_auroc": 0.8212835140487554,
- "delta_many_minus_balanced_single": 0.0023971301069923845
+ "single_logistic_auroc": 0.5028150236569756,
+ "delta_many_minus_single": 0.3207041122463524
 }

@@ -1,7 +1,7 @@
 {
- "auroc": 0.7700263093038553,
- "bal_acc": 0.7042064798957255,
- "f1": 0.8252445330509003,
+ "auroc": 0.7700103500006017,
+ "bal_acc": 0.7047514508576425,
+ "f1": 0.8252227553118574,
  "n": 10000,
  "n_pos": 9166,
  "chosen": [
@@ -12,7 +12,7 @@
    "lr": 0.05,
    "seed": 1,
    "class_weight": true,
-   "inner_auc": 0.7418928509592926
+   "inner_auc": 0.741934298342758
   },
   {
    "fold": 1,
@@ -21,7 +21,7 @@
    "lr": 0.05,
    "seed": 1,
    "class_weight": true,
-   "inner_auc": 0.7534340887326516
+   "inner_auc": 0.753433679269466
   },
   {
    "fold": 2,
@@ -30,7 +30,7 @@
    "lr": 0.05,
    "seed": 1,
    "class_weight": true,
-   "inner_auc": 0.7443024535464092
+   "inner_auc": 0.7443173989526828
   },
   {
    "fold": 3,
@@ -39,7 +39,7 @@
    "lr": 0.05,
    "seed": 0,
    "class_weight": true,
-   "inner_auc": 0.7345962414373727
+   "inner_auc": 0.7345978792901149
   },
   {
    "fold": 4,
@@ -48,26 +48,24 @@
    "lr": 0.05,
    "seed": 0,
    "class_weight": true,
-   "inner_auc": 0.7346251057217366
+   "inner_auc": 0.7346267636369189
   }
  ],
- "t_train_s": 47.97520732879639,
+ "t_train_s": 17.65031099319458,
  "n_heads_trained": 365,
- "heads_per_s": 7.608096354821051,
+ "heads_per_s": 20.67952231214129,
  "feature": "spec",
  "target": "work",
  "label_source": "AI (EG2 worker)",
  "protocol": "5-fold stratified CV, nested selection inside train folds",
  "auroc_ci95": [
-  0.7527850903511513,
-  0.786496594073105
+  0.7527799122094058,
+  0.7864526893160324
  ],
- "wall_s": 51.925429821014404,
- "vram_peak_GiB": 0.0,
+ "wall_s": 19.96551203727722,
+ "vram_peak_GiB": 0.16187429428100586,
  "epochs": 20,
  "seed": 0,
- "single_logistic_auroc": 0.7613084744946788,
- "delta_many_minus_single": 0.008717834809176539,
- "single_logistic_balanced_auroc": 0.7630324716879344,
- "delta_many_minus_balanced_single": 0.006993837615920873
+ "single_logistic_auroc": 0.49109837157548675,
+ "delta_many_minus_single": 0.27891197842511495
 }
