@@ -1,0 +1,29 @@
+{
+ "experiment": "E5.00",
+ "n": 60,
+ "n_good": 51,
+ "n_bad": 9,
+ "label_source": "human (ood_labels.json, single labeller; OOD n_bad=9 exploratory)",
+ "protocol": "frozen ensemble_v1 usable_prob vs human OOD labels; window bootstrap CI (optimistic: ~1 window/factory)",
+ "device": "CPU (numpy); frozen scores from the pod bundle",
+ "cost": {
+  "n_scored": 60
+ },
+ "ood_auroc": 0.4150326797385621,
+ "boot_mean": 0.4137846810957014,
+ "ci95": [
+  0.200570987654321,
+  0.656064705882353
+ ],
+ "balacc_at_0.5": 0.47058823529411764,
+ "prior_reference": {
+  "report": "docs/reports/ensemble_views.md (main / PR #79, NOT on this branch)",
+  "report_ci95": [
+   0.21,
+   0.647
+  ],
+  "scores_in_bundle": "$JADAL_BUNDLE/caches/ensemble/ood_scores.json"
+ },
+ "command": "OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py e5_00",
+ "git_sha": "c59daf5ab0f92aea975c0ba86ae91d7f39327226"
+}
