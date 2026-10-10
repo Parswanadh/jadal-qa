@@ -1,0 +1,23 @@
+{
+ "n_windows": 6,
+ "video_s": 59.99999999999999,
+ "cpu_1core_s": {
+  "decode_only": 3.602281332015991,
+  "series": 5.083774089813232,
+  "theory": 6.93967342376709,
+  "physics": 6.172534227371216,
+  "m1_row": 14.972307205200195
+ },
+ "cpu_1core": {
+  "full_s": 28.0845148563385,
+  "RTF_incl_decode": 2.136408633259989,
+  "segments_per_hour": 769.1071079735962,
+  "cores_for_5000x": 2340.3762380282083,
+  "cores_for_3333x": 1560.0948002696039
+ },
+ "gpu": {
+  "note": "gpu probe produced no output",
+  "rc": 1,
+  "stderr": ""
+ }
+}
