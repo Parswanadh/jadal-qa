@@ -21,12 +21,17 @@ NOT DONE:
 - Verdict reason rules live here (L2 certify API is thresholding + batch rule).
 - The real jadal.decision module does not exist yet (feat/decider has no
   Decider); L1 stays on stubs until it lands.
+- Funnel routing (``jadal.funnel.route``) is a runtime seam only: when that
+  module is importable it decides the verdict (with evidence); the funnel
+  thresholds/logic themselves are owned by another worker.
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import platform
+import time
 from dataclasses import fields as dataclass_fields
 from datetime import datetime, timezone
 from pathlib import Path
@@ -36,6 +41,8 @@ from jadal import certify as certify_mod
 from jadal import receipts as receipts_mod
 from jadal import stubs
 from jadal.config import Config
+
+log = logging.getLogger("jadal.pipeline")
 
 # Reason codes, in the canonical order they are reported (docs/SPEC.md).
 REASON_ORDER = [
@@ -232,12 +239,30 @@ def pick_threshold(config: Any) -> dict:
     )
 
 
+class ThresholdsError(RuntimeError):
+    """The funnel thresholds file failed its hash check (tampered/corrupt).
+
+    Raised by :func:`thresholds_snapshot` instead of falling back to other
+    thresholds: a hash mismatch must fail closed, never silently degrade the
+    router. Callers turn this into review verdicts with mismatch evidence
+    (never accepts) and record it in the errors store.
+    """
+
+
 def thresholds_snapshot(config: Any) -> dict:
-    """The thresholds a receipt records (also the ones re-verify replays with)."""
-    picked = pick_threshold(config)
-    answer_threshold = picked.get("threshold")
-    if answer_threshold is None:
-        answer_threshold = stubs.STUB_THRESHOLD  # nobody calibrated yet
+    """The thresholds a receipt records (also the ones re-verify replays with).
+
+    Starts from the funnel router's own thresholds file (via
+    ``jadal.funnel.load_thresholds``, hash-verified by that module) so the
+    router can enforce every rule it calibrates (motion_min, min_duration_s,
+    accept_conf, calibration gate), with the service Config values overlaid
+    on the shared L0 keys. A hash mismatch (tampered or corrupt file) raises
+    :class:`ThresholdsError` -- fail closed, never a silent fallback. Only a
+    missing file (nothing configured to verify) or a missing funnel module
+    falls back to the Config-only snapshot, which the inline verdict path
+    uses alone. The file content is stored verbatim, so re-verify replays the
+    exact thresholds behind the receipt even if the file later changes.
+    """
     snapshot = {
         "batch_size": int(config.batch_size),
         "batch_reject_k": int(config.batch_reject_k),
@@ -252,8 +277,36 @@ def thresholds_snapshot(config: Any) -> dict:
         "target_error": float(config.target_error),
         "delta": float(config.delta),
         "min_accepted": int(config.min_accepted),
-        "answer_threshold": float(answer_threshold),
     }
+    try:
+        from jadal import funnel as _funnel_mod
+        load_thresholds = getattr(_funnel_mod, "load_thresholds", None)
+        thresholds_hash = getattr(_funnel_mod, "thresholds_hash", None)
+        file_thresholds = load_thresholds() if callable(load_thresholds) else None
+    except ValueError as exc:
+        # Hash mismatch (or otherwise invalid file content): fail closed.
+        raise ThresholdsError(
+            f"funnel thresholds file failed verification: {exc}") from exc
+    except (ImportError, OSError):
+        # No funnel module, or no file configured to verify: the documented
+        # Config-only fallback.
+        file_thresholds = None
+        thresholds_hash = None
+        log.warning("funnel thresholds unavailable; Config-only snapshot")
+    if isinstance(file_thresholds, dict):
+        merged = {k: v for k, v in file_thresholds.items() if k != "sha256"}
+        merged.update(snapshot)  # service Config wins the shared L0 keys
+        snapshot = merged
+        if callable(thresholds_hash):
+            try:
+                snapshot["funnel_thresholds_sha256"] = thresholds_hash(file_thresholds)
+            except Exception:
+                pass
+    picked = pick_threshold(config)
+    answer_threshold = picked.get("threshold")
+    if answer_threshold is None:
+        answer_threshold = stubs.STUB_THRESHOLD  # nobody calibrated yet
+    snapshot["answer_threshold"] = float(answer_threshold)
     return snapshot
 
 
@@ -282,15 +335,95 @@ def stored_config(block: Any) -> Any:
 
 def process_clip(path: str | Path, worker_id: str, site_id: str,
                  config: Any) -> list[dict]:
-    """Turn one uploaded clip into Segment dicts (stub: a single segment)."""
+    """Turn one uploaded clip into Segment dicts (stub: a single segment).
+
+    An undecodable clip never raises here: when the segmenter fails on the
+    bytes (or yields zero segments), one deterministic placeholder segment
+    over the whole clip is returned so the batch still closes with an
+    UNDECODABLE reject verdict downstream. Only transient I/O (OSError)
+    propagates to the caller's retry path.
+    """
     out_dir = Path(config.segments_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    segments = _split_clip_fn()(str(path), float(config.segment_seconds), out_dir)
+    try:
+        segments = _split_clip_fn()(str(path), float(config.segment_seconds), out_dir)
+    except OSError:
+        raise
+    except Exception as exc:
+        log.warning("segmenter failed for %s (%s); using UNDECODABLE placeholder",
+                    path, exc)
+        segments = [_undecodable_placeholder(path, config)]
+    if not segments:
+        log.warning("segmenter yielded zero segments for %s; "
+                    "using UNDECODABLE placeholder", path)
+        segments = [_undecodable_placeholder(path, config)]
     for seg in segments:
         seg.setdefault("source_clip", str(path))
         seg["worker_id"] = worker_id
         seg["site_id"] = site_id
     return segments
+
+
+def _undecodable_placeholder(path: str | Path, config: Any) -> dict:
+    """One deterministic whole-clip segment for bytes no splitter accepts."""
+    sha = stubs.file_sha256(path)  # OSError here propagates (transient I/O)
+    return {
+        "segment_id": f"seg-{sha[:12]}-0000",
+        "source_clip": str(path),
+        "worker_id": "",
+        "site_id": "",
+        "start_s": 0.0,
+        "end_s": float(config.segment_seconds),
+        "path": str(path),
+        "sha256": sha,
+    }
+
+
+# Signals synthesised when the real decoder raises on a segment: zero
+# measurements with decodable=False. make_verdict / funnel route both map
+# this to a reject with reason UNDECODABLE (dependent hard checks may also
+# fire on the zeros; the verdict is reject either way).
+_UNDECODABLE_SIGNALS = {
+    "decodable": False,
+    "blur_var": 0.0,
+    "brightness_mean": 0.0,
+    "under_exposed_frac": 0.0,
+    "over_exposed_frac": 0.0,
+    "motion_mean": 0.0,
+    "hands_visible_frac": 0.0,
+    "hand_count_mode": 0,
+    "faces_found": 0,
+    "faces_blurred": 0,
+    "phash": "",
+    "dup_of": None,
+}
+
+# Transient decoder I/O is retried this many times with doubling backoff,
+# then the error propagates (the service requeues the batch and records the
+# error); anything else the decoder raises becomes an UNDECODABLE verdict,
+# never a retry.
+_SIGNAL_IO_RETRIES = 3
+_SIGNAL_IO_BASE_SLEEP_S = 0.02
+_SIGNAL_IO_MAX_SLEEP_S = 0.5
+
+
+def _compute_signals_safe(compute_signals: Any, seg_path: str,
+                          config: Any, decimals: int) -> dict:
+    """Decode-or-UNDECODABLE: capped retries for transient I/O, synthesis else."""
+    attempts = 0
+    while True:
+        try:
+            return _round_floats(compute_signals(seg_path, config), decimals)
+        except OSError:
+            attempts += 1
+            if attempts >= _SIGNAL_IO_RETRIES:
+                raise
+            time.sleep(min(_SIGNAL_IO_BASE_SLEEP_S * (2.0 ** (attempts - 1)),
+                           _SIGNAL_IO_MAX_SLEEP_S))
+        except Exception as exc:
+            log.warning("decoder failed for %s (%s: %s); verdict UNDECODABLE",
+                        seg_path, type(exc).__name__, exc)
+            return _round_floats(dict(_UNDECODABLE_SIGNALS), decimals)
 
 
 def make_verdict(segment: dict, signals: dict, decisions: dict,
@@ -340,17 +473,109 @@ def make_verdict(segment: dict, signals: dict, decisions: dict,
     }
 
 
+def _funnel_route_fn() -> Any | None:
+    """``jadal.funnel.route`` when that module is importable, else None.
+
+    Resolved at runtime on every call (never cached) so tests can inject a
+    fake ``jadal.funnel`` module and production picks the real one up the
+    moment it merges -- with zero behaviour change while it is absent.
+    """
+    try:
+        mod = __import__("jadal.funnel", fromlist=["route"])
+    except ImportError:
+        return None
+    fn = getattr(mod, "route", None)
+    return fn if callable(fn) else None
+
+
+def route_verdict(segment: dict, signals: dict, decisions: dict,
+                  thresholds: dict, decimals: int = 4) -> dict:
+    """L2 verdict through the funnel seam.
+
+    When ``jadal.funnel`` is importable its SPEC ``route(signals, decisions,
+    thresholds)`` decides (pure ``{verdict, reasons, evidence, answer_conf,
+    queue_priority}``); otherwise the inline :func:`make_verdict` logic runs.
+    The funnel path carries the optional ``evidence`` list on the verdict
+    (included in the receipt hash when present); the inline path never adds
+    the key, so existing receipt hashes are unchanged. A ``route`` exception
+    is never swallowed into a verdict: it propagates to the caller's
+    failure path (batch requeue + recorded error), because a crashing router
+    is a bug, not a measurement.
+    """
+    fn = _funnel_route_fn()
+    if fn is None:
+        return make_verdict(segment, signals, decisions, thresholds, decimals)
+    routed = fn(signals, decisions, thresholds)  # raises propagate, by design
+    verdict = str(routed.get("verdict", "review"))
+    if verdict not in ("accept", "reject", "review"):
+        verdict = "review"
+    reasons = [c for c in REASON_ORDER if c in (routed.get("reasons") or [])]
+    try:
+        answer_conf = (round(float(routed["answer_conf"]), decimals)
+                       if routed.get("answer_conf") is not None else 0.0)
+    except (TypeError, ValueError):
+        answer_conf = 0.0
+    accept_conf = thresholds.get("accept_conf",
+                                 thresholds.get("answer_threshold",
+                                                stubs.STUB_THRESHOLD))
+    try:
+        threshold = round(float(accept_conf), decimals)
+    except (TypeError, ValueError):
+        threshold = round(float(stubs.STUB_THRESHOLD), decimals)
+    out: dict[str, Any] = {
+        "segment_id": segment["segment_id"],
+        "verdict": verdict,
+        "reasons": reasons,
+        "answer_conf": answer_conf,
+        "threshold": threshold,
+    }
+    if routed.get("evidence") is not None:
+        out["evidence"] = routed["evidence"]
+    return out
+
+
+def _thresholds_mismatch_verdict(segment: dict, decimals: int) -> dict:
+    """Fail-closed verdict when the thresholds file hash does not match.
+
+    Review (never accept), with evidence naming the cause so a worker can
+    dispute it and the batch stays visibly non-accepting.
+    """
+    return {
+        "segment_id": segment["segment_id"],
+        "verdict": "review",
+        "reasons": ["LOW_CONFIDENCE"],
+        "answer_conf": 0.0,
+        "threshold": round(float(stubs.STUB_THRESHOLD), decimals),
+        "evidence": [{
+            "check": "thresholds",
+            "value": "hash mismatch",
+            "op": "==",
+            "threshold": "valid-hash",
+            "code": "LOW_CONFIDENCE",
+        }],
+    }
+
+
 def run_batch(segments: list[dict], config: Any) -> tuple[dict, list[dict]]:
     """Process a batch of segments per SPEC and return (batch, receipts).
 
     Stages are strictly per segment (batch size 1) so receipts do not depend on
     how the segments were grouped; phash duplicates are detected in input order.
+
+    A tampered thresholds file fails closed: every segment routes to review
+    with 'thresholds hash mismatch' evidence (never an accept, never a
+    silent fallback), and the batch still closes visibly.
     """
     if not segments:
         raise ValueError("run_batch needs at least one segment")
     ensure_determinism(config)
     decimals = int(config.float_decimals)
-    block = config_block(config)
+    try:
+        block = config_block(config)
+    except ThresholdsError as exc:
+        log.warning("thresholds verification failed (%s); batch fails closed "
+                    "to review", exc)
+        return _closed_mismatch_batch(segments, config, decimals, str(exc))
     compute_signals = _compute_signals_fn()
     decider_cls = _decider_class()
     try:
@@ -361,14 +586,15 @@ def run_batch(segments: list[dict], config: Any) -> tuple[dict, list[dict]]:
     receipts: list[dict] = []
 
     for seg in segments:
-        signals = _round_floats(compute_signals(seg["path"], config), decimals)
+        signals = _compute_signals_safe(compute_signals, seg["path"],
+                                        config, decimals)
         phash = str(signals.get("phash") or "")
         if phash and phash in phash_index:
             signals["dup_of"] = phash_index[phash]  # first occurrence wins
         elif phash:
             phash_index[phash] = seg["segment_id"]
         decisions = _round_floats(decider.decide(seg["path"], signals), decimals)
-        verdict = make_verdict(seg, signals, decisions, block["thresholds"], decimals)
+        verdict = route_verdict(seg, signals, decisions, block["thresholds"], decimals)
         receipts.append(receipts_mod.make_receipt(
             seg, signals, decisions, verdict, block))
 
@@ -388,6 +614,63 @@ def run_batch(segments: list[dict], config: Any) -> tuple[dict, list[dict]]:
         "k": int(config.batch_reject_k),
         "n": len(verdicts),
         "created_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    return batch, receipts
+
+
+def _closed_mismatch_batch(segments: list[dict], config: Any, decimals: int,
+                           error: str) -> tuple[dict, list[dict]]:
+    """Fail-closed batch: real L0/L1 stages, every verdict review-with-evidence.
+
+    The receipt block records ``{"thresholds_error": ...}`` instead of
+    thresholds (there are none to trust). The batch carries
+    ``"thresholds_error"`` too so the service records it in the errors store;
+    the store layer ignores the extra key. These receipts never re-verify
+    MATCH (a later replay runs the live router on the stored duress block and
+    gets a different verdict) -- honest: trust was unverifiable when made.
+    """
+    block = {
+        "thresholds": {"thresholds_error": error},
+        "pipeline_version": str(config.pipeline_version),
+        "versions": impl_versions(config),
+    }
+    compute_signals = _compute_signals_fn()
+    decider_cls = _decider_class()
+    try:
+        decider = decider_cls(config)
+    except TypeError:
+        decider = decider_cls()
+    phash_index: dict[str, str] = {}
+    receipts: list[dict] = []
+    for seg in segments:
+        signals = _compute_signals_safe(compute_signals, seg["path"],
+                                        config, decimals)
+        phash = str(signals.get("phash") or "")
+        if phash and phash in phash_index:
+            signals["dup_of"] = phash_index[phash]
+        elif phash:
+            phash_index[phash] = seg["segment_id"]
+        decisions = _round_floats(decider.decide(seg["path"], signals), decimals)
+        verdict = _thresholds_mismatch_verdict(seg, decimals)
+        receipts.append(receipts_mod.make_receipt(
+            seg, signals, decisions, verdict, block))
+    verdicts = [r["verdict"] for r in receipts]
+    segment_ids = [s["segment_id"] for s in segments]
+    site_id = segments[0].get("site_id", "")
+    batch_id = "b" + hashlib.sha256(
+        "|".join([site_id, *segment_ids, str(config.batch_reject_k)])
+        .encode("utf-8")).hexdigest()[:16]
+    batch = {
+        "batch_id": batch_id,
+        "site_id": site_id,
+        "segment_ids": segment_ids,
+        "verdicts": verdicts,
+        "batch_decision": certify_mod.batch_rule(verdicts, int(config.batch_reject_k)),
+        "rule": BATCH_RULE_TEXT,
+        "k": int(config.batch_reject_k),
+        "n": len(verdicts),
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "thresholds_error": error,
     }
     return batch, receipts
 
@@ -434,9 +717,10 @@ def reverify_receipt(receipt: dict, segment: dict, config: Any) -> dict:
         decider = decider_cls(replay_config)
     except TypeError:
         decider = decider_cls()
-    signals = _round_floats(compute_signals(segment["path"], replay_config), decimals)
+    signals = _compute_signals_safe(compute_signals, segment["path"],
+                                      replay_config, decimals)
     decisions = _round_floats(decider.decide(segment["path"], signals), decimals)
-    verdict = make_verdict(segment, signals, decisions, replay_thresholds, decimals)
+    verdict = route_verdict(segment, signals, decisions, replay_thresholds, decimals)
     actual = receipts_mod.make_receipt(segment, signals, decisions, verdict, block)
     result = receipts_mod.verify_receipt(receipt, lambda _stored: actual)
     result["version_match"], result["version_diff"] = compare_versions(
@@ -501,6 +785,282 @@ def risk_coverage_from_eval(results_dir: str | Path | None = None) -> list[dict]
     return clean
 
 
+def _read_eval_json(path: Path) -> dict | None:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _find_eval_file(results_dir: Path, stem: str) -> Path | None:
+    """``<stem>.json`` preferred, else the first ``<stem>*.json``; None if none.
+
+    The suffixed fallback (e.g. ``decider_baseline_DEV_ONLY.json``) only ever
+    surfaces real measurement files -- nothing is fabricated when absent.
+    """
+    exact = results_dir / f"{stem}.json"
+    if exact.is_file():
+        return exact
+    cands = sorted(results_dir.glob(f"{stem}*.json"))
+    return cands[0] if cands else None
+
+
+def _source_of(text: Any) -> str | None:
+    """One provenance text -> 'gemini' | 'human_gold' | 'synthetic' (None unknown).
+
+    An explicit auto-labeller mention wins inside a single text:
+    "labels by gemini-2.5-flash, not human-checked" is gemini labels.
+    """
+    if not isinstance(text, str):
+        return None
+    blob = text.lower()
+    if "gemini" in blob:
+        return "gemini"
+    if "human" in blob:
+        return "human_gold"
+    if "synthetic" in blob:
+        return "synthetic"
+    return None
+
+
+def _label_source(*texts: Any) -> str | None:
+    """First named source wins (most specific text first); conflicts reported.
+
+    Callers pass provenance texts from most specific (head level) to least
+    (artifact file level). The first text that names a source decides; when a
+    less specific text names a DIFFERENT source the disagreement is reported
+    as ``'conflict:<specific>|<general>'`` instead of being silently
+    overridden. Returns None when no text names a source.
+    """
+    decided: str | None = None
+    for text in texts:
+        source = _source_of(text)
+        if source is None:
+            continue
+        if decided is None:
+            decided = source
+        elif source != decided:
+            return f"conflict:{decided}|{source}"
+    return decided
+
+
+def _decider_head_entries(payload: dict, config: Any) -> list[dict]:
+    """One entry per L1 head in a decider_baseline.json payload."""
+    heads = payload.get("heads")
+    if not isinstance(heads, dict):
+        return []
+    target_err = float(getattr(config, "target_error", 0.05))
+    delta = float(getattr(config, "delta", 0.1))
+    entries = []
+    for head in sorted(heads):
+        body = heads[head]
+        if not isinstance(body, dict):
+            continue
+        entry: dict[str, Any] = {"head": str(head)}
+        calib = body.get("calibration") if isinstance(body.get("calibration"), dict) else {}
+        test = body.get("test") if isinstance(body.get("test"), dict) else {}
+        pick = calib.get("threshold_pick") if isinstance(calib.get("threshold_pick"), dict) else {}
+        points: list[dict] = []
+        conf, correct = calib.get("conf"), calib.get("correct")
+        if (isinstance(conf, list) and isinstance(correct, list) and conf
+                and len(conf) == len(correct)):
+            try:
+                points = risk_coverage(
+                    [{"conf": c, "correct": bool(v)} for c, v in zip(conf, correct)])
+            except (ValueError, TypeError, KeyError):
+                points = []
+        entry["points"] = points
+        if pick or calib:
+            # Something was measured: the key is present even when the head
+            # was explicitly NOT certified (threshold None).
+            entry["chosen_threshold"] = pick.get("threshold", None)
+            entry["upper_bound"] = pick.get("upper_bound", None)
+        entry["target_err"] = target_err
+        entry["delta"] = delta
+        if isinstance(calib.get("n"), int):
+            entry["n_calibration"] = calib["n"]
+        if isinstance(test.get("n"), int):
+            entry["n_test"] = test["n"]
+        source = _label_source(body.get("provenance"), body.get("label_caveat"),
+                               body.get("label_caveat_long"), payload.get("provenance"),
+                               payload.get("label_caveat"))
+        if source is not None:
+            entry["label_source"] = source
+        entries.append(entry)
+    return entries
+
+
+def _funnel_entries(payload: dict) -> list[dict]:
+    """Accept entry plus one entry per reject rule in funnel_calibration.json.
+
+    Understands both the original schema (top-level ``accept`` /
+    ``reject_rules`` with ``calib_certified`` / ``calib`` blocks) and the
+    post-fix-round-1 schema (``per_source.<origin>.accept`` /
+    ``reject_rules`` with ``select_certified`` / ``select`` blocks and a
+    ``certify`` held-out block). Numbers are only ever read, never made up:
+    ``n_calibration`` is the SELECT count, ``n_test`` the CERTIFY count, and
+    either key is absent when the file does not measure it.
+    """
+    if not isinstance(payload, dict):
+        return []
+    meta = payload.get("meta") if isinstance(payload.get("meta"), dict) else {}
+    targets = meta.get("targets") if isinstance(meta.get("targets"), dict) else {}
+    target_alpha = targets.get("target_alpha", targets.get("accept_step", 0.05))
+    target_beta = targets.get("target_beta", target_alpha)
+    try:
+        target_alpha_f, target_beta_f = float(target_alpha), float(target_beta)
+    except (TypeError, ValueError):
+        target_alpha_f, target_beta_f = 0.05, 0.05
+    try:
+        delta_f = float(targets.get("delta", 0.1))
+    except (TypeError, ValueError):
+        delta_f = 0.1
+    per_source = payload.get("per_source")
+    groups: dict[str, dict] = {}
+    if isinstance(per_source, dict):
+        for origin, group in per_source.items():
+            if isinstance(group, dict):
+                groups[str(origin)] = group
+    else:
+        groups["file"] = payload
+    file_source = _label_source(meta.get("provenance"), payload.get("provenance"))
+    entries = []
+    for origin in sorted(groups):
+        group = groups[origin]
+        source = _label_source(origin if origin != "file" else None,
+                               meta.get("provenance"),
+                               payload.get("provenance"))
+        if source is None:
+            source = file_source
+        accept = group.get("accept")
+        if isinstance(accept, dict):
+            certified = accept.get("select_certified")
+            if not isinstance(certified, dict):
+                certified = accept.get("calib_certified") if isinstance(
+                    accept.get("calib_certified"), dict) else {}
+            certify = accept.get("certify") if isinstance(
+                accept.get("certify"), dict) else {}
+            entry: dict[str, Any] = {"head": "accept", "points": []}
+            if "threshold" in accept:
+                entry["chosen_threshold"] = accept["threshold"]
+                entry["upper_bound"] = certified.get("upper_bound", None)
+            entry["target_err"] = target_alpha_f
+            entry["delta"] = delta_f
+            n_c = accept.get("n_select", accept.get("n_calib",
+                             meta.get("n_calib")))
+            if isinstance(n_c, int):
+                entry["n_calibration"] = n_c
+            n_t = certify.get("n_certify", meta.get("n_heldout"))
+            if isinstance(n_t, int):
+                entry["n_test"] = n_t
+            if source is not None:
+                entry["label_source"] = source
+            entries.append(entry)
+        rules = group.get("reject_rules")
+        if isinstance(rules, dict):
+            for key in sorted(rules):
+                rule = rules[key]
+                if not isinstance(rule, dict) or rule.get("disabled", False):
+                    continue
+                select = rule.get("select")
+                if not isinstance(select, dict):
+                    select = rule.get("calib") if isinstance(
+                        rule.get("calib"), dict) else {}
+                certify = rule.get("certify") if isinstance(
+                    rule.get("certify"), dict) else {}
+                entry = {"head": f"reject:{key}", "points": []}
+                if "threshold" in rule:
+                    entry["chosen_threshold"] = rule["threshold"]
+                    entry["upper_bound"] = select.get("upper_bound", None)
+                entry["target_err"] = target_beta_f
+                entry["delta"] = delta_f
+                n_c = rule.get("n_select", meta.get("n_calib"))
+                if isinstance(n_c, int):
+                    entry["n_calibration"] = n_c
+                n_t = certify.get("n_certify", meta.get("n_heldout"))
+                if isinstance(n_t, int):
+                    entry["n_test"] = n_t
+                if source is not None:
+                    entry["label_source"] = source
+                entries.append(entry)
+    return entries
+
+
+def risk_coverage_report(config: Any = None,
+                         results_dir: str | Path | None = None,
+                         store_points: list[dict] | None = None) -> list[dict]:
+    """Per-head risk/coverage report for GET /stats/risk_coverage.
+
+    Returns ``[{head, points, chosen_threshold, upper_bound, target_err,
+    delta, n_calibration, n_test, label_source}]`` (one entry per measured
+    head), reading ``eval/results/decider_baseline.json`` and
+    ``eval/results/funnel_calibration.json`` when present, then SQLite
+    calibration rows (head ``"answer"``), then legacy
+    ``eval/results/calibration.json``. ``[]`` means no measured data --
+    numbers are never invented. ``chosen_threshold`` is ``None`` when the
+    head was measured but explicitly NOT certified; the key is absent only
+    when nothing about a threshold was measured. The same rule governs every
+    measurement field: ``upper_bound`` is ``None`` only when a threshold
+    measurement exists but carries no bound (legacy fallback), otherwise the
+    key is absent; ``n_calibration`` / ``n_test`` are present only with real
+    counts (the store-backed head has no test set, so it omits ``n_test``).
+    ``label_source`` is one of ``'gemini' | 'human_gold' | 'synthetic'``,
+    head-level provenance first, and is omitted when no provenance is stated;
+    a head/file disagreement is reported as ``'conflict:<a>|<b>'``.
+    ``target_err`` / ``delta`` are the funnel file's targets on the funnel
+    path and the service config everywhere else.
+    """
+    from jadal.config import ROOT
+    base = Path(results_dir) if results_dir else ROOT / "eval" / "results"
+    entries: list[dict] = []
+    decider_path = _find_eval_file(base, "decider_baseline")
+    if decider_path is not None:
+        payload = _read_eval_json(decider_path)
+        if payload is not None:
+            entries.extend(_decider_head_entries(payload, config))
+    funnel_path = _find_eval_file(base, "funnel_calibration")
+    if funnel_path is not None:
+        payload = _read_eval_json(funnel_path)
+        if payload is not None:
+            entries.extend(_funnel_entries(payload))
+    if store_points:
+        try:
+            points = risk_coverage(store_points)
+            pick = certify_mod.pick_threshold(
+                conf=[p["conf"] for p in store_points],
+                correct=[p["correct"] for p in store_points],
+                target_err=float(getattr(config, "target_error", 0.05)),
+                delta=float(getattr(config, "delta", 0.1)),
+                min_accepted=int(getattr(config, "min_accepted", 30)),
+            )
+            entries.append({
+                "head": "answer",
+                "points": points,
+                "chosen_threshold": pick.get("threshold", None),
+                "upper_bound": pick.get("upper_bound", None),
+                "target_err": float(getattr(config, "target_error", 0.05)),
+                "delta": float(getattr(config, "delta", 0.1)),
+                "n_calibration": len(store_points),
+                # no "n_test": the store holds no test set, and an absent
+                # measurement must stay absent (never 0).
+            })
+        except (ValueError, TypeError, KeyError):
+            pass
+    if not entries:
+        legacy = risk_coverage_from_eval(base / "calibration.json")
+        if legacy:
+            entries.append({
+                "head": "answer",
+                "points": legacy,
+                "chosen_threshold": None,
+                "upper_bound": None,
+                "target_err": float(getattr(config, "target_error", 0.05)) if config is not None else 0.05,
+                "delta": float(getattr(config, "delta", 0.1)) if config is not None else 0.1,
+            })
+    return entries
+
+
 def sop_gaps_from_verdicts(batches: list[dict]) -> list[dict]:
     """Reason-code counts over stored batch verdicts (real /stats/sop_gaps data).
 
@@ -522,9 +1082,9 @@ def sop_gaps_from_verdicts(batches: list[dict]) -> list[dict]:
 
 
 __all__ = [
-    "REASON_ORDER", "HARD_REASONS", "BATCH_RULE_TEXT",
+    "REASON_ORDER", "HARD_REASONS", "BATCH_RULE_TEXT", "ThresholdsError",
     "impl_versions", "ensure_determinism", "pick_threshold", "thresholds_snapshot", "config_block",
-    "stored_config", "process_clip", "make_verdict", "run_batch",
+    "stored_config", "process_clip", "make_verdict", "route_verdict", "run_batch",
     "reverify_receipt", "compare_versions", "risk_coverage",
-    "risk_coverage_from_eval", "sop_gaps_from_verdicts",
+    "risk_coverage_from_eval", "risk_coverage_report", "sop_gaps_from_verdicts",
 ]

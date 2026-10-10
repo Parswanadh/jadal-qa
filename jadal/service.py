@@ -13,17 +13,20 @@ Run with::
 Env knobs (all optional; ``jadal/config.py`` is read-only so the time trigger
 lives here): ``JADAL_BATCH_MAX_AGE_S`` (30.0 s), ``JADAL_WATCH_BUCKET`` (1),
 ``JADAL_WATCH_SITE`` (site-sim), ``JADAL_WATCH_WORKER`` (w-sim),
-``JADAL_WATCH_POLL_S`` (0.25 s), ``JADAL_USE_STUBS`` (1 = allow pipeline stubs).
+``JADAL_WATCH_POLL_S`` (0.25 s), ``JADAL_USE_STUBS`` (1 = allow pipeline stubs),
+``JADAL_EVAL_RESULTS_DIR`` (eval results dir for /stats/risk_coverage),
+``JADAL_WS_RECV_TIMEOUT_S`` (60.0 s bound on every /ws receive wait).
 No network calls happen at import time; the SQLite file is created lazily.
 
 NOT DONE:
 - L0/L1/segmenter are stubs (hash-derived fakes, whole clip = one segment)
   until the real modules merge; set JADAL_USE_STUBS=1 to run on stubs.
-- /stats/risk_coverage needs calibration points (store rows, else
-  eval/results/calibration.json); with neither it returns [] -- "no measured
-  data", not a measurement of anything.
+- /stats/risk_coverage returns per-head entries from
+  eval/results/decider_baseline.json + funnel_calibration.json when present
+  (else SQLite calibration rows, else [] = no measured data, never invented).
 - /sop/search returns empty payloads until sop/ merges; /stats/sop_gaps
   counts real stored-verdict reasons until then.
+- /hub/* is mounted only when jadal.hub_api.router is importable.
 - /pico/status connects on startup when a port is configured; without hardware
   it reports connected=false.
 """
@@ -49,6 +52,21 @@ from jadal import pipeline, store as store_mod
 from jadal.config import LANGS, REASON_CODES, Config, DEFAULT
 
 log = logging.getLogger("jadal.service")
+
+# A poison clip is retried with backoff only this many times; afterwards it is
+# parked (marked done) and the terminal error stays in GET /ingest/errors.
+# Retries are for transient I/O -- an undecodable clip never retries: the
+# pipeline closes it with an UNDECODABLE reject verdict and a normal batch.
+WATCH_MAX_ATTEMPTS = 5
+
+# A failing batch-timeout flush is retried with backoff 1, 2, 4, 8, 16 s
+# (2**(failure-1) after failures 1..5); the 6th consecutive failure parks the
+# segments as failed instead of retrying forever.
+FLUSH_MAX_FAILURES = 6
+
+# Every /ws receive wait is bounded by this (env-overridable); an idle client
+# simply waits again instead of blocking forever.
+WS_RECV_TIMEOUT_S = 60.0
 
 
 def _env_float(name: str, default: float) -> float:
@@ -76,7 +94,7 @@ class _Service:
 
     def __init__(self, config: Config, *, batch_max_age_s: float,
                  watch_bucket: bool, watch_site: str, watch_worker: str,
-                 watch_poll_s: float) -> None:
+                 watch_poll_s: float, clock=None) -> None:
         self.cfg = config
         self._store: store_mod.Store | None = None
         self.batch_max_age_s = batch_max_age_s
@@ -84,11 +102,16 @@ class _Service:
         self.watch_site = watch_site
         self.watch_worker = watch_worker
         self.watch_poll_s = watch_poll_s
+        # Injectable clock (defaults to the monotonic wall clock); tests pass
+        # a fake so backoff schedules are asserted without sleeping.
+        self._clock = clock if clock is not None else time.monotonic
         self._lock = threading.RLock()
         self._pending: dict[str, list[dict]] = {}   # site -> [{"segment", "ts"}]
         self._ingested: set[tuple[str, str]] = set()  # (real path, sha256)
         self._errors: dict[str, str] = {}           # real path -> last error
         self._watch_backoff: dict[str, dict] = {}   # clip name -> {"attempts", "next_ts"}
+        self._flush_backoff: dict[str, dict] = {}   # site -> {"attempts", "next_ts"}
+        self._failed: dict[str, list[dict]] = {}    # site -> parked segments
         self._stability: dict[str, tuple[int, int]] = {}  # name -> (size, mtime_ns)
         self._done_files: set[str] = set()
         self._ws_clients: set[WebSocket] = set()
@@ -98,6 +121,9 @@ class _Service:
         self._threads_started = False
         self._pico = None
         self.started_utc = datetime.now(timezone.utc)
+
+    def _now(self) -> float:
+        return self._clock()
 
     @property
     def store(self) -> store_mod.Store:
@@ -146,7 +172,7 @@ class _Service:
             self._errors.pop(str(resolved), None)
             buf = self._pending.setdefault(site_id, [])
             for seg in segments:
-                buf.append({"segment": seg, "ts": time.monotonic()})
+                buf.append({"segment": seg, "ts": self._now()})
             triggered = len(buf) >= int(self.cfg.batch_size)
         batch = self.flush_site(site_id) if triggered else None
         return {"duplicate": False,
@@ -194,9 +220,22 @@ class _Service:
             with self._lock:
                 buf = self._pending.get(site_id) or []
                 self._pending[site_id] = (
-                    [{"segment": s, "ts": time.monotonic()} for s in segments]
+                    [{"segment": s, "ts": self._now()} for s in segments]
                     + buf)
             raise
+        if batch.get("thresholds_error"):
+            # Fail-closed batch: closed visibly, but the cause stays in the
+            # errors store (GET /ingest/errors) -- never silent.
+            with self._lock:
+                self._errors[f"batch:{site_id}"] = (
+                    f"ThresholdsError: {batch['thresholds_error']}")
+            log.warning("batch for %s closed fail-closed: %s",
+                        site_id, batch["thresholds_error"])
+        else:
+            # A healthy batch clears a stale fail-closed error from an
+            # earlier ingest-driven batch (thresholds fixed since then).
+            with self._lock:
+                self._errors.pop(f"batch:{site_id}", None)
         self._emit_batch(batch, receipts)
         # a clip that yielded many segments may leave a full batch behind
         with self._lock:
@@ -290,26 +329,86 @@ class _Service:
                 log.warning("worker tick failed: %s", exc)
 
     def _tick(self) -> None:
-        now = time.monotonic()
+        now = self._now()
         with self._lock:
             due = [site for site, buf in self._pending.items()
                    if buf and now - buf[0]["ts"] > self.batch_max_age_s]
         for site in due:
+            with self._lock:
+                gate = self._flush_backoff.get(site)
+            if gate is not None and now < gate["next_ts"]:
+                continue
             try:
-                self.flush_site(site)
+                batch = self.flush_site(site)
             except Exception as exc:
-                log.warning("timeout flush for %s failed: %s", site, exc)
+                self._record_flush_failure(site, exc, now)
+            else:
+                with self._lock:
+                    self._flush_backoff.pop(site, None)
+                    # Recovery clears the recorded flush error so
+                    # /ingest/errors stops reporting a healed site -- but a
+                    # fail-closed batch keeps its thresholds error.
+                    if batch is None or not batch.get("thresholds_error"):
+                        self._errors.pop(f"batch:{site}", None)
         if self.watch_bucket:
             try:
                 self._watch_bucket_tick()
             except Exception as exc:
                 log.warning("bucket watch failed: %s", exc)
 
+    def _record_flush_failure(self, site_id: str, exc: Exception,
+                              now: float) -> None:
+        """Capped retries for a failing timeout flush, then park as failed.
+
+        Each failure is recorded in the errors store (surfaced by
+        GET /ingest/errors) and retried with exponential backoff (1, 2, 4, 8,
+        16 s after failures 1..5). The 6th consecutive failure moves the
+        site's segments to the failed state (visible at GET /batches/failed):
+        never silently dropped, never retried forever. A later success clears
+        the recorded error (see the flush path).
+        """
+        with self._lock:
+            attempts = self._flush_backoff.get(site_id, {}).get("attempts", 0) + 1
+            if attempts >= FLUSH_MAX_FAILURES:
+                buf = self._pending.pop(site_id, [])
+                self._flush_backoff.pop(site_id, None)
+                for entry in buf:
+                    self._failed.setdefault(site_id, []).append({
+                        "segment": entry["segment"],
+                        "error": f"{type(exc).__name__}: {exc}",
+                        "failed_utc": datetime.now(timezone.utc).isoformat(),
+                    })
+                self._errors[f"batch:{site_id}"] = (
+                    f"{type(exc).__name__}: {exc} "
+                    f"(gave up after {attempts} failures; "
+                    f"{len(buf)} segment(s) moved to failed)")
+                parked, count = True, len(buf)
+            else:
+                self._flush_backoff[site_id] = {
+                    "attempts": attempts,
+                    "next_ts": now + 2.0 ** (attempts - 1),  # 1,2,4,8,16 s
+                }
+                self._errors[f"batch:{site_id}"] = (
+                    f"{type(exc).__name__}: {exc} "
+                    f"(timeout-flush failure {attempts}/"
+                    f"{FLUSH_MAX_FAILURES - 1} backoffs)")
+                parked, count = False, 0
+        if parked:
+            log.warning("timeout flush for %s parked %d segment(s) as failed "
+                        "after %d attempts: %s", site_id, count, attempts, exc)
+        else:
+            log.warning("timeout flush for %s failed (attempt %d): %s",
+                        site_id, attempts, exc)
+
+    def failed_count(self) -> int:
+        with self._lock:
+            return sum(len(v) for v in self._failed.values())
+
     def _watch_bucket_tick(self) -> None:
         bucket = Path(self.cfg.bucket_dir)
         if not bucket.is_dir():
             return
-        now = time.monotonic()
+        now = self._now()
         for clip in sorted(bucket.iterdir()):
             if not clip.is_file() or clip.name.startswith("."):
                 continue
@@ -337,17 +436,32 @@ class _Service:
                 self._done_files.add(clip.name)
             except Exception as exc:
                 # leave it out of _done_files so a later poll retries (I3),
-                # but back off exponentially so a poison file cannot spin.
+                # but back off exponentially so a poison file cannot spin --
+                # and give up after WATCH_MAX_ATTEMPTS attempts, parking the
+                # file with its terminal error in /ingest/errors.
                 with self._lock:
                     attempts = self._watch_backoff.get(clip.name, {}).get("attempts", 0) + 1
-                    self._watch_backoff[clip.name] = {
-                        "attempts": attempts,
-                        "next_ts": time.monotonic() + min(2.0 ** attempts, 30.0),
-                    }
-                    self._errors[str(Path(os.path.realpath(clip)))] = (
-                        f"{type(exc).__name__}: {exc}")
-                log.warning("watcher ingest of %s failed (attempt %d): %s",
-                            clip.name, attempts, exc)
+                    if attempts >= WATCH_MAX_ATTEMPTS:
+                        self._watch_backoff.pop(clip.name, None)
+                        self._errors[str(Path(os.path.realpath(clip)))] = (
+                            f"{type(exc).__name__}: {exc} "
+                            f"(gave up after {attempts} attempts)")
+                        parked = True
+                    else:
+                        self._watch_backoff[clip.name] = {
+                            "attempts": attempts,
+                            "next_ts": self._now() + min(2.0 ** attempts, 30.0),
+                        }
+                        self._errors[str(Path(os.path.realpath(clip)))] = (
+                            f"{type(exc).__name__}: {exc}")
+                        parked = False
+                if parked:
+                    self._done_files.add(clip.name)
+                    log.warning("watcher parked %s after %d attempts: %s",
+                                clip.name, attempts, exc)
+                else:
+                    log.warning("watcher ingest of %s failed (attempt %d): %s",
+                                clip.name, attempts, exc)
                 continue
             else:
                 with self._lock:
@@ -392,6 +506,7 @@ def create_app(config: Config | None = None, *, batch_max_age_s: float | None = 
             "status": "ok",
             "pipeline_version": cfg.pipeline_version,
             "pending_segments": svc.pending_count(),
+            "failed_segments": svc.failed_count(),
             "started_utc": svc.started_utc.isoformat(),
         }
 
@@ -425,6 +540,28 @@ def create_app(config: Config | None = None, *, batch_max_age_s: float | None = 
     def list_batches() -> dict:
         return {"batches": svc.store.list_batches()}
 
+    @app.get("/batches/failed")
+    def batches_failed() -> dict:
+        """Segments parked after FLUSH_MAX_FAILURES (6) failed timeout flushes.
+
+        Each entry carries the site, segment id, source clip, the terminal
+        error and the parking time: parked segments are queryable here, never
+        silently dropped.
+        """
+        with svc._lock:
+            out = []
+            for site_id, items in svc._failed.items():
+                for item in items:
+                    seg = item["segment"]
+                    out.append({
+                        "site_id": site_id,
+                        "segment_id": seg["segment_id"],
+                        "source_clip": seg.get("source_clip"),
+                        "error": item["error"],
+                        "failed_utc": item["failed_utc"],
+                    })
+        return {"failed": out}
+
     @app.get("/batches/{batch_id}")
     def get_batch(batch_id: str) -> dict:
         batch = svc.store.get_batch(batch_id)
@@ -454,12 +591,12 @@ def create_app(config: Config | None = None, *, batch_max_age_s: float | None = 
     # -- stats / sop / voice / pico ----------------------------------------
     @app.get("/stats/risk_coverage")
     def stats_risk_coverage() -> list[dict]:
-        points = svc.store.calibration_points()
-        if points:
-            return pipeline.risk_coverage(points)
-        # real eval results when the eval module has produced them; [] is the
-        # honest "no measured data" state -- never fabricated points.
-        return pipeline.risk_coverage_from_eval()
+        results_dir = os.environ.get("JADAL_EVAL_RESULTS_DIR") or None
+        return pipeline.risk_coverage_report(
+            config=cfg,
+            results_dir=results_dir,
+            store_points=svc.store.calibration_points(),
+        )
 
     @app.get("/stats/sop_gaps")
     def stats_sop_gaps() -> list[dict]:
@@ -508,18 +645,26 @@ def create_app(config: Config | None = None, *, batch_max_age_s: float | None = 
         svc.start(asyncio.get_running_loop())
         svc.register_ws(websocket, asyncio.get_running_loop())
         try:
+            recv_timeout = _env_float("JADAL_WS_RECV_TIMEOUT_S", WS_RECV_TIMEOUT_S)
             await websocket.send_json({"type": "hello",
                                        "recent": len(svc.recent_events())})
             for event in svc.recent_events():
                 await websocket.send_json(event)
             while True:
-                msg = await websocket.receive_text()
+                try:
+                    msg = await asyncio.wait_for(websocket.receive_text(),
+                                                 timeout=recv_timeout)
+                except asyncio.TimeoutError:
+                    continue  # idle client: wait again, never block forever
                 if msg == "ping":
                     await websocket.send_json({"type": "pong"})
         except WebSocketDisconnect:
             pass
         finally:
             svc.unregister_ws(websocket)
+
+    # -- optional hub router (owned by the hub worker; absent until it merges)
+    _mount_hub_router(app)
 
     # -- static dashboard ---------------------------------------------------
     web_dir = Path(cfg.web_dir)
@@ -541,6 +686,31 @@ def _sop_module():
         return sop_index
     except Exception:
         return None
+
+
+def _mount_hub_router(app: FastAPI) -> bool:
+    """Mount the optional hub router so its routes serve under /hub exactly once.
+
+    The hub worker owns ``jadal.hub_api``; when it is absent (or exposes no
+    router) the service behaves exactly as before. A router that already
+    carries the ``/hub`` prefix is included as-is; any other router is
+    included with ``prefix="/hub"``. Returns True when mounted.
+    """
+    try:
+        from jadal.hub_api import router as hub_router  # type: ignore
+    except Exception as exc:
+        log.info("hub router not mounted: %s", exc)
+        return False
+    try:
+        existing = (getattr(hub_router, "prefix", "") or "").rstrip("/")
+        if existing == "/hub":
+            app.include_router(hub_router)
+        else:
+            app.include_router(hub_router, prefix="/hub")
+    except Exception as exc:
+        log.warning("hub router present but failed to mount: %s", exc)
+        return False
+    return True
 
 
 app = create_app()
