@@ -13,14 +13,19 @@ otherwise a clear ``RuntimeError`` is raised. ``jadal.certify`` and
 
 NOT DONE:
 - L0/L1/segmenter are stubs (hash-derived fakes, whole clip = one segment)
-  until the real modules merge; set JADAL_USE_STUBS=1 to run on stubs.
+  until the real modules merge; set JADAL_USE_STUBS=1 to run on stubs. When
+  jadal.signals / jadal.decision / jadal.segmenter are importable they are
+  used automatically (no flag needed).
 - ``pick_threshold`` has no calibration data, so the answer threshold falls back
   to a recorded placeholder (0.9) until eval data exists.
 - Verdict reason rules live here (L2 certify API is thresholding + batch rule).
+- The real jadal.decision module does not exist yet (feat/decider has no
+  Decider); L1 stays on stubs until it lands.
 """
 from __future__ import annotations
 
 import hashlib
+import json
 import platform
 from dataclasses import fields as dataclass_fields
 from datetime import datetime, timezone
@@ -84,8 +89,15 @@ def _split_clip_fn():
                        stubs.stub_split_clip, "segmenter")
 
 
-def impl_versions() -> dict[str, str]:
-    """Which implementation each stage is running (goes into every receipt)."""
+def impl_versions(config: Any = None) -> dict[str, str]:
+    """Which implementation each stage is running (goes into every receipt).
+
+    Beyond module names this records the L0 backend details reported by the
+    real signals module (``backend_versions()``, else ``backend_info()``) and
+    the sha256 of the face/hand model weight files when they exist on disk.
+    Everything is best-effort: a missing module or file only means a missing
+    key, never an exception. Weight hashes are cached per process.
+    """
     versions = {"python": platform.python_version()}
     for name, attr, stub_tag in (
             ("signals", "compute_signals", "stubs.signals"),
@@ -99,7 +111,101 @@ def impl_versions() -> dict[str, str]:
         versions[name] = f"jadal.{name}" if real else stub_tag
     versions["certify"] = "jadal.certify"
     versions["receipts"] = "jadal.receipts"
+    try:
+        from jadal import signals as _sig_mod
+    except ImportError:
+        _sig_mod = None  # type: ignore[assignment]
+    if _sig_mod is not None:
+        fn = getattr(_sig_mod, "backend_versions", None)
+        if not callable(fn):
+            fn = getattr(_sig_mod, "backend_info", None)
+        if callable(fn):
+            try:
+                try:
+                    info = fn(config) if config is not None else fn()
+                except TypeError:
+                    info = fn()
+            except Exception:
+                info = None
+            if isinstance(info, dict):
+                versions["signals_backend"] = json.dumps(
+                    info, sort_keys=True, separators=(",", ":"),
+                    default=str)
+            elif info is not None:
+                versions["signals_backend"] = str(info)
+    if config is not None:
+        for key in ("face_detector_task", "hand_landmarker_task"):
+            token = _weight_token(getattr(config, key, None))
+            if token is not None:
+                versions[key] = token
     return versions
+
+
+# sha256 of model weight files, cached per process (files are small).
+_WEIGHT_HASH_CACHE: dict[str, str] = {}
+
+
+def _weight_hash(path: Path) -> str | None:
+    try:
+        resolved = str(path.resolve())
+    except OSError:
+        return None
+    if resolved in _WEIGHT_HASH_CACHE:
+        return _WEIGHT_HASH_CACHE[resolved]
+    try:
+        h = hashlib.sha256()
+        with open(resolved, "rb") as fh:
+            for chunk in iter(lambda: fh.read(1 << 20), b""):
+                h.update(chunk)
+    except OSError:
+        return None
+    digest = h.hexdigest()
+    _WEIGHT_HASH_CACHE[resolved] = digest
+    return digest
+
+
+def _weight_token(path: Any) -> str | None:
+    """`name:sha256:<hex>` for a weight file, else `name:size:<n>`, else None."""
+    if path is None:
+        return None
+    p = Path(path)
+    try:
+        if not p.is_file():
+            return None
+        size = p.stat().st_size
+    except OSError:
+        return None
+    digest = _weight_hash(p)
+    if digest is not None:
+        return f"{p.name}:sha256:{digest}"
+    return f"{p.name}:size:{size}"
+
+
+def ensure_determinism(config: Any) -> None:
+    """Pin down RNGs and deterministic kernels (SPEC determinism rules).
+
+    Best-effort and side-effect free on failure: every backend is guarded, so
+    a missing torch/numpy never breaks the pipeline. Real model modules own
+    their own fixed sampling; this only covers the process-global knobs.
+    """
+    seed = int(getattr(config, "seed", 1234))
+    try:
+        import random
+        random.seed(seed)
+    except Exception:
+        pass
+    try:
+        import numpy as _np
+        _np.random.seed(seed % (2 ** 32))
+    except Exception:
+        pass
+    try:
+        import torch
+        torch.manual_seed(seed)
+        torch.use_deterministic_algorithms(True, warn_only=True)
+        torch.backends.cudnn.benchmark = False
+    except Exception:
+        pass
 
 
 def _round_floats(obj: Any, decimals: int) -> Any:
@@ -155,7 +261,7 @@ def config_block(config: Any) -> dict:
     return {
         "thresholds": thresholds_snapshot(config),
         "pipeline_version": str(config.pipeline_version),
-        "versions": impl_versions(),
+        "versions": impl_versions(config),
     }
 
 
@@ -242,6 +348,7 @@ def run_batch(segments: list[dict], config: Any) -> tuple[dict, list[dict]]:
     """
     if not segments:
         raise ValueError("run_batch needs at least one segment")
+    ensure_determinism(config)
     decimals = int(config.float_decimals)
     block = config_block(config)
     compute_signals = _compute_signals_fn()
@@ -292,6 +399,7 @@ def reverify_receipt(receipt: dict, segment: dict, config: Any) -> dict:
     live object), the verdict threshold comes from the stored verdict, and the
     config block passed to make_receipt is the stored block verbatim.
     """
+    ensure_determinism(config)
     block = receipt.get("config")
     if not isinstance(block, dict):
         block = config_block(config)
@@ -301,6 +409,9 @@ def reverify_receipt(receipt: dict, segment: dict, config: Any) -> dict:
     replay_config = stored_config(block if isinstance(block, dict) else None) or config
     if not isinstance(replay_config, Config):
         replay_config = config
+    # the replayed seed governs from here on, so a torch-backed L0/L1 replays
+    # with the same RNG state that produced the receipt (no spurious MISMATCH)
+    ensure_determinism(replay_config)
     answer_threshold = (receipt.get("verdict") or {}).get("threshold")
     if answer_threshold is None:
         answer_threshold = thresholds.get("answer_threshold",
@@ -327,7 +438,28 @@ def reverify_receipt(receipt: dict, segment: dict, config: Any) -> dict:
     decisions = _round_floats(decider.decide(segment["path"], signals), decimals)
     verdict = make_verdict(segment, signals, decisions, replay_thresholds, decimals)
     actual = receipts_mod.make_receipt(segment, signals, decisions, verdict, block)
-    return receipts_mod.verify_receipt(receipt, lambda _stored: actual)
+    result = receipts_mod.verify_receipt(receipt, lambda _stored: actual)
+    result["version_match"], result["version_diff"] = compare_versions(
+        block, impl_versions(config))
+    return result
+
+
+def compare_versions(stored_block: Any,
+                     current_versions: dict) -> tuple[bool, list[str]]:
+    """Stored receipt versions vs the running code: (match, differing keys).
+
+    A re-verify mismatch after a module upgrade (stubs -> real signals, new
+    weights) is expected; the diff names the cause instead of leaving a bare
+    hash inequality.
+    """
+    stored_versions = (stored_block or {}).get("versions") if isinstance(
+        stored_block, dict) else None
+    if not isinstance(stored_versions, dict):
+        return False, ["<no stored versions>"]
+    keys = sorted(set(stored_versions) | set(current_versions))
+    diff = [k for k in keys
+            if stored_versions.get(k) != current_versions.get(k)]
+    return (not diff), diff
 
 
 def risk_coverage(points: list[dict]) -> list[dict]:
@@ -337,9 +469,62 @@ def risk_coverage(points: list[dict]) -> list[dict]:
     return certify_mod.risk_coverage(confs, corrects)
 
 
+def risk_coverage_from_eval(results_dir: str | Path | None = None) -> list[dict]:
+    """Risk/coverage points from the real eval results JSON, else [].
+
+    Reads ``eval/results/calibration.json`` (written by eval/calibration_report.py)
+    and returns its validated ``risk_coverage`` list. Returns [] when the file
+    is absent or malformed -- that is the honest "no measured data" state, and
+    callers must surface it as such instead of inventing numbers.
+    """
+    from jadal.config import ROOT
+    path = Path(results_dir) if results_dir else ROOT / "eval" / "results" / "calibration.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    rows = payload.get("risk_coverage") if isinstance(payload, dict) else None
+    if not isinstance(rows, list):
+        return []
+    clean = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        try:
+            clean.append({
+                "threshold": float(row["threshold"]),
+                "coverage": float(row["coverage"]),
+                "error": float(row["error"]),
+            })
+        except (KeyError, TypeError, ValueError):
+            continue
+    return clean
+
+
+def sop_gaps_from_verdicts(batches: list[dict]) -> list[dict]:
+    """Reason-code counts over stored batch verdicts (real /stats/sop_gaps data).
+
+    Returns ``[{reason_code, count, share}]`` sorted by count desc, then code.
+    ``share`` is count / total verdicts (0.0 when there are no verdicts).
+    """
+    counts: dict[str, int] = {}
+    total = 0
+    for batch in batches:
+        for verdict in batch.get("verdicts") or []:
+            total += 1
+            for code in verdict.get("reasons") or []:
+                counts[str(code)] = counts.get(str(code), 0) + 1
+    rows = [{"reason_code": code, "count": n,
+             "share": round(n / total, 4) if total else 0.0}
+            for code, n in counts.items()]
+    rows.sort(key=lambda r: (-r["count"], r["reason_code"]))
+    return rows
+
+
 __all__ = [
     "REASON_ORDER", "HARD_REASONS", "BATCH_RULE_TEXT",
-    "impl_versions", "pick_threshold", "thresholds_snapshot", "config_block",
+    "impl_versions", "ensure_determinism", "pick_threshold", "thresholds_snapshot", "config_block",
     "stored_config", "process_clip", "make_verdict", "run_batch",
-    "reverify_receipt", "risk_coverage",
+    "reverify_receipt", "compare_versions", "risk_coverage",
+    "risk_coverage_from_eval", "sop_gaps_from_verdicts",
 ]
