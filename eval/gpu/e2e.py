@@ -100,6 +100,24 @@ def main(nwin=120, B=8):
             done += len(batch)
             batch = []
     wall = time.perf_counter() - t0
+    if batch:  # flush partial tail (e.g. last windows exited at S0)
+        t2 = time.perf_counter()
+        ten = torch.from_numpy(np.stack(batch)).half().cuda()
+        luma = (0.299 * ten[..., 0] + 0.587 * ten[..., 1]
+                + 0.114 * ten[..., 2])
+        with torch.no_grad():
+            T = gpu_window_features_batch(luma, ten, fps=10.0).float().cpu().numpy()
+        gpu_s += time.perf_counter() - t2
+        P = clf.predict_proba((T - mu) / sd)[:, 1]
+        for p in P:
+            if p >= THR + MARGIN:
+                exits["S1_accept"] += 1
+            elif p <= THR - MARGIN:
+                exits["S1_reject"] += 1
+            else:
+                exits["S2"] += 1
+        done += len(batch)
+        batch = []
     torch.cuda.synchronize()
     t_end = now_str()
     wps = done / wall
