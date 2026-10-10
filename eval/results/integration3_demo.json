@@ -7,23 +7,32 @@
     "flock -w 3600 tools/gpu.lock bash scripts/demo.sh",
     "PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests"
   ],
-  "created_utc": "2026-10-10T12:03:22.549967+00:00",
+  "created_utc": "2026-10-10T12:04:14.619321+00:00",
   "determinism": {
     "alone_vs_batch5_identical": true,
-    "device": "cpu (fallback; CUDA_VISIBLE_DEVICES empty, EG2 cache warm)",
-    "gpu_run_pending": true,
-    "note": "CPU proof from .scratch/cpu_determinism.py; GPU determinism phase queued on the shared lock at assembly time",
-    "ten_runs_hash_prefix": "45e6611ade3bbbe5",
+    "latency": {
+      "decider_s_per_seg": 1.079,
+      "n_segments_timed": 5,
+      "note": "steady-state per-segment cost (embedding cache warm); segmenter timed separately below",
+      "route_s_per_seg": 0.0,
+      "segmenter_s_per_seg": 0.745,
+      "segments_per_hour": 1051.0,
+      "signals_s_per_seg": 2.347
+    },
+    "ten_runs_hash_prefix": "2c8e09ed8d2b2d99",
     "ten_runs_identical": true,
     "ten_runs_n_segments": 5
   },
   "device_label": "x86 laptop, shared GPU, NOT a Pi",
   "dock_to_batches_wall_s": 249.4,
   "latency": {
-    "decider_s_per_seg": 0.544,
-    "note": "CPU steady-state, EG2 embedding cache warm (GPU-computed)",
-    "segments_per_hour": 1742.3,
-    "signals_s_per_seg": 1.523
+    "decider_s_per_seg": 1.079,
+    "n_segments_timed": 5,
+    "note": "steady-state per-segment cost (embedding cache warm); segmenter timed separately below",
+    "route_s_per_seg": 0.0,
+    "segmenter_s_per_seg": 0.745,
+    "segments_per_hour": 1051.0,
+    "signals_s_per_seg": 2.347
   },
   "n_batches": 23,
   "n_clips": 7,
@@ -35,9 +44,7 @@
   ],
   "reverify": {
     "matched": 113,
-    "note": "all MATCH via the API with versions_match=True (no mid-run commits)",
-    "total": 113,
-    "versions_match": true
+    "total": 113
   },
   "tamper": {
     "clean_receipt_passes": true,
@@ -69,7 +76,7 @@
     "python": "3.12.15",
     "receipts": "jadal.receipts",
     "receipts_git_sha": "5919760860f940f9e2e97144321d492443e9225f",
-    "repo_git_sha": "4f76f8c207e3177fd0e91a7dda94bda29550952a",
+    "repo_git_sha": "d554ad03bb9ba243a95cde908dc630e971eae20a",
     "segmenter": "jadal.segmenter",
     "segmenter_git_sha": "e78a9e69933dd36a856c97387995f90cbfb2bd07",
     "signals": "jadal.signals",

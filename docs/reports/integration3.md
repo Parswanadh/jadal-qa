@@ -58,15 +58,19 @@ FINAL 17:35 IST (demo run 3, after the ingest-guard fix):
 - Re-verify: MATCH 113/113 via `POST /receipts/{id}/reverify`, all with
   `versions_match=True`. Tampered receipt FAILS `verify_receipt.py`
   (exit 1); clean receipt passes (exit 0).
-- Determinism (CPU fallback, `device=cpu` recorded): 10 repeated full
-  runs on the 94.5 s clip (5 segments) => IDENTICAL receipt_sha256 per
-  segment (`45e6611ade3bbbe5...`); alone vs batch-of-5 => IDENTICAL;
-  re-verify MATCH 5/5. GPU determinism phase was still queued on the
-  shared lock at assembly time (flagged `gpu_run_pending` in the JSON);
-  fresh GPU embeds were separately proven bit-identical (maxabs 0.0).
-- Latency (CPU steady-state, cache-warm): signals 1.523 s/segment,
-  decider 0.544 s/segment => 1742.3 segments/hour; dock-to-drained wall
+- Determinism (GPU, `device=cuda`, demo run 3 determinism phase): 10
+  repeated full runs on the 94.5 s clip (5 segments) => IDENTICAL
+  receipt_sha256 per segment (`2c8e09ed8d2b2d99...`); alone (batch of
+  1) vs in a batch of 5 => IDENTICAL. The same checks were proven
+  independently on the CPU fallback earlier (`45e6611ade3bbbe5...`,
+  re-verify 5/5, tamper exit 1) — the two hashes differ only in the
+  recorded backbone dtype string (bfloat16 vs float32); each path is
+  internally bit-identical, cross-device equality is NOT claimed.
+- Latency (GPU run, steady-state, embedding cache warm): segmenter
+  0.745 s/segment, signals 2.347 s/segment, decider 1.079 s/segment,
+  route ~0.0 s/segment => 1051.0 segments/hour; dock-to-drained wall
   249.4 s for 7 clips on this x86 laptop (shared GPU, NOT a Pi).
+  (CPU fallback measured separately: 1742.3 seg/hour cache-warm.)
 - `device=cuda:NVIDIA GeForce RTX 4070 Laptop GPU`, `arch=x86_64`
   in every receipt (cross-architecture determinism NOT claimed).
 - Suite: `Ran 564 tests in 212.654s -- OK (skipped=3)` (37.8 s
