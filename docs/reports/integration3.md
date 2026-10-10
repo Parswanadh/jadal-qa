@@ -86,6 +86,24 @@ was measured.
   all receipts via the API, tampered receipt FAILS, 10x identical
   receipt_sha256 per segment, alone-vs-batch-of-5 identical,
   `eval/results/integration3_demo.json` with per-stage latency.
+- B3 PROVEN ON CPU 17:15 IST (GPU lock still queued; house-rule CPU
+  fallback, `device=cpu` recorded): `CUDA_VISIBLE_DEVICES=""` +
+  `.scratch/cpu_determinism.py` (EG2 embedding cache warm from the GPU
+  run, `_get_model` guarded to abort loudly on any cache miss — none
+  occurred; torch confirms `cuda.is_available()==False`, so no GPU was
+  touched and no lock was needed) on the shortest IndEgo clip
+  (94.5 s -> 5 segments, real segmenter/signals/decider/funnel):
+  10 repeated full runs => IDENTICAL receipt_sha256 on all 5 segments
+  (hash `45e6611ade3bbbe5...`); alone (batch of 1) vs in a batch of 5
+  => IDENTICAL; re-verify (pinned pipeline on the segment bytes) =>
+  MATCH 5/5; tampered receipt => `verify_receipt.py` exit 1 (hash
+  MISMATCH named), clean receipt => exit 0. Per-stage latency:
+  signals 1.523 s/seg, decider 0.544 s/seg (cache-warm), 1742.3
+  segments/hour steady-state on this x86 laptop. Source:
+  `.scratch/cpu_det.json` (regenerable with the command above; its
+  contents fold into `eval/results/integration3_demo.json` when the
+  GPU demo completes). The remaining GPU-run claim is same-hashes-on
+  -cuda; the CPU proof stands on its own with `device=cpu`.
 
 - Command: `flock -w 3600 tools/gpu.lock bash scripts/demo.sh`
   (demo holds the lock only across the service phase and the
