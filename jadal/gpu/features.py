@@ -7,6 +7,9 @@ Layout: cpu_* functions are the float64 reference (also the Pi/edge path).
 gpu_* functions are batched torch kernels (fp16 in / fp32 math where safe,
 fixed-order deterministic reductions). Tolerance tests in tests/test_gpu_features.py.
 """
+import subprocess
+import sys
+
 import numpy as np
 
 FPS_DEFAULT = 30.0
@@ -24,6 +27,22 @@ FEATURE_NAMES = [
     "skin_frac", "illum_r", "illum_g", "illum_b",
     "rppg_pulse", "dup_hash_mean", "zncc_self",
 ]
+
+# --- 14 features added in m/feat40 (26 -> 40); see cpu_new_features ---
+NEW_FEATURE_NAMES = [
+    # Z3 transferable set (definitions frozen in m/adapt160:z3extract.py)
+    "ct_fsize_std", "mo_hand_motion_excess", "inv_clip_frac",
+    "inv_laplacian_var", "inv_hist_entropy", "inv_dct_hf_lf",
+    # finer spectral radial bands (fraction of FFT energy in a shell)
+    "spec_b1", "spec_b2", "spec_b3",
+    # colour-channel ratios (mean R/G, mean B/G)
+    "col_rg_ratio", "col_bg_ratio",
+    # temporal-lag differences (|frame_t - frame_{t-k}|)
+    "temp_lag2", "temp_lag3",
+    # per-pixel noise floor (median absolute deviation of the Laplacian)
+    "noise_floor",
+]
+FEATURE_NAMES = FEATURE_NAMES + NEW_FEATURE_NAMES
 
 
 # ---------------- CPU float64 reference ----------------
@@ -213,8 +232,8 @@ def cpu_zncc(a, b):
     return float((a * b).sum() / denom) if denom > 0 else 0.0
 
 
-def cpu_window_features(luma, rgb, fps=FPS_DEFAULT):
-    """luma: (T,H,W), rgb: (T,H,W,3) float64 in [0,1]. Returns {name: float} (27)."""
+def cpu_window_features(luma, rgb, fps=FPS_DEFAULT, path=None, start_s=None, end_s=None):
+    """luma: (T,H,W), rgb: (T,H,W,3) float64 in [0,1]. Returns {name: float} (40)."""
     bands = cpu_temporal_bands(luma, fps)
     bmean = {f"temp_b{i}": float(bands[f'b{i}'].mean()) for i in range(4)}
     tot_e = sum(bmean.values()) + 1e-18
@@ -244,11 +263,135 @@ def cpu_window_features(luma, rgb, fps=FPS_DEFAULT):
         "motion_energy": me, "global_shift": gs, "skin_frac": skin,
         "illum_r": ill[0], "illum_g": ill[1], "illum_b": ill[2],
         "rppg_pulse": pulse, "dup_hash_mean": dup_h, "zncc_self": zn,
+        **cpu_new_features(luma, rgb, fps, path=path, start_s=start_s, end_s=end_s),
+    }
+
+
+# ---------------- 14 added features (26 -> 40) ----------------
+
+def _ct_fsize_std(path, start_s, end_s):
+    """Compression telemetry: std of per-frame packet sizes in [start,end).
+
+    Cost: ONE ffprobe `-show_entries frame=...` pass (~20-80 ms/window).
+    Fallback 0.0 is loud (stderr), never silent.
+    """
+    out = 0.0
+    if path is None or start_s is None or end_s is None:
+        return out
+    try:
+        p = subprocess.run(
+            ["ffprobe", "-v", "error", "-select_streams", "v:0",
+             "-show_entries", "frame=pts_time,pkt_size", "-of", "csv=p=0", path],
+            capture_output=True, text=True, timeout=180)
+        sz = []
+        for line in p.stdout.splitlines():
+            a = line.split(",")
+            if len(a) < 2:
+                continue
+            try:
+                ts, s = float(a[0]), float(a[1])
+            except ValueError:
+                continue
+            if float(start_s) - 1e-6 <= ts < float(end_s) - 1e-6:
+                sz.append(s)
+        if len(sz) >= 3:
+            out = float(np.std(np.asarray(sz, float)))
+    except Exception as e:  # loud, never silent
+        print(f"[features40] ct_fsize_std failed for {path}: {e}",
+              file=sys.stderr, flush=True)
+    return out
+
+
+def _skin_mask(rgb_frame):
+    """YCrCb skin-locus mask for one (H,W,3) frame in [0,1] (BT.601)."""
+    r, g, b = rgb_frame[..., 0], rgb_frame[..., 1], rgb_frame[..., 2]
+    cr = 0.5 * r - 0.4187 * g - 0.0813 * b + 0.5
+    cb = -0.1687 * r - 0.3313 * g + 0.5 * b + 0.5
+    return (cr > 0.55) & (cr < 0.72) & (cb > 0.38) & (cb < 0.52)
+
+
+def cpu_new_features(luma, rgb, fps=FPS_DEFAULT, path=None, start_s=None, end_s=None):
+    """The 14 added per-pixel features. Returns {name: float}.
+
+    luma: (T,H,W) float64 [0,1]; rgb: (T,H,W,3) float64 [0,1]. All reductions are
+    fixed-order float64 means over decoded frames (deterministic).
+    """
+    import cv2
+    T = luma.shape[0]
+    if T == 0:
+        return {k: 0.0 for k in NEW_FEATURE_NAMES}
+    inv = 1.0 / T
+    # ---- streaming per-frame accumulators (Z3 invariants + colour + edge/noise) ----
+    lap_var = clip = hist_ent = noise = 0.0
+    rg_ratio = bg_ratio = 0.0
+    htrans, trans = [], []
+    prev = None
+    for t in range(T):
+        g = luma[t]
+        lap = cv2.Laplacian(g.astype(np.float32), cv2.CV_32F)
+        lap_var += float(lap.var())
+        noise += float(np.median(np.abs(lap - np.median(lap))))  # MAD noise floor
+        clip += float(((g <= 2.0 / 255.0) | (g >= 253.0 / 255.0)).mean())
+        h, _ = np.histogram(g, bins=32, range=(0.0, 1.0))
+        p = h / max(int(h.sum()), 1)
+        pp = p[p > 0]
+        hist_ent += float(-(pp * np.log(pp)).sum())
+        r, gc, b = rgb[t, :, :, 0], rgb[t, :, :, 1], rgb[t, :, :, 2]
+        gm = float(gc.mean())
+        rg_ratio += float(r.mean() / (gm + 1e-9))
+        bg_ratio += float(b.mean() / (gm + 1e-9))
+        if prev is not None:
+            d = np.abs(g - prev)
+            tr = float(d.mean())  # translation-only residual proxy (no warp)
+            trans.append(tr)
+            sk = _skin_mask(rgb[t])
+            if int(sk.sum()) >= 20:
+                htrans.append(float(d[sk].mean()))
+        prev = g
+    # ---- finer spectral radial bands (fraction of FFT energy in a shell) ----
+    b = np.zeros(3)
+    for t in range(0, T, max(1, T // 3)):
+        g = luma[t]
+        F = np.fft.rfft2(g - g.mean())
+        P = (F.real ** 2 + F.imag ** 2)
+        H, W = g.shape
+        ky = np.fft.fftfreq(H)[:, None]
+        kx = np.fft.rfftfreq(W)[None, :]
+        rr = np.sqrt(ky ** 2 + kx ** 2)
+        tot = P[rr > 0].sum() + 1e-18
+        b[0] += P[(rr > 0.10) & (rr <= 0.20)].sum() / tot
+        b[1] += P[(rr > 0.20) & (rr <= 0.35)].sum() / tot
+        b[2] += P[(rr > 0.35) & (rr <= 0.50)].sum() / tot
+    nb = len(range(0, T, max(1, T // 3)))
+    b /= max(nb, 1)
+    # ---- inv_dct_hf_lf on a 64x64 resize of the middle frame (Z3 definition) ----
+    mid = luma[T // 2]
+    small = cv2.resize(mid, (64, 64), interpolation=cv2.INTER_AREA)
+    d = cv2.dct(small.astype(np.float32))
+    yy, xx = np.mgrid[0:64, 0:64]
+    rad = np.sqrt((yy - 32) ** 2 + (xx - 32) ** 2)
+    hf_lf = float((d[rad > 20] ** 2).sum() / ((d[rad < 8] ** 2).sum() + 1e-9))
+    # ---- temporal lag 2/3 ----
+    def lag(k):
+        if T <= k:
+            return 0.0
+        return float(np.mean([np.abs(luma[t] - luma[t - k]).mean() for t in range(k, T)]))
+    return {
+        "ct_fsize_std": _ct_fsize_std(path, start_s, end_s),
+        "mo_hand_motion_excess": float(np.mean(htrans) - np.mean(trans)) if htrans else 0.0,
+        "inv_clip_frac": float(clip * inv),
+        "inv_laplacian_var": float(lap_var * inv),
+        "inv_hist_entropy": float(hist_ent * inv),
+        "inv_dct_hf_lf": hf_lf,
+        "spec_b1": float(b[0]), "spec_b2": float(b[1]), "spec_b3": float(b[2]),
+        "col_rg_ratio": float(rg_ratio * inv),
+        "col_bg_ratio": float(bg_ratio * inv),
+        "temp_lag2": lag(2), "temp_lag3": lag(3),
+        "noise_floor": float(noise * inv),
     }
 
 
 # ---------------- GPU torch kernels ----------------
-
 def _torch():
     import torch
     assert torch.cuda.is_available(), "no GPU"
