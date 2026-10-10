@@ -3,7 +3,7 @@
  "label_source": "human (IndEgo gold manifest_gold.json, one labeller); 150 windows; clips ecu_full/desk/organise/pallet/logistics4/ecu_late/pallet2",
  "protocol": "in-domain leave-one-clip-out over the 7 IndEgo clips (150 gold windows, 100 good / 50 bad), logistic C=0.01 on L2-normalised EG2 features, clip-bootstrap CI B=1000 seed0",
  "device": "A40",
- "git_sha": "f20013b",
+ "git_sha": "ebf909a",
  "command": "bash tools/pod/gpu_run.sh python3 eval/exp_mosaic_res/run_res.py --no-artifacts",
  "ms_per_win_note": "mosaic embed ms/window = batch mosaic-encode time attributed equally across configs; batch-shared, so use canvas_px as the deterministic cost proxy",
  "cost_total": {
@@ -141,5 +141,9 @@
  },
  "ablation_delta_timestamps": 0.0208,
  "ablation_delta_shuffle": -0.0164,
- "verdict": "duel: more smaller tiles win at equal canvas; mosaic still below mean-of-frames"
+ "verdict": "duel: more smaller tiles win at equal canvas; mosaic still below mean-of-frames",
+ "ci95": [
+  0.7345,
+  0.8949
+ ]
 }

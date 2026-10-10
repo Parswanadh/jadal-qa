@@ -146,6 +146,9 @@ def main():
                          + " at equal canvas; mosaic still below mean-of-frames"))
 
     for eid, d in (("MR.01", mr01), ("MR.02", mr02), ("MR.03", mr03)):
+        d["ci95"] = (d.get("headline") or {}).get("ci95")
+        if eid == "MR.03":
+            d["ci95"] = d["duel"]["m_4x4_t168"]["ci95"]
         json.dump(d, open(os.path.join(R, f"{eid}.json"), "w"), indent=1)
 
     # ---- console / markdown table ----
