@@ -18,7 +18,7 @@ Start with the [project README](../README.md) for the overview and the honest-cl
 
 Reports on `main`, one per module:
 
-- [`reports/certify.md`](reports/certify.md): calibration, exact binomial bound, signed receipts, re-verify.
+- [`reports/certify.md`](reports/certify.md): calibration, exact binomial bound, content-hashed receipts, re-verify.
 - [`reports/service.md`](reports/service.md): FastAPI service, SQLite, batch pipeline, bucket watcher.
 - [`reports/pico.md`](reports/pico.md): Pico 2 firmware and the host serial link.
 - [`reports/voicebank.md`](reports/voicebank.md): voice bank message catalogue and generator.

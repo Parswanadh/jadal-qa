@@ -56,7 +56,7 @@ Two-sided certification: `calibrate_two_sided(...)` picks (a) the accept thresho
 - `web/` — static dashboard (no build step, no CDN): `index.html`, `app.js`, `style.css`.
 - `sop/` — `sop_garment_v1.md` (SAMPLE SOP, clearly labelled sample), `sop_index.py` (deterministic retrieval).
 - `voicebank/` — `messages.json` (reason code x language -> text), `gen_voicebank.py` (Sarvam Bulbul v3; run once; skips existing files), `{lang}/{code}.wav` generated files. Languages: `hi-IN`, `kn-IN`, `ta-IN`, `te-IN`, `en-IN`.
-- `pico/` — `main.py` (MicroPython, Raspberry Pi Pico 2, USB serial only), `jadal/pico_link.py` (host side, with a fake-serial mode for tests).
+- `pico/` — `main.py` (MicroPython, Raspberry Pi Pico (RP2040 tested; RP2350 should also work), USB serial only), `jadal/pico_link.py` (host side, with a fake-serial mode for tests).
 - `sim/dock_sim.py` — copies clips into `data_runtime/bucket/` one by one with a delay and posts `/ingest/event`.
 - `eval/` — dataset split, baselines, calibration curves.
 - `tests/` — plain `unittest` files named `test_*.py`.
