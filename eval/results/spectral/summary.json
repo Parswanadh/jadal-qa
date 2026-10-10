@@ -1,0 +1,237 @@
+{
+ "created_utc": "2026-10-10T10:00:22Z",
+ "label_source": "human gold (IndEgo workers; NOT Awign footage)",
+ "gold_snapshot": {
+  "snapshot_utc": "2026-10-10T09:53:36.001340+00:00",
+  "labels_sha256": "0bc9e0b8f34839f98fa3fbdec068dc931e98e12d549da16d539be1d2db85be1b",
+  "n_good": 65,
+  "n_bad": 14
+ },
+ "arms": {
+  "A": {
+   "status": "NOT RUN",
+   "files": {
+    "gold.json": false,
+    "synth.json": false,
+    "dups.json": false,
+    "chunks.json": false,
+    "cost.json": false
+   }
+  },
+  "E": {
+   "status": "NOT RUN",
+   "files": {
+    "gold.json": false,
+    "synth.json": false,
+    "dups.json": false,
+    "chunks.json": false,
+    "cost.json": false
+   }
+  },
+  "B": {
+   "status": "NOT RUN",
+   "files": {
+    "gold.json": false,
+    "synth.json": false,
+    "dups.json": false,
+    "chunks.json": false,
+    "cost.json": false
+   }
+  },
+  "C": {
+   "status": "NOT RUN",
+   "files": {
+    "gold.json": false,
+    "synth.json": false,
+    "dups.json": false,
+    "chunks.json": false,
+    "cost.json": false
+   }
+  },
+  "D": {
+   "status": "NOT RUN",
+   "files": {
+    "gold.json": false,
+    "synth.json": false,
+    "dups.json": false,
+    "chunks.json": false,
+    "cost.json": false
+   }
+  },
+  "A-full": {
+   "status": "NOT RUN",
+   "files": {}
+  }
+ },
+ "synth": {
+  "A": {
+   "status": "NOT RUN"
+  },
+  "E": {
+   "status": "NOT RUN"
+  },
+  "B": {
+   "status": "NOT RUN"
+  },
+  "C": {
+   "status": "NOT RUN"
+  },
+  "D": {
+   "status": "NOT RUN"
+  },
+  "A-full": {
+   "status": "NOT RUN"
+  }
+ },
+ "dups": {
+  "A": {
+   "status": "NOT RUN"
+  },
+  "E": {
+   "status": "NOT RUN"
+  },
+  "B": {
+   "status": "NOT RUN"
+  },
+  "C": {
+   "status": "NOT RUN"
+  },
+  "D": {
+   "status": "NOT RUN"
+  }
+ },
+ "cost": {
+  "decode_floor": {
+   "note": "single-core (taskset) decode floor; NOT measured on a Pi; use cpu_benchmark to scale across machines",
+   "single_core": true,
+   "cpu_benchmark": {
+    "matmul_512_reps": 626,
+    "wall_s": 3.001,
+    "reps_per_s": 208.603
+   },
+   "machine": {
+    "nproc": 22
+   },
+   "rows": [
+    {
+     "id": "g000",
+     "clip": "ecu_full",
+     "video_s": 10.2,
+     "full_decode_cv2": {
+      "frames": 102,
+      "wall_s": 0.103
+     },
+     "scaled160_ffmpeg": {
+      "wall_s": 0.153,
+      "rc": 0,
+      "stderr_tail": ""
+     },
+     "keyframe_only_ffmpeg": {
+      "wall_s": 0.051,
+      "rc": 0,
+      "stderr_tail": ""
+     },
+     "rtf_full": 99.03,
+     "rtf_scaled160": 66.67,
+     "rtf_keyonly": 200.0
+    },
+    {
+     "id": "g048",
+     "clip": "ecu_late",
+     "video_s": 10.2,
+     "full_decode_cv2": {
+      "frames": 102,
+      "wall_s": 0.103
+     },
+     "scaled160_ffmpeg": {
+      "wall_s": 0.152,
+      "rc": 0,
+      "stderr_tail": ""
+     },
+     "keyframe_only_ffmpeg": {
+      "wall_s": 0.048,
+      "rc": 0,
+      "stderr_tail": ""
+     },
+     "rtf_full": 99.03,
+     "rtf_scaled160": 67.11,
+     "rtf_keyonly": 212.5
+    },
+    {
+     "id": "g062",
+     "clip": "desk",
+     "video_s": 10.2,
+     "full_decode_cv2": {
+      "frames": 102,
+      "wall_s": 0.114
+     },
+     "scaled160_ffmpeg": {
+      "wall_s": 0.179,
+      "rc": 0,
+      "stderr_tail": ""
+     },
+     "keyframe_only_ffmpeg": {
+      "wall_s": 0.048,
+      "rc": 0,
+      "stderr_tail": ""
+     },
+     "rtf_full": 89.47,
+     "rtf_scaled160": 56.98,
+     "rtf_keyonly": 212.5
+    }
+   ]
+  },
+  "arms": {
+   "A": {
+    "status": "NOT RUN"
+   },
+   "E": {
+    "status": "NOT RUN"
+   },
+   "B": {
+    "status": "NOT RUN"
+   },
+   "C": {
+    "status": "NOT RUN"
+   },
+   "D": {
+    "status": "NOT RUN"
+   },
+   "A-full": {
+    "status": "RUN",
+    "latency_s_per_segment_1core": null,
+    "rtf_incl_decode": null,
+    "peak_ram_mb": null,
+    "backend": null,
+    "note": "all-frames single-pass, measured single-process"
+   }
+  }
+ },
+ "streaming": {
+  "A": {
+   "status": "NOT RUN"
+  },
+  "E": {
+   "status": "NOT RUN"
+  },
+  "B": {
+   "status": "NOT RUN"
+  },
+  "C": {
+   "status": "NOT RUN"
+  },
+  "D": {
+   "status": "NOT RUN"
+  },
+  "A-full": {
+   "status": "NOT RUN"
+  }
+ },
+ "hyperspectral_verdict": {
+  "status": "NOT RUN"
+ },
+ "vlm_verdict": {
+  "status": "NOT RUN"
+ },
+ "scorer_wall_s": 0.0
+}
