@@ -245,64 +245,97 @@ def main() -> None:
         "arms": {},
     }
 
-    arm_docs = {}
-    arm_key_order = []
-    for a in ARMS + ["A-full"]:
-        if a == "A-full":
-            d = load(DATA / "arms" / "A" / "allframes.json")
-            key = "A-full"
-        else:
-            d = load(DATA / "arms" / a / "gold.json")
-            key = a
-            if d is None:
-                # provisional: score gold_<suffix>.json variants without touching them
-                import glob as _glob
-                for vf in sorted(_glob.glob(str(DATA / "arms" / a / "gold_*.json"))):
-                    suf = Path(vf).stem[len("gold_"):]
-                    try:
-                        vd = json.loads(Path(vf).read_text())
-                    except Exception:
-                        continue
-                    if isinstance(vd, dict) and vd.get("items"):
-                        arm_docs[f"{a}-{suf}"] = vd
-                        arm_key_order.append(f"{a}-{suf}")
-        if key not in arm_docs:
-            arm_docs[key] = d
-        arm_key_order.append(key)
-    for key in arm_key_order:
-        a = key.split("-")[0] if key != "A-full" else "A"
-        entry = {"status": "RUN" if arm_docs[key] else "NOT RUN",
-                 "files": status.get(a, {})}
-        if "-" in key and key != "A-full":
-            entry["provisional"] = True
-            entry["note"] = ("non-contract filename scored as-is; "
-                             "final number waits for arms/B/gold.json")
-        if arm_docs[key] and gold_manifest:
-            try:
-                akeys = (resolve_keys(key, arm_docs[key]["items"])
-                         if key not in FEAT_KEYS else FEAT_KEYS[key])
-                entry["gold"] = gold_task(a, arm_docs[key], gold_manifest, akeys)
-                entry["feature_keys"] = akeys
-            except Exception as e:  # never let one arm kill the scorer
-                entry["gold"] = {"error": f"{type(e).__name__}: {e}"}
-        summary["arms"][key] = entry
+    def dir_docs(arm):
+        """All JSON docs in an arm dir (parse failures -> skipped)."""
+        d = DATA / "arms" / arm
+        docs = {}
+        if d.is_dir():
+            for f in sorted(d.glob("*.json")):
+                try:
+                    docs[f.stem] = json.loads(f.read_text())
+                except Exception:
+                    continue
+        return docs
 
-    # synth task
+    def token_match(stem: str, token: str) -> bool:
+        return token in stem.split("_")
+
+    # Unified entries: contract arms + provisional non-contract variants.
+    # A variant key f"{arm}-{token}" links gold_<token> with any synth/dups/
+    # chunks file whose stem contains the token as an underscore-delimited part.
+    entries = []
+    for a in ARMS:
+        docs = dir_docs(a)
+        g = docs.get("gold")
+        if g and isinstance(g, dict) and g.get("items"):
+            entries.append({"key": a, "arm": a, "gold": g,
+                            "synth": docs.get("synth"), "dups": docs.get("dups"),
+                            "chunks": docs.get("chunks"), "provisional": False})
+        else:
+            entries.append({"key": a, "arm": a, "gold": None, "synth": None,
+                            "dups": docs.get("dups"), "chunks": None,
+                            "provisional": False})
+            for stem, gd in sorted(docs.items()):
+                if not stem.startswith("gold_") or not isinstance(gd, dict) \
+                        or not gd.get("items"):
+                    continue
+                tok = stem[len("gold_"):]
+                syn = next((v for s, v in sorted(docs.items())
+                            if s.startswith("synth") and token_match(s, tok)), None)
+                dup = next((v for s, v in sorted(docs.items())
+                            if s.startswith("dups") and token_match(s, tok)), None)
+                chu = next((v for s, v in sorted(docs.items())
+                            if s.startswith("chunks") and token_match(s, tok)), None)
+                linked = [s for s in sorted(docs)
+                            if s[:5] in ("synth", "dups_", "chunk")
+                            and token_match(s, tok)]
+                entries.append({"key": f"{a}-{tok}", "arm": a, "gold": gd,
+                                "synth": syn, "dups": dup, "chunks": chu,
+                                "provisional": True,
+                                "variant_files": [stem] + linked,
+                                "note": ("non-contract filenames scored as-is; final "
+                                         f"numbers wait for arms/{a}/gold.json etc.")})
+    af = load(DATA / "arms" / "A" / "allframes.json")
+    entries.append({"key": "A-full", "arm": "A", "gold": af,
+                    "synth": {"items": (af or {}).get("items", {})} if af else None,
+                    "dups": None, "chunks": None, "provisional": False,
+                    "note": "whole-video single-pass 160px variant of arm A"})
+
+    arm_docs = {e["key"]: e["gold"] for e in entries}
+    for e in entries:
+        key, a = e["key"], e["arm"]
+        entry = {"status": "RUN" if e["gold"] else "NOT RUN",
+                 "files": status.get(a, {})}
+        if e.get("provisional"):
+            entry["provisional"] = True
+            entry["note"] = e.get("note", "")
+        if e.get("variant_files"):
+            entry["variant_files"] = e["variant_files"]
+        if e["gold"] and gold_manifest:
+            try:
+                akeys = (FEAT_KEYS[key] if key in FEAT_KEYS
+                         else resolve_keys(key, e["gold"]["items"]))
+                entry["gold"] = gold_task(a, e["gold"], gold_manifest, akeys)
+                entry["feature_keys"] = akeys
+                e["akeys"] = akeys
+            except Exception as ex:  # never let one arm kill the scorer
+                entry["gold"] = {"error": f"{type(ex).__name__}: {ex}"}
+        summary["arms"][key] = entry
+    by_key = {e["key"]: e for e in entries}
+
+    # synth task (uses each entry's own gold head + linked synth doc)
     synth_res = {}
     if synth_manifest:
-        for a, d in arm_docs.items():
-            base = a.split("-")[0]
-            akeys = FEAT_KEYS.get(a, FEAT_KEYS["default"])
-            if a == "A-full":
-                af = load(DATA / "arms" / "A" / "allframes.json")
-                sd = {"items": (af or {}).get("items", {})} if af else None
-            else:
-                sd = load(DATA / "arms" / base / "synth.json")
-            if sd is None:
-                synth_res[a] = {"status": "NOT RUN"}
+        for e in entries:
+            key = e["key"]
+            sd = e.get("synth")
+            gd = e.get("gold")
+            akeys = e.get("akeys", FEAT_KEYS.get(key, FEAT_KEYS["default"]))
+            if sd is None or gd is None or not sd.get("items"):
+                synth_res[key] = {"status": "NOT RUN"}
                 continue
             try:
-                head, thr, _ = fit_full_head(d, gold_manifest, akeys)
+                head, thr, _ = fit_full_head(gd, gold_manifest, akeys)
                 by_deg: dict[str, list] = {}
                 for it in synth_manifest["items"]:
                     v = sd["items"].get(it["id"])
@@ -324,12 +357,12 @@ def main() -> None:
                     far = round(float(np.mean(np.array(ctrl) < thr)), 3) if ctrl else None
                     rows[deg] = {"n": len(lst), "sensitivity_at_5pct_FAR": sens,
                                  "control_FAR": far}
-                synth_res[a] = {"status": "RUN", "threshold_5pct_FAR_on_gold_good": round(thr, 4),
-                                "note": "threshold t = 5th pct of gold-good scores; "
-                                        "item bad iff score < t. Says NOTHING about activity judgement.",
-                                "per_degradation": rows}
-            except Exception as e:
-                synth_res[a] = {"status": "ERROR", "error": f"{type(e).__name__}: {e}"}
+                synth_res[key] = {"status": "RUN", "threshold_5pct_FAR_on_gold_good": round(thr, 4),
+                                  "note": "threshold t = 5th pct of gold-good scores; "
+                                          "item bad iff score < t. Says NOTHING about activity judgement.",
+                                  "per_degradation": rows}
+            except Exception as ex:
+                synth_res[key] = {"status": "ERROR", "error": f"{type(ex).__name__}: {ex}"}
     summary["synth"] = synth_res
 
     # dups task
@@ -342,10 +375,11 @@ def main() -> None:
         neg = [i for i, p in enumerate(pairs) if not p["is_duplicate"]]
         rng.shuffle(pos); rng.shuffle(neg)
         h1 = set(pos[:len(pos) // 2]) | set(neg[:len(neg) // 2])
-        for a in ARMS:
-            dd = load(DATA / "arms" / a / "dups.json")
-            if dd is None:
-                dups_res[a] = {"status": "NOT RUN"}
+        for e in entries:
+            key = e["key"]
+            dd = e.get("dups")
+            if not isinstance(dd, dict) or not dd.get("pairs"):
+                dups_res[key] = {"status": "NOT RUN"}
                 continue
             try:
                 sims = []
@@ -396,12 +430,12 @@ def main() -> None:
                         per_kind[k] = {"n": len(ii),
                                        "false_positive_rate": round(fpr, 3),
                                        "specificity": round(1 - fpr, 3)}
-                dups_res[a] = {"status": "RUN", "method": dd.get("method"),
+                dups_res[key] = {"status": "RUN", "method": dd.get("method"),
                                "threshold_maxF1_half1": round(float(best_t), 4),
                                "heldout_overall": prf(h2), "per_kind": per_kind,
                                "protocol": "threshold on held-out half 1, metrics on half 2"}
-            except Exception as e:
-                dups_res[a] = {"status": "ERROR", "error": f"{type(e).__name__}: {e}"}
+            except Exception as ex:
+                dups_res[key] = {"status": "ERROR", "error": f"{type(ex).__name__}: {ex}"}
     summary["dups"] = dups_res
 
     # cost + throughput (amendment)
@@ -459,35 +493,39 @@ def main() -> None:
 
     # streaming: time-to-decision per degradation
     stream = {}
-    for a, d in arm_docs.items():
-        if d is None:
-            stream[a] = {"status": "NOT RUN"}
+    for e in entries:
+        key = e["key"]
+        gd, ch = e.get("gold"), e.get("chunks")
+        akeys = e.get("akeys", FEAT_KEYS.get(key, FEAT_KEYS["default"]))
+        if gd is None:
+            stream[key] = {"status": "NOT RUN"}
             continue
-        base = a.split("-")[0]
-        ch = load(DATA / "arms" / base / "chunks.json")
-        if ch is None or not synth_manifest or a == "A-full":
-            stream[a] = {"status": "NOT STREAMABLE" if ch is None else "NOT RUN",
-                         "reason": ("no chunk scores exposed" if ch is None
-                                    else "chunk features only for A/E base variants")}
+        if ch is None or not synth_manifest or key == "A-full":
+            stream[key] = {"status": "NOT STREAMABLE" if ch is None else "NOT RUN",
+                           "reason": ("no chunk scores exposed" if ch is None
+                                      else "chunk features only for A/E base variants")}
             continue
         try:
-            sd = load(DATA / "arms" / base / "synth.json")
-            head, thr, _ = fit_full_head(d, gold_manifest, feat_keys)
+            sd = e.get("synth")
+            head, thr, _ = fit_full_head(gd, gold_manifest, akeys)
             ttd: dict[str, list] = {}
             lat_all = []
             for it in synth_manifest["items"]:
-                ce = ch["items"].get(it["id"])
-                if ce is None:
+                try:
+                    ce = (ch.get("items", {}) or {}).get(it["id"])
+                    if ce is None:
+                        continue
+                    if isinstance(ce, dict) and "running_mean" in ce:  # E-style
+                        seq = [{"emb": x} for x in ce["running_mean"]]
+                        lat_all.append(ce.get("latency_s", 0) / 5)
+                    else:  # A-style list of prefix feature dicts
+                        seq = [p["features"] for p in ce]
+                        lat_all += [p.get("latency_s", 0) for p in ce]
+                except Exception:
                     continue
-                if isinstance(ce, dict) and "running_mean" in ce:  # E-style
-                    seq = [{"emb": e} for e in ce["running_mean"]]
-                    lat_all.append(ce.get("latency_s", 0) / 5)
-                else:  # A-style list of prefix feature dicts
-                    seq = [p["features"] for p in ce]
-                    lat_all += [p.get("latency_s", 0) for p in ce]
                 decided = None
                 for k, feats in enumerate(seq):
-                    s = apply_head(head, feats, feat_keys)
+                    s = apply_head(head, feats, akeys)
                     if s is not None and s < thr:
                         decided = (k + 1) * 2
                         break
@@ -499,14 +537,14 @@ def main() -> None:
                                                 1) if any(x != float("inf") for x in v) else None,
                           "never_decided": sum(1 for x in v if x == float("inf"))}
                     for deg, v in sorted(ttd.items())}
-            stream[a] = {"status": "RUN",
-                         "operating_threshold": round(thr, 4),
-                         "per_chunk_latency_s_mean": round(float(np.mean(lat_all)), 3) if lat_all else None,
-                         "realtime_capable": bool(lat_all and float(np.mean(lat_all)) < 2.0),
-                         "ttd_per_degradation": rows,
-                         "note": "prefix-recompute latency is an UPPER bound; true incremental is cheaper"}
-        except Exception as e:
-            stream[a] = {"status": "ERROR", "error": f"{type(e).__name__}: {e}"}
+            stream[key] = {"status": "RUN",
+                           "operating_threshold": round(thr, 4),
+                           "per_chunk_latency_s_mean": round(float(np.mean(lat_all)), 3) if lat_all else None,
+                           "realtime_capable": bool(lat_all and float(np.mean(lat_all)) < 2.0),
+                           "ttd_per_degradation": rows,
+                           "note": "prefix-recompute latency is an UPPER bound; true incremental is cheaper"}
+        except Exception as ex:
+            stream[key] = {"status": "ERROR", "error": f"{type(ex).__name__}: {ex}"}
     summary["streaming"] = stream
 
     # hyperspectral + VLM verdicts (other workers)
@@ -695,6 +733,13 @@ def partial_recommendation(s: dict) -> str:
             "no usable-activity signal on current labels; A-full (whole-video cheap signals) "
             "leads but its synth profile (catches darken only) shows it keys on activity/motion, "
             "not capture quality.")
+    bt0 = (s.get("synth") or {}).get("B-T0", {})
+    if bt0.get("status") == "RUN":
+        cf = ((bt0.get("per_degradation") or {}).get("clean") or {}).get("control_FAR")
+        out += (f" B-T0 synth transfers poorly: clean-control FAR {cf} at the 5%-gold-FAR "
+                "threshold (5/6 clean flagged bad) — its scores shift between gold originals "
+                "and re-encoded synth mp4s, so its sensitivity numbers are not a usable "
+                "operating point.")
     return out
 
 
