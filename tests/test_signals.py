@@ -1,17 +1,17 @@
 """Unittests for jadal.signals (L0) and jadal.segmenter (issue #6).
 
-Test videos are generated synthetically with OpenCV. All scratch output is kept
-under <repo>/data_runtime/ (git-ignored) -- never /tmp, per docs/SPEC.md.
+Test videos are generated synthetically with OpenCV. All scratch output uses the
+system temp dir (tempfile.TemporaryDirectory) -- tests never depend on untracked
+repo directories.
 
 Detection backends: face/hand tests are backend-aware. The mediapipe tests run
-when the model files resolve (config paths or $JADAL_MODELS_DIR, else the main
-repo models dir below) and SKIP only when no model file exists -- they never
-silently pass. The colour-proxy fallback is unit-tested directly and always runs.
+when the model files resolve (config paths or $JADAL_MODELS_DIR) and SKIP only
+when no model file exists -- they never silently pass. The colour-proxy fallback
+is unit-tested directly and always runs.
 """
 from __future__ import annotations
 
 import hashlib
-import shutil
 import tempfile
 import unittest
 from dataclasses import replace
@@ -23,8 +23,6 @@ import numpy as np
 from jadal import segmenter, signals
 from jadal.config import DEFAULT
 
-ROOT = Path(__file__).resolve().parents[1]
-MAIN_MODELS = Path("/home/parshu/projects/jadal-qa/models")
 W, H, FPS, N = 320, 240, 30, 90
 SKIN = (90, 140, 220)          # BGR inside the YCrCb skin range
 SIGNAL_KEYS = {
@@ -89,17 +87,29 @@ def _hand_bar(i: int) -> np.ndarray:
 
 
 def _model_paths():
-    """(face_model, hand_model) or (None, None) when no model file resolves."""
-    face = MAIN_MODELS / "blaze_face_short_range.tflite"
-    hand = MAIN_MODELS / "hand_landmarker.task"
-    if face.is_file() and hand.is_file():
-        return face, hand
+    """(face_model, hand_model) or (None, None) when no model file resolves.
+
+    Resolves via jadal.config DEFAULT paths first, then $JADAL_MODELS_DIR --
+    never a hardcoded machine path -- so a fresh checkout without the
+    git-ignored models/ simply yields (None, None) and mediapipe tests skip.
+    """
+    fm = signals._face_model_path(DEFAULT)
+    hm = signals._hand_model_path(DEFAULT)
+    if fm is not None and hm is not None:
+        return fm, hm
     return None, None
+
+
+MODELS_ABSENT_REASON = (
+    "mediapipe model files absent (no models/ in checkout and no $JADAL_MODELS_DIR)"
+)
 
 
 class SignalsBase(unittest.TestCase):
     def setUp(self) -> None:
-        self.tmp = Path(tempfile.mkdtemp(dir=str(ROOT / "data_runtime"), prefix="test_signals_"))
+        # System temp dir: tests must never depend on untracked repo directories.
+        self._td = tempfile.TemporaryDirectory(prefix="test_signals_")
+        self.tmp = Path(self._td.name)
         self.cfg = replace(
             DEFAULT,
             blurred_dir=self.tmp / "blurred",
@@ -108,7 +118,7 @@ class SignalsBase(unittest.TestCase):
         face, hand = _model_paths()
         if face is not None and hand is not None:
             self.cfg = replace(self.cfg, face_detector_task=face, hand_landmarker_task=hand)
-        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.addCleanup(self._td.cleanup)
 
     def _path(self, name: str) -> Path:
         return self.tmp / name
@@ -262,12 +272,13 @@ class TestSignals(SignalsBase):
         self.assertGreaterEqual(sum(1 for b in blobs if b["face"]), 1)
 
 
+@unittest.skipUnless(_model_paths()[0] is not None, MODELS_ABSENT_REASON)
 class TestMediapipe(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         face, hand = _model_paths()
-        if face is None or hand is None:
-            raise unittest.SkipTest("mediapipe model files absent")
+        if face is None or hand is None:  # belt-and-braces; decorator normally skips first
+            raise unittest.SkipTest(MODELS_ABSENT_REASON)
         from dataclasses import replace as _replace
 
         cls.cfg = _replace(DEFAULT, face_detector_task=face, hand_landmarker_task=hand)
@@ -299,10 +310,9 @@ class TestMediapipe(unittest.TestCase):
         self.assertEqual(n1, n2)
 
     def test_end_to_end_drawn_face_video(self) -> None:
-        root = ROOT / "data_runtime"
-        tmp = Path(tempfile.mkdtemp(dir=str(root), prefix="test_mp_"))
-        self.addCleanup(shutil.rmtree, tmp, True)
-        p = tmp / "mpface.mp4"
+        td = tempfile.TemporaryDirectory(prefix="test_mp_")
+        self.addCleanup(td.cleanup)
+        p = Path(td.name) / "mpface.mp4"
         _write_video(p, _drawn_face)
         s1 = signals.compute_signals(p, self.cfg)
         self.assertGreaterEqual(s1["faces_found"], 1)

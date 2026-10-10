@@ -110,6 +110,40 @@ woman's face (matches the catalog's 182 s note) -- true-positive streak. But a
 dark pallet scene with no visible face scored faces=3, so false positives occur;
 face precision on this footage is UNMEASURED (no labelled face frames).
 
+## Fix round 3 (merge-gate: fresh-checkout FileNotFoundError)
+Trial merge showed ~20 signals tests failing in a fresh checkout (no
+git-ignored `data_runtime/`, no `models/`): `tempfile.mkdtemp(dir=ROOT /
+'data_runtime')` raises FileNotFoundError. Fixes, all in owned files:
+- Tests now use the system temp dir (`tempfile.TemporaryDirectory()`) for ALL
+  scratch paths; no test depends on any untracked repo directory. Removed the
+  hardcoded `/home/parshu/projects/jadal-qa/models` fallback: model resolution
+  is config DEFAULT paths, then `$JADAL_MODELS_DIR` (also fixes the
+  non-portable-path deferred minor).
+- `TestMediapipe` is `@unittest.skipUnless(models resolve, <reason>)`: skips
+  with a printed reason when models are absent, runs for real when present;
+  proxy-fallback tests always run without models. Production writes
+  (`split_clip`, `blur_and_hash_segment`) already create parents with
+  `mkdir(parents=True, exist_ok=True)` -- verified, no change needed.
+- Proof in a throwaway fresh worktree (`git worktree add /tmp/jadal_fresh_signals
+  HEAD`: no `data_runtime/`, `models/` holds only README.md), with the
+  round-3 test file copied in (throwaway deleted afterwards):
+  (a) without models: `Ran 24 tests ... OK (skipped=5)` -- the 5 mediapipe
+  tests skip with reason `mediapipe model files absent (no models/ in checkout
+  and no $JADAL_MODELS_DIR)`, all 19 others pass;
+  (b) with `JADAL_MODELS_DIR=/home/parshu/projects/jadal-qa/models`:
+  `Ran 24 tests ... OK`, 0 skipped;
+  (c) different cwd (`cd /`, absolute `-s` + `PYTHONPATH=<worktree>`):
+  `Ran 24 tests ... OK (skipped=5)`.
+- Full-`discover` note: `PYTHONNOUSERSITE=1 timeout 250 .../bin/python -m unittest
+  discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'` in the fresh
+  worktree (no models) printed NOTHING before timeout killed it at 250 s: after
+  the main merge, bare `discover -s tests` runs all modules' tests and hangs in
+  `test_service` (`ws.receive_json()` with no timeout; service tests write fake
+  text bytes as .mp4 while pipeline calls the real `split_clip`, which correctly
+  returns [] -- pre-existing service/pipeline-side debt, out of this module's
+  owned files, reported in Fix round 2 and NOT re-fixed here). All 24
+  `test_signals` tests demonstrably run green above via the module-level runs.
+
 ## Fix round 2 (review of PR #12, rereview)
 - Stale report lines fixed (mediapipe TESTED, current test count, current
   `<stem>-<sha8>-<NNNN>` naming).
