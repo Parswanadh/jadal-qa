@@ -19,9 +19,11 @@ No network calls happen at import time; the SQLite file is created lazily.
 NOT DONE:
 - L0/L1/segmenter are stubs (hash-derived fakes, whole clip = one segment)
   until the real modules merge; set JADAL_USE_STUBS=1 to run on stubs.
-- /stats/risk_coverage needs calibration points (eval module); with no rows it
-  returns [] -- it is not a measurement of anything yet.
-- /sop/search and /stats/sop_gaps return empty payloads until sop/ merges.
+- /stats/risk_coverage needs calibration points (store rows, else
+  eval/results/calibration.json); with neither it returns [] -- "no measured
+  data", not a measurement of anything.
+- /sop/search returns empty payloads until sop/ merges; /stats/sop_gaps
+  counts real stored-verdict reasons until then.
 - /pico/status connects on startup when a port is configured; without hardware
   it reports connected=false.
 """
@@ -86,6 +88,7 @@ class _Service:
         self._pending: dict[str, list[dict]] = {}   # site -> [{"segment", "ts"}]
         self._ingested: set[tuple[str, str]] = set()  # (real path, sha256)
         self._errors: dict[str, str] = {}           # real path -> last error
+        self._watch_backoff: dict[str, dict] = {}   # clip name -> {"attempts", "next_ts"}
         self._stability: dict[str, tuple[int, int]] = {}  # name -> (size, mtime_ns)
         self._done_files: set[str] = set()
         self._ws_clients: set[WebSocket] = set()
@@ -165,7 +168,12 @@ class _Service:
 
     # -- batches -----------------------------------------------------------
     def flush_site(self, site_id: str, *, limit: int | None = None) -> dict | None:
-        """Close one batch of at most batch_size segments (I4); rest stays queued."""
+        """Close one batch of at most batch_size segments (I4); rest stays queued.
+
+        A failing batch never drops its segments: they are requeued at the
+        FRONT of the site buffer (original order) and the error propagates so
+        the caller sees the 500 while the segments stay pending for retry.
+        """
         n = int(self.cfg.batch_size if limit is None else limit)
         with self._lock:
             buf = self._pending.get(site_id) or []
@@ -174,7 +182,15 @@ class _Service:
             take, rest = buf[:n], buf[n:]
             segments = [entry["segment"] for entry in take]
             self._pending[site_id] = rest
-        batch, receipts = pipeline.run_batch(segments, self.cfg)
+        try:
+            batch, receipts = pipeline.run_batch(segments, self.cfg)
+        except Exception:
+            with self._lock:
+                buf = self._pending.get(site_id) or []
+                self._pending[site_id] = (
+                    [{"segment": s, "ts": time.monotonic()} for s in segments]
+                    + buf)
+            raise
         rows = [dict(seg, created_utc=batch["created_utc"]) for seg in segments]
         self.store.save_batch(batch, receipts, rows)
         self._emit_batch(batch, receipts)
@@ -289,10 +305,17 @@ class _Service:
         bucket = Path(self.cfg.bucket_dir)
         if not bucket.is_dir():
             return
+        now = time.monotonic()
         for clip in sorted(bucket.iterdir()):
             if not clip.is_file() or clip.name.startswith("."):
                 continue
             if clip.suffix == ".part" or clip.name in self._done_files:
+                continue
+            # retry-with-backoff: a bad file waits 2^attempts s (cap 30 s)
+            # before the next attempt instead of spinning every poll.
+            with self._lock:
+                gate = self._watch_backoff.get(clip.name)
+            if gate is not None and now < gate["next_ts"]:
                 continue
             try:
                 stat = clip.stat()
@@ -309,10 +332,22 @@ class _Service:
             except PermissionError:
                 self._done_files.add(clip.name)
             except Exception as exc:
-                # leave it out of _done_files so a later poll retries (I3)
-                log.warning("watcher ingest of %s failed: %s", clip.name, exc)
+                # leave it out of _done_files so a later poll retries (I3),
+                # but back off exponentially so a poison file cannot spin.
+                with self._lock:
+                    attempts = self._watch_backoff.get(clip.name, {}).get("attempts", 0) + 1
+                    self._watch_backoff[clip.name] = {
+                        "attempts": attempts,
+                        "next_ts": time.monotonic() + min(2.0 ** attempts, 30.0),
+                    }
+                    self._errors[str(Path(os.path.realpath(clip)))] = (
+                        f"{type(exc).__name__}: {exc}")
+                log.warning("watcher ingest of %s failed (attempt %d): %s",
+                            clip.name, attempts, exc)
                 continue
             else:
+                with self._lock:
+                    self._watch_backoff.pop(clip.name, None)
                 self._done_files.add(clip.name)
 
 
@@ -375,6 +410,12 @@ def create_app(config: Config | None = None, *, batch_max_age_s: float | None = 
             log.warning("ingest failed: %s", exc)
             raise HTTPException(status_code=500, detail="ingest failed")
 
+    @app.get("/ingest/errors")
+    def ingest_errors() -> dict:
+        """Last ingest error per clip path (failed watcher retries land here)."""
+        with svc._lock:
+            return {"errors": dict(svc._errors)}
+
     # -- batches / receipts ------------------------------------------------
     @app.get("/batches")
     def list_batches() -> dict:
@@ -409,13 +450,18 @@ def create_app(config: Config | None = None, *, batch_max_age_s: float | None = 
     # -- stats / sop / voice / pico ----------------------------------------
     @app.get("/stats/risk_coverage")
     def stats_risk_coverage() -> list[dict]:
-        return pipeline.risk_coverage(svc.store.calibration_points())
+        points = svc.store.calibration_points()
+        if points:
+            return pipeline.risk_coverage(points)
+        # real eval results when the eval module has produced them; [] is the
+        # honest "no measured data" state -- never fabricated points.
+        return pipeline.risk_coverage_from_eval()
 
     @app.get("/stats/sop_gaps")
     def stats_sop_gaps() -> list[dict]:
         mod = _sop_module()
         if mod is None:
-            return []
+            return pipeline.sop_gaps_from_verdicts(svc.store.list_batches())
         for name in ("sop_gaps", "gaps"):
             fn = getattr(mod, name, None)
             if callable(fn):
@@ -423,7 +469,7 @@ def create_app(config: Config | None = None, *, batch_max_age_s: float | None = 
                     return list(fn())
                 except TypeError:
                     continue
-        return []
+        return pipeline.sop_gaps_from_verdicts(svc.store.list_batches())
 
     @app.get("/sop/search")
     def sop_search(q: str = "", lang: str = "") -> dict:
