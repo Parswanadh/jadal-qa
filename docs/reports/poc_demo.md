@@ -1,0 +1,60 @@
+# PoC stream-replay report (feat/poc-demo, issue #64)
+
+Date: 2026-10-10. Clip: `factory_069/worker_004/factory069_worker004_00077.mp4`
+(1920x1080 HEVC 30 fps, 180 s; one of the real Egocentric-10K scale clips).
+All numbers below are **descriptive behaviour on unlabelled video, NOT
+accuracy** (no human labels exist for this video).
+
+## How it runs
+
+`scripts/poc_stream_replay.py` delivers the clip in 2 s chunks (`ffmpeg
+-ss/-t`, 160 px wide @ 5 fps ⇒ ~10 frames/chunk, O(window) memory), evaluates
+the S0 rules per chunk (same rule/threshold shape as
+`eval/gpu/cascade.py::S0_RULES` on origin/feat/gpu-pipeline, loaded read-only
+by path where available — here the local identical copy was used), feeds the
+frames through the real `SpectralStream` from
+`jadal/spectral/stream.py` (origin/feat/spectral-features, loaded read-only by
+path; its `brightness/motion_energy/temp_frozen_frac/spec_hfratio` are stored
+per event), and appends
+`{"t","window_id","chunk","running_score","decision","reason"}` (+
+`latency_ms`, `ram_mb`, `decode`, `engine`) to
+`/home/parshu/projects/jadal-qa-wt/poc_data/stream_events.jsonl` (flushed per
+chunk). `--pico` sends accept→green / continue→amber / reject→red via
+`jadal/pico_link.py` under `flock tools/pico.lock`; headless it logs
+`pico: not connected` (verified with `FakePicoSerial`: `LED R` sent).
+
+## Measured results
+
+| Run (10–16 chunks, degrade at t=6/12 s video) | time-to-reject (video s) | evidence |
+|---|---|---|
+| clean (no degrade) | n/a — `continue` ×4 then `accept`, score ~0.78 | window complete, score ≥ 0.5 |
+| `--degrade blackout` | **0.0** (fires on the chunk the blackout starts) | `black: p95=0.0 < 0.03` (scope=chunk) |
+| `--degrade freeze` | **0.0** | `frozen: temp_e < 5e-4` (scope=chunk) |
+| `--degrade blur` (31×31) | **no reject in 10 chunks** — score dips 0.77→0.51 then ~0.55 | no S0 rule covers blur; handed on (honest non-result) |
+
+Chunk-level S0 scope matters: evaluating the same rules on the running
+window alone delayed blackout rejection to 4 s and freeze to 6 s of video
+(window dilution); the current-chunk check keeps both at 0.0 s.
+
+Cost per chunk (this machine, saturated, CPU decode — the ffmpeg build has no
+CUDA hwaccel): wall 0.6–6.0 s/chunk (1080p HEVC decode dominates; recorded per
+event, never averaged away), Python RSS 78–122 MB (far under the 1.5 GB
+budget), 16-chunk demo wall 41–56 s for 32 s of video. Decode backend
+`"cpu"` is recorded in every event.
+
+## Artefacts
+
+- `poc_data/stream_events.jsonl` — 16 demo events (blackout at t=12 s).
+- `docs/screens/poc_demo_backup.mp4` — 80 s backup render (PIL cards +
+  ffmpeg, no screen capture): sparkline, timeline, banner, evidence.
+- `scripts/poc_demo.sh` — one command: dashboard `:8840` if
+  `scripts/poc_server.py` exists (it does not on any branch yet → stub line),
+  scripted blackout replay, prints URLs, kills only PIDs it started.
+- `tests/test_poc_demo.py` — 12 tests, <30 s, no GPU/network/real video.
+
+## Caveats
+
+S0 thresholds are the shared a-priori constants (frozen 5e-4 justified by the
+codec-noise floor in cascade.py), not certified on this video. The running
+score is a fixed-weight descriptive composite, not a validated classifier.
+Blur has no S0 rule by design — blurry-but-bright footage is an S1/S2 job.
