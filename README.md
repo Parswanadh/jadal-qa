@@ -2,6 +2,23 @@
 
 **QA for head-camera factory video that shows its evidence — including when it fails.**
 
+<!-- BRAG_VIDEO: placeholder. Owner: upload docs/assets/brag.mp4 in the GitHub editor (drag it into a comment box to get a user-attachments URL), then replace this line and the link target below with that URL for inline playback. -->
+[![Jadal QA launch video (click to play)](docs/assets/ui_tour.gif)](docs/assets/brag.mp4)
+
+[![Jadal QA results explorer: funnel, scoreboard and experiment log](docs/assets/ui_hero.png)](https://parswanadh.github.io/jadal-qa/)
+
+*The explorer is a static TypeScript app in [`site/`](site/). It is live at the link above once GitHub Pages is enabled for this repository.*
+
+### Run the explorer locally
+
+```bash
+cd site
+npm ci --ignore-scripts
+npm run dev
+```
+
+Then open http://127.0.0.1:8874/. Tests: `npm test`; regenerate its baked data with `npm run data`.
+
 Crowd-captured head-camera video is the raw material for robot learning. Much of it is
 unusable: dark, blocked, frozen, duplicated, hands out of view, nothing happening.
 Jadal QA is a deterministic funnel that marks each 10-second window

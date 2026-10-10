@@ -1,0 +1,552 @@
+{
+  "figures": [
+    {
+      "id": "windows",
+      "label": "windows scored (PoC run)",
+      "value": 1587,
+      "display": "1,587",
+      "source": {
+        "file": "eval/results/poc/run_summary.json",
+        "keys": [
+          "unique_windows"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "hours",
+      "label": "video hours",
+      "value": 4.404,
+      "display": "4.404 h",
+      "source": {
+        "file": "eval/results/poc/run_summary.json",
+        "keys": [
+          "hours"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "factories",
+      "label": "factories in the PoC run",
+      "value": 47,
+      "display": "47",
+      "source": {
+        "file": "eval/results/poc/run_summary.json",
+        "keys": [
+          "factories"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "accept",
+      "label": "accept",
+      "value": 709,
+      "display": "709",
+      "source": {
+        "file": "eval/results/poc/run_summary.json",
+        "keys": [
+          "verdicts",
+          "accept"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "reject",
+      "label": "reject",
+      "value": 702,
+      "display": "702",
+      "source": {
+        "file": "eval/results/poc/run_summary.json",
+        "keys": [
+          "verdicts",
+          "reject"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "review",
+      "label": "review",
+      "value": 176,
+      "display": "176",
+      "source": {
+        "file": "eval/results/poc/run_summary.json",
+        "keys": [
+          "verdicts",
+          "review"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "reject_share",
+      "label": "reject share",
+      "value": 0.4423,
+      "display": "44.2%",
+      "source": {
+        "file": "eval/results/poc/run_summary.json",
+        "keys": [
+          "verdict_share",
+          "reject"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "s0",
+      "label": "decided at S0",
+      "value": 0,
+      "display": "0",
+      "source": {
+        "file": "eval/results/poc/run_summary.json",
+        "keys": [
+          "stages",
+          "S0"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "s1",
+      "label": "decided at S1",
+      "value": 1411,
+      "display": "1,411",
+      "source": {
+        "file": "eval/results/poc/run_summary.json",
+        "keys": [
+          "stages",
+          "S1"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "s2",
+      "label": "sent to S2 review",
+      "value": 176,
+      "display": "176",
+      "source": {
+        "file": "eval/results/poc/run_summary.json",
+        "keys": [
+          "stages",
+          "S2"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "indomain_auroc",
+      "label": "in-domain ensemble AUROC (IndEgo, n=150)",
+      "value": 0.8336,
+      "display": "0.834",
+      "source": {
+        "file": "eval/results/ensemble/nested_loco.json",
+        "keys": [
+          "views",
+          "ensemble_probavg",
+          "auroc"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "indomain_ci_lo",
+      "label": "in-domain CI low",
+      "value": 0.7149378624205013,
+      "display": "0.715",
+      "source": {
+        "file": "eval/results/ensemble/nested_loco.json",
+        "keys": [
+          "views",
+          "ensemble_probavg",
+          "ci95",
+          0
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "indomain_ci_hi",
+      "label": "in-domain CI high",
+      "value": 0.9135555555555555,
+      "display": "0.914",
+      "source": {
+        "file": "eval/results/ensemble/nested_loco.json",
+        "keys": [
+          "views",
+          "ensemble_probavg",
+          "ci95",
+          1
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "gate_auroc",
+      "label": "pre-registered gate AUROC >= 0.85 met",
+      "value": false,
+      "display": "no",
+      "source": {
+        "file": "eval/results/ensemble/nested_loco.json",
+        "keys": [
+          "gates",
+          "AUROC>=0.85"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "gate_ci",
+      "label": "pre-registered gate CI-low >= 0.72 met",
+      "value": false,
+      "display": "no",
+      "source": {
+        "file": "eval/results/ensemble/nested_loco.json",
+        "keys": [
+          "gates",
+          "CI_low>=0.72"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "ood_ensemble",
+      "label": "frozen ensemble, factory footage",
+      "value": 0.566,
+      "display": "0.566 [0.433, 0.693]",
+      "source": {
+        "file": "docs/pod/SYNC_UPDATE_2026-10-10_2145.md",
+        "literal": "0.566 (0.433-0.693)",
+        "line": 22
+      }
+    },
+    {
+      "id": "ood_cascade",
+      "label": "PoC cascade, factory footage",
+      "value": 0.6,
+      "display": "0.600 [0.474, 0.724]",
+      "source": {
+        "file": "docs/pod/SYNC_UPDATE_2026-10-10_2145.md",
+        "literal": "0.600 (0.474-0.724)",
+        "line": 22
+      }
+    },
+    {
+      "id": "ood_rejects",
+      "label": "good windows rejected by the cascade",
+      "value": 53,
+      "display": "53 of 138",
+      "source": {
+        "file": "docs/pod/SYNC_UPDATE_2026-10-10_2145.md",
+        "literal": "rejects 53 of 138 good windows (38%)",
+        "line": 22
+      }
+    },
+    {
+      "id": "ood_bad_rejected",
+      "label": "bad windows rejected by the cascade",
+      "value": 13,
+      "display": "13 of 22",
+      "source": {
+        "file": "docs/pod/SYNC_UPDATE_2026-10-10_2145.md",
+        "literal": "13 of 22 bad",
+        "line": 22
+      }
+    },
+    {
+      "id": "ood_ens_lo",
+      "label": "frozen ensemble CI low",
+      "value": 0.433,
+      "display": "0.433",
+      "source": {
+        "file": "docs/pod/SYNC_UPDATE_2026-10-10_2145.md",
+        "literal": "0.566 (0.433-0.693)",
+        "line": 22
+      }
+    },
+    {
+      "id": "ood_ens_hi",
+      "label": "frozen ensemble CI high",
+      "value": 0.693,
+      "display": "0.693",
+      "source": {
+        "file": "docs/pod/SYNC_UPDATE_2026-10-10_2145.md",
+        "literal": "0.566 (0.433-0.693)",
+        "line": 22
+      }
+    },
+    {
+      "id": "ood_casc_lo",
+      "label": "PoC cascade CI low",
+      "value": 0.474,
+      "display": "0.474",
+      "source": {
+        "file": "docs/pod/SYNC_UPDATE_2026-10-10_2145.md",
+        "literal": "0.600 (0.474-0.724)",
+        "line": 22
+      }
+    },
+    {
+      "id": "ood_casc_hi",
+      "label": "PoC cascade CI high",
+      "value": 0.724,
+      "display": "0.724",
+      "source": {
+        "file": "docs/pod/SYNC_UPDATE_2026-10-10_2145.md",
+        "literal": "0.600 (0.474-0.724)",
+        "line": 22
+      }
+    },
+    {
+      "id": "indomain_n",
+      "label": "in-domain windows (IndEgo, LOCO)",
+      "value": 150,
+      "display": "150",
+      "source": {
+        "file": "eval/results/ensemble/nested_loco.json",
+        "keys": [
+          "n"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "e101_features",
+      "label": "per-pixel features in the S1 view",
+      "value": 26,
+      "display": "26",
+      "source": {
+        "file": "eval/results/exp_fps/e1_01.json",
+        "keys": [
+          "rows",
+          0,
+          "n_features"
+        ],
+        "line": null
+      }
+    },
+    {
+      "id": "s1_threshold",
+      "label": "S1 operating threshold",
+      "value": 0.6,
+      "display": "0.6",
+      "source": {
+        "file": "jadal/poc/cascade.py",
+        "literal": "THRESHOLD = 0.6",
+        "line": 48
+      }
+    },
+    {
+      "id": "s1_margin",
+      "label": "S2 review margin",
+      "value": 0.25,
+      "display": "0.25",
+      "source": {
+        "file": "jadal/poc/cascade.py",
+        "literal": "MARGIN = 0.25",
+        "line": 49
+      }
+    },
+    {
+      "id": "ood_nbad",
+      "label": "labelled bad windows (factory, n_bad)",
+      "value": 22,
+      "display": "22",
+      "source": {
+        "file": "docs/pod/SYNC_UPDATE_2026-10-10_2145.md",
+        "literal": "160 random Egocentric-10K windows, 138 good / 22 bad",
+        "line": 6
+      }
+    }
+  ],
+  "s0_rules": [
+    {
+      "code": "BLACK",
+      "feature": "p95",
+      "op": "<",
+      "threshold": 0.03,
+      "source": {
+        "file": "jadal/poc/cascade.py",
+        "literal": "(\"BLACK\", \"p95\", \"<\", 0.03)",
+        "line": 36
+      }
+    },
+    {
+      "code": "TOO_DARK",
+      "feature": "mean",
+      "op": "<",
+      "threshold": 0.05,
+      "source": {
+        "file": "jadal/poc/cascade.py",
+        "literal": "(\"TOO_DARK\", \"mean\", \"<\", 0.05)",
+        "line": 37
+      }
+    },
+    {
+      "code": "LENS_BLOCKED",
+      "feature": "spatial_var",
+      "op": "<",
+      "threshold": 1e-05,
+      "source": {
+        "file": "jadal/poc/cascade.py",
+        "literal": "(\"LENS_BLOCKED\", \"spatial_var\", \"<\", 1e-5)",
+        "line": 38
+      }
+    },
+    {
+      "code": "OVEREXPOSED",
+      "feature": "p5",
+      "op": ">",
+      "threshold": 0.7,
+      "source": {
+        "file": "jadal/poc/cascade.py",
+        "literal": "(\"OVEREXPOSED\", \"p5\", \">\", 0.70)",
+        "line": 39
+      }
+    },
+    {
+      "code": "FROZEN",
+      "feature": "temp_e",
+      "op": "<",
+      "threshold": 0.0005,
+      "source": {
+        "file": "jadal/poc/cascade.py",
+        "literal": "(\"FROZEN\", \"temp_e\", \"<\", 5e-4)",
+        "line": 40
+      }
+    }
+  ],
+  "reject": {
+    "record": {
+      "window_id": "f069_w004_c00077_t0000",
+      "verdict": "reject",
+      "stage": "S1",
+      "reasons": [
+        {
+          "code": "S1_UNUSABLE",
+          "evidence": {
+            "feature": "s1_score",
+            "value": 0.0013,
+            "op": "<",
+            "threshold": 0.6
+          }
+        }
+      ],
+      "score": 0.0013,
+      "features_digest": "4af5b2a6…",
+      "receipt_sha256": "ca3ae717…"
+    },
+    "source": {
+      "file": "README.md",
+      "literal": "\"window_id\": \"f069_w004_c00077_t0000\"",
+      "line": 67
+    }
+  },
+  "e101": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "label_source": "human (IndEgo gold manifest_gold.json)",
+    "claim_status": "descriptive only: no equivalence margin was pre-stated and no paired test was run; the 95% CIs are ~0.2 wide at n=150 (50 bad), so differences between fps settings are not resolvable at this n",
+    "rows": [
+      {
+        "fps": 10,
+        "frames": 100,
+        "auroc": 0.8086,
+        "ci": [
+          0.6933,
+          0.8895
+        ],
+        "auroc_spatial": 0.6898,
+        "ci_spatial": [
+          0.5647,
+          0.8078
+        ],
+        "feat_ms": 238.1
+      },
+      {
+        "fps": 5,
+        "frames": 50,
+        "auroc": 0.7932,
+        "ci": [
+          0.665,
+          0.8782
+        ],
+        "auroc_spatial": 0.6656,
+        "ci_spatial": [
+          0.5415,
+          0.7813
+        ],
+        "feat_ms": 119.2
+      },
+      {
+        "fps": 3.33,
+        "frames": 34,
+        "auroc": 0.8068,
+        "ci": [
+          0.6967,
+          0.8726
+        ],
+        "auroc_spatial": 0.678,
+        "ci_spatial": [
+          0.5907,
+          0.7409
+        ],
+        "feat_ms": 80.3
+      },
+      {
+        "fps": 2,
+        "frames": 20,
+        "auroc": 0.7866,
+        "ci": [
+          0.6504,
+          0.8657
+        ],
+        "auroc_spatial": 0.6794,
+        "ci_spatial": [
+          0.5502,
+          0.792
+        ],
+        "feat_ms": 46.7
+      },
+      {
+        "fps": 1,
+        "frames": 10,
+        "auroc": 0.7736,
+        "ci": [
+          0.6306,
+          0.8494
+        ],
+        "auroc_spatial": 0.6782,
+        "ci_spatial": [
+          0.5474,
+          0.7907
+        ],
+        "feat_ms": 26.1
+      }
+    ],
+    "source": {
+      "file": "eval/results/exp_fps/e1_01.json",
+      "keys": [
+        "rows"
+      ],
+      "line": null
+    }
+  },
+  "res03": {
+    "id": "RES.03",
+    "track": "RES",
+    "title": "RES.03",
+    "status": "done",
+    "verdict": "adopt",
+    "summary": "360p@CRF28=0.8036 at 257 KiB (best bytes/accuracy, 40% of 480p@CRF23 bytes); 240p@CRF28=0.7934 at 169 KiB inside budget.",
+    "results": "eval/results/exp_res/RES.03.json",
+    "finished": "2026-10-10 16:49",
+    "line": 61
+  },
+  "registry_lines": 75,
+  "registry_unique": 75
+}
