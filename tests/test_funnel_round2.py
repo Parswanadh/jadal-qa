@@ -764,7 +764,10 @@ class TestGoldSchema(unittest.TestCase):
             self.assertIn("--human-gold", str(ctx.exception))
             self.assertFalse(out.is_file())
 
-    def test_records_human_with_flag_records_provenance(self):
+    def test_records_self_declared_human_with_flag_refused(self):
+        # Fix round 2, finding 5: --human-gold + --records must NOT let a
+        # self-declared human_gold file through (it used to exit 0 and
+        # write human_provenance, which lets status reach 'calibrated').
         from eval.calibrate_funnel import main
         with tempfile.TemporaryDirectory() as tmp:
             records_path = Path(tmp) / "records.json"
@@ -773,14 +776,27 @@ class TestGoldSchema(unittest.TestCase):
                 "label": "good", "label_source": "human_gold",
                 "group": "clipA", "labeller": "qa-lead"}]))
             out = Path(tmp) / "cal.json"
-            self.assertEqual(
+            with self.assertRaises(SystemExit) as ctx:
                 main(["--records", str(records_path), "--human-gold",
-                      "--out", str(out)]), 0)
-            result = json.loads(out.read_text())
-            human_prov = result["meta"]["human_provenance"]
-            self.assertTrue(human_prov["ok"])
-            self.assertEqual(human_prov["labellers"], ["qa-lead"])
-            self.assertEqual(len(human_prov["sha256"]), 64)
+                      "--out", str(out)])
+            self.assertIn("--from-gold", str(ctx.exception))
+            self.assertFalse(out.is_file())
+
+    def test_records_human_flag_alone_refused_for_any_records(self):
+        # --human-gold is refused under --records even for non-human files.
+        from eval.calibrate_funnel import main
+        with tempfile.TemporaryDirectory() as tmp:
+            records_path = Path(tmp) / "records.json"
+            records_path.write_text(json.dumps([{
+                "signals": dict(BASE_SIGNALS), "decisions": None,
+                "label": "good", "label_source": "synthetic",
+                "group": "clipA"}]))
+            out = Path(tmp) / "cal.json"
+            with self.assertRaises(SystemExit) as ctx:
+                main(["--records", str(records_path), "--human-gold",
+                      "--out", str(out)])
+            self.assertIn("--from-gold", str(ctx.exception))
+            self.assertFalse(out.is_file())
 
     def test_write_config_refusal_from_cli(self):
         # Fix round 1, Important 4 end-to-end: non-zero exit, clear

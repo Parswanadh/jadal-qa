@@ -356,9 +356,9 @@ def apply_to_config(result: dict, source: str, path: Path,
     auto-accept off. Human gold always writes fully; status is
     'calibrated' only for human_gold with N>=100, every CERTIFY bound
     met, AND established human provenance (a schema-checked gold file
-    or an explicit ``--human-gold`` records declaration, recorded in
-    ``meta['human_provenance']``) — else 'provisional' with the label
-    source stated.
+    via ``--from-gold``, recorded in ``meta['human_provenance']``; a
+    ``--records`` file can never establish it) — else 'provisional' with
+    the label source stated.
     """
     if source not in result["per_source"]:
         raise ValueError(f"source {source!r} not in calibration result "
@@ -400,8 +400,8 @@ def apply_to_config(result: dict, source: str, path: Path,
             reasons.append("not human gold")
         if source == "human_gold" and not human_ok:
             reasons.append("human provenance not established (need a "
-                           "schema-checked gold labels file via --from-gold "
-                           "or --human-gold for --records)")
+                           "schema-checked gold labels file via --from-gold; "
+                           "--records can never establish it)")
         if n < 100:
             reasons.append(f"N={n} < 100")
         if not bounds_ok:
@@ -536,11 +536,10 @@ def main(argv: list[str] | None = None) -> int:
                              "certified non-human accept_conf is REFUSED "
                              "(non-zero exit, nothing written)")
     parser.add_argument("--human-gold", action="store_true",
-                        help="with --records: explicitly assert the file's "
-                             "human_gold labels are real human labels (the "
-                             "file path and sha256 are recorded in "
-                             "provenance). Without it, self-declared "
-                             "human_gold records are REFUSED.")
+                        help="NOT accepted with --records (refused): human "
+                             "gold comes only from --from-gold, schema-checked "
+                             "by check_gold_labels. Records files that "
+                             "self-declare human_gold are always REFUSED.")
     parser.add_argument("--no-bonferroni", action="store_true",
                         help="test each reject rule at full delta (round-1 "
                              "behaviour; NOT family-wise — say so)")
@@ -558,7 +557,16 @@ def main(argv: list[str] | None = None) -> int:
                         help="print report tables generated from the JSON")
     args = parser.parse_args(argv)
 
+    human_provenance: dict | None = None
     if args.records:
+        if args.human_gold:
+            raise SystemExit(
+                f"REFUSING --human-gold with --records {args.records}: a "
+                f"records file can never establish human_gold by an operator "
+                f"flag. Human gold comes only from --from-gold (the "
+                f"schema-checked labels file written by "
+                f"tools/gold_label/label_server.py). Drop --human-gold; the "
+                f"records file can be calibrated at most as 'provisional'.")
         with open(args.records, "r", encoding="utf-8") as fh:
             payload = json.load(fh)
         records = payload if isinstance(payload, list) \
@@ -567,26 +575,14 @@ def main(argv: list[str] | None = None) -> int:
         declared_human = [r for r in records
                           if isinstance(r, dict)
                           and r.get("label_source") == "human_gold"]
-        if declared_human and not args.human_gold:
+        if declared_human:
             raise SystemExit(
                 f"REFUSING: {len(declared_human)} records in {args.records} "
                 f"self-declare label_source='human_gold'. A records file "
-                f"cannot prove that by itself. Rerun with --human-gold to "
-                f"explicitly assert they are real human labels (the file "
-                f"path and sha256 will be recorded in provenance), or use "
-                f"--from-gold with the schema-checked labels file.")
-        human_provenance: dict | None = None
-        if declared_human:
-            labellers = sorted({str(r["labeller"]) for r in declared_human
-                                if r.get("labeller") is not None})
-            human_provenance = {
-                "ok": True,
-                "schema": "operator-declared-human",
-                "file": str(args.records),
-                "sha256": file_sha256(args.records),
-                "labellers": labellers or "unknown",
-                "n_entries": len(declared_human),
-            }
+                f"cannot establish human_gold by itself, and --human-gold is "
+                f"not accepted with --records. Use --from-gold with the "
+                f"schema-checked labels file (tools/gold_label/label_server.py "
+                f"output) instead.")
     elif args.synthetic is not None:
         records = synthetic_records(args.synthetic, args.seed)
         provenance = "synthetic-fixtures"

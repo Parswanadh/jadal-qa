@@ -342,11 +342,12 @@ Rulings addressed, with evidence:
   schema-checks the labels file (history + latest, verdicts good|bad —
   the exact shape `tools/gold_label/label_server.py` writes) and REFUSES
   anything else; labeller ids are collected when present (the current
-  tool records none → `unknown`, said plainly). `--records` files that
-  self-declare `human_gold` are REFUSED without an explicit
-  `--human-gold` flag (file path + sha256 recorded in provenance).
-  `status: calibrated` additionally requires established human
-  provenance — human records alone stay `provisional`.
+  tool records none → `unknown`, said plainly). `--records` files can
+  never establish human provenance: a records file that self-declares
+  `human_gold` is REFUSED, and `--human-gold` is REFUSED with `--records`
+  (SystemExit pointing to `--from-gold`). A records file therefore reaches
+  at most `status: provisional`. `status: calibrated` requires the
+  schema-checked `--from-gold` path (human provenance established).
 - Important 6 (demo numbers not from JSON): the "Demo-only illustration"
   paragraph is DELETED (its numbers lived only in /tmp). No number in
   this report comes from outside a committed artifact.
