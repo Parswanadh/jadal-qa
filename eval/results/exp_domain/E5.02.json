@@ -228,5 +228,5 @@
  ],
  "caveat": "n_bad=9 -> every estimate is unstable; smallest n_bad in any training fold reported per recipe",
  "command": "OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py e5_02",
- "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+ "git_sha": "c59daf5ab0f92aea975c0ba86ae91d7f39327226"
 }
