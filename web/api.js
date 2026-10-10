@@ -40,6 +40,24 @@ function first(obj, keys) {
 
 function asArray(v) { return Array.isArray(v) ? v : []; }
 
+function isBound(v) {
+  // Tri-state gate for the certify error bound: ONLY a finite number draws
+  // the line. `isFinite(null)` coerces to 0 (true), so a bare isFinite test
+  // draws an explicit-null bound at 0 and swallows the caption — hence the
+  // typeof check. absent (undefined) => "bound not reported";
+  // explicit null => "not certified (no threshold meets the target)".
+  return typeof v === 'number' && isFinite(v);
+}
+
+function boundCaption(v) {
+  // Single shared caption for every non-number bound so the stats row and
+  // the under-chart caption can never disagree. Returns null when a line
+  // is drawn (finite number).
+  if (isBound(v)) return null;
+  if (v === null) return 'not certified (no threshold meets the target)';
+  return 'bound not reported';
+}
+
 function present(obj, keys) {
   // Like first(), but preserves an explicit null so callers can tell
   // "field absent" (undefined) apart from "API returned null".
@@ -65,6 +83,7 @@ function normSegments(raw) {
   var site = first(raw, ['site_id', 'siteId']) || '—';
   return ids.map(function (id) {
     var v = vById[id] || {};
+    var qp = first(v, ['queue_priority', 'queuePriority']);
     return {
       segment_id: id,
       site_id: site,
@@ -73,6 +92,9 @@ function normSegments(raw) {
       reasons: asArray(first(v, ['reasons'])),
       conf: first(v, ['answer_conf', 'conf']),
       threshold: first(v, ['threshold']),
+      // QA-queue rank. The field may be absent (null here, rendered '—');
+      // rows without one sort after ranked rows, by verdict then time.
+      queue_priority: (typeof qp === 'number' && isFinite(qp)) ? qp : null,
     };
   });
 }
@@ -265,12 +287,90 @@ function applyFilters(batches, f) {
   }).filter(Boolean);
 }
 
+/* ============================ funnel + QA queue ============================ */
+
+function funnelCounts(rows) {
+  var c = { accept: 0, reject: 0, review: 0, other: 0, total: 0 };
+  (rows || []).forEach(function (r) {
+    c.total++;
+    if (r.verdict === 'accept') c.accept++;
+    else if (r.verdict === 'reject') c.reject++;
+    else if (r.verdict === 'review') c.review++;
+    else c.other++;
+  });
+  return c;
+}
+
+// Review-routed segments across all batches, flattened for the QA queue.
+// Sorted by queue_priority (ranked first, descending); unranked rows fall
+// back to verdict, then newest batch first, then segment id.
+function queueRows(batches) {
+  var out = [];
+  (batches || []).forEach(function (b) {
+    (b.rows || []).forEach(function (r) {
+      if (r.verdict !== 'review') return;
+      out.push({
+        segment_id: r.segment_id,
+        site_id: r.site_id && r.site_id !== '—' ? r.site_id : (b.site_id || '—'),
+        batch_id: b.batch_id,
+        verdict: r.verdict,
+        reasons: r.reasons || [],
+        conf: r.conf,
+        threshold: r.threshold,
+        queue_priority: r.queue_priority,
+        created_utc: b.created_utc || null,
+      });
+    });
+  });
+  function prio(q) { return q === null || q === undefined ? null : q; }
+  out.sort(function (a, b) {
+    var pa = prio(a.queue_priority), pb = prio(b.queue_priority);
+    if (pa !== null && pb !== null && pa !== pb) return pb - pa;
+    if ((pa !== null) !== (pb !== null)) return pa !== null ? -1 : 1;
+    if (a.verdict !== b.verdict) return String(a.verdict).localeCompare(String(b.verdict));
+    var ta = String(a.created_utc || ''), tb = String(b.created_utc || '');
+    if (ta !== tb) return tb.localeCompare(ta);
+    return String(a.segment_id).localeCompare(String(b.segment_id));
+  });
+  return out;
+}
+
+function queueReasons(rows) {
+  var seen = {};
+  (rows || []).forEach(function (r) {
+    (r.reasons || []).forEach(function (c) { seen[c] = 1; });
+  });
+  return REASON_CODES.filter(function (c) { return seen[c]; });
+}
+
+/* ============================ video hub (mock placeholder) ============================ */
+
+function normHub(raw) {
+  var arr = Array.isArray(raw) ? raw : asArray(first(raw, ['items', 'results', 'segments', 'data']));
+  return {
+    items: arr.map(function (it) {
+      if (typeof it !== 'object' || it === null) return null;
+      return {
+        segment_id: first(it, ['segment_id', 'segmentId']) || '—',
+        site_id: first(it, ['site_id', 'siteId']) || '—',
+        verdict: first(it, ['verdict']) || '—',
+        reasons: asArray(first(it, ['reasons'])),
+        start_s: first(it, ['start_s', 'startS', 'start']),
+        end_s: first(it, ['end_s', 'endS', 'end']),
+        thumb_url: first(it, ['thumb_url', 'thumbUrl', 'thumb']) || null,
+        video_url: first(it, ['video_url', 'videoUrl', 'video', 'src']) || null,
+      };
+    }).filter(Boolean),
+    total: Array.isArray(raw) ? undefined : first(raw, ['total', 'n']),
+  };
+}
+
 /* ============================ hash router ============================ */
 
 function parseHash(h) {
   h = String(h || '#/batches');
-  var m = h.match(/^#\/(batches|segment|insights)(?:\/([^?]*))?(?:\?(.*))?$/);
-  if (!m) return { route: 'batches', id: null, filters: Object.assign({}, FILTER_DEFAULTS), lang: LANGS[0], head: '' };
+  var m = h.match(/^#\/(batches|segment|insights|queue|videos)(?:\/([^?]*))?(?:\?(.*))?$/);
+  if (!m) return { route: 'batches', id: null, filters: Object.assign({}, FILTER_DEFAULTS), lang: LANGS[0], head: '', queueReason: '', hub: { q: '', site: '', verdict: '', reason: '' } };
   var params = {};
   (m[3] || '').split('&').forEach(function (pair) {
     if (!pair) return;
@@ -293,6 +393,15 @@ function parseHash(h) {
     route: m[1],
     id: m[2] ? (() => { try { return decodeURIComponent(m[2]); } catch (e) { return m[2]; } })() : null,
     filters: filters, lang: lang, head: params.head || '',
+    // QA-queue + video-search state lives in the hash too (dedicated keys
+    // so it never collides with the batches filterbar state).
+    queueReason: clean(params.qr, REASON_CODES),
+    hub: {
+      q: params.hq || '',
+      site: params.hsite || '',
+      verdict: clean(params.hverdict, VERDICTS.concat(BATCH_DECISIONS)),
+      reason: clean(params.hreason, REASON_CODES),
+    },
   };
 }
 
@@ -428,6 +537,51 @@ function createClient(opts) {
     risk: function () {
       return mock ? mockFile('risk_coverage') : httpGet(fetchFn, base, '/stats/risk_coverage');
     },
+    hubThumbUrl: function (segmentId) {
+      return base + '/hub/thumb/' + encodeURIComponent(segmentId) + '.jpg';
+    },
+    hubVideoUrl: function (segmentId, startS, endS) {
+      var u = base + '/hub/video/' + encodeURIComponent(segmentId) + '.mp4';
+      if (startS !== null && startS !== undefined && endS !== null && endS !== undefined) {
+        u += '#t=' + startS + ',' + endS;
+      }
+      return u;
+    },
+    hubSearch: function (q, f) {
+      // Mock-only placeholder: no /hub in fixtures, so project the loaded
+      // batch list into hub-shaped items labelled as mock. Live mode goes
+      // straight at GET /hub/search; a 404 rejects to the caller, which
+      // renders "Video hub not available in this deployment".
+      if (mock) {
+        return mockFile('batches').then(function (all) {
+          var batches = normBatchList(all);
+          var ql = String(q || '').toLowerCase();
+          var items = [];
+          batches.forEach(function (b) {
+            if (f && f.site && b.site_id !== f.site) return;
+            (b.rows || []).forEach(function (r) {
+              if (f && f.verdict && r.verdict !== f.verdict) return;
+              if (f && f.reason && (r.reasons || []).indexOf(f.reason) === -1) return;
+              var hay = [r.segment_id, b.site_id, r.verdict,
+                (r.reasons || []).join(' ')].join(' ').toLowerCase();
+              if (ql && hay.indexOf(ql) === -1) return;
+              items.push({
+                segment_id: r.segment_id, site_id: b.site_id,
+                verdict: r.verdict, reasons: r.reasons,
+                start_s: null, end_s: null,
+                thumb_url: null, video_url: null,
+              });
+            });
+          });
+          return { items: items.slice(0, 12), total: items.length, mock: true };
+        });
+      }
+      var qs = '?q=' + encodeURIComponent(q || '');
+      ['site', 'verdict', 'reason'].forEach(function (k) {
+        if (f && f[k]) qs += '&' + k + '=' + encodeURIComponent(f[k]);
+      });
+      return httpGet(fetchFn, base, '/hub/search' + qs).then(normHub);
+    },
     gaps: function () {
       return mock ? mockFile('sop_gaps') : httpGet(fetchFn, base, '/stats/sop_gaps');
     },
@@ -469,9 +623,11 @@ function shortHash(h, n) {
 return {
   LANGS: LANGS, REASON_CODES: REASON_CODES, VERDICTS: VERDICTS,
   BATCH_DECISIONS: BATCH_DECISIONS, FILTER_DEFAULTS: FILTER_DEFAULTS,
-  first: first,
+  first: first, isBound: isBound, boundCaption: boundCaption,
   normBatch: normBatch, normBatchList: normBatchList, normReceipt: normReceipt,
   normRisk: normRisk, normGaps: normGaps, normPico: normPico, normReverify: normReverify,
+  normHub: normHub,
+  funnelCounts: funnelCounts, queueRows: queueRows, queueReasons: queueReasons,
   filterOptions: filterOptions, applyFilters: applyFilters, matchQuery: matchQuery,
   parseHash: parseHash, buildHash: buildHash, wsUrl: wsUrl,
   createClient: createClient, findReceiptForSegment: findReceiptForSegment,
