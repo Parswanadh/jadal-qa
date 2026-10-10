@@ -143,6 +143,30 @@ reverse the gap; and the difference between 0.8472 and 0.7912 is well inside the
 clip-bootstrap noise (7 clips). It is a *diagnostic ceiling for the class*, not a claim of
 superiority over machine learning in general.
 
+## 4.2 Cheap-signal candidates: informative as signals, weak as rules (A3)
+
+A3 screened compression telemetry (`B_p_size_mean`, `B_pb_size_ratio`, `B_frame_size_std`,
+`B_mv_per_frame`), DCT/spectral band ratios (`B_dct_hfenergy`, `B_spec_slope`, `B_wav_*`),
+ego-motion residual (`G_global_shift`, `G_pca_resid`, `P_shift_*`) and four new closed-form
+series composites, under the same LOCO protocol (`A3_new_rules.json`,
+`A3_rule_table_candidates.json`).
+
+**Result: none of them adds usable deterministic signal.** Every candidate's LOCO
+threshold-indicator AUROC lands at 0.52–0.54 with CIs touching 0.5, and the frozen
+single-threshold versions fire on 0–2 windows out of 150 — i.e. the threshold form throws
+away almost all of the information. Several are informative as *continuous* signed signals
+(`B_spec_slope` 0.725, `P_dct_hf_std` 0.769, and the new `P_sharp_flicker` composite 0.786
+raw signed AUROC), but converting them into a fixed Q=4 comparison collapses them to
+chance. That is a property of the model class, not of the features: a single fixed
+threshold on a heavy-tailed signal is a very lossy summary.
+
+The new composites are nevertheless the most interesting leftovers for future work, because
+they are closed-form and free at decode time: `P_motion_excess_nf` (motion above the
+window's own MAD noise floor), `P_ac1_contrast` (lag-1 autocorrelation of motion minus that
+of luma), `P_clip_total` (hard-clipped area, direction-free) and `P_sharp_flicker`
+(relative frame-to-frame sharpness instability). They would need a graded or multi-level
+deterministic encoding — not a single threshold — to pay off.
+
 ## 5. The domain shift: label-free per-domain re-quantiling
 
 `LEAD_v2.json` part C and `A2_ood_transfer.json` (A2, independent implementation).

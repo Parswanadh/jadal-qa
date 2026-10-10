@@ -763,9 +763,31 @@ def main() -> int:
         "fitting": "label-free: target statistics use X only; OOD labels never used for fitting",
         "determinism": "integer Q=4 comparisons, fixed constants, no RNG on the decision path",
     }
+    results["cross_references"] = {
+        "concurrent_independent_requantile_rerun": {
+            "file": "eval/results/exp_phys_dsh/LEAD_subset_ood.json",
+            "all_rules_ood_raw_auroc": 0.4272,
+            "all_rules_ood_requantile_auroc": 0.5456,
+            "delta": 0.1184,
+            "note": "the same label-free re-quantile idea implemented independently in this "
+                    "worktree lands within 0.011 AUROC of variant (b) here (0.5456 vs 0.5560); "
+                    "their 'apriori scale subset' (BLUR/CODING_NOISE/DUPLICATE rule selection, "
+                    "not a normalisation variant) reaches 0.638 OOD",
+        },
+        "confirmatory_holdout_108": {
+            "file": "labels/round3/ood_labels3_108_with_factory.json (scored once by the lead)",
+            "reported_by_lead_commit": "8fb9ac8 - label-free re-quantile transfer mode scored "
+                                       "0.5166 on the one-shot hold-out (no transfer)",
+            "note": "consistent with the weak-transfer conclusion here; this experiment did NOT "
+                    "touch the 108 hold-out (no tuning, no thresholding, no scoring by us)",
+        },
+    }
     results["limitations"] = [
         "n_bad = 22 on OOD-160: every OOD AUROC has a wide CI; differences below ~0.05 are "
-        "not resolvable.",
+        "not resolvable. The best variant (d, 0.576) is a best-of-7 selection evaluated on the "
+        "same 22 bad windows, so its lead over (b) is not a real ordering - only the gap to the "
+        "raw baseline (+0.12 to +0.15, paired CI excluding 0 for the rank/quantile variants) is "
+        "supported.",
         "Window-bootstrap CIs are optimistic: windows are not independent (many share a source "
         "factory/batch and pairs share the same source video), so true sampling error is larger.",
         "Variants b/b2/c/d/e are TRANSDUCTIVE: they use the target domain's own unlabelled "
