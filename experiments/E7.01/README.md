@@ -1,0 +1,24 @@
+# E7.01 — Cost model: hours of video per wall-hour on the pod A40, per profile
+
+**Why:** The product needs one honest cost table (fps x window sparsity x early exit x mosaic) computed only from measured numbers on THIS pod, so the demo/dashboard does not quote laptop or guessed throughput.
+
+**Hypothesis:** Sparse probing (every-2nd) and a 4 s early exit multiply, and with NVDEC decode the A40 stays feature/embedding-bound; hours-of-video per wall-hour should rise >= 4x vs the full-sampling profile.
+
+**Data / label source:** n/a (cost model): measured timings on the pod A40 from this run + source JSONs E1.01, E1.02, E1.04, E2.01, E3.04; profiles/*.json (5 profiles). No labels used.
+
+**Data regime:** 480p/10fps H.264 IndEgo + 1080p/30fps HEVC Egocentric-10K
+
+**Method:** timed decode (CPU ffmpeg vs NVDEC cuvid), pixel26 CPU features, EmbeddingGemma-2 batch-1 image embeddings on real mosaic PNGs; arithmetic cost model per profile with stated assumptions
+
+**Owner:** experimenter  **Started:** 2026-10-10 15:39
+
+## Results
+(pending — `exp.py finish` fills the registry; put figures/JSON in this folder)
+
+**Verdict (2026-10-10 15:59): adopt.** Cost table on A40 (contended pod): per-profile 0.51-15.22 video-h/wall-h; every-2nd+4s exit pixel26 565 ms/window -> 35.4 vs 9.1 full sampling (x3.88 wall-clock, mosaic-only x4.14); embedding-bound at batch 1 (183 ms/image, 47-94% of the window), decode-bound only for factory_1080p30 CPU (46%); NVDEC 7.37 vs 27.3 ms/frame on 1080p HEVC but slower on 480p (CI95 = window variation only, machine shared).
+
+Results file: eval/results/exp_cost/E7.01.json
+
+Decision: Use this table as the pod cost reference; keep NVDEC(1080p HEVC)/CPU(480p) separate; re-time on an idle pod and measure a pipelined multi-stream run + batch-8 eg2 feature path; policy verdicts stay with E3.01/E3.03/E3.05 (no new accuracy here; 3.88x < the 4x cost-only bar).
+
+Cost: timed measurement ~9 min wall (decode 4 configs x 6 windows, features 12 windows, embedder 32 images, mosaic build 6 windows), peak 1.5 GB VRAM
