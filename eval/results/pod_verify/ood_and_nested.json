@@ -26,7 +26,8 @@
    "rejected_good": 21,
    "rejected_bad": 5,
    "balanced_accuracy": 0.51
-  }
+  },
+  "note": "frozen ensemble_v1 only; NOT the 0.529 figure. Balanced accuracy: 0.412 with review counted as pass for good windows, 0.304 under strict accept-only. The 0.529 belongs to the PoC cascade (PR #100)."
  },
  "nested": {
   "n": 150,
@@ -99,7 +100,7 @@
   },
   "verdict": "The published OOD AUROC 0.529 cannot be reproduced from the artifacts shipped in this bundle; artifact drift is established independently by the checksum audit (14/316 files)."
  },
- "conclusion_ood": "NOT REPRODUCED: shipped score artifact gives AUROC 0.415 [0.207,0.630], 26/51 good windows rejected, 3/9 bad rejected, balanced accuracy 0.412, versus the published 0.529 / 21-51 / 5-9 / 0.51. The qualitative finding (at chance, heavy false rejects) is CONFIRMED and is worse than published.",
+ "conclusion_ood": "RESOLVED / CORRECTED: 0.529 IS reproducible - it is the PoC CASCADE (origin/main:eval/results/poc/ood_check_60.json): AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513 vs published 0.51 (all five sub-numbers match). The FROZEN two-view ensemble_v1 gives a DIFFERENT number: 0.415 [0.207,0.630], 26/51 good rejected, 3/9 bad. FACTS.md attributes 0.529 to the 'PoC cascade as shipped', not to the ensemble; my first pass conflated the two scorers. No artifact drift is involved here (the shipped OOD score file is byte-identical to origin/main, sha256 300c1eda...); the PoC artifact is simply not in the bundle. Both scorers are at chance with heavy false rejects, so the finding the submission rests on is confirmed twice. See eval/results/pod_verify/ood_0529_archaeology.json (PR #100).",
  "gold_manifest_verified": {
   "n": 150,
   "n_good": 100,

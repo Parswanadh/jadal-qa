@@ -128,46 +128,71 @@ I also tried the canonical-JSON variants that a content-hash scheme would use (s
 sorted-default, compact-unsorted) against the recorded hash: **none match**.
 
 **Consequence.** The published pre-registration hash `4da1068a78d5d150…` cannot be confirmed from any
-artifact present on this pod. This is exactly the check the LB4 guard is supposed to make, and it now
-genuinely fails: the frozen scorer on disk is **not** the file that was frozen. LB4 resolved this the
-honest way — it recovered the byte-exact frozen file from git
-(blob `0ede3b83d93ce23dc5b68cd20fb7de0af703ad27`), verified `sha256 == 4da1068a…`, and committed it as
-`configs/frozen/ensemble_v1.prereg.json` (PR #97). No hash was substituted or invented.
-Any OOD claim made before that recovery would have been scored with a different artifact than the one
-pre-registered — so B4's guard was not ceremonial.
+artifact present in the *bundle* on this pod. This is exactly the check the LB4 guard is supposed to make,
+and it genuinely fails on the shipped tree: the frozen scorer on disk is **not** the file that was frozen.
 
-## 6. The published out-of-domain number does NOT reproduce
+**Resolved — and independently re-verified by me.** LB4 recovered the byte-exact frozen file from git
+(blob `0ede3b83d93ce23dc5b68cd20fb7de0af703ad27`) and committed it as `configs/frozen/ensemble_v1.prereg.json`
+(PR #97). I re-checked that rescue myself rather than taking it on trust
+(`eval/results/pod_verify/frozen_blob_verification.json`):
 
-`FACTS.md` states: 60 real Egocentric-10K windows (human labels, 51 good / 9 bad), shipped
-IndEgo-calibrated cascade at chance — score AUROC **0.529** (0.32-0.74 by window, optimistic), rejected
-**21/51** good windows (41%), **5/9** bad, balanced accuracy **0.51**.
+```
+git cat-file blob 0ede3b83d93ce23dc5b68cd20fb7de0af703ad27 | sha256sum
+→ 4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31   ✅ equals the recorded hash
+```
 
-Recomputing from the artifacts shipped in this bundle
-(`caches/ensemble/ood_scores.json` joined to `labels/ood_labels.json` "latest" — the label set is the same
-51 good / 9 bad, 8 `NO_ACTIVE_WORK` + 1 `SHAKY`, and no window's verdict ever changed in `history`):
+and the copy committed on `b/ood-ready` (and on `b/poc-integrate`) is byte-identical to that blob, while the
+bundle copy (`cf7fd7d3…`) is the path-remapped one and must not be used for a pre-registered claim. So the
+evidence chain is **restored**: the authority is the git blob, not the working copy. Any OOD claim made
+before that recovery would have been scored with a different artifact than the one pre-registered — B4's
+guard was not ceremonial.
 
-| score column | AUROC |
-|---|---|
-| `usable_prob` (the shipped decision score) | **0.415** [0.207, 0.630] |
-| `margin` | 0.415 |
-| `p_eg2` | 0.586 |
-| `p_pixel` | 0.342 |
+## 6. The out-of-domain number 0.529 — RESOLVED: it is the PoC cascade, not the frozen ensemble
 
-Per-window verdicts: **reject 29 / review 14 / accept 17**; **26 of 51 good windows rejected (51.0%)**;
-**3 of 9 bad rejected**; balanced accuracy at the shipped rule **0.412**.
+**Correction to my own earlier finding.** I first reported that the published OOD AUROC `0.529` "does not
+reproduce". That was wrong in an important way, and an independent verifier (PR #100) pinned it down:
+**0.529 reproduces exactly — but from a different scorer than the one I recomputed.** `FACTS.md:66` and
+`docs/POC_STATUS.md` attribute 0.529 to *"the PoC cascade as shipped (IndEgo-calibrated)"*, not to the
+frozen two-view ensemble. I conflated the two. Here is the corrected, verified picture.
 
-**So the published 0.529 does not reproduce from any column of the shipped score file, and neither do the
-reject counts (26/51 and 3/9 vs the published 21/51 and 5/9).** The same artifact drift documented in §5
-is the most likely cause — the score file and the labels were both rewritten after the numbers were
-computed — but I cannot reconstruct the file that produced 0.529 from anything present here, and I will
-not reverse-engineer a number to match a claim.
+### Two different scorers, two different numbers, both at chance
 
-**What this does and does not change.** The *qualitative* finding that the whole submission is organised
-around — the IndEgo-calibrated cascade is at chance on real Egocentric-10K and rejects roughly half the
-good windows — is **confirmed independently, and is in fact worse than published** (0.415 vs 0.529;
-51% vs 41% of good windows rejected). The exact published figure should not be quoted as reproduced; it
-should either be re-derived from a recovered artifact or restated from this recomputation with its own
-provenance.
+| scorer | artifact | AUROC | 95% CI | good rejected | bad rejected |
+|---|---|---|---|---|---|
+| **PoC cascade** (the 0.529 claim) | `eval/results/poc/ood_check_60.json` on `origin/main` | **0.529** | [0.316, 0.728] | **21 / 51** | **5 / 9** |
+| frozen two-view ensemble (`ensemble_v1`) | `caches/ensemble/ood_scores.json`, `usable_prob` | **0.415** | [0.207, 0.630] | **26 / 51** | 3 / 9 |
+
+PoC cascade balanced accuracy 0.513 (published 0.51 ✅). Frozen ensemble: 0.412 on my
+review-as-pass convention, 0.304 on strict accept-only — a protocol difference, stated rather than hidden.
+Both are computed against the same 60 human labels (51 good / 9 bad) with window bootstrap.
+
+**So: 0.529 is accurate for the PoC cascade, and 0.415 is the frozen ensemble's number.** They are not
+meant to be the same figure, and neither contradicts the other. My error was attribution, not arithmetic,
+and it is corrected in the registry line and in `STATUS_B.md`.
+
+### Why the discrepancy was hard to see — and is NOT artifact drift
+
+- The shipped bundle's OOD score file is **byte-identical to `origin/main`** (sha256 `300c1eda…`), so this
+  is **not** an instance of the 14/316 checksum drift of §5. It is an attribution difference: the PoC
+  artifact (`eval/results/poc/ood_check_60.json`) is simply **not in the bundle at all**.
+- Label snapshots were tested and rejected as an explanation: `history` vs `latest` are identical for all
+  60 segments; dropping the one `SHAKY` window gives 0.556 (PoC) / 0.440 (frozen); reason-weighting gives
+  0.427 / 0.440. None of these is the 0.529.
+- Negative control: 6 head combinations and sign flips were tried; the closest to 0.529 are
+  `max(p_eg2, p_pixel) = 0.535` and `2*p_eg2 + usable = 0.527`, with different CIs and fingerprints —
+  i.e. no column of the ensemble score file reproduces the PoC cascade's number by accident.
+- `ood_scores2.json` / `exp_domain` / e5-cache variants are **not computable** here: `labels/ood_labels2.json`
+  is still absent and their `r…` ids are not in `ood_labels.json`.
+
+29 attempts, each with file / n / AUROC / CI / reject counts, are recorded in
+`eval/results/pod_verify/ood_0529_archaeology.json` (PR #100).
+
+### What actually matters for the submission
+
+The number that the submission is organised around — *the shipped IndEgo-calibrated pipeline is at chance
+on real Egocentric-10K and falsely rejects ~40-50% of good windows* — holds for **both** scorers, and is if
+anything worse for the frozen ensemble (51% vs 41% of good windows rejected). Cite them separately and
+never merge them into one figure.
 
 ## 7. A live config hazard found while verifying (merge-blocking)
 
@@ -211,9 +236,12 @@ re-derive independently, and E1.02 survives a from-scratch re-implementation.
    including the frozen scorer, because the bundle was path-remapped after it was checksummed. LB4 has
    since recovered the byte-exact frozen file from git and anchored it at
    `configs/frozen/ensemble_v1.prereg.json` (PR #97).
-2. **The headline out-of-domain number does not reproduce** (§6): the shipped artifacts give AUROC
-   **0.415** [0.207, 0.630] with **26/51** good windows rejected, not 0.529 with 21/51. The direction of the
-   finding is confirmed and is worse than published; the published figure must be re-derived, not quoted.
+2. **The out-of-domain picture needed an attribution fix, and now checks out** (§6). The published `0.529`
+   is the **PoC cascade** and reproduces exactly (21/51 good, 5/9 bad, bal.acc 0.513); the **frozen
+   `ensemble_v1`** is a different number, **0.415** [0.207, 0.630] with **26/51** good windows rejected.
+   Both are at chance with heavy false rejects — the finding the submission rests on is confirmed twice.
+   My first pass wrongly read the two as one figure; that is corrected here, in the registry and in
+   `STATUS_B.md`, and the correction is the reason the second verifier was worth running.
 
 The GPU half of the pipeline and the delivered-labels half of the out-of-domain work remain **unverified
 here** for environmental reasons that are stated above, not hidden.
