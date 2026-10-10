@@ -74,7 +74,7 @@
     "min_clip": 0.606
    },
    "reproduced": true,
-   "note": "values read from caches/ensemble/nested_loco.json (per-fold C chosen by inner LOCO); raw OOF probs are not in the artifact, so AUROCs were not recomputed from scratch, but every published value matches the stored one and the gates match."
+   "note": "RETRACTED CAVEAT: the raw probabilities ARE available - caches/ensemble/oof_probs.npz holds the NESTED OOF probabilities (per-fold C by inner LOCO). Recomputing AUROC straight from them gives EG2 0.8458, pixel 0.7916, prob-avg 0.8336, rank-avg 0.8440, i.e. every published nested value is reproduced from raw probabilities, and the gates are correctly reported as NOT met. See eval/results/pod_verify/oof_crosscheck.json."
   }
  },
  "artifact_integrity": {

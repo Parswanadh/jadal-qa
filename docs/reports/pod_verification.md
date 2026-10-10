@@ -34,11 +34,21 @@ Every number below is machine-written into a results JSON under `eval/results/po
 | 18 | Selective accuracy 80% / 60% coverage (FACTS.md) | 0.831 / 0.889 | **0.831 / 0.889** | ✅ exact |
 | 19 | Per-clip weak spots: pallet 0.59, ecu_late 0.68 | 0.59 / 0.68 | **0.59 / 0.68** (prob-avg view) | ✅ exact |
 | 20 | pallet / pallet2 at chance for every model | 0.50 / 0.50 | **0.50 / 0.50** (26-feature view) | ✅ exact |
+| 21 | **evidence chain** — features reproducible from video | — | **all 150 windows, max abs diff 7.11e-15** | ✅ verified |
+| 22 | **nested AUROCs** recomputed from raw OOF probabilities | EG2 0.846 / px 0.792 / prob 0.834 / rank 0.844 | **0.8458 / 0.7916 / 0.8336 / 0.8440** | ✅ exact |
 
 **Tolerance used:** a claim counts as reproduced when the re-run matches to the precision at which the
-claim was published (3 d.p. for AUROC, 3 d.p. for clip-error) on the same protocol. All 20 matched.
-CI endpoints for E1.02 differ in the last digit between the two implementations because the published
-bootstrap draws differ; the point estimates are identical.
+claim was published (3 d.p. for AUROC, 3 d.p. for clip-error) on the same protocol. All 20 core claims
+matched; rows 21–22 are additions made after the GPU unlock and close the two gaps I had flagged
+(the feature-extraction half, and the nested numbers not being recomputable from raw probabilities).
+
+**Rows 21–22 are the upgrade since the first pass.** Row 21 re-derives `caches/gpu/features.json` from the
+source video on this pod for **all 150 gold windows** and finds machine-epsilon agreement — so the cached
+evidence chain is reproducible, not merely internally consistent. Row 22 recomputes the nested figures
+directly from the stored OOF probabilities in `caches/ensemble/oof_probs.npz`, which turns out to hold the
+*nested* probabilities (C chosen by inner LOCO per outer fold) — which is why they sit slightly below the
+fixed-C numbers. My earlier caveat that the nested AUROCs "could not be recomputed from scratch because the
+raw probs are not in the artifact" is **retracted**: they are, and they agree.
 
 ## 2. Files (all under `eval/results/pod_verify/`)
 
