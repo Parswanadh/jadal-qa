@@ -103,3 +103,39 @@ Real run: `wrote 18 clips + manifest.json to data_runtime/demo_clips`
 (~4.4 s); clip shas stable across runs True; manifest bytes identical True;
 `ecu_wrong_fps.mp4`/`logistics_wrong_fps.mp4` report 15.0 fps and decode;
 guard probe exits 3 with nothing written.
+
+## Fix round 2 (review findings I1, M1-M5 — all in owned files)
+
+- I1 CWD-relative default: `DEFAULT_OUT` is now
+  `os.path.join(DATA_RUNTIME, "demo_clips")` (repo-anchored, absolute), so a
+  default run works from any CWD. Proven: default run with CWD=/tmp exits 0
+  and writes to the worktree's `data_runtime/demo_clips/` (19 files), nothing
+  under `/tmp/data_runtime`.
+- M1 short reads: `read_window` raises `RuntimeError` when fewer than 90% of
+  wanted frames are read (no more silent linspace-stretch of truncated
+  inputs). New `test_short_read_raises` (5-frame source, 2 s request).
+- M2 containment scope: documented on `build_source_set` — containment under
+  `data_runtime/` is a CLI (`main()`) property; the API writes wherever
+  `out_dir` points (tests use temp dirs).
+- M3 duration honesty: each manifest entry now has `actual_duration_s`
+  (`n_frames/fps`): 20.0 for 10 fps variants, 13.333 for `wrong_fps`.
+- M4 encoder size: `main` collects per-source sizes and raises on a mix
+  (both real sources 480x480; per-entry `window.frame_size` was already
+  per-source).
+- M5 test overclaim: manifest determinism now compares sha-redacted dicts
+  (holds on any OpenCV build); byte-op sha equality kept as the stability
+  check. No finding disputed.
+
+REAL outputs (fix round 2):
+
+```
+PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_make_demo_clips -v
+Ran 5 tests in 0.533s
+OK
+timeout 250 env PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 327 tests in 10.360s
+OK
+```
+
+Live manifest check: 18 files, no `created_utc`, good `actual_duration_s`
+20.0, wrong_fps 13.333, encoder 480x480 mp4v @ 10 fps.

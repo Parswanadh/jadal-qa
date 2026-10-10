@@ -5,8 +5,9 @@ Reads the real IndEgo clips read-only, cuts one ~20 s window from each of two
 sources (ECU assembly with hands in view, logistics), and deterministically
 emits a small LABELLED set of demo variants plus a manifest.
 
-Outputs go ONLY under ``data_runtime/demo_clips/`` (git-ignored). ``--out``
-accepts another directory only with ``--allow-outside-data-runtime``.
+Outputs go ONLY under ``data_runtime/demo_clips/`` (git-ignored; the default
+is anchored at the repo root so it works from any CWD). ``--out`` accepts
+another directory only with ``--allow-outside-data-runtime``.
 Source clips are never copied into the repo.
 
 Variants per source window (9 files):
@@ -66,7 +67,7 @@ WRONG_FPS = 15.0
 FOURCC = "mp4v"
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_RUNTIME = os.path.join(REPO_ROOT, "data_runtime")
-DEFAULT_OUT = os.path.join("data_runtime", "demo_clips")
+DEFAULT_OUT = os.path.join(DATA_RUNTIME, "demo_clips")
 INDEGO_ROOT = "/home/parshu/projects/awing/data/indego"
 
 # Hand-picked windows (from the IndEgo VIA annotations shipped with the data):
@@ -148,6 +149,10 @@ def read_window(
             raw.append(frame)
         if not raw:
             raise RuntimeError(f"no frames read from {path} at {start_s}s")
+        if len(raw) < want * 0.9:
+            raise RuntimeError(
+                f"short read from {path} at {start_s}s: got {len(raw)}/{want} frames"
+            )
         target = int(round(duration_s * FPS))
         if abs(src_fps - FPS) > 1e-6 and len(raw) != target:
             # Even resample to the nominal frame rate (deterministic
@@ -203,6 +208,9 @@ def build_source_set(
     Returns (manifest entries, (w, h)). Good is encoded once; truncated and
     the duplicate derive from those exact bytes. Postcondition: the
     decodable set decodes, truncated/garbage do not.
+
+    Note: output containment under data_runtime/ is a CLI (main()) property;
+    this API writes wherever out_dir points (tests use temp dirs).
     """
     frames, start_frame, size, src_fps = read_window(source_abs, start_s, duration_s)
     os.makedirs(out_dir, exist_ok=True)
@@ -248,6 +256,7 @@ def build_source_set(
                 "variant": variant,
                 "parameters": params,
                 "fps": out_fps,
+                "actual_duration_s": round(len(frames) / out_fps, 3),
                 "source_clip": source_rel,
                 "window": {
                     "start_s": start_s,
@@ -342,7 +351,7 @@ def main(argv: list[str] | None = None) -> int:
 
     os.makedirs(args.out, exist_ok=True)
     all_entries: list[dict] = []
-    first_size: tuple[int, int] | None = None
+    sizes: set[tuple[int, int]] = set()
     for i, src in enumerate(DEFAULT_SOURCES):
         src_entries, size = build_source_set(
             os.path.join(INDEGO_ROOT, src["relpath"]),
@@ -354,11 +363,12 @@ def main(argv: list[str] | None = None) -> int:
             args.seed,
             i,
         )
-        if first_size is None:
-            first_size = size
+        sizes.add(size)
         all_entries.extend(src_entries)
-    assert first_size is not None
-    write_manifest(args.out, args.seed, all_entries, first_size[0], first_size[1])
+    if len(sizes) > 1:
+        raise RuntimeError(f"mixed source frame sizes: {sorted(sizes)}")
+    (width, height) = sorted(sizes)[0]
+    write_manifest(args.out, args.seed, all_entries, width, height)
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
     print(f"wrote {len(all_entries)} clips + manifest.json to {args.out} at {now}")
     return 0

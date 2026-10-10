@@ -13,6 +13,7 @@ Fast (<30 s) and hang-free (no waits; subprocess calls carry timeouts).
 
 import hashlib
 import importlib.util
+import json
 import os
 import subprocess
 import sys
@@ -131,6 +132,8 @@ class TestMakeDemoClips(unittest.TestCase):
                 self.assertEqual(by_name[f"t_{v}.mp4"]["label"], "SYNTHETIC-DEFECT", v)
             self.assertEqual(by_name["t_wrong_fps.mp4"]["defect"], "wrong_fps")
             self.assertEqual(by_name["t_wrong_fps.mp4"]["fps"], 15.0)
+            self.assertEqual(by_name["t_good.mp4"]["actual_duration_s"], 2.0)
+            self.assertAlmostEqual(by_name["t_wrong_fps.mp4"]["actual_duration_s"], 20 / 15.0, places=2)
 
             # Byte-stability across runs ONLY for pure byte ops (M6: re-encoded
             # mp4s are not guaranteed stable across OpenCV builds).
@@ -148,15 +151,19 @@ class TestMakeDemoClips(unittest.TestCase):
                 diff = float(np.mean(np.abs(f1[0].astype(float) - f2[0].astype(float))))
                 self.assertLess(diff, 5.0, v)
 
-            # Manifest bytes are deterministic on the same machine+build
-            # (no timestamps stored — I3 fix).
+            # Manifest is deterministic modulo file hashes: compare with
+            # sha256 fields redacted, so this holds on any OpenCV build
+            # (full-bytes equality would bake in same-build encoder bytes).
             mdc.write_manifest(out1, 7, e1, size1[0], size1[1])
             mdc.write_manifest(out2, 7, e2, size2[0], size2[1])
-            with open(os.path.join(out1, "manifest.json"), "rb") as f:
-                m1 = f.read()
-            with open(os.path.join(out2, "manifest.json"), "rb") as f:
-                m2 = f.read()
-            self.assertEqual(m1, m2)
+            with open(os.path.join(out1, "manifest.json")) as f:
+                j1 = json.load(f)
+            with open(os.path.join(out2, "manifest.json")) as f:
+                j2 = json.load(f)
+            for entry in j1["files"] + j2["files"]:
+                entry["sha256"] = "redacted"
+                entry.get("parameters", {}).pop("good_sha256", None)
+            self.assertEqual(j1, j2)
 
             # Re-upload duplicate is byte-identical to good.
             with open(os.path.join(out1, "t_good.mp4"), "rb") as f:
@@ -200,6 +207,13 @@ class TestMakeDemoClips(unittest.TestCase):
             self.assertAlmostEqual(src_fps, 5.0, places=1)
             self.assertEqual(len(frames), 20)  # resampled 5 fps -> 10 fps
             self.assertEqual(size, (64, 64))
+
+    def test_short_read_raises(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            src = os.path.join(tmp, "short.mp4")
+            make_synthetic_source(src, n_frames=5, fps=5.0)
+            with self.assertRaises(RuntimeError):
+                mdc.read_window(src, 0.0, 2.0)
 
     def test_out_guard(self):
         with tempfile.TemporaryDirectory() as tmp:
