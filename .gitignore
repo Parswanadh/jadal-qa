@@ -6,7 +6,8 @@ data_runtime/
 *.pth
 *.safetensors
 *.parquet
-models/
+models/*
+!models/README.md
 .venv/
 node_modules/
 
