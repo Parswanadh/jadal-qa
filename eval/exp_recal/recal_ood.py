@@ -23,7 +23,7 @@ from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 OUTDIR = os.path.join(REPO, "eval", "results", "exp_recal")
 CONFIG = os.path.join(REPO, "configs", "ensemble_v1.json")
 BOOT = 2000

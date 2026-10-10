@@ -1,0 +1,43 @@
+{
+  "generated_utc": "2026-10-10T11:00:00Z",
+  "n_windows": 60,
+  "hours": 0.1667,
+  "by_verdict": {
+    "accept": 29,
+    "reject": 18,
+    "review": 13
+  },
+  "by_reason": {
+    "OCCLUDED": 5,
+    "OVEREXPOSED": 2,
+    "FLICKER": 2,
+    "BLURRY": 3,
+    "TOO_DARK": 6
+  },
+  "by_factory": {
+    "factory_061": {
+      "n": 20,
+      "accept": 7,
+      "reject": 7,
+      "review": 6
+    },
+    "factory_042": {
+      "n": 20,
+      "accept": 12,
+      "reject": 6,
+      "review": 2
+    },
+    "factory_017": {
+      "n": 20,
+      "accept": 10,
+      "reject": 5,
+      "review": 5
+    }
+  },
+  "throughput": {
+    "hours_of_video_per_wall_hour": 6.5,
+    "rtf": 0.15,
+    "gpu": "RTX 4070 Laptop (NOT datacenter, NOT a Pi)"
+  },
+  "partial": true
+}

@@ -1,0 +1,49 @@
+{
+ "generated_utc": "2026-10-10",
+ "command": "OMP_NUM_THREADS=2 PYTHONNOUSERSITE=1 python scripts/poc_run.py --verify <window_id>  (one run per id)",
+ "sample": {
+  "method": "random.seed(20261010); random.sample(window_ids_in_file_order, 5)",
+  "population": 1587,
+  "source": "poc_data/windows.jsonl"
+ },
+ "device": "cpu: ffmpeg cpu decode, numpy features, sklearn LogisticRegression head; --verify never uses the GPU (RTX 4070 Laptop present on host, not used)",
+ "head_sha": "d59955b512db1a1d",
+ "head_n_train": 150,
+ "threshold": 0.6,
+ "code_sha_at_run": "1da49b6",
+ "results": [
+  {
+   "window_id": "f036_w007_c00011_t0040",
+   "stored_receipt_sha256": "e09384e665ae8a73c1dae3a651038793979aeab2c59d55e835747d7ff059da1b",
+   "recomputed_receipt_sha256": "e09384e665ae8a73c1dae3a651038793979aeab2c59d55e835747d7ff059da1b",
+   "match": true
+  },
+  {
+   "window_id": "f020_w002_c00157_t0150",
+   "stored_receipt_sha256": "1c7fd217d12f57b35d627485eb78b34e6783e02f4648a2e7bc655929afd8c4ea",
+   "recomputed_receipt_sha256": "1c7fd217d12f57b35d627485eb78b34e6783e02f4648a2e7bc655929afd8c4ea",
+   "match": true
+  },
+  {
+   "window_id": "f058_w003_c00121_t0150",
+   "stored_receipt_sha256": "e18b347405cd12c503794ee8469d8652e540482ef16cda9077d39518e8c8fc5f",
+   "recomputed_receipt_sha256": "e18b347405cd12c503794ee8469d8652e540482ef16cda9077d39518e8c8fc5f",
+   "match": true
+  },
+  {
+   "window_id": "f003_w004_c00003_t0220",
+   "stored_receipt_sha256": "28746688a830330fbb1b8e33b4dff906704a69f5b657d6cdeee8b39620cef94e",
+   "recomputed_receipt_sha256": "28746688a830330fbb1b8e33b4dff906704a69f5b657d6cdeee8b39620cef94e",
+   "match": true
+  },
+  {
+   "window_id": "f061_w007_c00036_t1080",
+   "stored_receipt_sha256": "4b3188637bd7cb6efc290dd0e508723a7b1eb80345eb37f33e4e6dce37ae8817",
+   "recomputed_receipt_sha256": "4b3188637bd7cb6efc290dd0e508723a7b1eb80345eb37f33e4e6dce37ae8817",
+   "match": true
+  }
+ ],
+ "matches": 5,
+ "n": 5,
+ "mismatch_cause": null
+}

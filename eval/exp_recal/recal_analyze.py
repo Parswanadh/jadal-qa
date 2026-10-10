@@ -33,7 +33,7 @@ from sklearn.preprocessing import StandardScaler
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 CONFIG = os.path.join(REPO, "configs", "ensemble_v1.json")
 OUTDIR = os.path.join(REPO, "eval", "results", "exp_recal")
 GRID = [0.003, 0.01, 0.03, 0.1, 0.3, 1.0]

@@ -1,0 +1,73 @@
+{
+ "device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
+ "R0_cpu": {
+  "windows_s": 2.22,
+  "hours_per_hour": 22.2,
+  "video_s_per_wall_s": 22.2,
+  "nwin": 10,
+  "wall_s": 4.5,
+  "method": "ffmpeg CPU decode 160x90 rgb + cpu_window_features, 1 proc"
+ },
+ "memcpy": {
+  "d2d_gbps": 74.33,
+  "h2d_pinned_gbps": 7.56,
+  "theoretical_gb_s": 256,
+  "pcie_theoretical_gb_s": 16,
+  "note": "vs 256 GB/s GDDR6 theory and ~16 GB/s PCIe4x8 theory"
+ },
+ "kernels_only": {
+  "B1": {
+   "windows_s": 179.2,
+   "hours_per_hour": 1791.9
+  },
+  "B8": {
+   "windows_s": 178.4,
+   "hours_per_hour": 1784.3
+  },
+  "B32": {
+   "windows_s": 199.8,
+   "hours_per_hour": 1997.6
+  }
+ },
+ "gpu_peak_vram_mib_holdA": 4304.0,
+ "nvdec_rgb24_probe": {
+  "rc": 234,
+  "bytes": 0,
+  "expected": 2160000,
+  "ok": false,
+  "stderr_tail": "_hwdownload_1\n[vf#0:0 @ 0x61805088a540] Error reinitializing filters!\nFailed to inject frame into filter network: Invalid argument\nError while filtering: Invalid argument\n[out#0/rawvideo @ 0x6180508cff00] Nothing was written into output file, because at least one of its streams received no packets.\n"
+ },
+ "R3_pipeline": {
+  "sustain_s": 360.3,
+  "windows": 104,
+  "drops": 0,
+  "decoders": 4,
+  "batch": 8,
+  "windows_s": 0.29,
+  "hours_per_hour": 2.9,
+  "video_s_per_wall_s": 2.9,
+  "gpu_util_mean": 23.9,
+  "gpu_util_max": 79.0,
+  "h2d_gbps": 0.002,
+  "gpu_peak_vram_mib": 806.0,
+  "vram_budget_mib": 7168,
+  "corpus": "replicas of 7 IndEgo 480p clips, round-robin offsets (content repeated; decode cost realistic)"
+ },
+ "extrapolation": {
+  "rtf": 2.9,
+  "gpus_for_10kh_in_2h": 1732.2,
+  "gpus_for_10kh_in_3h": 1154.7,
+  "note": "LAPTOP GPU ceiling; linear scaling only to the NVDEC/PCIe/CPU bottleneck stated in limits; NOT a datacenter claim."
+ },
+ "R3b_cpufeed": {
+  "B8": {
+   "windows_s": 2.14,
+   "hours_per_hour": 21.4
+  },
+  "B32": {
+   "windows_s": 2.5,
+   "hours_per_hour": 25.0
+  }
+ },
+ "gpu_peak_vram_mib_holdB2": 3718.0
+}

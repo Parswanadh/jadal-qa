@@ -25,7 +25,7 @@ Output npz: ids, clips, labels, X_pixel (n,26), X_eg2 (n,768),
 n_frames_pixel, n_frames_eg2, fps_pixel, names.
 
 Run under the GPU slot:
-  source /workspace/env.sh
+  source "${JADAL_ENV:-env.sh}"
   bash tools/pod/gpu_run.sh python3 eval/exp_recal/extract_sparse.py --set gold --workers 2
 """
 from __future__ import annotations
@@ -46,13 +46,13 @@ sys.path.insert(0, REPO)
 
 from jadal.gpu.features import cpu_window_features  # noqa: E402
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 CONFIG = os.path.join(REPO, "configs", "ensemble_v1.json")
 LAPTOP_DATA = "/home/parshu/projects/awing/data/"
 POD_DATA = os.path.join(BUNDLE, "data") + "/"
 W, H = 160, 90
 EGW, EGH = 512, 288
-POD_EG2 = ("/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2"
+POD_EG2 = (os.path.join(os.environ.get("JADAL_POD_ROOT", ""), '.cache/huggingface/hub/models--google--embeddinggemma-2')
            "/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b")
 
 # adopted sparse settings (identical to run_fast.py --pixel-fps 3.33 --eg2-fps 1 --early-exit-s 4)
