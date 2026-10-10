@@ -143,6 +143,13 @@ class TestReplayDriver(unittest.TestCase):
             self.assertIn(e["decision"], ("continue", "early_reject", "accept"))
         self.assertIn("accept", [e["decision"] for e in evs])
 
+    def test_window_id_advances_per_window(self):
+        _, evs = self._run()  # 6 chunks of 2 s, 10 s window = 5 per window
+        ids = [e["window_id"] for e in evs]
+        self.assertEqual(len(set(ids[:5])), 1)
+        self.assertNotEqual(ids[5], ids[0])
+        self.assertTrue(ids[5].endswith("_t0010"))
+
     def test_blackout_rejects_fast(self):
         summary, evs = self._run(degrade="blackout", degrade_at=4.0)
         self.assertIsNotNone(summary["time_to_reject_s"])

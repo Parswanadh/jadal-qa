@@ -20,6 +20,9 @@ point." (Amber Pico LED = watching, green = accept.)
 Watch: the very next chunk flips to `early_reject`, evidence on screen:
 `S0 rule black p95=0.0 < 0.03`. Time-to-reject: **0.0 s of video** (same
 2 s chunk; freeze degradation also 0.0 s via `frozen temp_e < 5e-4`).
+(Time-to-reject is chunk-quantized: a degradation starting mid-chunk is first
+seen at the next 2 s boundary, so the true delay can be up to one chunk
+larger than the reported video-seconds number.)
 Red Pico LED.
 
 1:50 — "Every verdict carries evidence (value, operator, threshold) and the

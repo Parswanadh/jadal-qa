@@ -44,6 +44,10 @@ S0_RULES_FALLBACK = [
 
 DECISION_TO_LED = {"accept": "G", "early_reject": "R", "continue": "A"}
 
+REPO_ROOT = os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))))
+DEFAULT_PICO_LOCK = os.path.join(REPO_ROOT, "tools", "pico.lock")
+
 
 def load_by_path(modname, path):
     """Import a module read-only from an absolute path; raise on failure."""
@@ -248,14 +252,17 @@ def window_id_for(clip, start_s):
 # Pico hook                                                                    #
 # --------------------------------------------------------------------------- #
 
-def send_pico(decision, lock_path="tools/pico.lock", serial_obj=None):
+def send_pico(decision, lock_path=None, serial_obj=None):
     """Send the running verdict to the Pico LED under flock.
 
     accept->green, continue(uncertain)->amber, early_reject->red. Works
     headless: with no hardware it logs 'pico: not connected' and returns
     False. ``serial_obj`` injects a fake serial (tests/demo without hw).
+    ``lock_path`` defaults to <repo-root>/tools/pico.lock (CWD-independent).
     """
     color = DECISION_TO_LED.get(decision, "OFF")
+    if lock_path is None:
+        lock_path = DEFAULT_PICO_LOCK
     try:
         from jadal.pico_link import PicoLink
         os.makedirs(os.path.dirname(os.path.abspath(lock_path)), exist_ok=True)
@@ -291,7 +298,7 @@ def send_pico(decision, lock_path="tools/pico.lock", serial_obj=None):
 def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
            max_chunks=None, degrade="none", degrade_at=None,
            accept_thr=0.5, use_pico=False, fps=5, width=160,
-           use_cuda=False, lock_path="tools/pico.lock",
+           use_cuda=False, lock_path=None,
            serial_obj=None, append=False):
     """Run the replay; return a summary dict. Flushes one event per chunk.
 
@@ -301,7 +308,6 @@ def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
     """
     rules, s0_source = load_s0_rules()
     stream, engine = make_spectral_stream()
-    wid = window_id_for(clip, 0.0)
     per_window = max(1, int(round(window_s / chunk_s)))
     # True window-sized cap in frames (10 s window = per_window chunks of
     # chunk_s seconds at fps) plus a small slack; the stats span now matches
@@ -380,7 +386,10 @@ def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
             ram_mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
         except Exception:
             ram_mb = -1.0
-        event = {"t": round(t, 1), "window_id": wid, "chunk": n + 1,
+        event = {"t": round(t, 1),
+                 "window_id": window_id_for(clip, (n // per_window)
+                                            * window_s),
+                 "chunk": n + 1,
                  "running_score": score, "decision": decision,
                  "reason": reason, "latency_ms": round(ms, 1),
                  "ram_mb": round(ram_mb, 1), "decode": backend,

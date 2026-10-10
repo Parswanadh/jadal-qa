@@ -80,7 +80,8 @@ def main():
     args = ap.parse_args()
     root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
     out = args.out or os.path.join(root, "docs", "screens", "poc_demo_backup.mp4")
-    evs = [json.loads(l) for l in open(args.events) if l.strip()]
+    with open(args.events) as f:
+        evs = [json.loads(line) for line in f if line.strip()]
     if not evs:
         raise SystemExit(f"no events in {args.events}")
     hist = [(e.get("running_score", 0), e.get("decision", "continue")) for e in evs]

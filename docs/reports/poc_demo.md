@@ -50,7 +50,7 @@ budget), 16-chunk demo wall 41–56 s for 32 s of video. Decode backend
 - `scripts/poc_demo.sh` — one command: dashboard `:8840` if
   `scripts/poc_server.py` exists (it does not on any branch yet → stub line),
   scripted blackout replay, prints URLs, kills only PIDs it started.
-- `tests/test_poc_demo.py` — 12 tests, <30 s, no GPU/network/real video.
+- `tests/test_poc_demo.py` — 15 tests, <30 s, no GPU/network/real video.
 
 ## Caveats
 
@@ -107,3 +107,39 @@ Real command outputs:
 - Receipts/contract/probes (review §11–12): receipts remain poc-run-owned
   (windows.jsonl `receipt_sha256`); stream chunk events carry evidence, not
   receipts — unchanged by design, documented in DEMO.md.
+
+## Fix round 2 (round-2 review of PR #66 — both Important + all Minors fixed)
+
+- I1 (window_id never advances): `replay()` now stamps
+  `window_id_for(clip, (n // per_window) * window_s)` per event instead of one
+  id from t=0. Regenerated deliverable: 16 events span
+  `f69_w4_t0000/t0010/t0020/t0030`. New test
+  `test_window_id_advances_per_window` (5× one id, 6th chunk `_t0010`).
+- I2 (sha not re-checkable): the full-file sha256 mixed in wall-clock
+  `latency_ms`/`ram_mb`, so no re-run could reproduce it (reviewer's probe
+  confirmed; not disputed). Fix: publish the hash of deterministic fields
+  only. Re-check command and output:
+  `python3 -c "import json,hashlib; proj=[dict(sorted({k:e[k] for k in
+  ('t','window_id','chunk','running_score','decision','reason')}.items()))
+  for e in map(json.loads,open('poc_data/stream_events.jsonl'))];
+  print(hashlib.sha256(json.dumps(proj).encode()).hexdigest())"`
+  → deliverable file: `edc3abe97f38c245d4aa9709257fcc61a5706d0db2efe73871fc63cc249360d6`.
+  Stability proven on real video: two identical 6-chunk clean re-runs hash
+  `3b70b8bc...a02bd801f` twice (latency/RAM differ, digest identical).
+- M1: "12 tests" → corrected (15 then; 16 with the new window test).
+- M2: `poc_record.py` reads events via `with open(...)`.
+- M3: demo fallback `find ... | sort | head -n 1`.
+- M4: `send_pico`/`replay` lock default is now
+  `<repo-root>/tools/pico.lock` derived from `__file__` (CWD-independent);
+  explicit paths still honoured (tests pass absolute tmp paths).
+- M5: DEMO.md states chunk quantization explicitly (up to one 2 s chunk of
+  understatement for off-grid degrade_at).
+
+Real command outputs:
+- `python -m unittest tests.test_poc_demo` → `Ran 15 tests in 0.302s` / `OK`
+  (includes the new window-id test)
+- `PYTHONNOUSERSITE=1 timeout 250 python -m unittest discover -s tests`
+  → `Ran 597 tests in 36.383s` / `OK (skipped=8)`
+- TTR after round-2 changes (16-chunk blackout@12 run): `time_to_reject_s:
+  0.0`, `mean_latency_ms: 534.9`, wall 8.6 s. Backup mp4 re-rendered
+  (80 s, 16 cards).

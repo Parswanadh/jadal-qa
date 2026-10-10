@@ -14,7 +14,7 @@ if [[ -n "${1:-}" ]]; then
 elif [[ -f "$DEFAULT_CLIP" ]]; then
   CLIP="$DEFAULT_CLIP"  # pinned: DEMO.md expected scores were measured here
 else
-  CLIP="$(find /home/parshu/projects/awing/data/ego10k_scale/clips -name '*.mp4' | head -n 1)"
+  CLIP="$(find /home/parshu/projects/awing/data/ego10k_scale/clips -name '*.mp4' | sort | head -n 1)"
 fi
 EVENTS="${EVENTS:-/home/parshu/projects/jadal-qa-wt/poc_data/stream_events.jsonl}"
 PORT=8840
