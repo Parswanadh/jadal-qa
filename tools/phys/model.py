@@ -1,14 +1,17 @@
 """Deterministic physics rule-list model: integer-quantised decision path.
 
 This module is the shipping implementation of the Q1 rule table. It contains NO
-learned weights and NO floating-point arithmetic on the decision path:
+learned weights. The **rule decision path compares quantised integers only**:
+every feature value and every threshold is converted to an integer at
+10**quantisation (Q=4) *before* comparison, the score is the integer count of
+crossed thresholds, and ACCEPT / REJECT / REVIEW is a pure function of integers.
+Evidence is emitted as ``{rule, feature, value, op, threshold}`` with the integer
+value and threshold.
 
-  * every feature value and every threshold is converted to an integer at
-    10**quantisation (Q=4) *before* comparison;
-  * the score is the integer count of crossed thresholds;
-  * the decision (ACCEPT / REJECT / REVIEW) is a pure function of integers;
-  * evidence is emitted as ``{rule, feature, value, op, threshold}`` with the
-    integer value and threshold.
+The *optional* logistic fallback (hybrid mode) is the one **float** comparison in
+the receipt path: a REVIEW window is resolved with ``usable_prob >= 0.5``. Its
+source is bound into the receipt's ``fallback.source_sha256``, and the
+deterministic decision is kept in ``decision_deterministic``.
 
 Only the *input extraction* (decode + feature kernels) uses floats, exactly as
 in Q1; the scorer never sees them. The canonical receipt binds the result to
@@ -21,7 +24,7 @@ quantise(value, q) -> int | None
 feature_digest(features, rules) -> str
 score_window(features, rules) -> dict
 decide(scored, rules) -> dict
-receipt(window_id, features, rules, fallback_prob=None) -> dict
+receipt(window_id, features, rules, fallback_prob=None, fallback_sha256=None) -> dict
 """
 from __future__ import annotations
 
@@ -184,13 +187,13 @@ def _evidence_list(scored: dict) -> list:
 
 
 def receipt(window_id: str, features: dict, rules: dict,
-            fallback_prob=None) -> dict:
+            fallback_prob=None, fallback_sha256: str | None = None) -> dict:
     """Canonical JSON receipt for one window.
 
     If ``fallback_prob`` is given and the deterministic decision is REVIEW, the
     window is resolved by the frozen logistic fallback (ACCEPT iff p >= 0.5);
-    the receipt records this in ``fallback`` while keeping the deterministic
-    ``decision_deterministic`` field.
+    the receipt records this in ``fallback`` (including ``source_sha256`` when
+    provided) while keeping the deterministic ``decision_deterministic`` field.
     """
     scored = score_window(features, rules)
     det = decide(scored, rules)
@@ -200,7 +203,8 @@ def receipt(window_id: str, features: dict, rules: dict,
         p = float(fallback_prob)
         decision = "ACCEPT" if p >= 0.5 else "REJECT"
         fb = {"model": "ensemble_v1.usable_prob", "prob": round(p, 6),
-              "rule": "accept iff prob>=0.5", "decision": decision}
+              "rule": "accept iff prob>=0.5", "decision": decision,
+              "source_sha256": fallback_sha256}
     rec = {
         "code_sha256": code_sha256(),
         "decision": decision,

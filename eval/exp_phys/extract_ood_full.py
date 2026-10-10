@@ -21,6 +21,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, ROOT)
 BUNDLE = os.environ.get("JADAL_BUNDLE")
+if not BUNDLE:
+    raise SystemExit("JADAL_BUNDLE is required (path to the pod data bundle)")
 OUT = os.path.join(ROOT, "eval", "results", "exp_phys", "inputs")
 
 

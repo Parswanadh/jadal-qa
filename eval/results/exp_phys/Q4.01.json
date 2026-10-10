@@ -2,8 +2,14 @@
  "experiment": "Q4.01",
  "fallback": {
   "gold_score": "caches/ensemble/oof_probs.npz p_ens (out-of-fold)",
+  "gold_source_sha256": "ee35d4961a7ebeb2038068260e08744376440969f14b50d5309748d08abce81b",
   "model": "ensemble_v1 (frozen logistic, no refit)",
+  "note": "the hybrid decision depends on an unhashed-in-code cache; these sha256 values bind the fallback source into the result and into each receipt's fallback.source_sha256",
   "ood_score": "caches/ensemble/ood_scores{,2}.json usable_prob",
+  "ood_source_sha256": {
+   "ood_scores.json": "300c1eda6e8c0b709b36da433b8b91c464e83b89b58af5b3613cc71b02d15e5b",
+   "ood_scores2.json": "d5e68906fdd7fa914f31b9339052d550349ed42365d1712ef9f7c3c6f7ca988e"
+  },
   "rule": "REVIEW -> accept iff usable_prob >= 0.5"
  },
  "gold_loco": {
@@ -13,14 +19,14 @@
    "accept_share": 0.5867,
    "auroc_ci95": [
     0.7297,
-    0.8606
+    0.8657
    ],
    "auroc_fallback_prob_only": 0.8336,
    "auroc_hybrid_score": 0.8285,
    "balacc": 0.79,
    "balacc_ci95": [
-    0.692,
-    0.8283
+    0.6906,
+    0.8271
    ],
    "fallback_flips_to_accept": 64,
    "fallback_flips_to_reject": 26,
@@ -35,6 +41,25 @@
   "n_bad": 50,
   "n_clips": 7,
   "n_good": 100,
+  "paired_clip_bootstrap": {
+   "auroc_rules_minus_ensemble": {
+    "ci95": [
+     -0.1355,
+     0.06
+    ],
+    "delta": -0.0114,
+    "n_boot": 2000
+   },
+   "balacc_hybrid_minus_pure_review_as_accept": {
+    "ci95": [
+     0.016,
+     0.1309
+    ],
+    "delta": 0.08,
+    "n_boot": 2000
+   },
+   "note": "paired clip-grouped bootstrap, 2,000 shared resamples, seed 0; AUROC delta = rules - ensemble (both higher=bad), BA delta = hybrid - pure(review-as-accept)"
+  },
   "per_fold": {
    "desk": {
     "n": 29,
@@ -72,16 +97,1369 @@
     "reject_threshold": 15
    }
   },
+  "per_window_scores": [
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g000",
+    "p_ens": 0.423613,
+    "score": 1,
+    "y": 0
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g001",
+    "p_ens": 0.567733,
+    "score": 2,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g002",
+    "p_ens": 0.708844,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g003",
+    "p_ens": 0.671738,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g004",
+    "p_ens": 0.760041,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g005",
+    "p_ens": 0.798081,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g006",
+    "p_ens": 0.698909,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g007",
+    "p_ens": 0.756638,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g008",
+    "p_ens": 0.698681,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g009",
+    "p_ens": 0.738004,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g010",
+    "p_ens": 0.694266,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g011",
+    "p_ens": 0.676415,
+    "score": 2,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g012",
+    "p_ens": 0.501067,
+    "score": 0,
+    "y": 0
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g013",
+    "p_ens": 0.731155,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g014",
+    "p_ens": 0.713776,
+    "score": 5,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g015",
+    "p_ens": 0.677856,
+    "score": 2,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g016",
+    "p_ens": 0.708049,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g017",
+    "p_ens": 0.711905,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g018",
+    "p_ens": 0.730562,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g019",
+    "p_ens": 0.712572,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g020",
+    "p_ens": 0.758968,
+    "score": 1,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g021",
+    "p_ens": 0.79499,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g022",
+    "p_ens": 0.739631,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g023",
+    "p_ens": 0.691745,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g024",
+    "p_ens": 0.809233,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g025",
+    "p_ens": 0.802861,
+    "score": 1,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g026",
+    "p_ens": 0.71269,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g027",
+    "p_ens": 0.684891,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g028",
+    "p_ens": 0.69622,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g029",
+    "p_ens": 0.845937,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g030",
+    "p_ens": 0.779801,
+    "score": 1,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g031",
+    "p_ens": 0.726861,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g032",
+    "p_ens": 0.700009,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g033",
+    "p_ens": 0.746283,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g034",
+    "p_ens": 0.794206,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g035",
+    "p_ens": 0.630528,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g036",
+    "p_ens": 0.583583,
+    "score": 0,
+    "y": 0
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g037",
+    "p_ens": 0.707153,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g038",
+    "p_ens": 0.713951,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g039",
+    "p_ens": 0.656858,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g040",
+    "p_ens": 0.682617,
+    "score": 1,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g041",
+    "p_ens": 0.572321,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g042",
+    "p_ens": 0.742608,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g043",
+    "p_ens": 0.743817,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g044",
+    "p_ens": 0.693695,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g045",
+    "p_ens": 0.574869,
+    "score": 4,
+    "y": 0
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g046",
+    "p_ens": 0.733777,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "ecu_full",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g047",
+    "p_ens": 0.515198,
+    "score": 3,
+    "y": 0
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g048",
+    "p_ens": 0.598614,
+    "score": 10,
+    "y": 1
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g049",
+    "p_ens": 0.584329,
+    "score": 5,
+    "y": 1
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g050",
+    "p_ens": 0.873677,
+    "score": 6,
+    "y": 1
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g051",
+    "p_ens": 0.698047,
+    "score": 4,
+    "y": 0
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g052",
+    "p_ens": 0.774706,
+    "score": 5,
+    "y": 0
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g053",
+    "p_ens": 0.862685,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g054",
+    "p_ens": 0.716904,
+    "score": 5,
+    "y": 1
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g055",
+    "p_ens": 0.827123,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g056",
+    "p_ens": 0.732345,
+    "score": 5,
+    "y": 1
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g057",
+    "p_ens": 0.308134,
+    "score": 5,
+    "y": 0
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g058",
+    "p_ens": 0.346636,
+    "score": 13,
+    "y": 1
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g059",
+    "p_ens": 0.569514,
+    "score": 7,
+    "y": 1
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g060",
+    "p_ens": 0.659195,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "ecu_late",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g061",
+    "p_ens": 0.478322,
+    "score": 6,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g062",
+    "p_ens": 0.599557,
+    "score": 7,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g063",
+    "p_ens": 0.759321,
+    "score": 7,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g064",
+    "p_ens": 0.628135,
+    "score": 5,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g065",
+    "p_ens": 0.458122,
+    "score": 15,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g066",
+    "p_ens": 0.535149,
+    "score": 12,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g067",
+    "p_ens": 0.618288,
+    "score": 7,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g068",
+    "p_ens": 0.771276,
+    "score": 8,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g069",
+    "p_ens": 0.637591,
+    "score": 5,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g070",
+    "p_ens": 0.880512,
+    "score": 11,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g071",
+    "p_ens": 0.893517,
+    "score": 11,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g072",
+    "p_ens": 0.873595,
+    "score": 13,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g073",
+    "p_ens": 0.817268,
+    "score": 8,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g074",
+    "p_ens": 0.487574,
+    "score": 15,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g075",
+    "p_ens": 0.448382,
+    "score": 19,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g076",
+    "p_ens": 0.435252,
+    "score": 10,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g077",
+    "p_ens": 0.515762,
+    "score": 8,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g078",
+    "p_ens": 0.288127,
+    "score": 16,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g079",
+    "p_ens": 0.358171,
+    "score": 17,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g080",
+    "p_ens": 0.165316,
+    "score": 15,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g081",
+    "p_ens": 0.216171,
+    "score": 10,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g082",
+    "p_ens": 0.278558,
+    "score": 11,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g083",
+    "p_ens": 0.394091,
+    "score": 9,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g084",
+    "p_ens": 0.490208,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g085",
+    "p_ens": 0.322712,
+    "score": 19,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g086",
+    "p_ens": 0.338572,
+    "score": 13,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g087",
+    "p_ens": 0.569877,
+    "score": 14,
+    "y": 1
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g088",
+    "p_ens": 0.307183,
+    "score": 29,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g089",
+    "p_ens": 0.202729,
+    "score": 16,
+    "y": 0
+   },
+   {
+    "clip": "desk",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g090",
+    "p_ens": 0.348829,
+    "score": 22,
+    "y": 0
+   },
+   {
+    "clip": "pallet2",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g091",
+    "p_ens": 0.807301,
+    "score": 2,
+    "y": 1
+   },
+   {
+    "clip": "pallet2",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g092",
+    "p_ens": 0.739657,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "pallet2",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g093",
+    "p_ens": 0.216688,
+    "score": 19,
+    "y": 0
+   },
+   {
+    "clip": "pallet2",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g094",
+    "p_ens": 0.338268,
+    "score": 14,
+    "y": 0
+   },
+   {
+    "clip": "pallet2",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g095",
+    "p_ens": 0.738025,
+    "score": 3,
+    "y": 0
+   },
+   {
+    "clip": "pallet2",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g096",
+    "p_ens": 0.82089,
+    "score": 13,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g097",
+    "p_ens": 0.223601,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "pallet",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g098",
+    "p_ens": 0.58163,
+    "score": 2,
+    "y": 1
+   },
+   {
+    "clip": "pallet",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g099",
+    "p_ens": 0.030615,
+    "score": 16,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g100",
+    "p_ens": 0.023767,
+    "score": 10,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g101",
+    "p_ens": 0.043697,
+    "score": 16,
+    "y": 1
+   },
+   {
+    "clip": "pallet",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g102",
+    "p_ens": 0.089898,
+    "score": 14,
+    "y": 1
+   },
+   {
+    "clip": "pallet",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g103",
+    "p_ens": 0.064276,
+    "score": 15,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g104",
+    "p_ens": 0.10077,
+    "score": 10,
+    "y": 1
+   },
+   {
+    "clip": "pallet",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g105",
+    "p_ens": 0.056447,
+    "score": 15,
+    "y": 1
+   },
+   {
+    "clip": "pallet",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g106",
+    "p_ens": 0.035139,
+    "score": 8,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g107",
+    "p_ens": 0.49608,
+    "score": 12,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g108",
+    "p_ens": 0.221084,
+    "score": 13,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g109",
+    "p_ens": 0.139006,
+    "score": 19,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g110",
+    "p_ens": 0.037263,
+    "score": 16,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g111",
+    "p_ens": 0.297853,
+    "score": 17,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g112",
+    "p_ens": 0.037937,
+    "score": 20,
+    "y": 0
+   },
+   {
+    "clip": "pallet",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g113",
+    "p_ens": 0.660194,
+    "score": 6,
+    "y": 0
+   },
+   {
+    "clip": "organise",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g114",
+    "p_ens": 0.721438,
+    "score": 9,
+    "y": 1
+   },
+   {
+    "clip": "organise",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g115",
+    "p_ens": 0.496011,
+    "score": 17,
+    "y": 1
+   },
+   {
+    "clip": "organise",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g116",
+    "p_ens": 0.828271,
+    "score": 4,
+    "y": 1
+   },
+   {
+    "clip": "organise",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g117",
+    "p_ens": 0.397925,
+    "score": 8,
+    "y": 1
+   },
+   {
+    "clip": "organise",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g118",
+    "p_ens": 0.231443,
+    "score": 24,
+    "y": 0
+   },
+   {
+    "clip": "organise",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g119",
+    "p_ens": 0.744547,
+    "score": 7,
+    "y": 1
+   },
+   {
+    "clip": "organise",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g120",
+    "p_ens": 0.833369,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "organise",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g121",
+    "p_ens": 0.514249,
+    "score": 5,
+    "y": 1
+   },
+   {
+    "clip": "organise",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g122",
+    "p_ens": 0.286986,
+    "score": 14,
+    "y": 1
+   },
+   {
+    "clip": "organise",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g123",
+    "p_ens": 0.091047,
+    "score": 19,
+    "y": 0
+   },
+   {
+    "clip": "organise",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g124",
+    "p_ens": 0.290301,
+    "score": 17,
+    "y": 0
+   },
+   {
+    "clip": "organise",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g125",
+    "p_ens": 0.10893,
+    "score": 16,
+    "y": 0
+   },
+   {
+    "clip": "organise",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g126",
+    "p_ens": 0.107747,
+    "score": 11,
+    "y": 0
+   },
+   {
+    "clip": "organise",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g127",
+    "p_ens": 0.435105,
+    "score": 8,
+    "y": 0
+   },
+   {
+    "clip": "organise",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g128",
+    "p_ens": 0.580022,
+    "score": 11,
+    "y": 1
+   },
+   {
+    "clip": "organise",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g129",
+    "p_ens": 0.369985,
+    "score": 18,
+    "y": 0
+   },
+   {
+    "clip": "organise",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g130",
+    "p_ens": 0.124056,
+    "score": 24,
+    "y": 0
+   },
+   {
+    "clip": "organise",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g131",
+    "p_ens": 0.094829,
+    "score": 18,
+    "y": 0
+   },
+   {
+    "clip": "organise",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g132",
+    "p_ens": 0.285523,
+    "score": 16,
+    "y": 0
+   },
+   {
+    "clip": "logistics4",
+    "decision": "ACCEPT",
+    "hybrid_decision": "ACCEPT",
+    "id": "g133",
+    "p_ens": 0.544572,
+    "score": 0,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g134",
+    "p_ens": 0.76824,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g135",
+    "p_ens": 0.524986,
+    "score": 1,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g136",
+    "p_ens": 0.455336,
+    "score": 8,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g137",
+    "p_ens": 0.592682,
+    "score": 9,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g138",
+    "p_ens": 0.820298,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g139",
+    "p_ens": 0.687277,
+    "score": 2,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g140",
+    "p_ens": 0.44517,
+    "score": 9,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g141",
+    "p_ens": 0.640661,
+    "score": 3,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g142",
+    "p_ens": 0.420397,
+    "score": 7,
+    "y": 0
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g143",
+    "p_ens": 0.22483,
+    "score": 11,
+    "y": 0
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g144",
+    "p_ens": 0.140507,
+    "score": 12,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g145",
+    "p_ens": 0.391229,
+    "score": 9,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g146",
+    "p_ens": 0.648593,
+    "score": 12,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "REJECT",
+    "id": "g147",
+    "p_ens": 0.373761,
+    "score": 7,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REVIEW",
+    "hybrid_decision": "ACCEPT",
+    "id": "g148",
+    "p_ens": 0.666735,
+    "score": 8,
+    "y": 1
+   },
+   {
+    "clip": "logistics4",
+    "decision": "REJECT",
+    "hybrid_decision": "REJECT",
+    "id": "g149",
+    "p_ens": 0.030864,
+    "score": 23,
+    "y": 0
+   }
+  ],
+  "per_window_scores_note": "one row per gold window: id, clip, y, score, decision, p_ens, hybrid_decision; every metric above is re-derivable from these rows",
   "pure_rules": {
    "accept_share": 0.16,
    "auroc_ci95": [
-    0.7126,
-    0.855
+    0.7146,
+    0.8598
    ],
    "auroc_deterministic_score": 0.8222,
    "balacc_ci95": [
-    0.6021,
-    0.7569
+    0.6111,
+    0.757
    ],
    "balacc_decided_only": 0.808,
    "balacc_review_as_accept": 0.71,
@@ -92,21 +1470,26 @@
    "share_decided_deterministically": 0.4
   }
  },
+ "leakage": {
+  "candidate_rule_list_and_signs": "tools/phys/rules.json is the Q1 rule table; its candidate rules, features and signs were chosen by the author with all 150 IndEgo labels visible, so the gold LOCO AUROC is an OPTIMISTIC in-domain estimate (see the Q1 report). Fold thresholds are nested.",
+  "in_sample_deployment_table": "the shipped rules.json is derived from all 7 clips and its in-sample AUROC (0.8239) is not a held-out number",
+  "significance": "paired group-bootstrap CIs on the differences are reported below; treat differences whose CI contains 0 as not established"
+ },
  "ood160": {
   "determinism_cost_auroc": 0.1388,
   "fallback_buys_balacc": 0.0778,
   "hybrid_rules_plus_fallback": {
    "accept_share": 0.0813,
    "auroc_ci95": [
-    0.2751,
-    0.5564
+    0.2804,
+    0.5544
    ],
    "auroc_fallback_prob_only": 0.566,
    "auroc_hybrid_score": 0.4264,
    "balacc": 0.4681,
    "balacc_ci95": [
-    0.3809,
-    0.5427
+    0.3841,
+    0.5439
    ],
    "fallback_flips_to_accept": 13,
    "fallback_flips_to_reject": 44,
@@ -121,17 +1504,1479 @@
   "n_bad": 22,
   "n_factories": 47,
   "n_good": 138,
+  "paired_factory_bootstrap": {
+   "auroc_rules_minus_ensemble": {
+    "ci95": [
+     -0.3659,
+     0.0634
+    ],
+    "delta": -0.1388,
+    "n_boot": 2000
+   },
+   "balacc_hybrid_minus_pure_review_as_accept": {
+    "ci95": [
+     -0.0569,
+     0.2427
+    ],
+    "delta": 0.0777,
+    "n_boot": 2000
+   },
+   "note": "paired factory-grouped bootstrap, 2,000 shared resamples, seed 0; AUROC delta = rules - ensemble (both higher=bad), BA delta = hybrid - pure(review-as-accept)"
+  },
+  "per_window_scores": [
+   {
+    "decision": "REVIEW",
+    "factory": "factory_001",
+    "hybrid_decision": "ACCEPT",
+    "id": "q000_s_a558ea238cac",
+    "score": 6,
+    "usable_prob": 0.6818,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "q001_s_822aea16dbaf",
+    "score": 4,
+    "usable_prob": 0.4685,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "q002_s_009623b09fa7",
+    "score": 4,
+    "usable_prob": 0.424,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_010",
+    "hybrid_decision": "REJECT",
+    "id": "q003_s_86dc2a624dc6",
+    "score": 4,
+    "usable_prob": 0.3745,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_013",
+    "hybrid_decision": "REJECT",
+    "id": "q004_s_f534db15e873",
+    "score": 4,
+    "usable_prob": 0.362,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_014",
+    "hybrid_decision": "REJECT",
+    "id": "q005_s_1f058ff76496",
+    "score": 4,
+    "usable_prob": 0.9398,
+    "y": 0
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_016",
+    "hybrid_decision": "REJECT",
+    "id": "q006_s_e8b7ea33e4f6",
+    "score": 11,
+    "usable_prob": 0.35,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_019",
+    "hybrid_decision": "REJECT",
+    "id": "q007_s_a85158d0f3b7",
+    "score": 4,
+    "usable_prob": 0.9009,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_020",
+    "hybrid_decision": "REJECT",
+    "id": "q008_s_52c046b21322",
+    "score": 8,
+    "usable_prob": 0.23,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_021",
+    "hybrid_decision": "REJECT",
+    "id": "q009_s_39733e21ffbf",
+    "score": 5,
+    "usable_prob": 0.2733,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_022",
+    "hybrid_decision": "REJECT",
+    "id": "q010_s_0d6da1b626c8",
+    "score": 4,
+    "usable_prob": 0.7691,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_023",
+    "hybrid_decision": "REJECT",
+    "id": "q011_s_048cec11a8fd",
+    "score": 2,
+    "usable_prob": 0.4425,
+    "y": 0
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_024",
+    "hybrid_decision": "ACCEPT",
+    "id": "q012_s_4915864f2e16",
+    "score": 5,
+    "usable_prob": 0.7811,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_026",
+    "hybrid_decision": "REJECT",
+    "id": "q013_s_aba3dd5e872f",
+    "score": 4,
+    "usable_prob": 0.35,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_028",
+    "hybrid_decision": "REJECT",
+    "id": "q014_s_5a620a9e8223",
+    "score": 6,
+    "usable_prob": 0.3227,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_029",
+    "hybrid_decision": "REJECT",
+    "id": "q015_s_8794095f235c",
+    "score": 8,
+    "usable_prob": 0.3528,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_033",
+    "hybrid_decision": "REJECT",
+    "id": "q016_s_2fb6da454aeb",
+    "score": 8,
+    "usable_prob": 0.9069,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_035",
+    "hybrid_decision": "REJECT",
+    "id": "q017_s_348f54487c38",
+    "score": 2,
+    "usable_prob": 0.3584,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_036",
+    "hybrid_decision": "REJECT",
+    "id": "q018_s_0915b3f573b7",
+    "score": 6,
+    "usable_prob": 0.4096,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_037",
+    "hybrid_decision": "REJECT",
+    "id": "q019_s_35c124048082",
+    "score": 6,
+    "usable_prob": 0.9331,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_038",
+    "hybrid_decision": "REJECT",
+    "id": "q020_s_7787ab1e1ebc",
+    "score": 4,
+    "usable_prob": 0.7807,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_039",
+    "hybrid_decision": "REJECT",
+    "id": "q021_s_ec1c0dfee234",
+    "score": 3,
+    "usable_prob": 0.413,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_040",
+    "hybrid_decision": "REJECT",
+    "id": "q022_s_de54d8ed082e",
+    "score": 5,
+    "usable_prob": 0.6755,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_041",
+    "hybrid_decision": "ACCEPT",
+    "id": "q023_s_43c511da5f99",
+    "score": 9,
+    "usable_prob": 0.7553,
+    "y": 0
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_042",
+    "hybrid_decision": "REJECT",
+    "id": "q024_s_1f5e156cb521",
+    "score": 5,
+    "usable_prob": 0.4151,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_044",
+    "hybrid_decision": "REJECT",
+    "id": "q025_s_0d56e088331b",
+    "score": 5,
+    "usable_prob": 0.3687,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_046",
+    "hybrid_decision": "ACCEPT",
+    "id": "q026_s_1a26944a211e",
+    "score": 3,
+    "usable_prob": 0.8237,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_051",
+    "hybrid_decision": "REJECT",
+    "id": "q027_s_8ad313acfc5d",
+    "score": 4,
+    "usable_prob": 0.6529,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_053",
+    "hybrid_decision": "REJECT",
+    "id": "q028_s_645225e10dd6",
+    "score": 7,
+    "usable_prob": 0.3442,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_054",
+    "hybrid_decision": "REJECT",
+    "id": "q029_s_2c5a0dc9526a",
+    "score": 10,
+    "usable_prob": 0.3537,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_056",
+    "hybrid_decision": "REJECT",
+    "id": "q030_s_995e555ad42c",
+    "score": 5,
+    "usable_prob": 0.4222,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_057",
+    "hybrid_decision": "REJECT",
+    "id": "q031_s_356f97f7b0cb",
+    "score": 2,
+    "usable_prob": 0.2216,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_058",
+    "hybrid_decision": "REJECT",
+    "id": "q032_s_390d3a881a83",
+    "score": 1,
+    "usable_prob": 0.3398,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_060",
+    "hybrid_decision": "REJECT",
+    "id": "q033_s_cd12c28514db",
+    "score": 4,
+    "usable_prob": 0.3348,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_061",
+    "hybrid_decision": "REJECT",
+    "id": "q034_s_9f68944b2d57",
+    "score": 6,
+    "usable_prob": 0.4306,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_062",
+    "hybrid_decision": "REJECT",
+    "id": "q035_s_4c91ae5c30a8",
+    "score": 7,
+    "usable_prob": 0.3944,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_066",
+    "hybrid_decision": "REJECT",
+    "id": "q036_s_3c13ccbfbaef",
+    "score": 2,
+    "usable_prob": 0.4426,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_068",
+    "hybrid_decision": "REJECT",
+    "id": "q037_s_78f45fb35cef",
+    "score": 5,
+    "usable_prob": 0.4591,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_069",
+    "hybrid_decision": "ACCEPT",
+    "id": "q038_s_aeed2a166e35",
+    "score": 4,
+    "usable_prob": 0.865,
+    "y": 0
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_070",
+    "hybrid_decision": "REJECT",
+    "id": "q039_s_041ca61bbb85",
+    "score": 4,
+    "usable_prob": 0.3337,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_073",
+    "hybrid_decision": "REJECT",
+    "id": "q040_s_932a44d77f37",
+    "score": 7,
+    "usable_prob": 0.3068,
+    "y": 0
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_076",
+    "hybrid_decision": "REJECT",
+    "id": "q041_s_67113a8ebd04",
+    "score": 6,
+    "usable_prob": 0.329,
+    "y": 0
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_077",
+    "hybrid_decision": "REJECT",
+    "id": "q042_s_d228b7265bb4",
+    "score": 5,
+    "usable_prob": 0.3211,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_079",
+    "hybrid_decision": "REJECT",
+    "id": "q043_s_b266142c6511",
+    "score": 4,
+    "usable_prob": 0.3983,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_080",
+    "hybrid_decision": "REJECT",
+    "id": "q044_s_2749e2d1c769",
+    "score": 3,
+    "usable_prob": 0.4509,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_084",
+    "hybrid_decision": "REJECT",
+    "id": "q045_s_4b2ed87630cf",
+    "score": 13,
+    "usable_prob": 0.3891,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_085",
+    "hybrid_decision": "REJECT",
+    "id": "q046_s_329c246e78f3",
+    "score": 11,
+    "usable_prob": 0.3019,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_001",
+    "hybrid_decision": "REJECT",
+    "id": "q047_s_9f55cc02f28e",
+    "score": 4,
+    "usable_prob": 0.4491,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "q048_s_266b4df041d8",
+    "score": 5,
+    "usable_prob": 0.424,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "q049_s_8906fabce2ee",
+    "score": 5,
+    "usable_prob": 0.2634,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_010",
+    "hybrid_decision": "REJECT",
+    "id": "q050_s_046e5f4a3b2d",
+    "score": 4,
+    "usable_prob": 0.3699,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_013",
+    "hybrid_decision": "REJECT",
+    "id": "q051_s_f0e3f6abde5c",
+    "score": 4,
+    "usable_prob": 0.4159,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_014",
+    "hybrid_decision": "ACCEPT",
+    "id": "q052_s_19c3652de7e0",
+    "score": 6,
+    "usable_prob": 0.8647,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_016",
+    "hybrid_decision": "REJECT",
+    "id": "q053_s_3d56d59af728",
+    "score": 12,
+    "usable_prob": 0.3713,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_019",
+    "hybrid_decision": "ACCEPT",
+    "id": "q054_s_879c9e0d0dd5",
+    "score": 3,
+    "usable_prob": 0.9211,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_020",
+    "hybrid_decision": "REJECT",
+    "id": "q055_s_7c95895b5180",
+    "score": 11,
+    "usable_prob": 0.2351,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_021",
+    "hybrid_decision": "REJECT",
+    "id": "q056_s_18046a07308a",
+    "score": 5,
+    "usable_prob": 0.354,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_022",
+    "hybrid_decision": "REJECT",
+    "id": "q057_s_ebb845b1e4e3",
+    "score": 5,
+    "usable_prob": 0.8436,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_023",
+    "hybrid_decision": "REJECT",
+    "id": "q058_s_6f5c3773acf9",
+    "score": 3,
+    "usable_prob": 0.3609,
+    "y": 0
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_024",
+    "hybrid_decision": "ACCEPT",
+    "id": "q059_s_35815736920e",
+    "score": 3,
+    "usable_prob": 0.935,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r000_53a83eb4b7f1",
+    "score": 21,
+    "usable_prob": 0.7388,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_061",
+    "hybrid_decision": "REJECT",
+    "id": "r001_99dd19c7c6eb",
+    "score": 22,
+    "usable_prob": 0.4286,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_061",
+    "hybrid_decision": "REJECT",
+    "id": "r002_723638f6282c",
+    "score": 20,
+    "usable_prob": 0.3714,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "r003_98e16bbfb9d2",
+    "score": 19,
+    "usable_prob": 0.4923,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "r004_e94354798331",
+    "score": 21,
+    "usable_prob": 0.8707,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_069",
+    "hybrid_decision": "REJECT",
+    "id": "r005_368ceae20bcc",
+    "score": 22,
+    "usable_prob": 0.2476,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_084",
+    "hybrid_decision": "REJECT",
+    "id": "r006_6db1f41d78a6",
+    "score": 31,
+    "usable_prob": 0.3945,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_024",
+    "hybrid_decision": "REJECT",
+    "id": "r007_6f16b156f13e",
+    "score": 23,
+    "usable_prob": 0.9266,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_029",
+    "hybrid_decision": "REJECT",
+    "id": "r008_02f6e2d14eeb",
+    "score": 19,
+    "usable_prob": 0.3288,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_077",
+    "hybrid_decision": "REJECT",
+    "id": "r009_1b45cd4c304f",
+    "score": 19,
+    "usable_prob": 0.3624,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_061",
+    "hybrid_decision": "REJECT",
+    "id": "r010_1c9a85bb1d5e",
+    "score": 24,
+    "usable_prob": 0.9281,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r011_79829a545ce0",
+    "score": 21,
+    "usable_prob": 0.601,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_085",
+    "hybrid_decision": "REJECT",
+    "id": "r012_6b4b48c25c26",
+    "score": 20,
+    "usable_prob": 0.7606,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_061",
+    "hybrid_decision": "REJECT",
+    "id": "r013_47b593f6887e",
+    "score": 20,
+    "usable_prob": 0.6793,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r014_4364be38ce08",
+    "score": 14,
+    "usable_prob": 0.9283,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r015_fac41c5b9a63",
+    "score": 20,
+    "usable_prob": 0.8606,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_069",
+    "hybrid_decision": "ACCEPT",
+    "id": "r016_f807d41f3e5d",
+    "score": 4,
+    "usable_prob": 0.8394,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_037",
+    "hybrid_decision": "REJECT",
+    "id": "r017_03915f1164f8",
+    "score": 18,
+    "usable_prob": 0.9257,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_039",
+    "hybrid_decision": "REJECT",
+    "id": "r018_dfbe86bff923",
+    "score": 4,
+    "usable_prob": 0.3966,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "r019_53c94542d028",
+    "score": 22,
+    "usable_prob": 0.5787,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_024",
+    "hybrid_decision": "REJECT",
+    "id": "r020_10db36458056",
+    "score": 22,
+    "usable_prob": 0.9285,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_001",
+    "hybrid_decision": "REJECT",
+    "id": "r021_3e5089786db1",
+    "score": 3,
+    "usable_prob": 0.4097,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_040",
+    "hybrid_decision": "REJECT",
+    "id": "r022_f1570b6279cf",
+    "score": 8,
+    "usable_prob": 0.9123,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_057",
+    "hybrid_decision": "ACCEPT",
+    "id": "r023_4b4b4ed1a0e2",
+    "score": 5,
+    "usable_prob": 0.7045,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_042",
+    "hybrid_decision": "REJECT",
+    "id": "r024_e21faa5dadf4",
+    "score": 5,
+    "usable_prob": 0.4056,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r025_84efec641e36",
+    "score": 23,
+    "usable_prob": 0.449,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_061",
+    "hybrid_decision": "REJECT",
+    "id": "r026_148872daccca",
+    "score": 22,
+    "usable_prob": 0.3474,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_028",
+    "hybrid_decision": "REJECT",
+    "id": "r027_13c96d8a4d10",
+    "score": 15,
+    "usable_prob": 0.8041,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_056",
+    "hybrid_decision": "ACCEPT",
+    "id": "r028_35d5b1c8f28d",
+    "score": 10,
+    "usable_prob": 0.5872,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_036",
+    "hybrid_decision": "REJECT",
+    "id": "r029_bf9be9bba179",
+    "score": 31,
+    "usable_prob": 0.2707,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_040",
+    "hybrid_decision": "REJECT",
+    "id": "r030_e5b5bc1cfd47",
+    "score": 8,
+    "usable_prob": 0.8887,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_062",
+    "hybrid_decision": "REJECT",
+    "id": "r031_811af7fe4ded",
+    "score": 4,
+    "usable_prob": 0.4061,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_001",
+    "hybrid_decision": "REJECT",
+    "id": "r032_59774e22b6e0",
+    "score": 17,
+    "usable_prob": 0.4949,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_040",
+    "hybrid_decision": "REJECT",
+    "id": "r033_16ef18b96846",
+    "score": 12,
+    "usable_prob": 0.9082,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_068",
+    "hybrid_decision": "REJECT",
+    "id": "r034_e85d63e5b456",
+    "score": 3,
+    "usable_prob": 0.4711,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_020",
+    "hybrid_decision": "REJECT",
+    "id": "r035_f28a10e90b74",
+    "score": 23,
+    "usable_prob": 0.2564,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_040",
+    "hybrid_decision": "REJECT",
+    "id": "r036_31ac0501dc0f",
+    "score": 10,
+    "usable_prob": 0.8999,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_001",
+    "hybrid_decision": "REJECT",
+    "id": "r037_d61f3c72f928",
+    "score": 11,
+    "usable_prob": 0.3658,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_069",
+    "hybrid_decision": "ACCEPT",
+    "id": "r038_b7ca36a9c264",
+    "score": 8,
+    "usable_prob": 0.8554,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "r039_b0812e0095a1",
+    "score": 27,
+    "usable_prob": 0.2672,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_076",
+    "hybrid_decision": "REJECT",
+    "id": "r040_32c42216af3d",
+    "score": 15,
+    "usable_prob": 0.5371,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_013",
+    "hybrid_decision": "REJECT",
+    "id": "r041_54978417aaa7",
+    "score": 19,
+    "usable_prob": 0.7981,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_016",
+    "hybrid_decision": "REJECT",
+    "id": "r042_7c945354292e",
+    "score": 26,
+    "usable_prob": 0.6278,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_057",
+    "hybrid_decision": "REJECT",
+    "id": "r043_1829a06e5e31",
+    "score": 4,
+    "usable_prob": 0.491,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_077",
+    "hybrid_decision": "REJECT",
+    "id": "r044_b2c07f712e09",
+    "score": 19,
+    "usable_prob": 0.3193,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_020",
+    "hybrid_decision": "REJECT",
+    "id": "r045_8b0c4b8d8849",
+    "score": 22,
+    "usable_prob": 0.3588,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_061",
+    "hybrid_decision": "REJECT",
+    "id": "r046_348f259bfd88",
+    "score": 15,
+    "usable_prob": 0.8912,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_046",
+    "hybrid_decision": "REJECT",
+    "id": "r047_30cebe78beda",
+    "score": 10,
+    "usable_prob": 0.464,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_037",
+    "hybrid_decision": "REJECT",
+    "id": "r048_c4e85ab6b82a",
+    "score": 20,
+    "usable_prob": 0.8744,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_020",
+    "hybrid_decision": "REJECT",
+    "id": "r049_a53e4c2cf10d",
+    "score": 28,
+    "usable_prob": 0.175,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_022",
+    "hybrid_decision": "REJECT",
+    "id": "r050_1bde66997568",
+    "score": 8,
+    "usable_prob": 0.7597,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_053",
+    "hybrid_decision": "REJECT",
+    "id": "r051_ea57136540c8",
+    "score": 21,
+    "usable_prob": 0.3375,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r052_d59c4853a37d",
+    "score": 17,
+    "usable_prob": 0.8402,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r053_4cf8c915e6ab",
+    "score": 20,
+    "usable_prob": 0.6028,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_066",
+    "hybrid_decision": "REJECT",
+    "id": "r054_99a5fa118087",
+    "score": 2,
+    "usable_prob": 0.4473,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_041",
+    "hybrid_decision": "REJECT",
+    "id": "r055_a9064b83d885",
+    "score": 18,
+    "usable_prob": 0.7448,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_039",
+    "hybrid_decision": "REJECT",
+    "id": "r056_f53d8c6f5535",
+    "score": 3,
+    "usable_prob": 0.3757,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_040",
+    "hybrid_decision": "REJECT",
+    "id": "r057_63507fe6bfb0",
+    "score": 18,
+    "usable_prob": 0.5497,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_042",
+    "hybrid_decision": "REJECT",
+    "id": "r058_272475b0679e",
+    "score": 6,
+    "usable_prob": 0.4287,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_061",
+    "hybrid_decision": "REJECT",
+    "id": "r059_4c45d8733b73",
+    "score": 21,
+    "usable_prob": 0.9206,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_040",
+    "hybrid_decision": "REJECT",
+    "id": "r060_054d1660dfa9",
+    "score": 20,
+    "usable_prob": 0.6891,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_077",
+    "hybrid_decision": "REJECT",
+    "id": "r061_d4eb1af4c3ca",
+    "score": 3,
+    "usable_prob": 0.3178,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "r062_46bd9c2db0af",
+    "score": 23,
+    "usable_prob": 0.5144,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r063_95837794bfcc",
+    "score": 24,
+    "usable_prob": 0.5453,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_041",
+    "hybrid_decision": "REJECT",
+    "id": "r064_bf034be5a59c",
+    "score": 23,
+    "usable_prob": 0.7774,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r065_bb022611a1e1",
+    "score": 18,
+    "usable_prob": 0.8596,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_001",
+    "hybrid_decision": "REJECT",
+    "id": "r066_6826242dd954",
+    "score": 20,
+    "usable_prob": 0.2934,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "r067_f54453380763",
+    "score": 18,
+    "usable_prob": 0.9017,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "r068_98101f114eb0",
+    "score": 8,
+    "usable_prob": 0.9311,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_024",
+    "hybrid_decision": "REJECT",
+    "id": "r069_913d89e7f981",
+    "score": 11,
+    "usable_prob": 0.9544,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_079",
+    "hybrid_decision": "REJECT",
+    "id": "r070_2ab9743ff4d4",
+    "score": 6,
+    "usable_prob": 0.4356,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_069",
+    "hybrid_decision": "REJECT",
+    "id": "r071_d5b9af92b3d5",
+    "score": 25,
+    "usable_prob": 0.2805,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r072_cadb9073aba4",
+    "score": 24,
+    "usable_prob": 0.4169,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_061",
+    "hybrid_decision": "REJECT",
+    "id": "r073_b378876ebeb1",
+    "score": 23,
+    "usable_prob": 0.4981,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_040",
+    "hybrid_decision": "REJECT",
+    "id": "r074_044603c6a9cb",
+    "score": 19,
+    "usable_prob": 0.9113,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_014",
+    "hybrid_decision": "REJECT",
+    "id": "r075_a6b2458154f8",
+    "score": 22,
+    "usable_prob": 0.4976,
+    "y": 0
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_057",
+    "hybrid_decision": "ACCEPT",
+    "id": "r076_a4d44292e893",
+    "score": 3,
+    "usable_prob": 0.6371,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_033",
+    "hybrid_decision": "REJECT",
+    "id": "r077_53dd0e6e571d",
+    "score": 6,
+    "usable_prob": 0.7938,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_079",
+    "hybrid_decision": "REJECT",
+    "id": "r078_c2b5bf597386",
+    "score": 6,
+    "usable_prob": 0.4041,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_053",
+    "hybrid_decision": "REJECT",
+    "id": "r079_d95e07466a71",
+    "score": 10,
+    "usable_prob": 0.7923,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_001",
+    "hybrid_decision": "REJECT",
+    "id": "r080_69738f91a8c1",
+    "score": 7,
+    "usable_prob": 0.2196,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_016",
+    "hybrid_decision": "REJECT",
+    "id": "r081_e4cdf2dcbebf",
+    "score": 21,
+    "usable_prob": 0.3158,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_054",
+    "hybrid_decision": "REJECT",
+    "id": "r082_4d2aec302d5d",
+    "score": 18,
+    "usable_prob": 0.3805,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_073",
+    "hybrid_decision": "REJECT",
+    "id": "r083_0a75087f8ff6",
+    "score": 3,
+    "usable_prob": 0.4008,
+    "y": 0
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_040",
+    "hybrid_decision": "REJECT",
+    "id": "r084_d8e12252a317",
+    "score": 19,
+    "usable_prob": 0.9116,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_058",
+    "hybrid_decision": "REJECT",
+    "id": "r085_c48f7a7cb10b",
+    "score": 7,
+    "usable_prob": 0.3193,
+    "y": 1
+   },
+   {
+    "decision": "REVIEW",
+    "factory": "factory_079",
+    "hybrid_decision": "REJECT",
+    "id": "r086_8a0e2c7a9924",
+    "score": 6,
+    "usable_prob": 0.4092,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_040",
+    "hybrid_decision": "REJECT",
+    "id": "r087_b8c86b9255a4",
+    "score": 19,
+    "usable_prob": 0.8809,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_019",
+    "hybrid_decision": "REJECT",
+    "id": "r088_9f29b648b84a",
+    "score": 20,
+    "usable_prob": 0.8984,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_022",
+    "hybrid_decision": "REJECT",
+    "id": "r089_e7c6c632c20c",
+    "score": 16,
+    "usable_prob": 0.7939,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_010",
+    "hybrid_decision": "REJECT",
+    "id": "r090_0468480b5981",
+    "score": 20,
+    "usable_prob": 0.8263,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "r091_bb785530d41a",
+    "score": 12,
+    "usable_prob": 0.7564,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_020",
+    "hybrid_decision": "REJECT",
+    "id": "r092_da8b77382be6",
+    "score": 22,
+    "usable_prob": 0.2712,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_001",
+    "hybrid_decision": "REJECT",
+    "id": "r093_d0f6aa0b7be9",
+    "score": 18,
+    "usable_prob": 0.427,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_013",
+    "hybrid_decision": "REJECT",
+    "id": "r094_c4353547155f",
+    "score": 20,
+    "usable_prob": 0.564,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_003",
+    "hybrid_decision": "REJECT",
+    "id": "r095_09ba2d3356d9",
+    "score": 17,
+    "usable_prob": 0.8778,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_001",
+    "hybrid_decision": "REJECT",
+    "id": "r096_9ff7cead3b09",
+    "score": 16,
+    "usable_prob": 0.4612,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_001",
+    "hybrid_decision": "REJECT",
+    "id": "r097_e78c9b6d4472",
+    "score": 17,
+    "usable_prob": 0.6664,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_070",
+    "hybrid_decision": "REJECT",
+    "id": "r098_6e11588276a6",
+    "score": 20,
+    "usable_prob": 0.3325,
+    "y": 1
+   },
+   {
+    "decision": "REJECT",
+    "factory": "factory_009",
+    "hybrid_decision": "REJECT",
+    "id": "r099_3b37dd2fe5d0",
+    "score": 8,
+    "usable_prob": 0.8192,
+    "y": 1
+   }
+  ],
+  "per_window_scores_note": "one row per OOD window: id, factory, y, score, decision, usable_prob, hybrid_decision",
   "protocol": "frozen IndEgo rule table applied read-only; no OOD fitting. Factory-grouped bootstrap CI (n_boot=2000, seed=0) is the honest CI.",
   "pure_rules": {
    "accept_share": 0.0,
    "auroc_ci95": [
-    0.2687,
-    0.562
+    0.2754,
+    0.5606
    ],
    "auroc_deterministic_score": 0.4272,
    "balacc_ci95": [
-    0.2565,
-    0.5216
+    0.2579,
+    0.523
    ],
    "balacc_decided_only": 0.5,
    "balacc_review_as_accept": 0.3903,
@@ -143,7 +2988,7 @@
   }
  },
  "package": {
-  "code_sha256": "5627b1121e65bfe8a0421c7b0f58c05c56999779c702406288f8d93a1b0391d3",
+  "code_sha256": "1996c1450f7a3ff34efcac6fa1f720808a72ca44c9889e0fbb0b6844a30dcfbf",
   "n_rules": 16,
   "path": "tools/phys",
   "quantisation": 4,
@@ -151,5 +2996,5 @@
   "rules_json_sha256": "52355d724b58b6f375f36d45be85b60d3bc0d5c2e40a6b9b6b7c1241faff7a1d"
  },
  "title": "Deterministic physics model: runnable package + pure-vs-hybrid comparison",
- "wall_s": 16.34
+ "wall_s": 30.04
 }

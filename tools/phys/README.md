@@ -5,12 +5,14 @@ scorer** (Q1 rule table). Given a window it emits a canonical JSON receipt and o
 of three decisions — `ACCEPT`, `REJECT`, `REVIEW` — with the exact evidence that
 produced it.
 
-There are **no learned weights** and **no floating-point arithmetic on the
-decision path**: feature values and thresholds are converted to integers at
+There are **no learned weights**. The **rule decision path compares quantised
+integers only**: feature values and thresholds are converted to integers at
 `10**4` *before* any comparison, the score is an integer count, and the decision
-is a pure function of integers. The only float stage is feature extraction
-(decode + fixed kernels), identical to the kernels that produced the frozen
-thresholds.
+is a pure function of integers. The float stages are feature extraction
+(decode + fixed kernels, identical to the kernels that produced the frozen
+thresholds) and — only in the optional hybrid mode — the logistic fallback
+comparison `usable_prob >= 0.5`, which is recorded in the receipt's `fallback`
+block with the source sha256.
 
 ## Quick start
 
@@ -90,7 +92,10 @@ flat `{"full.luma_mean": ...}` dict, a `run_features`-style `{"full": {...},
 
 With `--fallback-prob` / `--fallback-json` the receipt additionally carries
 `decision_deterministic` (the pre-fallback verdict) and `fallback`
-(`{model, prob, rule, decision}`). The fallback only ever runs on `REVIEW`.
+(`{model, prob, rule, decision, source_sha256}`). The fallback only ever runs on
+`REVIEW`. `source_sha256` is the sha256 of the `--fallback-json` file (null when
+only `--fallback-prob` is given), so the hybrid decision is bound to a hashed
+source; the README and `docs/reports/exp_phys_ready.md` state that dependency.
 
 ## Decision logic (integer path)
 
@@ -148,7 +153,9 @@ receipt.
 
 ## Determinism guarantees
 
-* No randomness, no time, no threads in the decision path; no floats there either.
+* No randomness, no time, no threads in the rule decision path; the rule
+  comparisons are on integers only (the optional logistic fallback is one float
+  comparison, `usable_prob >= 0.5`, and is recorded with its source sha256).
 * `model.quantise` uses fixed half-up rounding for both signs.
 * Comparisons are strict (`<`, `>`), so a value exactly on a threshold never
   crosses it.
@@ -156,6 +163,22 @@ receipt.
   values are treated as non-crossing, except the `UNDECODABLE` tripwire.
 * The receipt is emitted with sorted keys and compact separators, so a given
   `(features, rules.json, model.py)` triple is byte-stable.
+
+## Provenance caveat (leakage)
+
+The candidate rule list, the feature choice and the directions in `rules.json`
+were selected by the author with all 150 IndEgo labels visible (see the Q1
+report). Only the fold thresholds and the reject operating point are nested, so
+the in-domain AUROC is an **optimistic** estimate. The shipped `rules.json` is
+derived from all 7 clips; its in-sample AUROC (0.8239) is **not** a held-out
+number. Do not quote either as a generalisation estimate.
+
+## Vendored kernels
+
+`vendor/` is a verbatim copy of the extraction kernels that also live under
+`jadal/` (and the pod stack). It is duplicated so the package is self-contained;
+if the originals change, `vendor/` can **drift**. Re-sync deliberately and re-run
+the tests after any kernel change.
 
 ## Scope / caveats
 

@@ -28,6 +28,8 @@ sys.path.insert(0, ROOT)
 from tools.phys import model  # noqa: E402
 
 BUNDLE = os.environ.get("JADAL_BUNDLE")
+if not BUNDLE:
+    raise SystemExit("JADAL_BUNDLE is required (path to the pod data bundle)")
 RES = os.path.join(ROOT, "eval", "results", "exp_phys")
 QUANTILES = (0.01, 0.05, 0.10, 0.25)
 Q = 4
@@ -169,10 +171,11 @@ def boot_auroc_ba(y, s, groups, pred_bad=None, n_boot=N_BOOT, seed=SEED):
     pred = None if pred_bad is None else np.asarray(pred_bad, bool)
     ug = sorted(set(groups.tolist()))
     idx_by = {g: np.where(groups == g)[0] for g in ug}
-    rng = np.random.RandomState(seed)
+    # same RNG as the Q1 evaluation (numpy default_rng, seed 0)
+    rng = np.random.default_rng(seed)
     a, b = [], []
     for _ in range(n_boot):
-        pick = rng.randint(0, len(ug), len(ug))
+        pick = rng.integers(0, len(ug), len(ug))
         idx = np.concatenate([idx_by[ug[p]] for p in pick])
         if len(set(y[idx].tolist())) < 2:
             continue
@@ -181,6 +184,47 @@ def boot_auroc_ba(y, s, groups, pred_bad=None, n_boot=N_BOOT, seed=SEED):
     ci = lambda v: [round(float(np.percentile(v, 2.5)), 4),
                     round(float(np.percentile(v, 97.5)), 4)] if v else [None, None]
     return {"auroc_ci95": ci(a), "balacc_ci95": ci(b)}
+
+
+def paired_boot_auroc(y, s_a, s_b, groups, n_boot=N_BOOT, seed=SEED):
+    """Paired group bootstrap on AUROC(a) - AUROC(b), shared resamples."""
+    from sklearn.metrics import roc_auc_score
+    y = np.asarray(y); s_a = np.asarray(s_a, float); s_b = np.asarray(s_b, float)
+    groups = np.asarray(groups)
+    ug = sorted(set(groups.tolist()))
+    idx_by = {g: np.where(groups == g)[0] for g in ug}
+    rng = np.random.default_rng(seed)
+    d = []
+    for _ in range(n_boot):
+        pick = rng.integers(0, len(ug), len(ug))
+        idx = np.concatenate([idx_by[ug[p]] for p in pick])
+        if len(set(y[idx].tolist())) < 2:
+            continue
+        d.append(roc_auc_score(1 - y[idx], s_a[idx]) - roc_auc_score(1 - y[idx], s_b[idx]))
+    if not d:
+        return {"delta": None, "ci95": [None, None], "n_boot": 0}
+    lo, hi = np.percentile(d, [2.5, 97.5])
+    return {"delta": round(float(auroc(y, s_a) - auroc(y, s_b)), 4),
+            "ci95": [round(float(lo), 4), round(float(hi), 4)], "n_boot": len(d)}
+
+
+def paired_boot_ba(y, pred_a, pred_b, groups, n_boot=N_BOOT, seed=SEED):
+    """Paired group bootstrap on balanced-accuracy(a) - balanced-accuracy(b)."""
+    y = np.asarray(y); pa = np.asarray(pred_a, bool); pb = np.asarray(pred_b, bool)
+    groups = np.asarray(groups)
+    ug = sorted(set(groups.tolist()))
+    idx_by = {g: np.where(groups == g)[0] for g in ug}
+    rng = np.random.default_rng(seed)
+    d = []
+    for _ in range(n_boot):
+        pick = rng.integers(0, len(ug), len(ug))
+        idx = np.concatenate([idx_by[ug[p]] for p in pick])
+        d.append(bal_acc(y[idx], pa[idx]) - bal_acc(y[idx], pb[idx]))
+    if not d:
+        return {"delta": None, "ci95": [None, None], "n_boot": 0}
+    lo, hi = np.percentile(d, [2.5, 97.5])
+    return {"delta": round(float(bal_acc(y, pa) - bal_acc(y, pb)), 4),
+            "ci95": [round(float(lo), 4), round(float(hi), 4)], "n_boot": len(d)}
 
 
 # ---------------------------------------------------------------- loaders
@@ -247,6 +291,32 @@ def main():
     o_ci = boot_auroc_ba(ood_y, o_scores, factory, pred_bad=o_rej)
     o_hyb_ci = boot_auroc_ba(ood_y, o_hyb_score, factory, pred_bad=o_hyb_rej)
 
+    # paired group bootstrap on the differences (shared resamples)
+    g_paired_auroc = paired_boot_auroc(y, scores, -prob, clips)   # rules - ensemble
+    g_paired_ba = paired_boot_ba(y, g_hyb_rej, g_rej, clips)      # hybrid - pure (review-as-accept)
+    o_paired_auroc = paired_boot_auroc(ood_y, o_scores, -ood_prob, factory)
+    o_paired_ba = paired_boot_ba(ood_y, o_hyb_rej, o_rej, factory)
+
+    # fallback source hashes (bind the hybrid decision to a hashed file)
+    gold_fallback_sha = model.sha256_file(
+        os.path.join(BUNDLE, "caches", "ensemble", "oof_probs.npz"))
+    ood_fallback_sha = {fn: model.sha256_file(
+        os.path.join(BUNDLE, "caches", "ensemble", fn))
+        for fn in ("ood_scores.json", "ood_scores2.json")}
+
+    gold_per_window = [
+        {"id": ids[i], "clip": str(clips[i]), "y": int(y[i]),
+         "score": int(scores[i]), "decision": str(decisions[i]),
+         "p_ens": round(float(prob[i]), 6),
+         "hybrid_decision": "REJECT" if bool(g_hyb_rej[i]) else "ACCEPT"}
+        for i in range(len(y))]
+    ood_per_window = [
+        {"id": ood_ids[i], "factory": str(factory[i]), "y": int(ood_y[i]),
+         "score": int(o_scores[i]), "decision": str(o_decisions[i]),
+         "usable_prob": round(float(ood_prob[i]), 6),
+         "hybrid_decision": "REJECT" if bool(o_hyb_rej[i]) else "ACCEPT"}
+        for i in range(len(ood_y))]
+
     out = {
         "experiment": "Q4.01",
         "title": "Deterministic physics model: runnable package + pure-vs-hybrid comparison",
@@ -261,7 +331,26 @@ def main():
         "fallback": {"model": "ensemble_v1 (frozen logistic, no refit)",
                      "rule": "REVIEW -> accept iff usable_prob >= 0.5",
                      "gold_score": "caches/ensemble/oof_probs.npz p_ens (out-of-fold)",
-                     "ood_score": "caches/ensemble/ood_scores{,2}.json usable_prob"},
+                     "gold_source_sha256": gold_fallback_sha,
+                     "ood_score": "caches/ensemble/ood_scores{,2}.json usable_prob",
+                     "ood_source_sha256": ood_fallback_sha,
+                     "note": ("the hybrid decision depends on an unhashed-in-code cache; "
+                              "these sha256 values bind the fallback source into the "
+                              "result and into each receipt's fallback.source_sha256")},
+        "leakage": {
+            "candidate_rule_list_and_signs": ("tools/phys/rules.json is the Q1 rule table; "
+                                              "its candidate rules, features and signs were "
+                                              "chosen by the author with all 150 IndEgo "
+                                              "labels visible, so the gold LOCO AUROC is an "
+                                              "OPTIMISTIC in-domain estimate (see the Q1 "
+                                              "report). Fold thresholds are nested."),
+            "in_sample_deployment_table": ("the shipped rules.json is derived from all 7 "
+                                           "clips and its in-sample AUROC (0.8239) is not a "
+                                           "held-out number"),
+            "significance": ("paired group-bootstrap CIs on the differences are reported "
+                             "below; treat differences whose CI contains 0 as not "
+                             "established"),
+        },
         "gold_loco": {
             "n": int(len(y)), "n_good": int((y == 1).sum()), "n_bad": int((y == 0).sum()),
             "n_clips": len(set(clips.tolist())),
@@ -270,7 +359,18 @@ def main():
             "logistic_oof_auroc": round(auroc_good(y, prob), 4),
             "determinism_cost_auroc": round(auroc_good(y, prob) - g_pure["auroc_deterministic_score"], 4),
             "fallback_buys_balacc": round(g_hyb["balacc"] - g_pure["balacc_review_as_accept"], 4),
+            "paired_clip_bootstrap": {
+                "auroc_rules_minus_ensemble": g_paired_auroc,
+                "balacc_hybrid_minus_pure_review_as_accept": g_paired_ba,
+                "note": ("paired clip-grouped bootstrap, 2,000 shared resamples, seed 0; "
+                         "AUROC delta = rules - ensemble (both higher=bad), BA delta = "
+                         "hybrid - pure(review-as-accept)"),
+            },
             "per_fold": per_fold,
+            "per_window_scores": gold_per_window,
+            "per_window_scores_note": ("one row per gold window: id, clip, y, score, "
+                                       "decision, p_ens, hybrid_decision; every metric "
+                                       "above is re-derivable from these rows"),
         },
         "ood160": {
             "n": int(len(ood_y)), "n_good": int((ood_y == 1).sum()),
@@ -283,6 +383,16 @@ def main():
             "logistic_oof_auroc": round(auroc_good(ood_y, ood_prob), 4),
             "determinism_cost_auroc": round(auroc_good(ood_y, ood_prob) - o_pure["auroc_deterministic_score"], 4),
             "fallback_buys_balacc": round(o_hyb["balacc"] - o_pure["balacc_review_as_accept"], 4),
+            "paired_factory_bootstrap": {
+                "auroc_rules_minus_ensemble": o_paired_auroc,
+                "balacc_hybrid_minus_pure_review_as_accept": o_paired_ba,
+                "note": ("paired factory-grouped bootstrap, 2,000 shared resamples, seed 0; "
+                         "AUROC delta = rules - ensemble (both higher=bad), BA delta = "
+                         "hybrid - pure(review-as-accept)"),
+            },
+            "per_window_scores": ood_per_window,
+            "per_window_scores_note": ("one row per OOD window: id, factory, y, score, "
+                                       "decision, usable_prob, hybrid_decision"),
         },
         "wall_s": round(time.perf_counter() - t0, 2),
     }

@@ -93,10 +93,14 @@ def main() -> int:
     rules = model.load_rules(args.rules)
 
     fb = args.fallback_prob
+    fb_sha = None
     if fb is None and args.fallback_json:
         fb = _load_fallback(args.fallback_json, wid)
+        if fb is not None:
+            fb_sha = model.sha256_file(args.fallback_json)
 
-    rec = model.receipt(wid, feats, rules, fallback_prob=fb)
+    rec = model.receipt(wid, feats, rules, fallback_prob=fb,
+                        fallback_sha256=fb_sha)
     if args.pretty:
         print(json.dumps(rec, indent=2, sort_keys=True))
     else:

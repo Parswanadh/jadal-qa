@@ -154,6 +154,18 @@ def test_fallback_resolves_review():
     assert rec3.get("fallback") is None
 
 
+def test_fallback_binds_source_sha256():
+    f = clean_features()
+    f["phys.flow_act"] = 0.70
+    h = "a" * 64
+    rec = model.receipt("g010", f, RULES, fallback_prob=0.9, fallback_sha256=h)
+    assert rec["fallback"]["source_sha256"] == h
+    # when no source file is given the key is still present (null), never absent
+    rec2 = model.receipt("g011", f, RULES, fallback_prob=0.9)
+    assert "source_sha256" in rec2["fallback"]
+    assert rec2["fallback"]["source_sha256"] is None
+
+
 def test_end_to_end_determinism():
     a = model.canonical_json(model.receipt("g005", clean_features(), RULES))
     b = model.canonical_json(model.receipt("g005", clean_features(), RULES))
