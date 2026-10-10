@@ -39,5 +39,5 @@ Five real bugs, from the round-0 reviews. Each is cited by review file and findi
 
 ## Limits
 
-- Reviewers ran on code, not on hardware or GPU. Pico firmware and the GPU determinism rules are not verified on device.
+- Reviewers ran on code, not on hardware or GPU. The GPU determinism rules are not verified on device. Pico firmware was run on a real RP2040 board (see `docs/reports/pico_hardware.md`), but LED output was not observed by the reviewers.
 - Reviews judge claims against the code and the tests. They do not replace a human check of the evaluation labels, and the labels were not human-checked.

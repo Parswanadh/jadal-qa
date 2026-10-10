@@ -66,10 +66,9 @@ passed.
 
 ## Known gaps / NOT DONE
 
-- **Firmware never run on a real Pico 2 from this repo** (no device in CI). Only
-  syntax-checked (`py_compile`) and logic-checked against stubbed
-  `machine`/`uselect`. Board-level behaviour (pin mapping, USB-CDC framing under
-  load, actual `mpremote` flash) is unverified.
+- **Firmware run on a real Raspberry Pi Pico (RP2040)**, MicroPython 1.29.0: heartbeat,
+  LED, FLASH and PING/PONG verified over USB serial. See `docs/reports/pico_hardware.md`.
+  Not verified: RP2350, USB-CDC framing under load, external RGB LED wiring.
 - **No measured sync accuracy.** `estimate_offset` is an NTP-style *estimate*
   whose uncertainty is bounded by half the measured round-trip
   (`sync_error_bound_ms`). We deliberately do not claim anything tighter than one
