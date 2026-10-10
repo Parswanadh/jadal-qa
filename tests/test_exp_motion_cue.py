@@ -137,3 +137,63 @@ def test_results_json_has_required_fields(monkeypatch):
             assert key in res, f"{fn.__name__} missing {key}"
         assert res["n"] == n
         json.dumps(res)                              # serialisable
+
+
+# --- pod: make bare module-level `test_*` functions visible to `unittest discover` ---
+# `unittest` collects only TestCase subclasses; the functions above were written pytest-style and were
+# therefore silently skipped by `python -m unittest discover -s tests`. This hook adapts them, including a
+# minimal `monkeypatch` shim (only `setattr` is used) so no test is silently dropped.
+class _PodMonkeyPatch:
+    _MISSING = object()
+
+    def __init__(self):
+        self._undo = []
+
+    def setattr(self, target, name=None, value=_MISSING, raising=True):
+        if isinstance(target, str):  # pytest-style "module.attr" form
+            import importlib
+
+            mod, _, attr = target.rpartition(".")
+            target, name, value = importlib.import_module(mod), attr, name
+        old = getattr(target, name, self._MISSING)
+        self._undo.append((target, name, old))
+        setattr(target, name, value)
+
+    def undo(self):
+        while self._undo:
+            target, name, old = self._undo.pop()
+            if old is self._MISSING:
+                try:
+                    delattr(target, name)
+                except AttributeError:
+                    pass
+            else:
+                setattr(target, name, old)
+
+
+def _pod_wrap_monkeypatch(fn):
+    def _test(self):
+        mp = _PodMonkeyPatch()
+        try:
+            fn(monkeypatch=mp)
+        finally:
+            mp.undo()
+
+    return _test
+
+
+def load_tests(loader, tests, pattern):  # noqa: D103
+    import inspect
+    import unittest as _u
+
+    class _ModuleTests(_u.TestCase):
+        pass
+
+    for _name, _fn in sorted(list(globals().items())):
+        if not (_name.startswith("test_") and callable(_fn)):
+            continue
+        if "monkeypatch" in inspect.signature(_fn).parameters:
+            setattr(_ModuleTests, _name, _pod_wrap_monkeypatch(_fn))
+        else:
+            setattr(_ModuleTests, _name, staticmethod(_fn))
+    return _u.TestSuite([loader.loadTestsFromTestCase(_ModuleTests)])
