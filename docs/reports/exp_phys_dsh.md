@@ -167,6 +167,33 @@ HANDS_NOT_VISIBLE 2 — a different mix from OOD-160, and again dominated by a m
 physics rules do not detect. With n_bad = 16 this is a wide, single point estimate;
 but it is the honest one-shot answer, and the answer is no.
 
+### 6.1 Post-hoc diagnostic (NOT a re-score): the hold-out is a *different encode*
+
+After the one-shot scoring (and without re-scoring, which the lock forbids), the sources
+were inspected. They are not the same domain as OOD-160:
+
+| set | container | resolution | codec | median `phys.frm_bytes_med` | median `full.hf_ratio` |
+|---|---|---|---|---|---|
+| IndEgo (training) | mp4_480 | 480p | H.264 | 5 130 | 0.01695 |
+| OOD-160 | label_windows{,_2} | 854×480 | H.264 | 7 833 | 0.02793 |
+| hold-out 108 | `clips/` | **1920×1080** | **HEVC** | **16 060** | **0.03317** |
+
+The hold-out is 1080p HEVC; IndEgo and OOD-160 are both 480p H.264. The CODING_NOISE
+rule reads `phys.frm_bytes_med` / `phys.p_size_med` / `phys.snr_db` with IndEgo p99
+thresholds of ~10 000 bytes — the hold-out's *median* is 16 060, so every hold-out window
+crosses every CODING_NOISE threshold. That is a systematic, resolution-and-bitrate-driven
+offset, not a content signal, and it inflates the integer score for good and bad windows
+alike (which is exactly what "AUROC ≈ 0.5 with a low reject rate at a high `t_reject`"
+looks like).
+
+**This is reported as an explanation, not as a licence to re-tune.** The hold-out was
+scored once with the frozen table and that result stands. The actionable, pre-registered
+conclusion for any future work is a robustness rule, not a threshold change:
+*compression-telemetry rules (`CODING_NOISE`) are resolution/bitrate-dependent by
+construction and must be excluded, or re-normalised per target encode, whenever the
+target's encode differs from the training encode.* OOD-160 alone would not have revealed
+this, because its encode happens to match IndEgo's 480p H.264.
+
 ## 7. Review ↔ error frontier and per-rule value (A4, commit `250eb63`)
 
 A4 reproduced the Q1 operating point exactly (decided 0.400, REVIEW 0.600,
