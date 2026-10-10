@@ -9,25 +9,30 @@ Guarantees enforced here:
     integer ``round(value * 10**4)`` using ``decimal`` ROUND_HALF_EVEN, so the
     *decision path contains no floating-point comparisons at all*.
   * canonical JSON: sorted keys, compact separators, UTF-8, ``ensure_ascii=False``.
-  * receipts carry no time/random/device fields; only the six schema fields
+  * receipts carry no time/random/device fields; only the schema fields
     plus the ``q`` scale.
   * ``rule_table_sha256`` and ``code_sha256`` pin the rule constants and the
     scorer source into every receipt.
+  * **fail closed on missing features**: a required feature that is absent /
+    non-finite is recorded in ``missing_features`` and the window is rejected
+    with ``reject:missing_feature`` (it can never silently pass).
 
 Receipt body (hashed)::
 
-    {window_id, decision, evidence:[{rule,feature,value,op,threshold}],
-     feature_digest, rule_table_sha256, code_sha256, q}
+    {window_id, decision, evidence:[{rule,feature,value,op,threshold,missing}],
+     missing_features, feature_digest, rule_table_sha256, code_sha256, q}
 
 ``receipt_sha256`` is the SHA-256 of the canonical JSON of that body and is the
-only envelope field, so it is reproducible byte-for-byte on any CPU.
+only envelope field, so it is reproducible byte-for-byte across runs on the same
+machine (verified on one x86_64 CPU). This is a same-machine guarantee, not a
+cross-machine one.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import os
-from decimal import ROUND_HALF_EVEN, Decimal
+from decimal import ROUND_HALF_EVEN, Decimal, InvalidOperation
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 Q = 4
@@ -85,7 +90,7 @@ def quantise(value) -> int:
     else:
         try:
             d = Decimal(str(value))
-        except Exception:
+        except (InvalidOperation, ValueError, TypeError):
             return MISSING
     if not d.is_finite():
         return MISSING
@@ -117,12 +122,15 @@ def score_window(window: dict, rule_table: dict, *,
     """
     features = window.get("features") or {}
     evidence: list[dict] = []
+    missing: list[str] = []
     hit_rule: str | None = None
     for r in rule_table["rules"]:
         feature = r["feature"]
         value_int = quantise(features.get(feature))
         thr_int = int(r["thr_int"])
-        if value_int == MISSING:
+        is_missing = value_int == MISSING
+        if is_missing:
+            missing.append(feature)
             hit = False
         elif r["op"] == "<":
             hit = value_int < thr_int
@@ -134,10 +142,18 @@ def score_window(window: dict, rule_table: dict, *,
             "value": value_int,
             "op": r["op"],
             "threshold": thr_int,
+            "missing": is_missing,
         })
         if hit and hit_rule is None:
             hit_rule = r["name"]
-    decision = ("reject:" + hit_rule) if hit_rule else "pass"
+    # Fail closed: a missing/non-finite required feature rejects the window.
+    # It must never silently fall through to "pass".
+    if missing:
+        decision = "reject:missing_feature"
+    elif hit_rule:
+        decision = "reject:" + hit_rule
+    else:
+        decision = "pass"
 
     feat_q = {r["feature"]: quantise(features.get(r["feature"]))
               for r in rule_table["rules"]}
@@ -147,6 +163,7 @@ def score_window(window: dict, rule_table: dict, *,
         "window_id": str(window["window_id"]),
         "decision": decision,
         "evidence": evidence,
+        "missing_features": sorted(set(missing)),
         "feature_digest": feature_digest,
         "rule_table_sha256": rule_table_sha256(rule_table),
         "code_sha256": code_hash if code_hash is not None else code_sha256(),

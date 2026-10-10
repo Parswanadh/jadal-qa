@@ -14,7 +14,9 @@ from jadal.perpixel import physics as P  # noqa: E402
 from jadal.perpixel import series as S  # noqa: E402
 from jadal.perpixel import theory as T  # noqa: E402
 
-B = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+B = os.environ.get("JADAL_BUNDLE")
+if not B:
+    raise SystemExit("JADAL_BUNDLE is required (path to the pod data bundle)")
 LABELS = os.path.join(B, "labels", "ood160_labels.json")
 N = int(sys.argv[1]) if len(sys.argv) > 1 else 30
 OUT = sys.argv[2] if len(sys.argv) > 2 else "/tmp/opencode/ood_feats.json"

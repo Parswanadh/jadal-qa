@@ -1,14 +1,16 @@
 """Build the frozen, committed input set for the Q3 determinism proof.
 
 Sources (all read-only, real data):
-  gold (150 windows): /workspace/jadal_pod_bundle/caches/perpixel/
+  gold (150 windows): ``$JADAL_BUNDLE/caches/perpixel/``
       - physics_feats.npz  -> hist_ent, ten_norm
       - theory_feats.npz   -> blur_norm (from the per-window float block)
       - gold.npz           -> y (human label), clips (LOCO group)
-  ood  (30 windows):   /tmp/opencode/ood_feats.json, produced ONCE by
-      eval/exp_phys/extract_ood_feats.py on branch b/ood-main
+  ood  (30 windows):   ``$JADAL_OOD_FEATS`` (default /tmp/opencode/ood_feats.json),
+      produced ONCE by eval/exp_phys/extract_ood_feats.py on branch b/ood-main
       (jadal.perpixel.{series,physics,theory}) over the local
       Egocentric-10K label_windows mp4s in the pod bundle.
+
+``JADAL_BUNDLE`` must be set in the environment (no hardcoded default).
 
 Output: eval/exp_phys/input_windows.json  (features only; no frames, no video).
 
@@ -25,9 +27,11 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
-B = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+B = os.environ.get("JADAL_BUNDLE")
+if not B:
+    raise SystemExit("JADAL_BUNDLE is required (path to the pod data bundle)")
 CACHE = os.path.join(B, "caches", "perpixel")
-OOD_FEATS = "/tmp/opencode/ood_feats.json"
+OOD_FEATS = os.environ.get("JADAL_OOD_FEATS", "/tmp/opencode/ood_feats.json")
 OUT = os.path.join(HERE, "input_windows.json")
 
 FEATURES = ("hist_ent", "ten_norm", "blur_norm")

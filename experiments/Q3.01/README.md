@@ -8,14 +8,14 @@
 
 **Data regime:** in-domain gold + out-of-domain (Egocentric-10K, 47 factories); rule table frozen from configs/perpixel_v1.json
 
-**Method:** Q=4 fixed-point integer comparisons (decimal ROUND_HALF_EVEN); canonical JSON (sorted keys, compact); receipt = sha256(canonical_json(body)); 10 runs + 3 PYTHONHASHSEED subprocesses
+**Method:** Q=4 fixed-point integer comparisons (decimal ROUND_HALF_EVEN); canonical JSON (sorted keys, compact); receipt = sha256(canonical_json(body)); 10 fresh-process runs (one interpreter per run, PYTHONHASHSEED 0/1/42 cycling); negative control (perturbed feature/threshold must change the receipt); fail-closed on missing features
 
 **Owner:** Q3  **Started:** 2026-10-10 18:52
 
 ## Results
 (pending — `exp.py finish` fills the registry; put figures/JSON in this folder)
 
-**Verdict (2026-10-10 18:52): adopt.** PASS: all 180 windows (150 gold + 30 OOD) produce byte-identical receipt SHA-256 across 10 runs; no dict-order/time/random/GPU dependence; cross-process determinism holds under PYTHONHASHSEED 0/1/42. rule_table_sha256=cf3ab757... code_sha256=b96818f2...
+**Verdict (2026-10-10 18:52): adopt.** PASS: all 180 windows (150 gold + 30 OOD) produce byte-identical receipt SHA-256 and bytes across 10 fresh-process runs (same machine); no dict-order/time/random/GPU dependence; PYTHONHASHSEED 0/1/42 determinism holds; negative control changes the receipt; missing features fail closed. rule_table_sha256=cf3ab757... code_sha256=02486b4f...
 
 Results file: eval/results/exp_phys/Q3.01.json
 
