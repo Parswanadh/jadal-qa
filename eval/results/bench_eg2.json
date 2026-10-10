@@ -55,7 +55,7 @@
   "go_nogo_140": "GO",
   "go_nogo_threshold_s_per_frame": 1.0,
   "median_s_per_frame_at_140": 0.0623,
-  "model_dir": "/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "model_dir": "/home/parshu/projects/awing/data/eg2",
   "notes": "Real-frame image-only embeddings; bfloat16; batch size 1; per-call processing_kwargs image.max_soft_tokens sets the vision budget.",
   "per_budget": [
     {

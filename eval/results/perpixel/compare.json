@@ -1,0 +1,63 @@
+{
+ "protocol": "nested leave-one-clip-out, 7 IndEgo clips, 150 windows",
+ "quality_stage": {
+  "rules": [
+   "lowent",
+   "blur",
+   "ten"
+  ],
+  "sens": 0.714,
+  "frr_good": 0.13,
+  "bal_acc": 0.792
+ },
+ "activity": {
+  "conv1d": {
+   "auroc": 0.7824324324324324,
+   "ci": [
+    0.6272716463085072,
+    0.8598277471908303
+   ],
+   "seeds": [
+    0.7762162162162162,
+    0.7921621621621621,
+    0.7651351351351351
+   ],
+   "params": "~1k",
+   "explains": "no",
+   "frozen": true
+  },
+  "hgb_m1": {
+   "auroc": 0.7578378378378379,
+   "ci": [
+    0.5731272294887039,
+    0.8739398814833693
+   ],
+   "frozen": false
+  },
+  "lr_m1": {
+   "auroc": 0.6727027027027028,
+   "ci": [
+    0.5501089324618736,
+    0.8233124357957465
+   ],
+   "frozen": false
+  },
+  "lr_physics": {
+   "auroc": 0.7154054054054054,
+   "ci": [
+    0.5725524475524475,
+    0.8104341708557344
+   ],
+   "frozen": false
+  },
+  "lr_all": {
+   "auroc": 0.7018918918918918,
+   "frozen": false
+  }
+ },
+ "rule_list_full_7rule": {
+  "bal_acc": 0.47,
+  "auroc": 0.5894999999999999,
+  "status": "REJECTED as decider (GOOD kept 0.0); kept as evidence only"
+ }
+}
