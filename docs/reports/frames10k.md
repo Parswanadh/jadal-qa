@@ -54,9 +54,8 @@ thread caps and survived. Label skew persists: work=yes 0.917, hands>=1 0.964.)
 
 Matryoshka truncation 768->128 loses ~0.01-0.015 AUROC; balacc drops more
 (threshold not retuned — operating point, not ranking, degrades).
-Full-6k run in progress; 10k embedding 8/10 shards done (partial_8k staged
-locally); segment embedding + transfer queued for GPU (lock held by another
-worker's long job since ~16:20 IST; fair queue).
+10k embedding 8/10 shards done (partial_8k staged locally); segment embedding
++ transfer queued for GPU (lock held by another worker's long job; fair queue).
 ### (4) Cost — pending (meta.json at concat)
 
 ## Resource-ladder note (feeder bottleneck, orchestrator 16:43 IST)
