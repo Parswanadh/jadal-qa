@@ -496,7 +496,9 @@ REASONS.forEach((c, i) => { const o = document.createElement('option'); o.value 
 const vid = document.getElementById('vid');
 const speedSel = document.getElementById('speed');
 speedSel.value = localStorage.getItem('gold_speed') || '1';
-speedSel.onchange = () => { localStorage.setItem('gold_speed', speedSel.value); vid.playbackRate = parseFloat(speedSel.value); };
+function applySpeed() { const r = parseFloat(speedSel.value) || 1; vid.defaultPlaybackRate = r; vid.playbackRate = r; }
+speedSel.onchange = () => { localStorage.setItem('gold_speed', speedSel.value); applySpeed(); };
+['loadstart', 'loadedmetadata', 'canplay', 'playing'].forEach(ev => vid.addEventListener(ev, applySpeed));
 const defn = document.getElementById('defn');
 if (localStorage.getItem('gold_defn_seen')) { defn.open = false; } else { defn.open = true; }
 defn.addEventListener('toggle', () => { if (!defn.open) localStorage.setItem('gold_defn_seen', '1'); });
@@ -529,7 +531,7 @@ function render() {
   const lab = S.latest[seg.segment_id];
   document.getElementById('taskline').textContent = seg.task_line +
     '  \u00b7  ' + seg.clip + ' ' + seg.start_s + 's\u2013' + seg.end_s + 's';
-  vid.playbackRate = parseFloat(speedSel.value);
+  applySpeed();
   vid.src = '/video?seg=' + seg.segment_id;
   vid.play().catch(() => {});
   const grid = document.getElementById('grid'); grid.innerHTML = '';
