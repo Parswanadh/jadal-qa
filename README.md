@@ -2,6 +2,28 @@
 
 **QA for head-camera factory video that shows its evidence — including when it fails.**
 
+<!-- BRAG_VIDEO_URL: paste the GitHub user-attachments URL of brag.mp4 here -->
+
+![Launch video: QA that shows its work, including where it fails](docs/assets/brag_preview.gif)
+
+*Launch video (35 s).* Poster: [`docs/assets/brag_poster.jpg`](docs/assets/brag_poster.jpg).
+
+[![Jadal QA results explorer: funnel, scoreboard and experiment log](docs/assets/ui_hero.png)](site/)
+
+*Explorer: a static TypeScript app in [`site/`](site/); run it with [Run the explorer locally](#run-the-explorer-locally). Live site: once the repository is public and GitHub Pages is enabled (not enabled yet).*
+
+![Explorer tour: funnel stages, scoreboard, experiment log](docs/assets/ui_tour.gif)
+
+### Run the explorer locally
+
+```bash
+cd site
+npm ci --ignore-scripts
+npm run dev
+```
+
+Then open http://127.0.0.1:8874/. Tests: `npm test`; regenerate its baked data with `npm run data`.
+
 Crowd-captured head-camera video is the raw material for robot learning. Much of it is
 unusable: dark, blocked, frozen, duplicated, hands out of view, nothing happening.
 Jadal QA is a deterministic funnel that marks each 10-second window
@@ -57,7 +79,7 @@ clip/factory correlation, so they are optimistic.
 
 ## What a rejection looks like
 
-A real record from the 1,587-window PoC run (`poc_data/windows.jsonl`, produced by
+An excerpt of a real record from the 1,587-window PoC run (`poc_data/windows.jsonl`, produced by
 `scripts/poc_run.py`; the file is local and not in this repo). In that run S0 fired 0 times,
 so all 702 rejects are stage-S1 `S1_UNUSABLE`, whose evidence is the `s1_score` against
 the 0.6 threshold (not a per-feature explanation):
@@ -178,10 +200,7 @@ deterministic merge gate that runs the full suite on the merged tree
 (`jadal/config.py`, `jadal/__init__.py`, `docs/SPEC.md`, `docs/BASELINE.md`)
 are untouched by docs work.
 
-**Experiment log.** No `experiments/registry.jsonl` on this branch. The pod-bundle
-snapshot lists 138 experiment/component ids (E/L/B series); continue E-series ids
-and merge by id, append-only. See `docs/pod/SYNC_UPDATE_2026-10-10_2145.md:50`
-and `docs/process/decision-log.md`.
+**Experiment log.** The registry on `main` (`experiments/registry.jsonl`) has 75 experiments, latest line per id. An earlier snapshot in the pod bundle lists 138 experiment/component ids (E/L/B series); the two numbers are different sources and are not mixed. See `docs/pod/SYNC_UPDATE_2026-10-10_2145.md:50` and `docs/process/decision-log.md`.
 
 **Edge tier.** The edge path pulls numpy, cv2, scipy, pillow + ImageHash — and no
 torch, transformers, sklearn, fastapi, or CUDA (`docs/reports/edge.md`,
