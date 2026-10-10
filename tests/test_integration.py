@@ -541,11 +541,16 @@ class TestReceiptProblems(IntegrationCase):
 
     def test_live_stub_receipt_fails_and_live_real_block_passes(self) -> None:
         # End to end through run_batch on forced stubs: the demo's no-stub
-        # assertion must fire on a stub receipt.
+        # assertion must fire on a stub receipt. The stage modules are
+        # blocked so impl_versions reports the stub tags (in this worktree
+        # the real modules are importable, which alone would name them
+        # real even though stub callables produced the numbers).
         segs = pipeline.process_clip(self.fake_clip("stubfail.mp4"), "w", "s",
                                      self.cfg)
-        _, receipts = pipeline.run_batch(segs, self.cfg)
-        self.assertTrue(pipeline.receipt_problems(receipts[0]))
+        blocked = ("jadal.signals", "jadal.decision", "jadal.segmenter")
+        with stubs.blocked_imports(*blocked):
+            _, receipts = pipeline.run_batch(segs, self.cfg)
+            self.assertTrue(pipeline.receipt_problems(receipts[0]))
 
     def test_missing_versions_block_is_a_problem(self) -> None:
         self.assertTrue(pipeline.receipt_problems({}))
