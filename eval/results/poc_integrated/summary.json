@@ -82,8 +82,8 @@
  },
  "frozen_ensemble_path": "configs/frozen/ensemble_v1.prereg.json",
  "frozen_ensemble_sha256_verified": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
- "generated_utc": "2026-10-10T16:16:43Z",
- "git_sha": "7e5cbc271651ad3d2fbdb41b2123660cd5b89378",
+ "generated_utc": "2026-10-10T16:23:22Z",
+ "git_sha": "1bf89ee579444106f6ba0b37f1af7e470b02587e",
  "independent_verification": {
   "result": "REPRODUCED: fused 4 s AUROC 0.8736 at C_eg2=0.003 vs 0.8734 at the published C_eg2=0.01; paired clip-bootstrap delta -0.0002, CI [-0.0133, +0.0095]; C-insensitive (+/-0.0002)",
   "source": "LB4 independent verification, PR #98"

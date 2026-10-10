@@ -52,6 +52,21 @@ The 4 s prefix is not worse than the full window on the EG2 and fused views
 4 s point estimate is higher but that difference is **not established** at
 n = 150 / 7 clips.
 
+**Do not read 0.874 as an improvement over the published 0.848.** That 0.848 is
+a *full-window inner-OOF* number (the same table gives 0.8514 at C = 0.003), not
+a like-for-like 4 s-LOCO comparator. Independent verification (LB4, PR #98)
+**reproduced** this integration: fused 4 s AUROC 0.8736 at C_eg2 = 0.003 vs
+0.8734 at the published C_eg2 = 0.01, paired clip-bootstrap delta −0.0002,
+CI [−0.0133, +0.0095] — the result is **C-insensitive (±0.0002)** and the C
+choice is immaterial.
+
+The frozen constants were loaded from the byte-exact pre-registered file
+`configs/frozen/ensemble_v1.prereg.json`, verifying
+`sha256 = 4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31`
+on **every load** (`policy.load_frozen_ensemble` fails closed: hash mismatch or
+missing file raises; it never falls back to the path-remapped
+`configs/ensemble_v1.json`).
+
 ## Counts
 
 - Window verdicts over all 150 gold windows (4 s LOCO policy): **accept 108, reject 27, uncertain 15**.
