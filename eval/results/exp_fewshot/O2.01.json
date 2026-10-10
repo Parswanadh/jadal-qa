@@ -1,0 +1,61 @@
+{
+ "experiment": "O2.01 (updates E5.04)",
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "n_factories": 47,
+ "label_source": "human, single labeller (labels/ood160_labels.json; merge of ood_labels.json q1 60 + ood_labels2.json q2 100; n_bad=22 now, was 9)",
+ "protocol": "frozen ensemble_v1 usable_prob vs 160 human OOD labels; no tuning (scorer frozen, config canonical sha asserted by E5.04). CIs: FACTORY-GROUPED cluster bootstrap (primary) + window bootstrap (optimistic)",
+ "device": "CPU (frozen scores from the pod bundle; no GPU scoring)",
+ "cost": {
+  "n_windows": 160,
+  "new_gpu_scoring": 0
+ },
+ "ood_auroc": 0.5660408432147562,
+ "auroc_ci95_factory_grouped": [
+  0.4451111111111111,
+  0.673536557866847
+ ],
+ "auroc_group_boot_mean": 0.5651082807209356,
+ "auroc_ci95_window_bootstrap_optimistic": [
+  0.43741392878221524,
+  0.6939664482699552
+ ],
+ "balacc_at_0.5": 0.5464426877470355,
+ "balacc_ci95_factory_grouped": [
+  0.45967357910906304,
+  0.6348977506707432
+ ],
+ "acc_at_0.5": 0.48125,
+ "mean_prob_good": 0.5672992753623188,
+ "mean_prob_bad": 0.5134227272727273,
+ "p_eg2_auroc": 0.5890974967061924,
+ "p_pixel_auroc": 0.5202569169960474,
+ "per_batch_descriptive": {
+  "q1": {
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.4150326797385621,
+   "balacc": 0.47058823529411764
+  },
+  "q2": {
+   "n": 100,
+   "n_good": 87,
+   "n_bad": 13,
+   "auroc": 0.6569407603890361,
+   "balacc": 0.5893015030946065
+  }
+ },
+ "verdict": "drop",
+ "verdict_rule": "adopt: factory-grouped CI lower > 0.5 AND AUROC >= 0.60; maybe: grouped-CI lower > 0.5 (significant but weak); drop: grouped CI includes 0.5",
+ "prior_E5.04": {
+  "verdict": "inconclusive",
+  "n": 0,
+  "reason": "ood_labels2.json was not delivered; descriptive only"
+ },
+ "bundle_reference": "docs/ood_eval_ensemble_v1_160.txt (window-bootstrap 0.566 [0.433,0.693]); O2.01 recomputes with factory-grouped CI",
+ "bytes_sha_guard": "frozen config sha 4da1068a (recorded by scorer; E5.04 asserts canonical match)",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_fewshot/run_o2.py o2_01",
+ "git_sha": "f20013b"
+}
