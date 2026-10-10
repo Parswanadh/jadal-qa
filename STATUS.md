@@ -97,7 +97,7 @@ frozen swscale (Δp_pixel ≤ 0.048, n=6 control). Full file `/workspace/artifac
 | E6.01-04 | drop | the cue is essentially ego-motion magnitude (wearer not walking); residual motion after translation-only compensation adds nothing; frozen orientation does not transfer (0.281 [0.145,0.434]) | IndEgo + OOD |
 | E7.01 | adopt | best profile ≈ **15.2 video-hours per wall-hour** on the A40 (vs default 29.84x speed-up); **feature/embedding-bound**, decode only 16.7% of the total | measured |
 | E9.01 | adopt | standard eval harness: pixel26 0.8100 [0.6934,0.8872], eg2 0.8480 [0.7344,0.9087], n=150 human LOCO | IndEgo |
-| E8.01 | pending | re-scoring all 1,546 Egocentric-10K windows (descriptive) — running | 1080p/30 |
+| E8.01 | adopt (descriptive) | 1,546 Egocentric-10K windows re-scored: accept 296 (19.2%) / reject 83 (5.4%) / review 1,167 (75.5%); accept-share 95% CI [0.136,0.254] (58-clip bootstrap); profiles factory_1080p30 1,540 + default 6 (UNSEEN_REGIME); 5,761 ms/window. **Unlabelled — not a quality measure.** | 5,761 ms/window (p50 5,195, p95 9,371), A40 | 1080p/30 |
 
 ## Handover notes for the builder (read before merging)
 1. **Conflict cause is duplication, not disagreement.** `main` (as of `e320c58`, 21:49 IST) now contains the
@@ -119,6 +119,8 @@ frozen swscale (Δp_pixel ≤ 0.048, n=6 control). Full file `/workspace/artifac
    conflicting branches are clean and pushed; the conflict exists only at merge time.
 4. `labels/ood_labels2.json` never arrived, so every OOD claim in this wave is n=60 / n_bad=9 (exploratory).
    E5.04 and E8.01 are the two ids that change the moment those 100 human labels land.
+
+## Facts worth carrying into the docs
 - `nproc` prints 4 only because coreutils honours `OMP_NUM_THREADS=4` from `/workspace/env.sh`; the cgroup
   quota is ≈7.65 cores (`/sys/fs/cgroup/cpu.max` `765000 100000`), so 7-8 agents are within budget.
 - `sentence-transformers` 6.1.0 IS importable (torch 2.8.0+cu128, transformers 5.19.0, cv2 5.0.0); `imagehash`
