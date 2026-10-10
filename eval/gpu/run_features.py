@@ -1,7 +1,7 @@
 """Extract whole-window + streaming-prefix + S0-probe features for gold + synth.
 
 CPU-only (no GPU lock). Run:
-  python3 eval/gpu/run_features.py
+  /home/parshu/envs/jadal/bin/python eval/gpu/run_features.py
 Writes eval/results/gpu/features.json
 """
 import json
@@ -16,8 +16,8 @@ from eval.gpu.decode import decode_window  # noqa: E402
 from jadal.gpu.features import cpu_window_features  # noqa: E402
 
 SPEC = os.path.join(HERE, "..", "results", "gpu", "features.json")
-GOLD = "/workspace/jadal_pod_bundle/labels/manifest_gold.json"
-SYNTH = "/workspace/jadal_pod_bundle/labels/manifest_synth.json"
+GOLD = "/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"
+SYNTH = "/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_synth.json"
 
 W, H = 160, 90
 
