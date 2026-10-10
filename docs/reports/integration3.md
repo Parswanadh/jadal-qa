@@ -57,8 +57,14 @@ was measured.
 - Suite: `PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests`
   => `Ran 564 tests in 212.654s -- OK (skipped=3)` (no GPU, no network;
   slow wall time is shared-machine CPU contention; 37.8 s unloaded).
-  A fresh `git clone` + `git checkout feat/integration3` runs the same
-  suite (in progress at time of writing; result to be appended).
+- Fresh-clone quickstart (goal 5, PROVEN 17:00 IST): `git clone
+  https://github.com/Parswanadh/jadal-qa.git` + `git checkout
+  feat/integration3` outside the repo, then the README commands:
+  suite => `Ran 564 tests in 63.523s -- OK (skipped=9)` with NO models
+  present (9 skips vs 3: the model-gated tests skip cleanly, nothing
+  fails); `bash scripts/demo.sh` without models prints the per-file
+  MISSING list + fetch pointers and exits 1 (verified `demo exit=1`),
+  never stubs silently. models/ contents are git-ignored by design.
 - Real-pipeline processing (demo run 1, killed by the no-stub assertion
   on a key-spelling bug of mine, since fixed): 7 clips -> 115 segments
   -> 115 receipts through real segmenter + real L0 (mediapipe) + real
