@@ -8,7 +8,7 @@
   "mediapipe_version": "1.1.0",
   "opencv_version": "5.0.0"
  },
- "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+ "clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
  "seg_seconds": 20.0,
  "segments": [
   {
@@ -25,7 +25,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0000",
     "sha256": "47de46588a8edde332ff29b506ec56a56198e8e53b1117861ef73a53fac6a7cb",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 0.0,
     "worker_id": "indego"
    },
@@ -58,7 +58,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0001",
     "sha256": "52c31bf66391e951c4d8a8d054890fc42b0a360e09e9dd3e497f58bed937b974",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 20.0,
     "worker_id": "indego"
    },
@@ -91,7 +91,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0002",
     "sha256": "01a44383ac68a0c3dac5e1435bbcca6d03340a20b359e78c5a9d6869fd184481",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 40.0,
     "worker_id": "indego"
    },
@@ -124,7 +124,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0003",
     "sha256": "907e8b02a618d876d38729ffcd31a7ecf1583779035883014188236193f48396",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 60.0,
     "worker_id": "indego"
    },
@@ -157,7 +157,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0004",
     "sha256": "6e4de3ff03332d2de339248c853a5deb160149fb1beda7253b3039c6f34b562b",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 80.0,
     "worker_id": "indego"
    },
@@ -190,7 +190,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0005",
     "sha256": "189b0462a0eeab1d4b1a5506b70aded39d6042f918ee73c18636776e3ec12840",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 100.0,
     "worker_id": "indego"
    },
@@ -223,7 +223,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0006",
     "sha256": "937d0330c04c9ff870cf86f3d096d9545e35ba42161903acafa9327926976e30",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 120.0,
     "worker_id": "indego"
    },
@@ -256,7 +256,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0007",
     "sha256": "4853853179f23cbf93ca263241dd5cf20203674a40c829fcfb85109cb188ed52",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 140.0,
     "worker_id": "indego"
    },
@@ -289,7 +289,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0008",
     "sha256": "c1d485808b8d8781d9952fd987d8bd5674b3076f712b66672763568f9c550d79",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 160.0,
     "worker_id": "indego"
    },
@@ -322,7 +322,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0009",
     "sha256": "5aed2877e6f9a2e6a7fe7ad7057b5acdd1baa5e8b82da71a0de7a3980b889897",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 180.0,
     "worker_id": "indego"
    },
@@ -355,7 +355,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0010",
     "sha256": "1562a8eca8e0f99fd8c87667356380a19e34a8b59554c379d739350888fe55fb",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 200.0,
     "worker_id": "indego"
    },
@@ -388,7 +388,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0011",
     "sha256": "3ee867f639d14bcd4242bd3f9611ee5938c7e60e16bf3004b953b84056306e53",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 220.0,
     "worker_id": "indego"
    },
@@ -421,7 +421,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0012",
     "sha256": "403a51794799b5720b5368829cfa1d9be786c5a6a447a379c0d935c01eb3f90f",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 240.0,
     "worker_id": "indego"
    },
@@ -454,7 +454,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0013",
     "sha256": "4c1c8ec4a7f3231ce723bd61735a76d5f669f6ba7c2f37b7f3e71907e7a2ed20",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 260.0,
     "worker_id": "indego"
    },
@@ -487,7 +487,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0014",
     "sha256": "d660d3fe5bc83a7c88ab25907f4af9af847a18348a170fa24cf455d040077452",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 280.0,
     "worker_id": "indego"
    },
@@ -520,7 +520,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0015",
     "sha256": "267354c8056f6e5da0cc7e5a8fcf2f625c3f84606bc9b4f46e85a3274f705020",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 300.0,
     "worker_id": "indego"
    },
@@ -553,7 +553,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0016",
     "sha256": "ff1347b4f93bb60c7093bfa6cad18673f485953ba2e7960b4d514580024baa5e",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 320.0,
     "worker_id": "indego"
    },
@@ -586,7 +586,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0017",
     "sha256": "07fa92fdb59db38679ab69f9302af2e54e6a9ee71ea55b537909e968f6885a45",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 340.0,
     "worker_id": "indego"
    },
@@ -619,7 +619,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0018",
     "sha256": "be4f9e247f811b18fe120f55f14a0ed76872826a7f2e4114abec783e7b5c7c99",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 360.0,
     "worker_id": "indego"
    },
@@ -652,7 +652,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0019",
     "sha256": "2e83c482615d222126c7736e91b4398969ad8edfcaa7ccec34d5c9d32945ed79",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 380.0,
     "worker_id": "indego"
    },
@@ -685,7 +685,7 @@
     "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0020",
     "sha256": "4a707c7eacde79eac74ead6f3f7b9dc5ffec3a2f0ce56f60d044d2319caf7bdd",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
     "start_s": 400.0,
     "worker_id": "indego"
    },

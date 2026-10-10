@@ -66,3 +66,8 @@ selection-arm ranking is not established at this n.
   10, 5, 3.33, 2, 1 fps), so the endpoint span changes with fps.
 - E1.02 (EG2 fps): see `e1_02.json`. E1.03 (OOD) is partial and its shard
   outputs are not committed.
+- E1.02b (denser EG2 5/10 fps, GPU): see `e1_02b.json` and
+  `docs/reports/e1_02b_dense_eg2.md`. Verdict drop: 5 fps 0.8486 and 10 fps
+  0.8478 vs 2 fps 0.8480; every paired clip-bootstrap delta CI includes 0 and
+  the point estimates sit at the 0.0012 re-embedding noise floor, at 2.5x/5x the
+  embedding cost. No gain established (the CIs exclude only gains above ~+0.015).

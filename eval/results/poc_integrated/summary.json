@@ -1,0 +1,231 @@
+{
+ "claim": "none - descriptive policy integration on IndEgo gold; OOD rows are not an accuracy claim",
+ "clip_verdict_agreement": "5/7",
+ "clip_verdict_note": "descriptive only; E3.01/E3.05 quote 7/7 on label-oracle clip error, this is the model-based count",
+ "clip_verdicts": [
+  {
+   "clip": "ecu_full",
+   "clip_verdict": "accept",
+   "n_sampled": 24,
+   "n_windows": 48,
+   "sampled_bad_fraction": 0.0,
+   "truth_bad_fraction": 0.1042,
+   "truth_clip_verdict": "accept"
+  },
+  {
+   "clip": "ecu_late",
+   "clip_verdict": "accept",
+   "n_sampled": 7,
+   "n_windows": 14,
+   "sampled_bad_fraction": 0.0,
+   "truth_bad_fraction": 0.2857,
+   "truth_clip_verdict": "accept"
+  },
+  {
+   "clip": "desk",
+   "clip_verdict": "accept",
+   "n_sampled": 15,
+   "n_windows": 29,
+   "sampled_bad_fraction": 0.2,
+   "truth_bad_fraction": 0.4483,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "clip": "pallet2",
+   "clip_verdict": "accept",
+   "n_sampled": 3,
+   "n_windows": 6,
+   "sampled_bad_fraction": 0.0,
+   "truth_bad_fraction": 0.6667,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "clip": "pallet",
+   "clip_verdict": "reject",
+   "n_sampled": 9,
+   "n_windows": 17,
+   "sampled_bad_fraction": 0.6667,
+   "truth_bad_fraction": 0.6471,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "clip": "organise",
+   "clip_verdict": "reject",
+   "n_sampled": 10,
+   "n_windows": 19,
+   "sampled_bad_fraction": 0.3,
+   "truth_bad_fraction": 0.5263,
+   "truth_clip_verdict": "reject"
+  },
+  {
+   "clip": "logistics4",
+   "clip_verdict": "accept",
+   "n_sampled": 9,
+   "n_windows": 17,
+   "sampled_bad_fraction": 0.1111,
+   "truth_bad_fraction": 0.1765,
+   "truth_clip_verdict": "accept"
+  }
+ ],
+ "cost": {
+  "every_2_4s_speedup": 4.86,
+  "every_2_4s_total_frac": 0.2059,
+  "every_2_speedup": 1.94,
+  "source": "E3.04 (arithmetic on E3.01/E3.03 fractions; decode-bound upper bound)"
+ },
+ "descriptive_only": true,
+ "deterministic": true,
+ "device": "CPU only (torch.cuda not used; cached features)",
+ "framing": {
+  "c_sensitivity": "C-insensitive (+/-0.0002) per independent verification PR #98",
+  "do_not_read_as_improvement": "fused_4s AUROC is NOT comparable to the published 0.848: that is a full-window inner-OOF number (the same table gives 0.8514 at C=0.003), not a like-for-like 4 s-LOCO comparator"
+ },
+ "frozen_ensemble_path": "configs/frozen/ensemble_v1.prereg.json",
+ "frozen_ensemble_sha256_verified": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+ "generated_utc": "2026-10-10T16:23:22Z",
+ "git_sha": "1bf89ee579444106f6ba0b37f1af7e470b02587e",
+ "independent_verification": {
+  "result": "REPRODUCED: fused 4 s AUROC 0.8736 at C_eg2=0.003 vs 0.8734 at the published C_eg2=0.01; paired clip-bootstrap delta -0.0002, CI [-0.0133, +0.0095]; C-insensitive (+/-0.0002)",
+  "source": "LB4 independent verification, PR #98"
+ },
+ "label_source": "human gold (single labeller, 100 good / 50 bad), manifest_gold.json",
+ "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+ "limitations": [
+  "E3.05 status is 'working policy on IndEgo, not validated' (7 clips, sparse gold windows)",
+  "OOD 4 s prefix could not be scored: no cached features/embeddings for the 60 OOD windows",
+  "clip-bootstrap CIs assume clips are exchangeable; 7 clips only, pallet2 has 6 windows",
+  "balanced accuracy at 0.5 is descriptive; no certified error bounds at n=150"
+ ],
+ "metrics": {
+  "eg2_2fps_4s": {
+   "auroc": 0.8598,
+   "auroc_ci95": [
+    0.7145,
+    0.9444
+   ],
+   "balanced_accuracy_at_0.5": 0.74,
+   "bootstrap_reps_used": 2000,
+   "label_source": "human gold (single labeller), manifest_gold.json",
+   "n": 150,
+   "protocol": "LOCO over the 7 IndEgo clips (clip held out entirely; heads re-fitted on the other 6 clips at the observed prefix); clip-bootstrap 95% CI (2000 resamples, seed 7); frozen ensemble_v1 hyperparameters/fusion/thresholds; equal-weight probability average"
+  },
+  "eg2_2fps_full": {
+   "auroc": 0.8422,
+   "auroc_ci95": [
+    0.7109,
+    0.9126
+   ],
+   "balanced_accuracy_at_0.5": 0.73,
+   "bootstrap_reps_used": 2000,
+   "label_source": "human gold (single labeller), manifest_gold.json",
+   "n": 150,
+   "protocol": "LOCO over the 7 IndEgo clips (clip held out entirely; heads re-fitted on the other 6 clips at the observed prefix); clip-bootstrap 95% CI (2000 resamples, seed 7); frozen ensemble_v1 hyperparameters/fusion/thresholds; equal-weight probability average"
+  },
+  "fused_4s": {
+   "auroc": 0.8736,
+   "auroc_ci95": [
+    0.7415,
+    0.9417
+   ],
+   "balanced_accuracy_at_0.5": 0.74,
+   "bootstrap_reps_used": 2000,
+   "label_source": "human gold (single labeller), manifest_gold.json",
+   "n": 150,
+   "protocol": "LOCO over the 7 IndEgo clips (clip held out entirely; heads re-fitted on the other 6 clips at the observed prefix); clip-bootstrap 95% CI (2000 resamples, seed 7); frozen ensemble_v1 hyperparameters/fusion/thresholds; equal-weight probability average"
+  },
+  "fused_full": {
+   "auroc": 0.8488,
+   "auroc_ci95": [
+    0.7207,
+    0.9285
+   ],
+   "balanced_accuracy_at_0.5": 0.765,
+   "bootstrap_reps_used": 2000,
+   "label_source": "human gold (single labeller), manifest_gold.json",
+   "n": 150,
+   "protocol": "LOCO over the 7 IndEgo clips (clip held out entirely; heads re-fitted on the other 6 clips at the observed prefix); clip-bootstrap 95% CI (2000 resamples, seed 7); frozen ensemble_v1 hyperparameters/fusion/thresholds; equal-weight probability average"
+  },
+  "pixel26_4s": {
+   "auroc": 0.797,
+   "auroc_ci95": [
+    0.6576,
+    0.8604
+   ],
+   "balanced_accuracy_at_0.5": 0.725,
+   "bootstrap_reps_used": 2000,
+   "label_source": "human gold (single labeller), manifest_gold.json",
+   "n": 150,
+   "protocol": "LOCO over the 7 IndEgo clips (clip held out entirely; heads re-fitted on the other 6 clips at the observed prefix); clip-bootstrap 95% CI (2000 resamples, seed 7); frozen ensemble_v1 hyperparameters/fusion/thresholds; equal-weight probability average"
+  },
+  "pixel26_full": {
+   "auroc": 0.8036,
+   "auroc_ci95": [
+    0.6852,
+    0.8881
+   ],
+   "balanced_accuracy_at_0.5": 0.765,
+   "bootstrap_reps_used": 2000,
+   "label_source": "human gold (single labeller), manifest_gold.json",
+   "n": 150,
+   "protocol": "LOCO over the 7 IndEgo clips (clip held out entirely; heads re-fitted on the other 6 clips at the observed prefix); clip-bootstrap 95% CI (2000 resamples, seed 7); frozen ensemble_v1 hyperparameters/fusion/thresholds; equal-weight probability average"
+  }
+ },
+ "n": 150,
+ "n_sampled_windows": 77,
+ "ood_descriptive": {
+  "claim": "none - descriptive only; no OOD/accuracy claim",
+  "label_source": "human OOD labels, ood_labels.json (READ-ONLY)",
+  "n": 60,
+  "n_bad": 9,
+  "protocol": "frozen full-window ensemble scores read from caches/ensemble/ood_scores.json (no cached features/embeddings for these 60 windows in the pod bundle, so the adopted 4 s prefix policy could NOT be re-applied to them)",
+  "verdict_counts": {
+   "accept": 17,
+   "reject": 29,
+   "uncertain": 14
+  }
+ },
+ "policy": {
+  "accept_prob": 0.5,
+  "clip_bad_fraction_threshold": 0.3,
+  "cost": {
+   "every_2_4s_proc_hours_per_4_404h": 0.907,
+   "every_2_4s_speedup": 4.86,
+   "every_2_4s_total_frac": 0.2059,
+   "every_2_speedup": 1.94,
+   "window_seconds": 10.0
+  },
+  "descriptive_only": true,
+  "early_exit_s": 4.0,
+  "eg2_prefix_frames": 8,
+  "frozen_ensemble_path": "configs/frozen/ensemble_v1.prereg.json",
+  "frozen_ensemble_sha256": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+  "fusion": "equal_weight_probability_average",
+  "pixel_prefix_index": 1,
+  "provenance": {
+   "cost": "E3.04",
+   "early_exit": "E3.03",
+   "eg2_view": "E1.02",
+   "fusion_and_thresholds": "configs/frozen/ensemble_v1.prereg.json (sha256 4da1068a\u2026)",
+   "pixel_view": "E1.01",
+   "sampling_grid": "E3.01/E3.05"
+  },
+  "reject_prob": 0.4,
+  "sample_every_n_windows": 2,
+  "sample_offset": 0,
+  "status": "working policy on IndEgo, not validated",
+  "views": [
+   "pixel26",
+   "eg2_2fps"
+  ]
+ },
+ "policy_label": "every-2-window grid + 4s early exit + EG2-2fps + pixel26-logistic (frozen-v1)",
+ "protocol": "LOCO over the 7 IndEgo clips (clip held out entirely; heads re-fitted on the other 6 clips at the observed prefix); clip-bootstrap 95% CI (2000 resamples, seed 7); frozen ensemble_v1 hyperparameters/fusion/thresholds; equal-weight probability average",
+ "regenerate": "OMP_NUM_THREADS=2 python eval/poc_integrate/run_integration.py",
+ "sampled_fraction": 0.5133,
+ "verdict_counts": {
+  "accept": 108,
+  "reject": 27,
+  "uncertain": 15
+ },
+ "verdict_counts_note": "counts over all 150 gold windows under the 4 s LOCO policy; 'sampled' in the JSONL marks the every-2nd grid"
+}

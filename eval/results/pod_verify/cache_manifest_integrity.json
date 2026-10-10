@@ -1,0 +1,50 @@
+{
+ "verified_by": "lead-b (LB1)",
+ "check": "do the cached feature/score artifacts use the SAME 150 windows, in the same order, with the SAME human labels as labels/manifest_gold.json?",
+ "segments_npz": {
+  "n": 150,
+  "ids_in_manifest_order": true,
+  "labels_match": true,
+  "clips_match": true,
+  "label_disagreements": 0,
+  "F_shape": [
+   150,
+   21,
+   768
+  ],
+  "dtype": "float16",
+  "counts_sum": 3005,
+  "meaning": "EG2 2fps embeddings cover exactly the gold windows; frame counts mean ~20 frames/window"
+ },
+ "oof_probs_npz": {
+  "ids_in_manifest_order": true,
+  "keys": [
+   "ids",
+   "y",
+   "clip",
+   "reason",
+   "p_eg2",
+   "p_pixel",
+   "p_ens",
+   "p_platt",
+   "p_isotonic",
+   "verdict_5pct",
+   "verdict_10pct"
+  ]
+ },
+ "gold_manifest": {
+  "n": 150,
+  "n_good": 100,
+  "n_bad": 50,
+  "n_clips": 7,
+  "reasons": {
+   "NO_ACTIVE_WORK": 23,
+   "HANDS_NOT_VISIBLE": 14,
+   "DUPLICATE": 6,
+   "TOO_DARK": 6,
+   "UNDECODABLE": 1
+  }
+ },
+ "conclusion": "No label misalignment: the EG2/E1.02 and OOF-based numbers are measured against the gold labels they claim.",
+ "caveat": "labels/manifest_gold.json itself fails its recorded bundle checksum (see bundle_checksum_audit.json), so its bytes are not the frozen ones; the counts and reason mix do match FACTS.md exactly."
+}

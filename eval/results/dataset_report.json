@@ -1,5 +1,5 @@
 {
-  "data_dir": "/workspace/jadal_pod_bundle/data/ego10k_eval",
+  "data_dir": "/home/parshu/projects/awing/data/ego10k_eval",
   "distinct_frame_ids": 30000,
   "files": {
     "ego4d.parquet": {
