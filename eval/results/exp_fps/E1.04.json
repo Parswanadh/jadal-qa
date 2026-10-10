@@ -1,0 +1,141 @@
+{
+ "experiment": "E1.04",
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold manifest_gold.json)",
+ "protocol": "leave-one-clip-out over 7 clips, StandardScaler+LogisticRegression C=0.3 balanced; CI=clip-bootstrap B=1000 seed0",
+ "ci95": [
+  0.6504,
+  0.8657
+ ],
+ "ci95_note": "ci95 = uniform20 clip-bootstrap CI95 (the reference arm); per-arm CI95 in rows[]",
+ "budget": "20 frames/window (~2fps at 10fps native); uniform=arange(0,T,5); motion=top-19 mean|inter-frame diff| + frame0 anchor; random=seed0; keyframe=I-frame pts_time via ffprobe mapped to 10fps grid, padded with uniform when <20 I-frames; keyframe arm is INVALID (always padded to uniform) and its numbers are withheld",
+ "cost": {
+  "frames_per_window": 20,
+  "decode_ms_per_window": 568.8,
+  "decode_ms_per_frame": 5.688,
+  "feat_ms_per_window_by_arm": {
+   "uniform20": 219.9,
+   "motion20": 174.4,
+   "random20": 175.7,
+   "keyframe": 167.0
+  },
+  "note": "decode is the full 100-frame native window in every arm (selection happens after decode), so selection cannot reduce decode cost"
+ },
+ "decode_ms_mean": 568.8,
+ "decode_ms_per_frame": 5.688,
+ "device": "A40 (pod host); decode=CPU cv2 160x90, features=CPU float64",
+ "command": "OMP_NUM_THREADS=1 eval/exp_fps/run_fps.py --mode select --shard {0,1}/2 && python3 eval/exp_fps/merge_e1_04.py",
+ "git_sha": "7d7861d",
+ "rows": [
+  {
+   "strategy": "uniform20",
+   "frames": 20,
+   "auroc": 0.7866,
+   "ci95": [
+    0.6504,
+    0.8657
+   ],
+   "bal_acc": 0.725,
+   "n_frames_mean": 20.0,
+   "feat_ms_mean": 219.9,
+   "feat_ms_per_frame": 10.997,
+   "delta_vs_uniform20": 0.0
+  },
+  {
+   "strategy": "motion20",
+   "frames": 20,
+   "auroc": 0.762,
+   "ci95": [
+    0.6752,
+    0.8017
+   ],
+   "bal_acc": 0.675,
+   "n_frames_mean": 20.0,
+   "feat_ms_mean": 174.4,
+   "feat_ms_per_frame": 8.719,
+   "delta_vs_uniform20": -0.0246
+  },
+  {
+   "strategy": "random20",
+   "frames": 20,
+   "auroc": 0.7386,
+   "ci95": [
+    0.586,
+    0.8055
+   ],
+   "bal_acc": 0.685,
+   "n_frames_mean": 20.0,
+   "feat_ms_mean": 175.7,
+   "feat_ms_per_frame": 8.785,
+   "delta_vs_uniform20": -0.048
+  },
+  {
+   "strategy": "keyframe",
+   "frames": 20,
+   "n_frames_mean": 20.0,
+   "feat_ms_mean": 167.0,
+   "feat_ms_per_frame": 8.35,
+   "invalid": true,
+   "invalid_reason": "every window has fewer than the 20-frame budget of I-frames (mean 1.23 I-frames/window; 150/150 windows), so the arm is padded back to uniform and is not a keyframe selection; its AUROC/CI are withheld",
+   "withheld": {
+    "auroc": 0.7798,
+    "ci95": [
+     0.6622,
+     0.8352
+    ],
+    "bal_acc": 0.735,
+    "delta_vs_uniform20": -0.0068
+   }
+  }
+ ],
+ "overlap_vs_uniform20": {
+  "uniform20": {
+   "mean_jaccard_vs_uniform20": 1.0,
+   "mean_frames_shared": 20.0,
+   "n_windows_identical_to_uniform": 150
+  },
+  "motion20": {
+   "mean_jaccard_vs_uniform20": 0.1347,
+   "mean_frames_shared": 4.72,
+   "n_windows_identical_to_uniform": 0
+  },
+  "random20": {
+   "mean_jaccard_vs_uniform20": 0.0811,
+   "mean_frames_shared": 3.0,
+   "n_windows_identical_to_uniform": 0
+  },
+  "keyframe": {
+   "mean_jaccard_vs_uniform20": 0.9244,
+   "mean_frames_shared": 19.18,
+   "n_windows_identical_to_uniform": 63
+  }
+ },
+ "score_spearman_vs_uniform20": {
+  "uniform20": 1.0,
+  "motion20": 0.7328,
+  "random20": 0.8091,
+  "keyframe": 0.9052
+ },
+ "keyframe_info": {
+  "mean_iframes_in_window": 1.23,
+  "n_windows_iframes_lt_budget": 150,
+  "n_windows": 150
+ },
+ "invalid_arms": {
+  "keyframe": {
+   "reason": "every window has fewer than the 20-frame budget of I-frames (mean 1.23 I-frames/window; 150/150 windows), so the arm is padded back to uniform and is not a keyframe selection; its AUROC/CI are withheld",
+   "diagnostic": {
+    "mean_iframes_in_window": 1.23,
+    "n_windows_iframes_lt_budget": 150,
+    "n_windows": 150,
+    "overlap_vs_uniform20": {
+     "mean_jaccard_vs_uniform20": 0.9244,
+     "mean_frames_shared": 19.18,
+     "n_windows_identical_to_uniform": 63
+    }
+   }
+  }
+ }
+}

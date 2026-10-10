@@ -1,17 +1,39 @@
-"""E1 shared lib: deterministic decode-once + index-subsample + LOCO eval."""
+"""E1 shared lib: deterministic decode-once + index-subsample + LOCO eval.
+
+All data paths resolve from $JADAL_BUNDLE (no laptop paths).
+"""
 import json
 import os
+import subprocess
 import time
 
 import cv2
 import numpy as np
 
-# Root of the jadal-qa worktree that holds data/caches (manifest, GPU source,
-# labels). Override with the JADAL_WT_ROOT env var; the default is the
-# original workstation location.
-WT_ROOT = os.environ.get("JADAL_WT_ROOT", "/home/parshu/projects/jadal-qa-wt")
-MANIFEST = os.path.join(WT_ROOT, "spectral_data", "manifest_gold.json")
-GPU_SRC = os.path.join(WT_ROOT, "gpu-pipeline", "jadal", "gpu")
+# keep one process = one core (pod rule: <=75% of cores, no oversubscription)
+cv2.setNumThreads(int(os.environ.get("JADAL_CV_THREADS", "1")))
+
+BUNDLE = os.environ.get("JADAL_BUNDLE", "")
+MANIFEST = os.path.join(BUNDLE, "labels", "manifest_gold.json")
+QUEUE1 = os.path.join(BUNDLE, "queues", "label_queue_random.json")
+QUEUE2 = os.path.join(BUNDLE, "queues", "label_queue_random2.json")
+OOD_LABELS = os.path.join(BUNDLE, "labels", "ood_labels.json")
+OOD_LABELS2 = os.path.join(BUNDLE, "labels", "ood_labels2.json")
+SEGMENTS_NPZ = os.path.join(BUNDLE, "caches", "frames10k", "segments.npz")
+_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+GPU_SRC = os.path.join(_root, "jadal", "gpu")
+# merged + shard results land in the repo; override with $JADAL_FPS_RESULTS
+RESULTS = os.environ.get("JADAL_FPS_RESULTS",
+                        os.path.join(_root, "eval", "results", "exp_fps"))
+
+
+def git_sha():
+    try:
+        return subprocess.run(["git", "-C", _root, "rev-parse", "--short", "HEAD"],
+                              capture_output=True, text=True,
+                              timeout=10).stdout.strip() or "unknown"
+    except Exception:
+        return "unknown"
 
 W, H = 160, 90          # decode size (matches perpixel series_gold: every frame at 160x90)
 NATIVE_FPS = 10.0
@@ -19,21 +41,6 @@ WIN_S = 10.0
 
 # fps target -> (step, effective fps). Rule: idx = arange(0, T_native, step).
 FPS_STEPS = {10: 1, 5: 2, 3.33: 3, 2: 5, 1: 10}
-
-# The 18 features that do not depend on the frame-time step (spatial /
-# middle-or-endpoint only). The other 8 (temp_b0-b3, frozen_frac, flicker_idx,
-# motion_energy, rppg_pulse) depend on dt and are NOT comparable across fps.
-SPATIAL_FEATURES = [
-    "global_shift", "zncc_self", "radial_slope", "hf_ratio", "dct_energy",
-    "pca_resid", "pca_top1_share", "luma_mean", "luma_p05", "luma_p50",
-    "luma_p95", "dark_frac", "bright_frac", "illum_r", "illum_g", "illum_b",
-    "skin_frac", "dup_hash_mean",
-]
-
-# Subset of SPATIAL_FEATURES that are dt-independent but SPAN-dependent: they
-# compare endpoints or read the middle frame, so arms that select different
-# frames (motion20, random20 vs uniform20) are confounded for these three.
-SPAN_DEPENDENT_FEATURES = ["global_shift", "zncc_self", "dup_hash_mean"]
 
 
 def load_manifest():
@@ -120,3 +127,23 @@ def clip_bootstrap_ci(y, p, clips, B=1000, seed=0):
 def bal_acc(y, p, t=0.5):
     pr = (p > t).astype(int)
     return float(((pr[y == 1] == 1).mean() + (pr[y == 0] == 0).mean()) / 2)
+
+
+def jaccard(a, b):
+    """Jaccard overlap of two frame-index collections."""
+    A, B = set(int(x) for x in a), set(int(x) for x in b)
+    return len(A & B) / max(len(A | B), 1)
+
+
+def pareto_front(points):
+    """Indices of the non-dominated points (maximise acc, minimise cost).
+
+    points: list of (acc, cost). Returns sorted list of indices.
+    """
+    keep = []
+    for i, (ai, ci) in enumerate(points):
+        dominated = any((aj >= ai and cj <= ci) and (aj > ai or cj < ci)
+                        for j, (aj, cj) in enumerate(points) if j != i)
+        if not dominated:
+            keep.append(i)
+    return sorted(keep)

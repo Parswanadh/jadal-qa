@@ -6,7 +6,9 @@
  "label_source": "human (IndEgo gold)",
  "protocol": "LOCO, L2-normalised mean embedding + StandardScaler + logistic C=0.01; CI=clip-bootstrap B=1000 seed0",
  "subsample_rule": "cached 0.5s-spacing rows; 2fps=all rows counts-aware, 1fps=rows ::2, 0.5fps=rows ::4; NO re-embed",
- "command": "eval/exp_fps/run_eg2.py",
+ "command": "python3 eval/exp_fps/run_eg2.py",
+ "device": "A40 (pod host); CPU eval on cached embeddings",
+ "git_sha": "7d7861d",
  "eg2_rows": [
   {
    "fps": "2fps",
@@ -42,8 +44,6 @@
    "delta_vs_2fps": 0.0222
   }
  ],
- "claim_status": "descriptive only: no non-inferiority margin was pre-stated; CIs overlap across rows, so no fps setting is shown to be not worse than 2 fps",
- "two_view_protocol": "mean of EG2 LOCO probability and pixel-view LOCO probability (26 features, C=0.3) at matching fps: 2fps<-pixel 2fps (step 5), 1fps<-pixel 1fps (step 10); pixel sweep has no 0.5fps",
  "two_view_prob_avg": [
   {
    "fps": "2fps",
