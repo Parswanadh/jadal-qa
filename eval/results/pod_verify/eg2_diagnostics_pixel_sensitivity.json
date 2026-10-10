@@ -1,0 +1,39 @@
+{
+ "note": "identical pixels, uniform integer LSB perturbation before encode",
+ "unperturbed": {
+  "frame_cosine_min": 0.9787701368331909,
+  "frame_cosine_median": 0.9953346252441406,
+  "frame_cosine_p10": 0.9905111014842987,
+  "frame_cosine_max": 0.9980553388595581,
+  "window_cosine_min": 0.9990487098693848,
+  "window_cosine_median": 0.9996337294578552,
+  "window_cosine_max": 0.9997565746307373
+ },
+ "noise_pm1_lsb": {
+  "frame_cosine_min": 0.976132869720459,
+  "frame_cosine_median": 0.9948038458824158,
+  "frame_cosine_p10": 0.989189213514328,
+  "frame_cosine_max": 0.9974543452262878,
+  "window_cosine_min": 0.9989341497421265,
+  "window_cosine_median": 0.9995936751365662,
+  "window_cosine_max": 0.9997334480285645
+ },
+ "noise_pm2_lsb": {
+  "frame_cosine_min": 0.9738011360168457,
+  "frame_cosine_median": 0.9933490455150604,
+  "frame_cosine_p10": 0.9870513916015625,
+  "frame_cosine_max": 0.9968055486679077,
+  "window_cosine_min": 0.9981964826583862,
+  "window_cosine_median": 0.9994111061096191,
+  "window_cosine_max": 0.9996263384819031
+ },
+ "noise_pm4_lsb": {
+  "frame_cosine_min": 0.9433783292770386,
+  "frame_cosine_median": 0.9900614619255066,
+  "frame_cosine_p10": 0.9824789047241211,
+  "frame_cosine_max": 0.9959357976913452,
+  "window_cosine_min": 0.9961482882499695,
+  "window_cosine_median": 0.9986181855201721,
+  "window_cosine_max": 0.9992923736572266
+ }
+}

@@ -1,0 +1,67 @@
+{
+ "sizes": {
+  "cpu_thumb": [
+   480,
+   480
+  ],
+  "gpu_preproc": [
+   512,
+   512
+  ]
+ },
+ "variants": {
+  "A_cpu_thumbs_bs32": {
+   "window_cosine_min": 0.999048113822937,
+   "window_cosine_median": 0.9996336102485657,
+   "window_cosine_max": 0.9997565150260925,
+   "window_max_abs_diff_max": 0.005093125626444817,
+   "frame_cosine_min": 0.9789103865623474,
+   "frame_cosine_median": 0.9959848821163177,
+   "frame_cosine_max": 1.0044969320297241
+  },
+  "B_cpu_thumbs_bs8": {
+   "window_cosine_min": 0.9990514516830444,
+   "window_cosine_median": 0.9996307790279388,
+   "window_cosine_max": 0.9997549057006836,
+   "window_max_abs_diff_max": 0.005080319009721279,
+   "frame_cosine_min": 0.9804685115814209,
+   "frame_cosine_median": 0.9957044720649719,
+   "frame_cosine_max": 1.0042680501937866
+  },
+  "C_cpu_thumbs_bs32_shuffled": {
+   "window_cosine_min": 0.99904865026474,
+   "window_cosine_median": 0.9996336996555328,
+   "window_cosine_max": 0.9997565150260925,
+   "window_max_abs_diff_max": 0.005086475983262062,
+   "frame_cosine_min": 0.9812633991241455,
+   "frame_cosine_median": 0.9960189461708069,
+   "frame_cosine_max": 1.0044969320297241
+  },
+  "D_gpu_preproc_512_bs32": {
+   "window_cosine_min": 0.9434755444526672,
+   "window_cosine_median": 0.9686040878295898,
+   "window_cosine_max": 0.9961675405502319,
+   "window_max_abs_diff_max": 0.04780122637748718,
+   "frame_cosine_min": 0.8719340562820435,
+   "frame_cosine_median": 0.9406734704971313,
+   "frame_cosine_max": 0.9921413660049438
+  }
+ },
+ "cross_variant_frame_cosine": {
+  "A_cpu_thumbs_bs32_vs_B_cpu_thumbs_bs8": {
+   "min": 0.9966602921485901,
+   "median": 1.000929832458496,
+   "max": 1.007577896118164
+  },
+  "A_cpu_thumbs_bs32_vs_C_cpu_thumbs_bs32_shuffled": {
+   "min": 0.996131181716919,
+   "median": 1.0015625953674316,
+   "max": 1.008123755455017
+  },
+  "A_cpu_thumbs_bs32_vs_D_gpu_preproc_512_bs32": {
+   "min": 0.8740136027336121,
+   "median": 0.9392879009246826,
+   "max": 0.9957756400108337
+  }
+ }
+}
