@@ -1,0 +1,227 @@
+{
+  "rows": [
+    {
+      "sigma": 2.0,
+      "trial": 0,
+      "true_status": "fresh",
+      "true_z": 5.5199,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.3879,
+      "wrong_bits": 19
+    },
+    {
+      "sigma": 2.0,
+      "trial": 1,
+      "true_status": "fresh",
+      "true_z": 5.6582,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 2.9822,
+      "wrong_bits": 24
+    },
+    {
+      "sigma": 2.0,
+      "trial": 2,
+      "true_status": "fresh",
+      "true_z": 5.632,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 2.3056,
+      "wrong_bits": 22
+    },
+    {
+      "sigma": 2.0,
+      "trial": 3,
+      "true_status": "fresh",
+      "true_z": 5.6662,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.7116,
+      "wrong_bits": 21
+    },
+    {
+      "sigma": 2.0,
+      "trial": 4,
+      "true_status": "fresh",
+      "true_z": 5.7192,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.7712,
+      "wrong_bits": 21
+    },
+    {
+      "sigma": 5.0,
+      "trial": 0,
+      "true_status": "fresh",
+      "true_z": 5.5199,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.388,
+      "wrong_bits": 19
+    },
+    {
+      "sigma": 5.0,
+      "trial": 1,
+      "true_status": "fresh",
+      "true_z": 5.6583,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 2.9826,
+      "wrong_bits": 24
+    },
+    {
+      "sigma": 5.0,
+      "trial": 2,
+      "true_status": "fresh",
+      "true_z": 5.632,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 2.3064,
+      "wrong_bits": 22
+    },
+    {
+      "sigma": 5.0,
+      "trial": 3,
+      "true_status": "fresh",
+      "true_z": 5.6664,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.7127,
+      "wrong_bits": 21
+    },
+    {
+      "sigma": 5.0,
+      "trial": 4,
+      "true_status": "fresh",
+      "true_z": 5.7193,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.772,
+      "wrong_bits": 21
+    },
+    {
+      "sigma": 10.0,
+      "trial": 0,
+      "true_status": "fresh",
+      "true_z": 5.5199,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.3879,
+      "wrong_bits": 19
+    },
+    {
+      "sigma": 10.0,
+      "trial": 1,
+      "true_status": "fresh",
+      "true_z": 5.6583,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 2.983,
+      "wrong_bits": 24
+    },
+    {
+      "sigma": 10.0,
+      "trial": 2,
+      "true_status": "fresh",
+      "true_z": 5.632,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 2.3074,
+      "wrong_bits": 22
+    },
+    {
+      "sigma": 10.0,
+      "trial": 3,
+      "true_status": "fresh",
+      "true_z": 5.6665,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.7134,
+      "wrong_bits": 21
+    },
+    {
+      "sigma": 10.0,
+      "trial": 4,
+      "true_status": "fresh",
+      "true_z": 5.7194,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.7733,
+      "wrong_bits": 21
+    },
+    {
+      "sigma": 20.0,
+      "trial": 0,
+      "true_status": "fresh",
+      "true_z": 5.5198,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.3855,
+      "wrong_bits": 19
+    },
+    {
+      "sigma": 20.0,
+      "trial": 1,
+      "true_status": "fresh",
+      "true_z": 5.6585,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 2.9829,
+      "wrong_bits": 24
+    },
+    {
+      "sigma": 20.0,
+      "trial": 2,
+      "true_status": "fresh",
+      "true_z": 5.6319,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 2.309,
+      "wrong_bits": 22
+    },
+    {
+      "sigma": 20.0,
+      "trial": 3,
+      "true_status": "fresh",
+      "true_z": 5.6667,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.7148,
+      "wrong_bits": 21
+    },
+    {
+      "sigma": 20.0,
+      "trial": 4,
+      "true_status": "fresh",
+      "true_z": 5.7196,
+      "true_bits": 32,
+      "true_lag_ms": 1000.0,
+      "wrong_status": "stale",
+      "wrong_z": 1.7753,
+      "wrong_bits": 21
+    }
+  ],
+  "detection_rate": 1.0,
+  "replay_rejection_rate": 1.0,
+  "n": 20
+}
