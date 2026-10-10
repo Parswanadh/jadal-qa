@@ -1,0 +1,104 @@
+{
+ "experiment": "E5.01",
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "clips": [
+  "desk",
+  "ecu_full",
+  "ecu_late",
+  "logistics4",
+  "organise",
+  "pallet",
+  "pallet2"
+ ],
+ "label_source": "head trained on AI labels (10k FACTORY frames, NOT human); evaluated vs HUMAN IndEgo gold (single labeller)",
+ "caveat": "model-vs-model agreement on AI targets, NOT ground-truth accuracy",
+ "protocol": "LOCO over 7 IndEgo clips; clip-bootstrap CI (2000); frame heads C=1 fixed on 10k AI frames",
+ "device": "CPU (numpy/sklearn); GPU not used",
+ "cost": {
+  "n_ai_frames": 10000,
+  "n_indego_windows": 150,
+  "note": "reuses cached EG2 embeddings; no GPU encode"
+ },
+ "frame_level_cv_ai": {
+  "active_labor": {
+   "n": 10000,
+   "pos_frac": 0.9166,
+   "oof_auroc": 0.910729675042423,
+   "boot_mean": 0.9106011079640627,
+   "ci95": [
+    0.9005481242526988,
+    0.9204185067257471
+   ],
+   "label_source": "AI (gemini-2.5-flash prompt; NOT human)",
+   "protocol": "stratified 5-fold, C=1 fixed, StandardScaler+logistic"
+  },
+  "hands_ok": {
+   "n": 10000,
+   "pos_frac": 0.9642,
+   "oof_auroc": 0.9565457339224691,
+   "boot_mean": 0.9565019533833816,
+   "ci95": [
+    0.9476921345466588,
+    0.9647617460441813
+   ],
+   "label_source": "AI (gemini-2.5-flash prompt; NOT human)",
+   "protocol": "stratified 5-fold, C=1 fixed, StandardScaler+logistic"
+  }
+ },
+ "arms": {
+  "work_prob_mean": {
+   "kind": "pooled frame-probability mean (no fitting)",
+   "oof_auroc": 0.8130000000000001,
+   "clip_boot_mean": 0.8019912855892514,
+   "ci95": [
+    0.6948529411764706,
+    0.8643356643356643
+   ],
+   "balacc": 0.685,
+   "acc": 0.76
+  },
+  "hands_prob_mean": {
+   "kind": "pooled frame-probability mean (no fitting)",
+   "oof_auroc": 0.8184,
+   "clip_boot_mean": 0.8073728959397699,
+   "ci95": [
+    0.685133239831697,
+    0.8926630434782609
+   ],
+   "balacc": 0.56,
+   "acc": 0.7
+  },
+  "both_prob_mean": {
+   "kind": "pooled frame-probability mean (no fitting)",
+   "oof_auroc": 0.8258000000000001,
+   "clip_boot_mean": 0.8150860801358049,
+   "ci95": [
+    0.7169059011164274,
+    0.8813131313131314
+   ],
+   "balacc": 0.615,
+   "acc": 0.7266666666666667
+  },
+  "pooled_feats_logistic_loco": {
+   "kind": "LEAVE-ONE-CLIP-OUT logistic on 12 pooled frame-head feats",
+   "dim": 12,
+   "oof_auroc": 0.7886,
+   "clip_boot_mean": 0.778450145818177,
+   "ci95": [
+    0.6860795454545454,
+    0.8618804908326967
+   ],
+   "balacc": 0.735,
+   "acc": 0.7466666666666667
+  }
+ },
+ "baselines_cited": {
+  "EG2 window-embedding logistic": 0.85,
+  "26 per-pixel feats logistic": 0.81,
+  "source": "experiments/EXPERIMENTS.md / nested_loco.json"
+ },
+ "command": "OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py e5_01",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+}
