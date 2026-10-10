@@ -1,0 +1,17 @@
+{
+  "version": "funnel-v1-placeholder",
+  "sha256": "RECOMPUTED_ON_CALIBRATION",
+  "blur_var_min": 60.0,
+  "brightness_min": 40.0,
+  "under_exposed_frac_max": 0.35,
+  "over_exposed_frac_max": 0.35,
+  "motion_max": 12.0,
+  "motion_min": 0.5,
+  "hands_visible_frac_min": 0.5,
+  "min_duration_s": 5.0,
+  "accept_conf": 0.9,
+  "calibration": {
+    "status": "placeholder",
+    "note": "Values copied from jadal.config.DEFAULT; motion_min, under_exposed_frac_max, min_duration_s and accept_conf are uncalibrated placeholders. No bound is claimed."
+  }
+}
