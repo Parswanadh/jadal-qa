@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import platform
 from collections.abc import Mapping
 from dataclasses import is_dataclass
@@ -46,6 +47,29 @@ def canonical_json(obj) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
         "utf-8"
     )
+
+
+def _check_finite(value, path: str) -> None:
+    """Reject NaN/inf before anything is hashed.
+
+    A NaN would serialize as the non-standard JSON token ``NaN`` and poison
+    every downstream consumer, so it is a hard error naming the field path.
+    Booleans are not floats and pass through untouched.
+    """
+    if isinstance(value, bool):
+        return
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError(f"non-finite float at {path}: {value!r}")
+        return
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            _check_finite(item, f"{path}.{key}")
+        return
+    if isinstance(value, (list, tuple)):
+        for index, item in enumerate(value):
+            _check_finite(item, f"{path}[{index}]")
+        return
 
 
 def _round_floats(value, decimals: int):
@@ -125,6 +149,13 @@ def make_receipt(
         if not isinstance(payload, Mapping):
             raise ValueError(f"{name} must be a mapping")
     block, decimals = _config_block(config)
+    for name, payload in (
+        ("signals", signals),
+        ("decisions", decisions),
+        ("verdict", verdict),
+        ("config", block),
+    ):
+        _check_finite(payload, name)
     body = {
         "segment_sha256": segment["sha256"],
         "signals": _round_floats(signals, decimals),
@@ -174,7 +205,15 @@ def verify_receipt(receipt: Mapping, recompute_fn) -> dict:
     if not isinstance(recomputed, Mapping):
         raise ValueError("recompute_fn must return a receipt mapping")
     actual = receipt_hash(recomputed)
-    match = expected is not None and expected == actual
+    # receipt_id is excluded from the hash by design (SPEC), but a stored
+    # receipt whose id does not match the recomputed hash of its own body is
+    # internally inconsistent. The id is checked against `actual` (not the
+    # stored hash) so that tampering with receipt_sha256 alone does not also
+    # raise a spurious receipt_id diff.
+    id_inconsistent = (
+        "receipt_id" in receipt and receipt["receipt_id"] != actual[:16]
+    )
+    match = expected is not None and expected == actual and not id_inconsistent
     if match:
         return {"match": True, "expected": expected, "actual": actual, "diff": []}
     stripped_stored = {
@@ -184,6 +223,11 @@ def verify_receipt(receipt: Mapping, recompute_fn) -> dict:
         key: value for key, value in recomputed.items() if key not in HASHED_EXCLUDED
     }
     diff = sorted(_diff_paths(stripped_stored, stripped_fresh))
-    if "receipt_sha256" not in receipt and "receipt_sha256" not in diff:
-        diff = sorted(diff + ["receipt_sha256"])
+    if not diff:
+        # Bodies are identical, so the mismatch must come from the envelope:
+        # a wrong/missing stored hash, or an id that does not name the hash.
+        if receipt.get("receipt_sha256") != actual:
+            diff = ["receipt_sha256"]
+        if id_inconsistent and "receipt_id" not in diff:
+            diff = sorted(diff + ["receipt_id"])
     return {"match": False, "expected": expected, "actual": actual, "diff": diff}

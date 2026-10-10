@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import hashlib
+import math
+import sys
 import unittest
 
 from jadal import receipts
@@ -160,6 +162,11 @@ class MakeReceiptTest(unittest.TestCase):
         self.assertEqual(receipt["verdict"]["answer_conf"], 1.0)
         self.assertEqual(receipt["decisions"]["step"]["answer_conf"], 1.0)
         self.assertNotIn("-0.0", receipts.canonical_json(receipt).decode("utf-8"))
+        # the tiny negative value must be positive zero, not negative zero
+        self.assertEqual(receipt["signals"]["brightness_mean"], 0.0)
+        self.assertEqual(
+            math.copysign(1.0, receipt["signals"]["brightness_mean"]), 1.0
+        )
 
     def test_config_dataclass_becomes_a_config_block(self):
         receipt = _receipt_for(config=Config())
@@ -169,7 +176,7 @@ class MakeReceiptTest(unittest.TestCase):
         self.assertIn("versions", config_block)
         self.assertEqual(config_block["thresholds"]["blur_var_min"], 60.0)
         self.assertEqual(config_block["thresholds"]["target_error"], 0.05)
-        self.assertEqual(config_block["versions"]["python"], ".".join(map(str, __import__("sys").version_info[:3])))
+        self.assertEqual(config_block["versions"]["python"], ".".join(map(str, sys.version_info[:3])))
 
     def test_config_mapping_is_used_as_is(self):
         block = {
@@ -201,6 +208,35 @@ class MakeReceiptTest(unittest.TestCase):
     def test_rejects_a_non_mapping_config(self):
         with self.assertRaises(ValueError):
             _receipt_for(config=["not", "a", "config"])
+
+    def test_rejects_nan_and_inf_naming_the_field_path(self):
+        segment = _segment(7)
+        signals = dict(_fake_signals(segment))
+        signals["blur_var"] = float("nan")
+        decider = FakeDecider()
+        decisions = decider.decide(segment, signals)
+        verdict = _fake_verdict(segment, decisions, 0.5)
+        with self.assertRaisesRegex(ValueError, r"signals\.blur_var"):
+            receipts.make_receipt(
+                segment, signals, decisions, verdict, Config(),
+                created_utc="2026-10-10T00:00:00+00:00",
+            )
+        signals = dict(_fake_signals(segment))
+        decisions = decider.decide(segment, signals)
+        decisions["step"]["probs"] = dict(decisions["step"]["probs"])
+        decisions["step"]["probs"]["trim"] = float("inf")
+        with self.assertRaisesRegex(ValueError, r"decisions\.step\.probs\.trim"):
+            receipts.make_receipt(
+                segment, signals, decisions, verdict, Config(),
+                created_utc="2026-10-10T00:00:00+00:00",
+            )
+        verdict = dict(_fake_verdict(segment, decider.decide(segment, signals), 0.5))
+        verdict["answer_conf"] = float("-inf")
+        with self.assertRaisesRegex(ValueError, r"verdict\.answer_conf"):
+            receipts.make_receipt(
+                segment, signals, decider.decide(segment, signals), verdict, Config(),
+                created_utc="2026-10-10T00:00:00+00:00",
+            )
 
 
 class ReceiptHashTest(unittest.TestCase):
@@ -239,55 +275,95 @@ class ReceiptHashTest(unittest.TestCase):
             receipts.canonical_json(payload)).hexdigest())
 
 
-class SegmentIsBatchIndependentTest(unittest.TestCase):
-    """SPEC: a segment must hash identically alone or inside a batch of five."""
+class FakeBatchDecider(FakeDecider):
+    """Decider with a one-call batch entry point.
 
-    @staticmethod
-    def _process(segments, decider, threshold, created_utc):
-        out = []
-        for segment in segments:  # batch size 1: one decider call per segment
-            signals = _fake_signals(segment)
-            decisions = decider.decide(segment, signals)
-            verdict = _fake_verdict(segment, decisions, threshold)
-            out.append(
-                receipts.make_receipt(
-                    segment, signals, decisions, verdict, Config(),
-                    created_utc=created_utc,
-                )
-            )
-        return out
+    `decide_batch` takes all segments at once (one call for the whole batch)
+    and returns one decisions dict per segment in input order. The per-segment
+    computation is identical to `decide` — batch size, position and neighbours
+    must not leak into any segment's result — and every batch call is logged
+    so tests can prove the batch path (not a per-segment loop) was exercised.
+    """
 
-    def test_same_hash_alone_and_inside_a_batch_of_five(self):
-        decider = FakeDecider()
-        batch = [_segment(i) for i in range(5)]
-        target = batch[2]
-        alone = self._process([target], decider, 0.5, "2026-10-10T10:00:00+00:00")
-        in_batch = self._process(batch, decider, 0.5, "2026-10-10T11:00:00+00:00")
+    def __init__(self):
+        self.batch_calls: list[int] = []
+
+    def decide_batch(self, segments: list[dict], signals: list[dict]) -> list[dict]:
+        self.batch_calls.append(len(segments))
+        return [self.decide(segment, sig) for segment, sig in zip(segments, signals)]
+
+
+def _run_batch(
+    segments: list[dict],
+    decider: FakeBatchDecider,
+    config,
+    threshold: float,
+    created_utc: str,
+) -> list[dict]:
+    """Batch helper: ONE decider call for all segments, then one receipt each."""
+    signals = [_fake_signals(segment) for segment in segments]
+    decisions = decider.decide_batch(segments, signals)
+    return [
+        receipts.make_receipt(
+            segment, sig, dec, _fake_verdict(segment, dec, threshold), config,
+            created_utc=created_utc,
+        )
+        for segment, sig, dec in zip(segments, signals, decisions)
+    ]
+
+
+def _run_single(
+    segment: dict, decider: FakeDecider, config, threshold: float, created_utc: str
+) -> dict:
+    """Single-segment path: one decide call, one receipt."""
+    signals = _fake_signals(segment)
+    decisions = decider.decide(segment, signals)
+    return receipts.make_receipt(
+        segment, signals, decisions, _fake_verdict(segment, decisions, threshold),
+        config, created_utc=created_utc,
+    )
+
+
+class BatchGoesThroughOneCallTest(unittest.TestCase):
+    """SPEC: a segment must hash identically alone or inside a batch of five.
+
+    The batch path calls the decider ONCE for all five segments; the receipts
+    must still match the single-segment path exactly.
+    """
+
+    def test_batch_of_five_matches_five_single_calls(self):
+        decider = FakeBatchDecider()
+        config = Config()
+        segments = [_segment(i) for i in range(5)]
+        in_batch = _run_batch(
+            segments, decider, config, 0.5, "2026-10-10T11:00:00+00:00"
+        )
+        # the batch path really was one call over all five segments
+        self.assertEqual(decider.batch_calls, [5])
         self.assertEqual(len(in_batch), 5)
-        self.assertEqual(
-            alone[0]["receipt_sha256"], in_batch[2]["receipt_sha256"]
-        )
-        self.assertEqual(alone[0]["receipt_id"], in_batch[2]["receipt_id"])
-        # the neighbours do not matter either: seg-003 hashes the same with
-        # neighbours {0, 1, 2, 4} as with neighbours {0, 1, 4}
-        reduced = self._process(
-            batch[:2] + batch[3:], decider, 0.5, "2026-10-10T12:00:00+00:00"
-        )
-        self.assertEqual(len(reduced), 4)
-        self.assertEqual(reduced[2]["receipt_sha256"], in_batch[3]["receipt_sha256"])
-        self.assertNotEqual(alone[0]["created_utc"], in_batch[2]["created_utc"])
-
-    def test_every_segment_in_the_batch_matches_its_alone_hash(self):
-        decider = FakeDecider()
-        threshold = 0.5
-        in_batch = self._process(
-            [_segment(i) for i in range(5)], decider, threshold, "2026-10-10T11:00:00+00:00"
-        )
-        for i, receipt in enumerate(in_batch):
-            alone = self._process(
-                [_segment(i)], decider, threshold, f"2026-10-10T1{i}:00:00+00:00"
+        for i, segment in enumerate(segments):
+            solo = _run_single(
+                segment, decider, config, 0.5, "2026-10-10T09:00:00+00:00"
             )
-            self.assertEqual(alone[0]["receipt_sha256"], receipt["receipt_sha256"], f"seg {i}")
+            with self.subTest(segment=segment["segment_id"]):
+                self.assertNotEqual(solo["created_utc"], in_batch[i]["created_utc"])
+                self.assertEqual(solo["receipt_sha256"], in_batch[i]["receipt_sha256"])
+                self.assertEqual(solo["receipt_id"], in_batch[i]["receipt_id"])
+
+    def test_batch_of_one_matches_batch_of_five_for_the_same_segment(self):
+        decider = FakeBatchDecider()
+        config = Config()
+        in_batch = _run_batch(
+            [_segment(i) for i in range(5)], decider, config, 0.5,
+            "2026-10-10T11:00:00+00:00",
+        )
+        solo_batch = _run_batch(
+            [_segment(2)], decider, config, 0.5, "2026-10-10T12:00:00+00:00"
+        )
+        self.assertEqual(decider.batch_calls, [5, 1])
+        self.assertEqual(
+            solo_batch[0]["receipt_sha256"], in_batch[2]["receipt_sha256"]
+        )
 
     def test_segment_sha256_is_the_hash_of_the_original_segment_file(self):
         receipt = _receipt_for()
@@ -375,6 +451,24 @@ class VerifyReceiptTest(unittest.TestCase):
         result = receipts.verify_receipt(broken, lambda r: _receipt_for())
         self.assertFalse(result["match"])
         self.assertIn("receipt_sha256", result["diff"])
+
+    def test_tampered_hash_only_reports_the_hash_path(self):
+        receipt = _receipt_for()
+        stored = dict(receipt)
+        stored["receipt_sha256"] = "f" * 64
+        result = receipts.verify_receipt(stored, lambda r: _receipt_for())
+        self.assertFalse(result["match"])
+        self.assertEqual(result["expected"], "f" * 64)
+        self.assertEqual(result["actual"], receipt["receipt_sha256"])
+        self.assertEqual(result["diff"], ["receipt_sha256"])
+
+    def test_tampered_receipt_id_is_reported(self):
+        receipt = _receipt_for()
+        stored = dict(receipt)
+        stored["receipt_id"] = "0" * 16
+        result = receipts.verify_receipt(stored, lambda r: _receipt_for())
+        self.assertFalse(result["match"])
+        self.assertEqual(result["diff"], ["receipt_id"])
 
     def test_created_utc_difference_still_verifies(self):
         receipt = _receipt_for(created_utc="2026-10-10T00:00:00+00:00")

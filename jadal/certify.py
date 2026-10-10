@@ -177,12 +177,31 @@ def _prepare_conf_correct(conf, correct) -> tuple[np.ndarray, np.ndarray]:
     ok = np.asarray(correct)
     if ok.ndim != 1 or ok.shape[0] != c.shape[0]:
         raise ValueError("correct must be a 1-D array with one entry per confidence")
-    ok = ok.astype(bool)
+    ok = _as_bool_mask(ok)
     if not np.all(np.isfinite(c)):
         raise ValueError("conf must be finite")
     if np.any(c < 0.0) or np.any(c > 1.0):
         raise ValueError("conf must lie in [0, 1]")
     return c, ok
+
+
+def _as_bool_mask(ok: np.ndarray) -> np.ndarray:
+    """Interpret `correct` strictly as booleans or 0/1 numbers.
+
+    Plain ``astype(bool)`` would silently turn the string ``"False"`` into
+    ``True``; anything that is not a bool or a 0/1 int/float is rejected.
+    """
+    if ok.dtype == bool:
+        return ok
+    if ok.dtype.kind in "iu":
+        if np.all((ok == 0) | (ok == 1)):
+            return ok.astype(bool)
+        raise ValueError("correct must contain only 0/1 integers or booleans")
+    if ok.dtype.kind == "f":
+        if np.all((ok == 0.0) | (ok == 1.0)):
+            return ok.astype(bool)
+        raise ValueError("correct must contain only 0/1 numbers or booleans")
+    raise ValueError("correct must be booleans or 0/1 numbers, not strings/objects")
 
 
 def pick_threshold(
@@ -194,18 +213,27 @@ def pick_threshold(
 ) -> dict:
     """Fixed-sequence threshold search over the confidence distribution.
 
-    Candidates are the distinct confidence values, scanned from the strictest
-    (highest) threshold downward; a segment is accepted when ``conf >=
-    threshold``. A candidate is admissible when it accepts at least
-    ``min_accepted`` segments AND its exact binomial upper bound on the error
-    rate (confidence ``1 - delta``) is at or below ``target_err``. The scan
-    keeps the loosest admissible candidate, i.e. the largest coverage that
-    still carries the certified bound.
+    Candidates are the distinct confidence values, ordered strictest
+    (highest) threshold first. That order is fixed BEFORE looking at any
+    outcomes. Each candidate is tested once at level ``delta``: a segment is
+    accepted when ``conf >= threshold``, and the candidate is certified only
+    when it accepts at least ``min_accepted`` segments AND its exact binomial
+    (Clopper-Pearson) upper bound on the error rate is at or below
+    ``target_err``. The scan STOPS at the first candidate that fails either
+    check and returns the last certified one.
+
+    Why the stopping rule matters: because the order is pre-fixed and the
+    decision to test candidate j depends only on candidates 1..j passing,
+    this is fixed-sequence testing — the family-wise error over the whole
+    scan is controlled at ``delta`` with no multiplicity correction, so the
+    returned threshold keeps its ``1 - delta`` certificate. Scanning every
+    candidate and then picking the loosest passer would be a
+    multiple-comparisons selection and would NOT carry that certificate.
 
     Returns ``{"threshold", "accepted", "errors", "upper_bound", "coverage"}``.
-    When no candidate is admissible, ``threshold`` is ``None`` and the other
-    fields describe the loosest candidate (accept everything), so callers can
-    see how far off the target was.
+    When even the strictest candidate fails, ``threshold`` is ``None`` and the
+    other fields describe the loosest candidate (accept everything), so
+    callers can see how far off the target was.
     """
     c, ok = _prepare_conf_correct(conf, correct)
     target = float(target_err)
@@ -226,9 +254,9 @@ def pick_threshold(
             "upper_bound": None,
             "coverage": 0.0,
         }
+    best: dict | None = None
     loosest: dict | None = None
-    winner: dict | None = None
-    for threshold in np.unique(c)[::-1]:  # strictest first
+    for threshold in np.unique(c)[::-1]:  # strictest first; order fixed upfront
         mask = c >= threshold
         accepted = int(mask.sum())
         errors = int((mask & ~ok).sum())
@@ -240,33 +268,30 @@ def pick_threshold(
             "upper_bound": upper_bound,
             "coverage": accepted / total,
         }
-        if accepted >= min_accepted and upper_bound <= target:
-            winner = loosest  # keep scanning: a looser pass has more coverage
-    if winner is not None:
-        return winner
-    if loosest is None:  # pragma: no cover - total > 0 always yields a candidate
-        return {
-            "threshold": None,
-            "accepted": 0,
-            "errors": 0,
-            "upper_bound": None,
-            "coverage": 0.0,
-        }
+        if accepted < min_accepted or upper_bound > target:
+            break  # fixed-sequence stopping rule: no later candidate is tested
+        best = loosest
+    if best is not None:
+        return best
+    # Nothing was certified. The accept-everything point below is a diagnostic
+    # summary only: it was never tested, so it carries no certificate, and
+    # computing it does not test (or certify) any candidate.
+    errors = int((~ok).sum())
     return {
         "threshold": None,
-        "accepted": loosest["accepted"],
-        "errors": loosest["errors"],
-        "upper_bound": loosest["upper_bound"],
-        "coverage": loosest["coverage"],
+        "accepted": total,
+        "errors": errors,
+        "upper_bound": exact_binomial_upper(errors, total, delta),
+        "coverage": 1.0,
     }
-
-
 def risk_coverage(conf, correct) -> list[dict]:
     """Risk (observed error) versus coverage for every distinct confidence.
 
     Rows are ordered from the strictest threshold downward, so coverage grows
     along the curve and the last row is "accept everything". All floats are
-    rounded to 4 decimals (SPEC determinism rule).
+    rounded to 4 decimals (SPEC determinism rule); distinct confidences that
+    round equal therefore produce duplicate threshold rows — that is kept
+    deliberately so every row still maps 1:1 to a distinct raw confidence.
     """
     c, ok = _prepare_conf_correct(conf, correct)
     total = int(c.shape[0])
