@@ -1,0 +1,102 @@
+chunk-loop iter 1 2026-10-10T10:24:46Z
+capped to 2 new shards this invocation
+rows=10000 shards=10 todo=2 batch=32
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Loading weights:   0%|          | 0/1376 [00:00<?, ?it/s]Loading weights:  78%|███████▊  | 1074/1376 [00:00<00:00, 10734.41it/s]Loading weights: 100%|██████████| 1376/1376 [00:00<00:00, 10719.69it/s]
+model loaded in 4.4s dtype=torch.bfloat16
+chunk-loop iter 1 2026-10-10T10:26:53Z
+capped to 2 new shards this invocation
+rows=10000 shards=10 todo=2 batch=32
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Loading weights:   0%|          | 0/1376 [00:00<?, ?it/s]Loading weights:  55%|█████▌    | 760/1376 [00:00<00:00, 7596.00it/s]Loading weights: 100%|██████████| 1376/1376 [00:00<00:00, 5581.57it/s]
+model loaded in 3.2s dtype=torch.bfloat16
+shard 0 done (1000 rows) [1000/10000]
+shard 1 done (1000 rows) [2000/10000]
+partial: 2/10 shards done; rerun to continue
+chunk-loop iter 2 2026-10-10T10:36:02Z
+capped to 2 new shards this invocation
+rows=10000 shards=10 todo=2 batch=32
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Loading weights:   0%|          | 0/1376 [00:00<?, ?it/s]Loading weights:  80%|████████  | 1107/1376 [00:00<00:00, 11026.00it/s]Loading weights: 100%|██████████| 1376/1376 [00:00<00:00, 10661.69it/s]
+model loaded in 2.7s dtype=torch.bfloat16
+shard 2 done (1000 rows) [1000/10000]
+shard 3 done (1000 rows) [2000/10000]
+partial: 4/10 shards done; rerun to continue
+chunk-loop iter 3 2026-10-10T10:39:01Z
+capped to 2 new shards this invocation
+rows=10000 shards=10 todo=2 batch=32
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Loading weights:   0%|          | 0/1376 [00:00<?, ?it/s]Loading weights:  57%|█████▋    | 781/1376 [00:00<00:00, 7753.59it/s]Loading weights: 100%|██████████| 1376/1376 [00:00<00:00, 7349.61it/s]
+model loaded in 8.0s dtype=torch.bfloat16
+shard 4 done (1000 rows) [1000/10000]
+shard 5 done (1000 rows) [2000/10000]
+partial: 6/10 shards done; rerun to continue
+chunk-loop iter 4 2026-10-10T10:46:53Z
+capped to 2 new shards this invocation
+rows=10000 shards=10 todo=2 batch=32
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Loading weights:   0%|          | 0/1376 [00:00<?, ?it/s]Loading weights:  69%|██████▉   | 956/1376 [00:00<00:00, 8924.51it/s]Loading weights: 100%|██████████| 1376/1376 [00:00<00:00, 3742.36it/s]
+model loaded in 31.7s dtype=torch.bfloat16
+shard 6 done (1000 rows) [1000/10000]
+shard 7 done (1000 rows) [2000/10000]
+partial: 8/10 shards done; rerun to continue
+chunk-loop iter 5 2026-10-10T11:18:42Z
+seg-stage start 2026-10-10T11:20:00Z
+seg-stage start 2026-10-10T11:20:01Z
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Loading weights:   0%|          | 0/1376 [00:00<?, ?it/s]Loading weights:  36%|███▌      | 491/1376 [00:00<00:00, 4820.38it/s]Loading weights:  71%|███████   | 974/1376 [00:00<00:00, 2929.45it/s]Loading weights:  95%|█████████▌| 1308/1376 [00:00<00:00, 2467.68it/s]Loading weights: 100%|██████████| 1376/1376 [00:00<00:00, 2581.06it/s]
+segments=150 snapshot=2026-10-10T10:53:24.018553+00:00 sha=43ab44e52eaa
+decoded 3005 frames (20.0/seg) in 229.5s
+Batches:   0%|          | 0/94 [00:00<?, ?it/s]Batches:   1%|          | 1/94 [00:03<05:05,  3.28s/it]Batches:   2%|▏         | 2/94 [00:05<03:44,  2.44s/it]Batches:   3%|▎         | 3/94 [00:07<03:20,  2.21s/it]Batches:   4%|▍         | 4/94 [00:08<03:04,  2.05s/it]Batches:   5%|▌         | 5/94 [00:10<02:58,  2.00s/it]Batches:   6%|▋         | 6/94 [00:12<02:53,  1.97s/it]Batches:   7%|▋         | 7/94 [00:14<02:48,  1.93s/it]Batches:   9%|▊         | 8/94 [00:16<02:43,  1.90s/it]Batches:  10%|▉         | 9/94 [00:18<02:39,  1.87s/it]Batches:  11%|█         | 10/94 [00:20<02:36,  1.86s/it]Batches:  12%|█▏        | 11/94 [00:22<02:37,  1.90s/it]Batches:  13%|█▎        | 12/94 [00:24<02:49,  2.06s/it]Batches:  14%|█▍        | 13/94 [00:26<02:58,  2.20s/it]Batches:  15%|█▍        | 14/94 [00:28<02:49,  2.11s/it]Batches:  16%|█▌        | 15/94 [00:30<02:45,  2.09s/it]Batches:  17%|█▋        | 16/94 [00:32<02:41,  2.07s/it]Batches:  18%|█▊        | 17/94 [00:35<02:42,  2.11s/it]Batches:  19%|█▉        | 18/94 [00:37<02:50,  2.24s/it]Batches:  20%|██        | 19/94 [00:39<02:45,  2.21s/it]Batches:  21%|██▏       | 20/94 [00:41<02:37,  2.13s/it]Batches:  22%|██▏       | 21/94 [00:43<02:31,  2.07s/it]Batches:  23%|██▎       | 22/94 [00:45<02:27,  2.04s/it]Batches:  24%|██▍       | 23/94 [00:47<02:25,  2.04s/it]Batches:  26%|██▌       | 24/94 [00:49<02:19,  1.99s/it]Batches:  27%|██▋       | 25/94 [00:51<02:16,  1.98s/it]Batches:  28%|██▊       | 26/94 [00:53<02:12,  1.95s/it]Batches:  29%|██▊       | 27/94 [00:55<02:10,  1.95s/it]Batches:  30%|██▉       | 28/94 [00:57<02:06,  1.92s/it]Batches:  31%|███       | 29/94 [00:59<02:03,  1.90s/it]Batches:  32%|███▏      | 30/94 [01:00<02:00,  1.89s/it]Batches:  33%|███▎      | 31/94 [01:02<01:57,  1.87s/it]Batches:  34%|███▍      | 32/94 [01:04<01:54,  1.85s/it]Batches:  35%|███▌      | 33/94 [01:06<01:51,  1.83s/it]Batches:  36%|███▌      | 34/94 [01:08<01:50,  1.84s/it]Batches:  37%|███▋      | 35/94 [01:10<01:51,  1.89s/it]Batches:  38%|███▊      | 36/94 [01:12<01:51,  1.93s/it]Batches:  39%|███▉      | 37/94 [01:14<01:52,  1.97s/it]Batches:  40%|████      | 38/94 [01:16<01:51,  1.99s/it]Batches:  41%|████▏     | 39/94 [01:18<01:51,  2.03s/it]Batches:  43%|████▎     | 40/94 [01:20<01:54,  2.13s/it]Batches:  44%|████▎     | 41/94 [01:22<01:50,  2.09s/it]Batches:  45%|████▍     | 42/94 [01:24<01:47,  2.08s/it]Batches:  46%|████▌     | 43/94 [01:26<01:44,  2.06s/it]Batches:  47%|████▋     | 44/94 [01:29<01:43,  2.07s/it]Batches:  48%|████▊     | 45/94 [01:31<01:40,  2.04s/it]Batches:  49%|████▉     | 46/94 [01:33<01:38,  2.06s/it]Batches:  50%|█████     | 47/94 [01:35<01:37,  2.08s/it]Batches:  51%|█████     | 48/94 [01:37<01:36,  2.11s/it]Batches:  52%|█████▏    | 49/94 [01:39<01:38,  2.18s/it]Batches:  53%|█████▎    | 50/94 [01:41<01:34,  2.14s/it]Batches:  54%|█████▍    | 51/94 [01:44<01:34,  2.19s/it]Batches:  55%|█████▌    | 52/94 [01:46<01:30,  2.15s/it]Batches:  56%|█████▋    | 53/94 [01:48<01:36,  2.34s/it]Batches:  57%|█████▋    | 54/94 [01:51<01:35,  2.38s/it]Batches:  59%|█████▊    | 55/94 [01:53<01:28,  2.28s/it]Batches:  60%|█████▉    | 56/94 [01:55<01:24,  2.21s/it]Batches:  61%|██████    | 57/94 [01:57<01:19,  2.16s/it]Batches:  62%|██████▏   | 58/94 [01:59<01:17,  2.14s/it]Batches:  63%|██████▎   | 59/94 [02:02<01:19,  2.27s/it]Batches:  64%|██████▍   | 60/94 [02:04<01:18,  2.30s/it]Batches:  65%|██████▍   | 61/94 [02:07<01:19,  2.42s/it]Batches:  66%|██████▌   | 62/94 [02:09<01:15,  2.36s/it]Batches:  67%|██████▋   | 63/94 [02:11<01:11,  2.30s/it]Batches:  68%|██████▊   | 64/94 [02:13<01:08,  2.29s/it]Batches:  69%|██████▉   | 65/94 [02:16<01:04,  2.22s/it]Batches:  70%|███████   | 66/94 [02:18<01:01,  2.21s/it]Batches:  71%|███████▏  | 67/94 [02:21<01:06,  2.47s/it]Batches:  72%|███████▏  | 68/94 [02:23<01:01,  2.38s/it]Batches:  73%|███████▎  | 69/94 [02:25<00:57,  2.32s/it]Batches:  74%|███████▍  | 70/94 [02:27<00:55,  2.29s/it]Batches:  76%|███████▌  | 71/94 [02:30<00:53,  2.31s/it]Batches:  77%|███████▋  | 72/94 [02:32<00:51,  2.34s/it]Batches:  78%|███████▊  | 73/94 [02:34<00:49,  2.35s/it]Batches:  79%|███████▊  | 74/94 [02:37<00:46,  2.34s/it]Batches:  80%|███████▉  | 75/94 [02:39<00:44,  2.34s/it]Batches:  81%|████████  | 76/94 [02:41<00:42,  2.34s/it]Batches:  82%|████████▏ | 77/94 [02:44<00:39,  2.33s/it]Batches:  83%|████████▎ | 78/94 [02:46<00:37,  2.31s/it]Batches:  84%|████████▍ | 79/94 [02:48<00:34,  2.29s/it]Batches:  85%|████████▌ | 80/94 [02:51<00:32,  2.32s/it]Batches:  86%|████████▌ | 81/94 [02:53<00:30,  2.33s/it]Batches:  87%|████████▋ | 82/94 [02:55<00:28,  2.33s/it]Batches:  88%|████████▊ | 83/94 [02:58<00:27,  2.50s/it]Batches:  89%|████████▉ | 84/94 [03:01<00:24,  2.47s/it]Batches:  90%|█████████ | 85/94 [03:03<00:22,  2.45s/it]Batches:  91%|█████████▏| 86/94 [03:05<00:19,  2.41s/it]Batches:  93%|█████████▎| 87/94 [03:08<00:16,  2.40s/it]Batches:  94%|█████████▎| 88/94 [03:10<00:14,  2.36s/it]Batches:  95%|█████████▍| 89/94 [03:12<00:11,  2.37s/it]Batches:  96%|█████████▌| 90/94 [03:15<00:09,  2.35s/it]Batches:  97%|█████████▋| 91/94 [03:18<00:07,  2.52s/it]Batches:  98%|█████████▊| 92/94 [03:20<00:04,  2.46s/it]Batches:  99%|█████████▉| 93/94 [03:22<00:02,  2.44s/it]Batches: 100%|██████████| 94/94 [03:25<00:00,  2.37s/it]Batches: 100%|██████████| 94/94 [03:25<00:00,  2.18s/it]
+encoded 3005 frames in 205.2s = 14.65 fps; VRAM peak 2.82 GB
+{
+ "n_segments": 150,
+ "n_frames": 3005,
+ "frames_per_seg_mean": 20.033333333333335,
+ "step_s": 0.5,
+ "decode_s": 229.4510407447815,
+ "encode_s": 205.17188358306885,
+ "frames_per_s_encode": 14.646256336499208,
+ "frames_per_s_wall": 6.914039347204866,
+ "vram_peak_gb": 2.822970368,
+ "batch_size": 32,
+ "gpu_decode": true,
+ "snapshot_utc": "2026-10-10T10:53:24.018553+00:00",
+ "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (single labeller; read-only snapshot)"
+}
+seg-stage exit 0 2026-10-10T11:45:35Z
+gpu-loop iter 1 2026-10-10T11:45:35Z
+capped to 2 new shards this invocation
+rows=10000 shards=10 todo=2 batch=32
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Loading weights:   0%|          | 0/1376 [00:00<?, ?it/s]Loading weights:  14%|█▎        | 186/1376 [00:00<00:00, 1768.51it/s]Loading weights:  26%|██▋       | 363/1376 [00:00<00:00, 1477.41it/s]Loading weights:  37%|███▋      | 514/1376 [00:00<00:00, 1337.63it/s]Loading weights:  48%|████▊     | 658/1376 [00:00<00:00, 1370.89it/s]Loading weights:  60%|█████▉    | 825/1376 [00:00<00:00, 1466.32it/s]Loading weights:  71%|███████   | 974/1376 [00:00<00:00, 1369.47it/s]Loading weights:  86%|████████▌ | 1185/1376 [00:00<00:00, 1589.63it/s]Loading weights: 100%|██████████| 1376/1376 [00:00<00:00, 1703.00it/s]
+model loaded in 33.2s dtype=torch.bfloat16
+shard 8 done (1000 rows) [1000/10000]
+shard 9 done (1000 rows) [2000/10000]
+{
+ "n": 10000,
+ "dim": 768,
+ "dtype": "float16",
+ "batch_encode_s": 128.43772888183594,
+ "wall_s": 165.3305037021637,
+ "frames_per_s_encode": 77.85874203054544,
+ "frames_per_s_wall": 60.484906149046765,
+ "vram_peak_gb": 2.822885888,
+ "embed_sha16": "cf07ca48b7f8b11d",
+ "backbone": "embeddinggemma2(batched; receipt batch-size-1 semantics N/A)",
+ "preprocess": "thumbnail longest side 512 BILINEAR",
+ "parquet": "/home/parshu/projects/awing/data/ego10k_eval/egocentric_10k.parquet",
+ "batch_size": 32,
+ "gpu_decode": true
+}
+stage2-loop finished 2026-10-10T11:49:20Z
