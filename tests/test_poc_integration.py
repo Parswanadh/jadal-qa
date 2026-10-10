@@ -20,11 +20,11 @@ if REPO_ROOT not in sys.path:
 
 from jadal.poc_stream import policy  # noqa: E402
 
-BUNDLE = policy.DEFAULT_BUNDLE
+BUNDLE = policy.DEFAULT_BUNDLE or ""  # empty when JADAL_BUNDLE is unset
 RESULTS = os.path.join(REPO_ROOT, "eval", "results", "poc_integrated")
 
 needs_bundle = pytest.mark.skipif(
-    not os.path.exists(os.path.join(BUNDLE, "caches", "ensemble", "ensemble_v1.json")),
+    not BUNDLE or not os.path.exists(os.path.join(BUNDLE, "caches", "ensemble", "ensemble_v1.json")),
     reason="pod bundle caches not present",
 )
 

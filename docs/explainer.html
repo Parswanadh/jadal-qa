@@ -151,17 +151,17 @@ window-level accuracy so far”. Registry cross-check: <code>E1.01</code> (10 fp
 </ul>
 <p class="src">Source: <code>docs/FACTS.md</code>, “UPDATE 2026-10-10 17:40 IST”, bullet “Selective accuracy”.</p>
 
-<h2>3 · What is in progress (never shown as a result)</h2>
+<h2>3 · What is open or not done (never shown as a result)</h2>
 <table>
   <tr><th>Item</th><th>State</th><th>Where it stands</th></tr>
-  <tr><td>Raspberry Pi measurement</td><td><span class="tag pend">in progress</span></td><td>only x86 laptop cores as a proxy; no Pi run</td></tr>
+  <tr><td>Raspberry Pi measurement</td><td><span class="tag pend">not done and not planned for this submission</span></td><td>not measured, not claimed; only x86 laptop cores as a proxy; no Pi run</td></tr>
   <tr><td>Egocentric-10K accuracy (in-domain for that corpus)</td><td><span class="tag pend">in progress</span></td><td>no human labels on the 4.404 h / 1,546 windows on disk; verdicts are descriptive</td></tr>
-  <tr><td>Hyperspectral imaging</td><td><span class="tag pend">in progress</span></td><td>cameras are RGB (3 bands); spectrum recovery is under-determined; we do per-pixel frequency/temporal-spectral analysis of RGB, not hyperspectral</td></tr>
+  <tr><td>Hyperspectral imaging</td><td><span class="tag pend">not done and not planned for this submission</span></td><td>denied: cameras are RGB (3 bands); spectrum recovery is under-determined; we do per-pixel frequency/temporal-spectral analysis of RGB, not hyperspectral</td></tr>
   <tr><td>Freshness nonce-LED</td><td><span class="tag pend">in progress</span></td><td>roadmap/pilot; the Pico currently shows verdict LEDs only</td></tr>
   <tr><td>Voice</td><td><span class="tag pend">in progress</span></td><td>not measured, not claimed</td></tr>
   <tr><td>End-to-end GPU number (10,000 h target)</td><td><span class="tag pend">in progress</span></td><td>kernel-only limits measured; end-to-end words pending</td></tr>
   <tr><td>Second OOD label batch (<code>labels/ood_labels2.json</code>)</td><td><span class="tag pend">in progress</span></td><td><strong>not delivered</strong> → OOD claims stay n=60 / n_bad=9; registry <code>E5.04</code> records <code>labels_missing=true</code>, no accuracy computed</td></tr>
-  <tr><td>Certified error bounds</td><td><span class="tag pend">in progress</span></td><td>not achievable at n=150: multiple-testing correction needs ~86 clean fires (certification split has 84); windows within a clip are correlated</td></tr>
+  <tr><td>Certified error bounds</td><td><span class="tag pend">not done and not planned for this submission</span></td><td>not achievable at n=150: multiple-testing correction needs ~86 clean fires (certification split has 84); windows within a clip are correlated</td></tr>
   <tr><td>End-to-end determinism proof (10 identical receipt hashes)</td><td><span class="tag pend">in progress</span></td><td>CPU feature path gives an identical quantised digest over 10 runs; GPU numerics are not claimed identical across devices</td></tr>
   <tr><td>Spectral arm B re-run</td><td><span class="tag pend">in progress</span></td><td>scored only on a stale 79-label snapshot (0.64–0.68, CI spans 0.5)</td></tr>
 </table>

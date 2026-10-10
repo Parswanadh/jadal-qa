@@ -72,7 +72,9 @@ ADOPTED = {
     },
 }
 
-DEFAULT_BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+# Pod bundle directory. None unless JADAL_BUNDLE is set; it is only needed when the
+# repo-root copy of the frozen config is missing (see resolve_frozen_prereg).
+DEFAULT_BUNDLE = os.environ.get("JADAL_BUNDLE") or None
 
 # --- pre-registered frozen model (fail closed) -----------------------------
 # The copies of ensemble_v1.json that lived on disk were path-remapped AFTER the
@@ -218,10 +220,18 @@ def resolve_frozen_prereg(bundle: str | None = None, path: str | None = None) ->
             raise FileNotFoundError(f"frozen ensemble not found: {path}")
         return path
     bundle = DEFAULT_BUNDLE if bundle is None else bundle
-    for cand in (os.path.join(_REPO_ROOT, FROZEN_PREREG_REL),
-                 os.path.join(bundle, FROZEN_PREREG_REL)):
+    cands = [os.path.join(_REPO_ROOT, FROZEN_PREREG_REL)]
+    if bundle:
+        cands.append(os.path.join(bundle, FROZEN_PREREG_REL))
+    for cand in cands:
         if os.path.exists(cand):
             return cand
+    if not bundle:
+        raise RuntimeError(
+            "pre-registered frozen ensemble not found at "
+            f"{cands[0]!r} and no pod bundle is configured. Set the JADAL_BUNDLE "
+            "environment variable to the pod bundle directory (or pass bundle=/path). "
+            f"Refusing to fall back to the path-remapped {LEGACY_REMAPPED_REL!r}.")
     raise FileNotFoundError(
         "pre-registered frozen ensemble not found in "
         f"{os.path.join(_REPO_ROOT, FROZEN_PREREG_REL)!r} or "

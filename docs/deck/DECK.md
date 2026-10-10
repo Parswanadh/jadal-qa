@@ -107,11 +107,11 @@ chance. Only the LB4 / PR #97 **re-derivation** on the pending second label batc
 
 ---
 
-# What is in progress (never shown as a result)
+# What is open or not done (never shown as a result)
 
-- Raspberry Pi measurement — **in progress** (x86 laptop cores only as proxy)
+- Raspberry Pi measurement — **not done and not planned for this submission** (not measured, not claimed; x86 laptop cores only as proxy)
 - Egocentric-10K accuracy — **in progress** (no human labels on the 1,546 windows)
-- Hyperspectral — **in progress** (cameras are RGB; we do RGB temporal-spectral)
+- Hyperspectral — **not done and not planned for this submission** (denied: cameras are RGB; we do RGB temporal-spectral analysis, which is not hyperspectral)
 - Freshness nonce-LED — **in progress** (Pico shows verdict LEDs only)
 - Voice — **in progress** (not measured, not claimed)
 - End-to-end GPU number — **in progress** (kernel-only limits measured)
@@ -147,7 +147,7 @@ step must earn its place in cross-validation.
 - Determinism: CPU feature path gives an identical quantised digest over 10 runs;
   GPU numerics not claimed identical across devices; 10 identical end-to-end
   receipt hashes **in progress**.
-- Certified error bounds **in progress**: not achievable at n=150 (correction
+- Certified error bounds **not done and not planned for this submission**: not achievable at n=150 (correction
   needs ~86 clean fires; certification split has 84; windows within a clip are
   correlated).
 

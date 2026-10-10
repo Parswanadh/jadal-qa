@@ -75,11 +75,14 @@ verification also **produced findings**: 14/316 checksum mismatches (including t
 and the OOD two-scorer attribution correction; the GPU feature-extraction half and the OOD-labels
 half remain **unverified**.
 
-## 5 · In progress — shown as such, never as results
+## 5 · Open items — shown as such, never as results
 
-Raspberry Pi measurement · Egocentric-10K accuracy (no human labels) · hyperspectral
-(cameras are RGB; we use RGB temporal-spectral analysis) · freshness nonce-LED · voice ·
-end-to-end GPU number · certified error bounds (needs ~86 clean fires; split has 84) ·
+Not done and not planned for this submission: Raspberry Pi measurement (not measured, not
+claimed) · hyperspectral (denied: cameras are RGB) · certified error bounds (not achievable at
+n=150: needs ~86 clean fires; split has 84).
+
+Still open: Egocentric-10K accuracy (no human labels) · freshness nonce-LED · voice ·
+end-to-end GPU number ·
 end-to-end determinism proof (10 receipt hashes) · spectral arm B re-run (stale 79-label
 snapshot) · `ood_labels2.json`
 (not delivered → OOD stays n=60 / n_bad=9). Registry status (union registry, 36 ids): **28 done / 7 running / 1 pending**; verdicts

@@ -163,6 +163,8 @@ def main() -> int:
     ap.add_argument("--out", default=DEFAULT_OUT)
     ap.add_argument("--boot", type=int, default=BOOT)
     args = ap.parse_args()
+    if not args.bundle:
+        ap.error("no pod bundle: set JADAL_BUNDLE or pass --bundle")
 
     os.makedirs(args.out, exist_ok=True)
     ens = policy.load_frozen_ensemble(args.bundle)
