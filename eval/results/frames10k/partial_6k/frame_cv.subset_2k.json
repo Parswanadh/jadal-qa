@@ -1,0 +1,132 @@
+{
+ "active_labor": {
+  "768": {
+   "cv_auroc_mean": 0.9110414856725084,
+   "cv_auroc_folds": [
+    0.911402856906944,
+    0.9421187350342665,
+    0.9201552307819337,
+    0.9170175873173149,
+    0.8645130183220828
+   ],
+   "oof_auroc": 0.9105649340894831,
+   "oof_auroc_ci95": [
+    0.8821629670736015,
+    0.9340502808226477
+   ],
+   "cv_balacc_mean": 0.6998410476158854,
+   "cv_acc_mean": 0.9365,
+   "label_source": "AI (gemini-2.5-flash prompt; NOT human)",
+   "protocol": "stratified 5-fold CV; C in {0.01,0.1,1,10} via inner 3-fold on train only",
+   "n": 2000,
+   "pos_frac": 0.917
+  },
+  "256": {
+   "cv_auroc_mean": 0.9057711746543763,
+   "cv_auroc_folds": [
+    0.9075220873585996,
+    0.9322929568161176,
+    0.9131368177689703,
+    0.9139625134175544,
+    0.8619414979106396
+   ],
+   "oof_auroc": 0.9049794829547524,
+   "oof_auroc_ci95": [
+    0.8767845861989783,
+    0.9289610641447822
+   ],
+   "cv_balacc_mean": 0.6808986339554238,
+   "cv_acc_mean": 0.9369999999999999,
+   "label_source": "AI (gemini-2.5-flash prompt; NOT human)",
+   "protocol": "stratified 5-fold CV; C in {0.01,0.1,1,10} via inner 3-fold on train only",
+   "n": 2000,
+   "pos_frac": 0.917
+  },
+  "128": {
+   "cv_auroc_mean": 0.9021902114537284,
+   "cv_auroc_folds": [
+    0.9223020394682521,
+    0.9444306828503014,
+    0.8906778961274875,
+    0.9100817438692098,
+    0.8434586949533911
+   ],
+   "oof_auroc": 0.9012511384854431,
+   "oof_auroc_ci95": [
+    0.8767577514295215,
+    0.9225848038500705
+   ],
+   "cv_balacc_mean": 0.6298283707591631,
+   "cv_acc_mean": 0.9285,
+   "label_source": "AI (gemini-2.5-flash prompt; NOT human)",
+   "protocol": "stratified 5-fold CV; C in {0.01,0.1,1,10} via inner 3-fold on train only",
+   "n": 2000,
+   "pos_frac": 0.917
+  }
+ },
+ "hands_ok": {
+  "768": {
+   "cv_auroc_mean": 0.9683241681545333,
+   "cv_auroc_folds": [
+    0.9583333333333334,
+    0.9576822916666666,
+    0.9685872395833333,
+    0.9731445312499999,
+    0.9838734449393335
+   ],
+   "oof_auroc": 0.9695645211137978,
+   "oof_auroc_ci95": [
+    0.9563192621469792,
+    0.9809533434207705
+   ],
+   "cv_balacc_mean": 0.7108609068627452,
+   "cv_acc_mean": 0.9675,
+   "label_source": "AI (gemini-2.5-flash prompt; NOT human)",
+   "protocol": "stratified 5-fold CV; C in {0.01,0.1,1,10} via inner 3-fold on train only",
+   "n": 2000,
+   "pos_frac": 0.9595
+  },
+  "256": {
+   "cv_auroc_mean": 0.9655764743478985,
+   "cv_auroc_folds": [
+    0.9462890625,
+    0.9637044270833334,
+    0.9576822916666667,
+    0.9724934895833334,
+    0.9877131009061588
+   ],
+   "oof_auroc": 0.9668835106564788,
+   "oof_auroc_ci95": [
+    0.9522152479926145,
+    0.9799265030543733
+   ],
+   "cv_balacc_mean": 0.6626378676470589,
+   "cv_acc_mean": 0.9654999999999999,
+   "label_source": "AI (gemini-2.5-flash prompt; NOT human)",
+   "protocol": "stratified 5-fold CV; C in {0.01,0.1,1,10} via inner 3-fold on train only",
+   "n": 2000,
+   "pos_frac": 0.9595
+  },
+  "128": {
+   "cv_auroc_mean": 0.9519674587156992,
+   "cv_auroc_folds": [
+    0.9357096354166666,
+    0.9471028645833333,
+    0.9379882812499999,
+    0.9593098958333334,
+    0.979726616495162
+   ],
+   "oof_auroc": 0.9535875495238615,
+   "oof_auroc_ci95": [
+    0.933222435619812,
+    0.9713909893740792
+   ],
+   "cv_balacc_mean": 0.5771745651589617,
+   "cv_acc_mean": 0.961,
+   "label_source": "AI (gemini-2.5-flash prompt; NOT human)",
+   "protocol": "stratified 5-fold CV; C in {0.01,0.1,1,10} via inner 3-fold on train only",
+   "n": 2000,
+   "pos_frac": 0.9595
+  }
+ }
+}

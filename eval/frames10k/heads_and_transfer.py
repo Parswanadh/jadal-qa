@@ -35,6 +35,11 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ds", required=True)
     ap.add_argument("--dims", default="768,256,128")
+    ap.add_argument("--data-dir", default="",
+                    help="override embedding dir (default eval/results/frames10k/<ds>)")
+    ap.add_argument("--tag", default="",
+                    help="output filename tag, e.g. partial_6k -> frame_cv.partial_6k.json")
+    ap.add_argument("--max-rows", type=int, default=0, help="0 = all rows; else first N rows")
     args = ap.parse_args()
 
     from sklearn.linear_model import LogisticRegression
@@ -43,10 +48,12 @@ def main() -> None:
     from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import StandardScaler
 
-    d = OUT_ROOT / args.ds
+    d = Path(args.data_dir) if args.data_dir else OUT_ROOT / args.ds
     E = np.load(d / "embeddings.fp16.npy").astype(np.float64)
     hand = np.load(d / "hand.npy")
     work = np.load(d / "work.npy")
+    if args.max_rows:
+        E, hand, work = E[:args.max_rows], hand[:args.max_rows], work[:args.max_rows]
     yh = (hand >= 1).astype(int)  # hands visible (any)
     yw = work.astype(int)         # active_labor yes
     print(f"{args.ds}: n={len(E)} hands>=1 frac={yh.mean():.3f} work=yes frac={yw.mean():.3f}", flush=True)
@@ -104,9 +111,10 @@ def main() -> None:
         heads[target] = {"mean": sc.mean_.tolist(), "scale": sc.scale_.tolist(),
                          "coef": lr.coef_.reshape(-1).tolist(),
                          "intercept": float(lr.intercept_[0])}
-    (d / "frame_heads.json").write_text(json.dumps({"heads": heads, "dim": 768}))
-    (d / "frame_cv.json").write_text(json.dumps(out, indent=1))
-    print("wrote", d / "frame_cv.json", d / "frame_heads.json")
+    stem = f".{args.tag}" if args.tag else ""
+    (d / f"frame_heads{stem}.json").write_text(json.dumps({"heads": heads, "dim": 768}))
+    (d / f"frame_cv{stem}.json").write_text(json.dumps(out, indent=1))
+    print("wrote", d / f"frame_cv{stem}.json", d / f"frame_heads{stem}.json")
 
 
 if __name__ == "__main__":

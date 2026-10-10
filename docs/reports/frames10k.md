@@ -27,5 +27,26 @@
 - (4) Cost: encode frames/s, wall frames/s, VRAM peak; Matryoshka truncation
   768/256/128 on frame heads.
 
-## Results
-(TBD — runs in progress; interim note pushed at ~min 45.)
+## Results (INTERIM, 2026-10-10 ~16:30 IST — partial; full 10k + transfer next)
+
+### (2) Frame heads vs AI labels — first 2,000 factory frames
+`eval/results/frames10k/partial_6k/frame_cv.subset_2k.json`. Labels AI
+(gemini-2.5-flash; NOT human). Protocol: stratified 5-fold CV, C in
+{0.01,0.1,1,10} via inner 3-fold on train folds only. n=2000,
+hands>=1 frac=0.960, work=yes frac=0.917 (skewed — balacc at 0.5 suffers).
+
+| target | dim | CV AUROC | OOF AUROC [95% boot CI] | balacc@0.5 |
+|---|---|---|---|---|
+| active_labor | 768 | 0.911 | 0.911 [0.882, 0.934] | 0.700 |
+| active_labor | 256 | 0.906 | 0.905 [0.877, 0.929] | 0.681 |
+| active_labor | 128 | 0.902 | 0.901 [0.877, 0.923] | 0.630 |
+| hands_ok | 768 | 0.968 | 0.970 [0.956, 0.981] | 0.711 |
+| hands_ok | 256 | 0.966 | 0.967 [0.952, 0.980] | 0.663 |
+| hands_ok | 128 | 0.952 | 0.954 [0.933, 0.971] | 0.577 |
+
+Matryoshka truncation 768->128 loses ~0.01-0.015 AUROC; balacc drops more
+(threshold not retuned — operating point, not ranking, degrades).
+Full-6k run in progress; 10k embedding 6/10 shards done.
+
+### (3) Transfer to HUMAN labels — pending (segment embed queued after 10k)
+### (4) Cost — pending (meta.json at concat)
