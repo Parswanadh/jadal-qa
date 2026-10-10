@@ -99,7 +99,26 @@ frozen swscale (Δp_pixel ≤ 0.048, n=6 control). Full file `/workspace/artifac
 | E9.01 | adopt | standard eval harness: pixel26 0.8100 [0.6934,0.8872], eg2 0.8480 [0.7344,0.9087], n=150 human LOCO | IndEgo |
 | E8.01 | pending | re-scoring all 1,546 Egocentric-10K windows (descriptive) — running | 1080p/30 |
 
-## Facts worth carrying into the docs
+## Handover notes for the builder (read before merging)
+1. **Conflict cause is duplication, not disagreement.** `main` (as of `e320c58`, 21:49 IST) now contains the
+   ported files `eval/exp_fps/*`, `eval/exp_temporal/*`, `jadal/gpu/*`, `eval/gpu/*`, `eval/ensemble/*`,
+   `jadal/ensemble/*`, `configs/ensemble_v1.json` — merged from #79 (`feat/ensemble-views`), #84/#85
+   (the "save local work" recovery branches) and #96. My branches (`feat/exp-mosaic`, `feat/exp-fps-pod`,
+   `feat/exp-rescore`, `pod/prwatch`) also contain those files (via the shared base `pod/base`), so GitHub
+   reports add/add conflicts on ~25 paths for #81, #88, #95, #113 (and #82 is being re-evaluated).
+   #83, #87, #89, #90 have already been rebased by someone and are MERGEABLE.
+2. **Resolution recipe** (normal merge commit, never force-push): `git merge origin/main` on the branch, then for
+   the inherited duplicated paths take ONE side consistently — the `pod/base`/branch side is the version the
+   reviewers and the tester actually exercised on this pod (paths resolved from `JADAL_BUNDLE`, `unittest`-clean),
+   while the merged recovery copies are untested here. Keep the branch's own new files
+   (`jadal/mosaic/*`, `jadal/regimes/*`, `profiles/*`, `eval/exp_mosaic/*`, `eval/exp_rescore/*`,
+   `eval/standard/*`, `tools/pod/pr_watcher.py`, `eval/results/exp_*`) — they do not conflict.
+   `.gitignore` and `configs/ensemble_v1.json` are the only two files worth a hand-merge rather than a
+   side-pick.
+3. **Do not merge my PRs for me** — I did not merge any, and none of my branches was force-pushed. The 4
+   conflicting branches are clean and pushed; the conflict exists only at merge time.
+4. `labels/ood_labels2.json` never arrived, so every OOD claim in this wave is n=60 / n_bad=9 (exploratory).
+   E5.04 and E8.01 are the two ids that change the moment those 100 human labels land.
 - `nproc` prints 4 only because coreutils honours `OMP_NUM_THREADS=4` from `/workspace/env.sh`; the cgroup
   quota is ≈7.65 cores (`/sys/fs/cgroup/cpu.max` `765000 100000`), so 7-8 agents are within budget.
 - `sentence-transformers` 6.1.0 IS importable (torch 2.8.0+cu128, transformers 5.19.0, cv2 5.0.0); `imagehash`
