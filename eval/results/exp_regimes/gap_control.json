@@ -1,0 +1,159 @@
+{
+ "n_paired": 60,
+ "transcode_vs_source": [
+  {
+   "descriptor": "static_frac",
+   "transcode_median": 0.1429,
+   "source_median": 0.0,
+   "median_ratio_src_over_tc": 0.0
+  },
+  {
+   "descriptor": "dup_frac",
+   "transcode_median": 0.0,
+   "source_median": 0.0,
+   "median_ratio_src_over_tc": 0.0
+  },
+  {
+   "descriptor": "sharp_lapvar",
+   "transcode_median": 6138.1928,
+   "source_median": 1888.8273,
+   "median_ratio_src_over_tc": 0.308
+  },
+  {
+   "descriptor": "sharp_norm",
+   "transcode_median": 12680.337,
+   "source_median": 4259.3688,
+   "median_ratio_src_over_tc": 0.336
+  },
+  {
+   "descriptor": "bitrate_kbps",
+   "transcode_median": 1754.2,
+   "source_median": 4004.45,
+   "median_ratio_src_over_tc": 2.283
+  },
+  {
+   "descriptor": "bytes_per_frame",
+   "transcode_median": 7309.25,
+   "source_median": 16685.2,
+   "median_ratio_src_over_tc": 2.283
+  },
+  {
+   "descriptor": "height",
+   "transcode_median": 480.0,
+   "source_median": 1080.0,
+   "median_ratio_src_over_tc": 2.25
+  },
+  {
+   "descriptor": "width",
+   "transcode_median": 854.0,
+   "source_median": 1920.0,
+   "median_ratio_src_over_tc": 2.248
+  },
+  {
+   "descriptor": "noise_sigma",
+   "transcode_median": 0.0046,
+   "source_median": 0.0025,
+   "median_ratio_src_over_tc": 0.544
+  },
+  {
+   "descriptor": "edge_density",
+   "transcode_median": 0.177,
+   "source_median": 0.1073,
+   "median_ratio_src_over_tc": 0.606
+  },
+  {
+   "descriptor": "shift_mean",
+   "transcode_median": 14.6002,
+   "source_median": 15.869,
+   "median_ratio_src_over_tc": 1.087
+  },
+  {
+   "descriptor": "shift_max",
+   "transcode_median": 43.9573,
+   "source_median": 46.3941,
+   "median_ratio_src_over_tc": 1.055
+  },
+  {
+   "descriptor": "dark_frac",
+   "transcode_median": 0.0705,
+   "source_median": 0.0735,
+   "median_ratio_src_over_tc": 1.043
+  },
+  {
+   "descriptor": "luma_p05",
+   "transcode_median": 0.0485,
+   "source_median": 0.0466,
+   "median_ratio_src_over_tc": 0.96
+  },
+  {
+   "descriptor": "blockiness",
+   "transcode_median": 1.0519,
+   "source_median": 1.0747,
+   "median_ratio_src_over_tc": 1.022
+  },
+  {
+   "descriptor": "clip_frac",
+   "transcode_median": 0.1993,
+   "source_median": 0.2034,
+   "median_ratio_src_over_tc": 1.021
+  },
+  {
+   "descriptor": "chroma_spread",
+   "transcode_median": 36.1529,
+   "source_median": 36.724,
+   "median_ratio_src_over_tc": 1.016
+  },
+  {
+   "descriptor": "bright_frac",
+   "transcode_median": 0.1074,
+   "source_median": 0.1086,
+   "median_ratio_src_over_tc": 1.011
+  },
+  {
+   "descriptor": "temp_energy",
+   "transcode_median": 0.2097,
+   "source_median": 0.2118,
+   "median_ratio_src_over_tc": 1.01
+  },
+  {
+   "descriptor": "luma_p50",
+   "transcode_median": 0.4081,
+   "source_median": 0.4044,
+   "median_ratio_src_over_tc": 0.991
+  },
+  {
+   "descriptor": "luma_mean",
+   "transcode_median": 0.4726,
+   "source_median": 0.4717,
+   "median_ratio_src_over_tc": 0.998
+  },
+  {
+   "descriptor": "luma_p95",
+   "transcode_median": 0.9949,
+   "source_median": 0.9971,
+   "median_ratio_src_over_tc": 1.002
+  },
+  {
+   "descriptor": "fps",
+   "transcode_median": 30.0,
+   "source_median": 30.0,
+   "median_ratio_src_over_tc": 1.0
+  }
+ ],
+ "frozen_ensemble_on_ood": {
+  "n": 60,
+  "n_bad": 9,
+  "auroc": 0.415,
+  "mean_p_good": 0.488,
+  "mean_p_bad": 0.5416,
+  "note": "baseline ood_scores.json used 300 pixel frames/20 EG2 frames per 10 s window"
+ },
+ "p_pixel_vs_source_descriptor_corr": {
+  "shift_mean": -0.336,
+  "sharp_lapvar": 0.436,
+  "noise_sigma": 0.277,
+  "luma_mean": -0.34,
+  "temp_energy": -0.372
+ },
+ "cmd": "paired transcode-vs-source descriptors + frozen ensemble score audit"
+}

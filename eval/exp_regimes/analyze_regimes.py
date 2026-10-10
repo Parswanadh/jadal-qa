@@ -41,6 +41,8 @@ def cohens_d(a, b):
     b = np.asarray(b, float)
     n1, n2 = len(a), len(b)
     v = ((n1 - 1) * a.var() + (n2 - 1) * b.var()) / max(n1 + n2 - 2, 1)
+    if v < 1e-18:  # constant within each set (e.g. width/fps): exact spec gap
+        return float("inf") if a.mean() != b.mean() else 0.0
     return float((a.mean() - b.mean()) / np.sqrt(v + 1e-12))
 
 
@@ -86,7 +88,7 @@ def eg2_clusters():
     from sklearn.cluster import KMeans
     di = np.load(f"{WT}/frames10k/eval/results/frames10k/human_segments/segments.npz",
                  allow_pickle=True)
-    F = di["F"].astype(np.float64)
+    F = np.nan_to_num(di["F"].astype(np.float64), nan=0.0)
     Mi = F.mean(axis=1)
     nrm = Mi / (np.linalg.norm(Mi, axis=1, keepdims=True) + 1e-12)
     km = KMeans(n_clusters=6, random_state=0, n_init=10).fit(nrm)
