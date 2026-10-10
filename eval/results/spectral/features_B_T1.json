@@ -1,0 +1,51 @@
+{
+ "loco_auroc_full": 0.7478,
+ "ci": [
+  0.6235294117647059,
+  0.8194595055642738
+ ],
+ "leave_one_out": {
+  "spatial_fft": 0.7534,
+  "spatial_dct": 0.7496000000000002,
+  "wavelet": 0.7402000000000001,
+  "basic": 0.7555999999999999,
+  "temporal": 0.7660000000000001,
+  "chroma": 0.7692,
+  "skin": 0.7246,
+  "compressed": 0.7697999999999999
+ },
+ "family_only": {
+  "spatial_fft": 0.6152,
+  "spatial_dct": 0.5446,
+  "wavelet": 0.6866,
+  "basic": 0.4384,
+  "temporal": 0.7402,
+  "chroma": 0.27740000000000004,
+  "skin": 0.6980000000000001,
+  "compressed": 0.596
+ },
+ "transfer": {},
+ "rtf": {
+  "seg_seconds": 10.0,
+  "mean_latency_total_s": 0.43183151880900067,
+  "mean_latency_decode_s": 0.17107856432596844,
+  "mean_latency_math_s": 0.21311853249867757,
+  "rtf_total": 23.15717951200085,
+  "rtf_no_decode": 46.92224501903443
+ },
+ "n": {
+  "items": 150,
+  "n_good": 100,
+  "n_bad": 50,
+  "clips": [
+   "desk",
+   "ecu_full",
+   "ecu_late",
+   "logistics4",
+   "organise",
+   "pallet",
+   "pallet2"
+  ],
+  "protocol": "LOCO clip-level, bootstrap CI clip-resampled"
+ }
+}
