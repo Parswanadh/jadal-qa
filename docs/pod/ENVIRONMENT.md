@@ -13,7 +13,7 @@ called out. Nothing here is a performance claim.
 | GPU decode (NVDEC) | `h264_cuvid`, `hevc_cuvid`, `av1_cuvid`, `mjpeg_cuvid`, `vp9_cuvid`, … present | `ffmpeg -hide_banner -decoders \| grep cuvid` |
 | CPUs | `nproc` prints **4** with `/workspace/env.sh` sourced, but that is coreutils `nproc` honouring `OMP_NUM_THREADS=4` from that file, not the machine size: `nproc --all` = 96, `/proc/cpuinfo` = 96 processors, cgroup v2 `/sys/fs/cgroup/cpu.max` = `765000 100000` (≈ **7.65 cores** quota) | `nproc`, `nproc --all`, `grep -c ^processor /proc/cpuinfo`, `cat /sys/fs/cgroup/cpu.max` |
 | Load at check time | load average 11–12 on the shared host (above the cgroup quota) | `uptime` |
-| RAM | 503 GB total, 208 GB free, 424 GB available, no swap | `free -g` |
+| RAM | 503 GB total, 208 GB free, 424 GB available, no swap | `free -g` (bootstrap 14:38Z read 431 GB available; this line is the 15:16Z read — the 23 GB difference is other tenants on the shared host) |
 | Disk | `/workspace` 94 GB, 17 GB used, **77 GB free** (bootstrap measured 93 GB free at 14:38Z) | `df -h /workspace` |
 
 **Correction to the bootstrap report:** it records `nproc: 96` (it ran before/without

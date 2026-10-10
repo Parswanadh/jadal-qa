@@ -14,6 +14,11 @@ The rendered log is `experiments/EXPERIMENTS.md`.
 
 ## Wave 1
 
+The table below intentionally lags `experiments/registry.jsonl` until the lead fills the
+result columns from the merged wave-1 registries: rows whose registry line already has a
+verdict (E0.01 `maybe`, E1.01/E1.02, E3.01-E3.05) still show `pending` here because their
+result files live in the other worktrees/bundle, not in this one.
+
 | id | verdict | headline number with CI | cost | regime | file |
 |---|---|---|---|---|---|
 | E0.01 | pending | pending | pending | 480p/10fps IndEgo | experiments/registry.jsonl (E0.01); prose: none in this worktree yet |
@@ -54,8 +59,11 @@ is **not high** yet. The out-of-domain set is **n_bad = 9** (60 human-labelled
 Egocentric-10K windows: 51 good / 9 bad, [`docs/reports/exp_temporal.md`](../reports/exp_temporal.md)),
 so any out-of-domain statement is exploratory and a "no effect" result there is absence of
 evidence, not evidence of absence ([AGENTS.md](../../AGENTS.md) rule 1). IndEgo-trained
-scorers did not transfer out of domain (0.4–0.53 AUROC) — never claim transfer that has
-not been tested. The motion/stability cue predicts *usable* windows; **part of that cue may
+scorers did not transfer out of domain (**0.4–0.53 AUROC**; the two component numbers are the
+shipped PoC cascade 0.529, window-bootstrap CI [0.32, 0.74], and the "work" frame head 0.41,
+recorded in the pod bundle at `/workspace/jadal_pod_bundle/docs/FACTS.md` lines 66 and 50 —
+**pod path, not an in-repo results file yet**, exactly like the motion-cue correction below) —
+never claim transfer that has not been tested. The motion/stability cue predicts *usable* windows; **part of that cue may
 be head stability, it is not "hand work is detected"** (correction dated 2026-10-10 18:25
 IST in the pod bundle's `/workspace/jadal_pod_bundle/docs/FACTS.md`; **no in-repo results
 file backs this correction yet**, so it is recorded here as a correction to earlier wording,
