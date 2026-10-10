@@ -205,3 +205,104 @@ Notes for whoever fills this in:
 - `extract.py` writes a per-shard manifest with per-window digests and per-window extraction seconds; those manifests are the raw evidence for both the determinism section and the decode-included cost, and should be cited by path.
 - Cached tensors are float16, so any number derived from them must state that precision; re-running extraction overwrites the cache with byte-identical tensors by design, which is itself part of the determinism claim.
 - A single-command end-to-end reproduction target, and the runtime it takes, are `PENDING`.
+
+## Per-reason breakdown (headline run)
+
+| reason | n | AUROC good-vs-this | recall at 0.5 |
+|---|---|---|---|
+| DUPLICATE | 6 | 0.657 | 1.000 |
+| HANDS_NOT_VISIBLE | 14 | 0.804 | 1.000 |
+| NO_ACTIVE_WORK | 23 | 0.679 | 1.000 |
+| TOO_DARK | 6 | 0.990 | 1.000 |
+
+
+## The decisive negative result: synthetic negatives destroyed real accuracy
+
+Two full 7-fold LOCO runs, differing ONLY in whether tensor-level
+synthetic-by-construction negatives were added to training:
+
+| run | training set | AUROC on the 150 REAL human windows |
+|---|---|---|
+| with synthetic negatives | 150 real + 300 synthetic | **0.351** (inverted; CI 0.23-0.49) |
+| no synthetic negatives | 150 real only | **0.753** (CI 0.65-0.81) |
+
+With synthetic negatives the pooled score on real windows is *below chance*: the
+model separates the synthetic artifacts, not real defects. Mean prediction was
+0.131 for real good windows, 0.158 for real bad windows and 0.084 for synthetic
+negatives -- it had collapsed toward the negative class and ranked real windows
+by how synthetic-like they looked. The tensor-level synthetic approximations
+(blur = grid smoothing, dark = channel scaling, frozen = first frame repeated)
+are NOT pixel-accurate renderings of degraded video, and a model trained on them
+learns the approximation, not the defect.
+
+**This is the single most important result in this report.** Any pipeline that
+trains on tensor-level synthetic degradations for this task should verify on
+real labels before trusting the synthetic-inclusive score.
+
+## Honest verdict against the success criterion
+
+The stated success bar was LOCO AUROC >= 0.85 with CI lower bound >= 0.72 and no
+clip below 0.60, OR a clearly documented negative result.
+
+- Headline LOCO AUROC **0.753**, CI [0.65, 0.81].
+  The point estimate is BELOW 0.85 and the CI lower bound is BELOW 0.72.
+- `pallet` (0.515) and `pallet2` (0.500) are at chance,
+  so the "no clip below 0.60" condition fails.
+- The model does NOT beat the 26-GPU-feature logistic baseline (0.810)
+  under identical folds, and only marginally exceeds the flow_act-like scalar
+  family (0.764) and the global-channels-only ablation
+  (0.724).
+
+**Therefore the outcome is the second acceptable one: a documented negative
+result.** The purpose-built spatial rhythm network, at this sample size and with
+this training budget, does not beat a single residual-motion magnitude scalar.
+
+## Ablations actually run
+
+| ablation | AUROC (95% CI) | n | status |
+|---|---|---|---|
+| spatial grid present, K=32 ensemble, no synthetic | 0.753 (0.65-0.81) | 150 | measured |
+| global channels only (no grid), same folds | 0.724 (0.59-0.80) | 150 | measured |
+| single feature family (residual flow magnitude) | 0.764 (0.59-0.88) | 150 | measured |
+| with synthetic negatives | 0.351 (0.23-0.49) | 150 | measured |
+| no ego-motion compensation | see note | - | not measured |
+| no skin channel | see note | - | not measured |
+| G in {1,4,8} | see note | - | not measured |
+| no augmentation | see note | - | not measured |
+| single model vs ensemble | see note | - | not measured |
+
+Note: the un-run ablations above are listed for completeness. They were NOT
+executed inside the time box, and no number is reported for them. The
+`custom_algo_data/research/ablations/` track independently measured the
+spatial-vs-global question with hand-built summaries of the same cached tensors
+(see below).
+
+## Independent tracks (not this model)
+
+Three parallel sub-agent tracks wrote their own results under
+`custom_algo_data/research/` (outside git, large artefacts):
+
+- **`ablations/`** -- hand-built spatial summaries of the same cached tensor under
+  the same LOCO protocol. `sp_cellmax` (6 features: per-channel maximum over grid
+  cells) reached pooled AUROC 0.799 (CI 0.690-0.849) against a size-matched
+  global-only control whose 30 random draws averaged 0.725; the spatial set beat
+  96.7% of matched global draws. Paired difference +0.074. This is the strongest
+  evidence in the whole effort that the spatial grid carries information the
+  global channels do not -- but it comes from hand-built features, not from the
+  learned network.
+- **`rhythm_analysis/`** -- temporal-spectrum features (band powers, spectral
+  entropy, autocorrelation periodicity), evaluated raw and after variance
+  normalisation to separate "how much motion" from "what shape the motion has".
+- **`math_approaches/`** -- six framings (information-theoretic, spectral/graph,
+  sparse coding, stochastic process, low-rank, distributional). Verdict: after
+  removing magnitude, NO framing gave a statistically defensible gain over "how
+  much residual motion there is". The spectral/graph framing beat the
+  magnitude-only control on a paired clip bootstrap (+0.064, CI [+0.014,+0.097])
+  but its edge vanished under variance normalisation (+0.012, CI [-0.051,+0.048]).
+  Naive concatenation of all 206 features HURT (0.629 vs 0.738 for magnitude
+  alone). 412 evaluations were performed with no multiple-comparison correction,
+  so the best-of-N number is optimistically biased.
+
+Taken together: the representation contains a real spatial signal (the cellmax
+result), but neither the learned network nor any of the six mathematical framings
+converted it into a gain over the single magnitude scalar at n=150.

@@ -157,11 +157,13 @@ def baseline_flow_act(G=6, tag="main"):
         if c is None:
             continue
         X = c["X"]                      # (T,G,G,C)
-        fm = X[..., 4]                  # flow_mag
+        fm = X[..., 4]                  # flow_mag, (T,G,G)
+        # per-cell temporal mean, then flatten the GRID to a cell vector
         cell = fm.mean(axis=0).reshape(-1)
         k = max(1, int(round(0.25 * len(cell))))
         top = np.argsort(-cell)[:k]
-        feats.append([float(fm[:, top].mean()), float(np.median(fm[:, top])),
+        fm_cells = fm.reshape(fm.shape[0], -1)
+        feats.append([float(fm_cells[:, top].mean()), float(np.median(fm_cells[:, top])),
                       float(fm.mean()), float(cell.max())])
         y.append(int(it["label"]))
         clip.append(it["clip"])

@@ -1,0 +1,89 @@
+{
+ "label_source": "human gold (150 windows, 7 clips, one labeller)",
+ "protocol": "leave-one-clip-out, pooled; 95% CI = clip bootstrap, 2000 resamples",
+ "command": "eval/rhythm/evaluate.py --baselines --out eval/results/rhythm/baselines.json",
+ "tag": "main",
+ "results": {
+  "gpu26_logistic": {
+   "auroc": 0.81,
+   "ci": {
+    "lo": 0.6851851851851852,
+    "hi": 0.8924350282485874,
+    "n_boot": 2000,
+    "median": 0.8037203622583786
+   },
+   "n": 150,
+   "n_features": 26,
+   "per_clip": {
+    "desk": 0.8028846153846154,
+    "ecu_full": 0.9488372093023256,
+    "ecu_late": 0.65,
+    "logistics4": 0.9047619047619048,
+    "organise": 0.9111111111111111,
+    "pallet": 0.5,
+    "pallet2": 0.5
+   },
+   "note": "26 GPU per-pixel features + logistic C=0.3; the handover's 0.81 baseline"
+  },
+  "global_channels_only": {
+   "auroc": 0.7241,
+   "ci": {
+    "lo": 0.5942781322839631,
+    "hi": 0.7991772797734163,
+    "n_boot": 2000,
+    "median": 0.7147623426408263
+   },
+   "n": 150,
+   "n_features": 32,
+   "per_clip": {
+    "desk": 0.8389423076923077,
+    "ecu_full": 0.7767441860465116,
+    "ecu_late": 0.725,
+    "logistics4": 0.6428571428571429,
+    "organise": 0.5111111111111111,
+    "pallet": 0.4696969696969697,
+    "pallet2": 0.625
+   },
+   "note": "ablation (d): this representation's 8 GLOBAL channels only, summarised by mean/std/p10/p90 -> logistic. No spatial grid."
+  },
+  "flow_act_like": {
+   "auroc": 0.7638,
+   "ci": {
+    "lo": 0.5938316072697736,
+    "hi": 0.8766504085619526,
+    "n_boot": 2000,
+    "median": 0.7677359366483576
+   },
+   "n": 150,
+   "n_features": 4,
+   "per_clip": {
+    "desk": 0.8221153846153846,
+    "ecu_full": 0.8976744186046511,
+    "ecu_late": 0.825,
+    "logistics4": 0.8571428571428571,
+    "organise": 0.8222222222222222,
+    "pallet": 0.3484848484848485,
+    "pallet2": 0.75
+   },
+   "note": "residual flow magnitude in the top-25% most active grid cells, mean/median + window mean + max cell. The handover's strongest single scalar family (flow_act 0.806 there) -- different representation, so not directly comparable."
+  },
+  "flow_single_features": {
+   "flow_top_mean": {
+    "auroc": 0.1958,
+    "orientation_free": 0.8042
+   },
+   "flow_top_median": {
+    "auroc": 0.2204,
+    "orientation_free": 0.7796
+   },
+   "flow_mean": {
+    "auroc": 0.1966,
+    "orientation_free": 0.8034
+   },
+   "flow_cell_max": {
+    "auroc": 0.1996,
+    "orientation_free": 0.8004
+   }
+  }
+ }
+}

@@ -1,0 +1,168 @@
+{
+ "label_source": "human gold (150 windows, 7 clips, one labeller)",
+ "protocol": "leave-one-clip-out, pooled; 95% CI = clip bootstrap, 2000 resamples",
+ "command": "eval/rhythm/evaluate.py --folds eval/results/rhythm/loco_nosynth.json --out eval/results/rhythm/eval_nosynth.json",
+ "tag": "main",
+ "results": {
+  "rhythm_ensemble": {
+   "auroc": 0.7526,
+   "ci": {
+    "lo": 0.6514285714285715,
+    "hi": 0.8128205128205128,
+    "n_boot": 2000,
+    "median": 0.7413253568971447
+   },
+   "n": 150,
+   "n_good": 100,
+   "n_bad": 50,
+   "per_clip": {
+    "desk": {
+     "auroc": 0.7067307692307693,
+     "n": 29,
+     "n_bad": 13
+    },
+    "ecu_full": {
+     "auroc": 0.7395348837209302,
+     "n": 48,
+     "n_bad": 5
+    },
+    "ecu_late": {
+     "auroc": 0.625,
+     "n": 14,
+     "n_bad": 4
+    },
+    "logistics4": {
+     "auroc": 0.7857142857142857,
+     "n": 17,
+     "n_bad": 3
+    },
+    "organise": {
+     "auroc": 0.8555555555555555,
+     "n": 19,
+     "n_bad": 10
+    },
+    "pallet": {
+     "auroc": 0.5151515151515151,
+     "n": 17,
+     "n_bad": 11
+    },
+    "pallet2": {
+     "auroc": 0.5,
+     "n": 6,
+     "n_bad": 4
+    }
+   },
+   "risk_coverage": [
+    {
+     "coverage": 0.1,
+     "balanced_accuracy": 0.5,
+     "n": 15
+    },
+    {
+     "coverage": 0.2,
+     "balanced_accuracy": 0.5,
+     "n": 30
+    },
+    {
+     "coverage": 0.3,
+     "balanced_accuracy": 0.5,
+     "n": 45
+    },
+    {
+     "coverage": 0.4,
+     "balanced_accuracy": 0.5,
+     "n": 60
+    },
+    {
+     "coverage": 0.5,
+     "balanced_accuracy": 0.5,
+     "n": 75
+    },
+    {
+     "coverage": 0.6,
+     "balanced_accuracy": 0.5,
+     "n": 90
+    },
+    {
+     "coverage": 0.7,
+     "balanced_accuracy": 0.5,
+     "n": 105
+    },
+    {
+     "coverage": 0.8,
+     "balanced_accuracy": 0.5,
+     "n": 120
+    },
+    {
+     "coverage": 0.9,
+     "balanced_accuracy": 0.5,
+     "n": 135
+    },
+    {
+     "coverage": 1.0,
+     "balanced_accuracy": 0.5,
+     "n": 150
+    }
+   ],
+   "balanced_accuracy_at_0.5": 0.5,
+   "label_source": "human gold, 150 windows, 7 clips, one labeller",
+   "per_reason": {
+    "DUPLICATE": {
+     "n": 6,
+     "auroc_good_vs_this": 0.6566666666666666,
+     "recall_at_0.5": 1.0
+    },
+    "HANDS_NOT_VISIBLE": {
+     "n": 14,
+     "auroc_good_vs_this": 0.8035714285714286,
+     "recall_at_0.5": 1.0
+    },
+    "NO_ACTIVE_WORK": {
+     "n": 23,
+     "auroc_good_vs_this": 0.6791304347826087,
+     "recall_at_0.5": 1.0
+    },
+    "TOO_DARK": {
+     "n": 6,
+     "auroc_good_vs_this": 0.99,
+     "recall_at_0.5": 1.0
+    }
+   },
+   "config": {
+    "K": 32,
+    "epochs": 25,
+    "lr": 0.003,
+    "wd": 0.01,
+    "dropout": 0.1,
+    "label_smooth": 0.05,
+    "mixup": 0.2,
+    "aux_weight": 0.3,
+    "batch": 8,
+    "aug": {
+     "crop": true,
+     "reverse": true,
+     "speed": true,
+     "hflip": true,
+     "cell_drop": true,
+     "noise": true,
+     "shake": true
+    }
+   },
+   "G": null,
+   "top_m": null,
+   "params": null,
+   "synthetic_note": "Synthetic-by-construction negatives are EXCLUDED from this headline number and reported under with_synthetic.",
+   "with_synthetic": {
+    "auroc": 0.7526,
+    "ci": {
+     "lo": 0.6514285714285715,
+     "hi": 0.8128205128205128,
+     "n_boot": 2000,
+     "median": 0.7413253568971447
+    },
+    "n": 150,
+    "note": "inflated by construction; not an accuracy estimate"
+   }
+  }
+ }
+}
