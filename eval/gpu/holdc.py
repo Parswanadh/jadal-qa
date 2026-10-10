@@ -4,7 +4,7 @@ Orchestrator feeder fix: conversion moves off hot CPUs onto the GPU.
 Run under lock (small: 48 windows ~ 8 video-min):
   OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 \
   flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock \
-    python3 eval/gpu/holdc.py
+    /home/parshu/envs/jadal/bin/python eval/gpu/holdc.py
 Writes R3c_gpu_convert into eval/results/gpu/throughput.json + ladder rung.
 """
 import json
@@ -19,7 +19,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", ".."))
 THR = os.path.join(HERE, "..", "results", "gpu", "throughput.json")
 LAD = os.path.join(HERE, "..", "results", "gpu", "ladder.json")
-GOLD = "/workspace/jadal_pod_bundle/labels/manifest_gold.json"
+GOLD = "/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"
 W, H, T = 160, 90, 100
 
 

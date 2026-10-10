@@ -1,0 +1,50 @@
+{
+ "artifact_observations": [
+  {
+   "exists": true,
+   "matches_recorded_preregistered_hash": true,
+   "observed_sha256": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+   "path": "configs/frozen/ensemble_v1.prereg.json",
+   "role": "frozen_preregistered_copy"
+  },
+  {
+   "exists": true,
+   "matches_recorded_preregistered_hash": true,
+   "observed_sha256": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+   "path": "configs/ensemble_v1.json",
+   "role": "repo_config"
+  },
+  {
+   "exists": true,
+   "matches_recorded_preregistered_hash": false,
+   "observed_sha256": "cf7fd7d34df2c3ca654c730d518b5aa6c341f6476b41fb3e4d29326b3c18004b",
+   "path": "/workspace/jadal_pod_bundle/caches/ensemble/ensemble_v1.json",
+   "role": "bundle_cache"
+  }
+ ],
+ "claims_note": "No OOD claim may be updated until this run completes. OOD headline claims stay n=60 / n_bad=9 (first batch: jadal_pod_bundle/labels/ood_labels.json, 51 good / 9 bad) and are untouched by this staged runner.",
+ "command": "bash tools/pod/run_ood_frozen.sh",
+ "expected_n": 100,
+ "frozen_artifact": "configs/frozen/ensemble_v1.prereg.json",
+ "frozen_provenance": "git blob 0ede3b83d93ce23dc5b68cd20fb7de0af703ad27 = configs/ensemble_v1.json at freeze commit b21e3af; recorded in jadal_pod_bundle/SHA256SUMS.txt:1, jadal_pod_bundle/caches/ensemble/ood_scores.json:config_sha256, configs/ensemble_v1.json.sha256",
+ "frozen_sha256": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+ "frozen_sha256_observed": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+ "frozen_sha256_verified": true,
+ "generated_utc": "2026-10-10T16:24:25Z",
+ "guard": "labels_absent",
+ "id": "LB4",
+ "label_source": null,
+ "labels_path": null,
+ "labels_path_searched": [
+  "labels/ood_labels2.json",
+  "/workspace/jadal_pod_bundle/labels/ood_labels2.json"
+ ],
+ "n": null,
+ "n_bad": null,
+ "next_command": "bash tools/pod/run_ood_frozen.sh",
+ "preregistered": true,
+ "protocol": "out-of-domain Egocentric-10K windows, human labels; FROZEN pre-registered ensemble_v1 (two-view EG2+pixel equal-weight probability average, threshold 0.5, abstain band [0.4,0.6]) applied as-is with no tuning, no refitting and no re-thresholding; primary metric AUROC with 95% CI by source-clip bootstrap (2000 resamples, seed 0); secondary optimistic window-bootstrap CI; balanced accuracy at the pre-registered threshold",
+ "reason": "human labels not delivered: no 100-window label file found; nothing was scored (searched: labels/ood_labels2.json, /workspace/jadal_pod_bundle/labels/ood_labels2.json)",
+ "status": "PENDING",
+ "threshold": null
+}

@@ -26,7 +26,7 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, REPO)
 
 RES = os.path.join(REPO, "eval", "results", "exp_phys")
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE")
 SEED = 0
 N_BOOT = 2000
 
