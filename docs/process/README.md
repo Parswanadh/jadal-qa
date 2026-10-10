@@ -25,6 +25,12 @@ Five real bugs, from the round-0 reviews. Each is cited by review file and findi
 | 4 | **MediaPipe API bug hidden by a bare `except`.** `mp_core.BaseOptions` does not exist, and the resulting `AttributeError` was swallowed by `except Exception: return None`. With the face model configured, the code silently fell back to the skin-colour proxy. Fix: import `BaseOptions` from `mediapipe.tasks.python.core.base_options`, narrow the exception handling, and log failures. | [`signals-review.md`](reviews/signals-review.md) Critical 1 | Fixed on the branch ([`signals-rereview.md`](reviews/signals-rereview.md) C1: ADDRESSED). PR #12 is still open, and the re-review found stale report text to fix before merge. |
 | 5 | **Eval harness: threshold chosen on the split it reports, and near-duplicates across splits.** (a) `calibration_report.py` picked the threshold on the same records it reported, and `--split test` restricted those records to test, so the threshold was chosen on test. (b) `dedup()` skipped every blocking bucket with more than 400 members. The 563 all-zero-hash frames went through, which left 71,343 cross-split near-duplicate pairs. | [`evalharness-review.md`](reviews/evalharness-review.md) Critical 2 (threshold) and Critical 1 (near-duplicates) | **Caught; fix in progress.** No re-review yet. PR #16 is open, so none of the eval numbers should be cited. |
 
+## Open at the time of writing
+
+- **Integration (PR #19, issue #17).** Round-0 review: SPEC PASS, QUALITY CHANGES NEEDED, with two Important findings (save outside the requeue guard; reverify without `ensure_determinism`). Fix round 1 was dispatched. See [`reviews/integration-review.md`](reviews/integration-review.md).
+- **Voicebank tests (`main`).** Installing the `sarvamai` SDK broke two tests that assumed it was absent. One of them made a real API call with an empty key. A fix to make the tests network-free was dispatched.
+- **Eval harness (PR #16), signals (PR #12).** See the table above.
+
 ## Lessons recorded in the ledger
 
 - **Check tool activity, not the startup banner.** One worker sat dead for about 15 minutes after a model switch was blocked by a workspace privacy setting. The status check had passed on the banner alone. Workers are now verified by their tool calls.

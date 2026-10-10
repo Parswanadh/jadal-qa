@@ -32,4 +32,4 @@ Screenshots of the dashboard are in [`screens/`](screens/).
 
 - [`process/README.md`](process/README.md): how the repo was built. Workflow, the reviews, and the five bugs they caught.
 - [`process/decision-log.md`](process/decision-log.md): the ledger of rulings, scope cuts and incidents. Redacted for paths and session IDs.
-- [`process/reviews/`](process/reviews/): every review and scoped re-review, round 0 through round 2 (14 files).
+- [`process/reviews/`](process/reviews/): every review and scoped re-review, round 0 through round 2, plus the round-0 review of the integration PR (15 files).

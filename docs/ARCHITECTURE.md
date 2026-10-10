@@ -119,7 +119,7 @@ What the tests show: the batch-independence tests on `main` call pure functions 
 | Byte-identical clips from two workers or sites | Same `segment_id`; the second record's metadata is lost | open (signals deferred minor) |
 | Face blur misses faces | The blur is a skin-colour proxy, so it can miss faces | open PR #12 (signals I3) |
 | Pico port permissions after reflashing MicroPython | Device node is recreated with a restricted group, so the port must be re-granted | operational (ledger) |
-| Voicebank tests in an environment with the `sarvamai` SDK installed | Two tests assume the SDK is absent and fail | open on `main` (see README test status) |
+| Voicebank tests in an environment with the `sarvamai` SDK installed | Two tests assume the SDK is absent and fail; one also makes a real network call with an empty key | open on `main`; a network-free test fix is dispatched (see README test status) |
 
 ## What we deliberately do not claim
 

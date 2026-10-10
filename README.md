@@ -88,7 +88,7 @@ make demo                             # coming with the integration PR (#19 / is
 
 Secrets are read from environment variables (`SARVAM_API_KEY`, `CF_API_TOKEN`, `CF_ACCOUNT_ID`). Put them in a local `.env`, which is git-ignored. Never commit a key.
 
-Test status on `main`: 213 tests run. 211 pass. 2 fail in `tests/test_voicebank.py` in this environment, because the `sarvamai` SDK is installed and two tests assume it is absent. This is reported, not hidden. The dashboard suite (`web/`) passes: 13 tests.
+Test status on `main`: 213 tests run. 211 pass. 2 fail in `tests/test_voicebank.py` in this environment. The `sarvamai` SDK is installed in the env, and two tests assume it is absent. One of them also makes a real network call with an empty key. A fix that makes the voicebank tests network-free has been dispatched, per the decision log. This is reported, not hidden. The dashboard suite (`web/`) passes: 13 tests.
 
 ## Honest claims
 
