@@ -380,8 +380,9 @@ def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
                  "engine": engine, "s0_source": s0_source}
         if spec_feats is not None:
             event["spectral"] = {k: spec_feats[k]
-                                 for k in ("luma_mean", "hf_ratio",
-                                           "temporal_e", "frozen_frac")
+                                 for k in ("brightness", "spec_hfratio",
+                                           "motion_energy", "temp_frozen_frac",
+                                           "under_frac", "over_frac")
                                  if k in spec_feats}
         with open(out_path, "a") as f:
             f.write(json.dumps(event) + "\n")
