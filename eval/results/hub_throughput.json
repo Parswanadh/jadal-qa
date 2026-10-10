@@ -1,0 +1,71 @@
+{
+  "note": "GPU job must run under flock gpu.lock",
+  "rows": [
+    {
+      "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+      "data": "real IndEgo clip",
+      "device": "cuda",
+      "gpu_s_per_segment_median": 0.447,
+      "n_frames": 4,
+      "peak_vram_GB": 1.66,
+      "reps": 2,
+      "seg_len_s": 5,
+      "segments_per_hour": 8054.0
+    },
+    {
+      "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+      "data": "real IndEgo clip",
+      "device": "cuda",
+      "gpu_s_per_segment_median": 0.591,
+      "n_frames": 8,
+      "peak_vram_GB": 1.809,
+      "reps": 2,
+      "seg_len_s": 5,
+      "segments_per_hour": 6089.0
+    },
+    {
+      "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+      "data": "real IndEgo clip",
+      "device": "cuda",
+      "gpu_s_per_segment_median": 0.295,
+      "n_frames": 4,
+      "peak_vram_GB": 1.66,
+      "reps": 2,
+      "seg_len_s": 10,
+      "segments_per_hour": 12183.7
+    },
+    {
+      "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+      "data": "real IndEgo clip",
+      "device": "cuda",
+      "gpu_s_per_segment_median": 0.605,
+      "n_frames": 8,
+      "peak_vram_GB": 1.809,
+      "reps": 2,
+      "seg_len_s": 10,
+      "segments_per_hour": 5945.6
+    },
+    {
+      "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+      "data": "real IndEgo clip",
+      "device": "cuda",
+      "gpu_s_per_segment_median": 0.299,
+      "n_frames": 4,
+      "peak_vram_GB": 1.66,
+      "reps": 2,
+      "seg_len_s": 20,
+      "segments_per_hour": 12043.4
+    },
+    {
+      "clip": "1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+      "data": "real IndEgo clip",
+      "device": "cuda",
+      "gpu_s_per_segment_median": 0.666,
+      "n_frames": 8,
+      "peak_vram_GB": 1.809,
+      "reps": 2,
+      "seg_len_s": 20,
+      "segments_per_hour": 5407.7
+    }
+  ]
+}

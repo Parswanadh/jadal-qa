@@ -1,0 +1,30 @@
+{
+  "bytes_formula": "segments * dim * 2",
+  "bytes_per_1000h_fp16": {
+    "128": 92160000,
+    "256": 184320000
+  },
+  "latency_ms_dim256_fp32matmul_cpu": {
+    "10000": {
+      "data": "SYNTHETIC random unit vectors",
+      "median_ms": 3.01,
+      "p95_ms": 5.78,
+      "repeats": 20
+    },
+    "100000": {
+      "data": "SYNTHETIC random unit vectors",
+      "median_ms": 3.04,
+      "p95_ms": 6.01,
+      "repeats": 20
+    },
+    "1000000": {
+      "data": "SYNTHETIC random unit vectors",
+      "median_ms": 17.6,
+      "p95_ms": 21.52,
+      "repeats": 20
+    }
+  },
+  "n": "segments counted exactly; latency vectors SYNTHETIC",
+  "seg_seconds": 10.0,
+  "segments_per_1000h": 360000
+}

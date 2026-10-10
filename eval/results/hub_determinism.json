@@ -1,0 +1,11 @@
+{
+  "data": "measured 768-d IndEgo segment embeddings",
+  "dim": 768,
+  "n": 91,
+  "query_identical": true,
+  "query_results_hash_1": "78ba0a8bedeaa0e7183b73b4cec5ec216bbaf88581e68d83d4142fa274b81de3",
+  "query_results_hash_2": "78ba0a8bedeaa0e7183b73b4cec5ec216bbaf88581e68d83d4142fa274b81de3",
+  "rebuild_identical": true,
+  "rebuild_index_hash_1": "aad21019fc03d1b812ba9723a3297b68d2bcad9954239eda6bb339caeb6bd8cb",
+  "rebuild_index_hash_2": "aad21019fc03d1b812ba9723a3297b68d2bcad9954239eda6bb339caeb6bd8cb"
+}
