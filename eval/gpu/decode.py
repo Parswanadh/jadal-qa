@@ -4,6 +4,26 @@ import subprocess
 import numpy as np
 
 
+def clip_duration(path):
+    """Duration in seconds via ffprobe (cached per path)."""
+    if path not in clip_duration._cache:
+        p = subprocess.run(["ffprobe", "-hide_banner", "-v", "error",
+                            "-show_entries", "format=duration",
+                            "-of", "default=noprint_wrappers=1:nokey=1", path],
+                           capture_output=True, text=True, timeout=30)
+        clip_duration._cache[path] = float(p.stdout.strip())
+    return clip_duration._cache[path]
+
+
+clip_duration._cache = {}
+
+
+def safe_offset(path, i, dur_s, step=37):
+    dur = clip_duration(path)
+    span = max(dur - dur_s - 1, 1)
+    return (i * step) % span
+
+
 def decode_window(path, start_s, dur_s, w=160, h=90, pix_fmt="rgb24",
                   timeout_s=120):
     """Decode [start_s, start_s+dur_s) scaled to w,h. Returns (arr, fps).
