@@ -1096,6 +1096,9 @@ class TestFunnelSeam(BucketCase):
 ENV_DEPENDENT_VERSION_KEYS = frozenset({
     "face_detector_task", "hand_landmarker_task",  # weight-file tokens
     "signals_backend",  # only present when the real signals module imports
+    "eg2_weights",  # backbone token: only present with the EG2 weights file
+    "decider_decider_hands", "decider_decider_work",  # head tokens: models/ only
+    "decider_decider_step_prototypes",
 })
 
 
@@ -1106,7 +1109,8 @@ def _env_free(obj):
         for k, v in obj.items():
             if k == "versions" and isinstance(v, dict):
                 v = {vk: vv for vk, vv in v.items()
-                     if vk not in ENV_DEPENDENT_VERSION_KEYS}
+                     if vk not in ENV_DEPENDENT_VERSION_KEYS
+                     and not vk.startswith(("eg2_", "decider_"))}
             out[k] = _env_free(v)
         return out
     if isinstance(obj, list):
@@ -1308,6 +1312,51 @@ class TestRiskCoverageHeads(BucketCase):
                 expected = json.loads(
                     (examples / f"{name}.json").read_text(encoding="utf-8"))
                 self.assertEqual(_env_free(payload), _env_free(expected))
+
+
+class TestConcurrentIngest(BucketCase):
+    """Same clip twice concurrently => one processing, one duplicate (B3).
+
+    Regression test for the demo's 3 reverify MISMATCHes: without an
+    in-flight guard, the dock POST and the bucket watcher (or two
+    request threads) run process_clip on the same bytes concurrently
+    and tear the segment files, so receipts stop re-verifying.
+    """
+
+    def test_concurrent_same_clip_processes_once(self) -> None:
+        import threading
+        from jadal import service as service_mod
+        path = self.fake_clip("race.mp4")
+        calls = {"n": 0}
+        entered = threading.Event()
+        release = threading.Event()
+        real = pipeline.process_clip
+
+        def slow(path_, worker_id, site_id, config):
+            calls["n"] += 1
+            entered.set()
+            assert release.wait(timeout=30.0), "second ingest never arrived"
+            return real(path_, worker_id, site_id, config)
+
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        svc = app.state.service
+        results = {}
+        with mock.patch.object(service_mod.pipeline, "process_clip",
+                               side_effect=slow):
+            first = threading.Thread(
+                target=lambda: results.setdefault(
+                    "first", svc.handle_clip(path, "w", "race")))
+            first.start()
+            assert entered.wait(timeout=30.0), "first ingest never started"
+            # Same clip while the first is still inside process_clip.
+            second = svc.handle_clip(path, "w", "race")
+            release.set()
+            first.join(timeout=60.0)
+        self.assertFalse(first.is_alive(), "first ingest hung")
+        self.assertFalse(results["first"]["duplicate"])
+        self.assertTrue(second["duplicate"])
+        self.assertEqual(calls["n"], 1)
+        self.assertNotIn("race.mp4", str(svc._errors))
 
 
 class TestHubMount(BucketCase):
