@@ -1,0 +1,260 @@
+{
+ "frr_cap": 0.15,
+ "loco": {
+  "sens": 1.0,
+  "frr_good": 0.97,
+  "bal_acc": 0.515,
+  "per_reason": {
+   "GOOD": {
+    "recall_bad": null,
+    "kept": 0.03,
+    "n": 100
+   },
+   "TOO_DARK": {
+    "recall_bad": 1.0,
+    "kept": null,
+    "n": 6
+   },
+   "UNDECODABLE": {
+    "recall_bad": 1.0,
+    "kept": null,
+    "n": 1
+   }
+  },
+  "baselines": {
+   "accept_all": 0.5,
+   "reject_all": 0.5
+  },
+  "beats_trivial": true
+ },
+ "fold_thresholds": {
+  "desk": {
+   "dark": 0.0087,
+   "overexp": 0.5941,
+   "blur": 125.0711,
+   "ten": 320.46,
+   "frozen": 1.5,
+   "madfroz": 0.6,
+   "ffroz": 0.05,
+   "pbytes": 2228.1,
+   "clipfrac": 0.05,
+   "lowent": 7.132,
+   "lowsnr": 7.9208,
+   "still": 0.7
+  },
+  "ecu_full": {
+   "dark": 0.0189,
+   "overexp": 0.6204,
+   "blur": 118.5012,
+   "ten": 387.838,
+   "frozen": 1.5,
+   "madfroz": 0.1,
+   "ffroz": 0.05,
+   "pbytes": 3383.6,
+   "clipfrac": 0.2,
+   "lowent": 6.991,
+   "lowsnr": 7.4768,
+   "still": 0.5
+  },
+  "ecu_late": {
+   "dark": 0.0087,
+   "overexp": 0.6071,
+   "blur": 126.1307,
+   "ten": 350.2142,
+   "frozen": 1.5,
+   "madfroz": 0.2,
+   "ffroz": 0.05,
+   "pbytes": 2290.1,
+   "clipfrac": 0.2,
+   "lowent": 7.1014,
+   "lowsnr": 9.204,
+   "still": 0.7
+  },
+  "logistics4": {
+   "dark": 0.0087,
+   "overexp": 0.6052,
+   "blur": 127.2279,
+   "ten": 323.8013,
+   "frozen": 1.5,
+   "madfroz": 0.6,
+   "ffroz": 0.05,
+   "pbytes": 2236.0,
+   "clipfrac": 0.2,
+   "lowent": 6.1268,
+   "lowsnr": 7.9525,
+   "still": 0.7
+  },
+  "organise": {
+   "dark": 0.0087,
+   "overexp": 0.6053,
+   "blur": 122.7561,
+   "ten": 370.2239,
+   "frozen": 1.5,
+   "madfroz": 0.6,
+   "ffroz": 0.05,
+   "pbytes": 2183.425,
+   "clipfrac": 0.2,
+   "lowent": 6.7321,
+   "lowsnr": 8.4996,
+   "still": 0.7
+  },
+  "pallet": {
+   "dark": 0.0087,
+   "overexp": 0.6057,
+   "blur": 114.587,
+   "ten": 256.9862,
+   "frozen": 1.5,
+   "madfroz": 0.6,
+   "ffroz": 0.05,
+   "pbytes": 2196.8,
+   "clipfrac": 0.2,
+   "lowent": 7.004,
+   "lowsnr": 8.0317,
+   "still": 0.7
+  },
+  "pallet2": {
+   "dark": 0.0089,
+   "overexp": 0.6055,
+   "blur": 94.1019,
+   "ten": 359.4003,
+   "frozen": 1.5,
+   "madfroz": 0.6,
+   "ffroz": 0.05,
+   "pbytes": 2181.4,
+   "clipfrac": 0.2,
+   "lowent": 6.4145,
+   "lowsnr": 8.1207,
+   "still": 0.7
+  }
+ },
+ "frozen": {
+  "dark": {
+   "thr": 0.009,
+   "J": -0.03,
+   "train_frr": 0.03,
+   "fallback": true,
+   "feature": "p05",
+   "op": "<",
+   "src": "th",
+   "thr_int": 90
+  },
+  "overexp": {
+   "thr": 0.6053,
+   "J": -0.4343,
+   "train_frr": 0.72,
+   "fallback": true,
+   "feature": "p95",
+   "op": ">",
+   "src": "th",
+   "thr_int": 6053
+  },
+  "blur": {
+   "thr": 95.0933,
+   "J": 0.4286,
+   "train_frr": 0.0,
+   "fallback": false,
+   "feature": "blur_norm",
+   "op": "<",
+   "src": "th",
+   "thr_int": 950933
+  },
+  "ten": {
+   "thr": 339.2751,
+   "J": 0.3986,
+   "train_frr": 0.03,
+   "fallback": false,
+   "feature": "ten_norm",
+   "op": "<",
+   "src": "ph",
+   "thr_int": 3392751
+  },
+  "frozen": {
+   "thr": 1.5,
+   "J": 0.0,
+   "train_frr": 0.0,
+   "fallback": true,
+   "feature": "frozen_idx",
+   "op": "<",
+   "src": "th",
+   "thr_int": 15000
+  },
+  "madfroz": {
+   "thr": 0.6,
+   "J": 0.1429,
+   "train_frr": 0.0,
+   "fallback": false,
+   "feature": "mad_frozen_frac",
+   "op": ">",
+   "src": "ph",
+   "thr_int": 6000
+  },
+  "ffroz": {
+   "thr": 0.05,
+   "J": 0.0,
+   "train_frr": 0.0,
+   "fallback": true,
+   "feature": "frm_frozen_frac",
+   "op": ">",
+   "src": "ph",
+   "thr_int": 500
+  },
+  "pbytes": {
+   "thr": 2183.6,
+   "J": 0.2457,
+   "train_frr": 0.04,
+   "fallback": false,
+   "feature": "p_size_med",
+   "op": "<",
+   "src": "ph",
+   "thr_int": 21836000
+  },
+  "clipfrac": {
+   "thr": 0.2,
+   "J": 0.0,
+   "train_frr": 0.0,
+   "fallback": true,
+   "feature": "clip_frac",
+   "op": ">",
+   "src": "ph",
+   "thr_int": 2000
+  },
+  "lowent": {
+   "thr": 6.4861,
+   "J": 0.7043,
+   "train_frr": 0.01,
+   "fallback": false,
+   "feature": "hist_ent",
+   "op": "<",
+   "src": "ph",
+   "thr_int": 64861
+  },
+  "lowsnr": {
+   "thr": 8.1401,
+   "J": -0.03,
+   "train_frr": 0.03,
+   "fallback": true,
+   "feature": "snr_db",
+   "op": "<",
+   "src": "ph",
+   "thr_int": 81401
+  },
+  "still": {
+   "thr": 0.7,
+   "J": 0.0,
+   "train_frr": 0.0,
+   "fallback": true,
+   "feature": "still_run",
+   "op": ">",
+   "src": "th",
+   "thr_int": 7000
+  }
+ },
+ "active_rules": [
+  "blur",
+  "lowent",
+  "madfroz",
+  "pbytes",
+  "ten"
+ ],
+ "primary_claim": "quality stage only; activity stays a score; rule list is NOT the primary decider unless it beats trivial baselines out-of-clip"
+}
