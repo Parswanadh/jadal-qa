@@ -26,7 +26,7 @@ sys.path.insert(0, THIS)
 from phys_rules import (CANDIDATE_RULES, Q, build_rule_table, choose_reject_threshold,  # noqa: E402
                         choose_reject_threshold_ba, decide, derive_thresholds, score_window)
 
-DATA = os.environ.get("JADAL_DATA", "/workspace/jadal_pod_bundle")
+DATA = os.environ["JADAL_DATA"]
 OUT = os.path.join(ROOT, "eval", "results", "exp_phys")
 FR_BUDGET = 0.05          # pre-registered false-reject budget on training-good
 BOOT = 2000
