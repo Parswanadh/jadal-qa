@@ -1,12 +1,12 @@
 # Pico module report (issue #2)
 
-Owner branch: `feat/pico` (worktree `.../jadal-qa-wt/pico`). Implements the Pico 2
+Owner branch: `feat/pico` (worktree `.../jadal-qa-wt/pico`). Implements the Raspberry Pi Pico (RP2040 tested)
 firmware + host serial link per the protocol in [`docs/SPEC.md`](../SPEC.md).
 USB serial only, no Wi-Fi.
 
 ## What exists
 
-- `pico/main.py` — MicroPython firmware for Raspberry Pi Pico 2 (RP2350).
+- `pico/main.py` — MicroPython firmware for Raspberry Pi Pico (RP2040 tested; RP2350 not tested).
   - `HB <ticks_ms> <led_state>` every 1.0 s (non-blocking schedule).
   - `LED G|A|R|OFF` — onboard LED plus an **optional external RGB LED** via
     `RGB_PINS` at the top of the file (G=green, A=red+green amber, R=red).
@@ -43,7 +43,7 @@ was done.
 # firmware syntax check + import-safety (no hardware)
 /home/parshu/envs/jadal/bin/python -m py_compile pico/main.py
 
-# deploy to a real Pico 2 (see pico/README.md)
+# deploy to a real Pico (see pico/README.md)
 mpremote fs cp pico/main.py :main.py && mpremote reset
 ```
 

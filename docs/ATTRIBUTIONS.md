@@ -13,7 +13,7 @@ Every dataset, model, service and external package that Jadal QA uses or depends
 | MediaPipe model files: `hand_landmarker.task`, `blaze_face_short_range.tflite` | Model (hand and face detection) | Google | Google MediaPipe model files (downloaded from storage.googleapis.com/mediapipe-models; licence not verified here; not redistributed). | L0 hand and face detection (`jadal/signals.py`, PR #12). | **No.** Downloaded into `models/`, which is git-ignored. |
 | Laya (Design 1 fusion) | Model and code | NandhaKishorM/laya | Apache-2.0 | L1 vision-fusion design, planned as a stretch goal (issue #9). Not used on `main`. | No. |
 | Sarvam AI Bulbul v3 (TTS API) | Hosted API | Sarvam AI | Sarvam service terms. **check** the terms for generated audio. | Generates the pre-recorded voice messages (`voicebank/gen_voicebank.py`). | Generated `.wav` files are git-ignored. The API key is read from `SARVAM_API_KEY`. |
-| MicroPython | Firmware | MicroPython project | MIT | Pico 2 firmware (`pico/main.py`), v1.29.0 RPI_PICO build. | Not committed as a binary. |
+| MicroPython | Firmware | MicroPython project | MIT | Raspberry Pi Pico (RP2040 tested) firmware (`pico/main.py`), v1.29.0 RPI_PICO build. | Not committed as a binary. |
 
 ## Other dependencies
 

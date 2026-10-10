@@ -103,4 +103,4 @@ MicroPython 1.29.0: heartbeat, LED, FLASH and PING/PONG verified over USB serial
 see `docs/reports/pico_hardware.md`. The onboard LED's colour output and the FLASH
 pattern were not observed by the agent.
 The host link and its fake serial are unit-tested. See `main.py`'s module
-docstring and `docs/reports/pico.md` for the NOT-DONE list.
+docstring (LIMITS section) and `docs/reports/pico.md` for the open points.

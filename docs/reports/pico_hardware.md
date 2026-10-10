@@ -46,7 +46,7 @@ ls :            (empty root, before copy)
 
 ## Step 2 - deploy firmware
 
-Source: `pico/main.py` (7963 bytes), copied to `prep/pico_hw/main.py` for the test.
+Source: `pico/main.py` (7963 bytes), copied to the test bench (test scripts are not committed to this repo).
 The first `fs cp` attempt failed with `TransportError: could not enter raw repl`. The cause was not diagnosed; a retry succeeded.
 
 ```
@@ -63,7 +63,7 @@ Note: the `main.py` docstring says it targets Pico 2 (RP2350). This board is an 
 
 ## Step 3 - PicoLink exercise
 
-Scripts: `prep/pico_hw/pico_hw_check.py` (log: `run1.log`). Supplementary: `pico_hw_check2.py` (log: `run2.log`).
+Scripts and logs (`pico_hw_check.py` / `run1.log`, supplementary `pico_hw_check2.py` / `run2.log`) are not committed to this repo. Outputs are copied below.
 
 ```
 [OK] connect(): '/dev/ttyACM0'
