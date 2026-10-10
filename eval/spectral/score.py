@@ -733,12 +733,16 @@ def partial_recommendation(s: dict) -> str:
             "no usable-activity signal on current labels; A-full (whole-video cheap signals) "
             "leads but its synth profile (catches darken only) shows it keys on activity/motion, "
             "not capture quality.")
-    bt0 = (s.get("synth") or {}).get("B-T0", {})
-    if bt0.get("status") == "RUN":
-        cf = ((bt0.get("per_degradation") or {}).get("clean") or {}).get("control_FAR")
-        out += (f" B-T0 synth transfers poorly: clean-control FAR {cf} at the 5%-gold-FAR "
-                "threshold (5/6 clean flagged bad) — its scores shift between gold originals "
-                "and re-encoded synth mp4s, so its sensitivity numbers are not a usable "
+    bad_transfer = []
+    for k, v in (s.get("synth") or {}).items():
+        if k.startswith("B-") and v.get("status") == "RUN":
+            cf = ((v.get("per_degradation") or {}).get("clean") or {}).get("control_FAR")
+            if cf is not None and cf > 0.2:
+                bad_transfer.append(f"{k} clean-FAR {cf}")
+    if bad_transfer:
+        out += (" Spectral-gold-to-synth transfer warning (" + "; ".join(bad_transfer) +
+                " at the 5%-gold-FAR threshold): scores shift between gold originals "
+                "and re-encoded synth mp4s, so those sensitivity numbers are not a usable "
                 "operating point.")
     return out
 

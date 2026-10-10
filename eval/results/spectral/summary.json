@@ -1,11 +1,11 @@
 {
- "created_utc": "2026-10-10T10:11:53Z",
+ "created_utc": "2026-10-10T10:16:25Z",
  "label_source": "human gold (IndEgo workers; NOT Awign footage)",
  "gold_snapshot": {
-  "snapshot_utc": "2026-10-10T09:53:36.001340+00:00",
-  "labels_sha256": "0bc9e0b8f34839f98fa3fbdec068dc931e98e12d549da16d539be1d2db85be1b",
-  "n_good": 65,
-  "n_bad": 14
+  "snapshot_utc": "2026-10-10T10:14:34Z",
+  "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+  "n_good": 100,
+  "n_bad": 50
  },
  "arms": {
   "A": {
@@ -984,7 +984,7 @@
     "clean": {
      "n": 6,
      "sensitivity_at_5pct_FAR": null,
-     "control_FAR": 0.833
+     "control_FAR": 1.0
     },
     "darken": {
      "n": 6,
@@ -1577,5 +1577,5 @@
  "vlm_verdict": {
   "status": "NOT RUN"
  },
- "scorer_wall_s": 10.9
+ "scorer_wall_s": 12.0
 }
