@@ -1,0 +1,1225 @@
+{
+ "variants_ood": [
+  {
+   "label": "a_raw_frozen",
+   "mode": "raw",
+   "note": "",
+   "auroc": 0.4272,
+   "score_stats": {
+    "mean": 11.875,
+    "median": 9.5,
+    "p90": 22.0,
+    "max": 31
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.5,
+   "balanced_acc_review_as_accept": 0.3903,
+   "reject_rate": 0.6438,
+   "review_rate": 0.3563,
+   "recall_bad": 0.4545,
+   "false_reject_rate_good": 0.6739,
+   "confusion": {
+    "tp_bad_rejected": 10,
+    "fp_good_rejected": 93,
+    "tn_good_accepted": 0,
+    "fn_bad_accepted": 0
+   },
+   "auroc_ci95_window_bootstrap": [
+    0.281,
+    0.5767
+   ]
+  },
+  {
+   "label": "b_requantile_target",
+   "mode": "requantile",
+   "note": "",
+   "auroc": 0.556,
+   "score_stats": {
+    "mean": 6.306,
+    "median": 5.0,
+    "p90": 14.0,
+    "max": 25
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.5368,
+   "balanced_acc_review_as_accept": 0.4848,
+   "reject_rate": 0.1625,
+   "review_rate": 0.7625,
+   "recall_bad": 0.1364,
+   "false_reject_rate_good": 0.1667,
+   "confusion": {
+    "tp_bad_rejected": 3,
+    "fp_good_rejected": 23,
+    "tn_good_accepted": 11,
+    "fn_bad_accepted": 1
+   },
+   "auroc_ci95_window_bootstrap": [
+    0.4341,
+    0.6695
+   ]
+  },
+  {
+   "label": "b2_requantile_rank",
+   "mode": "requantile_rank",
+   "note": "",
+   "auroc": 0.5441,
+   "score_stats": {
+    "mean": 6.506,
+    "median": 5.0,
+    "p90": 14.0,
+    "max": 25
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.4515,
+   "balanced_acc_review_as_accept": 0.4848,
+   "reject_rate": 0.1625,
+   "review_rate": 0.7625,
+   "recall_bad": 0.1364,
+   "false_reject_rate_good": 0.1667,
+   "confusion": {
+    "tp_bad_rejected": 3,
+    "fp_good_rejected": 23,
+    "tn_good_accepted": 10,
+    "fn_bad_accepted": 2
+   },
+   "auroc_ci95_window_bootstrap": [
+    0.4187,
+    0.6625
+   ]
+  },
+  {
+   "label": "c_zscore_target",
+   "mode": "zscore",
+   "note": "",
+   "auroc": 0.4962,
+   "score_stats": {
+    "mean": 9.363,
+    "median": 8.0,
+    "p90": 18.0,
+    "max": 31
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.5,
+   "balanced_acc_review_as_accept": 0.4368,
+   "reject_rate": 0.2,
+   "review_rate": 0.8,
+   "recall_bad": 0.0909,
+   "false_reject_rate_good": 0.2174,
+   "confusion": {
+    "tp_bad_rejected": 2,
+    "fp_good_rejected": 30,
+    "tn_good_accepted": 0,
+    "fn_bad_accepted": 0
+   },
+   "auroc_ci95_window_bootstrap": [
+    0.36,
+    0.6184
+   ]
+  },
+  {
+   "label": "c1_zscore_literal",
+   "mode": "zscore_literal",
+   "note": "",
+   "auroc": 0.4336,
+   "score_stats": {
+    "mean": 19.244,
+    "median": 20.0,
+    "p90": 28.0,
+    "max": 35
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.5,
+   "balanced_acc_review_as_accept": 0.5072,
+   "reject_rate": 0.9875,
+   "review_rate": 0.0125,
+   "recall_bad": 1.0,
+   "false_reject_rate_good": 0.9855,
+   "confusion": {
+    "tp_bad_rejected": 22,
+    "fp_good_rejected": 136,
+    "tn_good_accepted": 0,
+    "fn_bad_accepted": 0
+   },
+   "auroc_ci95_window_bootstrap": [
+    0.3075,
+    0.5562
+   ]
+  },
+  {
+   "label": "d_regime_requantile",
+   "mode": "requantile",
+   "note": "",
+   "auroc": 0.5761,
+   "score_stats": {
+    "mean": 7.744,
+    "median": 7.0,
+    "p90": 15.099999999999994,
+    "max": 29
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.5854,
+   "balanced_acc_review_as_accept": 0.5586,
+   "reject_rate": 0.2625,
+   "review_rate": 0.6937,
+   "recall_bad": 0.3636,
+   "false_reject_rate_good": 0.2464,
+   "confusion": {
+    "tp_bad_rejected": 8,
+    "fp_good_rejected": 34,
+    "tn_good_accepted": 7,
+    "fn_bad_accepted": 0
+   },
+   "auroc_ci95_window_bootstrap": [
+    0.4484,
+    0.6913
+   ]
+  },
+  {
+   "label": "d2_regime_zscore",
+   "mode": "zscore",
+   "note": "",
+   "auroc": 0.4699,
+   "score_stats": {
+    "mean": 9.406,
+    "median": 8.0,
+    "p90": 19.099999999999994,
+    "max": 33
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.5,
+   "balanced_acc_review_as_accept": 0.4667,
+   "reject_rate": 0.1938,
+   "review_rate": 0.8063,
+   "recall_bad": 0.1364,
+   "false_reject_rate_good": 0.2029,
+   "confusion": {
+    "tp_bad_rejected": 3,
+    "fp_good_rejected": 28,
+    "tn_good_accepted": 0,
+    "fn_bad_accepted": 0
+   },
+   "auroc_ci95_window_bootstrap": [
+    0.3337,
+    0.5991
+   ]
+  }
+ ],
+ "variants_in_domain": [
+  {
+   "label": "a_raw_frozen",
+   "mode": "raw",
+   "note": "",
+   "auroc": 0.823,
+   "score_stats": {
+    "mean": 6.567,
+    "median": 4.5,
+    "p90": 15.0,
+    "max": 26
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.9,
+   "balanced_acc_review_as_accept": 0.685,
+   "reject_rate": 0.1733,
+   "review_rate": 0.6933,
+   "recall_bad": 0.42,
+   "false_reject_rate_good": 0.05,
+   "confusion": {
+    "tp_bad_rejected": 21,
+    "fp_good_rejected": 5,
+    "tn_good_accepted": 20,
+    "fn_bad_accepted": 0
+   },
+   "auroc_ci95_clip_bootstrap": [
+    0.7326,
+    0.8568
+   ]
+  },
+  {
+   "label": "b_requantile_heldout_clip",
+   "mode": "requantile",
+   "note": "per-fold target-side fit on the 7 held-out clips (6-48 unlabelled windows each)",
+   "auroc": 0.7128,
+   "score_stats": {
+    "mean": 7.333,
+    "median": 6.0,
+    "p90": 16.099999999999994,
+    "max": 32
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.6241,
+   "balanced_acc_review_as_accept": 0.635,
+   "reject_rate": 0.26,
+   "review_rate": 0.6867,
+   "recall_bad": 0.44,
+   "false_reject_rate_good": 0.17,
+   "confusion": {
+    "tp_bad_rejected": 22,
+    "fp_good_rejected": 17,
+    "tn_good_accepted": 7,
+    "fn_bad_accepted": 1
+   },
+   "auroc_ci95_clip_bootstrap": [
+    0.6613,
+    0.78
+   ]
+  },
+  {
+   "label": "b2_requantile_rank_heldout_clip",
+   "mode": "requantile_rank",
+   "note": "per-fold target-side fit on the 7 held-out clips (6-48 unlabelled windows each)",
+   "auroc": 0.7034,
+   "score_stats": {
+    "mean": 6.28,
+    "median": 5.0,
+    "p90": 13.099999999999994,
+    "max": 24
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.7951,
+   "balanced_acc_review_as_accept": 0.62,
+   "reject_rate": 0.1,
+   "review_rate": 0.8333,
+   "recall_bad": 0.26,
+   "false_reject_rate_good": 0.02,
+   "confusion": {
+    "tp_bad_rejected": 13,
+    "fp_good_rejected": 2,
+    "tn_good_accepted": 7,
+    "fn_bad_accepted": 3
+   },
+   "auroc_ci95_clip_bootstrap": [
+    0.6437,
+    0.772
+   ]
+  },
+  {
+   "label": "c_zscore_heldout_clip",
+   "mode": "zscore",
+   "note": "per-fold target-side fit on the 7 held-out clips (6-48 unlabelled windows each)",
+   "auroc": 0.6794,
+   "score_stats": {
+    "mean": 7.853,
+    "median": 7.0,
+    "p90": 14.0,
+    "max": 29
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.6071,
+   "balanced_acc_review_as_accept": 0.605,
+   "reject_rate": 0.12,
+   "review_rate": 0.86,
+   "recall_bad": 0.26,
+   "false_reject_rate_good": 0.05,
+   "confusion": {
+    "tp_bad_rejected": 13,
+    "fp_good_rejected": 5,
+    "tn_good_accepted": 2,
+    "fn_bad_accepted": 1
+   },
+   "auroc_ci95_clip_bootstrap": [
+    0.659,
+    0.7438
+   ]
+  },
+  {
+   "label": "b_requantile_selfquantile",
+   "mode": "requantile",
+   "note": "",
+   "auroc": 0.823,
+   "score_stats": {
+    "mean": 6.567,
+    "median": 4.5,
+    "p90": 15.0,
+    "max": 26
+   },
+   "reject_threshold": 14,
+   "balanced_acc_decided": 0.9,
+   "balanced_acc_review_as_accept": 0.685,
+   "reject_rate": 0.1733,
+   "review_rate": 0.6933,
+   "recall_bad": 0.42,
+   "false_reject_rate_good": 0.05,
+   "confusion": {
+    "tp_bad_rejected": 21,
+    "fp_good_rejected": 5,
+    "tn_good_accepted": 20,
+    "fn_bad_accepted": 0
+   },
+   "auroc_ci95_clip_bootstrap": [
+    0.7326,
+    0.8568
+   ]
+  }
+ ],
+ "extra": {
+  "regimes_ood": {
+   "info": {
+    "k": 2,
+    "seed": 0,
+    "descriptor_keys": [
+     "bitrate_kbps",
+     "luma_mean",
+     "sharp_norm",
+     "noise_sigma",
+     "edge_density",
+     "blockiness",
+     "luma_p05",
+     "bright_frac",
+     "shift_mean"
+    ],
+    "sizes": {
+     "0": 45,
+     "1": 115
+    },
+    "centroids_z": [
+     [
+      -0.605,
+      0.828,
+      -1.182,
+      -1.015,
+      -1.044,
+      0.695,
+      1.002,
+      -0.957,
+      -0.187
+     ],
+     [
+      0.237,
+      -0.324,
+      0.462,
+      0.397,
+      0.409,
+      -0.272,
+      -0.392,
+      0.374,
+      0.073
+     ]
+    ]
+   },
+   "n_with_descriptor": 160,
+   "note": "k-means on z-scored E4 descriptors, fixed seed, no labels"
+  },
+  "calibration_slice": {
+   "calib32_requantile": {
+    "n_calib": 32,
+    "n_seeds": 20,
+    "auroc_mean": 0.5422,
+    "auroc_std": 0.0266,
+    "auroc_min": 0.4817,
+    "auroc_max": 0.5884,
+    "auroc_by_seed": [
+     0.5219,
+     0.5708,
+     0.4817,
+     0.5595,
+     0.5884,
+     0.5471,
+     0.5359,
+     0.5459,
+     0.5486,
+     0.5324,
+     0.5619,
+     0.5132,
+     0.557,
+     0.5728,
+     0.5369,
+     0.5188,
+     0.5522,
+     0.5532,
+     0.5591,
+     0.486
+    ],
+    "auroc_heldout128_mean": 0.5496,
+    "auroc_heldout128_min": 0.4677,
+    "auroc_heldout128_max": 0.6311,
+    "note": "quantiles estimated from the unlabelled calibration slice only; evaluated on all 160 (and on the disjoint 128)",
+    "seed0_full_report": {
+     "label": "e_calib32_s0",
+     "mode": "requantile",
+     "note": "",
+     "auroc": 0.5219,
+     "score_stats": {
+      "mean": 7.369,
+      "median": 6.0,
+      "p90": 16.099999999999994,
+      "max": 27
+     },
+     "reject_threshold": 14,
+     "balanced_acc_decided": 0.4091,
+     "balanced_acc_review_as_accept": 0.5007,
+     "reject_rate": 0.3625,
+     "review_rate": 0.5875,
+     "recall_bad": 0.3636,
+     "false_reject_rate_good": 0.3623,
+     "confusion": {
+      "tp_bad_rejected": 8,
+      "fp_good_rejected": 50,
+      "tn_good_accepted": 5,
+      "fn_bad_accepted": 3
+     },
+     "auroc_ci95_window_bootstrap": [
+      0.3825,
+      0.6566
+     ],
+     "calibration_rows": [
+      0,
+      18,
+      23,
+      26,
+      27,
+      28,
+      29,
+      37,
+      39,
+      41,
+      44,
+      63,
+      67,
+      68,
+      70,
+      72,
+      79,
+      80,
+      98,
+      104,
+      105,
+      108,
+      111,
+      120,
+      121,
+      127,
+      133,
+      139,
+      143,
+      144,
+      151,
+      153
+     ],
+     "auroc_heldout_windows_only": 0.5596
+    }
+   },
+   "calib32_requantile_rank": {
+    "auroc_mean": 0.5364,
+    "auroc_min": 0.4806,
+    "auroc_max": 0.5748
+   }
+  },
+  "paired_delta_auroc_vs_raw_ood": {
+   "b_requantile_target": {
+    "delta": 0.129,
+    "ci95": [
+     0.0138,
+     0.2475
+    ],
+    "p_delta_le_0": 0.012,
+    "of": "AUROC(b_requantile_target) - AUROC(a_raw_frozen), paired window bootstrap"
+   },
+   "b2_requantile_rank": {
+    "delta": 0.1171,
+    "ci95": [
+     0.0025,
+     0.2368
+    ],
+    "p_delta_le_0": 0.0235,
+    "of": "AUROC(b2_requantile_rank) - AUROC(a_raw_frozen), paired window bootstrap"
+   },
+   "c_zscore_target": {
+    "delta": 0.0684,
+    "ci95": [
+     -0.0388,
+     0.1817
+    ],
+    "p_delta_le_0": 0.104,
+    "of": "AUROC(c_zscore_target) - AUROC(a_raw_frozen), paired window bootstrap"
+   },
+   "c1_zscore_literal": {
+    "delta": 0.0071,
+    "ci95": [
+     -0.1206,
+     0.1439
+    ],
+    "p_delta_le_0": 0.463,
+    "of": "AUROC(c1_zscore_literal) - AUROC(a_raw_frozen), paired window bootstrap"
+   },
+   "d_regime_requantile": {
+    "delta": 0.149,
+    "ci95": [
+     0.0047,
+     0.2918
+    ],
+    "p_delta_le_0": 0.022,
+    "of": "AUROC(d_regime_requantile) - AUROC(a_raw_frozen), paired window bootstrap"
+   },
+   "d2_regime_zscore": {
+    "delta": 0.0429,
+    "ci95": [
+     -0.0691,
+     0.1578
+    ],
+    "p_delta_le_0": 0.229,
+    "of": "AUROC(d2_regime_zscore) - AUROC(a_raw_frozen), paired window bootstrap"
+   }
+  },
+  "score_share_by_rule_ood": {
+   "raw": {
+    "BLUR": 0.0058,
+    "CODING_NOISE": 0.06,
+    "DUPLICATE": 0.0489,
+    "FROZEN_STATIC": 0.0053,
+    "HANDS_NOT_VISIBLE": 0.0047,
+    "NO_ACTIVE_WORK": 0.0479,
+    "OVEREXPOSED": 0.0826,
+    "TOO_DARK": 0.0016
+   },
+   "requantile": {
+    "BLUR": 0.0654,
+    "CODING_NOISE": 0.0773,
+    "DUPLICATE": 0.0545,
+    "FROZEN_STATIC": 0.0515,
+    "HANDS_NOT_VISIBLE": 0.0396,
+    "NO_ACTIVE_WORK": 0.0496,
+    "OVEREXPOSED": 0.0396,
+    "TOO_DARK": 0.0654
+   },
+   "regime_requantile": {
+    "BLUR": 0.0694,
+    "CODING_NOISE": 0.0775,
+    "DUPLICATE": 0.0492,
+    "FROZEN_STATIC": 0.0371,
+    "HANDS_NOT_VISIBLE": 0.0355,
+    "NO_ACTIVE_WORK": 0.0428,
+    "OVEREXPOSED": 0.0234,
+    "TOO_DARK": 0.046
+   }
+  },
+  "paired_delta_auroc_vs_raw_indego": {
+   "requantile_heldout_clip": {
+    "delta": -0.093,
+    "ci95": [
+     -0.1706,
+     0.0218
+    ],
+    "p_delta_le_0": 0.9595,
+    "of": "AUROC(requantile_heldout_clip) - AUROC(a_raw_frozen), paired clip bootstrap"
+   },
+   "requantile_rank_heldout_clip": {
+    "delta": -0.1017,
+    "ci95": [
+     -0.1843,
+     0.0096
+    ],
+    "p_delta_le_0": 0.964,
+    "of": "AUROC(requantile_rank_heldout_clip) - AUROC(a_raw_frozen), paired clip bootstrap"
+   },
+   "zscore_heldout_clip": {
+    "delta": -0.1155,
+    "ci95": [
+     -0.1745,
+     -0.0205
+    ],
+    "p_delta_le_0": 0.9885,
+    "of": "AUROC(zscore_heldout_clip) - AUROC(a_raw_frozen), paired clip bootstrap"
+   }
+  },
+  "within_clip_auroc_indego": {
+   "raw": {
+    "mean_within_auroc": 0.7311,
+    "n_groups_scored": 7,
+    "group_sizes": {
+     "desk": 29,
+     "ecu_full": 48,
+     "ecu_late": 14,
+     "logistics4": 17,
+     "organise": 19,
+     "pallet": 17,
+     "pallet2": 6
+    }
+   },
+   "b_requantile_heldout_clip": {
+    "mean_within_auroc": 0.7156,
+    "n_groups_scored": 7,
+    "group_sizes": {
+     "desk": 29,
+     "ecu_full": 48,
+     "ecu_late": 14,
+     "logistics4": 17,
+     "organise": 19,
+     "pallet": 17,
+     "pallet2": 6
+    }
+   },
+   "note": "per-domain monotone re-quantiling cannot change within-clip feature ranking; it changes only the pooling across clips (between-clip level information)"
+  },
+  "within_batch_auroc_ood": {
+   "raw": {
+    "mean_within_auroc": 0.436,
+    "n_groups_scored": 2,
+    "group_sizes": {
+     "q1": 60,
+     "q2": 100
+    }
+   },
+   "b_requantile_target": {
+    "mean_within_auroc": 0.5908,
+    "n_groups_scored": 2,
+    "group_sizes": {
+     "q1": 60,
+     "q2": 100
+    }
+   },
+   "d_regime_requantile": {
+    "mean_within_auroc": 0.626,
+    "n_groups_scored": 2,
+    "group_sizes": {
+     "q1": 60,
+     "q2": 100
+    }
+   },
+   "note": "batch from the OOD window metadata (label-free grouping)"
+  },
+  "in_domain_target_size_curve": {
+   "m16": {
+    "n_reps": 20,
+    "requantile_auroc_mean": 0.8471,
+    "raw_auroc_mean_same_subsets": 0.8204,
+    "delta_mean": 0.0267,
+    "requantile_auroc_min": 0.5256,
+    "requantile_auroc_max": 1.0
+   },
+   "m32": {
+    "n_reps": 20,
+    "requantile_auroc_mean": 0.8423,
+    "raw_auroc_mean_same_subsets": 0.84,
+    "delta_mean": 0.0023,
+    "requantile_auroc_min": 0.7247,
+    "requantile_auroc_max": 0.9071
+   },
+   "m64": {
+    "n_reps": 20,
+    "requantile_auroc_mean": 0.8283,
+    "raw_auroc_mean_same_subsets": 0.8264,
+    "delta_mean": 0.0019,
+    "requantile_auroc_min": 0.7284,
+    "requantile_auroc_max": 0.9131
+   },
+   "m150": {
+    "n_reps": 1,
+    "requantile_auroc_mean": 0.823,
+    "raw_auroc_mean_same_subsets": 0.823,
+    "delta_mean": 0.0,
+    "requantile_auroc_min": 0.823,
+    "requantile_auroc_max": 0.823
+   },
+   "clip_sizes_6_to_48": {
+    "requantile_auroc": 0.7128,
+    "raw_auroc": 0.823,
+    "note": "per-clip LOCO: each target domain is one IndEgo clip (6-48 windows)"
+   }
+  },
+  "fire_rate_extreme_threshold": {
+   "indego_expected_level_p01_or_p99": 0.01,
+   "indego_raw": {
+    "TOO_DARK:full.luma_mean": 0.0133,
+    "TOO_DARK:full.dark_frac": 0.0133,
+    "OVEREXPOSED:full.bright_frac": 0.0133,
+    "BLUR:full.hf_ratio": 0.0133,
+    "BLUR:full.dct_energy": 0.0133,
+    "FROZEN_STATIC:full.temp_b0": 0.0133,
+    "FROZEN_STATIC:full.frozen_frac": 0.0133,
+    "NO_ACTIVE_WORK:phys.flow_act": 0.0133,
+    "NO_ACTIVE_WORK:phys.flow_med": 0.0133,
+    "NO_ACTIVE_WORK:full.motion_energy": 0.0133,
+    "HANDS_NOT_VISIBLE:full.skin_frac": 0.0133,
+    "DUPLICATE:phys.dhash_loop_min": 0.0067,
+    "DUPLICATE:phys.mad_mean": 0.0133,
+    "CODING_NOISE:phys.frm_bytes_med": 0.0133,
+    "CODING_NOISE:phys.p_size_med": 0.0133,
+    "CODING_NOISE:phys.snr_db": 0.0136
+   },
+   "ood_raw": {
+    "TOO_DARK:full.luma_mean": 0.0,
+    "TOO_DARK:full.dark_frac": 0.0,
+    "OVEREXPOSED:full.bright_frac": 0.5062,
+    "BLUR:full.hf_ratio": 0.0,
+    "BLUR:full.dct_energy": 0.0,
+    "FROZEN_STATIC:full.temp_b0": 0.0,
+    "FROZEN_STATIC:full.frozen_frac": 0.0125,
+    "NO_ACTIVE_WORK:phys.flow_act": 0.0063,
+    "NO_ACTIVE_WORK:phys.flow_med": 0.0187,
+    "NO_ACTIVE_WORK:full.motion_energy": 0.3312,
+    "HANDS_NOT_VISIBLE:full.skin_frac": 0.0,
+    "DUPLICATE:phys.dhash_loop_min": 0.025,
+    "DUPLICATE:phys.mad_mean": 0.2375,
+    "CODING_NOISE:phys.frm_bytes_med": 0.375,
+    "CODING_NOISE:phys.p_size_med": 0.375,
+    "CODING_NOISE:phys.snr_db": 0.0443
+   },
+   "ood_requantile": {
+    "TOO_DARK:full.luma_mean": 0.0125,
+    "TOO_DARK:full.dark_frac": 0.0125,
+    "OVEREXPOSED:full.bright_frac": 0.0125,
+    "BLUR:full.hf_ratio": 0.0125,
+    "BLUR:full.dct_energy": 0.0125,
+    "FROZEN_STATIC:full.temp_b0": 0.0125,
+    "FROZEN_STATIC:full.frozen_frac": 0.0125,
+    "NO_ACTIVE_WORK:phys.flow_act": 0.0125,
+    "NO_ACTIVE_WORK:phys.flow_med": 0.0125,
+    "NO_ACTIVE_WORK:full.motion_energy": 0.0125,
+    "HANDS_NOT_VISIBLE:full.skin_frac": 0.0125,
+    "DUPLICATE:phys.dhash_loop_min": 0.0063,
+    "DUPLICATE:phys.mad_mean": 0.0125,
+    "CODING_NOISE:phys.frm_bytes_med": 0.0125,
+    "CODING_NOISE:phys.p_size_med": 0.0125,
+    "CODING_NOISE:phys.snr_db": 0.0127
+   }
+  },
+  "per_rule_indicator_auroc_ood": {
+   "TOO_DARK:full.luma_mean": {
+    "raw": 0.5155,
+    "requantile": 0.498
+   },
+   "TOO_DARK:full.dark_frac": {
+    "raw": 0.5155,
+    "requantile": 0.498
+   },
+   "OVEREXPOSED:full.bright_frac": {
+    "raw": 0.4845,
+    "requantile": 0.4605
+   },
+   "BLUR:full.hf_ratio": {
+    "raw": 0.4601,
+    "requantile": 0.6298
+   },
+   "BLUR:full.dct_energy": {
+    "raw": 0.4601,
+    "requantile": 0.6298
+   },
+   "FROZEN_STATIC:full.temp_b0": {
+    "raw": 0.4638,
+    "requantile": 0.4697
+   },
+   "FROZEN_STATIC:full.frozen_frac": {
+    "raw": 0.4638,
+    "requantile": 0.4697
+   },
+   "NO_ACTIVE_WORK:phys.flow_act": {
+    "raw": 0.4074,
+    "requantile": 0.5033
+   },
+   "NO_ACTIVE_WORK:phys.flow_med": {
+    "raw": 0.4074,
+    "requantile": 0.5033
+   },
+   "NO_ACTIVE_WORK:full.motion_energy": {
+    "raw": 0.4074,
+    "requantile": 0.5033
+   },
+   "HANDS_NOT_VISIBLE:full.skin_frac": {
+    "raw": 0.4937,
+    "requantile": 0.4078
+   },
+   "DUPLICATE:phys.dhash_loop_min": {
+    "raw": 0.4265,
+    "requantile": 0.5115
+   },
+   "DUPLICATE:phys.mad_mean": {
+    "raw": 0.4265,
+    "requantile": 0.5115
+   },
+   "CODING_NOISE:phys.frm_bytes_med": {
+    "raw": 0.5086,
+    "requantile": 0.6126
+   },
+   "CODING_NOISE:phys.p_size_med": {
+    "raw": 0.5086,
+    "requantile": 0.6126
+   },
+   "CODING_NOISE:phys.snr_db": {
+    "raw": 0.5086,
+    "requantile": 0.6126
+   }
+  },
+  "frozen_threshold_level_recovery": {
+   "TOO_DARK:full.luma_mean": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ]
+   },
+   "TOO_DARK:full.dark_frac": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   },
+   "OVEREXPOSED:full.bright_frac": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   },
+   "BLUR:full.hf_ratio": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1067,
+     0.2267
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ]
+   },
+   "BLUR:full.dct_energy": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0467,
+     0.1,
+     0.2467
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ]
+   },
+   "FROZEN_STATIC:full.temp_b0": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ]
+   },
+   "FROZEN_STATIC:full.frozen_frac": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2467
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   },
+   "NO_ACTIVE_WORK:phys.flow_act": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   },
+   "NO_ACTIVE_WORK:phys.flow_med": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   },
+   "NO_ACTIVE_WORK:full.motion_energy": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   },
+   "HANDS_NOT_VISIBLE:full.skin_frac": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ]
+   },
+   "DUPLICATE:phys.dhash_loop_min": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0067,
+     0.04,
+     0.1,
+     0.1933
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   },
+   "DUPLICATE:phys.mad_mean": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   },
+   "CODING_NOISE:phys.frm_bytes_med": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   },
+   "CODING_NOISE:phys.p_size_med": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0133,
+     0.0533,
+     0.1,
+     0.2533
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   },
+   "CODING_NOISE:phys.snr_db": {
+    "empirical_beyond_frozen_thresholds": [
+     0.0136,
+     0.0544,
+     0.102,
+     0.2517
+    ],
+    "levels": [
+     0.01,
+     0.05,
+     0.1,
+     0.25
+    ],
+    "recovered_levels_rank": [
+     0.99,
+     0.95,
+     0.9,
+     0.75
+    ]
+   }
+  },
+  "baseline_cross_check": {
+   "our_a_raw_frozen_ood160_auroc": 0.4272,
+   "recorded_Q4_01_ood160_pure_rules_auroc": 0.4272,
+   "recorded_Q4_01_ood160_logistic_oof_auroc": 0.566,
+   "note": "the earlier corpus-level '99.55% reject' pathology is reproduced here by the naive z-score-literal variant (reject 0.9875), not by the raw frozen table on ood160 (reject 0.644)",
+   "indego_in_sample_Q4_01": 0.8222
+  }
+ },
+ "transfer_statement": {
+  "rule_list": "frozen from IndEgo (Q1): 16 rule-features, 7 named rules",
+  "sign_op_direction": "frozen (< for low-is-bad, > for high-is-bad) - unchanged",
+  "order_statistic_levels": [
+   0.01,
+   0.05,
+   0.1,
+   0.25
+  ],
+  "numeric_threshold": "re-estimated from the TARGET domain's own UNLABELLED feature values at the same levels (variants b/b2/d/e); variant c uses the target's own mean/std instead",
+  "score_and_decision": "unchanged integer Q=4 count of crossed thresholds; REJECT if score >= 14 or a quality rule crosses its extreme (index 0) threshold",
+  "labels": "no target label is ever used to fit a threshold; y is used only for metrics"
+ },
+ "headline": {
+  "n_ood": 160,
+  "n_ood_bad": 22,
+  "n_indego": 150,
+  "n_indego_bad": 50,
+  "n_features": 42,
+  "n_rules": 16,
+  "reject_threshold": 14,
+  "auroc_raw_ood": 0.4272,
+  "auroc_requantile_ood": 0.556,
+  "verdict": "LABEL-FREE PER-DOMAIN RE-QUANTILING PARTIALLY RESCUES OOD TRANSFER: AUROC moves from below chance to slightly above it, and the reject-everything pathology disappears, but it does not approach the in-domain 0.82 - see variants_ood and paired_delta_auroc_vs_raw_ood."
+ },
+ "protocol": {
+  "ood": "all 160 windows; window-bootstrap 95% CI (2000 reps, seed 0) - OPTIMISTIC (resampling windows is not resampling domains)",
+  "in_domain": "IndEgo 150 (7 clips); clip-bootstrap 95% CI; LOCO variants fit the normaliser on the held-out clip's own unlabelled values only",
+  "fitting": "label-free: target statistics use X only; OOD labels never used for fitting",
+  "determinism": "integer Q=4 comparisons, fixed constants, no RNG on the decision path"
+ },
+ "limitations": [
+  "n_bad = 22 on OOD-160: every OOD AUROC has a wide CI; differences below ~0.05 are not resolvable.",
+  "Window-bootstrap CIs are optimistic: windows are not independent (many share a source factory/batch and pairs share the same source video), so true sampling error is larger.",
+  "Variants b/b2/c/d/e are TRANSDUCTIVE: they use the target domain's own unlabelled feature values (the whole target for b/b2/c/d). That is legitimate unlabelled domain adaptation, but it is not a purely inductive single-window decision: a deployed window must be scored against a bank of target statistics. Variant e (32-window calibration slice) quantifies how much of the effect survives with a small unlabelled slice.",
+  "In-domain numbers for the raw table are in-sample (thresholds were derived on these 150 windows); only the LOCO variants are held-out, and their per-clip target domain is tiny (6-48 windows), so their quantile estimates are noisy.",
+  "phys.snr_db is non-finite for 2/160 OOD and 3/150 IndEgo windows; the scorer skips non-finite features (that rule cannot fire on those windows), exactly as tools/phys.",
+  "Reject/BA numbers use the frozen reject_threshold = 14 for every variant; the score distribution changes with re-quantiling, so the operating point is not re-optimised (that is deliberate: re-optimising on OOD would use OOD labels)."
+ ],
+ "n": {
+  "ood": 160,
+  "indego": 150,
+  "ood_bad": 22,
+  "indego_bad": 50
+ },
+ "label_source": "human labels: labels/ood160_labels.json (OOD, n_bad=22) and labels/manifest_gold.json (IndEgo, labels only for reporting)",
+ "command": "OMP_NUM_THREADS=1 python3 eval/exp_phys_dsh/a2_transfer.py --boot 2000 --calib-sizes 32 --calib-seeds 20 --k-regimes 2",
+ "device": "CPU (threads only; multiprocessing blocked by the sandbox)",
+ "rule_table": {
+  "path": "eval/results/exp_phys/rule_table.json",
+  "sha256": "2bc865339d74c43361a90ec7157a82d0aae84ec1753ae2bae1dd0fd847c278e1"
+ },
+ "runtime_s": 85.6
+}

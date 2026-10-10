@@ -1,0 +1,213 @@
+{
+ "experiment": "A4-determinism",
+ "title": "Byte-identical receipt re-proof for the deterministic Q=4 rule scorer",
+ "n": 150,
+ "label_source": "not used for scoring (determinism proof); IndEgo gold window ids",
+ "protocol": "fixed frozen rule table (tools/phys/rules.json thresholds_q, read-only); integer score = number of crossed Q=4 thresholds; decision = REJECT if a QUALITY rule crosses its extreme threshold or score>=t_reject, REVIEW in [t_accept,t_reject), ACCEPT below; receipt = sha256 of the canonical JSON (sorted keys, separators ',' ':') of the full decision record with one {rule,feature,value,op,threshold} entry per crossed threshold",
+ "command": "cd /workspace/wt/dsh-phys && python3 eval/exp_phys_dsh/det_scorer_v2.py --proof --n 10",
+ "device": "cpu x86_64 Linux python 3.12.3",
+ "quantisation": 4,
+ "t_accept": 1,
+ "t_reject": 14,
+ "quality_override": true,
+ "rules_path": "tools/phys/rules.json",
+ "rules_sha256": "52355d724b58b6f375f36d45be85b60d3bc0d5c2e40a6b9b6b7c1241faff7a1d",
+ "scorer_path": "eval/exp_phys_dsh/det_scorer_v2.py",
+ "scorer_sha256_before": "b3c396d01c3bc8087cc8c8168b5a2a2db525ccfb413e7c12101a5046528e2350",
+ "scorer_sha256_after": "b3c396d01c3bc8087cc8c8168b5a2a2db525ccfb413e7c12101a5046528e2350",
+ "scorer_unchanged_during_proof": true,
+ "features_file": "eval/results/exp_phys_dsh/a4_det_features_150.json",
+ "features_sha256": "7a5ecad2738bf2664a54cc0d26fdbe088fb1b58955c6d5f53c58964d6a71f232",
+ "canonical_receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+ "repeats": {
+  "in_process_n": 10,
+  "in_process_hashes": [
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63"
+  ],
+  "in_process_unique": [
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63"
+  ],
+  "subprocess_n": 10,
+  "subprocess_hashes": [
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63"
+  ],
+  "subprocess_unique": [
+   "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63"
+  ]
+ },
+ "diff_count_all_identical_runs": 0,
+ "invariance": {
+  "row_order_reversed": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true
+  },
+  "row_order_rotate": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true
+  },
+  "row_order_modular": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true
+  },
+  "row_order_duplicated_x2": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true,
+   "detail": "input list doubled (300 rows): records are keyed by window_id and sorted, so duplicate rows collapse to the same 150-record receipt"
+  },
+  "input_feature_key_order_reversed": {
+   "records_sha256": "26830b5f57a3eddc596b9176a42da12278b9f1c7c7a9b005a3d1635783759d1a",
+   "baseline_records_sha256": "26830b5f57a3eddc596b9176a42da12278b9f1c7c7a9b005a3d1635783759d1a",
+   "identical_to_baseline": true,
+   "detail": "feature dict key order reversed in the input file; the file sha256 (correctly) changes, the decision records must not"
+  }
+ },
+ "invariance_environment": {
+  "PYTHONHASHSEED=0": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true,
+   "returncode": 0,
+   "cwd": "/workspace/wt/dsh-phys",
+   "env": {
+    "PYTHONHASHSEED": "0"
+   }
+  },
+  "PYTHONHASHSEED=1": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true,
+   "returncode": 0,
+   "cwd": "/workspace/wt/dsh-phys",
+   "env": {
+    "PYTHONHASHSEED": "1"
+   }
+  },
+  "PYTHONHASHSEED=random": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true,
+   "returncode": 0,
+   "cwd": "/workspace/wt/dsh-phys",
+   "env": {
+    "PYTHONHASHSEED": "random"
+   }
+  },
+  "LC_ALL=C": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true,
+   "returncode": 0,
+   "cwd": "/workspace/wt/dsh-phys",
+   "env": {
+    "LC_ALL": "C",
+    "LANG": "C"
+   }
+  },
+  "LC_ALL=C.UTF-8": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true,
+   "returncode": 0,
+   "cwd": "/workspace/wt/dsh-phys",
+   "env": {
+    "LC_ALL": "C.UTF-8",
+    "LANG": "C.UTF-8"
+   }
+  },
+  "TZ=Pacific/Kiritimati": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true,
+   "returncode": 0,
+   "cwd": "/workspace/wt/dsh-phys",
+   "env": {
+    "TZ": "Pacific/Kiritimati"
+   }
+  },
+  "cwd=/": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true,
+   "returncode": 0,
+   "cwd": "/",
+   "env": {}
+  },
+  "PYTHONUTF8=0": {
+   "receipt_sha256": "c0d09f83fb1565ef820bb1eed2582487ab5ba2bcd300feaa70f163dbfe997b63",
+   "identical_to_baseline": true,
+   "returncode": 0,
+   "cwd": "/workspace/wt/dsh-phys",
+   "env": {
+    "PYTHONUTF8": "0",
+    "LC_ALL": "C"
+   }
+  }
+ },
+ "variant_review_band_t_accept_3": {
+  "t_accept": 3,
+  "t_reject": 14,
+  "receipt_sha256": "11e9b0ce1cca3c3133bc6611124ed3478cfe8904c5c5c9a99cf3f6c30ff483a2",
+  "differs_from_baseline": true
+ },
+ "variant_without_quality_override": {
+  "quality_override": false,
+  "receipt_sha256": "6068bda1db73881a36f43cca5089c2854b8baff7d3e8574ec3737b64a02eebde",
+  "differs_from_baseline": true
+ },
+ "feature_source_invariance": {
+  "baseline_records_sha256": "26830b5f57a3eddc596b9176a42da12278b9f1c7c7a9b005a3d1635783759d1a",
+  "gold_records_sha256": "37df12ee06b1e238435bc602b14b7f0e9e2efd078e1b91056b2c46a8c9240d98",
+  "n_windows_differing_full_record": 9,
+  "n_windows_differing_decision_or_score": 0,
+  "n_windows_differing_evidence": 4,
+  "decision_level_identical": true,
+  "note": "gold.npz G_* is float32 and its full.temp_b0/b1/b2 differ from the Q1 float64 source by up to 0.156, so the per-window feature_digest differs for a few windows and 4/150 evidence entries move by 1 Q=4 unit (e.g. frozen_frac 12 vs 13). The integer score and the decision are identical for 150/150 windows under the frozen table; under LOCO (thresholds re-derived per fold from the same source) the scores were identical for 150/150 as well."
+ },
+ "integer_path_audit": {
+  "evidence_entries": 985,
+  "non_int_evidence_fields": 0,
+  "float_values_after_json_round_trip": 0,
+  "score/types": "score=int, value=int, threshold=int, comparisons int<int / int>int",
+  "rng_in_decision_path": false,
+  "rng_in_proof_harness": false,
+  "dict_order_dependence": "none: features accessed by name; evidence sorted by (rule, feature, op, threshold, value); records sorted by id",
+  "float_operations": "exactly one, at the input boundary: int(floor(value*10**4+0.5)) (Q=4 quantisation)"
+ },
+ "decision_summary": {
+  "n_windows": 150,
+  "n_accept": 20,
+  "n_review": 104,
+  "n_reject": 26,
+  "score_min": 0,
+  "score_max": 26
+ },
+ "proven": [
+  "10/10 in-process rebuilds and 10/10 separate-process runs produced the identical receipt sha256",
+  "receipt sha256 is invariant to input row order (reversed / rotated / affine permutation / duplicated rows) and to feature-dict key order",
+  "receipt sha256 is invariant to PYTHONHASHSEED=0/1/random, LC_ALL=C / C.UTF-8, TZ, PYTHONUTF8=0 and the process CWD",
+  "every emitted evidence value/threshold is a JSON integer (no float on the decision path beyond the Q=4 quantisation of the input value)",
+  "no RNG is used by the scorer or the proof harness"
+ ],
+ "not_proven": [
+  "cross-machine / cross-python-version identity (only this host and interpreter 3.12.3 were exercised)",
+  "identity of the *feature extraction* (upstream decode/kernels still use floats); only the scorer from a fixed feature file is proven",
+  "subprocess runs inherit the same platform; cross-arch reproducibility untested",
+  "the proof covers a fixed set of 150 windows and the frozen Q1 table, not arbitrary future rule tables"
+ ],
+ "artifacts": {
+  "features": "eval/results/exp_phys_dsh/a4_det_features_150.json",
+  "features_gold": "eval/results/exp_phys_dsh/a4_det_features_150_gold.json"
+ },
+ "wall_s": 6.62
+}

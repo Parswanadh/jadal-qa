@@ -1,0 +1,51 @@
+{
+ "command": "python3 eval/exp_phys_dsh/score_holdout.py",
+ "config": "configs/phys_rules_v2.json",
+ "config_sha256": "15e81a155e8364703d647dd920bc6460f99a90e237cbc81005b983daf242707b",
+ "device": "CPU (RunPod A40 host)",
+ "experiment": "HOLDOUT108_final",
+ "honesty": "scored once after the freeze; the hold-out never entered any threshold, weight, tau or mode decision. n_bad=16 is small, so the CI is wide and this is a single point estimate.",
+ "label_source": "human (labels/round3/ood_labels3_108_with_factory.json)",
+ "modes": {
+  "absolute": {
+   "auroc": 0.5166,
+   "auroc_ci95_window_bootstrap": [
+    0.3673,
+    0.6952
+   ],
+   "balanced_accuracy": 0.5041,
+   "false_reject_good": 0.0543,
+   "reject_rate_all": 0.0556,
+   "reject_rate_bad": 0.0625,
+   "score_stats": {
+    "max": 39,
+    "mean": 15.759,
+    "min": 10
+   }
+  },
+  "requantile": {
+   "auroc": 0.5099,
+   "auroc_ci95_window_bootstrap": [
+    0.3481,
+    0.6932
+   ],
+   "balanced_accuracy": 0.5245,
+   "false_reject_good": 0.0761,
+   "reject_rate_all": 0.0833,
+   "reject_rate_bad": 0.125,
+   "score_stats": {
+    "max": 44,
+    "mean": 12.222,
+    "min": 0
+   }
+  }
+ },
+ "n": 108,
+ "n_bad": 16,
+ "n_good": 92,
+ "protocol": "confirmatory hold-out, 108 human-labelled Egocentric-10K windows (92 good / 16 bad), scorched ONCE with the frozen table; window-bootstrap 95% CI (optimistic)",
+ "runtime_s": 20.4,
+ "scored_utc": "2026-10-10T20:29:16Z",
+ "t_accept_frozen": 0,
+ "t_reject_frozen": 25
+}

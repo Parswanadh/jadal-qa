@@ -1,0 +1,248 @@
+{
+ "candidates": {
+  "C1_v1_uniform": {
+   "auroc": 0.823,
+   "auroc_ci95_clip_bootstrap": [
+    0.7326,
+    0.8568
+   ],
+   "loco_balanced_accuracy": 0.705,
+   "loco_false_reject_good": 0.05,
+   "loco_reject_rate_bad": 0.46,
+   "loco_review_as_accept_ba": 0.705,
+   "n": 150,
+   "n_rule_specs": 16,
+   "nominal_t_reject_ignored": 14,
+   "per_fold_tau": {
+    "desk": 13,
+    "ecu_full": 16,
+    "ecu_late": 14,
+    "logistics4": 14,
+    "organise": 12,
+    "pallet": 12,
+    "pallet2": 14
+   },
+   "rules": [
+    "TOO_DARK:full.luma_mean",
+    "TOO_DARK:full.dark_frac",
+    "OVEREXPOSED:full.bright_frac",
+    "BLUR:full.hf_ratio",
+    "BLUR:full.dct_energy",
+    "FROZEN_STATIC:full.temp_b0",
+    "FROZEN_STATIC:full.frozen_frac",
+    "NO_ACTIVE_WORK:phys.flow_act",
+    "NO_ACTIVE_WORK:phys.flow_med",
+    "NO_ACTIVE_WORK:full.motion_energy",
+    "HANDS_NOT_VISIBLE:full.skin_frac",
+    "DUPLICATE:phys.dhash_loop_min",
+    "DUPLICATE:phys.mad_mean",
+    "CODING_NOISE:phys.frm_bytes_med",
+    "CODING_NOISE:phys.p_size_med",
+    "CODING_NOISE:phys.snr_db"
+   ],
+   "score_stats": {
+    "max": 26,
+    "mean": 6.567,
+    "min": 0
+   },
+   "tau_frozen_on_all_training": 13
+  },
+  "C2_a1_fixed5": {
+   "auroc": 0.8231,
+   "auroc_ci95_clip_bootstrap": [
+    0.7107,
+    0.8783
+   ],
+   "loco_balanced_accuracy": 0.625,
+   "loco_false_reject_good": 0.05,
+   "loco_reject_rate_bad": 0.3,
+   "loco_review_as_accept_ba": 0.625,
+   "n": 150,
+   "n_rule_specs": 5,
+   "nominal_t_reject_ignored": 9,
+   "per_fold_tau": {
+    "desk": 7,
+    "ecu_full": 9,
+    "ecu_late": 9,
+    "logistics4": 9,
+    "organise": 7,
+    "pallet": 7,
+    "pallet2": 9
+   },
+   "rules": [
+    "HANDS_NOT_VISIBLE:full.skin_frac",
+    "BLUR:full.dct_energy",
+    "SHAKY:full.global_shift",
+    "BLUR:full.hf_ratio",
+    "NO_ACTIVE_WORK:full.motion_energy"
+   ],
+   "score_stats": {
+    "max": 12,
+    "mean": 3.62,
+    "min": 0
+   },
+   "tau_frozen_on_all_training": 7
+  },
+  "C3_merged_a1_plus_v1soft": {
+   "auroc": 0.8472,
+   "auroc_ci95_clip_bootstrap": [
+    0.7432,
+    0.8906
+   ],
+   "loco_balanced_accuracy": 0.67,
+   "loco_false_reject_good": 0.06,
+   "loco_reject_rate_bad": 0.4,
+   "loco_review_as_accept_ba": 0.67,
+   "n": 150,
+   "n_rule_specs": 21,
+   "nominal_t_reject_ignored": 12,
+   "per_fold_tau": {
+    "desk": 25,
+    "ecu_full": 28,
+    "ecu_late": 26,
+    "logistics4": 26,
+    "organise": 25,
+    "pallet": 23,
+    "pallet2": 26
+   },
+   "rules": [
+    "HANDS_NOT_VISIBLE:full.skin_frac",
+    "BLUR:full.dct_energy",
+    "SHAKY:full.global_shift",
+    "BLUR:full.hf_ratio",
+    "NO_ACTIVE_WORK:full.motion_energy",
+    "TOO_DARK:full.luma_mean",
+    "TOO_DARK:full.dark_frac",
+    "OVEREXPOSED:full.bright_frac",
+    "BLUR:full.hf_ratio",
+    "BLUR:full.dct_energy",
+    "FROZEN_STATIC:full.temp_b0",
+    "FROZEN_STATIC:full.frozen_frac",
+    "NO_ACTIVE_WORK:phys.flow_act",
+    "NO_ACTIVE_WORK:phys.flow_med",
+    "NO_ACTIVE_WORK:full.motion_energy",
+    "HANDS_NOT_VISIBLE:full.skin_frac",
+    "DUPLICATE:phys.dhash_loop_min",
+    "DUPLICATE:phys.mad_mean",
+    "CODING_NOISE:phys.frm_bytes_med",
+    "CODING_NOISE:phys.p_size_med",
+    "CODING_NOISE:phys.snr_db"
+   ],
+   "score_stats": {
+    "max": 49,
+    "mean": 12.113,
+    "min": 0
+   },
+   "tau_frozen_on_all_training": 25
+  },
+  "C4_merged_drop_frozen_static": {
+   "auroc": 0.8469,
+   "auroc_ci95_clip_bootstrap": [
+    0.741,
+    0.888
+   ],
+   "loco_balanced_accuracy": 0.62,
+   "loco_false_reject_good": 0.06,
+   "loco_reject_rate_bad": 0.3,
+   "loco_review_as_accept_ba": 0.62,
+   "n": 150,
+   "n_rule_specs": 19,
+   "nominal_t_reject_ignored": 12,
+   "per_fold_tau": {
+    "desk": 25,
+    "ecu_full": 28,
+    "ecu_late": 26,
+    "logistics4": 26,
+    "organise": 25,
+    "pallet": 23,
+    "pallet2": 26
+   },
+   "rules": [
+    "HANDS_NOT_VISIBLE:full.skin_frac",
+    "BLUR:full.dct_energy",
+    "SHAKY:full.global_shift",
+    "BLUR:full.hf_ratio",
+    "NO_ACTIVE_WORK:full.motion_energy",
+    "TOO_DARK:full.luma_mean",
+    "TOO_DARK:full.dark_frac",
+    "OVEREXPOSED:full.bright_frac",
+    "BLUR:full.hf_ratio",
+    "BLUR:full.dct_energy",
+    "NO_ACTIVE_WORK:phys.flow_act",
+    "NO_ACTIVE_WORK:phys.flow_med",
+    "NO_ACTIVE_WORK:full.motion_energy",
+    "HANDS_NOT_VISIBLE:full.skin_frac",
+    "DUPLICATE:phys.dhash_loop_min",
+    "DUPLICATE:phys.mad_mean",
+    "CODING_NOISE:phys.frm_bytes_med",
+    "CODING_NOISE:phys.p_size_med",
+    "CODING_NOISE:phys.snr_db"
+   ],
+   "score_stats": {
+    "max": 49,
+    "mean": 11.287,
+    "min": 0
+   },
+   "tau_frozen_on_all_training": 25
+  },
+  "C5_merged_drop_frozen_no_veto": {
+   "auroc": 0.8469,
+   "auroc_ci95_clip_bootstrap": [
+    0.741,
+    0.888
+   ],
+   "loco_balanced_accuracy": 0.62,
+   "loco_false_reject_good": 0.06,
+   "loco_reject_rate_bad": 0.3,
+   "loco_review_as_accept_ba": 0.62,
+   "n": 150,
+   "n_rule_specs": 19,
+   "nominal_t_reject_ignored": 12,
+   "per_fold_tau": {
+    "desk": 25,
+    "ecu_full": 28,
+    "ecu_late": 26,
+    "logistics4": 26,
+    "organise": 25,
+    "pallet": 23,
+    "pallet2": 26
+   },
+   "rules": [
+    "HANDS_NOT_VISIBLE:full.skin_frac",
+    "BLUR:full.dct_energy",
+    "SHAKY:full.global_shift",
+    "BLUR:full.hf_ratio",
+    "NO_ACTIVE_WORK:full.motion_energy",
+    "TOO_DARK:full.luma_mean",
+    "TOO_DARK:full.dark_frac",
+    "OVEREXPOSED:full.bright_frac",
+    "BLUR:full.hf_ratio",
+    "BLUR:full.dct_energy",
+    "NO_ACTIVE_WORK:phys.flow_act",
+    "NO_ACTIVE_WORK:phys.flow_med",
+    "NO_ACTIVE_WORK:full.motion_energy",
+    "HANDS_NOT_VISIBLE:full.skin_frac",
+    "DUPLICATE:phys.dhash_loop_min",
+    "DUPLICATE:phys.mad_mean",
+    "CODING_NOISE:phys.frm_bytes_med",
+    "CODING_NOISE:phys.p_size_med",
+    "CODING_NOISE:phys.snr_db"
+   ],
+   "score_stats": {
+    "max": 49,
+    "mean": 11.287,
+    "min": 0
+   },
+   "tau_frozen_on_all_training": 25
+  }
+ },
+ "command": "python3 eval/exp_phys_dsh/freeze_v2.py",
+ "device": "CPU (RunPod A40 host)",
+ "experiment": "LEAD_freeze",
+ "frozen_config": "configs/phys_rules_v2.json",
+ "holdout_note": "the 108-window hold-out was NOT touched here",
+ "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+ "protocol": "in-domain frozen-model evaluation, IndEgo 150, 7 clips, clip-bootstrap B=2000 seed 0",
+ "runtime_s": 20.4,
+ "selected": "C3_merged_a1_plus_v1soft"
+}

@@ -1,0 +1,1320 @@
+{
+ "experiment": "A4",
+ "title": "Deterministic REVIEW band [t_accept,t_reject) on the Q1 integer score: review<->error frontier under LOCO",
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold)",
+ "protocol": "leave-one-clip-out over 7 clips; per-fold thresholds from training clips only (quantiles p01/p05/p10/p25 mirrored for high-is-bad, Q=4 integers); operating point chosen on training clips only (false-reject budget 5% on training-good); metrics pooled on held-out windows; clip-bootstrap 95% CI (B=2000, seed=0)",
+ "decision_rule": "REJECT if a QUALITY rule crosses its extreme threshold (index 0) or score >= t_reject; ACCEPT if score < t_accept (and margin_q >= m_min for axis 2); REVIEW otherwise",
+ "feature_source": "gold",
+ "feature_source_sensitivity": {
+  "primary_source": "gold",
+  "comparison_source": "q1",
+  "n_windows": 150,
+  "n_loco_score_differences": 0,
+  "n_hard_rule_differences": 0,
+  "identical_fold_t_reject": true,
+  "note": "gold.npz G_* is float32; per-feature comparison against the Q1 float64 source shows full.temp_b0/b1/b2 differ by up to 0.156 and all other features by <=3e-6. Because LOCO re-derives thresholds from the same source as the values, the integer out-of-fold scores are identical, so the BRIEF gold name map is decision-equivalent for this rule table.",
+  "companion_result": "eval/results/exp_phys_dsh/A4_review_band.json"
+ },
+ "feature_source_note": "gold = gold.npz G_* (float32) + physics_feats.npz `phys`, per BRIEF name map; note full.temp_b0/b1/b2 differ from the Q1 source used to derive the frozen thresholds by up to 0.156.",
+ "quantisation": 4,
+ "metric_definitions": {
+  "decided_frac": "(n_accept + n_reject) / n",
+  "review_frac": "n_review / n",
+  "ba_decided": "0.5 * ( P(REJECT | bad, decided) + P(ACCEPT | good, decided) ) -- balanced accuracy restricted to the decided windows (Q1/Q4 `balacc_decided_only` convention, verified to reproduce 0.808)",
+  "fr_good": "P(REJECT | good) over ALL good windows (review counted as not-rejected)",
+  "fa_bad": "P(ACCEPT | bad) over ALL bad windows (review counted as not-accepted)"
+ },
+ "false_reject_budget": 0.05,
+ "n_thresholds": 64,
+ "score_max_oof": 29,
+ "auroc_deterministic_score_oof": 0.8222,
+ "auroc_ci95_clip_bootstrap": [
+  0.7146478873239437,
+  0.8597961881803011
+ ],
+ "per_fold": {
+  "desk": {
+   "n": 29,
+   "t_reject": 15
+  },
+  "ecu_full": {
+   "n": 48,
+   "t_reject": 12
+  },
+  "ecu_late": {
+   "n": 14,
+   "t_reject": 14
+  },
+  "logistics4": {
+   "n": 17,
+   "t_reject": 14
+  },
+  "organise": {
+   "n": 19,
+   "t_reject": 14
+  },
+  "pallet": {
+   "n": 17,
+   "t_reject": 13
+  },
+  "pallet2": {
+   "n": 6,
+   "t_reject": 15
+  }
+ },
+ "baseline_q1_q4": {
+  "decided_frac": 0.4,
+  "accept_frac": 0.16,
+  "reject_frac": 0.24,
+  "review_frac": 0.6,
+  "ba_decided": 0.8080357142857143,
+  "fr_good": 0.1,
+  "fa_bad": 0.04,
+  "n_decided": 60,
+  "n_review": 90,
+  "n_accept": 24,
+  "n_reject": 36,
+  "confusion": {
+   "good_accept": 22,
+   "good_review": 68,
+   "good_reject": 10,
+   "bad_accept": 2,
+   "bad_review": 22,
+   "bad_reject": 26
+  },
+  "t_accept": 1,
+  "t_reject_per_fold": {
+   "desk": 15,
+   "ecu_full": 12,
+   "ecu_late": 14,
+   "logistics4": 14,
+   "organise": 14,
+   "pallet": 13,
+   "pallet2": 15
+  },
+  "ci95_clip_bootstrap": {
+   "ba_decided_ci95": [
+    0.5,
+    0.8675213675213675
+   ],
+   "fr_good_ci95": [
+    0.015255866553576478,
+    0.2777777777777778
+   ],
+   "fa_bad_ci95": [
+    0.0,
+    0.14638663053297174
+   ],
+   "review_frac_ci95": [
+    0.49993961352657007,
+    0.7727368220015278
+   ],
+   "decided_frac_ci95": [
+    0.22726317799847212,
+    0.5000603864734297
+   ]
+  },
+  "reference": "Q4.01 pure_rules: review_share 0.60, balacc_decided_only 0.808, auroc 0.8222"
+ },
+ "best_operating_point": {
+  "decided_frac": 0.48,
+  "accept_frac": 0.24,
+  "reject_frac": 0.24,
+  "review_frac": 0.52,
+  "ba_decided": 0.8319967923015237,
+  "fr_good": 0.1,
+  "fa_bad": 0.06,
+  "n_decided": 72,
+  "n_review": 78,
+  "n_accept": 36,
+  "n_reject": 36,
+  "confusion": {
+   "good_accept": 33,
+   "good_review": 57,
+   "good_reject": 10,
+   "bad_accept": 3,
+   "bad_review": 21,
+   "bad_reject": 26
+  },
+  "t_accept": 3,
+  "t_reject_per_fold": {
+   "desk": 15,
+   "ecu_full": 12,
+   "ecu_late": 14,
+   "logistics4": 14,
+   "organise": 14,
+   "pallet": 13,
+   "pallet2": 15
+  },
+  "constraint": "training-good false-reject <= 5% per fold (protocol-faithful, Q1 meaning)",
+  "ci95_clip_bootstrap": {
+   "ba_decided_ci95": [
+    0.5526315789473684,
+    0.8730223727422003
+   ],
+   "fr_good_ci95": [
+    0.015255866553576478,
+    0.2777777777777778
+   ],
+   "fa_bad_ci95": [
+    0.0,
+    0.21957994579945764
+   ],
+   "review_frac_ci95": [
+    0.40333165875045673,
+    0.7169858967028777
+   ],
+   "decided_frac_ci95": [
+    0.2830141032971222,
+    0.5966683412495432
+   ]
+  }
+ },
+ "best_operating_point_empirical_fr5": {
+  "decided_frac": 0.26666666666666666,
+  "accept_frac": 0.16,
+  "reject_frac": 0.10666666666666667,
+  "review_frac": 0.7333333333333333,
+  "ba_decided": 0.8733333333333333,
+  "fr_good": 0.03,
+  "fa_bad": 0.04,
+  "n_decided": 40,
+  "n_review": 110,
+  "n_accept": 24,
+  "n_reject": 16,
+  "t_accept": 1,
+  "t_reject": 20,
+  "constraint": "OBSERVED held-out false-reject <= 5% (empirical; chosen on test metrics, reported for the frontier, not a deployable protocol)"
+ },
+ "best_operating_point_empirical_fr10": {
+  "decided_frac": 0.26666666666666666,
+  "accept_frac": 0.16,
+  "reject_frac": 0.10666666666666667,
+  "review_frac": 0.7333333333333333,
+  "ba_decided": 0.8733333333333333,
+  "fr_good": 0.03,
+  "fa_bad": 0.04,
+  "n_decided": 40,
+  "n_review": 110,
+  "n_accept": 24,
+  "n_reject": 16,
+  "t_accept": 1,
+  "t_reject": 20,
+  "constraint": "OBSERVED held-out false-reject <= 10% (empirical)"
+ },
+ "best_grid_point": {
+  "decided_frac": 0.26666666666666666,
+  "accept_frac": 0.16,
+  "reject_frac": 0.10666666666666667,
+  "review_frac": 0.7333333333333333,
+  "ba_decided": 0.8733333333333333,
+  "fr_good": 0.03,
+  "fa_bad": 0.04,
+  "n_decided": 40,
+  "n_review": 110,
+  "n_accept": 24,
+  "n_reject": 16,
+  "t_accept": 1,
+  "t_reject": 20
+ },
+ "inner_selected_operating_point_train_only": {
+  "decided_frac": 0.4533333333333333,
+  "accept_frac": 0.21333333333333335,
+  "reject_frac": 0.24,
+  "review_frac": 0.5466666666666666,
+  "ba_decided": 0.8200707338638373,
+  "fr_good": 0.1,
+  "fa_bad": 0.06,
+  "n_decided": 68,
+  "n_review": 82,
+  "n_accept": 32,
+  "n_reject": 36,
+  "confusion": {
+   "good_accept": 29,
+   "good_review": 61,
+   "good_reject": 10,
+   "bad_accept": 3,
+   "bad_review": 21,
+   "bad_reject": 26
+  },
+  "selection": "per fold, maximise TRAINING balanced accuracy on decided windows over t_accept with the pre-registered tau=0.05 training-good FR budget; no test label used",
+  "per_fold_choice": {
+   "desk": {
+    "tau": 0.05,
+    "t_accept": 2,
+    "t_reject": 15,
+    "m_min": 0,
+    "train_ba_decided": 0.8947,
+    "train_decided_frac": 0.4298
+   },
+   "ecu_full": {
+    "tau": 0.05,
+    "t_accept": 3,
+    "t_reject": 12,
+    "m_min": 0,
+    "train_ba_decided": 0.869,
+    "train_decided_frac": 0.3824
+   },
+   "ecu_late": {
+    "tau": 0.05,
+    "t_accept": 2,
+    "t_reject": 14,
+    "m_min": 0,
+    "train_ba_decided": 0.8987,
+    "train_decided_frac": 0.3824
+   },
+   "logistics4": {
+    "tau": 0.05,
+    "t_accept": 1,
+    "t_reject": 14,
+    "m_min": 0,
+    "train_ba_decided": 0.8958,
+    "train_decided_frac": 0.3233
+   },
+   "organise": {
+    "tau": 0.05,
+    "t_accept": 2,
+    "t_reject": 14,
+    "m_min": 0,
+    "train_ba_decided": 0.9091,
+    "train_decided_frac": 0.3664
+   },
+   "pallet": {
+    "tau": 0.05,
+    "t_accept": 2,
+    "t_reject": 13,
+    "m_min": 0,
+    "train_ba_decided": 0.8824,
+    "train_decided_frac": 0.3985
+   },
+   "pallet2": {
+    "tau": 0.05,
+    "t_accept": 2,
+    "t_reject": 15,
+    "m_min": 0,
+    "train_ba_decided": 0.9047,
+    "train_decided_frac": 0.3819
+   }
+  },
+  "ci95_clip_bootstrap": {
+   "ba_decided_ci95": [
+    0.5,
+    0.8605990783410138
+   ],
+   "fr_good_ci95": [
+    0.015255866553576478,
+    0.2777777777777778
+   ],
+   "fa_bad_ci95": [
+    0.0,
+    0.21957994579945764
+   ],
+   "review_frac_ci95": [
+    0.41708542713567837,
+    0.7642390890032396
+   ],
+   "decided_frac_ci95": [
+    0.23576091099676005,
+    0.5829145728643216
+   ]
+  }
+ },
+ "inner_selected_operating_point_tau_swept": {
+  "decided_frac": 0.3333333333333333,
+  "accept_frac": 0.21333333333333335,
+  "reject_frac": 0.12,
+  "review_frac": 0.6666666666666666,
+  "ba_decided": 0.8511586452762923,
+  "fr_good": 0.04,
+  "fa_bad": 0.06,
+  "n_decided": 50,
+  "n_review": 100,
+  "n_accept": 32,
+  "n_reject": 18,
+  "confusion": {
+   "good_accept": 29,
+   "good_review": 67,
+   "good_reject": 4,
+   "bad_accept": 3,
+   "bad_review": 33,
+   "bad_reject": 14
+  },
+  "selection": "per fold, maximise TRAINING balanced accuracy on decided windows over (t_accept, tau); tau in [0.0, 0.01, 0.02, 0.05, 0.1, 0.2]; no test label used",
+  "per_fold_choice": {
+   "desk": {
+    "tau": 0.0,
+    "t_accept": 2,
+    "t_reject": 19,
+    "m_min": 0,
+    "train_ba_decided": 0.9412,
+    "train_decided_frac": 0.3636
+   },
+   "ecu_full": {
+    "tau": 0.0,
+    "t_accept": 3,
+    "t_reject": 13,
+    "m_min": 0,
+    "train_ba_decided": 0.8812,
+    "train_decided_frac": 0.3529
+   },
+   "ecu_late": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 18,
+    "m_min": 0,
+    "train_ba_decided": 0.9412,
+    "train_decided_frac": 0.1985
+   },
+   "logistics4": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 19,
+    "m_min": 0,
+    "train_ba_decided": 0.9524,
+    "train_decided_frac": 0.2256
+   },
+   "organise": {
+    "tau": 0.0,
+    "t_accept": 2,
+    "t_reject": 19,
+    "m_min": 0,
+    "train_ba_decided": 0.9655,
+    "train_decided_frac": 0.2748
+   },
+   "pallet": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 20,
+    "m_min": 0,
+    "train_ba_decided": 0.95,
+    "train_decided_frac": 0.218
+   },
+   "pallet2": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 21,
+    "m_min": 0,
+    "train_ba_decided": 0.9545,
+    "train_decided_frac": 0.2222
+   }
+  },
+  "ci95_clip_bootstrap": {
+   "ba_decided_ci95": [
+    0.5,
+    1.0
+   ],
+   "fr_good_ci95": [
+    0.0,
+    0.14457831325301204
+   ],
+   "fa_bad_ci95": [
+    0.0,
+    0.21957994579945764
+   ],
+   "review_frac_ci95": [
+    0.49333333333333335,
+    0.8846153846153846
+   ],
+   "decided_frac_ci95": [
+    0.11538461538461539,
+    0.5066666666666667
+   ]
+  }
+ },
+ "inner_selected_operating_point_tau_and_margin": {
+  "decided_frac": 0.3333333333333333,
+  "accept_frac": 0.21333333333333335,
+  "reject_frac": 0.12,
+  "review_frac": 0.6666666666666666,
+  "ba_decided": 0.8511586452762923,
+  "fr_good": 0.04,
+  "fa_bad": 0.06,
+  "n_decided": 50,
+  "n_review": 100,
+  "n_accept": 32,
+  "n_reject": 18,
+  "confusion": {
+   "good_accept": 29,
+   "good_review": 67,
+   "good_reject": 4,
+   "bad_accept": 3,
+   "bad_review": 33,
+   "bad_reject": 14
+  },
+  "selection": "per fold, maximise TRAINING balanced accuracy on decided windows over (t_accept, tau, m_min) with the scale-free margin axis (half-gap units); no test label used",
+  "per_fold_choice": {
+   "desk": {
+    "tau": 0.0,
+    "t_accept": 2,
+    "t_reject": 19,
+    "m_min": 0,
+    "train_ba_decided": 0.9412,
+    "train_decided_frac": 0.3636
+   },
+   "ecu_full": {
+    "tau": 0.0,
+    "t_accept": 3,
+    "t_reject": 13,
+    "m_min": 0,
+    "train_ba_decided": 0.8812,
+    "train_decided_frac": 0.3529
+   },
+   "ecu_late": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 18,
+    "m_min": 0,
+    "train_ba_decided": 0.9412,
+    "train_decided_frac": 0.1985
+   },
+   "logistics4": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 19,
+    "m_min": 0,
+    "train_ba_decided": 0.9524,
+    "train_decided_frac": 0.2256
+   },
+   "organise": {
+    "tau": 0.0,
+    "t_accept": 2,
+    "t_reject": 19,
+    "m_min": 0,
+    "train_ba_decided": 0.9655,
+    "train_decided_frac": 0.2748
+   },
+   "pallet": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 20,
+    "m_min": 0,
+    "train_ba_decided": 0.95,
+    "train_decided_frac": 0.218
+   },
+   "pallet2": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 21,
+    "m_min": 0,
+    "train_ba_decided": 0.9545,
+    "train_decided_frac": 0.2222
+   }
+  },
+  "ci95_clip_bootstrap": {
+   "ba_decided_ci95": [
+    0.5,
+    1.0
+   ],
+   "fr_good_ci95": [
+    0.0,
+    0.14457831325301204
+   ],
+   "fa_bad_ci95": [
+    0.0,
+    0.21957994579945764
+   ],
+   "review_frac_ci95": [
+    0.49333333333333335,
+    0.8846153846153846
+   ],
+   "decided_frac_ci95": [
+    0.11538461538461539,
+    0.5066666666666667
+   ]
+  }
+ },
+ "inner_selected_operating_point_tau_and_crossed_margin": {
+  "decided_frac": 0.29333333333333333,
+  "accept_frac": 0.17333333333333334,
+  "reject_frac": 0.12,
+  "review_frac": 0.7066666666666667,
+  "ba_decided": 0.8376906318082789,
+  "fr_good": 0.04,
+  "fa_bad": 0.06,
+  "n_decided": 44,
+  "n_review": 106,
+  "n_accept": 26,
+  "n_reject": 18,
+  "confusion": {
+   "good_accept": 23,
+   "good_review": 73,
+   "good_reject": 4,
+   "bad_accept": 3,
+   "bad_review": 33,
+   "bad_reject": 14
+  },
+  "selection": "per fold, maximise TRAINING balanced accuracy on decided windows over (t_accept, tau, m_min) with the crossed-threshold margin axis; no test label used",
+  "per_fold_choice": {
+   "desk": {
+    "tau": 0.0,
+    "t_accept": 2,
+    "t_reject": 19,
+    "m_min": 0,
+    "train_ba_decided": 0.9412,
+    "train_decided_frac": 0.3636
+   },
+   "ecu_full": {
+    "tau": 0.0,
+    "t_accept": 3,
+    "t_reject": 13,
+    "m_min": 16,
+    "train_ba_decided": 0.8976,
+    "train_decided_frac": 0.2843
+   },
+   "ecu_late": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 18,
+    "m_min": 0,
+    "train_ba_decided": 0.9412,
+    "train_decided_frac": 0.1985
+   },
+   "logistics4": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 19,
+    "m_min": 0,
+    "train_ba_decided": 0.9524,
+    "train_decided_frac": 0.2256
+   },
+   "organise": {
+    "tau": 0.0,
+    "t_accept": 2,
+    "t_reject": 19,
+    "m_min": 0,
+    "train_ba_decided": 0.9655,
+    "train_decided_frac": 0.2748
+   },
+   "pallet": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 20,
+    "m_min": 0,
+    "train_ba_decided": 0.95,
+    "train_decided_frac": 0.218
+   },
+   "pallet2": {
+    "tau": 0.0,
+    "t_accept": 1,
+    "t_reject": 21,
+    "m_min": 0,
+    "train_ba_decided": 0.9545,
+    "train_decided_frac": 0.2222
+   }
+  },
+  "ci95_clip_bootstrap": {
+   "ba_decided_ci95": [
+    0.5,
+    1.0
+   ],
+   "fr_good_ci95": [
+    0.0,
+    0.14457831325301204
+   ],
+   "fa_bad_ci95": [
+    0.0,
+    0.21957994579945764
+   ],
+   "review_frac_ci95": [
+    0.5796460176991151,
+    0.8846153846153846
+   ],
+   "decided_frac_ci95": [
+    0.11538461538461539,
+    0.42035398230088494
+   ]
+  }
+ },
+ "ablation_without_quality_override": {
+  "baseline_t_accept_1": {
+   "decided_frac": 0.37333333333333335,
+   "accept_frac": 0.16,
+   "reject_frac": 0.21333333333333335,
+   "review_frac": 0.6266666666666667,
+   "ba_decided": 0.8422733077905491,
+   "fr_good": 0.07,
+   "fa_bad": 0.04,
+   "n_decided": 56,
+   "n_review": 94,
+   "n_accept": 24,
+   "n_reject": 32,
+   "confusion": {
+    "good_accept": 22,
+    "good_review": 71,
+    "good_reject": 7,
+    "bad_accept": 2,
+    "bad_review": 23,
+    "bad_reject": 25
+   }
+  },
+  "best_point": {
+   "decided_frac": 0.4533333333333333,
+   "accept_frac": 0.24,
+   "reject_frac": 0.21333333333333335,
+   "review_frac": 0.5466666666666666,
+   "ba_decided": 0.8589285714285715,
+   "fr_good": 0.07,
+   "fa_bad": 0.06,
+   "n_decided": 68,
+   "n_review": 82,
+   "n_accept": 36,
+   "n_reject": 32,
+   "confusion": {
+    "good_accept": 33,
+    "good_review": 60,
+    "good_reject": 7,
+    "bad_accept": 3,
+    "bad_review": 22,
+    "bad_reject": 25
+   }
+  },
+  "note": "frozen Q1 semantics always hard-reject a QUALITY rule crossing its extreme (index 0) threshold; this ablation removes that override and keeps only the integer band, so hard-fired low-score windows can fall into ACCEPT/REVIEW."
+ },
+ "review_drivers": {
+  "baseline_t_accept_1": {
+   "BLUR": {
+    "review_windows": 39,
+    "review_good": 23,
+    "review_bad": 16
+   },
+   "FROZEN_STATIC": {
+    "review_windows": 64,
+    "review_good": 51,
+    "review_bad": 13
+   },
+   "TOO_DARK": {
+    "review_windows": 50,
+    "review_good": 36,
+    "review_bad": 14
+   },
+   "DUPLICATE": {
+    "review_windows": 40,
+    "review_good": 25,
+    "review_bad": 15
+   },
+   "OVEREXPOSED": {
+    "review_windows": 19,
+    "review_good": 14,
+    "review_bad": 5
+   },
+   "NO_ACTIVE_WORK": {
+    "review_windows": 54,
+    "review_good": 32,
+    "review_bad": 22
+   },
+   "CODING_NOISE": {
+    "review_windows": 61,
+    "review_good": 39,
+    "review_bad": 22
+   },
+   "HANDS_NOT_VISIBLE": {
+    "review_windows": 19,
+    "review_good": 14,
+    "review_bad": 5
+   }
+  },
+  "best_point": {
+   "FROZEN_STATIC": {
+    "review_windows": 55,
+    "review_good": 42,
+    "review_bad": 13
+   },
+   "TOO_DARK": {
+    "review_windows": 49,
+    "review_good": 35,
+    "review_bad": 14
+   },
+   "BLUR": {
+    "review_windows": 37,
+    "review_good": 22,
+    "review_bad": 15
+   },
+   "OVEREXPOSED": {
+    "review_windows": 19,
+    "review_good": 14,
+    "review_bad": 5
+   },
+   "NO_ACTIVE_WORK": {
+    "review_windows": 54,
+    "review_good": 32,
+    "review_bad": 22
+   },
+   "CODING_NOISE": {
+    "review_windows": 61,
+    "review_good": 39,
+    "review_bad": 22
+   },
+   "HANDS_NOT_VISIBLE": {
+    "review_windows": 18,
+    "review_good": 13,
+    "review_bad": 5
+   },
+   "DUPLICATE": {
+    "review_windows": 38,
+    "review_good": 23,
+    "review_bad": 15
+   }
+  }
+ },
+ "verdict": {
+  "baseline_reproduced": {
+   "point": "t_accept=1, per-fold t_reject from 5% training-good FR budget",
+   "decided_frac": 0.4,
+   "review_frac": 0.6,
+   "ba_decided": 0.8080357142857143,
+   "fr_good": 0.1,
+   "fa_bad": 0.04,
+   "auroc": 0.8222,
+   "matches": "Q4.01 pure_rules: review_share 0.60, balacc_decided_only 0.808, auroc 0.8222 -> exact reproduction"
+  },
+  "best_under_protocol_fr_budget_5pct": {
+   "point": "t_accept=3 (per-fold t_reject, tau=0.05)",
+   "ba_decided": 0.832,
+   "delta_ba_vs_baseline": 0.024,
+   "review_frac": 0.52,
+   "decided_frac": 0.48,
+   "fr_good": 0.1,
+   "fa_bad": 0.06,
+   "selected_on_test": true,
+   "note": "this row is the best point of the swept frontier; it is selected on the held-out metrics and is therefore an upper bound, not a deployable choice"
+  },
+  "best_deployable": {
+   "point": "inner-selected (t_accept, tau) per fold on TRAINING clips only, ranking = training BA on decided windows",
+   "ba_decided": 0.8512,
+   "delta_ba_vs_baseline": 0.0431,
+   "review_frac": 0.6666666666666666,
+   "decided_frac": 0.3333333333333333,
+   "fr_good": 0.04,
+   "fa_bad": 0.06,
+   "ci95_clip_bootstrap": {
+    "ba_decided_ci95": [
+     0.5,
+     1.0
+    ],
+    "fr_good_ci95": [
+     0.0,
+     0.14457831325301204
+    ],
+    "fa_bad_ci95": [
+     0.0,
+     0.21957994579945764
+    ],
+    "review_frac_ci95": [
+     0.49333333333333335,
+     0.8846153846153846
+    ],
+    "decided_frac_ci95": [
+     0.11538461538461539,
+     0.5066666666666667
+    ]
+   },
+   "satisfies_observed_fr_le_5pct": true,
+   "selected_on_test": false
+  },
+  "best_under_observed_fr_le_5pct_grid": {
+   "point": "t_accept=1, t_reject=20",
+   "ba_decided": 0.8733,
+   "review_frac": 0.7333333333333333,
+   "fr_good": 0.03,
+   "selected_on_test": true
+  },
+  "axis2": "no sharpening: the scale-free half-gap margin is 0 for all 150 windows (m_min>=1 cannot ACCEPT anything) and the raw margin lattice is flat or worse (delta BA <= +0.0007 at a HIGHER review rate). See axis2_margin_review."
+ },
+ "per_rule": {
+  "TOO_DARK": {
+   "features": [
+    "full.luma_mean",
+    "full.dark_frac"
+   ],
+   "fire": 44,
+   "fire_good": 26,
+   "fire_bad": 18,
+   "hard_fire": 5,
+   "hard_fire_good": 0,
+   "hard_fire_bad": 5,
+   "threshold_crossings": 145,
+   "strength": "quality",
+   "fire_share": 0.29333333333333333,
+   "bad_total": 50,
+   "good_total": 100,
+   "precision": 0.4090909090909091,
+   "recall_bad": 0.36,
+   "indicator_auroc": 0.5756
+  },
+  "OVEREXPOSED": {
+   "features": [
+    "full.bright_frac"
+   ],
+   "fire": 37,
+   "fire_good": 21,
+   "fire_bad": 16,
+   "hard_fire": 5,
+   "hard_fire_good": 3,
+   "hard_fire_bad": 2,
+   "threshold_crossings": 87,
+   "strength": "quality",
+   "fire_share": 0.24666666666666667,
+   "bad_total": 50,
+   "good_total": 100,
+   "precision": 0.43243243243243246,
+   "recall_bad": 0.32,
+   "indicator_auroc": 0.5483
+  },
+  "BLUR": {
+   "features": [
+    "full.hf_ratio",
+    "full.dct_energy"
+   ],
+   "fire": 60,
+   "fire_good": 27,
+   "fire_bad": 33,
+   "hard_fire": 6,
+   "hard_fire_good": 0,
+   "hard_fire_bad": 6,
+   "threshold_crossings": 141,
+   "strength": "quality",
+   "fire_share": 0.4,
+   "bad_total": 50,
+   "good_total": 100,
+   "precision": 0.55,
+   "recall_bad": 0.66,
+   "indicator_auroc": 0.7259
+  },
+  "FROZEN_STATIC": {
+   "features": [
+    "full.temp_b0",
+    "full.frozen_frac"
+   ],
+   "fire": 66,
+   "fire_good": 44,
+   "fire_bad": 22,
+   "hard_fire": 8,
+   "hard_fire_good": 2,
+   "hard_fire_bad": 6,
+   "threshold_crossings": 153,
+   "strength": "quality",
+   "fire_share": 0.44,
+   "bad_total": 50,
+   "good_total": 100,
+   "precision": 0.3333333333333333,
+   "recall_bad": 0.44,
+   "indicator_auroc": 0.5091
+  },
+  "NO_ACTIVE_WORK": {
+   "features": [
+    "phys.flow_act",
+    "phys.flow_med",
+    "full.motion_energy"
+   ],
+   "fire": 54,
+   "fire_good": 23,
+   "fire_bad": 31,
+   "hard_fire": 0,
+   "hard_fire_good": 0,
+   "hard_fire_bad": 0,
+   "threshold_crossings": 221,
+   "strength": "weak",
+   "fire_share": 0.36,
+   "bad_total": 50,
+   "good_total": 100,
+   "precision": 0.5740740740740741,
+   "recall_bad": 0.62,
+   "indicator_auroc": 0.715
+  },
+  "HANDS_NOT_VISIBLE": {
+   "features": [
+    "full.skin_frac"
+   ],
+   "fire": 41,
+   "fire_good": 20,
+   "fire_bad": 21,
+   "hard_fire": 0,
+   "hard_fire_good": 0,
+   "hard_fire_bad": 0,
+   "threshold_crossings": 79,
+   "strength": "weak",
+   "fire_share": 0.2733333333333333,
+   "bad_total": 50,
+   "good_total": 100,
+   "precision": 0.5121951219512195,
+   "recall_bad": 0.42,
+   "indicator_auroc": 0.6124
+  },
+  "DUPLICATE": {
+   "features": [
+    "phys.dhash_loop_min",
+    "phys.mad_mean"
+   ],
+   "fire": 55,
+   "fire_good": 25,
+   "fire_bad": 30,
+   "hard_fire": 0,
+   "hard_fire_good": 0,
+   "hard_fire_bad": 0,
+   "threshold_crossings": 124,
+   "strength": "weak",
+   "fire_share": 0.36666666666666664,
+   "bad_total": 50,
+   "good_total": 100,
+   "precision": 0.5454545454545454,
+   "recall_bad": 0.6,
+   "indicator_auroc": 0.6779
+  },
+  "CODING_NOISE": {
+   "features": [
+    "phys.frm_bytes_med",
+    "phys.p_size_med",
+    "phys.snr_db"
+   ],
+   "fire": 63,
+   "fire_good": 29,
+   "fire_bad": 34,
+   "hard_fire": 0,
+   "hard_fire_good": 0,
+   "hard_fire_bad": 0,
+   "threshold_crossings": 203,
+   "strength": "weak",
+   "fire_share": 0.42,
+   "bad_total": 50,
+   "good_total": 100,
+   "precision": 0.5396825396825397,
+   "recall_bad": 0.68,
+   "indicator_auroc": 0.7145
+  }
+ },
+ "drop_one_rule_loco": {
+  "BLUR": {
+   "auroc_score": 0.8019,
+   "auroc_delta": -0.0203,
+   "ba_decided_at_t_accept_1": 0.7837,
+   "ba_delta_at_t_accept_1": -0.0243,
+   "review_frac_at_t_accept_1": 0.62,
+   "review_delta_at_t_accept_1": 0.02,
+   "best_ba_decided_over_t_accept": 0.812,
+   "best_t_accept": 3,
+   "best_ba_delta_vs_full_best": -0.02
+  },
+  "CODING_NOISE": {
+   "auroc_score": 0.8074,
+   "auroc_delta": -0.0148,
+   "ba_decided_at_t_accept_1": 0.8296,
+   "ba_delta_at_t_accept_1": 0.0216,
+   "review_frac_at_t_accept_1": 0.62,
+   "review_delta_at_t_accept_1": 0.02,
+   "best_ba_decided_over_t_accept": 0.8354,
+   "best_t_accept": 4,
+   "best_ba_delta_vs_full_best": 0.0034
+  },
+  "DUPLICATE": {
+   "auroc_score": 0.815,
+   "auroc_delta": -0.0072,
+   "ba_decided_at_t_accept_1": 0.826,
+   "ba_delta_at_t_accept_1": 0.018,
+   "review_frac_at_t_accept_1": 0.5867,
+   "review_delta_at_t_accept_1": -0.0133,
+   "best_ba_decided_over_t_accept": 0.8328,
+   "best_t_accept": 4,
+   "best_ba_delta_vs_full_best": 0.0008
+  },
+  "FROZEN_STATIC": {
+   "auroc_score": 0.8253,
+   "auroc_delta": 0.0031,
+   "ba_decided_at_t_accept_1": 0.8583,
+   "ba_delta_at_t_accept_1": 0.0503,
+   "review_frac_at_t_accept_1": 0.5333,
+   "review_delta_at_t_accept_1": -0.0667,
+   "best_ba_decided_over_t_accept": 0.8675,
+   "best_t_accept": 2,
+   "best_ba_delta_vs_full_best": 0.0355
+  },
+  "HANDS_NOT_VISIBLE": {
+   "auroc_score": 0.8216,
+   "auroc_delta": -0.0006,
+   "ba_decided_at_t_accept_1": 0.8132,
+   "ba_delta_at_t_accept_1": 0.0051,
+   "review_frac_at_t_accept_1": 0.6333,
+   "review_delta_at_t_accept_1": 0.0333,
+   "best_ba_decided_over_t_accept": 0.8298,
+   "best_t_accept": 4,
+   "best_ba_delta_vs_full_best": -0.0022
+  },
+  "NO_ACTIVE_WORK": {
+   "auroc_score": 0.804,
+   "auroc_delta": -0.0182,
+   "ba_decided_at_t_accept_1": 0.8003,
+   "ba_delta_at_t_accept_1": -0.0078,
+   "review_frac_at_t_accept_1": 0.6333,
+   "review_delta_at_t_accept_1": 0.0333,
+   "best_ba_decided_over_t_accept": 0.8239,
+   "best_t_accept": 3,
+   "best_ba_delta_vs_full_best": -0.0081
+  },
+  "OVEREXPOSED": {
+   "auroc_score": 0.83,
+   "auroc_delta": 0.0078,
+   "ba_decided_at_t_accept_1": 0.8282,
+   "ba_delta_at_t_accept_1": 0.0202,
+   "review_frac_at_t_accept_1": 0.6267,
+   "review_delta_at_t_accept_1": 0.0267,
+   "best_ba_decided_over_t_accept": 0.8514,
+   "best_t_accept": 3,
+   "best_ba_delta_vs_full_best": 0.0194
+  },
+  "TOO_DARK": {
+   "auroc_score": 0.7977,
+   "auroc_delta": -0.0245,
+   "ba_decided_at_t_accept_1": 0.8194,
+   "ba_delta_at_t_accept_1": 0.0113,
+   "review_frac_at_t_accept_1": 0.62,
+   "review_delta_at_t_accept_1": 0.02,
+   "best_ba_decided_over_t_accept": 0.8258,
+   "best_t_accept": 3,
+   "best_ba_delta_vs_full_best": -0.0062
+  }
+ },
+ "axis2_margin_review": {
+  "description": "margin = distance of the quantised value to the nearest of the 64 Q=4 thresholds. ACCEPT requires score < t_accept AND margin >= m_min, otherwise REVIEW (REJECT unchanged). m_min=0 reproduces the 2-axis band.",
+  "raw_margin_q_quantiles": {
+   "0": 0,
+   "5": 0,
+   "25": 0,
+   "50": 2,
+   "75": 4,
+   "95": 10,
+   "100": 24
+  },
+  "norm_margin_distribution": {
+   "0": 150,
+   "1": 0,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0,
+   "6": 0,
+   "7": 0,
+   "8": 0,
+   "9": 0,
+   "10": 0,
+   "11": 0,
+   "12": 0,
+   "13": 0,
+   "14": 0,
+   "15": 0,
+   "16": 0
+  },
+  "norm": {
+   "n_points": 510,
+   "m_min_grid": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+   ],
+   "best_over_m_min": {
+    "decided_frac": 0.48,
+    "accept_frac": 0.24,
+    "reject_frac": 0.24,
+    "review_frac": 0.52,
+    "ba_decided": 0.8319967923015237,
+    "fr_good": 0.1,
+    "fa_bad": 0.06,
+    "n_decided": 72,
+    "n_review": 78,
+    "n_accept": 36,
+    "n_reject": 36,
+    "confusion": {
+     "good_accept": 33,
+     "good_review": 57,
+     "good_reject": 10,
+     "bad_accept": 3,
+     "bad_review": 21,
+     "bad_reject": 26
+    },
+    "t_accept": 3,
+    "m_min": 0
+   },
+   "delta_ba_vs_best_2axis": 0.0,
+   "delta_ba_vs_best_2axis_fr5": null
+  },
+  "raw": {
+   "n_points": 330,
+   "m_min_grid": [
+    0,
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    256,
+    1024,
+    4096
+   ],
+   "best_over_m_min": {
+    "decided_frac": 0.44,
+    "accept_frac": 0.2,
+    "reject_frac": 0.24,
+    "review_frac": 0.56,
+    "ba_decided": 0.8327067669172932,
+    "fr_good": 0.1,
+    "fa_bad": 0.04,
+    "n_decided": 66,
+    "n_review": 84,
+    "n_accept": 30,
+    "n_reject": 36,
+    "confusion": {
+     "good_accept": 28,
+     "good_review": 62,
+     "good_reject": 10,
+     "bad_accept": 2,
+     "bad_review": 22,
+     "bad_reject": 26
+    },
+    "t_accept": 5,
+    "m_min": 2
+   },
+   "delta_ba_vs_best_2axis": 0.0007
+  },
+  "iso_review_comparison": [
+   {
+    "target_review": 0.3,
+    "two_axis": {
+     "review": 0.3267,
+     "ba_decided": 0.8204,
+     "t_accept": 5
+    },
+    "with_margin_axis": {
+     "review": 0.3267,
+     "ba_decided": 0.8204,
+     "t_accept": 5,
+     "m_min": 0
+    }
+   },
+   {
+    "target_review": 0.4,
+    "two_axis": {
+     "review": 0.42,
+     "ba_decided": 0.8301,
+     "t_accept": 4
+    },
+    "with_margin_axis": {
+     "review": 0.42,
+     "ba_decided": 0.8301,
+     "t_accept": 4,
+     "m_min": 0
+    }
+   },
+   {
+    "target_review": 0.5,
+    "two_axis": {
+     "review": 0.52,
+     "ba_decided": 0.832,
+     "t_accept": 3
+    },
+    "with_margin_axis": {
+     "review": 0.52,
+     "ba_decided": 0.832,
+     "t_accept": 3,
+     "m_min": 0
+    }
+   },
+   {
+    "target_review": 0.6,
+    "two_axis": {
+     "review": 0.6,
+     "ba_decided": 0.808,
+     "t_accept": 1
+    },
+    "with_margin_axis": {
+     "review": 0.6,
+     "ba_decided": 0.808,
+     "t_accept": 1,
+     "m_min": 0
+    }
+   },
+   {
+    "target_review": 0.7,
+    "two_axis": {
+     "review": 0.6,
+     "ba_decided": 0.808,
+     "t_accept": 1
+    },
+    "with_margin_axis": {
+     "review": 0.76,
+     "ba_decided": 0.5,
+     "t_accept": 1,
+     "m_min": 1
+    }
+   }
+  ],
+  "crossed": {
+   "description": "margin = Q=4 integer distance to the nearest CROSSED threshold (1e9 when nothing fires); ACCEPT requires score < t_accept and margin_crossed >= m_min.",
+   "n_points": 300,
+   "m_min_grid": [
+    0,
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256
+   ],
+   "best_over_m_min": {
+    "decided_frac": 0.48,
+    "accept_frac": 0.24,
+    "reject_frac": 0.24,
+    "review_frac": 0.52,
+    "ba_decided": 0.8319967923015237,
+    "fr_good": 0.1,
+    "fa_bad": 0.06,
+    "n_decided": 72,
+    "n_review": 78,
+    "n_accept": 36,
+    "n_reject": 36,
+    "confusion": {
+     "good_accept": 33,
+     "good_review": 57,
+     "good_reject": 10,
+     "bad_accept": 3,
+     "bad_review": 21,
+     "bad_reject": 26
+    },
+    "t_accept": 3,
+    "m_min": 0
+   },
+   "delta_ba_vs_best_2axis": 0.0
+  }
+ },
+ "device": "cpu",
+ "wall_s": 15.78,
+ "command": "cd /workspace/wt/dsh-phys && python3 eval/exp_phys_dsh/run_a4_review_band.py --source gold --boot 2000 --light",
+ "artifacts": {
+  "rule_table": "eval/results/exp_phys/rule_table.json"
+ },
+ "frontier_grid": {
+  "omitted": "light run: see A4_review_band.json for the full grid"
+ },
+ "budget_curve": {
+  "omitted": "light run: see A4_review_band.json"
+ }
+}

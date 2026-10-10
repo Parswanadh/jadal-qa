@@ -1,0 +1,501 @@
+{
+ "derivation_summary": "Rule list and directions: the a-priori product vocabulary (TOO_DARK, OVEREXPOSED, BLUR, FROZEN_STATIC, NO_ACTIVE_WORK, HANDS_NOT_VISIBLE, DUPLICATE, CODING_NOISE) plus SHAKY. Thresholds: k x a physical reference measured on TRAINING windows only (median skin fraction, DCT AC energy, global shift, HF share, motion energy), k in {0.75, 2.0}, rounded to an integer at Q=4. Weights: small integers derived by A1 on training clips. t_reject: chosen on training windows under a <=5% false-reject budget.",
+ "description": "Deterministic physics rule model v2: fixed integer Q=4 thresholds, fixed integer weights, no learned parameter in the decision path, byte-identical receipts.",
+ "domain_mode": {
+  "absolute": "thresholds_q are absolute values from IndEgo training; use in-domain",
+  "requantile": "LABEL-FREE domain adaptation: replace each feature value by its within-target rank (uniform in (0,1), target's own unlabelled values only), then the thresholds become the fixed quantile levels [9900,9500,9000,7500] for high-is-bad and [100,500,1000,2500] for low-is-bad. Rule list, directions, weights and t_reject stay frozen from IndEgo."
+ },
+ "evidence_provenance": {
+  "C1": "eval/results/exp_phys/rule_table.json (Q1, PR #141); LOCO reproduced independently at 0.8222 in LEAD_v2.json",
+  "C2": "eval/results/exp_phys_dsh/A1_indomain_v2.json (commit 2ad71fd)",
+  "merge": "eval/results/exp_phys_dsh/LEAD_freeze.json"
+ },
+ "limitations": "IndEgo n=150 (100 good / 50 bad) over 7 clips; one clip can move AUROC by >0.05. Candidate families were shortlisted on the same pool (mild selection bias). OOD labels were never used for fitting, weighting, thresholding or selection.",
+ "metrics": {
+  "C1_v1_uniform": {
+   "auroc": 0.823,
+   "auroc_ci95_clip_bootstrap": [
+    0.7326,
+    0.8568
+   ],
+   "loco_balanced_accuracy": 0.705,
+   "loco_false_reject_good": 0.05,
+   "loco_reject_rate_bad": 0.46,
+   "loco_review_as_accept_ba": 0.705,
+   "n": 150,
+   "n_rule_specs": 16,
+   "nominal_t_reject_ignored": 14,
+   "per_fold_tau": {
+    "desk": 13,
+    "ecu_full": 16,
+    "ecu_late": 14,
+    "logistics4": 14,
+    "organise": 12,
+    "pallet": 12,
+    "pallet2": 14
+   },
+   "score_stats": {
+    "max": 26,
+    "mean": 6.567,
+    "min": 0
+   },
+   "tau_frozen_on_all_training": 13
+  },
+  "C2_a1_fixed5": {
+   "auroc": 0.8231,
+   "auroc_ci95_clip_bootstrap": [
+    0.7107,
+    0.8783
+   ],
+   "loco_balanced_accuracy": 0.625,
+   "loco_false_reject_good": 0.05,
+   "loco_reject_rate_bad": 0.3,
+   "loco_review_as_accept_ba": 0.625,
+   "n": 150,
+   "n_rule_specs": 5,
+   "nominal_t_reject_ignored": 9,
+   "per_fold_tau": {
+    "desk": 7,
+    "ecu_full": 9,
+    "ecu_late": 9,
+    "logistics4": 9,
+    "organise": 7,
+    "pallet": 7,
+    "pallet2": 9
+   },
+   "score_stats": {
+    "max": 12,
+    "mean": 3.62,
+    "min": 0
+   },
+   "tau_frozen_on_all_training": 7
+  },
+  "C3_merged_a1_plus_v1soft": {
+   "auroc": 0.8472,
+   "auroc_ci95_clip_bootstrap": [
+    0.7432,
+    0.8906
+   ],
+   "loco_balanced_accuracy": 0.67,
+   "loco_false_reject_good": 0.06,
+   "loco_reject_rate_bad": 0.4,
+   "loco_review_as_accept_ba": 0.67,
+   "n": 150,
+   "n_rule_specs": 21,
+   "nominal_t_reject_ignored": 12,
+   "per_fold_tau": {
+    "desk": 25,
+    "ecu_full": 28,
+    "ecu_late": 26,
+    "logistics4": 26,
+    "organise": 25,
+    "pallet": 23,
+    "pallet2": 26
+   },
+   "score_stats": {
+    "max": 49,
+    "mean": 12.113,
+    "min": 0
+   },
+   "tau_frozen_on_all_training": 25
+  },
+  "C4_merged_drop_frozen_static": {
+   "auroc": 0.8469,
+   "auroc_ci95_clip_bootstrap": [
+    0.741,
+    0.888
+   ],
+   "loco_balanced_accuracy": 0.62,
+   "loco_false_reject_good": 0.06,
+   "loco_reject_rate_bad": 0.3,
+   "loco_review_as_accept_ba": 0.62,
+   "n": 150,
+   "n_rule_specs": 19,
+   "nominal_t_reject_ignored": 12,
+   "per_fold_tau": {
+    "desk": 25,
+    "ecu_full": 28,
+    "ecu_late": 26,
+    "logistics4": 26,
+    "organise": 25,
+    "pallet": 23,
+    "pallet2": 26
+   },
+   "score_stats": {
+    "max": 49,
+    "mean": 11.287,
+    "min": 0
+   },
+   "tau_frozen_on_all_training": 25
+  },
+  "C5_merged_drop_frozen_no_veto": {
+   "auroc": 0.8469,
+   "auroc_ci95_clip_bootstrap": [
+    0.741,
+    0.888
+   ],
+   "loco_balanced_accuracy": 0.62,
+   "loco_false_reject_good": 0.06,
+   "loco_reject_rate_bad": 0.3,
+   "loco_review_as_accept_ba": 0.62,
+   "n": 150,
+   "n_rule_specs": 19,
+   "nominal_t_reject_ignored": 12,
+   "per_fold_tau": {
+    "desk": 25,
+    "ecu_full": 28,
+    "ecu_late": 26,
+    "logistics4": 26,
+    "organise": 25,
+    "pallet": 23,
+    "pallet2": 26
+   },
+   "score_stats": {
+    "max": 49,
+    "mean": 11.287,
+    "min": 0
+   },
+   "tau_frozen_on_all_training": 25
+  }
+ },
+ "name": "phys_rules_v2",
+ "quantisation": 4,
+ "rules": [
+  {
+   "derivation": "0.75 x median training-window skin fraction (hands out of frame)",
+   "feature": "full.skin_frac",
+   "k": 0.75,
+   "op": "<",
+   "reference": "median_train skin fraction",
+   "reference_value": 0.0348575,
+   "rule": "HANDS_NOT_VISIBLE",
+   "side": "low",
+   "strength": "weak",
+   "thresholds_q": [
+    261
+   ],
+   "weight": 2
+  },
+  {
+   "derivation": "0.75 x median training DCT AC energy (acuity floor)",
+   "feature": "full.dct_energy",
+   "k": 0.75,
+   "op": "<",
+   "reference": "median_train DCT AC energy",
+   "reference_value": 0.008682,
+   "rule": "BLUR",
+   "side": "low",
+   "strength": "quality",
+   "thresholds_q": [
+    65
+   ],
+   "weight": 3
+  },
+  {
+   "derivation": "2.0 x median training global shift (camera shake)",
+   "feature": "full.global_shift",
+   "k": 2.0,
+   "op": ">",
+   "reference": "median_train global shift",
+   "reference_value": 14.106335,
+   "rule": "SHAKY",
+   "side": "high",
+   "strength": "weak",
+   "thresholds_q": [
+    211595
+   ],
+   "weight": 3
+  },
+  {
+   "derivation": "0.75 x median training HF share (noise-normalised sharpness)",
+   "feature": "full.hf_ratio",
+   "k": 0.75,
+   "op": "<",
+   "reference": "median_train HF share",
+   "reference_value": 0.016952,
+   "rule": "BLUR",
+   "side": "low",
+   "strength": "quality",
+   "thresholds_q": [
+    127
+   ],
+   "weight": 3
+  },
+  {
+   "derivation": "2.0 x median training motion energy (motion after ego-compensation)",
+   "feature": "full.motion_energy",
+   "k": 2.0,
+   "op": ">",
+   "reference": "median_train motion energy",
+   "reference_value": 0.038485,
+   "rule": "NO_ACTIVE_WORK",
+   "side": "high",
+   "strength": "weak",
+   "thresholds_q": [
+    577
+   ],
+   "weight": 3
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p01/p05/p10/p25 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "full.luma_mean",
+   "op": "<",
+   "reference": "p01/p05/p10/p25",
+   "rule": "TOO_DARK",
+   "side": "low",
+   "strength": "quality",
+   "thresholds_q": [
+    723,
+    1845,
+    2360,
+    2678
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "full.dark_frac",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "TOO_DARK",
+   "side": "high",
+   "strength": "quality",
+   "thresholds_q": [
+    7398,
+    3709,
+    2394,
+    1949
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "full.bright_frac",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "OVEREXPOSED",
+   "side": "high",
+   "strength": "quality",
+   "thresholds_q": [
+    979,
+    459,
+    251,
+    57
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p01/p05/p10/p25 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "full.hf_ratio",
+   "op": "<",
+   "reference": "p01/p05/p10/p25",
+   "rule": "BLUR",
+   "side": "low",
+   "strength": "quality",
+   "thresholds_q": [
+    47,
+    77,
+    97,
+    134
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p01/p05/p10/p25 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "full.dct_energy",
+   "op": "<",
+   "reference": "p01/p05/p10/p25",
+   "rule": "BLUR",
+   "side": "low",
+   "strength": "quality",
+   "thresholds_q": [
+    2,
+    35,
+    49,
+    68
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p01/p05/p10/p25 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "full.temp_b0",
+   "op": "<",
+   "reference": "p01/p05/p10/p25",
+   "rule": "FROZEN_STATIC",
+   "side": "low",
+   "strength": "quality",
+   "thresholds_q": [
+    8563,
+    47671,
+    76483,
+    97065
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "full.frozen_frac",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "FROZEN_STATIC",
+   "side": "high",
+   "strength": "quality",
+   "thresholds_q": [
+    223,
+    41,
+    24,
+    3
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "phys.flow_act",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "NO_ACTIVE_WORK",
+   "side": "high",
+   "strength": "weak",
+   "thresholds_q": [
+    8914,
+    7970,
+    7661,
+    6394
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "phys.flow_med",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "NO_ACTIVE_WORK",
+   "side": "high",
+   "strength": "weak",
+   "thresholds_q": [
+    22787,
+    20763,
+    19475,
+    13544
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "full.motion_energy",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "NO_ACTIVE_WORK",
+   "side": "high",
+   "strength": "weak",
+   "thresholds_q": [
+    734,
+    669,
+    624,
+    502
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p01/p05/p10/p25 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "full.skin_frac",
+   "op": "<",
+   "reference": "p01/p05/p10/p25",
+   "rule": "HANDS_NOT_VISIBLE",
+   "side": "low",
+   "strength": "weak",
+   "thresholds_q": [
+    3,
+    46,
+    66,
+    161
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "phys.dhash_loop_min",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "DUPLICATE",
+   "side": "high",
+   "strength": "weak",
+   "thresholds_q": [
+    120000,
+    100000,
+    91000,
+    70000
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "phys.mad_mean",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "DUPLICATE",
+   "side": "high",
+   "strength": "weak",
+   "thresholds_q": [
+    197433,
+    158866,
+    141781,
+    121200
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "phys.frm_bytes_med",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "CODING_NOISE",
+   "side": "high",
+   "strength": "weak",
+   "thresholds_q": [
+    100000700,
+    89142500,
+    82470500,
+    69572500
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "phys.p_size_med",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "CODING_NOISE",
+   "side": "high",
+   "strength": "weak",
+   "thresholds_q": [
+    99047400,
+    88492000,
+    81206000,
+    67588750
+   ],
+   "weight": 1
+  },
+  {
+   "derivation": "IndEgo training quantile ladder p99/p95/p90/p75 at Q=4 (Q1/PR #141 thresholds, frozen)",
+   "feature": "phys.snr_db",
+   "op": ">",
+   "reference": "p99/p95/p90/p75",
+   "rule": "CODING_NOISE",
+   "side": "high",
+   "strength": "weak",
+   "thresholds_q": [
+    189924,
+    168766,
+    160496,
+    148676
+   ],
+   "weight": 1
+  }
+ ],
+ "score_rule": "score = sum over rules of weight * (number of thresholds crossed); REJECT if a QUALITY veto fires or score >= t_reject; REVIEW if t_accept <= score < t_reject; else ACCEPT",
+ "selected_candidate": "C3_merged_a1_plus_v1soft",
+ "t_accept": 0,
+ "t_reject": 25,
+ "version": 2
+}

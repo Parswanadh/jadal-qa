@@ -1,0 +1,33 @@
+{
+ "caveat": "a diagnostic upper bound for the model CLASS, not a proposed model; logistic regression is not deterministic-integer and cannot ship",
+ "command": "python3 eval/exp_phys_dsh/run_ceiling.py",
+ "device": "CPU (RunPod A40 host)",
+ "experiment": "LEAD_ceiling",
+ "headroom": {
+  "interpretation": "the rank-42 logistic is the best any per-feature-order-statistic model can do on these features under LOCO; the gap to v2 is the headroom left inside the model class, and it is bought with a non-integer, non-shippable model",
+  "v2_vs_best_aggregation_of_same_rules": -0.0614,
+  "v2_vs_class_ceiling": -0.1412
+ },
+ "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+ "protocol": "leave-one-clip-out over the 7 IndEgo clips; clip-bootstrap B=2000 seed 0",
+ "results": {
+  "logistic_on_16_rule_firecounts": 0.7858,
+  "logistic_on_16_rule_firecounts_ci95": [
+   0.647,
+   0.8527
+  ],
+  "logistic_rank42_CLASS_CEILING": 0.706,
+  "logistic_rank42_CLASS_CEILING_ci95": [
+   0.6064,
+   0.8031
+  ],
+  "logistic_raw42": 0.7912,
+  "logistic_raw42_ci95": [
+   0.6759,
+   0.8665
+  ],
+  "q1_rule_model": 0.823,
+  "v2_rule_model": 0.8472
+ },
+ "runtime_s": 13.8
+}
