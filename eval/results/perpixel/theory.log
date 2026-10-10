@@ -1,0 +1,9 @@
+phase1: n=150 fails=[] seconds=281.4
+ablation raw: auroc=0.532 ci=[0.42, 0.684]
+ablation flick: auroc=0.604 ci=[0.493, 0.72]
+ablation gmc: auroc=0.491 ci=[0.406, 0.669]
+ablation tempmed: auroc=0.527 ci=[0.445, 0.673]
+ablation full: auroc=0.475 ci=[0.394, 0.619]
+nulls: {"frozen_alpha0.01": {"nominal_thr": 0.9972604154495461, "empirical_far": 0.0, "n_good": 100}, "frozen_alpha0.001": {"nominal_thr": 0.9963620840608333, "empirical_far": 0.0, "n_good": 100}, "rhythm_alpha0.01": {"nominal_thr_logp": -2.0, "empirical_far": 0.11, "n_good": 100}, "rhythm_alpha0.001": {"nominal_thr_logp": -3.0, "empirical_far": 0.02, "n_good": 100}}
+rule list: bal_acc=0.470 auroc=0.410
+wrote theory.json

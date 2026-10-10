@@ -1,0 +1,13 @@
+AI audit active_labor: n=7000 oof_auc=0.932 flagged=258
+AI audit hands_ok: n=7000 oof_auc=0.976 flagged=108
+human flagged: 12
+Traceback (most recent call last):
+  File "/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/eval/perpixel/audit.py", line 217, in <module>
+    main()
+  File "/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/eval/perpixel/audit.py", line 205, in main
+    retr = retrain_variants(fl)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/eval/perpixel/audit.py", line 195, in retrain_variants
+    out["auroc_all_sameproto"] = run(np.ones(len(ida), bool), soft=False)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: retrain_variants.<locals>.run() got an unexpected keyword argument 'soft'

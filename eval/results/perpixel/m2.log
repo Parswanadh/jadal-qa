@@ -1,0 +1,5 @@
+quality LOCO auroc: 0.849
+dups constructed: {'threshold': 0.8410791366906474, 'n_test': 64, 'precision': 0.9565217391304348, 'recall': 1.0, 'auroc': 1.0} human: {'dup_ids': ['g072', 'g077', 'g088', 'g089', 'g090', 'g149'], 'recall_at1': 0.5, 'recall_at3': 0.5, 'precision_top': 0.047619047619047616, 'n_flagged': 63}
+activity LR: 0.673 HGB: 0.758
+series: conv 40 0.782
+wrote m2.json

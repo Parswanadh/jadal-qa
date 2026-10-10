@@ -1,0 +1,5 @@
+n=150 quality_pos=7 good=100
+LOCO quality stage: sens=1.000 FRR=0.970 bal=0.515
+per-reason: {"GOOD": {"recall_bad": null, "kept": 0.03, "n": 100}, "TOO_DARK": {"recall_bad": 1.0, "kept": null, "n": 6}, "UNDECODABLE": {"recall_bad": 1.0, "kept": null, "n": 1}}
+trivial accept-all bal=0.5 reject-all bal=0.5
+active: ['blur', 'lowent', 'madfroz', 'pbytes', 'ten'] wrote rulelist.json

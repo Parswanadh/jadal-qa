@@ -1,0 +1,13 @@
+/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/jadal/perpixel/physics.py:89: RuntimeWarning: invalid value encountered in sqrt
+  snr = float(np.median([m / np.sqrt(a * m + b) for m in m2]))
+/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/jadal/perpixel/physics.py:89: RuntimeWarning: invalid value encountered in sqrt
+  snr = float(np.median([m / np.sqrt(a * m + b) for m in m2]))
+/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/jadal/perpixel/physics.py:89: RuntimeWarning: invalid value encountered in sqrt
+  snr = float(np.median([m / np.sqrt(a * m + b) for m in m2]))
+extract: n=150 fails=0 s=105.8
+nan_frac: {'snr_db': 0.02}
+phys quality: auroc=0.963 ci=[0.743, 1.0]
+phys activity: auroc=0.715 ci=[0.573, 0.81]
+combined activity: auroc=0.702 ci=[0.54, 0.836]
+theory+physics activity: auroc=0.691 ci=[0.537, 0.8]
+wrote physics.json
