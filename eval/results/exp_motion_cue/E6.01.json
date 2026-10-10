@@ -175,7 +175,7 @@
   },
   "shift_px_mean (ego motion itself)": {
    "auroc_oriented_pooled": 0.8053999999999999,
-   "auroc_signed_pooled": 0.1946,
+   "auroc_unoriented_pooled": 0.1946,
    "ci95_oriented_clip_bootstrap": [
     0.6750524109014675,
     0.8926047658409083
@@ -372,8 +372,8 @@
   "seed": 0
  },
  "device": "A40 (CPU-only feature extraction; GPU idle)",
- "command": "JADAL_BUNDLE=$JADAL_BUNDLE python3 eval/exp_motion_cue/run_e6.py --experiments E6.01,E6.02,E6.04 --workers 3",
- "git_sha": "124826e1cbae8573b5e8e84878b2efc9745f9570",
+ "command": "JADAL_BUNDLE=$JADAL_BUNDLE python3 eval/exp_motion_cue/run_e6.py --experiments E6.01 --workers 3",
+ "git_sha": "339066a3b1d9f6ca152219351ec3969fa0e46b37",
  "cost": {
   "frames_per_window": 100,
   "windows": 150,
@@ -384,5 +384,5 @@
   "cue_cache": "eval/results/exp_motion_cue/cue_indego.npz",
   "cue_cache_sha256": "87e128384aed5bd8ea618d2e7808f57f6cd771b9b41fd0e515e5e9951a7e85f8"
  },
- "timestamp_utc": "2026-10-10T15:34:50Z"
+ "timestamp_utc": "2026-10-10T15:45:51Z"
 }

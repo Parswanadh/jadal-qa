@@ -56,7 +56,7 @@
   "seed": 0
  },
  "command": "JADAL_BUNDLE=$JADAL_BUNDLE python3 eval/exp_motion_cue/run_e6.py --experiments E6.01,E6.02,E6.03,E6.04 --workers 3",
- "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "git_sha": "339066a3b1d9f6ca152219351ec3969fa0e46b37",
  "cost": {
   "frames_per_window": 100,
   "windows": 150,
@@ -71,6 +71,6 @@
   "cue_cache_ood": "eval/results/exp_motion_cue/cue_ood.npz",
   "cue_cache_ood_sha256": "507225813e7c71ef2d834a1bb0b043e721c8cd3fb5a528163ab82dc2a8e075d6"
  },
- "timestamp_utc": "2026-10-10T15:25:53Z",
+ "timestamp_utc": "2026-10-10T15:42:19Z",
  "missing_labels": []
 }

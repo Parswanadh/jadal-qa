@@ -308,7 +308,7 @@ def run_e601(cue, y, clips, cached, meta) -> dict:
                      "partial_cue_label_given_ego": {"r": rp, "ci95": [lop, hip]}}
     ref["shift_px_mean (ego motion itself)"] = {
         "auroc_oriented_pooled": auroc(y, -ego),
-        "auroc_signed_pooled": auroc(y, ego),
+        "auroc_unoriented_pooled": auroc(y, ego),
         "ci95_oriented_clip_bootstrap": list(clip_bootstrap_ci(y, -ego, clips)),
         "per_clip_auroc_oriented": per_clip_auroc(-ego, y, clips),
         "note": "this IS the conditioning variable (cached series_gold channel 4, mean over frames)"}
