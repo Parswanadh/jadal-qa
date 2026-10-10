@@ -1,0 +1,65 @@
+[make_splits] stage 1/3: scanning parquet metadata (no images decoded)
+
+=== dataset report (metadata only, no images decoded) ===
+data_dir: /home/parshu/projects/awing/data/ego10k_eval
+file                      rows  sources             hand_count          active_labor        
+--------------------------------------------------------------------------------------------
+ego4d.parquet            10000  ego4d:10000         0:3267,1:3038,2:3695no:4993,yes:5007    
+egocentric_10k.parquet   10000  egocentric_10k:100000:358,1:2008,2:7634 no:834,yes:9166     
+epic_kitchens.parquet    10000  epic_kitchens:10000 0:963,1:2932,2:6105 no:1496,yes:8504    
+TOTAL                    30000  distinct frame_ids: 30000
+
+--- label distribution by source_dataset (rows) ---
+source_dataset           hand_count=0       hand_count=1       hand_count=2   active_labor=yes    active_labor=no               rows
+------------------------------------------------------------------------------------------------------------------------------------
+ego4d                            3267               3038               3695               5007               4993              10000
+egocentric_10k                    358               2008               7634               9166                834              10000
+epic_kitchens                     963               2932               6105               8504               1496              10000
+TOTAL                            4588               7978              17434              22677               7323              30000
+
+[make_splits] stage 2/3: computing pHashes (streaming, images downscaled immediately)
+[make_splits]   ego4d.parquet: 10000 frames, 10000 to decode, 0 from cache
+[make_splits]   egocentric_10k.parquet: 10000 frames, 10000 to decode, 0 from cache
+[make_splits]   epic_kitchens.parquet: 10000 frames, 10000 to decode, 0 from cache
+[make_splits] stage 1/3: scanning parquet metadata (no images decoded)
+
+=== dataset report (metadata only, no images decoded) ===
+data_dir: /home/parshu/projects/awing/data/ego10k_eval
+file                      rows  sources             hand_count          active_labor        
+--------------------------------------------------------------------------------------------
+ego4d.parquet            10000  ego4d:10000         0:3267,1:3038,2:3695no:4993,yes:5007    
+egocentric_10k.parquet   10000  egocentric_10k:100000:358,1:2008,2:7634 no:834,yes:9166     
+epic_kitchens.parquet    10000  epic_kitchens:10000 0:963,1:2932,2:6105 no:1496,yes:8504    
+TOTAL                    30000  distinct frame_ids: 30000
+
+--- label distribution by source_dataset (rows) ---
+source_dataset           hand_count=0       hand_count=1       hand_count=2   active_labor=yes    active_labor=no               rows
+------------------------------------------------------------------------------------------------------------------------------------
+ego4d                            3267               3038               3695               5007               4993              10000
+egocentric_10k                    358               2008               7634               9166                834              10000
+epic_kitchens                     963               2932               6105               8504               1496              10000
+TOTAL                            4588               7978              17434              22677               7323              30000
+
+[make_splits] stage 2/3: computing pHashes (streaming, images downscaled immediately)
+[make_splits]   ego4d.parquet: 10000 frames, 10000 to decode, 0 from cache
+[make_splits]   egocentric_10k.parquet: 10000 frames, 10000 to decode, 0 from cache
+[make_splits]   epic_kitchens.parquet: 10000 frames, 10000 to decode, 0 from cache
+[make_splits]   hashed 30000 frames in 162.9s
+[make_splits] stage 3/3: dedup + stratified split
+[make_splits]   kept 29770, removed 230 near-duplicates (221 groups, 11303820 pairs checked)
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/parshu/projects/jadal-qa-wt/evalharness/eval/make_splits.py", line 631, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/parshu/projects/jadal-qa-wt/evalharness/eval/make_splits.py", line 609, in main
+    manifest = build_manifest(
+               ^^^^^^^^^^^^^^^
+  File "/home/parshu/projects/jadal-qa-wt/evalharness/eval/make_splits.py", line 485, in build_manifest
+    per_split = split_distribution(records, assignment)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/parshu/projects/jadal-qa-wt/evalharness/eval/make_splits.py", line 456, in split_distribution
+    rec = by_frame[frame_id]
+          ~~~~~~~~^^^^^^^^^^
+KeyError: 'assignment'

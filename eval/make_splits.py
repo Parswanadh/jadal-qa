@@ -140,14 +140,14 @@ def scan_metadata(data_dir: Path, files: Sequence[str] = PARQUET_FILES) -> dict:
 def print_metadata_report(report: dict) -> None:
     print("\n=== dataset report (metadata only, no images decoded) ===")
     print(f"data_dir: {report['data_dir']}")
-    header = f"{'file':<22}{'rows':>8}  {'sources':<20}{'hand_count':<20}{'active_labor':<20}"
+    header = f"{'file':<24}{'rows':>8}  {'sources':<26}{'hand_count':<22}{'active_labor':<18}"
     print(header)
     print("-" * len(header))
     for name, f in report["files"].items():
         sources = ",".join(f"{k}:{v}" for k, v in f["distinct_source_dataset"].items())
         hands = ",".join(f"{k}:{v}" for k, v in f["hand_count"].items())
         labels = ",".join(f"{k}:{v}" for k, v in f["active_labor"].items())
-        print(f"{name:<22}{f['rows']:>8}  {sources:<20}{hands:<20}{labels:<20}")
+        print(f"{name:<24}{f['rows']:>8}  {sources:<26}{hands:<22}{labels:<18}")
     print(f"{'TOTAL':<22}{report['total_rows']:>8}  distinct frame_ids: {report['distinct_frame_ids']}")
     if report["frame_id_duplicates"]:
         print(f"WARNING: {len(report['frame_id_duplicates'])} frame_id value(s) appear in more than one file")
@@ -293,7 +293,7 @@ def hash_dataset(
             if limit is not None and seen >= limit:
                 break
         log(f"  {name}: {total} frames, {len(need)} to decode, {len(cached_rows)} from cache")
-        fresh = hash_parquet(path, workers=workers, batch_size=batch_size, limit=limit, only_frames=need or None)
+        fresh = hash_parquet(path, workers=workers, batch_size=batch_size, limit=limit, only_frames=need)
         records.extend(cached_rows)
         records.extend(fresh)
     if use_cache:
@@ -474,6 +474,7 @@ def split_distribution(records: Sequence[dict], assignment: dict[str, str]) -> d
 def build_manifest(
     records: Sequence[dict],
     assignment: dict[str, str],
+    strata: dict,
     seed: int,
     ratios: Sequence[float],
     dup_report: dict,
@@ -512,7 +513,7 @@ def build_manifest(
             },
         },
         "label_source": "gemini-2.5-flash auto-labels, NOT human-checked (see eval/README.md)",
-        "strata_counts": assignment["strata"],
+        "strata_counts": strata,
         "splits": {
             name: {
                 "count": len(frame_ids[name]),
@@ -608,7 +609,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     split = assign_splits(kept, seed=args.seed, ratios=ratios)
     manifest = build_manifest(
         kept,
-        split,
+        split["assignment"],
+        split["strata"],
         seed=args.seed,
         ratios=ratios,
         dup_report=dup_report,
