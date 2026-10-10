@@ -13,6 +13,9 @@ Deterministic, CPU-only, no network access at import time. Every number is
 written to a results JSON together with n, label source, protocol, CI,
 device, git sha and the exact command that regenerates it.
 
+Feature vectors are reordered into `FEATURE_NAMES` order before use (asserted;
+`align_features`), so a regenerated shard cannot silently misalign the model.
+
 Usage:
   python3 eval/standard/run_all.py [--bundle DIR] [--out PATH] [--quiet]
 
@@ -192,8 +195,30 @@ def eg2_matrix(bundle, ids):
     return X / norm
 
 
-def load_ood(bundle):
-    """Return ids, y, and the 26-feature matrix at fps tag '10' from cached shards."""
+def align_features(vec, names, target):
+    """Reorder one feature vector from *names* order into *target* order.
+
+    A regenerated shard could store the same features in a different order; the
+    model must never silently receive mis-aligned inputs.  Raises if the shard
+    does not cover every target feature.
+    """
+    names = [str(n) for n in names]
+    target = [str(n) for n in target]
+    if names == target:
+        return list(vec)
+    idx = {n: i for i, n in enumerate(names)}
+    missing = [n for n in target if n not in idx]
+    if missing:
+        raise KeyError(f"feature shard is missing {missing[:3]} (shard names: {names[:6]}...)")
+    return [vec[idx[n]] for n in target]
+
+
+def load_ood(bundle, names=None):
+    """Return ids, y, and the 26-feature matrix at fps tag '10' from cached shards.
+
+    The matrix is reordered (asserted) into `names` (FEATURE_NAMES) order, so a
+    re-generated shard cannot silently misalign it.
+    """
     shard_dir = os.path.join(bundle, "local_work", "exp-fps", "eval", "results", "exp_fps")
     shards = []
     i = 0
@@ -205,6 +230,11 @@ def load_ood(bundle):
         i += 1
     if not shards:
         raise FileNotFoundError("no cached OOD feature shards (ood_shard_*of2.json)")
+    shard_names = [str(n) for n in shards[0]["names"]]
+    for s in shards[1:]:
+        if [str(n) for n in s["names"]] != shard_names:
+            raise ValueError("OOD shards disagree on feature names")
+    target = [str(n) for n in names] if names else shard_names
     wins = [w for s in shards for w in s["windows"]]
     wins.sort(key=lambda w: w["segment_id"])
     # labels from the human OOD file (authoritative); shard 'y' is a cross-check
@@ -216,12 +246,14 @@ def load_ood(bundle):
         ys.append(1 if (v and v.get("verdict") == "good") else 0)
         ids.append(sid)
     y = np.array(ys)
-    X = np.nan_to_num(np.array([w["fps"]["10"]["feats"] for w in wins], dtype=np.float64))
+    rows = [align_features(w["fps"]["10"]["feats"], shard_names, target) for w in wins]
+    X = np.nan_to_num(np.array(rows, dtype=np.float64))
     return {"ids": ids, "y": y, "X": X, "n_good": int(y.sum()),
-            "n_bad": int((1 - y).sum()), "names": shards[0]["names"]}
+            "n_bad": int((1 - y).sum()), "names": target,
+            "shard_names": shard_names, "reordered": target != shard_names}
 
 
-def load_e103_indego_features(bundle):
+def load_e103_indego_features(bundle, names=None):
     """IndEgo 26 features decoded by the E1.01 sweep (matches the OOD features' pipeline)."""
     shard_dir = os.path.join(bundle, "local_work", "exp-fps", "eval", "results", "exp_fps")
     shards = []
@@ -237,7 +269,16 @@ def load_e103_indego_features(bundle):
     ids = [x for s in shards for x in s["ids"]]
     order = np.argsort(ids, kind="stable")
     ids = [ids[i] for i in order]
-    X = np.nan_to_num(np.array([x for s in shards for x in s["feats"]["10"]])[order])
+    target = [str(n) for n in names] if names else None
+    rows = []
+    for s in shards:
+        shard_names = s.get("names")
+        for x in s["feats"]["10"]:
+            if target and shard_names:
+                rows.append(align_features(x, shard_names, target))
+            else:
+                rows.append(list(x))
+    X = np.nan_to_num(np.array([rows[i] for i in order])) if shards else None
     y = np.array([x for s in shards for x in s["y"]])[order]
     return {"ids": ids, "X": X, "y": y}
 
@@ -317,7 +358,7 @@ def build(bundle=DEFAULT_BUNDLE):
     }
 
     # --- OOD: frozen IndEgo pixel26 model -> OOD windows ---------------------
-    ood = load_ood(bundle)
+    ood = load_ood(bundle, names)
     sc, m = frozen_fit(X26, y)
     p_ood = m.predict_proba(sc.transform(ood["X"]))[:, 1]
     saturated = bool(np.allclose(p_ood, p_ood[0]))
@@ -330,12 +371,14 @@ def build(bundle=DEFAULT_BUNDLE):
         "frozen_pixel26_auroc": auroc(ood["y"], p_ood),
         "ci95_window_bootstrap": window_bootstrap_ci(ood["y"], p_ood),
         "saturated": saturated,
+        "feature_names": ood["names"],
+        "feature_order_reordered": ood["reordered"],
         "note_saturated": ("all OOD windows scored p=1.0 (the features.json scale is far outside "
                            "the IndEgo training range); the value is reported, not hidden") if saturated else "",
         "documented_range": "0.4-0.53 (IndEgo-trained models did NOT transfer)",
     }
     # E1.03 reference: same model but trained on the E1.01-decoded IndEgo features
-    ref = load_e103_indego_features(bundle)
+    ref = load_e103_indego_features(bundle, names)
     if ref is not None:
         sc2, m2 = frozen_fit(ref["X"], ref["y"])
         p_ref = m2.predict_proba(sc2.transform(ood["X"]))[:, 1]

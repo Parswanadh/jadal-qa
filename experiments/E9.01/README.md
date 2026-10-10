@@ -22,3 +22,9 @@ Results file: eval/results/standard/run_all.json
 Decision: Use eval/standard/run_all.py as the single comparison number for PR-triggered review; exec tier runs it in a throwaway clone behind the run-tests label.
 
 Cost: CPU sklearn, no GPU, ~14-36 s, no network
+
+**Fix (A6b, M4):** the OOD 26-feature matrix is now reordered into
+`FEATURE_NAMES` order (or the harness raises) before `predict_proba`, so a
+regenerated shard cannot silently misalign it; `run_all.json` records
+`feature_names` and `feature_order_reordered` (currently `false`, the shard
+order already matches). Numbers above are unchanged by this fix.
