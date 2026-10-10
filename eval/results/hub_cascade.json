@@ -1,0 +1,14 @@
+{
+  "hub_cost_source": "measured (decode+model wall)",
+  "hub_wall_s_per_segment": 0.627,
+  "l0_s_per_segment_cpu": 0.2204,
+  "n_segments_measured": 91,
+  "note": "parametric; no invented Awign numbers",
+  "proxy": "Laplacian-var>=30 + mean>=15 on 4 frames (NOT jadal.signals; signals not on main)",
+  "seg_seconds": 10.0,
+  "survivor_fraction": 1.0,
+  "table_hours_video_per_day": {
+    "L0_only": 1088.97,
+    "L0_plus_hub_on_survivors": 283.22
+  }
+}

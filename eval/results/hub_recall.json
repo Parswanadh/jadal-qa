@@ -1,0 +1,33 @@
+{
+  "data": "real IndEgo ECU clips + VIA annotations",
+  "dims": {
+    "128": {
+      "n_queries": 20,
+      "n_segments": 91,
+      "note": "N is small (20 step intervals over 91 segments); do not generalise.",
+      "recall@1": 0.2,
+      "recall@10": 0.65,
+      "recall@5": 0.5,
+      "seg_seconds": 10.0
+    },
+    "256": {
+      "n_queries": 20,
+      "n_segments": 91,
+      "note": "N is small (20 step intervals over 91 segments); do not generalise.",
+      "recall@1": 0.35,
+      "recall@10": 0.7,
+      "recall@5": 0.55,
+      "seg_seconds": 10.0
+    },
+    "768": {
+      "n_queries": 20,
+      "n_segments": 91,
+      "note": "N is small (20 step intervals over 91 segments); do not generalise.",
+      "recall@1": 0.25,
+      "recall@10": 0.75,
+      "recall@5": 0.65,
+      "seg_seconds": 10.0
+    }
+  },
+  "truncation": "leading-dims of the same measured 768-d vectors, renormalised"
+}

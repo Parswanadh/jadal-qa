@@ -1,0 +1,8 @@
+{
+  "index_hash_alone": "019092f40cd0db1262db7ffe8dbde4ede61c983566ac7fe686292baeb6988847",
+  "index_hash_batched": "019092f40cd0db1262db7ffe8dbde4ede61c983566ac7fe686292baeb6988847",
+  "max_abs_diff_alone_vs_in_batch_of_5": 0.0,
+  "route": "{\"text\": \"<|video|>\", \"video\": [N PIL RGB frames]}",
+  "runtime_dtype": "bfloat16",
+  "segment": "User_1_412_2010_3_480.mp4 [70,80]s N=4"
+}

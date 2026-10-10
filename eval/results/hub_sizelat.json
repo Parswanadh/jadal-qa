@@ -1,0 +1,111 @@
+{
+  "backends": {
+    "numpy_cpu": {
+      "dim128_N10000": {
+        "backend": "numpy",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 6.0,
+        "p95_ms": 6.11,
+        "repeats": 20
+      },
+      "dim128_N100000": {
+        "backend": "numpy",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 30.12,
+        "p95_ms": 33.48,
+        "repeats": 20
+      },
+      "dim128_N1000000": {
+        "backend": "numpy",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 405.36,
+        "p95_ms": 450.36,
+        "repeats": 20
+      },
+      "dim256_N10000": {
+        "backend": "numpy",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 5.55,
+        "p95_ms": 7.25,
+        "repeats": 20
+      },
+      "dim256_N100000": {
+        "backend": "numpy",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 72.46,
+        "p95_ms": 85.2,
+        "repeats": 20
+      },
+      "dim256_N1000000": {
+        "backend": "numpy",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 656.13,
+        "p95_ms": 722.85,
+        "repeats": 20
+      }
+    },
+    "torch_gpu_matmul": {
+      "dim128_N10000": {
+        "backend": "torch",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 3.27,
+        "p95_ms": 3.7,
+        "repeats": 10
+      },
+      "dim128_N100000": {
+        "backend": "torch",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 25.98,
+        "p95_ms": 33.23,
+        "repeats": 10
+      },
+      "dim128_N1000000": {
+        "backend": "torch",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 393.27,
+        "p95_ms": 488.49,
+        "repeats": 10
+      },
+      "dim256_N10000": {
+        "backend": "torch",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 3.48,
+        "p95_ms": 5.02,
+        "repeats": 10
+      },
+      "dim256_N100000": {
+        "backend": "torch",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 62.58,
+        "p95_ms": 66.78,
+        "repeats": 10
+      },
+      "dim256_N1000000": {
+        "backend": "torch",
+        "data": "SYNTHETIC random unit vectors through the REAL Index.search_by_vector path (cached matrix, vectorised mask, exact top-k)",
+        "k": 5,
+        "median_ms": 615.71,
+        "p95_ms": 621.5,
+        "repeats": 10
+      }
+    }
+  },
+  "bytes_formula": "segments * dim * 2 (float16 MATRIX bytes only; excludes .npz compression and meta.jsonl)",
+  "matrix_bytes_per_1000h_fp16": {
+    "128": 92160000,
+    "256": 184320000
+  },
+  "seg_seconds": 10.0,
+  "segments_per_1000h": 360000
+}

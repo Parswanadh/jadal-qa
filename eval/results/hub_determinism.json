@@ -1,0 +1,19 @@
+{
+  "data": "measured 768-d IndEgo segment embeddings",
+  "dim": 768,
+  "gpu_repeat": {
+    "device": "cuda",
+    "max_abs_diff_same_query_twice": 0.0,
+    "max_abs_diff_same_segment_twice": 0.0,
+    "route": "{\"text\": \"<|video|>\", \"video\": [N PIL RGB frames]}",
+    "runtime_dtype": "bfloat16",
+    "segment": "User_1_412_2010_3_480.mp4 [10,20]s N=8"
+  },
+  "n": 91,
+  "query_identical": true,
+  "query_results_hash_1": "78ba0a8bedeaa0e7183b73b4cec5ec216bbaf88581e68d83d4142fa274b81de3",
+  "query_results_hash_2": "78ba0a8bedeaa0e7183b73b4cec5ec216bbaf88581e68d83d4142fa274b81de3",
+  "rebuild_identical": true,
+  "rebuild_index_hash_1": "aad21019fc03d1b812ba9723a3297b68d2bcad9954239eda6bb339caeb6bd8cb",
+  "rebuild_index_hash_2": "aad21019fc03d1b812ba9723a3297b68d2bcad9954239eda6bb339caeb6bd8cb"
+}
