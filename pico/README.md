@@ -15,6 +15,30 @@ Host -> Pico             :  PING                   -> Pico replies  PONG <ticks_
 Unknown or malformed frames are silently ignored by the firmware (an unknown
 `LED` colour never latches the LED on).
 
+## Idle / attract mode
+
+With no laptop attached the board still shows it is alive: after 20 s
+(`IDLE_AFTER_S` in `pico/idle.py`) with no received host frame, `main.py`
+plays a repeating ambient animation — 3× PWM breathing (3 s each) on the
+onboard LED, then a verdict tour (ACCEPT solid 1 s, REVIEW slow blink
+400 ms for 2 s, REJECT fast blink 100 ms for 1.5 s), then a 0.5 s dark gap.
+With an external RGB LED wired (`RGB_PINS`): green/amber/red for the tour
+plus a slow colour fade while breathing. Every duration is tunable at the top
+of `pico/idle.py`; the pure animation logic there is unit-tested in
+`tests/test_pico_idle.py`.
+
+Host protocol always wins: **any** received frame — even an unknown or
+malformed one — stops the animation immediately (pins restored to plain
+outputs, last host-set colour back) and idle restarts only after another 20 s
+of silence. Heartbeats keep flowing during the animation; a `FLASH` arriving
+mid-animation starts on the next tick. The one visible protocol addition is
+read-only: while idle, the `HB` line reports `led_state` as `IDLE`
+(the host can never *set* `IDLE`; `parse_hb` accepts it like any other state).
+
+Power up with no host and watch the LED: idle starts at once (no host frame
+has ever arrived), so after `mpremote reset` — or a power-cycle — the board
+breathes and tours verdicts on its own.
+
 ## Hardware
 
 - Raspberry Pi Pico (RP2040 tested) running **MicroPython**.
