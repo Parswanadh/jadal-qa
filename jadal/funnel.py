@@ -66,13 +66,23 @@ Accepted/rejected clips score 0.0 (they never enter the queue). The
 score is monotone in uncertainty: a clip closer to the decision
 boundary always ranks higher.
 
-Missing fields: a missing, non-numeric, NaN/inf or garbage REQUIRED L0
-measurement (``decodable`` plus every measurement whose rule threshold is
-configured) can never prove anything, so it yields ``review`` with
-``LOW_CONFIDENCE`` and a ``missing:<field>`` evidence entry — never
-reject, never accept. A missing L1 decision (``None`` or ``{}``) likewise
-means ``review``, never a crash and never an accept. ``dup_of`` missing or
-null simply means "not a duplicate".
+Missing/invalid fields (fix round 1, Critical 1): ``decodable`` is a
+STRICT boolean — only a real ``True`` passes; an explicit ``False``
+rejects (``UNDECODABLE``); anything else (``0.0``, ``"0"``, ``2``,
+``None``, ...) proves nothing, so it yields ``review`` with
+``LOW_CONFIDENCE`` and an ``invalid:decodable`` evidence entry — never a
+numeric parse, never accept, never reject. A missing, non-numeric,
+NaN/inf or garbage REQUIRED numeric L0 measurement (every measurement
+whose rule threshold is configured; bools never parse as numbers) yields
+``review`` with ``LOW_CONFIDENCE`` and a ``missing:<field>`` evidence
+entry — never reject, never accept. A missing L1 decision (``None`` or
+``{}``) likewise means ``review``, never a crash and never an accept.
+``dup_of`` missing or null simply means "not a duplicate"; with
+``dup_of`` set but no usable ``phash`` (absent or not a 64-bit hex), the
+duplicate stands alone and rejects under ``evidence_reject`` (minor 9:
+stated, not silently assumed). Evidence values are always
+``float|int|str`` (bools/``None``/non-finite/garbage are encoded, never
+raw).
 
 NOT DONE (Phase 3+):
 - Threshold defaults are PLACEHOLDERS until calibrated on human gold labels.
@@ -182,6 +192,32 @@ def _as_prob(value: Any) -> float | None:
     if number is None or not 0.0 <= number <= 1.0:
         return None
     return number
+
+
+def _spec_value(value: Any) -> Any:
+    """Encode an evidence value into the SPEC type (float|int|str).
+
+    Bools become ``"true"``/``"false"``, ``None`` becomes ``"missing"``,
+    non-finite floats become ``"nan"``/``"inf"``/``"-inf"``, and any other
+    non-numeric garbage (lists, dicts, ...) becomes its ``str()`` — so a
+    corrupt measurement is always reportable, never silently dropped and
+    never smuggled through as a number (fix round 1, minor 8).
+    """
+    if value is None:
+        return "missing"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, float):
+        if value != value:
+            return "nan"
+        if value == float("inf"):
+            return "inf"
+        if value == float("-inf"):
+            return "-inf"
+        return value
+    if isinstance(value, (int, str)):
+        return value
+    return str(value)
 
 
 def _evidence(check: str, value: Any, op: str, threshold: Any,
@@ -304,14 +340,17 @@ def route(signals: Mapping[str, Any] | None,
     (``hands_ok``, ``active_work``, ``step``); floats are rounded to 4
     decimals.
 
-    Safety (C1): every REQUIRED L0 field — ``decodable`` plus each
-    measurement whose rule threshold is configured — goes through the
-    strict ``need_float`` path. A missing, non-numeric, NaN/inf or
-    garbage value can never prove anything, so it yields ``review`` with
-    ``LOW_CONFIDENCE`` and an evidence entry
-    ``{check: 'missing:<field>', ...}`` — never reject, never accept.
-    Only ``decodable`` explicitly false (or 0) rejects (``UNDECODABLE``).
-    ``dup_of`` is not required: missing/null simply means "not a duplicate".
+    Safety (C1, tightened fix round 1): every REQUIRED numeric L0 field —
+    each measurement whose rule threshold is configured — goes through the
+    strict ``need_float`` path (bools, strings, NaN/inf and garbage never
+    parse). A failure yields ``review`` with ``LOW_CONFIDENCE`` and a
+    ``missing:<field>`` evidence entry — never reject, never accept.
+    ``decodable`` is STRICTLY boolean: only a real ``True`` passes; an
+    explicit ``False`` rejects (``UNDECODABLE``); anything else yields
+    ``review`` with an ``invalid:decodable`` entry (never a numeric
+    parse). ``dup_of`` is not required: missing/null simply means "not a
+    duplicate"; with ``dup_of`` set but no usable ``phash``, the
+    duplicate stands alone (rejects under ``evidence_reject``).
 
     Policy gate (round 2, audit L9): ``thresholds['hard_reject_policy']``
     is ``'integrity_only'`` (DEFAULT when absent) or ``'evidence_reject'``
@@ -373,7 +412,7 @@ def route(signals: Mapping[str, Any] | None,
             soft.add("LOW_CONFIDENCE")
             evidence.append({
                 "check": f"missing:{name}",
-                "value": raw if raw is not None else "missing",
+                "value": _spec_value(raw),
                 "op": "==",
                 "threshold": "valid-number",
                 "code": "LOW_CONFIDENCE",
@@ -381,19 +420,29 @@ def route(signals: Mapping[str, Any] | None,
         return number
 
     # -- L0 hard checks (exact rules only) -------------------------------
-    # decodable
+    # decodable: STRICT boolean (fix round 1, Critical 1). Only a real
+    # bool True passes; an explicit bool False rejects UNDECODABLE;
+    # anything else (0.0, "0", 2, None, ...) proves nothing, so it goes
+    # to review with `invalid:decodable` evidence — never a numeric
+    # parse, never accept, never reject.
     decodable = signals.get("decodable")
-    if decodable is False or (isinstance(decodable, int)
-                              and not isinstance(decodable, bool)
-                              and int(decodable) == 0):
-        hard.add("UNDECODABLE")
-        evidence.append(_evidence("decodable", False, "==", False,
+    if decodable is True:
+        evidence.append(_evidence("decodable", "true", "==", "true",
                                   "UNDECODABLE"))
-    elif decodable is True or decodable == 1:
-        evidence.append(_evidence("decodable", True, "==", True,
+    elif decodable is False:
+        hard.add("UNDECODABLE")
+        evidence.append(_evidence("decodable", "false", "==", "false",
                                   "UNDECODABLE"))
     else:
-        need_float("decodable")
+        missing_l0 = True
+        soft.add("LOW_CONFIDENCE")
+        evidence.append({
+            "check": "invalid:decodable",
+            "value": _spec_value(decodable),
+            "op": "==",
+            "threshold": "true-boolean",
+            "code": "LOW_CONFIDENCE",
+        })
 
     # duration (required whenever min_duration_s is configured)
     min_duration = _as_float(thresh.get("min_duration_s"))
@@ -483,16 +532,16 @@ def route(signals: Mapping[str, Any] | None,
                 "threshold": "non-degenerate-phash",
                 "code": "DUPLICATE",
             })
-            evidence.append(_evidence("dup_of", str(dup_of), "!=", None,
-                                      "DUPLICATE"))
+            evidence.append(_evidence("dup_of", str(dup_of), "!=",
+                                      "non-null", "DUPLICATE"))
         elif not quality_rejects:
             soft.add("DUPLICATE")
-            evidence.append(_evidence("dup_of", str(dup_of), "!=", None,
-                                      "DUPLICATE"))
+            evidence.append(_evidence("dup_of", str(dup_of), "!=",
+                                      "non-null", "DUPLICATE"))
         else:
             hard.add("DUPLICATE")
-            evidence.append(_evidence("dup_of", str(dup_of), "!=", None,
-                                      "DUPLICATE"))
+            evidence.append(_evidence("dup_of", str(dup_of), "!=",
+                                      "non-null", "DUPLICATE"))
 
     # -- L1 soft checks (demote to review only, never reject) -------------
     accept_conf = _as_float(thresh.get("accept_conf"))
@@ -604,8 +653,8 @@ def route(signals: Mapping[str, Any] | None,
                 "label_source": calib_source,
             })
         elif calib_status != "calibrated":
-            evidence.append(_evidence("allow_uncalibrated_accept", True,
-                                      "==", True, "LOW_CONFIDENCE"))
+            evidence.append(_evidence("allow_uncalibrated_accept", 1,
+                                      "==", 1, "LOW_CONFIDENCE"))
 
     return {
         "verdict": verdict,
@@ -959,20 +1008,40 @@ def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
         reject_out[key] = entry
         updates[key] = entry["threshold"]
 
+    provenance = {**_source_provenance(subset, source),
+                  "delta_per_rule": round(delta_rule, 4)}
+    for entry in reject_out.values():
+        entry["provenance"] = dict(provenance)
+    accept_out["certify"]["provenance"] = dict(provenance)
+
     # -- (c) union: measured end-to-end on CERTIFY with selected thresholds.
     # Each rule was tested at delta_rule (Bonferroni delta/m by default);
     # the UNION false-reject rate of route() itself is measured on CERTIFY
-    # with its exact bound at full delta. Per-rule bounds do NOT bound
-    # the union — only this number describes route().
-    route_thresh = {k: v for k, v in updates.items()}
-    union_rejected = [
-        r for r in certify
-        if route(r["signals"], r["decisions"], route_thresh,
-                 allow_uncalibrated_accept=True)["verdict"] == "reject"]
-    union_stats = _rate_bound([r["label"] for r in union_rejected], delta)
-    union = {**union_stats, "n_certify": len(certify),
-             "note": ("union of all selected reject rules as route() "
-                      "applies them; per-rule bounds do not bound this")}
+    # with its exact bound at full delta, under BOTH policies, labelled
+    # (fix round 1: the certified policy is evidence_reject — measuring
+    # only under the integrity_only default made the union trivially
+    # zero). Per-rule bounds do NOT bound the union — only these numbers
+    # describe route().
+    unions: dict[str, dict] = {}
+    for union_policy in ("evidence_reject", "integrity_only"):
+        route_thresh = {k: v for k, v in updates.items()}
+        route_thresh["hard_reject_policy"] = union_policy
+        union_rejected = [
+            r for r in certify
+            if route(r["signals"], r["decisions"], route_thresh,
+                     allow_uncalibrated_accept=True)["verdict"] == "reject"]
+        union_stats = _rate_bound([r["label"] for r in union_rejected],
+                                  delta)
+        unions[union_policy] = {
+            **union_stats, "n_certify": len(certify),
+            "policy": union_policy, "profile": "default",
+            "provenance": dict(provenance),
+            "note": ("union of all selected reject rules as route() "
+                     "applies them under this policy (profile 'default', "
+                     "no profiles map: legacy hands enforcement); "
+                     "per-rule bounds do not bound this"),
+        }
+    union = unions["evidence_reject"]
 
     select_groups = sorted({r["group"] for r in select
                             if r["group"] is not None})
@@ -986,11 +1055,11 @@ def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
         "certify_groups": certify_groups,
         "n_select_clips": len(select_groups),
         "n_certify_clips": len(certify_groups),
-        "provenance": {**_source_provenance(subset, source),
-                       "delta_per_rule": round(delta_rule, 4)},
+        "provenance": dict(provenance),
         "accept": accept_out,
         "reject_rules": reject_out,
         "union": union,
+        "union_integrity_only": unions["integrity_only"],
         "threshold_updates": updates,
     }
 

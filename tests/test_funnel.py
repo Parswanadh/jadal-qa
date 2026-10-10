@@ -7,10 +7,12 @@ TestGoldRecordsBuild which uses tmp dirs (never eval/gold/).
 from __future__ import annotations
 
 import copy
+import contextlib
 import hashlib
 import json
 import math
 import random
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -63,6 +65,29 @@ GOOD_DECISIONS = {
 REQUIRED_L0 = ["decodable", "duration_s", "blur_var", "brightness_mean",
                "under_exposed_frac", "over_exposed_frac", "motion_mean",
                "hands_visible_frac"]
+
+_ABSENT = object()  # sys.modules sentinel for _block_signals_import
+
+
+@contextlib.contextmanager
+def _block_signals_import():
+    """Simulate ``jadal.signals`` being absent.
+
+    ``None`` in ``sys.modules`` makes ``from jadal import signals`` raise
+    ``ImportError`` whether or not the real module is importable. The
+    previous entry (or absence) is restored by key diff — ``sys.modules``
+    itself is never cleared or replaced.
+    """
+    key = "jadal.signals"
+    previous = sys.modules.get(key, _ABSENT)
+    sys.modules[key] = None
+    try:
+        yield
+    finally:
+        if previous is _ABSENT:
+            sys.modules.pop(key, None)
+        else:
+            sys.modules[key] = previous
 
 
 def sig(**over) -> dict:
@@ -198,6 +223,23 @@ class TestHardReject(unittest.TestCase):
         self.check_reject(sig(dup_of="seg0001"), "DUPLICATE")
 
 
+class TestShippedDefaultPolicy(unittest.TestCase):
+    """Minor 7: the round-1 fixture above pins evidence_reject explicitly,
+    so pin the SHIPPED default (no hard_reject_policy key =>
+    integrity_only) here: quality failures review, integrity rejects."""
+
+    def test_default_is_integrity_only(self):
+        thresholds = {k: v for k, v in THRESHOLDS.items()
+                      if k != "hard_reject_policy"}
+        thresholds["calibration"] = {"status": "calibrated"}
+        out = route(sig(blur_var=10.0), dec(), thresholds)
+        self.assertEqual(out["verdict"], "review")
+        self.assertIn("BLUR", out["reasons"])
+        out = route(sig(decodable=False), dec(), thresholds)
+        self.assertEqual(out["verdict"], "reject")
+        self.assertIn("UNDECODABLE", out["reasons"])
+
+
 class TestL1CannotReject(unittest.TestCase):
     def test_bad_heads_only_review(self):
         bad = {"hands_ok": {"p_yes": 0.1}, "active_work": {"p_yes": 0.1},
@@ -312,8 +354,11 @@ class TestMissingFields(unittest.TestCase):
         self.assertIsNone(route(sig(), {}, THRESHOLDS)["answer_conf"])
 
     def test_each_missing_l0_field_reviews_with_missing_evidence(self):
-        # C1: every required L0 field, removed or corrupted, must give
-        # review (never accept/reject) with a missing:<field> entry.
+        # C1 (tightened fix round 1): every required numeric L0 field,
+        # removed or corrupted, must give review (never accept/reject)
+        # with a missing:<field> entry. decodable is STRICTLY boolean:
+        # removed/corrupted gives invalid:decodable instead (only a real
+        # True passes, only an explicit False rejects).
         for field in REQUIRED_L0:
             for garbage in ["__DELETE__", *self.GARBAGE]:
                 signals = sig()
@@ -326,7 +371,9 @@ class TestMissingFields(unittest.TestCase):
                                  (field, garbage))
                 self.assertIn("LOW_CONFIDENCE", out["reasons"])
                 checks = [e["check"] for e in out["evidence"]]
-                self.assertIn(f"missing:{field}", checks, (field, garbage))
+                expected = ("invalid:decodable" if field == "decodable"
+                            else f"missing:{field}")
+                self.assertIn(expected, checks, (field, garbage))
 
     def test_decodable_false_still_rejects(self):
         out = accept_route(sig(decodable=False), dec())
@@ -360,7 +407,8 @@ class TestMissingFields(unittest.TestCase):
                 for field in REQUIRED_L0:
                     value = signals.get(field)
                     if field == "decodable":
-                        self.assertIn(value, (True, 1))
+                        # Fix round 1: only a real bool True passes.
+                        self.assertIs(value, True)
                     else:
                         self.assertIsInstance(value, (int, float))
                         self.assertNotIsInstance(value, bool)
@@ -675,6 +723,11 @@ class TestGoldRecordsBuild(unittest.TestCase):
             self.assertEqual(len(calls), 2)
 
     def test_missing_signals_module_raises_clearly(self):
+        # Merge-gate: simulate the absence explicitly (None in sys.modules
+        # makes the import raise ImportError) so this passes both with
+        # and without the real jadal.signals importable. The blocker
+        # restores the previous entry by key diff, never clearing
+        # sys.modules.
         from eval.calibrate_funnel import build_gold_records
         with tempfile.TemporaryDirectory() as tmp:
             manifest = {"segments": [
@@ -683,10 +736,22 @@ class TestGoldRecordsBuild(unittest.TestCase):
             labels = {"history": [], "latest": {
                 "g000": {"segment_id": "g000", "verdict": "good",
                          "reason": None, "note": ""}}}
-            with self.assertRaises(RuntimeError) as ctx:
+            with _block_signals_import(), \
+                    self.assertRaises(RuntimeError) as ctx:
                 build_gold_records(manifest, labels, signals_fn=None,
                                    cuts_dir=Path(tmp) / "cuts")
             self.assertIn("jadal.signals", str(ctx.exception))
+
+    def test_signals_blocker_restores_sys_modules(self):
+        before_keys = set(sys.modules)
+        before_value = sys.modules.get("jadal.signals", _ABSENT)
+        with _block_signals_import():
+            self.assertIsNone(sys.modules.get("jadal.signals"))
+            with self.assertRaises(ImportError):
+                import jadal.signals  # noqa: F401
+        self.assertEqual(set(sys.modules), before_keys)
+        self.assertIs(sys.modules.get("jadal.signals", _ABSENT),
+                      before_value)
 
 
 if __name__ == "__main__":

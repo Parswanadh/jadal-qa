@@ -458,18 +458,33 @@ class TestWriteConfigGating(unittest.TestCase):
         return path
 
     def test_synthetic_write_refuses_accept_conf_without_flag(self):
+        # Fix round 1, Important 4: a certified non-human accept_conf is
+        # REFUSED (non-zero exit, nothing written), not silently nulled.
         from eval.calibrate_funnel import apply_to_config
         result = self._result()
         self.assertIsNotNone(
             result["per_source"]["synthetic"]["accept"]["threshold"])
         with tempfile.TemporaryDirectory() as tmp:
             path = self._tmp_config(tmp)
+            before = path.read_text()
+            with self.assertRaises(SystemExit) as ctx:
+                apply_to_config(result, "synthetic", path)
+            self.assertIn("REFUSING", str(ctx.exception))
+            self.assertIn("--allow-provisional", str(ctx.exception))
+            self.assertEqual(path.read_text(), before)
+
+    def test_synthetic_write_uncertified_accept_writes_null(self):
+        # Nothing to refuse when calibration certified no accept
+        # threshold: the write proceeds with auto-accept off.
+        from eval.calibrate_funnel import apply_to_config
+        result = self._result()
+        result["threshold_updates"]["synthetic"]["accept_conf"] = None
+        result["per_source"]["synthetic"]["accept"]["threshold"] = None
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._tmp_config(tmp)
             config = apply_to_config(result, "synthetic", path)
             self.assertIsNone(config["accept_conf"])
             self.assertEqual(config["calibration"]["status"], "provisional")
-            self.assertEqual(config["calibration"]["label_source"],
-                             "synthetic")
-            self.assertIn("forced to null", config["calibration"]["note"])
 
     def test_synthetic_write_with_allow_provisional(self):
         from eval.calibrate_funnel import apply_to_config
@@ -502,6 +517,14 @@ class TestWriteConfigGating(unittest.TestCase):
                          "answer_conf": 0.2}}
         result = funnel.calibrate_two_sided(
             records, {"min_accepted": 10, "seed": 5, "target_alpha": 0.1})
+        # Simulate the validated gold path: the library result gains the
+        # human_provenance the --from-gold driver attaches after
+        # schema-checking the real labels file.
+        result["meta"]["human_provenance"] = {
+            "ok": True, "schema": "gold-labels-v1",
+            "file": "eval/gold/labels.json", "sha256": "0" * 64,
+            "labellers": "unknown", "n_entries": 160,
+        }
         with tempfile.TemporaryDirectory() as tmp:
             path = self._tmp_config(tmp)
             config = apply_to_config(result, "human_gold", path)
@@ -509,6 +532,278 @@ class TestWriteConfigGating(unittest.TestCase):
                 config["accept_conf"],
                 result["per_source"]["human_gold"]["accept"]["threshold"])
             self.assertEqual(config["calibration"]["status"], "calibrated")
+
+    def test_human_gold_without_provenance_stays_provisional(self):
+        # Fix round 1, Important 5: human_gold records alone do not earn
+        # 'calibrated' — provenance must be established.
+        from eval.calibrate_funnel import apply_to_config
+        records = []
+        for i in range(80):
+            records.append(_mk_record(150.0, "good", source="human_gold",
+                                      group=f"h{i % 8}", labeller="parshu"))
+            records[i]["decisions"] = {
+                "hands_ok": {"p_yes": 0.95}, "active_work": {"p_yes": 0.95},
+                "step": {"choice": "assemble", "probs": {},
+                         "answer_conf": 0.95}}
+        for i in range(80):
+            records.append(_mk_record(150.0, "bad", source="human_gold",
+                                      group=f"h{i % 8}", labeller="parshu"))
+            records[-1]["decisions"] = {
+                "hands_ok": {"p_yes": 0.2}, "active_work": {"p_yes": 0.2},
+                "step": {"choice": "assemble", "probs": {},
+                         "answer_conf": 0.2}}
+        result = funnel.calibrate_two_sided(
+            records, {"min_accepted": 10, "seed": 5, "target_alpha": 0.1})
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._tmp_config(tmp)
+            config = apply_to_config(result, "human_gold", path)
+            self.assertEqual(config["calibration"]["status"], "provisional")
+            self.assertIn("human provenance not established",
+                          config["calibration"]["note"])
+
+
+class TestStrictDecodable(unittest.TestCase):
+    """Fix round 1, Critical 1: decodable is strictly boolean."""
+
+    def thresholds(self):
+        return cfg("evidence_reject", None, CALIBRATED)
+
+    def test_true_passes_false_rejects(self):
+        out = route(sig(decodable=True), dec(), self.thresholds())
+        self.assertEqual(out["verdict"], "accept")
+        out = route(sig(decodable=False), dec(), self.thresholds())
+        self.assertEqual(out["verdict"], "reject")
+        self.assertEqual(out["reasons"], ["UNDECODABLE"])
+
+    def test_non_bool_never_accepts_never_rejects(self):
+        for value in (0.0, "0", "0.0", 2, 0.5, -1e308, 1.5, 1, 0,
+                      None, "true", "", [], {}, {"decodable": True}):
+            out = route(sig(decodable=value), dec(), self.thresholds())
+            self.assertEqual(out["verdict"], "review", value)
+            self.assertIn("invalid:decodable",
+                          [e["check"] for e in out["evidence"]],
+                          value)
+            self.assertIn("LOW_CONFIDENCE", out["reasons"])
+
+    def test_missing_decodable_reviews_with_invalid_evidence(self):
+        signals = sig()
+        del signals["decodable"]
+        out = route(signals, dec(), self.thresholds())
+        self.assertEqual(out["verdict"], "review")
+        entry = next(e for e in out["evidence"]
+                     if e["check"] == "invalid:decodable")
+        self.assertEqual(entry["value"], "missing")
+
+    def test_evidence_values_are_spec_typed(self):
+        # Minor 8: float|int|str only — no raw bools, None or NaN.
+        out = route(sig(decodable=False), dec(), self.thresholds())
+        for entry in out["evidence"]:
+            for key in ("value", "threshold"):
+                self.assertIsInstance(entry[key], (float, int, str),
+                                      (entry["check"], key, entry[key]))
+        out = route(sig(decodable=float("nan")), dec(), self.thresholds())
+        entry = next(e for e in out["evidence"]
+                     if e["check"] == "invalid:decodable")
+        self.assertEqual(entry["value"], "nan")
+
+
+class TestFuzz5000(unittest.TestCase):
+    def test_no_accept_of_garbage_l0(self):
+        # Fix round 1: 5000 seeded corruptions incl. type confusion.
+        # Accept is possible ONLY when every required field is valid and
+        # passing (decodable exactly True) plus confident L1.
+        import random
+        fields = ["decodable", "duration_s", "blur_var", "brightness_mean",
+                  "under_exposed_frac", "over_exposed_frac", "motion_mean",
+                  "hands_visible_frac"]
+        pool = [None, "", "abc", "nan", "60", "0", "1.5", "false", "true",
+                float("nan"), float("inf"), float("-inf"), True, False,
+                0, 1, 2, 0.0, 0.5, 1.5, -1, 10**100, -10**100,
+                [], {}, [0.9], {"p_yes": 0.9}, {"a": 1},
+                "9e999", -1e308, 1e308, "  ", "\x00"]
+        rng = random.Random(20261010)
+        thresholds = cfg("evidence_reject", None, CALIBRATED)
+        n_accept = 0
+        for _ in range(5000):
+            signals = sig()
+            for field in fields:
+                if rng.random() < 0.5:
+                    choice = rng.choice(["del", "pool"])
+                    if choice == "del":
+                        signals.pop(field, None)
+                    else:
+                        signals[field] = rng.choice(pool)
+            decisions = dec()
+            if rng.random() < 0.3:
+                decisions["hands_ok"] = rng.choice(
+                    [None, {}, {"p_yes": "x"}, {"p_yes": 2}])
+            out = route(signals, decisions, thresholds)
+            if out["verdict"] == "accept":
+                n_accept += 1
+                for field in fields:
+                    value = signals.get(field)
+                    if field == "decodable":
+                        # Fix round 1: only a real bool True passes.
+                        self.assertIs(value, True)
+                    else:
+                        # Numeric validity is exactly _as_float: bools,
+                        # strings-that-do-not-parse, NaN/inf and garbage
+                        # never parse (passing is enforced by route() —
+                        # accept requires every check to clear).
+                        self.assertIsNotNone(funnel._as_float(value),
+                                             (field, value))
+        self.assertGreater(n_accept, 0)
+        self.assertEqual(
+            route(sig(), dec(), thresholds)["verdict"], "accept")
+
+
+class TestUnionBothPolicies(unittest.TestCase):
+    def test_union_reported_under_both_policies_labelled(self):
+        records = []
+        for i in range(100):
+            records.append(_mk_record(5.0 + 15.0 * i / 99, "bad",
+                                      group=f"bad{i % 10}"))
+        for i in range(100):
+            records.append(_mk_record(100.0 + 100.0 * i / 99, "good",
+                                      group=f"good{i % 10}"))
+        result = funnel.calibrate_two_sided(
+            records, {"seed": 3, "bonferroni": False})
+        src = result["per_source"]["synthetic"]
+        for key, policy in (("union", "evidence_reject"),
+                            ("union_integrity_only", "integrity_only")):
+            block = src[key]
+            self.assertEqual(block["policy"], policy)
+            self.assertEqual(block["profile"], "default")
+            for field in ("fired", "errors", "upper_bound", "n_certify",
+                          "provenance"):
+                self.assertIn(field, block)
+            self.assertEqual(block["provenance"]["label_source"], "synthetic")
+        # The certified policy actually rejects; the default cannot.
+        self.assertGreater(src["union"]["fired"], 0)
+        self.assertEqual(src["union_integrity_only"]["fired"], 0)
+
+    def test_provenance_beside_every_bound(self):
+        records = [_mk_record(150.0, "good", group=f"g{i % 4}")
+                   for i in range(40)]
+        result = funnel.calibrate_two_sided(records, {"seed": 1})
+        src = result["per_source"]["synthetic"]
+        for key, entry in src["reject_rules"].items():
+            for field in ("n_segments", "n_clips", "n_wearers",
+                          "n_labellers", "label_source", "delta_per_rule"):
+                self.assertIn(field, entry["provenance"], (key, field))
+        self.assertIn("provenance", src["accept"]["certify"])
+        self.assertIn("provenance", src["union"])
+        self.assertIn("provenance", src["union_integrity_only"])
+
+
+class TestGoldSchema(unittest.TestCase):
+    def test_real_gold_shape_validates(self):
+        from eval.calibrate_funnel import check_gold_labels
+        labels = {
+            "history": [
+                {"ts": "t0", "segment_id": "g000", "verdict": "good",
+                 "reason": None, "note": ""},
+                {"ts": "t1", "segment_id": "g001", "verdict": "bad",
+                 "reason": "BLUR", "note": "x"},
+            ],
+            "latest": {
+                "g000": {"ts": "t0", "segment_id": "g000",
+                         "verdict": "good", "reason": None, "note": ""},
+                "g001": {"ts": "t1", "segment_id": "g001",
+                         "verdict": "bad", "reason": "BLUR", "note": "x"},
+            },
+        }
+        verdict = check_gold_labels(labels)
+        self.assertTrue(verdict["ok"], verdict["reasons"])
+        self.assertEqual(verdict["n_entries"], 2)
+        # The current label tool records no labeller id: said plainly.
+        self.assertEqual(verdict["labellers"], "unknown")
+
+    def test_labeller_ids_collected_when_present(self):
+        from eval.calibrate_funnel import check_gold_labels
+        labels = {
+            "history": [
+                {"ts": "t0", "segment_id": "g000", "verdict": "good",
+                 "reason": None, "note": "", "labeller": "qa-lead"},
+            ],
+            "latest": {
+                "g000": {"ts": "t0", "segment_id": "g000",
+                         "verdict": "good", "reason": None, "note": "",
+                         "labeller": "qa-lead"},
+            },
+        }
+        verdict = check_gold_labels(labels)
+        self.assertTrue(verdict["ok"], verdict["reasons"])
+        self.assertEqual(verdict["labellers"], ["qa-lead"])
+
+    def test_non_gold_files_rejected(self):
+        from eval.calibrate_funnel import check_gold_labels
+        for payload in ([], {}, {"records": []},
+                        {"latest": {}, "history": []},
+                        {"latest": {"g0": {"segment_id": "g0",
+                                           "verdict": "maybe"}},
+                         "history": [{"segment_id": "g0"}]},
+                        {"latest": {"g0": {"segment_id": "g0",
+                                           "verdict": "good"}},
+                         "history": []}):
+            self.assertFalse(check_gold_labels(payload)["ok"], payload)
+
+    def test_records_self_declared_human_refused_without_flag(self):
+        from eval.calibrate_funnel import main
+        with tempfile.TemporaryDirectory() as tmp:
+            records_path = Path(tmp) / "records.json"
+            records_path.write_text(json.dumps([{
+                "signals": dict(BASE_SIGNALS), "decisions": None,
+                "label": "good", "label_source": "human_gold",
+                "group": "clipA"}]))
+            out = Path(tmp) / "cal.json"
+            with self.assertRaises(SystemExit) as ctx:
+                main(["--records", str(records_path),
+                      "--out", str(out)])
+            self.assertIn("human_gold", str(ctx.exception))
+            self.assertIn("--human-gold", str(ctx.exception))
+            self.assertFalse(out.is_file())
+
+    def test_records_human_with_flag_records_provenance(self):
+        from eval.calibrate_funnel import main
+        with tempfile.TemporaryDirectory() as tmp:
+            records_path = Path(tmp) / "records.json"
+            records_path.write_text(json.dumps([{
+                "signals": dict(BASE_SIGNALS), "decisions": None,
+                "label": "good", "label_source": "human_gold",
+                "group": "clipA", "labeller": "qa-lead"}]))
+            out = Path(tmp) / "cal.json"
+            self.assertEqual(
+                main(["--records", str(records_path), "--human-gold",
+                      "--out", str(out)]), 0)
+            result = json.loads(out.read_text())
+            human_prov = result["meta"]["human_provenance"]
+            self.assertTrue(human_prov["ok"])
+            self.assertEqual(human_prov["labellers"], ["qa-lead"])
+            self.assertEqual(len(human_prov["sha256"]), 64)
+
+    def test_write_config_refusal_from_cli(self):
+        # Fix round 1, Important 4 end-to-end: non-zero exit, clear
+        # message, config file untouched. (N=1200/seed 7 certifies
+        # accept_conf=0.4 on synthetic fixtures — N=400 honestly does
+        # not, so there is nothing to refuse there.)
+        from eval.calibrate_funnel import main
+        with tempfile.TemporaryDirectory() as tmp:
+            config = Path(tmp) / "thresholds.json"
+            config.write_text(json.dumps(
+                {"accept_conf": None,
+                 "calibration": {"status": "placeholder"}}))
+            out = Path(tmp) / "cal.json"
+            with self.assertRaises(SystemExit) as ctx:
+                main(["--synthetic", "1200", "--seed", "7",
+                      "--source", "synthetic", "--write-config",
+                      "--config", str(config), "--out", str(out)])
+            self.assertIn("REFUSING", str(ctx.exception))
+            self.assertEqual(json.loads(config.read_text())["accept_conf"],
+                             None)
+            self.assertEqual(
+                json.loads(config.read_text())["calibration"]["status"],
+                "placeholder")
 
 
 class TestGoldPlumbing(unittest.TestCase):

@@ -128,6 +128,74 @@ def wearers_from_path(path: str) -> list[str]:
                   key=int)
 
 
+def check_gold_labels(labels: object) -> dict:
+    """Schema-check a human gold labels file (fix round 1, Important 5).
+
+    Accepts ONLY the shape ``tools/gold_label/label_server.py`` writes:
+    a dict with a non-empty ``history`` list (every click is appended)
+    and a ``latest`` dict derived from it, whose entries carry
+    ``segment_id`` + ``verdict`` (``good``|``bad``). A bare ``--records``
+    list, a Gemini dump, or any other JSON fails — such files may not
+    self-declare ``human_gold``. Labeller ids are collected from entry
+    or top-level ``labeller`` fields when present; the current label
+    tool records none, in which case ``labellers`` is ``"unknown"``
+    (said plainly — single-human-labeller session, not verified from
+    the file).
+    """
+    problems: list[str] = []
+    if not isinstance(labels, dict):
+        return {"ok": False, "reasons": ["top level must be an object"],
+                "labellers": "unknown", "n_entries": 0}
+    latest = labels.get("latest")
+    history = labels.get("history")
+    if not isinstance(latest, dict) or not latest:
+        problems.append("'latest' must be a non-empty object")
+    if not isinstance(history, list) or not history:
+        problems.append("'history' must be a non-empty list")
+    entries = list(latest.values()) if isinstance(latest, dict) else []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            problems.append("a 'latest' entry is not an object")
+            break
+        if entry.get("verdict") not in ("good", "bad"):
+            problems.append(
+                f"entry {entry.get('segment_id')!r}: verdict must be "
+                f"good|bad, got {entry.get('verdict')!r}")
+            break
+        if not isinstance(entry.get("segment_id"), str):
+            problems.append("a 'latest' entry lacks a segment_id string")
+            break
+    if isinstance(history, list) and history:
+        hist_ids = {e.get("segment_id") for e in history
+                    if isinstance(e, dict)}
+        if isinstance(latest, dict) and not set(latest) <= hist_ids:
+            problems.append("'latest' keys are not all present in 'history'")
+    labellers: set[str] = set()
+    for entry in entries:
+        if isinstance(entry, dict) and entry.get("labeller") is not None:
+            labellers.add(str(entry["labeller"]))
+    top = labels.get("labeller") if isinstance(labels, dict) else None
+    if isinstance(top, str):
+        labellers.add(top)
+    if isinstance(labels.get("labellers"), list):
+        labellers.update(str(x) for x in labels["labellers"])
+    return {
+        "ok": not problems,
+        "reasons": problems,
+        "labellers": sorted(labellers) if labellers else "unknown",
+        "n_entries": len(entries),
+    }
+
+
+def file_sha256(path: Path) -> str:
+    import hashlib
+    digest = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def cut_segment(src: str, start_s: float, end_s: float, out_path: Path,
                 recut: bool = False) -> Path:
     """Deterministically cut [start_s, end_s) to out_path (mp4v re-encode).
@@ -279,31 +347,49 @@ def apply_to_config(result: dict, source: str, path: Path,
                     allow_provisional: bool = False) -> dict:
     """Merge one source's calibrated thresholds into the config file.
 
-    Provisional-accept safety (round 2, audit N1): ``accept_conf`` is
-    written from a non-human source ONLY when ``allow_provisional`` is
-    passed (``--allow-provisional``); otherwise the write keeps
-    ``accept_conf=None`` (auto-accept stays disabled) and says so in the
-    calibration note. Human gold always writes fully; status is
-    'calibrated' only for human_gold N>=100 with every CERTIFY bound met,
-    else 'provisional' with the label source stated.
+    Provisional-accept safety (round 2, audit N1; tightened fix
+    round 1, Important 4): ``accept_conf`` from a non-human source is
+    REFUSED without ``allow_provisional`` (``--allow-provisional``) —
+    ``SystemExit`` with a clear message BEFORE anything is written
+    (nothing is silently nulled). When the source certifies no accept
+    threshold anyway (``accept_conf`` null), the write proceeds with
+    auto-accept off. Human gold always writes fully; status is
+    'calibrated' only for human_gold with N>=100, every CERTIFY bound
+    met, AND established human provenance (a schema-checked gold file
+    or an explicit ``--human-gold`` records declaration, recorded in
+    ``meta['human_provenance']``) — else 'provisional' with the label
+    source stated.
     """
     if source not in result["per_source"]:
         raise ValueError(f"source {source!r} not in calibration result "
                          f"(have {sorted(result['per_source'])})")
-    with open(path, "r", encoding="utf-8") as fh:
-        config = json.load(fh)
     src_res = result["per_source"][source]
     meta = result["meta"]
     n = meta["by_source"][source]
     updates = dict(result["threshold_updates"][source])
+    human_prov = meta.get("human_provenance") or {}
+    human_ok = (source == "human_gold"
+                and human_prov.get("ok") is True)
+    if source != "human_gold" and not allow_provisional \
+            and updates.get("accept_conf") is not None:
+        raise SystemExit(
+            f"REFUSING --write-config: source={source!r} is not human "
+            f"gold, but calibration certified accept_conf="
+            f"{updates['accept_conf']}. Writing it would enable "
+            f"auto-accept on non-human labels. Rerun with "
+            f"--allow-provisional to write it explicitly (status stays "
+            f"'provisional'), or calibrate --from-gold on the real human "
+            f"labels. Nothing was written to {path}.")
     provisional_write = source != "human_gold" and not allow_provisional
     if provisional_write:
         updates["accept_conf"] = None
+    with open(path, "r", encoding="utf-8") as fh:
+        config = json.load(fh)
     for key, value in updates.items():
         config[key] = value
     targets = meta["targets"]
     bounds_ok, bound_notes = written_bounds_ok(src_res, targets)
-    if source == "human_gold" and n >= 100 and bounds_ok:
+    if source == "human_gold" and human_ok and n >= 100 and bounds_ok:
         status = "calibrated"
         note = (f"Calibrated on {n} human gold labels; every written "
                 f"threshold met its CERTIFY bound.")
@@ -312,6 +398,10 @@ def apply_to_config(result: dict, source: str, path: Path,
         reasons = [f"label_source={source}"]
         if source != "human_gold":
             reasons.append("not human gold")
+        if source == "human_gold" and not human_ok:
+            reasons.append("human provenance not established (need a "
+                           "schema-checked gold labels file via --from-gold "
+                           "or --human-gold for --records)")
         if n < 100:
             reasons.append(f"N={n} < 100")
         if not bounds_ok:
@@ -331,6 +421,9 @@ def apply_to_config(result: dict, source: str, path: Path,
         "seed": meta["seed"],
         "accept_certify": src_res["accept"]["certify"],
         "union_certify": src_res["union"],
+        "union_integrity_only_certify": src_res.get("union_integrity_only"),
+        "provenance": src_res.get("provenance"),
+        "human_provenance": human_prov or None,
         "disabled_rules": disabled,
         "note": note + (" Bounds carry only the certificate of their label "
                         "source. Per-rule bounds do not bound the union; "
@@ -338,8 +431,8 @@ def apply_to_config(result: dict, source: str, path: Path,
         + (f" Certification stopped {len(stopped)} bad rule(s) "
            f"({', '.join(sorted(stopped))}): certified on SELECT but "
            f"rejected on held-out clips." if stopped else "")
-        + (f" accept_conf forced to null: non-human source without "
-           f"--allow-provisional (auto-accept stays disabled)."
+        + (f" accept_conf null (no certified accept threshold from "
+           f"this source; auto-accept stays disabled)."
            if provisional_write else ""),
     }
     config["sha256"] = funnel.thresholds_hash(config)
@@ -394,10 +487,23 @@ def markdown_tables(result: dict) -> str:
                              f"rule — {entry.get('reason')}")
             elif entry["disabled"]:
                 lines.append(f"DISABLED ({key}): {entry.get('reason')}")
-        union = src["union"]
-        lines.append(f"union CERTIFY: rejected={union['fired']} "
-                     f"errors={union['errors']} UCB={union['upper_bound']} "
-                     f"(n_certify={union['n_certify']})")
+        for key in ("union", "union_integrity_only"):
+            block = src["union"] if key == "union" else src.get(
+                "union_integrity_only", {})
+            if not block:
+                continue
+            uprov = block.get("provenance", {})
+            lines.append(f"{key} CERTIFY (policy={block.get('policy')}, "
+                         f"profile={block.get('profile')}): "
+                         f"rejected={block['fired']} "
+                         f"errors={block['errors']} "
+                         f"UCB={block['upper_bound']} "
+                         f"(n_certify={block['n_certify']}, "
+                         f"n_segments={uprov.get('n_segments')}, "
+                         f"n_clips={uprov.get('n_clips')}, "
+                         f"n_wearers={uprov.get('n_wearers')}, "
+                         f"n_labellers={uprov.get('n_labellers')}, "
+                         f"label_source={uprov.get('label_source')})")
     return "\n".join(lines)
 
 
@@ -426,8 +532,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-provisional", action="store_true",
                         help="with --write-config from a non-human source, "
                              "write its accept_conf too (status stays "
-                             "provisional, source stated); without it, "
-                             "accept_conf is forced to null")
+                             "provisional, source stated); without it, a "
+                             "certified non-human accept_conf is REFUSED "
+                             "(non-zero exit, nothing written)")
+    parser.add_argument("--human-gold", action="store_true",
+                        help="with --records: explicitly assert the file's "
+                             "human_gold labels are real human labels (the "
+                             "file path and sha256 are recorded in "
+                             "provenance). Without it, self-declared "
+                             "human_gold records are REFUSED.")
     parser.add_argument("--no-bonferroni", action="store_true",
                         help="test each reject rule at full delta (round-1 "
                              "behaviour; NOT family-wise — say so)")
@@ -451,9 +564,33 @@ def main(argv: list[str] | None = None) -> int:
         records = payload if isinstance(payload, list) \
             else payload.get("records", [])
         provenance = f"records-file:{args.records}"
+        declared_human = [r for r in records
+                          if isinstance(r, dict)
+                          and r.get("label_source") == "human_gold"]
+        if declared_human and not args.human_gold:
+            raise SystemExit(
+                f"REFUSING: {len(declared_human)} records in {args.records} "
+                f"self-declare label_source='human_gold'. A records file "
+                f"cannot prove that by itself. Rerun with --human-gold to "
+                f"explicitly assert they are real human labels (the file "
+                f"path and sha256 will be recorded in provenance), or use "
+                f"--from-gold with the schema-checked labels file.")
+        human_provenance: dict | None = None
+        if declared_human:
+            labellers = sorted({str(r["labeller"]) for r in declared_human
+                                if r.get("labeller") is not None})
+            human_provenance = {
+                "ok": True,
+                "schema": "operator-declared-human",
+                "file": str(args.records),
+                "sha256": file_sha256(args.records),
+                "labellers": labellers or "unknown",
+                "n_entries": len(declared_human),
+            }
     elif args.synthetic is not None:
         records = synthetic_records(args.synthetic, args.seed)
         provenance = "synthetic-fixtures"
+        human_provenance = None
     else:
         with open(args.manifest, "r", encoding="utf-8") as fh:
             manifest = json.load(fh)
@@ -466,9 +603,25 @@ def main(argv: list[str] | None = None) -> int:
                 f"provisional/synthetic until then.")
         with open(labels_path, "r", encoding="utf-8") as fh:
             labels = json.load(fh)
+        gold_check = check_gold_labels(labels)
+        if not gold_check["ok"]:
+            raise SystemExit(
+                f"REFUSING --from-gold: {labels_path} is not a real gold "
+                f"labels file ({'; '.join(gold_check['reasons'])}). "
+                f"Only the file written by tools/gold_label/label_server.py "
+                f"(history + latest, verdicts good|bad) may source "
+                f"human_gold records.")
         records = build_gold_records(manifest, labels, signals_fn=None,
                                      cuts_dir=args.cuts_dir, recut=args.recut)
         provenance = f"gold-join:{labels_path}"
+        human_provenance = {
+            "ok": True,
+            "schema": "gold-labels-v1",
+            "file": str(labels_path),
+            "sha256": file_sha256(labels_path),
+            "labellers": gold_check["labellers"],
+            "n_entries": gold_check["n_entries"],
+        }
         if args.save_records is None:
             args.save_records = GOLD_RECORDS_PATH
     if args.save_records is not None:
@@ -484,6 +637,8 @@ def main(argv: list[str] | None = None) -> int:
         "min_accepted": args.min_accepted, "seed": args.seed,
         "bonferroni": not args.no_bonferroni})
     result["meta"]["provenance"] = provenance
+    if human_provenance is not None:
+        result["meta"]["human_provenance"] = human_provenance
     # M3: the wall clock lives in a sidecar excluded from every hash and
     # comparison (see funnel.calibration_content_hash), never in meta.
     result["sidecar"] = {

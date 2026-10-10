@@ -258,15 +258,17 @@ records=1200 sources={'synthetic': 1200} seed=7 bonferroni=True delta_per_rule=0
 | motion_min | None | True | 0 | 0 | None |
 | hands_visible_frac_min | None | True | 0 | 0 | None |
 | min_duration_s | None | True | 0 | 0 | None |
-union CERTIFY: rejected=0 errors=0 UCB=None (n_certify=600)
+union CERTIFY (policy=evidence_reject, profile=default): rejected=88 errors=0 UCB=0.0258 (n_certify=600, n_segments=1200, n_clips=0, n_wearers=unknown, n_labellers=0, label_source=synthetic)
+union_integrity_only CERTIFY (policy=integrity_only, profile=default): rejected=0 errors=0 UCB=None (n_certify=600, n_segments=1200, n_clips=0, n_wearers=unknown, n_labellers=0, label_source=synthetic)
 
 Read it plainly: family-wise control at this N certifies almost nothing
 — only the accept side and brightness survive; every other rule is
 DISABLED with its reason (certification stopped bad rules, and the
 support floor 86 says this N cannot support family-wise quality
-rejects). The union is 0 because the shipped default policy is
-`integrity_only` (quality rules review). The live config was NOT
-overwritten (placeholders stay until human gold).
+rejects). The union is measured under BOTH policies, labelled: under the
+certified `evidence_reject` policy the calibrated rule set rejects 88/600
+with 0 false rejects (UCB 0.0258); under the shipped `integrity_only`
+default it is structurally 0 (quality rules review).
 
 ### Funnel report artifact (regenerated): eval/results/funnel_report_synthetic.json
 
@@ -276,24 +278,17 @@ reject=0 / review=1200 (100%). Placeholders reject nothing and accept
 nothing — the whole queue goes to humans (FR n/a, defect n/a, QA
 workload reduction 0.0). That is the safe default working as designed.
 
-Demo-only illustration (NOT shipped: provisional synthetic thresholds
-with `--allow-provisional`, `evidence_reject`, `--profile logistics`,
-all in /tmp): split accept=719 (59.92%) / reject=175 (14.58%) /
-review=306 (25.5%); false_reject 0/175 → UCB 0.0131; defect among
-accepted 8/719 → UCB 0.018; queue defect rate 0.3063 vs unfiltered
-0.4075; QA workload reduction 0.745.
-
 ### Scale artifact (regenerated): eval/results/funnel_scale.json
 
 `eval/scale_bench.py --limit 150` (L0 = documented PROXY;
-`jadal.decision` absent so L1 skipped; GPU at 30% from another worker):
+`jadal.decision` absent so L1 skipped; GPU at 2% from another worker):
 
 | workers | seg/h | decode mean | l0_proxy mean | route mean |
 |---|---|---|---|---|
-| 1 | 15907.1 | 223.154 ms | 2.76 ms | 0.078 ms |
-| 2 | 21338.7 | 332.608 ms | 3.552 ms | 0.092 ms |
-| 4 | 26065.8 | 542.074 ms | 4.514 ms | 0.117 ms |
-| 8 | 25236.2 | 1120.804 ms | 5.781 ms | 0.225 ms |
+| 1 | 17417.5 | 203.539 ms | 2.683 ms | 0.072 ms |
+| 2 | 25962.4 | 273.031 ms | 3.392 ms | 0.087 ms |
+| 4 | 31125.8 | 455.452 ms | 4.124 ms | 0.108 ms |
+| 8 | 31953.4 | 885.227 ms | 5.2 ms | 0.131 ms |
 
 Decode-bound; little gain past P=4. Cross-process determinism: IDENTICAL
 route() hashes, 150 segments x 4 worker counts. Bench verdict mix is
@@ -307,3 +302,73 @@ route() hashes, 150 segments x 4 worker counts. Bench verdict mix is
   provisional test asserts the new N1 gating — noted, not hidden).
 - `python -m unittest discover -s tests` → Ran 344 tests, OK (whole
   suite green in this worktree).
+
+---
+
+## Fix round 1 (review of PR #42: SPEC FAIL → fixes; all numbers below are
+generated from the committed JSON artifacts, not hand-typed)
+
+Rulings addressed, with evidence:
+
+- Critical 1 (garbage `decodable` accepted): `route()` now treats
+  `decodable` as a STRICT boolean — only a real `True` passes, an
+  explicit `False` rejects `UNDECODABLE`, anything else (`0.0`, `"0"`,
+  `2`, `0.5`, `None`, ...) reviews with `invalid:decodable` evidence
+  (never a numeric parse, never accept). Same strictness everywhere else
+  stands: bools/strings/NaN/inf never parse as numbers. New 5000-case
+  seeded fuzz (type confusion: numeric strings, bools-as-numbers, nested
+  dicts, huge ints, NaN) proves accept is impossible unless every
+  required field is valid and passing. Minor 8 folded in: evidence
+  values are always `float|int|str` (bools/`None`/non-finite/garbage
+  encoded). Minor 9 documented: `dup_of` with no usable `phash` stands
+  alone (rejects under `evidence_reject`).
+- Important 2 (union under the wrong policy): the union false-reject
+  bound is now measured under BOTH policies, labelled, from
+  `eval/results/funnel_calibration_synthetic.json`: `union`
+  (policy=`evidence_reject`) rejected=88 errors=0 UCB=0.0258
+  (n_certify=600); `union_integrity_only` rejected=0 errors=0 UCB=None.
+  The certificate now describes the calibrated rule set.
+- Important 3 (provenance beside every bound): each reject-rule entry,
+  the accept certify block, and both union blocks carry their own
+  `provenance` (`n_segments=1200, n_clips=0, n_wearers=unknown,
+  n_labellers=0, label_source=synthetic, delta_per_rule=0.0125`), copied
+  into the config's `accept_certify`/`union_certify` by `--write-config`.
+- Important 4 (`--write-config` did not refuse): a certified non-human
+  `accept_conf` without `--allow-provisional` is now REFUSED — non-zero
+  exit with `REFUSING ... Nothing was written` before any write
+  (verified: config file byte-identical after the refusal). Nothing to
+  refuse (uncertified accept) still writes with auto-accept off.
+- Important 5 (label source trusted from the file): `--from-gold`
+  schema-checks the labels file (history + latest, verdicts good|bad —
+  the exact shape `tools/gold_label/label_server.py` writes) and REFUSES
+  anything else; labeller ids are collected when present (the current
+  tool records none → `unknown`, said plainly). `--records` files that
+  self-declare `human_gold` are REFUSED without an explicit
+  `--human-gold` flag (file path + sha256 recorded in provenance).
+  `status: calibrated` additionally requires established human
+  provenance — human records alone stay `provisional`.
+- Important 6 (demo numbers not from JSON): the "Demo-only illustration"
+  paragraph is DELETED (its numbers lived only in /tmp). No number in
+  this report comes from outside a committed artifact.
+- Minor 7: a round-1 test now pins the shipped default explicitly
+  (no `hard_reject_policy` key → `integrity_only`).
+- Merge-gate blocker: `test_missing_signals_module_raises_clearly` now
+  SIMULATES the absence (`sys.modules['jadal.signals']=None` in a
+  context manager restoring by key diff), so it passes with and without
+  the real module. Verified both ways: this worktree (no
+  `jadal.signals`) AND a throwaway worktree with `origin/feat/signals`
+  merged (no `data_runtime/`) — funnel suite green in both.
+
+### Verification commands (all ran)
+
+- `python -m unittest discover -s tests -p 'test_funnel*'` → Ran 107
+  tests, OK (90 round-1/2 + 17 fix-round-1: strict-decodable, 5000-fuzz,
+  dual-union, per-bound provenance, gold schema, CLI refusal).
+- Review probe `reviews/funnel2_probe.py` (51 checks): the 10 round-2
+  failures are fixed. Two probe expectations are superseded by these
+  rulings, not by code gaps — 1g asserted the old silent-null behaviour
+  (ruling 4 now demands refusal; the probe exits there with
+  `REFUSING ... Nothing was written`), and 5j hard-codes `False`
+  (unpassable as written). A byte-identical copy of the probe with only
+  those two checks updated to the post-fix contracts passes 51/51
+  (`/tmp` copy, reviewer's file untouched).
