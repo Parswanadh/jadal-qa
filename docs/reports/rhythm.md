@@ -306,3 +306,54 @@ Three parallel sub-agent tracks wrote their own results under
 Taken together: the representation contains a real spatial signal (the cellmax
 result), but neither the learned network nor any of the six mathematical framings
 converted it into a gain over the single magnitude scalar at n=150.
+
+## CORRECTION: the motion cue points the OPPOSITE way to the premise
+
+Independently confirmed here with separate code (`eval/rhythm/sign_robust.py`,
+`eval/results/rhythm/sign_robust.json`), and originally found by the
+`rhythm_analysis` track. Every residual-motion MAGNITUDE scalar is strongly
+INVERTED: **good windows have LESS residual flow than bad ones.**
+
+| raw scalar | signed AUROC | orientation-free | direction |
+|---|---|---|---|
+| `flow_top_mean` (top-25% cells) | 0.196 | 0.804 | good < bad |
+| `flow_mean` (whole window) | 0.197 | 0.803 | good < bad |
+| `flow_cell_max` | 0.200 | 0.800 | good < bad |
+| `coh_mean` (flow coherence) | 0.218 | 0.782 | good < bad |
+| `coh_std` | 0.721 | 0.721 | good > bad |
+| `concentration` (max cell / sum) | 0.759 | 0.759 | good > bad |
+
+**Interpretation.** Ego-motion compensation here is TRANSLATION ONLY. When the
+wearer walks or turns, the global translation model fails to explain the frame,
+so the residual rises everywhere -- not because hands are working, but because
+the camera is moving. The strongest cue in this representation is therefore
+closer to a **"the wearer is not walking / hands are not dominant" detector than
+a "work is happening" detector.** Any judge-facing explanation of this pipeline
+must be corrected to say that.
+
+Note also that `concentration` (good > bad, 0.759) points the expected way and
+is the one spatial summary that is both orientation-correct and competitive.
+
+## pallet is a SIGN INVERSION, not missing signal
+
+Within `pallet` the magnitude scalar scores 0.273 (good windows there have MORE
+flow -- the reverse of the other six clips). `pallet2` behaves like the majority
+(0.750). This is a per-clip sign flip, not an absence of signal.
+
+Label-free per-clip transforms (using only that clip's own median/MAD, so legal
+under LOCO) were tested:
+
+| pooling rule | pooled AUROC | pallet | pallet2 |
+|---|---|---|---|
+| raw | 0.766 | 0.273 | 0.750 |
+| signed (negated) | 0.766 | 0.273 | 0.750 |
+| `abs_z` within clip | 0.555 | 0.606 | 1.000 |
+| distance from clip median | 0.735 | 0.515 | 0.750 |
+| two-sided (raw + abs_z) | 0.752 | 0.242 | 0.750 |
+
+Sign-robust pooling **does** lift pallet (0.273 -> 0.606 for `abs_z`, 0.515 for
+distance-from-median) but costs the pooled score (0.766 -> 0.555 / 0.735). No
+rule here dominates the raw baseline. **The live lead is per-clip sign
+calibration, not a new feature** -- and it cannot be tuned on the held-out clip,
+so it needs either more clips or a label-free sign decision rule that this
+sample (7 clips) cannot validate.

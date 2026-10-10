@@ -1,0 +1,145 @@
+{
+ "label_source": "human gold, 150 windows, 7 clips, one labeller",
+ "protocol": "LOCO over 7 clips + clip bootstrap 95% CI, 2000 resamples",
+ "command": "eval/rhythm/sign_robust.py --out eval/results/rhythm/sign_robust.json",
+ "G": 6,
+ "features": [
+  "flow_top_mean",
+  "flow_top_std",
+  "flow_mean",
+  "flow_cell_max",
+  "coh_mean",
+  "coh_std",
+  "concentration"
+ ],
+ "note": "Per-clip transforms use ONLY that clip's own median/MAD (label-free), which is legal under LOCO. They are not fitted on labels.",
+ "runs": {
+  "raw": {
+   "auroc": 0.7656,
+   "ci": {
+    "lo": 0.5881942118553961,
+    "hi": 0.878219951546142,
+    "n_boot": 2000
+   },
+   "per_clip": {
+    "desk": 0.755,
+    "ecu_full": 0.926,
+    "ecu_late": 0.725,
+    "logistics4": 0.786,
+    "organise": 0.889,
+    "pallet": 0.273,
+    "pallet2": 0.75
+   },
+   "n_features": 7
+  },
+  "signed": {
+   "auroc": 0.7656,
+   "ci": {
+    "lo": 0.5881942118553961,
+    "hi": 0.878219951546142,
+    "n_boot": 2000
+   },
+   "per_clip": {
+    "desk": 0.755,
+    "ecu_full": 0.926,
+    "ecu_late": 0.725,
+    "logistics4": 0.786,
+    "organise": 0.889,
+    "pallet": 0.273,
+    "pallet2": 0.75
+   },
+   "n_features": 7
+  },
+  "abs_z_within_clip": {
+   "auroc": 0.5552,
+   "ci": {
+    "lo": 0.503641456582633,
+    "hi": 0.6581173982020095,
+    "n_boot": 2000
+   },
+   "per_clip": {
+    "desk": 0.606,
+    "ecu_full": 0.73,
+    "ecu_late": 0.575,
+    "logistics4": 0.571,
+    "organise": 0.767,
+    "pallet": 0.606,
+    "pallet2": 1.0
+   },
+   "n_features": 7
+  },
+  "dist_from_clip_median": {
+   "auroc": 0.7348,
+   "ci": {
+    "lo": 0.6111368639113415,
+    "hi": 0.8145014103202256,
+    "n_boot": 2000
+   },
+   "per_clip": {
+    "desk": 0.543,
+    "ecu_full": 0.809,
+    "ecu_late": 0.7,
+    "logistics4": 0.69,
+    "organise": 0.611,
+    "pallet": 0.515,
+    "pallet2": 0.75
+   },
+   "n_features": 7
+  },
+  "two_sided_raw_plus_absz": {
+   "auroc": 0.7524,
+   "ci": {
+    "lo": 0.5697683659623958,
+    "hi": 0.8646731377015026,
+    "n_boot": 2000
+   },
+   "per_clip": {
+    "desk": 0.76,
+    "ecu_full": 0.86,
+    "ecu_late": 0.575,
+    "logistics4": 0.69,
+    "organise": 0.911,
+    "pallet": 0.242,
+    "pallet2": 0.75
+   },
+   "n_features": 14
+  }
+ },
+ "single_feature_raw": {
+  "flow_top_mean": {
+   "auroc": 0.1958,
+   "orientation_free": 0.8042,
+   "direction": "good<bad"
+  },
+  "flow_top_std": {
+   "auroc": 0.2054,
+   "orientation_free": 0.7946,
+   "direction": "good<bad"
+  },
+  "flow_mean": {
+   "auroc": 0.1966,
+   "orientation_free": 0.8034,
+   "direction": "good<bad"
+  },
+  "flow_cell_max": {
+   "auroc": 0.1996,
+   "orientation_free": 0.8004,
+   "direction": "good<bad"
+  },
+  "coh_mean": {
+   "auroc": 0.2176,
+   "orientation_free": 0.7824,
+   "direction": "good<bad"
+  },
+  "coh_std": {
+   "auroc": 0.7214,
+   "orientation_free": 0.7214,
+   "direction": "good>bad"
+  },
+  "concentration": {
+   "auroc": 0.7588,
+   "orientation_free": 0.7588,
+   "direction": "good>bad"
+  }
+ }
+}
