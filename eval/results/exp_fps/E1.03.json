@@ -5,6 +5,70 @@
  "n_bad": 9,
  "label_source": "human (labels/ood_labels.json, 51 good / 9 bad, one labeller)",
  "protocol": "out-of-domain: frozen IndEgo logistic (all 150 IndEgo windows, native 10fps, C=0.3 balanced) applied to the 60 labelled Egocentric-10K windows; CI95 = window bootstrap B=2000 seed0 (OPTIMISTIC: ~1 window per factory); per-feature AUROC computed directly against the OOD labels (no transfer)",
+ "ci95": {
+  "30": [
+   0.1799,
+   0.554
+  ],
+  "15": [
+   0.2222,
+   0.6057
+  ],
+  "10": [
+   0.2373,
+   0.6271
+  ],
+  "5": [
+   0.32,
+   0.6776
+  ],
+  "3": [
+   0.3731,
+   0.7146
+  ],
+  "2": [
+   0.375,
+   0.7168
+  ],
+  "1": [
+   0.3791,
+   0.7081
+  ]
+ },
+ "ci95_note": "ci95[fps] = window-bootstrap CI95 of the frozen-model AUROC at that fps (optimistic: ~1 window per factory)",
+ "cost": {
+  "frames_per_window_by_fps": {
+   "30": 300.0,
+   "15": 150.0,
+   "10": 100.0,
+   "5": 50.0,
+   "3": 30.0,
+   "2": 20.0,
+   "1": 10.0
+  },
+  "feat_ms_per_window_by_fps": {
+   "30": 3312.4,
+   "15": 1729.0,
+   "10": 1093.7,
+   "5": 536.5,
+   "3": 371.8,
+   "2": 265.7,
+   "1": 168.9
+  },
+  "feat_ms_per_frame_by_fps": {
+   "30": 11.041,
+   "15": 11.527,
+   "10": 10.937,
+   "5": 10.73,
+   "3": 12.394,
+   "2": 13.287,
+   "1": 16.895
+  },
+  "decode_ms_per_window": 6495.7,
+  "decode_ms_per_frame": 21.652,
+  "device_note": "decode=CPU cv2 160x90, features=CPU float64; the whole 300-frame 1080p window is decoded regardless of the target fps, so decode does not shrink with fps",
+  "clean_bench": "see eval/results/exp_fps/pareto.json"
+ },
  "regime": "out-of-domain Egocentric-10K 1080p 30fps HEVC, 60 windows / 47 factories",
  "decode": "ORIGINAL source_path (1080p HEVC 30fps) via cv2 POS_MSEC seek -> 160x90 analysis res, 300 frames, CPU decode; idx=arange(0,T,step), steps {30:1,15:2,10:3,5:6,3:10,2:15,1:30}; TRUE effective fps=30/step passed to cpu_window_features",
  "source_sample": {
@@ -17,7 +81,7 @@
  "decode_ms_per_frame": 21.652,
  "device": "A40 (pod host); decode=CPU cv2 160x90, features=CPU float64",
  "command": "OMP_NUM_THREADS=1 eval/exp_fps/run_ood.py --queue 1 --shard {0,1}/2 && OMP_NUM_THREADS=1 eval/exp_fps/run_fps.py --mode sweep --shard {0,1}/2 && python3 eval/exp_fps/merge_ood.py",
- "git_sha": "3c6d713",
+ "git_sha": "021ae8d",
  "warning": "n_bad=9 -> exploratory only; CI by window is optimistic",
  "frozen_rows": [
   {

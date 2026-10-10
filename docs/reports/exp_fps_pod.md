@@ -171,22 +171,24 @@ window); the corrected numbers are above. No past registry line was edited.
 `clean` cost = min over **3 bench runs × 3 reps** of one representative window
 (`OMP_NUM_THREADS=1`, `cv2` threads 1); the shard-run means in
 `E1.01/E1.03/E1.04.json` are 2–4× slower because the pod is shared (host load average
-17.8 at bench; per-run spread is recorded in `bench_spread`). Feature cost fits
-`feat_ms = intercept + slope·frames` with R² ≥ 0.998:
-**IndEgo 2.48 ms/frame** (intercept 4.6 ms), **OOD 2.64 ms/frame** (intercept −5.9 ms).
+17.1 at bench; the per-run spread is recorded in `bench_spread` rather than hidden —
+across the three bench runs the decode rate moved between 1.31–2.17 ms/frame in-domain
+and 12.37–13.96 ms/frame out-of-domain). Feature cost fits
+`feat_ms = intercept + slope·frames` with R² ≥ 0.99:
+**IndEgo 2.45 ms/frame** (intercept 11.4 ms), **OOD 3.17 ms/frame** (intercept −18.8 ms).
 
 `indego_480p_10fps_in_domain` (LOCO, n=150):
 
 | setting | frames | AUROC | decode ms/win | feat ms/win | total ms/win |
 |---|---|---|---|---|---|
-| 10 fps | 100 | 0.8086 | 129 | 252 | 381 |
-| 5 fps | 50 | 0.7932 | 129 | 130 | 259 |
-| **3.33 fps** | 34 | 0.8068 | 129 | 86 | **215** |
-| 2 fps / uniform-20 | 20 | 0.7866 | 129 | 53 | 182 |
-| 1 fps | 10 | 0.7736 | 129 | 31 | 161 |
-| motion-20 | 20 | 0.7620 | 129 | 53 | 182 |
-| keyframe | 20 | 0.7798 | 129 | 53 | 182 |
-| random-20 | 20 | 0.7386 | 129 | 53 | 182 |
+| 10 fps | 100 | 0.8086 | 131 | 255 | 386 |
+| 5 fps | 50 | 0.7932 | 131 | 128 | 259 |
+| **3.33 fps** | 34 | 0.8068 | 131 | 110 | **241** |
+| 2 fps / uniform-20 | 20 | 0.7866 | 131 | 56 | 186 |
+| 1 fps | 10 | 0.7736 | 131 | 32 | 163 |
+| motion-20 | 20 | 0.7620 | 131 | 56 | 186 |
+| keyframe | 20 | 0.7798 | 131 | 56 | 186 |
+| random-20 | 20 | 0.7386 | 131 | 56 | 186 |
 
 Pareto front: 10 fps, 3.33 fps, 2 fps, 1 fps and uniform-20.
 
@@ -194,23 +196,23 @@ Pareto front: 10 fps, 3.33 fps, 2 fps, 1 fps and uniform-20.
 
 | fps | frames | frozen AUROC | decode ms/win | feat ms/win | total ms/win |
 |---|---|---|---|---|---|
-| 30 | 300 | 0.3595 | 3004 | 798 | 3802 |
-| 15 | 150 | 0.4096 | 3004 | 374 | 3378 |
-| 10 | 100 | 0.4314 | 3004 | 244 | 3247 |
-| 5 | 50 | 0.4989 | 3004 | 123 | 3126 |
-| 3 | 30 | 0.5468 | 3004 | 76 | 3079 |
-| 2 | 20 | 0.5512 | 3004 | 55 | 3059 |
-| 1 | 10 | 0.5468 | 3004 | 32 | 3035 |
+| 30 | 300 | 0.3595 | 3711 | 956 | 4668 |
+| 15 | 150 | 0.4096 | 3711 | 435 | 4146 |
+| 10 | 100 | 0.4314 | 3711 | 247 | 3959 |
+| 5 | 50 | 0.4989 | 3711 | 131 | 3843 |
+| 3 | 30 | 0.5468 | 3711 | 91 | 3803 |
+| 2 | 20 | 0.5512 | 3711 | 66 | 3777 |
+| 1 | 10 | 0.5468 | 3711 | 32 | 3743 |
 
-**Decode dominates the OOD regime**: 3004 ms of the 3802 ms at 30 fps (10.0 ms/frame,
-1080p HEVC, CPU). Dropping 30 fps → 1 fps removes 96 % of the feature cost but only
-20 % of the total, because the whole 1080p window is decoded either way. In IndEgo
-(480p H.264, 10 fps) decode is 129 ms and the feature stage dominates instead.
+**Decode dominates the OOD regime**: 3711 ms of the 4668 ms at 30 fps
+(12.4 ms/frame, 1080p HEVC, CPU). Dropping 30 fps → 1 fps removes 97 % of the feature
+cost but only 20 % of the total, because the whole 1080p window is decoded either way.
+In IndEgo (480p H.264, 10 fps) decode is 131 ms and the feature stage dominates instead.
 
 ## Decisions (per regime)
 
 1. **In-domain pixel view: keep 3.33 fps (34 frames/window).** It is within 0.02 AUROC
-   of 10 fps (−0.0018) at 56 % of the total cost; 2 fps (−0.0220) misses the 0.02 rule
+   of 10 fps (−0.0018) at 62 % of the total cost; 2 fps (−0.0220) misses the 0.02 rule
    and 1 fps (−0.0350) clearly does. This matches the E1.01 prior-art decision.
 2. **Frame selection: dropped.** Uniform sampling stays (E1.04, verdict `drop`). No arm
    beats uniform, no arm reduces decode, and motion-adaptive is worse at equal cost.

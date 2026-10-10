@@ -199,12 +199,19 @@ def main():
            "git_sha": git_sha(),
            "command": "python3 eval/exp_fps/pareto.py --reps %d" % a.reps,
            "regimes": {
-               "indego_480p_10fps_in_domain":
-                   "150 IndEgo human-labelled windows, 7 clips, LOCO",
-               "ego10k_1080p_30fps_ood":
-                   "60 human-labelled Egocentric-10K windows (51 good / 9 bad; "
-                   "n_bad=9 exploratory, CI by window is optimistic); frozen "
-                   "IndEgo model -> AUROC not usable for a regime choice"},
+               "indego_480p_10fps_in_domain": {
+                   "n": (e101 or {}).get("n"),
+                   "label_source": (e101 or {}).get("label_source"),
+                   "protocol": (e101 or {}).get("protocol"),
+                   "description": "150 IndEgo human-labelled windows, 7 clips, LOCO"},
+               "ego10k_1080p_30fps_ood": {
+                   "n": (e103 or {}).get("n"),
+                   "label_source": (e103 or {}).get("label_source"),
+                   "protocol": (e103 or {}).get("protocol"),
+                   "description": "60 human-labelled Egocentric-10K windows "
+                                  "(51 good / 9 bad; n_bad=9 exploratory, CI by "
+                                  "window is optimistic); frozen IndEgo model -> "
+                                  "AUROC not usable for a regime choice"}},
            "clean_bench_indego": ci, "clean_bench_ood": co,
            "pareto_fronts": fronts, "rows": rows}
     json.dump(res, open(os.path.join(RESULTS, "pareto.json"), "w"), indent=1)
