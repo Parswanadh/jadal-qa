@@ -1,0 +1,404 @@
+{
+ "experiment": "LB1-feature-reproduction",
+ "verified_by": "lead-b",
+ "claim_under_test": "caches/gpu/features.json reproduces from the source video on this pod, which would close the 'GPU feature-extraction half is unverified' gap",
+ "n_windows": 6,
+ "n_ok": 6,
+ "n_error": 0,
+ "label_source": "human gold IndEgo (labels/manifest_gold.json, READ-ONLY)",
+ "protocol": "decode_window(160x90 rgb24, CPU ffmpeg) -> cpu_window_features(fps=min(fps,30)) vs cached caches/gpu/features.json['windows'][id]['full']; per-feature abs diff",
+ "device": "RunPod A40 pod, CPU feature path (CUDA visible but not used by cpu_window_features)",
+ "warmup_note": "windows picked one per clip round-robin so a single clip cannot explain the result",
+ "per_feature": {
+  "temp_b0": {
+   "max_abs_diff": 7.105427357601002e-15,
+   "mean_abs_diff": 1.6283271027835629e-15,
+   "n": 6
+  },
+  "temp_b1": {
+   "max_abs_diff": 1.1102230246251565e-16,
+   "mean_abs_diff": 1.850371707708594e-17,
+   "n": 6
+  },
+  "temp_b2": {
+   "max_abs_diff": 2.7755575615628914e-17,
+   "mean_abs_diff": 9.25185853854297e-18,
+   "n": 6
+  },
+  "temp_b3": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "frozen_frac": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "flicker_idx": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "radial_slope": {
+   "max_abs_diff": 2.6645352591003757e-15,
+   "mean_abs_diff": 1.0362081563168128e-15,
+   "n": 6
+  },
+  "hf_ratio": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "dct_energy": {
+   "max_abs_diff": 1.734723475976807e-18,
+   "mean_abs_diff": 5.782411586589357e-19,
+   "n": 6
+  },
+  "pca_resid": {
+   "max_abs_diff": 4.336808689942018e-19,
+   "mean_abs_diff": 1.5811281682080272e-19,
+   "n": 6
+  },
+  "pca_top1_share": {
+   "max_abs_diff": 2.3314683517128287e-15,
+   "mean_abs_diff": 1.0177044392397268e-15,
+   "n": 6
+  },
+  "luma_mean": {
+   "max_abs_diff": 1.1102230246251565e-16,
+   "mean_abs_diff": 5.088522196198634e-17,
+   "n": 6
+  },
+  "luma_p05": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "luma_p50": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "luma_p95": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "dark_frac": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "bright_frac": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "motion_energy": {
+   "max_abs_diff": 2.0816681711721685e-17,
+   "mean_abs_diff": 1.3299546649155522e-17,
+   "n": 6
+  },
+  "global_shift": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "skin_frac": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "illum_r": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "illum_g": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "illum_b": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "rppg_pulse": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "dup_hash_mean": {
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0,
+   "n": 6
+  },
+  "zncc_self": {
+   "max_abs_diff": 1.6653345369377348e-16,
+   "mean_abs_diff": 4.625929269271486e-17,
+   "n": 6
+  }
+ },
+ "windows": [
+  {
+   "id": "g062",
+   "clip": "desk",
+   "label": 1,
+   "status": "ok",
+   "frames": 100,
+   "fps": 10.0,
+   "cache_frames": 100,
+   "n_features_compared": 26,
+   "max_abs_diff": 2.3314683517128287e-15,
+   "worst_feature": "pca_top1_share",
+   "worst_abs_diff": 2.3314683517128287e-15,
+   "exact_matches": 21,
+   "per_feature_abs_diff": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": 0.0,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.0,
+    "illum_g": 0.0,
+    "illum_r": 0.0,
+    "luma_mean": 1.1102230246251565e-16,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 6.938893903907228e-18,
+    "pca_resid": 2.710505431213761e-20,
+    "pca_top1_share": 2.3314683517128287e-15,
+    "radial_slope": 0.0,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 0.0,
+    "temp_b1": 1.1102230246251565e-16,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   }
+  },
+  {
+   "id": "g000",
+   "clip": "ecu_full",
+   "label": 0,
+   "status": "ok",
+   "frames": 100,
+   "fps": 10.0,
+   "cache_frames": 100,
+   "n_features_compared": 26,
+   "max_abs_diff": 1.7763568394002505e-15,
+   "worst_feature": "radial_slope",
+   "worst_abs_diff": 1.7763568394002505e-15,
+   "exact_matches": 20,
+   "per_feature_abs_diff": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 1.734723475976807e-18,
+    "dup_hash_mean": 0.0,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.0,
+    "illum_g": 0.0,
+    "illum_r": 0.0,
+    "luma_mean": 5.551115123125783e-17,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 1.3877787807814457e-17,
+    "pca_resid": 0.0,
+    "pca_top1_share": 1.3322676295501878e-15,
+    "radial_slope": 1.7763568394002505e-15,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 0.0,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 2.7755575615628914e-17
+   }
+  },
+  {
+   "id": "g048",
+   "clip": "ecu_late",
+   "label": 1,
+   "status": "ok",
+   "frames": 100,
+   "fps": 10.0,
+   "cache_frames": 100,
+   "n_features_compared": 26,
+   "max_abs_diff": 9.992007221626409e-16,
+   "worst_feature": "pca_top1_share",
+   "worst_abs_diff": 9.992007221626409e-16,
+   "exact_matches": 20,
+   "per_feature_abs_diff": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": 0.0,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.0,
+    "illum_g": 0.0,
+    "illum_r": 0.0,
+    "luma_mean": 8.326672684688674e-17,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 6.938893903907228e-18,
+    "pca_resid": 0.0,
+    "pca_top1_share": 9.992007221626409e-16,
+    "radial_slope": 0.0,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 8.881784197001252e-16,
+    "temp_b1": 0.0,
+    "temp_b2": 1.3877787807814457e-17,
+    "temp_b3": 0.0,
+    "zncc_self": 2.7755575615628914e-17
+   }
+  },
+  {
+   "id": "g133",
+   "clip": "logistics4",
+   "label": 1,
+   "status": "ok",
+   "frames": 100,
+   "fps": 10.0,
+   "cache_frames": 100,
+   "n_features_compared": 26,
+   "max_abs_diff": 1.7763568394002505e-15,
+   "worst_feature": "temp_b0",
+   "worst_abs_diff": 1.7763568394002505e-15,
+   "exact_matches": 19,
+   "per_feature_abs_diff": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 1.734723475976807e-18,
+    "dup_hash_mean": 0.0,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.0,
+    "illum_g": 0.0,
+    "illum_r": 0.0,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 1.0408340855860843e-17,
+    "pca_resid": 1.6263032587282567e-19,
+    "pca_top1_share": 8.881784197001252e-16,
+    "radial_slope": 0.0,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 1.7763568394002505e-15,
+    "temp_b1": 0.0,
+    "temp_b2": 1.3877787807814457e-17,
+    "temp_b3": 0.0,
+    "zncc_self": 1.6653345369377348e-16
+   }
+  },
+  {
+   "id": "g114",
+   "clip": "organise",
+   "label": 1,
+   "status": "ok",
+   "frames": 100,
+   "fps": 10.0,
+   "cache_frames": 100,
+   "n_features_compared": 26,
+   "max_abs_diff": 7.105427357601002e-15,
+   "worst_feature": "temp_b0",
+   "worst_abs_diff": 7.105427357601002e-15,
+   "exact_matches": 19,
+   "per_feature_abs_diff": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": 0.0,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.0,
+    "illum_g": 0.0,
+    "illum_r": 0.0,
+    "luma_mean": 5.551115123125783e-17,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 2.0816681711721685e-17,
+    "pca_resid": 3.2526065174565133e-19,
+    "pca_top1_share": 2.220446049250313e-16,
+    "radial_slope": 1.7763568394002505e-15,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 7.105427357601002e-15,
+    "temp_b1": 0.0,
+    "temp_b2": 2.7755575615628914e-17,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   }
+  },
+  {
+   "id": "g097",
+   "clip": "pallet",
+   "label": 1,
+   "status": "ok",
+   "frames": 100,
+   "fps": 10.0,
+   "cache_frames": 100,
+   "n_features_compared": 26,
+   "max_abs_diff": 2.6645352591003757e-15,
+   "worst_feature": "radial_slope",
+   "worst_abs_diff": 2.6645352591003757e-15,
+   "exact_matches": 21,
+   "per_feature_abs_diff": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": 0.0,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.0,
+    "illum_g": 0.0,
+    "illum_r": 0.0,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 2.0816681711721685e-17,
+    "pca_resid": 4.336808689942018e-19,
+    "pca_top1_share": 3.3306690738754696e-16,
+    "radial_slope": 2.6645352591003757e-15,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 0.0,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 5.551115123125783e-17
+   }
+  }
+ ],
+ "global": {
+  "max_abs_diff_all": 7.105427357601002e-15,
+  "mean_max_abs_diff": 2.7755575615628914e-15,
+  "all_exact": false,
+  "elapsed_s": 2.41
+ }
+}
