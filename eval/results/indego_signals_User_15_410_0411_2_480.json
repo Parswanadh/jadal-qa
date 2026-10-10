@@ -8,7 +8,7 @@
   "mediapipe_version": "1.1.0",
   "opencv_version": "5.0.0"
  },
- "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+ "clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
  "seg_seconds": 20.0,
  "segments": [
   {
@@ -25,7 +25,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0000",
     "sha256": "710e2d7a30532a1993ab4bf989f5098c91a7c2a1acaf38ce466c75a2b693b023",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 0.0,
     "worker_id": "indego"
    },
@@ -58,7 +58,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0001",
     "sha256": "183799d2ef178c36783bb03a72aea68904996fa183173fc876137693e4dd54ac",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 20.0,
     "worker_id": "indego"
    },
@@ -91,7 +91,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0002",
     "sha256": "36a063483fd182ac99b9c56494c9517e0978f7fcd6b75de88ce2ea96a35ec121",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 40.0,
     "worker_id": "indego"
    },
@@ -124,7 +124,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0003",
     "sha256": "27facf3de5a91a43b9fecb7c27fb079f5ff254bc0c2a19df0e24390684dfdb95",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 60.0,
     "worker_id": "indego"
    },
@@ -157,7 +157,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0004",
     "sha256": "2cb80cd4d5e8ec1a571b7bf10d3ef8687245d58583b6d5b2408efc4b43aa48de",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 80.0,
     "worker_id": "indego"
    },
@@ -190,7 +190,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0005",
     "sha256": "34fa5d6e6db59afc02400abc054a491a9b5a74051922c9ee6a54943be32e10d1",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 100.0,
     "worker_id": "indego"
    },
@@ -223,7 +223,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0006",
     "sha256": "f180d7aaf593bd2776bcb5fb7e882e67ddb1343baa83d43b05c4bf838a032f19",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 120.0,
     "worker_id": "indego"
    },
@@ -256,7 +256,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0007",
     "sha256": "c082fab7d8a1dba750bff439fcd99fcdc654c70a004d5182414020e53903859f",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 140.0,
     "worker_id": "indego"
    },
@@ -289,7 +289,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0008",
     "sha256": "1222f69874179c64ee870b3d5af8f3d8fbc8cf14e60cfccf98b96b247eba16a9",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 160.0,
     "worker_id": "indego"
    },
@@ -322,7 +322,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0009",
     "sha256": "96af334e3e5c760fc1bc337bddfbb6517573dfd0cdef90868ad7f40c74efe7cd",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 180.0,
     "worker_id": "indego"
    },
@@ -355,7 +355,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0010",
     "sha256": "10774de1cc033abee2d84c904f17db1f51f284c1b373c6ec495128dd07a51d55",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 200.0,
     "worker_id": "indego"
    },
@@ -388,7 +388,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0011",
     "sha256": "3f180393a5805866536935e532a635153492e43f33f587e91c9c26a7c875b1cc",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 220.0,
     "worker_id": "indego"
    },
@@ -421,7 +421,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0012",
     "sha256": "5f431c4fd656d39f7a05f2e6024ba0da3a16524400aeb42fa2ed4d5a8b4e6004",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 240.0,
     "worker_id": "indego"
    },
@@ -454,7 +454,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0013",
     "sha256": "833f4d7c7d77371047e2fa61f5ca62276ef98f4e88778509c0d80512ecb1f3de",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 260.0,
     "worker_id": "indego"
    },
@@ -487,7 +487,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0014",
     "sha256": "5405a20e80e8be8374f9ae4f37cc5bb5b1d2465593158e8eaab78b10fde29c08",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 280.0,
     "worker_id": "indego"
    },
@@ -520,7 +520,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0015",
     "sha256": "ea4f1e909a7887e272b2f38ed23ab5ee90bbf620cb43f4ec2cb4ed7df3163436",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 300.0,
     "worker_id": "indego"
    },
@@ -553,7 +553,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0016",
     "sha256": "796808134552b47fc24277772241f7691a7b1c6fa26a7916da9b97c07e876f6c",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 320.0,
     "worker_id": "indego"
    },
@@ -586,7 +586,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0017",
     "sha256": "a29e8fe590cf7897134b2e49d1c038cce5eb5744ccfb9f1d355d2ddade14e8b7",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 340.0,
     "worker_id": "indego"
    },
@@ -619,7 +619,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0018",
     "sha256": "081eb91066c0c44270bbc7071c3a198d8291641be7fda0adcf606bd4afb1b91c",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 360.0,
     "worker_id": "indego"
    },
@@ -652,7 +652,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0019",
     "sha256": "5e3b26b0a433783b68decc5bd5ddd448a7c87e235c9527f9d4accaa0b059f7d6",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 380.0,
     "worker_id": "indego"
    },
@@ -685,7 +685,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0020",
     "sha256": "fa47c3fbcc21f6d5aff91d76fcea51963a97dd54fb300b6a719108840f21f392",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 400.0,
     "worker_id": "indego"
    },
@@ -718,7 +718,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0021",
     "sha256": "a786f71d6344ba3d9bbe41c1f0591081618f1841aba82a78d3e8a8197f0c6b59",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 420.0,
     "worker_id": "indego"
    },
@@ -751,7 +751,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0022",
     "sha256": "caef1717e881959ea6a4e496dac00023fb6697be941477262e28195e032aa4e5",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 440.0,
     "worker_id": "indego"
    },
@@ -784,7 +784,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0023",
     "sha256": "3ee048d2158ef07c8c68385ee682fc9a63d4783d2005bbf2879243475803cbe6",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 460.0,
     "worker_id": "indego"
    },
@@ -817,7 +817,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0024",
     "sha256": "80988df12efa3d192814cd90b1835adbb8fea3fc5106f0a6b31b487984e7c10b",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 480.0,
     "worker_id": "indego"
    },
@@ -850,7 +850,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0025",
     "sha256": "240751e808c91efbca209a92edeeb5e5df6f666cd4ab15d924f0eb3f0dffbcbb",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 500.0,
     "worker_id": "indego"
    },
@@ -883,7 +883,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0026",
     "sha256": "e18818a4798bdb9b04d15c77a9412efa0b8b48fb5b4d19fd85b516ecf27a69e7",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 520.0,
     "worker_id": "indego"
    },
@@ -916,7 +916,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0027",
     "sha256": "b921a95894d7a7ef787cd02af64cfd4eaffebad26549e05bc784aaa24f3c5b82",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 540.0,
     "worker_id": "indego"
    },
@@ -949,7 +949,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0028",
     "sha256": "28162ed2b82f10244bc0bdea7bb877dc58e9d1229e3e5136b25232b6cc010762",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 560.0,
     "worker_id": "indego"
    },
@@ -982,7 +982,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0029",
     "sha256": "f8dad0b73032a6a081efc60906021b82a1bf6b9e04ab249712135f7946c9d796",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 580.0,
     "worker_id": "indego"
    },
@@ -1015,7 +1015,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0030",
     "sha256": "18f3ac602a1d5aa4f26c216659f5cff4571bbc63ad9d9297a678fd1b80102e66",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 600.0,
     "worker_id": "indego"
    },
@@ -1048,7 +1048,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0031",
     "sha256": "9a74d9bd4a5fcb7e75376ba20e233b0071d64e658677cb6848f1c0f29acdf8c2",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 620.0,
     "worker_id": "indego"
    },
@@ -1081,7 +1081,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0032",
     "sha256": "f9b668e6a01c2a965c30b601ae204e23af746de42cc08599f5b8f0dc5fe37314",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 640.0,
     "worker_id": "indego"
    },
@@ -1114,7 +1114,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0033",
     "sha256": "686a2c12574955679fa0bd548b3a43af6e1ea59aec93667542da785ffac7a510",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 660.0,
     "worker_id": "indego"
    },
@@ -1147,7 +1147,7 @@
     "segment_id": "User_15_410_0411_2_480-675a30d2-0034",
     "sha256": "a41243b0640c35efb72cc83110296dec7c3c92ea32a512b9a112d76c2747e502",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
     "start_s": 680.0,
     "worker_id": "indego"
    },

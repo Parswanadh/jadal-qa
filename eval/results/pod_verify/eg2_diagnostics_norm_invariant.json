@@ -1,0 +1,18 @@
+{
+ "mine_vs_cache": {
+  "frame_min": 0.9787701368331909,
+  "frame_median": 0.9953346252441406,
+  "frame_max": 0.9980553388595581,
+  "window_min": 0.9990487694740295,
+  "window_median": 0.9996336996555328,
+  "window_max": 0.9997566342353821
+ },
+ "mine_vs_mine_fullbatch": {
+  "frame_min": 0.999967098236084,
+  "frame_median": 1.0,
+  "frame_max": 1.000000238418579,
+  "window_min": 0.9999994039535522,
+  "window_median": 1.0,
+  "window_max": 1.0000001192092896
+ }
+}
