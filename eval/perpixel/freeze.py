@@ -43,8 +43,8 @@ from sklearn.preprocessing import StandardScaler  # noqa: E402
 SPEC_DIR = "/home/parshu/projects/jadal-qa-wt/spectral_data"
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES = os.path.join(os.path.dirname(HERE), "results", "perpixel")
-CFG = os.path.join(os.path.dirname(HERE), "..", "..", "configs",
-                   "perpixel_v1.json")
+CFG = os.path.normpath(os.path.join(HERE, "..", "..", "configs",
+                                "perpixel_v1.json"))
 SEED = 0
 
 
@@ -113,6 +113,7 @@ def main():
         "theory+physics": np.concatenate([Xth[ma], Xph[ma]], axis=1),
         "all": np.concatenate([Xm1[ma], Xth[ma], Xph[ma]], axis=1),
     }
+    cands = {k: fill(v, v)[0] for k, v in cands.items()}
     acts = {"m1": float(m2["activity"]["auroc_lr"])}
     for k in ("theory+physics", "all"):
         p, a, _ = __import__("eval.perpixel.physics_run", fromlist=["x"]

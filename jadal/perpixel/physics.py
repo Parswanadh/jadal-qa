@@ -56,23 +56,37 @@ def _blocks(Y: np.ndarray):
 
 
 def noise_model(Y: np.ndarray):
-    """Spec 1: var(Y-blur3x3)*1.5 = a*mu + b over flat blocks. NaN if <20."""
-    bl = [z for z in _blocks(Y)]
-    if len(bl) < 20:
-        return float("nan"), float("nan"), float("nan")
-    cut = np.percentile([g for _, g, _ in bl], 30)
+    """Spec 1 on one frame (kept for API compat; under-powered at 160x90)."""
+    a, b, s = noise_model_stack(Y[None], np.array([0]))
+    return a, b, s
+
+
+def noise_model_stack(Ys: np.ndarray, samp: np.ndarray):
+    """Spec 1, window-pooled: 16x16 blocks from all sampled frames.
+
+    At 160x90 one frame yields ~50 candidate blocks; the 30% flat cut then
+    leaves <20 and the fit always fails. Pooling sampled frames (~12x540
+    candidates) restores the spec's intent (same block size, cut, minimum).
+    <20 pooled blocks -> (NaN, NaN, NaN), never guessed.
+    """
     mus, vs = [], []
-    for mu, g, b in bl:
-        if g <= cut:
+    for i in samp:
+        for mu, g, b in _blocks(Ys[i]):
             r = b - cv2.blur(b, (3, 3))
             mus.append(mu)
-            vs.append(float(r.var()) * 1.5)
+            vs.append((float(r.var()) * 1.5, g))
     if len(mus) < 20:
         return float("nan"), float("nan"), float("nan")
-    A = np.column_stack([np.asarray(mus), np.ones(len(mus))])
-    (a, b), *_ = np.linalg.lstsq(A, np.asarray(vs), rcond=None)
+    gs = np.array([g for _, g in vs])
+    cut = np.percentile(gs, 30)
+    m2 = [m for m, (v, g) in zip(mus, vs) if g <= cut]
+    v2 = [v for v, g in vs if g <= cut]
+    if len(m2) < 20:
+        return float("nan"), float("nan"), float("nan")
+    A = np.column_stack([np.asarray(m2), np.ones(len(m2))])
+    (a, b), *_ = np.linalg.lstsq(A, np.asarray(v2), rcond=None)
     a, b = float(a), float(max(b, 1e-9))
-    snr = float(np.median([m / np.sqrt(a * m + b) for m in mus]))
+    snr = float(np.median([m / np.sqrt(a * m + b) for m in m2]))
     return a, b, float(10 * np.log10(max(snr, 1e-12)))
 
 
@@ -133,20 +147,17 @@ def extract_physics(frames90: np.ndarray, fps: float, path: str,
     clip = Y <= 2
     clip |= Y >= 253
     samp = np.linspace(0, T - 1, min(T, 12)).astype(int)
-    A, B, S = [], [], []
+    # spec 1, window-pooled (per-frame fits are under-powered at 160x90)
+    a, b, snr = noise_model_stack(Y, samp)
     TEN, TENN, MAD, FRZ = [], [], [], []
     from jadal.perpixel import theory as _T
-    sig_floor = float(np.median([_T.immerkaer_sigma(Y[i]) for i in samp]))
+    sig_floor = float(np.sqrt(b)) if np.isfinite(b) else float(
+        np.median([_T.immerkaer_sigma(Y[i]) for i in samp]))
     if not np.isfinite(sig_floor) or sig_floor <= 0:
         sig_floor = 1.0
     for i in samp:
         y = Y[i]
-        a, b, s = noise_model(y)
-        A.append(a)
-        B.append(b)
-        S.append(s)
-        # spec-1 blocks rarely fire at 160x90 (recorded NaN per spec);
-        # normalisation uses the Immerkaer floor (same resolution, robust).
+        # normalisation uses the spec-1 floor when valid, else Immerkaer.
         sig2 = sig_floor ** 2 + 1e-12
         h, w = y.shape
         roi = y[h // 4:3 * h // 4, w // 4:3 * w // 4]
@@ -161,9 +172,6 @@ def extract_physics(frames90: np.ndarray, fps: float, path: str,
                       if (~clip[i] & ~clip[i - 1]).any() else d.mean())
             MAD.append(m)
             FRZ.append(1.0 if m < 0.5 * sig_floor else 0.0)
-    a = float(np.nanmedian(A)) if np.isfinite(A).any() else float("nan")
-    b = float(np.nanmedian(B)) if np.isfinite(B).any() else float("nan")
-    snr = float(np.nanmedian(S)) if np.isfinite(S).any() else float("nan")
     # spec 6: residual flow after median (ego-motion) removal, lower-60% ROI
     H, W = Y.shape[1:]
     acts, meds = [], []
