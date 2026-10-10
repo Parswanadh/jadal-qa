@@ -1,0 +1,825 @@
+{
+ "id": "E6.04",
+ "protocol": "IndEgo 150 windows, 7 clips; within-stratum AUROC of the residual cue under different stratification rules (quantile vs fixed ego-motion bins) and cue variants; stability of the Spearman partial correlation (clip bootstrap CI).",
+ "stratification_schemes": {
+  "quantile_terciles": {
+   "edges_px": [
+    12.465930744806926,
+    25.39954474131266
+   ],
+   "variants": {
+    "resid_mean": {
+     "strata": {
+      "stratum_0": {
+       "n": 50,
+       "n_good": 49,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        12.420985503196716
+       ],
+       "auroc_oriented": 0.30612244897959184
+      },
+      "stratum_1": {
+       "n": 50,
+       "n_good": 30,
+       "n_bad": 20,
+       "ego_range_px": [
+        12.48840336561203,
+        25.35667114019394
+       ],
+       "auroc_oriented": 0.6816666666666666
+      },
+      "stratum_2": {
+       "n": 50,
+       "n_good": 21,
+       "n_bad": 29,
+       "ego_range_px": [
+        25.48529194355011,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5172413793103448
+      }
+     },
+     "strata_with_ge3_bad": 2,
+     "min_auroc": 0.5172413793103448,
+     "max_auroc": 0.6816666666666666,
+     "mean_auroc": 0.5994540229885057,
+     "std_auroc": 0.08221264367816095,
+     "partial_spearman_given_ego": -0.10181241064930768
+    },
+    "resid_med": {
+     "strata": {
+      "stratum_0": {
+       "n": 50,
+       "n_good": 49,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        12.420985503196716
+       ],
+       "auroc_oriented": 0.40816326530612246
+      },
+      "stratum_1": {
+       "n": 50,
+       "n_good": 30,
+       "n_bad": 20,
+       "ego_range_px": [
+        12.48840336561203,
+        25.35667114019394
+       ],
+       "auroc_oriented": 0.685
+      },
+      "stratum_2": {
+       "n": 50,
+       "n_good": 21,
+       "n_bad": 29,
+       "ego_range_px": [
+        25.48529194355011,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5139573070607554
+      }
+     },
+     "strata_with_ge3_bad": 2,
+     "min_auroc": 0.5139573070607554,
+     "max_auroc": 0.685,
+     "mean_auroc": 0.5994786535303778,
+     "std_auroc": 0.08552134646962234,
+     "partial_spearman_given_ego": -0.10451081692592469
+    },
+    "resid_p90": {
+     "strata": {
+      "stratum_0": {
+       "n": 50,
+       "n_good": 49,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        12.420985503196716
+       ],
+       "auroc_oriented": 0.1836734693877551
+      },
+      "stratum_1": {
+       "n": 50,
+       "n_good": 30,
+       "n_bad": 20,
+       "ego_range_px": [
+        12.48840336561203,
+        25.35667114019394
+       ],
+       "auroc_oriented": 0.6883333333333334
+      },
+      "stratum_2": {
+       "n": 50,
+       "n_good": 21,
+       "n_bad": 29,
+       "ego_range_px": [
+        25.48529194355011,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5221674876847291
+      }
+     },
+     "strata_with_ge3_bad": 2,
+     "min_auroc": 0.5221674876847291,
+     "max_auroc": 0.6883333333333334,
+     "mean_auroc": 0.6052504105090313,
+     "std_auroc": 0.08308292282430213,
+     "partial_spearman_given_ego": -0.09670290386447178
+    },
+    "resid_std": {
+     "strata": {
+      "stratum_0": {
+       "n": 50,
+       "n_good": 49,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        12.420985503196716
+       ],
+       "auroc_oriented": 0.02040816326530612
+      },
+      "stratum_1": {
+       "n": 50,
+       "n_good": 30,
+       "n_bad": 20,
+       "ego_range_px": [
+        12.48840336561203,
+        25.35667114019394
+       ],
+       "auroc_oriented": 0.6
+      },
+      "stratum_2": {
+       "n": 50,
+       "n_good": 21,
+       "n_bad": 29,
+       "ego_range_px": [
+        25.48529194355011,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5845648604269293
+      }
+     },
+     "strata_with_ge3_bad": 2,
+     "min_auroc": 0.5845648604269293,
+     "max_auroc": 0.6,
+     "mean_auroc": 0.5922824302134646,
+     "std_auroc": 0.0077175697865353166,
+     "partial_spearman_given_ego": -0.04946814055000275
+    }
+   }
+  },
+  "quantile_quintiles": {
+   "edges_px": [
+    9.101040742874146,
+    15.539995114326477,
+    23.075391365289686,
+    31.6050528178215
+   ],
+   "variants": {
+    "resid_mean": {
+     "strata": {
+      "stratum_0": {
+       "n": 30,
+       "n_good": 29,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        8.888260583877564
+       ],
+       "auroc_oriented": 0.4482758620689655
+      },
+      "stratum_1": {
+       "n": 30,
+       "n_good": 27,
+       "n_bad": 3,
+       "ego_range_px": [
+        9.15423578262329,
+        15.521005692481994
+       ],
+       "auroc_oriented": 0.6913580246913581
+      },
+      "stratum_2": {
+       "n": 30,
+       "n_good": 18,
+       "n_bad": 12,
+       "ego_range_px": [
+        15.552654728889465,
+        22.991510852575303
+       ],
+       "auroc_oriented": 0.5648148148148149
+      },
+      "stratum_3": {
+       "n": 30,
+       "n_good": 17,
+       "n_bad": 13,
+       "ego_range_px": [
+        23.201212134361267,
+        31.57169098854065
+       ],
+       "auroc_oriented": 0.7556561085972852
+      },
+      "stratum_4": {
+       "n": 30,
+       "n_good": 9,
+       "n_bad": 21,
+       "ego_range_px": [
+        31.738500134944914,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5026455026455027
+      }
+     },
+     "strata_with_ge3_bad": 4,
+     "min_auroc": 0.5026455026455027,
+     "max_auroc": 0.7556561085972852,
+     "mean_auroc": 0.6286186126872402,
+     "std_auroc": 0.100018633591759,
+     "partial_spearman_given_ego": -0.10181241064930768
+    },
+    "resid_med": {
+     "strata": {
+      "stratum_0": {
+       "n": 30,
+       "n_good": 29,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        8.888260583877564
+       ],
+       "auroc_oriented": 0.5517241379310345
+      },
+      "stratum_1": {
+       "n": 30,
+       "n_good": 27,
+       "n_bad": 3,
+       "ego_range_px": [
+        9.15423578262329,
+        15.521005692481994
+       ],
+       "auroc_oriented": 0.7037037037037037
+      },
+      "stratum_2": {
+       "n": 30,
+       "n_good": 18,
+       "n_bad": 12,
+       "ego_range_px": [
+        15.552654728889465,
+        22.991510852575303
+       ],
+       "auroc_oriented": 0.5601851851851851
+      },
+      "stratum_3": {
+       "n": 30,
+       "n_good": 17,
+       "n_bad": 13,
+       "ego_range_px": [
+        23.201212134361267,
+        31.57169098854065
+       ],
+       "auroc_oriented": 0.7375565610859729
+      },
+      "stratum_4": {
+       "n": 30,
+       "n_good": 9,
+       "n_bad": 21,
+       "ego_range_px": [
+        31.738500134944914,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5132275132275133
+      }
+     },
+     "strata_with_ge3_bad": 4,
+     "min_auroc": 0.5132275132275133,
+     "max_auroc": 0.7375565610859729,
+     "mean_auroc": 0.6286682408005937,
+     "std_auroc": 0.09421183242655967,
+     "partial_spearman_given_ego": -0.10451081692592469
+    },
+    "resid_p90": {
+     "strata": {
+      "stratum_0": {
+       "n": 30,
+       "n_good": 29,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        8.888260583877564
+       ],
+       "auroc_oriented": 0.3103448275862069
+      },
+      "stratum_1": {
+       "n": 30,
+       "n_good": 27,
+       "n_bad": 3,
+       "ego_range_px": [
+        9.15423578262329,
+        15.521005692481994
+       ],
+       "auroc_oriented": 0.5802469135802469
+      },
+      "stratum_2": {
+       "n": 30,
+       "n_good": 18,
+       "n_bad": 12,
+       "ego_range_px": [
+        15.552654728889465,
+        22.991510852575303
+       ],
+       "auroc_oriented": 0.6203703703703703
+      },
+      "stratum_3": {
+       "n": 30,
+       "n_good": 17,
+       "n_bad": 13,
+       "ego_range_px": [
+        23.201212134361267,
+        31.57169098854065
+       ],
+       "auroc_oriented": 0.7194570135746606
+      },
+      "stratum_4": {
+       "n": 30,
+       "n_good": 9,
+       "n_bad": 21,
+       "ego_range_px": [
+        31.738500134944914,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5026455026455027
+      }
+     },
+     "strata_with_ge3_bad": 4,
+     "min_auroc": 0.5026455026455027,
+     "max_auroc": 0.7194570135746606,
+     "mean_auroc": 0.6056799500426951,
+     "std_auroc": 0.07814084292082106,
+     "partial_spearman_given_ego": -0.09670290386447178
+    },
+    "resid_std": {
+     "strata": {
+      "stratum_0": {
+       "n": 30,
+       "n_good": 29,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        8.888260583877564
+       ],
+       "auroc_oriented": 0.034482758620689655
+      },
+      "stratum_1": {
+       "n": 30,
+       "n_good": 27,
+       "n_bad": 3,
+       "ego_range_px": [
+        9.15423578262329,
+        15.521005692481994
+       ],
+       "auroc_oriented": 0.4197530864197531
+      },
+      "stratum_2": {
+       "n": 30,
+       "n_good": 18,
+       "n_bad": 12,
+       "ego_range_px": [
+        15.552654728889465,
+        22.991510852575303
+       ],
+       "auroc_oriented": 0.6018518518518519
+      },
+      "stratum_3": {
+       "n": 30,
+       "n_good": 17,
+       "n_bad": 13,
+       "ego_range_px": [
+        23.201212134361267,
+        31.57169098854065
+       ],
+       "auroc_oriented": 0.6380090497737556
+      },
+      "stratum_4": {
+       "n": 30,
+       "n_good": 9,
+       "n_bad": 21,
+       "ego_range_px": [
+        31.738500134944914,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5343915343915344
+      }
+     },
+     "strata_with_ge3_bad": 4,
+     "min_auroc": 0.4197530864197531,
+     "max_auroc": 0.6380090497737556,
+     "mean_auroc": 0.5485013806092238,
+     "std_auroc": 0.08311604333409871,
+     "partial_spearman_given_ego": -0.04946814055000275
+    }
+   }
+  },
+  "fixed_bins_px_5_15": {
+   "edges_px": [
+    5.0,
+    15.0
+   ],
+   "variants": {
+    "resid_mean": {
+     "strata": {
+      "stratum_0": {
+       "n": 11,
+       "n_good": 10,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        4.499797617197037
+       ],
+       "auroc_oriented": 0.6
+      },
+      "stratum_1": {
+       "n": 48,
+       "n_good": 46,
+       "n_bad": 2,
+       "ego_range_px": [
+        5.144664775133133,
+        14.982362432479858
+       ],
+       "auroc_oriented": 0.782608695652174
+      },
+      "stratum_2": {
+       "n": 91,
+       "n_good": 44,
+       "n_bad": 47,
+       "ego_range_px": [
+        15.521005692481994,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.594294003868472
+      }
+     },
+     "strata_with_ge3_bad": 1,
+     "min_auroc": 0.594294003868472,
+     "max_auroc": 0.594294003868472,
+     "mean_auroc": 0.594294003868472,
+     "std_auroc": 0.0,
+     "partial_spearman_given_ego": -0.10181241064930768
+    },
+    "resid_med": {
+     "strata": {
+      "stratum_0": {
+       "n": 11,
+       "n_good": 10,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        4.499797617197037
+       ],
+       "auroc_oriented": 0.6
+      },
+      "stratum_1": {
+       "n": 48,
+       "n_good": 46,
+       "n_bad": 2,
+       "ego_range_px": [
+        5.144664775133133,
+        14.982362432479858
+       ],
+       "auroc_oriented": 0.7608695652173914
+      },
+      "stratum_2": {
+       "n": 91,
+       "n_good": 44,
+       "n_bad": 47,
+       "ego_range_px": [
+        15.521005692481994,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5894584139264991
+      }
+     },
+     "strata_with_ge3_bad": 1,
+     "min_auroc": 0.5894584139264991,
+     "max_auroc": 0.5894584139264991,
+     "mean_auroc": 0.5894584139264991,
+     "std_auroc": 0.0,
+     "partial_spearman_given_ego": -0.10451081692592469
+    },
+    "resid_p90": {
+     "strata": {
+      "stratum_0": {
+       "n": 11,
+       "n_good": 10,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        4.499797617197037
+       ],
+       "auroc_oriented": 0.5
+      },
+      "stratum_1": {
+       "n": 48,
+       "n_good": 46,
+       "n_bad": 2,
+       "ego_range_px": [
+        5.144664775133133,
+        14.982362432479858
+       ],
+       "auroc_oriented": 0.6521739130434783
+      },
+      "stratum_2": {
+       "n": 91,
+       "n_good": 44,
+       "n_bad": 47,
+       "ego_range_px": [
+        15.521005692481994,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.6039651837524178
+      }
+     },
+     "strata_with_ge3_bad": 1,
+     "min_auroc": 0.6039651837524178,
+     "max_auroc": 0.6039651837524178,
+     "mean_auroc": 0.6039651837524178,
+     "std_auroc": 0.0,
+     "partial_spearman_given_ego": -0.09670290386447178
+    },
+    "resid_std": {
+     "strata": {
+      "stratum_0": {
+       "n": 11,
+       "n_good": 10,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        4.499797617197037
+       ],
+       "auroc_oriented": 0.1
+      },
+      "stratum_1": {
+       "n": 48,
+       "n_good": 46,
+       "n_bad": 2,
+       "ego_range_px": [
+        5.144664775133133,
+        14.982362432479858
+       ],
+       "auroc_oriented": 0.532608695652174
+      },
+      "stratum_2": {
+       "n": 91,
+       "n_good": 44,
+       "n_bad": 47,
+       "ego_range_px": [
+        15.521005692481994,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.620889748549323
+      }
+     },
+     "strata_with_ge3_bad": 1,
+     "min_auroc": 0.620889748549323,
+     "max_auroc": 0.620889748549323,
+     "mean_auroc": 0.620889748549323,
+     "std_auroc": 0.0,
+     "partial_spearman_given_ego": -0.04946814055000275
+    }
+   }
+  },
+  "fixed_bins_px_1_5_20": {
+   "edges_px": [
+    1.0,
+    5.0,
+    20.0
+   ],
+   "variants": {
+    "resid_mean": {
+     "strata": {
+      "stratum_0": {
+       "n": 0,
+       "n_good": 0,
+       "n_bad": 0,
+       "ego_range_px": null,
+       "auroc_oriented": NaN
+      },
+      "stratum_1": {
+       "n": 11,
+       "n_good": 10,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        4.499797617197037
+       ],
+       "auroc_oriented": 0.6
+      },
+      "stratum_2": {
+       "n": 68,
+       "n_good": 59,
+       "n_bad": 9,
+       "ego_range_px": [
+        5.144664775133133,
+        19.646422959566117
+       ],
+       "auroc_oriented": 0.8060263653483992
+      },
+      "stratum_3": {
+       "n": 71,
+       "n_good": 31,
+       "n_bad": 40,
+       "ego_range_px": [
+        20.213669801950456,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5693548387096774
+      }
+     },
+     "strata_with_ge3_bad": 2,
+     "min_auroc": 0.5693548387096774,
+     "max_auroc": 0.8060263653483992,
+     "mean_auroc": 0.6876906020290383,
+     "std_auroc": 0.11833576331936091,
+     "partial_spearman_given_ego": -0.10181241064930768
+    },
+    "resid_med": {
+     "strata": {
+      "stratum_0": {
+       "n": 0,
+       "n_good": 0,
+       "n_bad": 0,
+       "ego_range_px": null,
+       "auroc_oriented": NaN
+      },
+      "stratum_1": {
+       "n": 11,
+       "n_good": 10,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        4.499797617197037
+       ],
+       "auroc_oriented": 0.6
+      },
+      "stratum_2": {
+       "n": 68,
+       "n_good": 59,
+       "n_bad": 9,
+       "ego_range_px": [
+        5.144664775133133,
+        19.646422959566117
+       ],
+       "auroc_oriented": 0.8154425612052731
+      },
+      "stratum_3": {
+       "n": 71,
+       "n_good": 31,
+       "n_bad": 40,
+       "ego_range_px": [
+        20.213669801950456,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.564516129032258
+      }
+     },
+     "strata_with_ge3_bad": 2,
+     "min_auroc": 0.564516129032258,
+     "max_auroc": 0.8154425612052731,
+     "mean_auroc": 0.6899793451187656,
+     "std_auroc": 0.12546321608650757,
+     "partial_spearman_given_ego": -0.10451081692592469
+    },
+    "resid_p90": {
+     "strata": {
+      "stratum_0": {
+       "n": 0,
+       "n_good": 0,
+       "n_bad": 0,
+       "ego_range_px": null,
+       "auroc_oriented": NaN
+      },
+      "stratum_1": {
+       "n": 11,
+       "n_good": 10,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        4.499797617197037
+       ],
+       "auroc_oriented": 0.5
+      },
+      "stratum_2": {
+       "n": 68,
+       "n_good": 59,
+       "n_bad": 9,
+       "ego_range_px": [
+        5.144664775133133,
+        19.646422959566117
+       ],
+       "auroc_oriented": 0.7777777777777778
+      },
+      "stratum_3": {
+       "n": 71,
+       "n_good": 31,
+       "n_bad": 40,
+       "ego_range_px": [
+        20.213669801950456,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5814516129032258
+      }
+     },
+     "strata_with_ge3_bad": 2,
+     "min_auroc": 0.5814516129032258,
+     "max_auroc": 0.7777777777777778,
+     "mean_auroc": 0.6796146953405018,
+     "std_auroc": 0.098163082437276,
+     "partial_spearman_given_ego": -0.09670290386447178
+    },
+    "resid_std": {
+     "strata": {
+      "stratum_0": {
+       "n": 0,
+       "n_good": 0,
+       "n_bad": 0,
+       "ego_range_px": null,
+       "auroc_oriented": NaN
+      },
+      "stratum_1": {
+       "n": 11,
+       "n_good": 10,
+       "n_bad": 1,
+       "ego_range_px": [
+        1.4961653709411622,
+        4.499797617197037
+       ],
+       "auroc_oriented": 0.1
+      },
+      "stratum_2": {
+       "n": 68,
+       "n_good": 59,
+       "n_bad": 9,
+       "ego_range_px": [
+        5.144664775133133,
+        19.646422959566117
+       ],
+       "auroc_oriented": 0.6704331450094162
+      },
+      "stratum_3": {
+       "n": 71,
+       "n_good": 31,
+       "n_bad": 40,
+       "ego_range_px": [
+        20.213669801950456,
+        46.76240974187851
+       ],
+       "auroc_oriented": 0.5991935483870967
+      }
+     },
+     "strata_with_ge3_bad": 2,
+     "min_auroc": 0.5991935483870967,
+     "max_auroc": 0.6704331450094162,
+     "mean_auroc": 0.6348133466982564,
+     "std_auroc": 0.035619798311159745,
+     "partial_spearman_given_ego": -0.04946814055000275
+    }
+   }
+  }
+ },
+ "loco_logistic_controls": {
+  "cue_only": {
+   "auroc": 0.6597999999999999,
+   "ci95": [
+    0.4689536878216124,
+    0.8346215986394556
+   ]
+  },
+  "ego_only": {
+   "auroc": 0.7984
+  },
+  "cue_plus_ego": {
+   "auroc": 0.7926000000000001
+  }
+ },
+ "n": 150,
+ "label_source": "human (IndEgo gold, one labeller)",
+ "ci95": {
+  "method": "clip bootstrap",
+  "draws": 2000,
+  "seed": 0
+ },
+ "device": "A40 (CPU-only feature extraction; GPU idle)",
+ "command": "JADAL_BUNDLE=$JADAL_BUNDLE python3 eval/exp_motion_cue/run_e6.py --experiments E6.01,E6.02,E6.04 --workers 3",
+ "git_sha": "124826e1cbae8573b5e8e84878b2efc9745f9570",
+ "cost": {
+  "frames_per_window": 100,
+  "windows": 150,
+  "extraction_wall_s_indego": 98.6,
+  "ms_per_window": 657.4,
+  "workers": 3,
+  "vram_mb": 0,
+  "cue_cache": "eval/results/exp_motion_cue/cue_indego.npz",
+  "cue_cache_sha256": "87e128384aed5bd8ea618d2e7808f57f6cd771b9b41fd0e515e5e9951a7e85f8"
+ },
+ "timestamp_utc": "2026-10-10T15:34:50Z"
+}

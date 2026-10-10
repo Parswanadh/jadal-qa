@@ -163,6 +163,40 @@ def zscore_within(v, clips):
     return out
 
 
+def per_clip_auroc(score, y, clips) -> dict:
+    out = {}
+    for c in sorted(set(np.asarray(clips).tolist())):
+        m = np.asarray(clips) == c
+        out[str(c)] = {"auroc_oriented": auroc(y[m], np.asarray(score)[m]),
+                       "n": int(m.sum()), "n_bad": int((1 - np.asarray(y)[m]).sum())}
+    return out
+
+
+def mean_per_clip_auroc_ci(score, y, clips, B=BOOT, seed=SEED):
+    """Equal-weight mean of the per-clip AUROCs, with a clip-bootstrap CI.
+
+    This is the metric that a PER-CLIP calibration can move: the pooled AUROC is
+    dominated by between-clip score offsets.  Both are reported; if they
+    disagree, say so.
+    """
+    score, y, clips = np.asarray(score), np.asarray(y), np.asarray(clips)
+    names = sorted(set(clips.tolist()))
+    per = {}
+    for c in names:
+        m = clips == c
+        per[c] = auroc(y[m], score[m])
+    point = float(np.mean([v for v in per.values() if np.isfinite(v)])) if per else float("nan")
+    rng = np.random.default_rng(seed)
+    vals = []
+    for _ in range(B):
+        cs = list(rng.choice(names, len(names)))
+        vs = [per[c] for c in cs if np.isfinite(per[c])]
+        if vs:
+            vals.append(float(np.mean(vs)))
+    lo, hi = (float(np.percentile(vals, 2.5)), float(np.percentile(vals, 97.5))) if vals else (float("nan"),) * 2
+    return point, lo, hi
+
+
 def save_json(path: Path, obj: dict):
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w") as f:
@@ -274,7 +308,10 @@ def run_e601(cue, y, clips, cached, meta) -> dict:
                      "partial_cue_label_given_ego": {"r": rp, "ci95": [lop, hip]}}
     ref["shift_px_mean (ego motion itself)"] = {
         "auroc_oriented_pooled": auroc(y, -ego),
-        "note": "this IS the conditioning variable"}
+        "auroc_signed_pooled": auroc(y, ego),
+        "ci95_oriented_clip_bootstrap": list(clip_bootstrap_ci(y, -ego, clips)),
+        "per_clip_auroc_oriented": per_clip_auroc(-ego, y, clips),
+        "note": "this IS the conditioning variable (cached series_gold channel 4, mean over frames)"}
     res["cached_scalar_controls"] = ref
 
     # terciles of ego-motion magnitude, within-tercile AUROC
@@ -311,13 +348,21 @@ def calibrate_abs_z(z):
     return -np.abs(z)
 
 
-def calibrate_majority(z):
-    """Label-free: pick the per-clip sign so the majority (>50%) of the clip's
-    windows score usable (prior: usable windows are the majority in this corpus)."""
-    s = -z                                     # canonical orientation: low residual = usable
-    if np.mean(s > 0) < 0.5:                   # <-- uses NO labels, only the clip's own values
-        s = -s
-    return s
+def calibrate_majority(s):
+    """Label-free sign calibration for ONE clip.
+
+    `s` = the cue's usable-score for that clip's windows (already oriented by the
+    training-clip direction).  The clip's own values are centred/scaled, then the
+    sign is chosen so that the MAJORITY of the clip's windows score usable
+    (prior: usable windows are the majority in this corpus).  Uses NO labels.
+    """
+    s = np.asarray(s, float)
+    sd = s.std()
+    z = (s - s.mean()) / sd if sd > 0 else s - s.mean()
+    flipped = np.mean(z > 0) < 0.5
+    if flipped:
+        z = -z
+    return z, bool(flipped)
 
 
 def run_e602(cue, y, clips, meta, variants=CUE_VARIANTS) -> dict:
@@ -336,6 +381,7 @@ def run_e602(cue, y, clips, meta, variants=CUE_VARIANTS) -> dict:
         loco_raw = np.zeros(len(y))
         loco_maj = np.zeros(len(y))
         loco_absz = np.zeros(len(y))
+        loco_oracle = np.zeros(len(y))
         per_clip = {}
         for c in names:
             te = clips == c
@@ -347,17 +393,20 @@ def run_e602(cue, y, clips, meta, variants=CUE_VARIANTS) -> dict:
             # label-free per-clip recalibration on the held-out clip's own values (no labels)
             zc = (s - s.mean()) / (s.std() if s.std() > 0 else 1.0)
             loco_absz[te] = -np.abs(zc)
-            sm = s.copy()
-            if np.mean(sm > 0) < 0.5:
-                sm = -sm
+            sm, flipped = calibrate_majority(s)
             loco_maj[te] = sm
+            # ORACLE upper bound only: sign chosen WITH the test labels (not usable in the product)
+            a_te = auroc(y[te], s)
+            loco_oracle[te] = s if (not np.isfinite(a_te) or a_te >= 0.5) else -s
             per_clip[c] = {
                 "n": int(te.sum()), "n_good": int(y[te].sum()), "n_bad": int((1 - y[te]).sum()),
                 "auroc_raw_oriented": auroc(y[te], raw[te]),
                 "auroc_loco_raw": auroc(y[te], s),
                 "auroc_loco_abs_z": auroc(y[te], loco_absz[te]),
                 "auroc_loco_majority_prior": auroc(y[te], loco_maj[te]),
-                "sign_chosen_by_majority_prior": float(np.sign(sm.mean())),
+                "majority_prior_flipped_the_sign": flipped,
+                "training_clip_direction": d,
+                "auroc_loco_oracle_sign_UPPER_BOUND_only": auroc(y[te], loco_oracle[te]),
             }
         variant = {
             "pooled_auroc_raw_global_orientation": auroc(y, raw),
@@ -367,6 +416,14 @@ def run_e602(cue, y, clips, meta, variants=CUE_VARIANTS) -> dict:
             "ci95_loco_raw": list(clip_bootstrap_ci(y, loco_raw, clips)),
             "ci95_loco_abs_z": list(clip_bootstrap_ci(y, loco_absz, clips)),
             "ci95_loco_majority_prior": list(clip_bootstrap_ci(y, loco_maj, clips)),
+            "pooled_auroc_loco_oracle_sign_UPPER_BOUND_only": auroc(y, loco_oracle),
+            "mean_per_clip_auroc": {
+                "raw": list(mean_per_clip_auroc_ci(raw, y, clips)),
+                "loco_raw": list(mean_per_clip_auroc_ci(loco_raw, y, clips)),
+                "loco_abs_z": list(mean_per_clip_auroc_ci(loco_absz, y, clips)),
+                "loco_majority_prior": list(mean_per_clip_auroc_ci(loco_maj, y, clips)),
+                "loco_oracle_sign_UPPER_BOUND_only": list(mean_per_clip_auroc_ci(loco_oracle, y, clips)),
+            },
             "per_clip": per_clip,
         }
         per_variant[name] = variant

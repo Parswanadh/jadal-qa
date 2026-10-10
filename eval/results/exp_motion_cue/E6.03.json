@@ -1,0 +1,76 @@
+{
+ "id": "E6.03",
+ "n": 60,
+ "n_good": 51,
+ "n_bad": 9,
+ "label_source": "human (Egocentric-10K random windows, one labeller; n_bad=9 -> EXPLORATORY)",
+ "cue_rows": {
+  "resid_mean": {
+   "auroc_frozen_indego_direction": 0.28104575163398693,
+   "ci95_window_optimistic": [
+    0.14506172839506173,
+    0.4340498144712427
+   ],
+   "spearman_cue_label": 0.27086907127449394,
+   "auroc_within_ood_best_orientation": 0.7189542483660132,
+   "indego_direction": 1.0
+  },
+  "resid_med": {
+   "auroc_frozen_indego_direction": 0.2636165577342048,
+   "ci95_window_optimistic": [
+    0.13596538461538463,
+    0.411873840445269
+   ],
+   "spearman_cue_label": 0.2924307883908716,
+   "auroc_within_ood_best_orientation": 0.7363834422657952,
+   "indego_direction": 1.0
+  },
+  "resid_p90": {
+   "auroc_frozen_indego_direction": 0.383442265795207,
+   "ci95_window_optimistic": [
+    0.19872709148071466,
+    0.567946492165242
+   ],
+   "spearman_cue_label": 0.14419398321577542,
+   "auroc_within_ood_best_orientation": 0.616557734204793,
+   "indego_direction": 1.0
+  },
+  "resid_std": {
+   "auroc_frozen_indego_direction": 0.5751633986928104,
+   "ci95_window_optimistic": [
+    0.3487654320987654,
+    0.7839999999999999
+   ],
+   "spearman_cue_label": -0.09298490506437852,
+   "auroc_within_ood_best_orientation": 0.5751633986928104,
+   "indego_direction": 1.0
+  }
+ },
+ "per_clip_calibration": "NOT APPLICABLE: the 60 OOD windows come from 47+ distinct source videos, almost all with a single labelled window, so a per-source sign cannot be estimated from that source's own windows.",
+ "source_data": "cue computed on queues/label_queue_random.json `path` (480p/30 fps, 10 s transcode; effective ~10 fps via stride 3), i.e. the same file the human labelled. The 1080p/30 fps `source_path` originals exist; not used here.",
+ "protocol": "out-of-domain: 60 human-labelled Egocentric-10K windows scored with the IndEgo-frozen cue direction; window-bootstrap 95% CI (optimistic: one window per factory); n_bad=9 -> exploratory, no accuracy claim",
+ "device": "A40 (CPU-only feature extraction; GPU idle)",
+ "ci95": {
+  "method": "window bootstrap (optimistic)",
+  "draws": 2000,
+  "seed": 0
+ },
+ "command": "JADAL_BUNDLE=$JADAL_BUNDLE python3 eval/exp_motion_cue/run_e6.py --experiments E6.01,E6.02,E6.03,E6.04 --workers 3",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "cost": {
+  "frames_per_window": 100,
+  "windows": 150,
+  "extraction_wall_s_indego": 98.6,
+  "ms_per_window": 657.4,
+  "workers": 3,
+  "vram_mb": 0,
+  "cue_cache": "eval/results/exp_motion_cue/cue_indego.npz",
+  "cue_cache_sha256": "87e128384aed5bd8ea618d2e7808f57f6cd771b9b41fd0e515e5e9951a7e85f8",
+  "extraction_wall_s_ood": 95.6,
+  "ms_per_window_ood": 1593.3,
+  "cue_cache_ood": "eval/results/exp_motion_cue/cue_ood.npz",
+  "cue_cache_ood_sha256": "507225813e7c71ef2d834a1bb0b043e721c8cd3fb5a528163ab82dc2a8e075d6"
+ },
+ "timestamp_utc": "2026-10-10T15:25:53Z",
+ "missing_labels": []
+}

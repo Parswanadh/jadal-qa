@@ -1,0 +1,388 @@
+{
+ "id": "E6.01",
+ "ego_definition": "per-window mean of series_gold.npz channel shift_px (phase-correlation shift vs first frame)",
+ "cue_definition": "per-window mean residual |I_t - warp(I_{t-1})| after translation-only phase-correlation compensation, 160x90, every frame",
+ "cue_rows": {
+  "resid_mean": {
+   "spearman_cue_label": {
+    "r": -0.3135416547459939,
+    "ci95": [
+     -0.4987573639910499,
+     0.039516726692513
+    ]
+   },
+   "spearman_cue_ego": {
+    "r": 0.47276234499311076,
+    "ci95": [
+     -0.016808328094118304,
+     0.6925248221403811
+    ]
+   },
+   "partial_cue_label_given_ego": {
+    "r": -0.10181241064930768,
+    "ci95": [
+     -0.3470579122364079,
+     0.07223881036077416
+    ]
+   },
+   "auroc_oriented_pooled": 0.692
+  },
+  "resid_med": {
+   "spearman_cue_label": {
+    "r": -0.29982420735085663,
+    "ci95": [
+     -0.47995483663990884,
+     0.007449083135903797
+    ]
+   },
+   "spearman_cue_ego": {
+    "r": 0.43788435041557405,
+    "ci95": [
+     -0.01834797165430436,
+     0.6438815065647776
+    ]
+   },
+   "partial_cue_label_given_ego": {
+    "r": -0.10451081692592469,
+    "ci95": [
+     -0.3337894803595397,
+     0.06637660204647429
+    ]
+   },
+   "auroc_oriented_pooled": 0.6836
+  },
+  "resid_p90": {
+   "spearman_cue_label": {
+    "r": -0.32268661967608536,
+    "ci95": [
+     -0.48669631930573126,
+     0.01574726702784353
+    ]
+   },
+   "spearman_cue_ego": {
+    "r": 0.5016311836081604,
+    "ci95": [
+     0.03807974507300776,
+     0.6887883666398349
+    ]
+   },
+   "partial_cue_label_given_ego": {
+    "r": -0.09670290386447178,
+    "ci95": [
+     -0.3151428377781153,
+     0.06266061523189527
+    ]
+   },
+   "auroc_oriented_pooled": 0.6976
+  },
+  "resid_std": {
+   "spearman_cue_label": {
+    "r": -0.31648110775923755,
+    "ci95": [
+     -0.4404307947455636,
+     -0.054173190178575054
+    ]
+   },
+   "spearman_cue_ego": {
+    "r": 0.5635574914440642,
+    "ci95": [
+     0.2591767337429226,
+     0.6846505270884216
+    ]
+   },
+   "partial_cue_label_given_ego": {
+    "r": -0.04946814055000275,
+    "ci95": [
+     -0.18751638128441475,
+     0.0677835785821015
+    ]
+   },
+   "auroc_oriented_pooled": 0.6938
+  }
+ },
+ "cached_scalar_controls": {
+  "diff_e_mean": {
+   "auroc_oriented_pooled": 0.6918,
+   "spearman_cue_label": {
+    "r": -0.31321504885563345,
+    "ci95": [
+     -0.4932230900494408,
+     0.03848666208025633
+    ]
+   },
+   "spearman_cue_ego": {
+    "r": 0.476602515667363,
+    "ci95": [
+     0.018025187039721953,
+     0.6876106819726645
+    ]
+   },
+   "partial_cue_label_given_ego": {
+    "r": -0.09911020502002052,
+    "ci95": [
+     -0.3299753944821858,
+     0.07832792791166301
+    ]
+   }
+  },
+  "motion_energy": {
+   "auroc_oriented_pooled": 0.6918,
+   "spearman_cue_label": {
+    "r": -0.31321504885563345,
+    "ci95": [
+     -0.4932230900494408,
+     0.03848666208025633
+    ]
+   },
+   "spearman_cue_ego": {
+    "r": 0.476602515667363,
+    "ci95": [
+     0.018025187039721953,
+     0.6876106819726645
+    ]
+   },
+   "partial_cue_label_given_ego": {
+    "r": -0.09911020502002052,
+    "ci95": [
+     -0.3299753944821858,
+     0.07832792791166301
+    ]
+   }
+  },
+  "global_shift": {
+   "auroc_oriented_pooled": 0.6238999999999999,
+   "spearman_cue_label": {
+    "r": -0.20244287298077038,
+    "ci95": [
+     -0.3545855461514075,
+     -0.024978447871306493
+    ]
+   },
+   "spearman_cue_ego": {
+    "r": 0.5124554278387937,
+    "ci95": [
+     0.3939622409959938,
+     0.6259405857615135
+    ]
+   },
+   "partial_cue_label_given_ego": {
+    "r": 0.07138617683550623,
+    "ci95": [
+     -0.13047753029131667,
+     0.2659508145794384
+    ]
+   }
+  },
+  "shift_px_mean (ego motion itself)": {
+   "auroc_oriented_pooled": 0.8053999999999999,
+   "auroc_signed_pooled": 0.1946,
+   "ci95_oriented_clip_bootstrap": [
+    0.6750524109014675,
+    0.8926047658409083
+   ],
+   "per_clip_auroc_oriented": {
+    "desk": {
+     "auroc_oriented": 0.7067307692307692,
+     "n": 29,
+     "n_bad": 13
+    },
+    "ecu_full": {
+     "auroc_oriented": 0.8651162790697674,
+     "n": 48,
+     "n_bad": 5
+    },
+    "ecu_late": {
+     "auroc_oriented": 0.6,
+     "n": 14,
+     "n_bad": 4
+    },
+    "logistics4": {
+     "auroc_oriented": 0.7857142857142858,
+     "n": 17,
+     "n_bad": 3
+    },
+    "organise": {
+     "auroc_oriented": 0.9888888888888889,
+     "n": 19,
+     "n_bad": 10
+    },
+    "pallet": {
+     "auroc_oriented": 0.5151515151515151,
+     "n": 17,
+     "n_bad": 11
+    },
+    "pallet2": {
+     "auroc_oriented": 1.0,
+     "n": 6,
+     "n_bad": 4
+    }
+   },
+   "note": "this IS the conditioning variable (cached series_gold channel 4, mean over frames)"
+  }
+ },
+ "ego_tercile_edges_px": [
+  12.465930744806926,
+  25.39954474131266
+ ],
+ "within_ego_terciles": {
+  "tercile_0": {
+   "n": 50,
+   "n_good": 49,
+   "n_bad": 1,
+   "ego_range_px": [
+    1.4961653709411622,
+    12.420985503196716
+   ],
+   "cue": {
+    "resid_mean": {
+     "auroc_oriented": 0.30612244897959184,
+     "ci95": [
+      0.060561497326203216,
+      0.44565217391304346
+     ]
+    },
+    "resid_med": {
+     "auroc_oriented": 0.40816326530612246,
+     "ci95": [
+      0.07692307692307693,
+      0.5806451612903226
+     ]
+    },
+    "resid_p90": {
+     "auroc_oriented": 0.1836734693877551,
+     "ci95": [
+      0.030280748663101608,
+      0.2717391304347826
+     ]
+    },
+    "resid_std": {
+     "auroc_oriented": 0.02040816326530612,
+     "ci95": [
+      0.0,
+      0.03260869565217391
+     ]
+    },
+    "diff_e_mean": {
+     "auroc_oriented": 0.1836734693877551
+    },
+    "motion_energy": {
+     "auroc_oriented": 0.1836734693877551
+    }
+   }
+  },
+  "tercile_1": {
+   "n": 50,
+   "n_good": 30,
+   "n_bad": 20,
+   "ego_range_px": [
+    12.48840336561203,
+    25.35667114019394
+   ],
+   "cue": {
+    "resid_mean": {
+     "auroc_oriented": 0.6816666666666666,
+     "ci95": [
+      0.46111111111111114,
+      0.8297619047619048
+     ]
+    },
+    "resid_med": {
+     "auroc_oriented": 0.685,
+     "ci95": [
+      0.48609601449275364,
+      0.8528138528138528
+     ]
+    },
+    "resid_p90": {
+     "auroc_oriented": 0.6883333333333334,
+     "ci95": [
+      0.43237969924812036,
+      0.8406655844155844
+     ]
+    },
+    "resid_std": {
+     "auroc_oriented": 0.6,
+     "ci95": [
+      0.40712510442773603,
+      0.7192525096162867
+     ]
+    },
+    "diff_e_mean": {
+     "auroc_oriented": 0.665
+    },
+    "motion_energy": {
+     "auroc_oriented": 0.665
+    }
+   }
+  },
+  "tercile_2": {
+   "n": 50,
+   "n_good": 21,
+   "n_bad": 29,
+   "ego_range_px": [
+    25.48529194355011,
+    46.76240974187851
+   ],
+   "cue": {
+    "resid_mean": {
+     "auroc_oriented": 0.5172413793103448,
+     "ci95": [
+      0.3470133053221288,
+      0.740530303030303
+     ]
+    },
+    "resid_med": {
+     "auroc_oriented": 0.5139573070607554,
+     "ci95": [
+      0.35000000000000003,
+      0.6853186274509803
+     ]
+    },
+    "resid_p90": {
+     "auroc_oriented": 0.5221674876847291,
+     "ci95": [
+      0.3383567821067821,
+      0.7642192725752508
+     ]
+    },
+    "resid_std": {
+     "auroc_oriented": 0.5845648604269293,
+     "ci95": [
+      0.413439091680815,
+      0.761731725305944
+     ]
+    },
+    "diff_e_mean": {
+     "auroc_oriented": 0.5254515599343186
+    },
+    "motion_energy": {
+     "auroc_oriented": 0.5254515599343186
+    }
+   }
+  }
+ },
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold, one labeller)",
+ "protocol": "in-domain: 150 windows, 7 clips; within-stratum AUROC + Spearman partial correlation (clip-bootstrap 95% CI, 2000 draws)",
+ "ci95": {
+  "method": "clip bootstrap",
+  "draws": 2000,
+  "seed": 0
+ },
+ "device": "A40 (CPU-only feature extraction; GPU idle)",
+ "command": "JADAL_BUNDLE=$JADAL_BUNDLE python3 eval/exp_motion_cue/run_e6.py --experiments E6.01,E6.02,E6.04 --workers 3",
+ "git_sha": "124826e1cbae8573b5e8e84878b2efc9745f9570",
+ "cost": {
+  "frames_per_window": 100,
+  "windows": 150,
+  "extraction_wall_s_indego": 98.6,
+  "ms_per_window": 657.4,
+  "workers": 3,
+  "vram_mb": 0,
+  "cue_cache": "eval/results/exp_motion_cue/cue_indego.npz",
+  "cue_cache_sha256": "87e128384aed5bd8ea618d2e7808f57f6cd771b9b41fd0e515e5e9951a7e85f8"
+ },
+ "timestamp_utc": "2026-10-10T15:34:50Z"
+}
