@@ -122,7 +122,7 @@ class StaticAssets(unittest.TestCase):
         for field in ["receipt_ids", "upper_bound", "last_hb_led", "last_hb_age_s",
                       "blurred_sha256", "findReceiptForSegment", "parseHash", "buildHash",
                       "filterOptions", "applyFilters", "normReceipt", "createClient",
-                      "isBound", "funnelCounts", "queueRows", "normHub", "hubSearch"]:
+                      "isBound", "boundCaption", "funnelCounts", "queueRows", "normHub", "hubSearch"]:
             self.assertIn(field, api, f"api.js never defines {field}")
         self.assertIn("JadalApi", app, "app.js must go through the web/api.js adapter")
         self.assertIn("createClient", app)
@@ -136,6 +136,7 @@ class StaticAssets(unittest.TestCase):
                        "A.normPico", "A.applyFilters", "A.filterOptions",
                        "A.parseHash", "A.buildHash", "A.shortHash",
                        "A.findReceiptForSegment", "A.wsUrl", "A.isBound",
+                       "A.boundCaption",
                        "A.funnelCounts", "A.queueRows", "A.queueReasons"]:
             self.assertIn(helper, app, f"app.js never uses adapter {helper}")
         # ... and builds no transport URLs of its own
@@ -402,10 +403,11 @@ class FixRound1(unittest.TestCase):
 
     def test_threshold_absent_vs_null(self):
         app = (WEB / "app.js").read_text(encoding="utf-8")
+        api = (WEB / "api.js").read_text(encoding="utf-8")
         self.assertIn("no certified threshold reported", app,
                       "absent chosen_threshold needs a neutral 'not reported'")
-        self.assertIn("bound not reported", app,
-                      "absent error bound needs a 'bound not reported' caption")
+        self.assertIn("bound not reported", api,
+                      "absent error bound needs a 'bound not reported' caption (shared helper)")
         node = shutil.which("node")
         if node is None:
             self.skipTest("node not on PATH")
@@ -455,9 +457,10 @@ class Dashboard3(unittest.TestCase):
 
     def test_bound_tristate_strings(self):
         app = (WEB / "app.js").read_text(encoding="utf-8")
-        self.assertIn("A.isBound", app, "bound checks must use the adapter gate")
-        self.assertIn("bound not reported", app)
-        self.assertIn("not certified (no threshold meets the target)", app)
+        api = (WEB / "api.js").read_text(encoding="utf-8")
+        self.assertIn("A.boundCaption", app, "bound checks must use the adapter gate")
+        self.assertIn("bound not reported", api)
+        self.assertIn("not certified (no threshold meets the target)", api)
         # no bare isFinite(null)-style bound test may remain (isFinite(null) is true)
         for line in app.splitlines():
             if "error_bound" in line and "isFinite" in line and "isBound" not in line:
@@ -544,6 +547,69 @@ class Dashboard3(unittest.TestCase):
     def test_hub_unavailable_copy(self):
         app = (WEB / "app.js").read_text(encoding="utf-8")
         self.assertIn("Video hub not available in this deployment", app)
+
+    def test_hash_round_trips_queue_and_hub(self):
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("node not on PATH")
+        script = (
+            "const A = require(" + repr(str(WEB / "api.js")) + ");\n"
+            "const assert = require('node:assert');\n"
+            "let p = A.parseHash('#/queue?qr=BLUR');\n"
+            "assert.strictEqual(p.route, 'queue');\n"
+            "assert.strictEqual(p.queueReason, 'BLUR');\n"
+            "assert.strictEqual(A.buildHash('queue', null, null, {qr: 'BLUR'}), '#/queue?qr=BLUR');\n"
+            "p = A.parseHash('#/videos?hq=seg+12&hsite=site_a&hverdict=review&hreason=BLUR');\n"
+            "assert.strictEqual(p.route, 'videos');\n"
+            "assert.deepStrictEqual(p.hub, {q: 'seg 12', site: 'site_a', verdict: 'review', reason: 'BLUR'});\n"
+            "const h = A.buildHash('videos', null, null, {hq: 'seg 12', hsite: 'site_a', hverdict: 'review', hreason: 'BLUR'});\n"
+            "assert.deepStrictEqual(A.parseHash(h).hub, p.hub);\n"
+            "assert.strictEqual(A.buildHash('queue', null, null, null), '#/queue');\n"
+            "assert.strictEqual(A.parseHash('#/queue').queueReason, '');\n"
+            "assert.strictEqual(A.parseHash('#/batches?verdict=accept').queueReason, '');\n"
+            "console.log('HASH-OK');\n"
+        )
+        r = subprocess.run([node, "-e", script],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0,
+                         f"hash node cases failed:\n{r.stdout}\n{r.stderr}")
+        self.assertIn("HASH-OK", r.stdout)
+
+    def test_bound_caption_is_shared(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("A.boundCaption", app,
+                      "stats row, caption and aria-label must share one helper")
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("node not on PATH")
+        script = (
+            "const A = require(" + repr(str(WEB / "api.js")) + ");\n"
+            "const assert = require('node:assert');\n"
+            "assert.strictEqual(A.boundCaption(0.07), null);\n"
+            "assert.strictEqual(A.boundCaption(undefined), 'bound not reported');\n"
+            "assert.strictEqual(A.boundCaption(null), 'not certified (no threshold meets the target)');\n"
+            "assert.strictEqual(A.boundCaption('x'), 'bound not reported');\n"
+            "console.log('CAPTION-OK');\n"
+        )
+        r = subprocess.run([node, "-e", script],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0,
+                         f"caption node cases failed:\n{r.stdout}\n{r.stderr}")
+        self.assertIn("CAPTION-OK", r.stdout)
+
+    def test_funnel_counts_other(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("is-other", app, "funnel must render an 'other' segment")
+        self.assertIn("other-count", app)
+
+    def test_no_legacy_layout_traps_in_css(self):
+        css = (WEB / "style.css").read_text(encoding="utf-8")
+        for dead in [".tl-scroll", ".tl-step", "pre.pre", "130vw", "150vw"]:
+            self.assertNotIn(dead, css, f"dead layout trap remains: {dead}")
+        self.assertNotRegex(css, r"overflow-x:\s*auto",
+                            "no horizontal-scroll containers may remain")
+        self.assertNotRegex(css, r"min-width:\s*[^;]*vw",
+                            "viewport-width min-widths risk sideways scroll")
 
 
 if __name__ == "__main__":

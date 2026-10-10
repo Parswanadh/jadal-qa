@@ -49,6 +49,15 @@ function isBound(v) {
   return typeof v === 'number' && isFinite(v);
 }
 
+function boundCaption(v) {
+  // Single shared caption for every non-number bound so the stats row and
+  // the under-chart caption can never disagree. Returns null when a line
+  // is drawn (finite number).
+  if (isBound(v)) return null;
+  if (v === null) return 'not certified (no threshold meets the target)';
+  return 'bound not reported';
+}
+
 function present(obj, keys) {
   // Like first(), but preserves an explicit null so callers can tell
   // "field absent" (undefined) apart from "API returned null".
@@ -361,7 +370,7 @@ function normHub(raw) {
 function parseHash(h) {
   h = String(h || '#/batches');
   var m = h.match(/^#\/(batches|segment|insights|queue|videos)(?:\/([^?]*))?(?:\?(.*))?$/);
-  if (!m) return { route: 'batches', id: null, filters: Object.assign({}, FILTER_DEFAULTS), lang: LANGS[0], head: '' };
+  if (!m) return { route: 'batches', id: null, filters: Object.assign({}, FILTER_DEFAULTS), lang: LANGS[0], head: '', queueReason: '', hub: { q: '', site: '', verdict: '', reason: '' } };
   var params = {};
   (m[3] || '').split('&').forEach(function (pair) {
     if (!pair) return;
@@ -384,6 +393,15 @@ function parseHash(h) {
     route: m[1],
     id: m[2] ? (() => { try { return decodeURIComponent(m[2]); } catch (e) { return m[2]; } })() : null,
     filters: filters, lang: lang, head: params.head || '',
+    // QA-queue + video-search state lives in the hash too (dedicated keys
+    // so it never collides with the batches filterbar state).
+    queueReason: clean(params.qr, REASON_CODES),
+    hub: {
+      q: params.hq || '',
+      site: params.hsite || '',
+      verdict: clean(params.hverdict, VERDICTS.concat(BATCH_DECISIONS)),
+      reason: clean(params.hreason, REASON_CODES),
+    },
   };
 }
 
@@ -605,7 +623,7 @@ function shortHash(h, n) {
 return {
   LANGS: LANGS, REASON_CODES: REASON_CODES, VERDICTS: VERDICTS,
   BATCH_DECISIONS: BATCH_DECISIONS, FILTER_DEFAULTS: FILTER_DEFAULTS,
-  first: first, isBound: isBound,
+  first: first, isBound: isBound, boundCaption: boundCaption,
   normBatch: normBatch, normBatchList: normBatchList, normReceipt: normReceipt,
   normRisk: normRisk, normGaps: normGaps, normPico: normPico, normReverify: normReverify,
   normHub: normHub,

@@ -1,9 +1,12 @@
 /* Jadal QA dashboard v2 — vanilla JS, no build step, no CDN.
  *
- * Three screens in one page: Batches (filterable list), Segment (receipt
- * tree + re-verify + step timeline), Insights (risk/coverage + SOP gaps).
+ * Five screens in one page: Batches (filterable list), QA queue (review
+ * pile), Segment (receipt tree + re-verify + step timeline), Video search
+ * (hub clips), Insights (risk/coverage + SOP gaps).
  * A global filter bar of real <select>s + search; ALL state lives in the
- * URL hash (see JadalApi.parseHash / buildHash).
+ * URL hash (see JadalApi.parseHash / buildHash) — queue reason as `qr`,
+ * hub search as `hq`/`hsite`/`hverdict`/`hreason`, so filtered queues and
+ * hub searches deep-link and survive reload.
  *
  * Field access rule: every payload field is read through web/api.js
  * (`JadalApi`). app.js never touches raw service keys directly.
@@ -54,7 +57,7 @@ var clientOpts = { mock: MOCK, apiBase: API, forceMismatch: false };
 var client = A.createClient(clientOpts);
 
 var state = {
-  route: 'batches',       // 'batches' | 'segment' | 'insights'
+  route: 'batches',       // 'batches' | 'queue' | 'segment' | 'videos' | 'insights'
   segmentId: null,
   filters: Object.assign({}, A.FILTER_DEFAULTS),
   lang: A.LANGS[0],
@@ -305,13 +308,29 @@ function syncControlsFromState() {
 function pushHash() {
   var extra = { lang: state.lang !== A.LANGS[0] ? state.lang : '' };
   if (state.route === 'insights' && state.head) extra.head = state.head;
-  var h = state.route === 'segment' && state.segmentId
-    ? A.buildHash('segment', state.segmentId, null, { lang: state.lang !== A.LANGS[0] ? state.lang : '' })
-    : state.route === 'insights'
-      ? A.buildHash('insights', null, null, extra.head ? { head: state.head } : null)
-      : A.buildHash('batches', null, state.filters, state.lang !== A.LANGS[0] ? { lang: state.lang } : null);
+  var h;
+  if (state.route === 'segment' && state.segmentId) {
+    h = A.buildHash('segment', state.segmentId, null, { lang: state.lang !== A.LANGS[0] ? state.lang : '' });
+  } else if (state.route === 'insights') {
+    h = A.buildHash('insights', null, null, extra.head ? { head: state.head } : null);
+  } else if (state.route === 'queue') {
+    h = A.buildHash('queue', null, null, state.queueReason ? { qr: state.queueReason } : null);
+  } else if (state.route === 'videos') {
+    var hx = {};
+    if (state.hubQ) hx.hq = state.hubQ;
+    if (state.hubSite) hx.hsite = state.hubSite;
+    if (state.hubVerdict) hx.hverdict = state.hubVerdict;
+    if (state.hubReason) hx.hreason = state.hubReason;
+    h = A.buildHash('videos', null, null, Object.keys(hx).length ? hx : null);
+  } else {
+    h = A.buildHash('batches', null, state.filters, state.lang !== A.LANGS[0] ? { lang: state.lang } : null);
+  }
   if (location.hash !== h) location.hash = h;
   else routeFromHash();
+}
+
+function hubKey() {
+  return [state.hubQ, state.hubSite, state.hubVerdict, state.hubReason].join('|');
 }
 
 function bindFilterbar() {
@@ -446,17 +465,20 @@ function funnelBar(c) {
   function pct(n) { return c.total ? (100 * n / c.total) : 0; }
   var bar = el(
     '<div class="funnel" role="img" aria-label="Funnel: ' + c.accept + ' accept, ' +
-      c.reject + ' reject, ' + c.review + ' review out of ' + c.total + ' segments">' +
+      c.reject + ' reject, ' + c.review + ' review, ' + c.other + ' other out of ' +
+      c.total + ' segments">' +
       '<p class="funnel-line">' +
         '<b>' + c.total + '</b> segments — ' +
         '<span class="verdict verdict-accept">' + c.accept + ' accept</span> · ' +
         '<span class="verdict verdict-reject">' + c.reject + ' reject</span> · ' +
         '<span class="verdict verdict-review">' + c.review + ' review</span>' +
+        (c.other ? ' · <span class="other-count">' + c.other + ' other</span>' : '') +
       '</p>' +
       '<div class="funnel-track">' +
         '<span class="funnel-seg is-accept" style="width:' + pct(c.accept).toFixed(1) + '%"></span>' +
         '<span class="funnel-seg is-reject" style="width:' + pct(c.reject).toFixed(1) + '%"></span>' +
         '<span class="funnel-seg is-review" style="width:' + pct(c.review).toFixed(1) + '%"></span>' +
+        (c.other ? '<span class="funnel-seg is-other" style="width:' + pct(c.other).toFixed(1) + '%"></span>' : '') +
       '</div>' +
     '</div>');
   return bar;
@@ -1089,11 +1111,9 @@ function renderInsights() {
     // JadalApi.isBound). Absent and explicit-null each get their own
     // caption so a missing bound never reads as a zero bound, and an
     // explicit null never reads as "not reported".
-    var eb = state.risk.error_bound;
-    if (!A.isBound(eb)) {
-      rOut.appendChild(el('<p class="state-note">' +
-        (eb === null ? 'not certified (no threshold meets the target)' : 'bound not reported') +
-        '</p>'));
+    var cap = A.boundCaption(state.risk.error_bound);
+    if (cap) {
+      rOut.appendChild(el('<p class="state-note">' + esc(cap) + '</p>'));
     }
     rOut.appendChild(riskLegend(state.risk));
   }
@@ -1141,18 +1161,14 @@ function riskStatsRow(d) {
     ctNote = (d.min_accepted !== undefined ? '≥ ' + d.min_accepted + ' accepted' : '');
   }
   var ebNote, ebValue;
-  if (d.error_bound === undefined) {
-    ebValue = '—';
-    ebNote = 'bound not reported by the API';
-  } else if (d.error_bound === null) {
-    ebValue = 'not certified';
-    ebNote = 'the API returned null — no threshold meets the target';
-  } else if (A.isBound(d.error_bound)) {
+  if (A.isBound(d.error_bound)) {
     ebValue = num(d.error_bound);
     ebNote = (d.delta !== undefined ? 'exact binomial, δ = ' + d.delta : 'exact binomial upper bound');
   } else {
-    ebValue = '—';
-    ebNote = 'unparseable bound value from the API';
+    // Same shared caption as under the chart, so the two can never
+    // disagree — including for unparseable non-null values.
+    ebValue = d.error_bound === null ? 'not certified' : '—';
+    ebNote = A.boundCaption(d.error_bound);
   }
   row.innerHTML =
     stat('error bound', ebValue, ebNote) +
@@ -1255,9 +1271,10 @@ function riskChart(d) {
       'operating θ=' + num(pick.threshold, 2));
   }
 
+  var noBound = A.boundCaption(d.error_bound);
   svg.setAttribute('aria-label', 'Risk/coverage curve with ' + pts.length + ' points. ' +
     (hasBound ? 'Error bound ' + num(d.error_bound) + '. '
-      : (d.error_bound === null ? 'Not certified (no threshold meets the target). ' : 'Bound not reported. ')) +
+      : (noBound.charAt(0).toUpperCase() + noBound.slice(1) + '. ')) +
     (hasTarget ? 'Target error ' + num(d.target_error) + '.' : ''));
   return svg;
 }
@@ -1299,11 +1316,13 @@ function renderQueue() {
   $('#queue-mock-pill').hidden = !MOCK;
 
   if (state.batchesError && !state.batches) {
+    $('#queue-meta').hidden = true;
     body.appendChild(errorState(String(state.batchesError.message || state.batchesError), 'queue'));
     body.setAttribute('aria-busy', 'false');
     return;
   }
   if (state.batches === null) {
+    $('#queue-meta').hidden = true;
     body.innerHTML = skeletonCards(2);
     return;
   }
@@ -1400,6 +1419,7 @@ function renderVideos() {
 
   var h = state.hub;
   if (!h || h.status === 'idle') {
+    $('#videos-meta').hidden = true;
     body.appendChild(el(
       '<div class="state" role="status">' +
         '<p class="state-title">Search the video hub</p>' +
@@ -1410,10 +1430,12 @@ function renderVideos() {
     return;
   }
   if (h.status === 'busy') {
+    $('#videos-meta').hidden = true;
     body.innerHTML = skeletonCards(2);
     return;
   }
   if (h.status === 'error') {
+    $('#videos-meta').hidden = true;
     var msg = String((h.error && h.error.message) || h.error || 'search failed');
     // The adapter formats transport failures as "GET <path> → <status>",
     // so a 404 from the hub search endpoint lands here without app.js
@@ -1502,6 +1524,7 @@ function renderVideos() {
 }
 
 async function loadHub() {
+  state.hubKeyFor = hubKey();
   state.hub = { status: 'busy', items: [], error: null };
   renderVideos();
   try {
@@ -1715,7 +1738,9 @@ function setRoute(name, id) {
     if (state.batches === null && !state.batchesError) {
       loadBatches(true).then(function () { if (state.route === 'videos') renderVideos(); });
     }
-    if (!state.hub || state.hub.status === 'idle') loadHub();
+    // Hash-driven (deep link, back button) searches refetch; in-view
+    // re-renders reuse the last result.
+    if (!state.hub || state.hub.status === 'idle' || state.hubKeyFor !== hubKey()) loadHub();
     else renderVideos();
   }
 }
@@ -1736,6 +1761,13 @@ function routeFromHash() {
   }
   syncControlsFromState();
   state.segmentId = parsed.route === 'segment' ? parsed.id : null;
+  // Queue + hub search state round-trips through the hash like everything
+  // else, so filtered queues and hub searches are deep-linkable.
+  state.queueReason = parsed.queueReason || '';
+  state.hubQ = (parsed.hub && parsed.hub.q) || '';
+  state.hubSite = (parsed.hub && parsed.hub.site) || '';
+  state.hubVerdict = (parsed.hub && parsed.hub.verdict) || '';
+  state.hubReason = (parsed.hub && parsed.hub.reason) || '';
   setRoute(parsed.route, state.segmentId);
 }
 
@@ -1802,6 +1834,7 @@ function bindStatic() {
 
   $('#q-reason').addEventListener('change', function () {
     state.queueReason = this.value;
+    pushHash();
     renderQueue();
   });
 
@@ -1811,6 +1844,7 @@ function bindStatic() {
     state.hubSite = $('#v-site').value;
     state.hubVerdict = $('#v-verdict').value;
     state.hubReason = $('#v-reason').value;
+    pushHash();
     loadHub();
   });
   $('#videos-reset').addEventListener('click', function () {

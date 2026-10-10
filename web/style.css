@@ -584,20 +584,6 @@ main { display: block; padding-bottom: var(--s7); }
   animation: pulse 1.4s ease-in-out infinite;
 }
 
-pre.pre {
-  margin: 0;
-  padding: var(--s4);
-  background: var(--surface-2);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-  overflow-x: auto;
-  font-size: 0.75rem;
-  line-height: 1.55;
-  max-height: 26rem;
-  color: var(--ink-2);
-  white-space: pre;
-}
-
 /* re-verify */
 .rv-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3); }
 
@@ -786,35 +772,14 @@ input[type="search"] { width: 100%; }
 .segdetails-caret { color: var(--ink-3); transition: transform 0.15s ease; }
 .segdetails[open] .segdetails-caret { transform: rotate(180deg); }
 
-/* step timeline: horizontal SOP steps, detected step marked */
-.tl-scroll { overflow-x: auto; padding-bottom: var(--s2); }
-.timeline {
-  list-style: none;
-  margin: 0 0 var(--s3);
-  padding: var(--s2) 0;
-  display: flex;
-  gap: 0;
-  min-width: min(34rem, 150vw);
-}
-.tl-step {
-  flex: 1 1 0;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  text-align: center;
-  padding: var(--s2) var(--s1);
-  border-top: 2px solid var(--rule-2);
-  position: relative;
-}
+/* step chips: the compact strip (ol.timeline.tl-compact) wraps, never scrolls */
 .tl-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   background: var(--surface);
   border: 2px solid var(--ink-3);
-  margin-top: -12px;
+  margin-top: 0;
 }
 .tl-dot.conf-high { border-color: var(--ink); background: var(--ink); }
 .tl-name {
@@ -831,13 +796,6 @@ input[type="search"] { width: 100%; }
   letter-spacing: 0.06em;
   color: var(--ink-2);
 }
-/* detected step carries the segment verdict tint (verdict badges may use
-   green/amber/red; the timeline dot itself stays neutral ink) */
-.tl-step.is-detected { border-top-color: var(--ink); background: var(--surface-2); border-radius: 0 0 var(--radius) var(--radius); }
-.tl-step.is-detected.verdict-accept { background: var(--accept-bg); border-top-color: var(--accept); }
-.tl-step.is-detected.verdict-review { background: var(--review-bg); border-top-color: var(--review); }
-.tl-step.is-detected.verdict-reject { background: var(--reject-bg); border-top-color: var(--reject); }
-
 /* collapsible receipt tree */
 .rtree { font-size: 0.8125rem; }
 .rt-node { border-left: 2px solid var(--rule); margin-left: 4px; padding-left: var(--s3); }
@@ -880,7 +838,6 @@ input[type="search"] { width: 100%; }
   .filterbar .field { flex: 1 1 45%; min-width: 0; }
   .filterbar .field-search { flex: 1 1 100%; }
   .sysdrawer-body { max-width: 100%; }
-  .timeline { min-width: 130vw; }
   .tab-hint { display: none; }
   .tab-name { font-size: 0.875rem; }
 }
@@ -918,7 +875,6 @@ input[type="search"] { width: 100%; }
   border-radius: 999px;
   background: var(--surface);
 }
-.tl-chip .tl-dot { margin-top: 0; }
 .tl-chip.is-detected { border-color: var(--ink-2); background: var(--surface-2); font-weight: 600; }
 .tl-chip.is-detected.verdict-accept { background: var(--accept-bg); border-color: var(--accept); }
 .tl-chip.is-detected.verdict-review { background: var(--review-bg); border-color: var(--review); }
@@ -961,6 +917,10 @@ input[type="search"] { width: 100%; }
 .funnel-seg.is-accept { background: var(--ink); }
 .funnel-seg.is-reject { background: var(--ink-2); }
 .funnel-seg.is-review { background: transparent; border-right: 1px dashed var(--ink-3); }
+.funnel-seg.is-other {
+  background: repeating-linear-gradient(45deg, var(--ink-3) 0 2px, transparent 2px 4px);
+}
+.other-count { font-size: 0.75rem; color: var(--ink-2); }
 
 /* QA queue rows */
 .q-prio {

@@ -70,9 +70,10 @@ Segment facts, Voice message, Hashes, Signals each collapsed in
   dropdowns, results grid with thumbnails (`client.hubThumbUrl`) and
   on-demand `<video src="…#t=start,end">` (`client.hubVideoUrl`). Mock
   mode projects batch fixtures into labelled placeholders (no footage
-  ships); live mode calls `GET /hub/search` through `client.hubSearch`
+  ships); live mode calls   `GET /hub/search` through `client.hubSearch`
   (`A.normHub`); a 404 renders `Video hub not available in this
-  deployment`. No hub URL literal appears in `app.js` (pinned by test).
+  deployment`. No hub *fetch* URL is built in `app.js` — only a mock-mode
+  display string naming the live path (pinned by test).
 - All field access stays in `web/api.js` (`isBound`, `funnelCounts`,
   `queueRows`, `queueReasons`, `normHub`, `hubSearch`, `hubThumbUrl`,
   `hubVideoUrl`, extended `parseHash` routes).
@@ -124,3 +125,48 @@ NOT DONE:
   real `/hub` (no such deployment here).
 - `tests/` suite (`unittest discover -s tests`) was not run: outside owned
   files and untouched by this diff.
+
+## Fix round 1 (review of PR #32, reviews/pr32-review.md)
+
+All findings were in owned files; none disputed. Fixed on `feat/dashboard3`
+(after `git merge origin/main`), no new branch/PR:
+
+- I-1 (hash state): queue reason and hub search now round-trip through the
+  URL hash. `parseHash` returns `queueReason` (`qr`) and `hub`
+  (`hq`/`hsite`/`hverdict`/`hreason`); `pushHash` rebuilds `#/queue` /
+  `#/videos` hashes; both handlers push before rendering; `setRoute`
+  refetches the hub only when the hash-driven key changes (deep links,
+  back button) via `hubKey()`/`hubKeyFor`. Header comment and the stale
+  `state.route` comment corrected. Node test `HASH-OK` pins the round trip.
+- M-1 (funnel `other`): `funnelBar` renders a hatched neutral `is-other`
+  segment plus an `other` count in the label/aria-label whenever
+  `c.other > 0`, so widths always sum to 100%.
+- M-2 (stale meta): `renderVideos` hides `#videos-meta` in idle/busy/error
+  branches; `renderQueue` hides `#queue-meta` while loading/on error.
+- M-3: report reworded to "no hub *fetch* URL is built in `app.js`".
+- M-4 (dead CSS): deleted `pre.pre`, `.tl-scroll`, the `.timeline` base
+  rule + its 390px override, and all `.tl-step*` rules; `.tl-dot` base
+  `margin-top` corrected to 0 (dots now live only in chips). New test
+  `test_no_legacy_layout_traps_in_css` bans `tl-scroll`/`tl-step`/`pre.pre`,
+  `*vw` min-widths and `overflow-x:auto`.
+- M-5 (caption drift): new shared `A.boundCaption(v)` in `api.js` (null
+  when a number draws the line); stats row, under-chart caption and chart
+  aria-label all route through it. Node test `CAPTION-OK` pins the mapping.
+
+REAL command outputs (fix round 1):
+
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s web -t web
+Ran 28 tests in 1.532s
+OK
+$ node --check web/api.js && node --check web/app.js
+node --check: api.js + app.js OK
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 553 tests in 101.792s
+OK (skipped=8)
+```
+
+Screenshots were not re-taken this round: pixels are unchanged for contract
+data (funnel `other` is zero-width, CSS deletions only remove unused rules)
+and the fixed behaviors (hash restore, meta clearing) need
+interaction/reload, not pixels.
