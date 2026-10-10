@@ -2,41 +2,57 @@
  "experiment": "E1.cost",
  "n_rows": 16,
  "device": "A40 (pod host); decode=CPU cv2 160x90 (cv2 threads=1), features=CPU float64 reference, OMP_NUM_THREADS=1",
- "cost_note": "clean_ms = min over 3 reps x 3 bench runs of one representative window (OMP_NUM_THREADS=1, cv2 threads=1); the shard-run means in E1.01/E1.03/E1.04.json are 2-4x slower because the pod is shared. Host load average at bench: 17.1",
+ "cost_note": "clean_ms = min over 3 reps x 3 bench runs of one representative window (OMP_NUM_THREADS=1, cv2 threads=1); the shard-run means in E1.01/E1.03/E1.04.json were measured while the pod was shared, so they are slower than these clean minima by a regime/stage-dependent factor: see clean_vs_shard_ratio. Host load average at bench: 17.6",
  "bench_spread": {
   "n_bench_runs": 3,
   "n_reps_each": 3,
   "indego_decode_ms_per_frame": [
-   1.3082,
-   2.1731
+   1.1198,
+   1.8382
   ],
   "ood_decode_ms_per_frame": [
-   12.3714,
-   13.9581
+   9.6679,
+   11.5402
   ],
   "indego_feat_ms_per_frame": [
-   2.5533,
-   3.8295
+   2.6836,
+   4.3087
   ],
   "ood_feat_ms_per_frame": [
-   2.4733,
-   8.4801
+   2.465,
+   3.3218
   ]
+ },
+ "clean_vs_shard_ratio": {
+  "indego_decode": 8.01,
+  "indego_feat_10fps": 4.92,
+  "indego_feat_1fps": 5.75,
+  "ood_decode": 2.24,
+  "ood_feat_30fps": 3.93,
+  "ood_feat_1fps": 5.21,
+  "e104_decode": 5.08,
+  "e104_feat_uniform20": 4.09,
+  "e104_feat_keyframe": 3.11,
+  "range": [
+   2.24,
+   8.01
+  ],
+  "note": "shard-run mean / clean min, per regime and stage (decode or feature); the shard runs shared the pod"
  },
  "feat_fit": {
   "indego": {
-   "slope_ms_per_frame": 2.4507,
-   "intercept_ms": 11.35,
-   "r2": 0.99
+   "slope_ms_per_frame": 2.9096,
+   "intercept_ms": 4.25,
+   "r2": 0.9905
   },
   "ood": {
-   "slope_ms_per_frame": 3.1655,
-   "intercept_ms": -18.76,
-   "r2": 0.9927
+   "slope_ms_per_frame": 2.7939,
+   "intercept_ms": -10.16,
+   "r2": 0.9973
   }
  },
- "git_sha": "021ae8d",
- "command": "python3 eval/exp_fps/pareto.py --reps 3",
+ "git_sha": "7d7861d",
+ "command": "python3 eval/exp_fps/pareto.py --reps 3 --benches 3",
  "regimes": {
   "indego_480p_10fps_in_domain": {
    "n": 150,
@@ -54,89 +70,89 @@
  "clean_bench_indego": {
   "10": {
    "n_frames": 100,
-   "decode_ms": 130.8,
-   "decode_ms_per_frame": 1.3082,
-   "feat_ms": 255.3,
-   "feat_ms_per_frame": 2.5533
+   "decode_ms": 112.0,
+   "decode_ms_per_frame": 1.1198,
+   "feat_ms": 288.9,
+   "feat_ms_per_frame": 2.8887
   },
   "5": {
    "n_frames": 50,
-   "decode_ms": 130.8,
-   "decode_ms_per_frame": 1.3082,
-   "feat_ms": 128.4,
-   "feat_ms_per_frame": 2.5674
+   "decode_ms": 112.0,
+   "decode_ms_per_frame": 1.1198,
+   "feat_ms": 166.7,
+   "feat_ms_per_frame": 3.3337
   },
   "3.33": {
    "n_frames": 34,
-   "decode_ms": 130.8,
-   "decode_ms_per_frame": 1.3082,
-   "feat_ms": 110.0,
-   "feat_ms_per_frame": 3.2345
+   "decode_ms": 112.0,
+   "decode_ms_per_frame": 1.1198,
+   "feat_ms": 102.2,
+   "feat_ms_per_frame": 3.0055
   },
   "2": {
    "n_frames": 20,
-   "decode_ms": 130.8,
-   "decode_ms_per_frame": 1.3082,
-   "feat_ms": 55.6,
-   "feat_ms_per_frame": 2.7816
+   "decode_ms": 112.0,
+   "decode_ms_per_frame": 1.1198,
+   "feat_ms": 53.7,
+   "feat_ms_per_frame": 2.6836
   },
   "1": {
    "n_frames": 10,
-   "decode_ms": 130.8,
-   "decode_ms_per_frame": 1.3082,
-   "feat_ms": 31.9,
-   "feat_ms_per_frame": 3.1889
+   "decode_ms": 112.0,
+   "decode_ms_per_frame": 1.1198,
+   "feat_ms": 32.4,
+   "feat_ms_per_frame": 3.2376
   }
  },
  "clean_bench_ood": {
   "30": {
    "n_frames": 300,
-   "decode_ms": 3711.4,
-   "decode_ms_per_frame": 12.3714,
-   "feat_ms": 956.3,
-   "feat_ms_per_frame": 3.1875
+   "decode_ms": 2900.4,
+   "decode_ms_per_frame": 9.6679,
+   "feat_ms": 843.0,
+   "feat_ms_per_frame": 2.81
   },
   "15": {
    "n_frames": 150,
-   "decode_ms": 3711.4,
-   "decode_ms_per_frame": 12.3714,
-   "feat_ms": 434.6,
-   "feat_ms_per_frame": 2.8977
+   "decode_ms": 2900.4,
+   "decode_ms_per_frame": 9.6679,
+   "feat_ms": 391.8,
+   "feat_ms_per_frame": 2.6121
   },
   "10": {
    "n_frames": 100,
-   "decode_ms": 3711.4,
-   "decode_ms_per_frame": 12.3714,
-   "feat_ms": 247.3,
-   "feat_ms_per_frame": 2.4733
+   "decode_ms": 2900.4,
+   "decode_ms_per_frame": 9.6679,
+   "feat_ms": 246.5,
+   "feat_ms_per_frame": 2.465
   },
   "5": {
    "n_frames": 50,
-   "decode_ms": 3711.4,
-   "decode_ms_per_frame": 12.3714,
-   "feat_ms": 131.1,
-   "feat_ms_per_frame": 2.6223
+   "decode_ms": 2900.4,
+   "decode_ms_per_frame": 9.6679,
+   "feat_ms": 128.7,
+   "feat_ms_per_frame": 2.5749
   },
   "3": {
    "n_frames": 30,
-   "decode_ms": 3711.4,
-   "decode_ms_per_frame": 12.3714,
-   "feat_ms": 91.4,
-   "feat_ms_per_frame": 3.048
+   "decode_ms": 2900.4,
+   "decode_ms_per_frame": 9.6679,
+   "feat_ms": 74.9,
+   "feat_ms_per_frame": 2.4981
   },
   "2": {
    "n_frames": 20,
-   "decode_ms": 3711.4,
-   "decode_ms_per_frame": 12.3714,
-   "feat_ms": 65.7,
-   "feat_ms_per_frame": 3.2848
+   "decode_ms": 2900.4,
+   "decode_ms_per_frame": 9.6679,
+   "feat_ms": 55.5,
+   "feat_ms_per_frame": 2.7734
   },
   "1": {
    "n_frames": 10,
-   "decode_ms": 3711.4,
-   "decode_ms_per_frame": 12.3714,
-   "feat_ms": 31.5,
-   "feat_ms_per_frame": 3.1533
+   "decode_ms": 2900.4,
+   "decode_ms_per_frame": 9.6679,
+   "feat_ms": 32.4,
+   "feat_ms_per_frame": 3.2387
   }
  },
  "pareto_fronts": {
@@ -162,9 +178,9 @@
     0.6933,
     0.8895
    ],
-   "decode_ms_per_window": 130.8,
-   "feat_ms_per_window": 255.3,
-   "total_ms_per_window": 386.1,
+   "decode_ms_per_window": 112.0,
+   "feat_ms_per_window": 288.9,
+   "total_ms_per_window": 400.9,
    "accuracy_meaningful": true,
    "source": "E1.01",
    "pareto_front": true
@@ -178,9 +194,9 @@
     0.665,
     0.8782
    ],
-   "decode_ms_per_window": 130.8,
-   "feat_ms_per_window": 128.4,
-   "total_ms_per_window": 259.2,
+   "decode_ms_per_window": 112.0,
+   "feat_ms_per_window": 166.7,
+   "total_ms_per_window": 278.7,
    "accuracy_meaningful": true,
    "source": "E1.01",
    "pareto_front": false
@@ -194,9 +210,9 @@
     0.6967,
     0.8726
    ],
-   "decode_ms_per_window": 130.8,
-   "feat_ms_per_window": 110.0,
-   "total_ms_per_window": 240.8,
+   "decode_ms_per_window": 112.0,
+   "feat_ms_per_window": 102.2,
+   "total_ms_per_window": 214.2,
    "accuracy_meaningful": true,
    "source": "E1.01",
    "pareto_front": true
@@ -210,9 +226,9 @@
     0.6504,
     0.8657
    ],
-   "decode_ms_per_window": 130.8,
-   "feat_ms_per_window": 55.6,
-   "total_ms_per_window": 186.4,
+   "decode_ms_per_window": 112.0,
+   "feat_ms_per_window": 53.7,
+   "total_ms_per_window": 165.7,
    "accuracy_meaningful": true,
    "source": "E1.01",
    "pareto_front": true
@@ -226,9 +242,9 @@
     0.6306,
     0.8494
    ],
-   "decode_ms_per_window": 130.8,
-   "feat_ms_per_window": 31.9,
-   "total_ms_per_window": 162.7,
+   "decode_ms_per_window": 112.0,
+   "feat_ms_per_window": 32.4,
+   "total_ms_per_window": 144.4,
    "accuracy_meaningful": true,
    "source": "E1.01",
    "pareto_front": true
@@ -242,9 +258,9 @@
     0.6504,
     0.8657
    ],
-   "decode_ms_per_window": 130.8,
-   "feat_ms_per_window": 55.6,
-   "total_ms_per_window": 186.4,
+   "decode_ms_per_window": 112.0,
+   "feat_ms_per_window": 53.7,
+   "total_ms_per_window": 165.7,
    "accuracy_meaningful": true,
    "source": "E1.04",
    "pareto_front": true
@@ -258,9 +274,9 @@
     0.6752,
     0.8017
    ],
-   "decode_ms_per_window": 130.8,
-   "feat_ms_per_window": 55.6,
-   "total_ms_per_window": 186.4,
+   "decode_ms_per_window": 112.0,
+   "feat_ms_per_window": 53.7,
+   "total_ms_per_window": 165.7,
    "accuracy_meaningful": true,
    "source": "E1.04",
    "pareto_front": false
@@ -274,9 +290,9 @@
     0.586,
     0.8055
    ],
-   "decode_ms_per_window": 130.8,
-   "feat_ms_per_window": 55.6,
-   "total_ms_per_window": 186.4,
+   "decode_ms_per_window": 112.0,
+   "feat_ms_per_window": 53.7,
+   "total_ms_per_window": 165.7,
    "accuracy_meaningful": true,
    "source": "E1.04",
    "pareto_front": false
@@ -290,9 +306,9 @@
     0.6622,
     0.8352
    ],
-   "decode_ms_per_window": 130.8,
-   "feat_ms_per_window": 55.6,
-   "total_ms_per_window": 186.4,
+   "decode_ms_per_window": 112.0,
+   "feat_ms_per_window": 53.7,
+   "total_ms_per_window": 165.7,
    "accuracy_meaningful": true,
    "source": "E1.04",
    "pareto_front": false
@@ -306,9 +322,9 @@
     0.1799,
     0.554
    ],
-   "decode_ms_per_window": 3711.4,
-   "feat_ms_per_window": 956.3,
-   "total_ms_per_window": 4667.7,
+   "decode_ms_per_window": 2900.4,
+   "feat_ms_per_window": 843.0,
+   "total_ms_per_window": 3743.4,
    "accuracy_meaningful": false,
    "source": "E1.03",
    "pareto_front": false
@@ -322,9 +338,9 @@
     0.2222,
     0.6057
    ],
-   "decode_ms_per_window": 3711.4,
-   "feat_ms_per_window": 434.6,
-   "total_ms_per_window": 4146.0,
+   "decode_ms_per_window": 2900.4,
+   "feat_ms_per_window": 391.8,
+   "total_ms_per_window": 3292.2,
    "accuracy_meaningful": false,
    "source": "E1.03",
    "pareto_front": false
@@ -338,9 +354,9 @@
     0.2373,
     0.6271
    ],
-   "decode_ms_per_window": 3711.4,
-   "feat_ms_per_window": 247.3,
-   "total_ms_per_window": 3958.7,
+   "decode_ms_per_window": 2900.4,
+   "feat_ms_per_window": 246.5,
+   "total_ms_per_window": 3146.9,
    "accuracy_meaningful": false,
    "source": "E1.03",
    "pareto_front": false
@@ -354,9 +370,9 @@
     0.32,
     0.6776
    ],
-   "decode_ms_per_window": 3711.4,
-   "feat_ms_per_window": 131.1,
-   "total_ms_per_window": 3842.5,
+   "decode_ms_per_window": 2900.4,
+   "feat_ms_per_window": 128.7,
+   "total_ms_per_window": 3029.1,
    "accuracy_meaningful": false,
    "source": "E1.03",
    "pareto_front": false
@@ -370,9 +386,9 @@
     0.3731,
     0.7146
    ],
-   "decode_ms_per_window": 3711.4,
-   "feat_ms_per_window": 91.4,
-   "total_ms_per_window": 3802.8,
+   "decode_ms_per_window": 2900.4,
+   "feat_ms_per_window": 74.9,
+   "total_ms_per_window": 2975.3,
    "accuracy_meaningful": false,
    "source": "E1.03",
    "pareto_front": false
@@ -386,9 +402,9 @@
     0.375,
     0.7168
    ],
-   "decode_ms_per_window": 3711.4,
-   "feat_ms_per_window": 65.7,
-   "total_ms_per_window": 3777.1,
+   "decode_ms_per_window": 2900.4,
+   "feat_ms_per_window": 55.5,
+   "total_ms_per_window": 2955.9,
    "accuracy_meaningful": false,
    "source": "E1.03",
    "pareto_front": true
@@ -402,9 +418,9 @@
     0.3791,
     0.7081
    ],
-   "decode_ms_per_window": 3711.4,
-   "feat_ms_per_window": 31.5,
-   "total_ms_per_window": 3742.9,
+   "decode_ms_per_window": 2900.4,
+   "feat_ms_per_window": 32.4,
+   "total_ms_per_window": 2932.8,
    "accuracy_meaningful": false,
    "source": "E1.03",
    "pareto_front": true

@@ -8,7 +8,7 @@
  "subsample_rule": "cached 0.5s-spacing rows; 2fps=all rows counts-aware, 1fps=rows ::2, 0.5fps=rows ::4; NO re-embed",
  "command": "python3 eval/exp_fps/run_eg2.py",
  "device": "A40 (pod host); CPU eval on cached embeddings",
- "git_sha": "3c6d713",
+ "git_sha": "7d7861d",
  "eg2_rows": [
   {
    "fps": "2fps",

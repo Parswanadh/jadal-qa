@@ -81,7 +81,7 @@
  "decode_ms_per_frame": 21.652,
  "device": "A40 (pod host); decode=CPU cv2 160x90, features=CPU float64",
  "command": "OMP_NUM_THREADS=1 eval/exp_fps/run_ood.py --queue 1 --shard {0,1}/2 && OMP_NUM_THREADS=1 eval/exp_fps/run_fps.py --mode sweep --shard {0,1}/2 && python3 eval/exp_fps/merge_ood.py",
- "git_sha": "021ae8d",
+ "git_sha": "7d7861d",
  "warning": "n_bad=9 -> exploratory only; CI by window is optimistic",
  "frozen_rows": [
   {
