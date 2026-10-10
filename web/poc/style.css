@@ -68,7 +68,9 @@ code, .mono, pre { font-family: var(--mono); font-size: 0.8125rem; }
 .tab-name { font-family: var(--serif); font-weight: 600; }
 .tab-hint { font-size: 0.75rem; color: var(--ink-3); }
 
-/* honesty banner */
+/* honesty banner (finding, always visible) */
+.honesty p { margin: 0 0 var(--s2); }
+.honesty p:last-child { margin-bottom: 0; }
 .honesty { background: var(--surface); border: 1px solid var(--rule-2);
   border-left: 4px solid var(--review); border-radius: var(--radius);
   padding: var(--s3) var(--s4); margin: var(--s4) 0; font-size: 0.875rem; }
@@ -83,6 +85,7 @@ code, .mono, pre { font-family: var(--mono); font-size: 0.8125rem; }
 .chip-accept { background: var(--accept-bg); color: var(--accept); }
 .chip-review { background: var(--review-bg); color: var(--review); }
 .chip-reject { background: var(--reject-bg); color: var(--reject); }
+.chip-ood { background: transparent; color: var(--ink-2); border: 1px dashed var(--rule-2); font-weight: 500; }
 .chip-reason { background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--rule); cursor: help; }
 
 /* views */

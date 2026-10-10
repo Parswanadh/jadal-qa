@@ -1,10 +1,12 @@
 # PoC status — Egocentric-10K factory video through the per-pixel QA funnel
 
-> **Honesty banner (also shown on every dashboard screen):** descriptive rates
-> on **unlabelled** video — **not accuracy**. Accuracy comes only from the 150
-> human-labelled IndEgo windows (leave-one-clip-out AUROC ~0.7–0.8, not yet
-> high). Thresholds are not certified. Not measured on a Raspberry Pi.
-> Receipts are content-hashed, not signed.
+> **Finding (also shown on every dashboard screen):** on 60 human-labelled
+> Egocentric-10K windows the shipped cascade is **at chance** (score AUROC 0.529;
+> 21 of 51 good windows falsely rejected). The ~40% reject share on this footage
+> is mostly false rejects from domain shift. Verdict rates here are descriptive,
+> not quality. Accuracy on the 150 IndEgo windows (leave-one-clip-out AUROC
+> ~0.7–0.8, not yet high) is a different data set. Thresholds are not certified.
+> Not measured on a Raspberry Pi. Receipts are content-hashed, not signed.
 
 ## What runs (integration/poc, all merged)
 
@@ -54,11 +56,31 @@ Accuracy (only labelled data, `eval/results/perpixel/compare.json`):
 nested leave-one-clip-out on 7 IndEgo clips / 150 windows — conv1d AUROC
 **0.782** (95% CI 0.63–0.86), quality-stage sens 0.714 / bal_acc 0.792.
 
+## Human-labelled out-of-domain check
+
+60 random real Egocentric-10K windows, labelled by a human: 51 good, 9 bad
+(8 no active work, 1 shaky). Exploratory: n_bad = 9.
+
+- PoC cascade as shipped (IndEgo-calibrated): score AUROC **0.529**
+  (0.32–0.74 by window, optimistic); balanced accuracy 0.51.
+- Rejected **21 of 51 good windows (41%)** and 5 of 9 bad ones.
+- Frozen two-view ensemble on the same windows: AUROC 0.415.
+- Frozen per-pixel scorer on the same windows: AUROC 0.515.
+- The ~40% reject share shown on Egocentric-10K is therefore mostly false
+  rejects, caused by the 480p/10 fps (IndEgo) → 1080p/30 fps HEVC (Egocentric-10K)
+  domain shift.
+
+Verdict rates on this footage are descriptive, not quality.
+
+Source: `jadal-ops/explainer/FACTS.md`, section "UPDATE 2026-10-10 18:40".
+
 ## Not claimed
 
-- **No Egocentric-10K accuracy**: the video is unlabelled; 44.2% reject is a
-  descriptive share, probably inflated by the 480p/10fps → 1080p/30fps domain
-  shift (thresholds were set on IndEgo working resolution).
+- **No Egocentric-10K quality claim**: the video is unlabelled in the batch run.
+  The 44.2% reject share is descriptive. The 60-window human-labelled check
+  measured AUROC 0.529 (chance), 21 of 51 good windows falsely rejected (41%),
+  balanced accuracy 0.51, and frozen two-view 0.415 / per-pixel 0.515 on the
+  same windows (see "Human-labelled out-of-domain check").
 - Not measured on a Pi (RTX 4070 Laptop, not datacenter, not a Pi).
 - Receipts content-hashed (sha256), not signed; no certificate chain.
 - RGB only — no hyperspectral. Certified bounds not achievable at n=150.

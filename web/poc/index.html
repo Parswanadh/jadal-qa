@@ -50,12 +50,16 @@
 
 <main id="main" class="wrap">
 
-  <p class="honesty" role="note">
-    <strong>How to read this page.</strong> Descriptive rates on <strong>unlabelled</strong> video —
-    not accuracy. Accuracy comes only from the 150 human-labelled IndEgo windows
-    (leave-one-clip-out AUROC ~0.7–0.8, not yet high). Thresholds are not certified.
-    Not measured on a Raspberry Pi. Receipts are content-hashed, not signed.
-  </p>
+  <div class="honesty" role="note">
+    <p><strong>Finding (human-labelled check, 2026-10-10):</strong> on 60 random real Egocentric-10K windows
+    labelled by a human (51 good, 9 bad; exploratory, only 9 bad), the PoC cascade as shipped is
+    <strong>at chance</strong>: score AUROC <strong>0.529</strong> (0.32–0.74 by window, optimistic), balanced accuracy 0.51.
+    It rejected <strong>21 of 51 good windows (41%)</strong>, so the ~40% reject share on this footage is mostly
+    <strong>false reject</strong>s from the 480p/10 fps → 1080p/30 fps domain shift.</p>
+    <p>Verdict rates on Egocentric-10K are descriptive, not quality. Accuracy on IndEgo (150 windows, AUROC ~0.7–0.8,
+    not yet high) is a different data set. Thresholds are not certified; not measured on a Raspberry Pi; receipts are
+    content-hashed, not signed. Full numbers: <a href="#/about" data-goto="claims">claims table</a>.</p>
+  </div>
 
   <!-- ── Screen 1: overview ─────────────────────────────────────────── -->
   <section class="view" id="view-overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0">
@@ -162,12 +166,13 @@
         </svg>
         <p class="micro">S0 exact rules reject fast; S1 scores the whole window; S2 (uncertain) is handed on, not run in the PoC. Every verdict carries evidence (value, op, threshold) and a content-hashed receipt.</p>
       </div>
-      <div class="card">
+      <div class="card" id="claims">
         <h2>Claims table</h2>
         <table class="claims">
           <thead><tr><th scope="col">Claim</th><th scope="col">Status</th></tr></thead>
           <tbody>
-            <tr><td>Verdict rates on Egocentric-10K factory video</td><td><span class="chip chip-accept">measured (descriptive)</span></td></tr>
+            <tr><td>Verdict rates on Egocentric-10K factory video</td><td><span class="chip chip-review">descriptive only, not quality</span></td></tr>
+            <tr><td>Quality on Egocentric-10K (60 human-labelled windows, 51 good / 9 bad)</td><td><span class="chip chip-reject">not supported: AUROC 0.529 (chance); 21/51 good windows falsely rejected</span></td></tr>
             <tr><td>Evidence + content-hashed receipt per window</td><td><span class="chip chip-accept">measured</span></td></tr>
             <tr><td>Throughput (hours of video per wall-hour)</td><td><span class="chip chip-accept">measured</span></td></tr>
             <tr><td>Accuracy of thresholds</td><td><span class="chip chip-review">AUROC ~0.7–0.8 on 150 human windows — not yet high</span></td></tr>

@@ -168,6 +168,16 @@ class PocServerTest(unittest.TestCase):
         self.assertNotIn("href=\"http", html)
         self.assertNotIn("srcset=", html)
 
+    def test_banner_states_out_of_domain_finding(self):
+        _, _, blob = get("/")
+        html = blob.decode()
+        start = html.index('class="honesty"')
+        banner = html[start:html.index("</div>", start)]
+        self.assertIn("0.529", banner)
+        self.assertIn("false reject", banner)
+        self.assertIn('href="#/about"', banner)
+        self.assertIn('id="claims"', html)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

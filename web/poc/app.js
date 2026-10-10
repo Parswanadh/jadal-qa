@@ -173,6 +173,15 @@ function galleryQuery(extra) {
   return p.toString();
 }
 
+/* Every window on this dashboard is Egocentric-10K, where the cascade is not
+   validated (human-labelled check, 60 windows). Verdict chips carry this tag. */
+const OOD_TITLE = "Human-labelled check on 60 Egocentric-10K windows (51 good, 9 bad): " +
+  "score AUROC 0.529 (chance), 21 of 51 good windows falsely rejected (41%), " +
+  "5 of 9 bad rejected, balanced accuracy 0.51. Verdict rates here are descriptive, not quality.";
+function oodTag() {
+  return `<span class="chip chip-ood" title="${esc(OOD_TITLE)}">unvalidated on this data type</span>`;
+}
+
 function evidenceTitle(reasons) {
   return reasons.map((r) => {
     const e = r.evidence || {};
@@ -183,7 +192,7 @@ function evidenceTitle(reasons) {
 function cardHTML(w) {
   const thumbs = (w.thumbs || []).slice(0, 3).map((t) =>
     `<img src="/${esc(t)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`).join("");
-  const vchip = `<span class="chip chip-${w.verdict === "review" ? "review" : w.verdict}">${esc(w.verdict)} · ${esc(w.stage || "")}</span>`;
+  const vchip = `<span class="chip chip-${w.verdict === "review" ? "review" : w.verdict}">${esc(w.verdict)} · ${esc(w.stage || "")}</span> ${oodTag()}`;
   const rchips = (w.reasons || []).map((r) =>
     `<span class="chip chip-reason" title="${esc(evidenceTitle([r]))}">${esc(r.code)}</span>`).join("");
   const score = w.score == null ? "score —" : `score ${Number(w.score).toFixed(2)}`;
@@ -293,7 +302,7 @@ async function openDrawer(wid) {
   const lat = w.latency_ms ? Object.entries(w.latency_ms).map(([k, v]) => `${k} ${v} ms`).join(" · ") : "—";
   $("drawer-body").innerHTML =
     big +
-    `<p><span class="chip chip-${w.verdict === "review" ? "review" : w.verdict}">${esc(w.verdict)}</span>` +
+    `<p><span class="chip chip-${w.verdict === "review" ? "review" : w.verdict}">${esc(w.verdict)}</span> ${oodTag()}` +
     `<span class="micro">score ${w.score == null ? "—" : esc(w.score)} · latency ${esc(lat)}</span></p>` +
     `<h3>Evidence</h3><table class="ev"><thead><tr><th>Reason</th><th>Feature</th><th>Value</th><th>Op threshold</th></tr></thead><tbody>${evRows}</tbody></table>` +
     `<h3>Features</h3><dl class="kv">${feats}</dl>` +
@@ -384,6 +393,10 @@ async function loadLive() {
 }
 
 /* ── wiring ──────────────────────────────────────────────────────────── */
+document.querySelector('.honesty a[data-goto="claims"]').addEventListener("click", () => {
+  // hash change renders the About view; scroll to the claims table once shown
+  setTimeout(() => $("claims").scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+});
 $("overview-refresh").addEventListener("click", loadSummary);
 $("gallery-refresh").addEventListener("click", loadGallery);
 $("live-refresh").addEventListener("click", loadLive);
