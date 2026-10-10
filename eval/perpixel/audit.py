@@ -5,7 +5,7 @@
 (ii) 150 human labels: OOF from m2.json (activity p_lr, quality scores);
      flag strong disagreements. NEVER edits labels: writes a review queue
      in funnel/eval/gold/segments.json schema under eval/results/perpixel/.
-Retrain activity-LR with/without flagged (drop, soft) — always evaluated on
+Retrain activity-LR with/without flagged (drop, downweight x0.25) — always evaluated on
 HUMAN windows only (never on cleaned AI labels).
 
 Output: eval/results/perpixel/audit.json + review_queue.json
@@ -167,23 +167,22 @@ def retrain_variants(flagged_ids):
     m2 = json.load(open(os.path.join(RES, "m2.json")))
     pact = dict(zip(m2["activity"]["ids"], m2["activity"]["p_lr"]))
 
-    def run(mask, soft=False):
+    def run(mask, weight_flagged=1.0):
         Xm = Xa[mask]
         ytrue = ya[mask]
-        ym = ytrue.astype(float).copy()
+        ym = ytrue.copy()
         cm = [c for c, m in zip(cla, mask) if m]
         im = [i for i, m in zip(ida, mask) if m]
-        if soft:
-            for j, i in enumerate(im):
-                if i in flagged_ids and i in pact:
-                    ym[j] = float(np.clip(pact[i], 0.05, 0.95))
+        w = np.array([weight_flagged if i in flagged_ids else 1.0
+                      for i in im])
         ucl = sorted(set(cm))
         p = np.zeros(len(ym))
         for tc in ucl:
             tr = np.array([c != tc for c in cm])
             sc = StandardScaler().fit(Xm[tr])
             mm = LogisticRegression(C=1.0, max_iter=5000, random_state=SEED)
-            mm.fit(sc.transform(Xm[tr]), ym[tr])
+            mm.fit(sc.transform(Xm[tr]), ym[tr],
+                   sample_weight=w[tr])
             p[~tr] = mm.predict_proba(sc.transform(Xm[~tr]))[:, 1]
         return auroc(ytrue, p)
 
@@ -191,7 +190,8 @@ def retrain_variants(flagged_ids):
     # number restricted to the same eval for comparability.
     out = {"n_all": int(keep.sum()), "n_dropped": int((~drop).sum())}
     out["auroc_drop"] = run(drop)
-    out["auroc_soft"] = run(np.ones(len(ida), bool), soft=True)
+    out["auroc_downweight025"] = run(np.ones(len(ida), bool),
+                                     weight_flagged=0.25)
     out["auroc_all_sameproto"] = run(np.ones(len(ida), bool), soft=False)
     out["auroc_all_m2_LR"] = float(m2["activity"]["auroc_lr"])
     return out

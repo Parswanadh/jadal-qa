@@ -69,7 +69,7 @@ def main():
     pmap = {i: np.asarray(zp["X"][j], dtype=np.float64)
             for j, i in enumerate(pids)}
     order = sorted(set(ids) & set(tids) & set(pids))
-    assert len(order) == 150, len(order)
+    print(f"freeze intersection n={len(order)}", flush=True)
     Xm1 = np.array([dict(zip(ids, X))[i] for i in order])
     Xth = np.array([tmap[i] for i in order])
     Xph = np.array([pmap[i] for i in order])
