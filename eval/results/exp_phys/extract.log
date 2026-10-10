@@ -1,0 +1,6 @@
+/workspace/wt/m-phys-ood/jadal/perpixel/physics.py:89: RuntimeWarning: invalid value encountered in sqrt
+  snr = float(np.median([m / np.sqrt(a * m + b) for m in m2]))
+/workspace/wt/m-phys-ood/jadal/perpixel/physics.py:89: RuntimeWarning: invalid value encountered in sqrt
+  snr = float(np.median([m / np.sqrt(a * m + b) for m in m2]))
+n=160 errors=0 in 170.3s -> /workspace/wt/m-phys-ood/eval/results/exp_phys/inputs/ood_phys.npz
+indego n= 150
