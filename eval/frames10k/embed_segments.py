@@ -22,9 +22,16 @@ STEP_S = 0.5
 OUT = Path(__file__).resolve().parents[2] / "eval" / "results" / "frames10k" / "human_segments"
 
 
-def sample_segment(path: str, start: float, end: float, step: float = STEP_S):
+def sample_segment(path: str, start: float, end: float, step: float = STEP_S,
+                   gpu: bool = False):
     import cv2
     from PIL import Image
+
+    if gpu:
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from gpu_pre import gpu_thumb_bgr
 
     cap = cv2.VideoCapture(path)
     try:
@@ -40,6 +47,9 @@ def sample_segment(path: str, start: float, end: float, step: float = STEP_S):
             ok, frame = cap.read()
             if not ok or frame is None:
                 continue
+            if gpu:
+                pils.append(gpu_thumb_bgr(frame))
+                continue
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             img = Image.fromarray(rgb).convert("RGB")
             img.thumbnail((PREPROCESS_MAX_SIDE, PREPROCESS_MAX_SIDE), Image.BILINEAR)
@@ -53,6 +63,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest", default="/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json")
     ap.add_argument("--batch-size", type=int, default=32)
+    ap.add_argument("--gpu-decode", action="store_true",
+                    help="upload BGR frames to GPU for RGB/resize (else CPU cv2+PIL)")
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
 
@@ -78,7 +90,7 @@ def main() -> None:
     all_pils, counts, ids, clips, labels, reasons = [], [], [], [], [], []
     t_dec0 = time.time()
     for it in items:
-        pils = sample_segment(it["path"], it["start_s"], it["end_s"])
+        pils = sample_segment(it["path"], it["start_s"], it["end_s"], gpu=args.gpu_decode)
         all_pils.extend(pils)
         counts.append(len(pils))
         ids.append(it["id"])
@@ -115,6 +127,7 @@ def main() -> None:
             "frames_per_s_encode": float(n / t_enc),
             "frames_per_s_wall": float(n / (t_dec + t_enc)),
             "vram_peak_gb": vram_peak, "batch_size": args.batch_size,
+            "gpu_decode": bool(args.gpu_decode),
             "snapshot_utc": man["snapshot_utc"], "labels_sha256": man["labels_sha256"],
             "n_good": man["n_good"], "n_bad": man["n_bad"],
             "label_source": "human (single labeller; read-only snapshot)"}

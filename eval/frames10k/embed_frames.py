@@ -17,6 +17,7 @@ import argparse
 import hashlib
 import io
 import json
+import sys
 import time
 from pathlib import Path
 
@@ -27,7 +28,11 @@ PREPROCESS_MAX_SIDE = 512
 EMBED_DIM = 768
 
 
-def preprocess_bytes(raw: bytes):
+def preprocess_bytes(raw: bytes, gpu: bool = False):
+    if gpu:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from gpu_pre import gpu_thumb_jpeg
+        return gpu_thumb_jpeg(raw)
     from PIL import Image
 
     img = Image.open(io.BytesIO(raw)).convert("RGB")
@@ -44,6 +49,8 @@ def main() -> None:
     ap.add_argument("--shard-rows", type=int, default=1000)
     ap.add_argument("--max-new-shards", type=int, default=0,
                     help="0 = all todo shards; else encode at most this many new shards per invocation (keeps lock holds short)")
+    ap.add_argument("--gpu-decode", action="store_true",
+                    help="nvjpeg GPU decode + cuda resize (else CPU PIL); see gpu_pre.py")
     args = ap.parse_args()
 
     import pyarrow.parquet as pq
@@ -116,7 +123,7 @@ def main() -> None:
             entry = pending.setdefault(s, {"ids": [], "pils": [], "hands": [], "work": []})
             raw = r["image"]["bytes"] if isinstance(r["image"], dict) else r["image"]
             entry["ids"].append(str(r["frame_id"]))
-            entry["pils"].append(preprocess_bytes(bytes(raw)))
+            entry["pils"].append(preprocess_bytes(bytes(raw), gpu=args.gpu_decode))
             entry["hands"].append(int(r["hand_count"]))
             entry["work"].append(1 if str(r["active_labor"]) == "yes" else 0)
             raw = None
@@ -178,7 +185,8 @@ def main() -> None:
             "vram_peak_gb": vram_peak, "embed_sha16": sha,
             "backbone": "embeddinggemma2(batched; receipt batch-size-1 semantics N/A)",
             "preprocess": f"thumbnail longest side {PREPROCESS_MAX_SIDE} BILINEAR",
-            "parquet": str(args.parquet), "batch_size": args.batch_size}
+            "parquet": str(args.parquet), "batch_size": args.batch_size,
+            "gpu_decode": bool(args.gpu_decode)}
     (out / "meta.json").write_text(json.dumps(meta, indent=1))
     print(json.dumps(meta, indent=1))
 
