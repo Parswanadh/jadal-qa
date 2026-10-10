@@ -184,4 +184,6 @@ def verify_receipt(receipt: Mapping, recompute_fn) -> dict:
         key: value for key, value in recomputed.items() if key not in HASHED_EXCLUDED
     }
     diff = sorted(_diff_paths(stripped_stored, stripped_fresh))
+    if "receipt_sha256" not in receipt and "receipt_sha256" not in diff:
+        diff = sorted(diff + ["receipt_sha256"])
     return {"match": False, "expected": expected, "actual": actual, "diff": diff}

@@ -4,7 +4,7 @@ from __future__ import annotations
 import hashlib
 import unittest
 
-from jadal import certify, receipts
+from jadal import receipts
 from jadal.config import Config
 
 
@@ -86,255 +86,6 @@ class CanonicalJsonTest(unittest.TestCase):
         self.assertEqual(first, receipts.canonical_json(dict(obj)))
 
 
-def _segment(i: int) -> dict:
-    return {
-        "segment_id": f"seg-{i:03d}",
-        "source_clip": f"clip-{(i // 5) + 1:02d}.mp4",
-        "worker_id": "w07",
-        "site_id": "site-a",
-        "start_s": float(i * 20),
-        "end_s": float(i * 20 + 20),
-        "path": f"data_runtime/segments/seg-{i:03d}.mp4",
-        "sha256": hashlib.sha256(f"bytes-of-seg-{i}".encode("utf-8")).hexdigest(),
-    }
-
-
-def _run(segments: list[dict], decider: FakeDecider, config, threshold: float,
-         created_utc: str) -> list[dict]:
-    """Run the fake pipeline over segments in list order (batch-position blind)."""
-    out = []
-    for segment in segments:
-        signals = _fake_signals(segment)
-        decisions = decider.decide(segment, signals)
-        verdict = _fake_verdict(segment, decisions, threshold)
-        out.append(
-            receipts.make_receipt(
-                segment, signals, decisions, verdict, config, created_utc=created_utc
-            )
-        )
-    return out
-
-
-class MakeReceiptTest(unittest.TestCase):
-
-    def test_receipt_has_the_contract_keys_and_flows_segment_hash_through(self):
-        segment = _segment(0)
-        receipt = receipts.make_receipt(
-            segment,
-            _fake_signals(segment),
-            FakeDecider().decide(segment, _fake_signals(segment)),
-            _fake_verdict(segment, FakeDecider().decide(segment, _fake_signals(segment)), 0.5),
-            Config(),
-        )
-        for key in (
-            "receipt_id", "segment_sha256", "signals", "decisions", "verdict",
-            "config", "receipt_sha256", "created_utc",
-        ):
-            self.assertIn(key, receipt)
-        self.assertEqual(receipt["segment_sha256"], segment["sha256"])
-        self.assertEqual(receipt["config"]["pipeline_version"], "0.1.0")
-        self.assertIn("thresholds", receipt["config"])
-        self.assertEqual(
-            receipt["receipt_sha256"],
-            receipts.receipt_hash(receipt),
-        )
-        self.assertEqual(receipt["receipt_id"], receipt["receipt_sha256"][:16])
-
-    def test_created_utc_is_excluded_from_the_hash(self):
-        segment = _segment(1)
-        signals = _fake_signals(segment)
-        decider = FakeDecider()
-        decisions = decider.decide(segment, signals)
-        verdict = _fake_verdict(segment, decisions, 0.5)
-        first = receipts.make_receipt(
-            segment, signals, decisions, verdict, Config(),
-            created_utc="2026-10-10T10:00:00+00:00",
-        )
-        second = receipts.make_receipt(
-            segment, signals, decisions, verdict, Config(),
-            created_utc="2026-10-11T10:00:00+00:00",
-        )
-        self.assertNotEqual(first["created_utc"], second["created_utc"])
-        self.assertEqual(first["receipt_sha256"], second["receipt_sha256"])
-        self.assertEqual(first["receipt_id"], second["receipt_id"])
-
-    def test_key_order_in_inputs_does_not_change_the_hash(self):
-        segment = _segment(2)
-        signals = _fake_signals(segment)
-        decider = FakeDecider()
-        decisions = decider.decide(segment, signals)
-        verdict = _fake_verdict(segment, decisions, 0.5)
-        ordered = receipts.make_receipt(
-            dict(reversed(list(segment.items()))),
-            dict(reversed(list(signals.items()))),
-            decisions,
-            verdict,
-            Config(),
-            created_utc="2026-10-10T10:00:00+00:00",
-        )
-        plain = receipts.make_receipt(
-            segment, signals, decisions, verdict, Config(),
-            created_utc="2026-10-10T10:00:00+00:00",
-        )
-        self.assertEqual(ordered["receipt_sha256"], plain["receipt_sha256"])
-
-    def test_floats_are_rounded_to_four_decimals_and_minus_zero_is_gone(self):
-        segment = _segment(3)
-        signals = dict(_fake_signals(segment))
-        signals["blur_var"] = 123.456789
-        signals["motion_mean"] = -0.000001
-        decider = FakeDecider()
-        decisions = decider.decide(segment, signals)
-        decisions["step"]["answer_conf"] = 0.123456
-        verdict = _fake_verdict(segment, decisions, 0.123456789)
-        receipt = receipts.make_receipt(
-            segment, signals, decisions, verdict, Config(),
-            created_utc="2026-10-10T10:00:00+00:00",
-        )
-        self.assertEqual(receipt["signals"]["blur_var"], 123.4568)
-        self.assertEqual(receipt["signals"]["motion_mean"], 0.0)
-        self.assertNotIn("-0.0", receipts.canonical_json(receipt).decode("utf-8"))
-        self.assertEqual(receipt["decisions"]["step"]["answer_conf"], 0.1235)
-        self.assertEqual(receipt["verdict"]["threshold"], 0.1235)
-
-    def test_a_changed_config_changes_the_hash(self):
-        segment = _segment(4)
-        signals = _fake_signals(segment)
-        decider = FakeDecider()
-        decisions = decider.decide(segment, signals)
-        verdict = _fake_verdict(segment, decisions, 0.5)
-        base = receipts.make_receipt(
-            segment, signals, decisions, verdict,
-            {"thresholds": {"t": 0.5}, "pipeline_version": "0.1.0", "versions": {}},
-            created_utc="2026-10-10T10:00:00+00:00",
-        )
-        other = receipts.make_receipt(
-            segment, signals, decisions, verdict,
-            {"thresholds": {"t": 0.6}, "pipeline_version": "0.1.0", "versions": {}},
-            created_utc="2026-10-10T10:00:00+00:00",
-        )
-        self.assertNotEqual(base["receipt_sha256"], other["receipt_sha256"])
-
-    def test_config_dataclass_is_accepted(self):
-        receipt = receipts.make_receipt(
-            _segment(5), _fake_signals(_segment(5)),
-            FakeDecider().decide(_segment(5), _fake_signals(_segment(5))),
-            {"segment_id": "seg-005", "verdict": "accept", "reasons": [],
-             "answer_conf": 0.9, "threshold": 0.5},
-            Config(target_error=0.05),
-        )
-        self.assertEqual(receipt["config"]["thresholds"]["target_error"], 0.05)
-        self.assertIn("python", receipt["config"]["versions"])
-
-    def test_missing_receipt_sha256_hashes_consistently(self):
-        receipt = receipts.make_receipt(
-            _segment(6), _fake_signals(_segment(6)),
-            FakeDecider().decide(_segment(6), _fake_signals(_segment(6))),
-            _fake_verdict(_segment(6), FakeDecider().decide(_segment(6), _fake_signals(_segment(6))), 0.5),
-            Config(),
-            created_utc="2026-10-10T10:00:00+00:00",
-        )
-        stripped = {k: v for k, v in receipt.items() if k != "receipt_sha256"}
-        self.assertEqual(receipts.receipt_hash(stripped), receipt["receipt_sha256"])
-
-
-class BatchVsAloneTest(unittest.TestCase):
-    """Per-segment determinism: alone must equal inside a batch of five."""
-
-    def test_one_segment_hashes_identically_alone_and_inside_a_batch(self):
-        config = Config()
-        decider = FakeDecider()
-        threshold = 0.5
-        solo = _run([_segment(2)], decider, config, threshold,
-                    created_utc="2026-10-10T09:00:00+00:00")[0]
-        batch = _run([_segment(i) for i in range(5)], decider, config, threshold,
-                     created_utc="2026-10-10T10:00:00+00:00")
-        self.assertNotEqual(solo["created_utc"], batch[2]["created_utc"])
-        self.assertEqual(solo["receipt_sha256"], batch[2]["receipt_sha256"])
-        self.assertEqual(solo["receipt_id"], batch[2]["receipt_id"])
-
-    def test_every_batch_member_matches_its_solo_run(self):
-        config = Config()
-        decider = FakeDecider()
-        threshold = 0.4
-        batch = _run([_segment(i) for i in range(5)], decider, config, threshold,
-                     created_utc="2026-10-10T10:00:00+00:00")
-        for i in range(5):
-            solo = _run([_segment(i)], decider, config, threshold,
-                        created_utc="2026-10-09T00:00:00+00:00")[0]
-            with self.subTest(segment=i):
-                self.assertEqual(solo["receipt_sha256"], batch[i]["receipt_sha256"])
-                self.assertEqual(
-                    receipts.verify_receipt(batch[i], lambda r: solo)["match"], True
-                )
-
-
-class VerifyReceiptTest(unittest.TestCase):
-
-    @staticmethod
-    def _stored() -> dict:
-        segment = _segment(1)
-        signals = _fake_signals(segment)
-        decider = FakeDecider()
-        decisions = decider.decide(segment, signals)
-        verdict = _fake_verdict(segment, decisions, 0.5)
-        return receipts.make_receipt(
-            segment, signals, decisions, verdict, Config(),
-            created_utc="2026-10-10T10:00:00+00:00",
-        )
-
-    def test_match_on_identical_recompute(self):
-        stored = self._stored()
-        result = receipts.verify_receipt(stored, lambda receipt: dict(stored))
-        self.assertTrue(result["match"])
-        self.assertEqual(result["expected"], stored["receipt_sha256"])
-        self.assertEqual(result["actual"], stored["receipt_sha256"])
-        self.assertEqual(result["diff"], [])
-
-    def test_created_utc_differences_still_match(self):
-        stored = self._stored()
-        newer = dict(stored)
-        newer["created_utc"] = "2031-01-01T00:00:00+00:00"
-        self.assertTrue(receipts.verify_receipt(stored, lambda receipt: newer)["match"])
-
-    def test_perturbing_one_value_reports_its_field_path(self):
-        stored = self._stored()
-        tampered = {k: (dict(v) if isinstance(v, dict) else v) for k, v in stored.items()}
-        tampered["verdict"] = dict(stored["verdict"])
-        tampered["verdict"]["answer_conf"] = round(stored["verdict"]["answer_conf"] + 0.01, 4)
-        result = receipts.verify_receipt(stored, lambda receipt: tampered)
-        self.assertFalse(result["match"])
-        self.assertEqual(result["expected"], stored["receipt_sha256"])
-        self.assertEqual(result["actual"], receipts.receipt_hash(tampered))
-        self.assertEqual(result["diff"], ["verdict.answer_conf"])
-
-    def test_multiple_differences_are_all_reported(self):
-        stored = self._stored()
-        tampered = {k: (dict(v) if isinstance(v, dict) else v) for k, v in stored.items()}
-        tampered["verdict"] = dict(stored["verdict"])
-        tampered["verdict"]["verdict"] = "accept"
-        tampered["signals"] = dict(stored["signals"])
-        tampered["signals"]["blur_var"] = 1.0
-        result = receipts.verify_receipt(stored, lambda receipt: tampered)
-        self.assertFalse(result["match"])
-        self.assertIn("verdict.verdict", result["diff"])
-        self.assertIn("signals.blur_var", result["diff"])
-        self.assertEqual(result["diff"], sorted(result["diff"]))
-
-    def test_recompute_fn_receives_the_stored_receipt(self):
-        stored = self._stored()
-        seen = []
-        receipts.verify_receipt(
-            stored, lambda receipt: seen.append(receipt) or stored
-        )
-        self.assertEqual(seen, [stored])
-
-    def test_non_mapping_recompute_raises(self):
-        stored = self._stored()
-        with self.assertRaises(ValueError):
-            receipts.verify_receipt(stored, lambda receipt: None)
-
-
 def _segment(i: int = 0) -> dict:
     return {
         "segment_id": f"seg-{i:03d}",
@@ -391,16 +142,24 @@ class MakeReceiptTest(unittest.TestCase):
         self.assertEqual(len(receipt["receipt_id"]), 16)
 
     def test_floats_are_rounded_to_four_decimals(self):
-        receipt = _receipt_for()
-        receipt["signals"]["blur_var"] = 123.456789
-        receipt["signals"]["brightness_mean"] = -0.00001
-        receipt["verdict"]["answer_conf"] = 0.123456
-        receipt["decisions"]["step"]["answer_conf"] = 0.99999
-        rebuilt = receipts.rehash(receipt)
-        self.assertEqual(rebuilt["signals"]["blur_var"], 123.4568)
-        self.assertEqual(rebuilt["signals"]["brightness_mean"], 0.0)
-        self.assertEqual(rebuilt["verdict"]["answer_conf"], 0.1235)
-        self.assertEqual(rebuilt["decisions"]["step"]["answer_conf"], 1.0)
+        # unrounded raw values go in; the receipt normalizes them on the way in
+        segment = _segment(0)
+        signals = dict(_fake_signals(segment))
+        signals["blur_var"] = 123.456789
+        signals["brightness_mean"] = -0.00001
+        decisions = FakeDecider().decide(segment, signals)
+        decisions["step"]["answer_conf"] = 0.99999
+        verdict = _fake_verdict(segment, decisions, 0.123456)
+        receipt = receipts.make_receipt(
+            segment, signals, decisions, verdict, Config(),
+            created_utc="2026-10-10T00:00:00+00:00",
+        )
+        self.assertEqual(receipt["signals"]["blur_var"], 123.4568)
+        self.assertEqual(receipt["signals"]["brightness_mean"], 0.0)
+        self.assertEqual(receipt["verdict"]["threshold"], 0.1235)
+        self.assertEqual(receipt["verdict"]["answer_conf"], 1.0)
+        self.assertEqual(receipt["decisions"]["step"]["answer_conf"], 1.0)
+        self.assertNotIn("-0.0", receipts.canonical_json(receipt).decode("utf-8"))
 
     def test_config_dataclass_becomes_a_config_block(self):
         receipt = _receipt_for(config=Config())
@@ -463,7 +222,7 @@ class ReceiptHashTest(unittest.TestCase):
 
     def test_hash_changes_when_a_hashed_field_is_perturbed(self):
         receipt = _receipt_for()
-        other = _receipt_for()
+        other = _receipt_for(1)  # a different segment hashes differently
         self.assertNotEqual(receipt["receipt_sha256"], other["receipt_sha256"])
         tampered = dict(receipt)
         tampered["signals"] = dict(receipt["signals"], blur_var=999.0)
@@ -509,12 +268,13 @@ class SegmentIsBatchIndependentTest(unittest.TestCase):
             alone[0]["receipt_sha256"], in_batch[2]["receipt_sha256"]
         )
         self.assertEqual(alone[0]["receipt_id"], in_batch[2]["receipt_id"])
-        self.assertEqual(
-            alone[0]["receipt_sha256"],
-            self._process(batch[:2] + batch[3:], decider, 0.5, "2026-10-10T12:00:00+00:00")[2][
-                "receipt_sha256"
-            ],
+        # the neighbours do not matter either: seg-003 hashes the same with
+        # neighbours {0, 1, 2, 4} as with neighbours {0, 1, 4}
+        reduced = self._process(
+            batch[:2] + batch[3:], decider, 0.5, "2026-10-10T12:00:00+00:00"
         )
+        self.assertEqual(len(reduced), 4)
+        self.assertEqual(reduced[2]["receipt_sha256"], in_batch[3]["receipt_sha256"])
         self.assertNotEqual(alone[0]["created_utc"], in_batch[2]["created_utc"])
 
     def test_every_segment_in_the_batch_matches_its_alone_hash(self):
@@ -528,7 +288,6 @@ class SegmentIsBatchIndependentTest(unittest.TestCase):
                 [_segment(i)], decider, threshold, f"2026-10-10T1{i}:00:00+00:00"
             )
             self.assertEqual(alone[0]["receipt_sha256"], receipt["receipt_sha256"], f"seg {i}")
-            self.assertEqual(receipt["segment_ids_in_batch"] if False else 5, 5)
 
     def test_segment_sha256_is_the_hash_of_the_original_segment_file(self):
         receipt = _receipt_for()
