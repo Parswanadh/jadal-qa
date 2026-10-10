@@ -172,11 +172,12 @@ def main():
     # single-logistic baseline (same outer folds, sklearn, train-only scaling)
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=args.seed)
     Pb = np.zeros_like(P)
-    for tri, tei in skf.split(X, y):
-        mu = X[tri].mean(axis=0); sd = X[tri].std(axis=0); sd[sd < 1e-8] = 1.0
-        clf = LogisticRegression(max_iter=1000)
-        clf.fit((X[tri] - mu) / sd, y[tri])
-        Pb[tei] = clf.predict_proba((X[tei] - mu) / sd)[:, 1]
+    X64 = X.astype(np.float64)  # lbfgs stalls on float32 with ill-conditioned spectral feats
+    for tri, tei in skf.split(X64, y):
+        mu = X64[tri].mean(axis=0); sd = X64[tri].std(axis=0); sd[sd < 1e-8] = 1.0
+        clf = LogisticRegression(max_iter=5000)
+        clf.fit((X64[tri] - mu) / sd, y[tri])
+        Pb[tei] = clf.predict_proba((X64[tei] - mu) / sd)[:, 1]
     from jadal.gpuheads.metrics import auroc as auc
     res["single_logistic_auroc"] = auc(Y, Pb)
     res["delta_many_minus_single"] = res["auroc"] - res["single_logistic_auroc"]
