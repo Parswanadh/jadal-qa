@@ -1,0 +1,228 @@
+{
+  "accept": {
+    "calib_certified": {
+      "accepted": 364,
+      "coverage": 0.6067,
+      "errors": 8,
+      "upper_bound": 0.0355
+    },
+    "heldout": {
+      "errors": 9,
+      "fired": 364,
+      "n_heldout": 600,
+      "upper_bound": 0.0387
+    },
+    "heldout_by_source": {
+      "synthetic": {
+        "errors": 9,
+        "fired": 364,
+        "upper_bound": 0.0387
+      }
+    },
+    "n_calib": 600,
+    "n_no_conf": 0,
+    "threshold": 0.4
+  },
+  "meta": {
+    "by_source": {
+      "synthetic": 1200
+    },
+    "date_utc": "2026-10-10T06:43:34.937530+00:00",
+    "n_bad": 489,
+    "n_calib": 600,
+    "n_good": 711,
+    "n_heldout": 600,
+    "n_total": 1200,
+    "provenance": "synthetic-fixtures",
+    "seed": 7,
+    "support_floor": 45,
+    "targets": {
+      "accept_step": 0.05,
+      "calib_frac": 0.5,
+      "delta": 0.1,
+      "min_accepted": 30,
+      "min_support": 10,
+      "target_alpha": 0.05,
+      "target_beta": 0.05
+    }
+  },
+  "reject_rules": {
+    "blur_var_min": {
+      "calib": {
+        "errors": 0,
+        "fired": 78,
+        "upper_bound": 0.0291
+      },
+      "code": "BLUR",
+      "disabled": false,
+      "heldout": {
+        "errors": 5,
+        "fired": 88,
+        "upper_bound": 0.1028
+      },
+      "heldout_by_source": {
+        "synthetic": {
+          "errors": 5,
+          "fired": 88,
+          "upper_bound": 0.1028
+        }
+      },
+      "n_eligible_candidates": 556,
+      "threshold": 90.5116
+    },
+    "brightness_min": {
+      "calib": {
+        "errors": 0,
+        "fired": 88,
+        "upper_bound": 0.0258
+      },
+      "code": "TOO_DARK",
+      "disabled": false,
+      "heldout": {
+        "errors": 3,
+        "fired": 92,
+        "upper_bound": 0.0712
+      },
+      "heldout_by_source": {
+        "synthetic": {
+          "errors": 3,
+          "fired": 92,
+          "upper_bound": 0.0712
+        }
+      },
+      "n_eligible_candidates": 555,
+      "threshold": 80.9377
+    },
+    "hands_visible_frac_min": {
+      "calib": {
+        "errors": 1,
+        "fired": 82,
+        "upper_bound": 0.0466
+      },
+      "code": "HANDS_NOT_VISIBLE",
+      "disabled": false,
+      "heldout": {
+        "errors": 8,
+        "fired": 92,
+        "upper_bound": 0.1374
+      },
+      "heldout_by_source": {
+        "synthetic": {
+          "errors": 8,
+          "fired": 92,
+          "upper_bound": 0.1374
+        }
+      },
+      "n_eligible_candidates": 504,
+      "threshold": 0.7028
+    },
+    "min_duration_s": {
+      "code": "UNDECODABLE",
+      "disabled": true,
+      "heldout": {
+        "errors": 0,
+        "fired": 0,
+        "note": "rule disabled: fires on nothing",
+        "upper_bound": null
+      },
+      "heldout_by_source": {},
+      "n_eligible_candidates": 0,
+      "reason": "no candidate certified: the strictest candidate with support >= 45 already exceeds target_beta (or no candidate reaches support)",
+      "threshold": null
+    },
+    "motion_max": {
+      "calib": {
+        "errors": 0,
+        "fired": 74,
+        "upper_bound": 0.0306
+      },
+      "code": "SHAKY",
+      "disabled": false,
+      "heldout": {
+        "errors": 1,
+        "fired": 71,
+        "upper_bound": 0.0537
+      },
+      "heldout_by_source": {
+        "synthetic": {
+          "errors": 1,
+          "fired": 71,
+          "upper_bound": 0.0537
+        }
+      },
+      "n_eligible_candidates": 554,
+      "threshold": 7.9731
+    },
+    "motion_min": {
+      "calib": {
+        "errors": 0,
+        "fired": 68,
+        "upper_bound": 0.0333
+      },
+      "code": "NO_ACTIVE_WORK",
+      "disabled": false,
+      "heldout": {
+        "errors": 2,
+        "fired": 68,
+        "upper_bound": 0.0764
+      },
+      "heldout_by_source": {
+        "synthetic": {
+          "errors": 2,
+          "fired": 68,
+          "upper_bound": 0.0764
+        }
+      },
+      "n_eligible_candidates": 556,
+      "threshold": 2.0309
+    },
+    "over_exposed_frac_max": {
+      "calib": {
+        "errors": 1,
+        "fired": 88,
+        "upper_bound": 0.0435
+      },
+      "code": "OVEREXPOSED",
+      "disabled": false,
+      "heldout": {
+        "errors": 1,
+        "fired": 89,
+        "upper_bound": 0.043
+      },
+      "heldout_by_source": {
+        "synthetic": {
+          "errors": 1,
+          "fired": 89,
+          "upper_bound": 0.043
+        }
+      },
+      "n_eligible_candidates": 358,
+      "threshold": 0.0497
+    },
+    "under_exposed_frac_max": {
+      "code": "TOO_DARK",
+      "disabled": true,
+      "heldout": {
+        "errors": 0,
+        "fired": 0,
+        "note": "rule disabled: fires on nothing",
+        "upper_bound": null
+      },
+      "heldout_by_source": {},
+      "n_eligible_candidates": 316,
+      "reason": "no candidate certified: the strictest candidate with support >= 45 already exceeds target_beta (or no candidate reaches support)",
+      "threshold": null
+    }
+  },
+  "threshold_updates": {
+    "accept_conf": 0.4,
+    "blur_var_min": 90.5116,
+    "brightness_min": 80.9377,
+    "hands_visible_frac_min": 0.7028,
+    "min_duration_s": null,
+    "motion_max": 7.9731,
+    "motion_min": 2.0309,
+    "over_exposed_frac_max": 0.0497,
+    "under_exposed_frac_max": null
+  }
+}

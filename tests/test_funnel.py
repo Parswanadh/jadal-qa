@@ -258,5 +258,103 @@ class TestThresholdHelpers(unittest.TestCase):
         self.assertEqual(loaded["calibration"]["status"], "placeholder")
 
 
+def _mk_record(blur, conf, label, source="synthetic"):
+    signals = dict(GOOD_SIGNALS)
+    signals["blur_var"] = blur
+    decisions = {"hands_ok": {"p_yes": conf},
+                 "active_work": {"p_yes": conf},
+                 "step": {"choice": "assemble", "probs": {},
+                          "answer_conf": conf}}
+    return {"signals": signals, "decisions": decisions, "label": label,
+            "reason_gold": None, "label_source": source}
+
+
+class TestCalibrateTwoSided(unittest.TestCase):
+    def test_accept_certifies_separable(self):
+        records = [_mk_record(150.0, 0.95 + 0.04 * (i % 10) / 9, "good")
+                   for i in range(80)]
+        records += [_mk_record(150.0, 0.1 + 0.4 * (i % 10) / 9, "bad")
+                    for i in range(80)]
+        # alpha 0.1: 40 clean calib clips suffice (bound(0,40) ~= 0.056).
+        result = funnel.calibrate_two_sided(
+            records, {"min_accepted": 10, "seed": 5, "target_alpha": 0.1})
+        accept = result["accept"]
+        self.assertIsNotNone(accept["threshold"])
+        self.assertLessEqual(accept["calib_certified"]["upper_bound"], 0.1)
+        self.assertIn("heldout_by_source", accept)
+        self.assertEqual(accept["heldout_by_source"]["synthetic"]["fired"],
+                         accept["heldout"]["fired"])
+        meta = result["meta"]
+        self.assertEqual(meta["n_total"], 160)
+        self.assertEqual(meta["by_source"], {"synthetic": 160})
+        self.assertEqual(meta["n_calib"] + meta["n_heldout"], 160)
+
+    def test_reject_clean_rule_certifies(self):
+        records = [_mk_record(5.0 + 15.0 * i / 99, 0.99, "bad")
+                   for i in range(100)]
+        records += [_mk_record(100.0 + 100.0 * i / 99, 0.99, "good")
+                    for i in range(100)]
+        result = funnel.calibrate_two_sided(
+            records, {"seed": 3, "min_accepted": 1000})
+        entry = result["reject_rules"]["blur_var_min"]
+        self.assertFalse(entry["disabled"])
+        self.assertIsNotNone(entry["threshold"])
+        self.assertEqual(entry["calib"]["errors"], 0)
+        self.assertLess(entry["threshold"], 150.0)
+        # accept side disabled here (min_accepted unreachable) — honest None
+        self.assertIsNone(result["accept"]["threshold"])
+        self.assertIsNone(result["threshold_updates"]["accept_conf"])
+
+    def test_reject_noisy_rule_disabled(self):
+        records = [_mk_record(5.0 + 195.0 * i / 99, 0.99,
+                              "bad" if i % 2 else "good")
+                   for i in range(100)]
+        result = funnel.calibrate_two_sided(records, {"seed": 3})
+        entry = result["reject_rules"]["blur_var_min"]
+        self.assertTrue(entry["disabled"])
+        self.assertIsNone(entry["threshold"])
+        self.assertIsNone(result["threshold_updates"]["blur_var_min"])
+
+    def test_mixed_sources_reported_per_source(self):
+        records = [_mk_record(150.0, 0.97, "good", "synthetic")
+                   for _ in range(50)]
+        records += [_mk_record(150.0, 0.97, "good", "gemini")
+                    for _ in range(50)]
+        records += [_mk_record(150.0, 0.2, "bad", "synthetic")
+                    for _ in range(50)]
+        records += [_mk_record(150.0, 0.2, "bad", "gemini")
+                    for _ in range(50)]
+        result = funnel.calibrate_two_sided(
+            records, {"min_accepted": 10, "seed": 11})
+        self.assertEqual(result["meta"]["by_source"],
+                         {"synthetic": 100, "gemini": 100})
+        by_source = result["accept"]["heldout_by_source"]
+        self.assertEqual(set(by_source), {"synthetic", "gemini"})
+
+    def test_deterministic_and_order_independent(self):
+        records = [_mk_record(150.0, 0.97, "good") for _ in range(30)]
+        records += [_mk_record(10.0, 0.2, "bad") for _ in range(30)]
+        first = funnel.calibrate_two_sided(records, {"seed": 9})
+        second = funnel.calibrate_two_sided(list(reversed(records)),
+                                            {"seed": 9})
+        digest = lambda obj: hashlib.sha256(
+            json.dumps(obj, sort_keys=True).encode()).hexdigest()
+        strip = lambda res: {k: v for k, v in res.items()}  # date_utc differs
+        first["meta"].pop("date_utc")
+        second["meta"].pop("date_utc")
+        self.assertEqual(digest(strip(first)), digest(strip(second)))
+
+    def test_rejects_unknown_source_and_bad_label(self):
+        good = _mk_record(150.0, 0.97, "good")
+        bad_source = dict(good, label_source="crowd_unknown")
+        with self.assertRaises(ValueError):
+            funnel.calibrate_two_sided([good, bad_source])
+        bad_label = dict(good, label="maybe")
+        with self.assertRaises(ValueError):
+            funnel.calibrate_two_sided([good, bad_label])
+        with self.assertRaises(ValueError):
+            funnel.calibrate_two_sided([])
+
+
 if __name__ == "__main__":
     unittest.main()
