@@ -141,7 +141,7 @@ def main() -> None:
            "clips": sorted(set(clips.tolist())),
            "label_source": "human (single labeller; manifest_gold snapshot)",
            "protocol": "leave-one-clip-out CV; C in {0.01,0.1,1,10} via inner LOCO on train clips; class_weight=balanced",
-           "frame_heads_source": "AI labels (gemini-2.5-flash) on 8000 factory frames (lean C=1 heads)"}
+           "frame_heads_source": "AI labels (gemini-2.5-flash) on 10000 factory frames (lean C=1 heads)"}
     for name, X in arms.items():
         oof = loco_oof(X, y, clips)
         auc = roc_auc_score(y, oof)

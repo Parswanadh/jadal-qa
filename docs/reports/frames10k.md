@@ -49,6 +49,9 @@ hands>=1 frac=0.960, work=yes frac=0.917 (skewed — balacc at 0.5 suffers).
 PIL decode path).
 - active_labor: AUROC 0.9026 [0.8906, 0.9141], balacc 0.7394
 - hands_ok: AUROC 0.9587 [0.9481, 0.9684], balacc 0.7484
+Full-10k lean heads (`egocentric_10k/frame_cv.lean_10k.json`; shards 0-7 CPU
+decode + 8-9 GPU-nvjpeg decode = mixed preprocessing): active_labor 0.9107
+[0.9006, 0.9206]; hands_ok 0.9524 [0.9415, 0.9628]. 8k->10k deltas are noise.
 (The C-grid 6k run died to system OOM; lean fixed-C rerun used float32 +
 thread caps and survived. Label skew persists: work=yes 0.917, hands>=1 0.964.)
 
@@ -56,16 +59,19 @@ Matryoshka truncation 768->128 loses ~0.01-0.015 AUROC; balacc drops more
 (threshold not retuned — operating point, not ranking, degrades).
 ### (3) KEY TEST: pooled frame heads -> HUMAN label (LOCO, 7 clips)
 `human_segments/transfer.json`. n=150 (100 usable/50 bad), ~20 frames/seg
-@0.5 s (3005 frames, GPU-nvjpeg). Heads: lean_8k (8000 AI factory frames,
-CPU-PIL decode; gap noted, shared across arms). LOCO CV, inner-LOCO C pick,
+@0.5 s (3005 frames, GPU-nvjpeg). Heads: lean_10k (10000 AI factory frames,
+shards 0-7 CPU-PIL + 8-9 GPU-nvjpeg decode = mixed preprocessing; gap noted,
+shared across arms). LOCO CV, inner-LOCO C pick,
 class_weight=balanced. AUROC + clip-bootstrap 95% CI:
 
-(i) pretrained_pooled (12 feats): 0.808 [0.699,0.862], balacc 0.715.
+(i) pretrained_pooled (12 feats): 0.791 [0.688,0.863], balacc 0.735.
 (ii) human_only_embed (768-d): 0.816 [0.710,0.892], balacc 0.730.
-(iii) combo (780-d): 0.817 [0.716,0.863], balacc 0.745.
+(iii) combo (780-d): 0.829 [0.735,0.900], balacc 0.755.
+8k-heads replication: (i) 0.808 [0.699,0.862] / (ii) 0.816 / (iii) 0.817 —
+same picture (8k = single CPU-decode path; 10k mixes CPU+GPU decode).
 Per reason: HANDS_NOT_VISIBLE ~0.87; NO_ACTIVE_WORK ~0.74 (hardest, n=23);
 DUPLICATE ~0.83; TOO_DARK 0.85-0.97 (n=6); UNDECODABLE ~0.98 (n=1).
-CONCLUSION: no evidence 8k-AI pretraining helps beyond the 150 human labels
+CONCLUSION: no evidence 8k/10k-AI pretraining helps beyond the 150 human labels
 (CIs overlap fully; combo ties human-only). All CIs span ~0.70-0.89: with 7
 clips nothing is resolved. Domain gap + AI-label skew (92% yes) limit transfer.
 

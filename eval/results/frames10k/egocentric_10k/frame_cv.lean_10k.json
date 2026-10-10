@@ -1,0 +1,28 @@
+{
+ "active_labor": {
+  "cv_note": "stratified 5-fold, C=1 fixed (no tuning)",
+  "oof_auroc": 0.9107177055649828,
+  "oof_auroc_ci95": [
+   0.900619303013285,
+   0.9205560695563874
+  ],
+  "balacc": 0.740612266896062,
+  "acc": 0.9311,
+  "label_source": "AI (gemini-2.5-flash prompt; NOT human)",
+  "n": 10000,
+  "pos_frac": 0.9166
+ },
+ "hands_ok": {
+  "cv_note": "stratified 5-fold, C=1 fixed (no tuning)",
+  "oof_auroc": 0.9524040249884409,
+  "oof_auroc_ci95": [
+   0.9414877401104659,
+   0.962759848632546
+  ],
+  "balacc": 0.7572700441156532,
+  "acc": 0.965,
+  "label_source": "AI (gemini-2.5-flash prompt; NOT human)",
+  "n": 10000,
+  "pos_frac": 0.9642
+ }
+}

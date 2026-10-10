@@ -1,0 +1,16 @@
+{
+ "n": 10000,
+ "dim": 768,
+ "dtype": "float16",
+ "batch_encode_s": 128.43772888183594,
+ "wall_s": 165.3305037021637,
+ "frames_per_s_encode": 77.85874203054544,
+ "frames_per_s_wall": 60.484906149046765,
+ "vram_peak_gb": 2.822885888,
+ "embed_sha16": "cf07ca48b7f8b11d",
+ "backbone": "embeddinggemma2(batched; receipt batch-size-1 semantics N/A)",
+ "preprocess": "thumbnail longest side 512 BILINEAR",
+ "parquet": "/home/parshu/projects/awing/data/ego10k_eval/egocentric_10k.parquet",
+ "batch_size": 32,
+ "gpu_decode": true
+}
