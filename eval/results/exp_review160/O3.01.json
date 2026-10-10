@@ -1,0 +1,2502 @@
+{
+ "band_frontier_coarse": [
+  {
+   "ood_ba": 0.5464426877470355,
+   "ood_ba_ci95_grouped": [
+    0.4391702091447389,
+    0.654917531793739
+   ],
+   "ood_ba_rankavg": 0.5263504611330698,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3845379478677351,
+    0.658929307005252
+   ],
+   "ood_err": 0.4535573122529645,
+   "ood_err_rankavg": 0.4736495388669302,
+   "ood_fn": 75,
+   "ood_fn_rankavg": 68,
+   "ood_fp": 8,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 22,
+   "ood_n_decided": 160,
+   "ood_n_decided_rankavg": 160,
+   "ood_n_good_decided": 138,
+   "ood_review_share": 0.0,
+   "review_share_1546": 0.0,
+   "w": 0.0
+  },
+  {
+   "ood_ba": 0.5426065162907268,
+   "ood_ba_ci95_grouped": [
+    0.4239067441698815,
+    0.6565608874533256
+   ],
+   "ood_ba_rankavg": 0.517718715393134,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.38094262295081965,
+    0.6498072099078139
+   ],
+   "ood_err": 0.45739348370927324,
+   "ood_err_rankavg": 0.48228128460686603,
+   "ood_fn": 71,
+   "ood_fn_rankavg": 63,
+   "ood_fp": 8,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 21,
+   "ood_n_decided": 154,
+   "ood_n_decided_rankavg": 150,
+   "ood_n_good_decided": 133,
+   "ood_review_share": 0.03749999999999998,
+   "review_share_1546": 0.02652005174644243,
+   "w": 0.02
+  },
+  {
+   "ood_ba": 0.5653100775193799,
+   "ood_ba_ci95_grouped": [
+    0.44129340903628933,
+    0.6916846508550705
+   ],
+   "ood_ba_rankavg": 0.49107939339875106,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.34261926817971283,
+    0.6260521447384924
+   ],
+   "ood_err": 0.4346899224806201,
+   "ood_err_rankavg": 0.5089206066012489,
+   "ood_fn": 67,
+   "ood_fn_rankavg": 58,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 20,
+   "ood_n_decided": 149,
+   "ood_n_decided_rankavg": 137,
+   "ood_n_good_decided": 129,
+   "ood_review_share": 0.06874999999999998,
+   "review_share_1546": 0.05821474773609314,
+   "w": 0.04
+  },
+  {
+   "ood_ba": 0.5380200860832138,
+   "ood_ba_ci95_grouped": [
+    0.39446466227962285,
+    0.6780725153454356
+   ],
+   "ood_ba_rankavg": 0.48992374727668847,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.32470024161884625,
+    0.6445735359361134
+   ],
+   "ood_err": 0.46197991391678617,
+   "ood_err_rankavg": 0.5100762527233116,
+   "ood_fn": 63,
+   "ood_fn_rankavg": 53,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 9,
+   "ood_n_bad_decided": 17,
+   "ood_n_decided": 140,
+   "ood_n_decided_rankavg": 125,
+   "ood_n_good_decided": 123,
+   "ood_review_share": 0.125,
+   "review_share_1546": 0.1093143596377749,
+   "w": 0.06
+  },
+  {
+   "ood_ba": 0.5356359649122807,
+   "ood_ba_ci95_grouped": [
+    0.37190241228070176,
+    0.6850475136339111
+   ],
+   "ood_ba_rankavg": 0.505,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3376053946053946,
+    0.6720894255123184
+   ],
+   "ood_err": 0.4643640350877193,
+   "ood_err_rankavg": 0.495,
+   "ood_fn": 56,
+   "ood_fn_rankavg": 49,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 8,
+   "ood_n_bad_decided": 16,
+   "ood_n_decided": 130,
+   "ood_n_decided_rankavg": 116,
+   "ood_n_good_decided": 114,
+   "ood_review_share": 0.1875,
+   "review_share_1546": 0.19922380336351875,
+   "w": 0.08
+  },
+  {
+   "ood_ba": 0.5240384615384616,
+   "ood_ba_ci95_grouped": [
+    0.37386679063860667,
+    0.6744034090909089
+   ],
+   "ood_ba_rankavg": 0.5221014492753624,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.34463254172015406,
+    0.6817072226866041
+   ],
+   "ood_err": 0.47596153846153844,
+   "ood_err_rankavg": 0.4778985507246376,
+   "ood_fn": 47,
+   "ood_fn_rankavg": 45,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 7,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 118,
+   "ood_n_decided_rankavg": 107,
+   "ood_n_good_decided": 104,
+   "ood_review_share": 0.26249999999999996,
+   "review_share_1546": 0.29560155239327296,
+   "w": 0.1
+  },
+  {
+   "ood_ba": 0.5364583333333333,
+   "ood_ba_ci95_grouped": [
+    0.3826883332335822,
+    0.6967152244257532
+   ],
+   "ood_ba_rankavg": 0.5473421926910299,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.36369458128078824,
+    0.7272452856740782
+   ],
+   "ood_err": 0.46354166666666674,
+   "ood_err_rankavg": 0.4526578073089701,
+   "ood_fn": 41,
+   "ood_fn_rankavg": 41,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 6,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 110,
+   "ood_n_decided_rankavg": 100,
+   "ood_n_good_decided": 96,
+   "ood_review_share": 0.3125,
+   "review_share_1546": 0.36998706338939197,
+   "w": 0.12
+  },
+  {
+   "ood_ba": 0.5425339366515838,
+   "ood_ba_ci95_grouped": [
+    0.3802767499229109,
+    0.7051061980859515
+   ],
+   "ood_ba_rankavg": 0.6290684624017957,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4431569602272727,
+    0.7844351771354052
+   ],
+   "ood_err": 0.4574660633484162,
+   "ood_err_rankavg": 0.3709315375982043,
+   "ood_fn": 32,
+   "ood_fn_rankavg": 38,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 3,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 98,
+   "ood_n_decided_rankavg": 92,
+   "ood_n_good_decided": 85,
+   "ood_review_share": 0.38749999999999996,
+   "review_share_1546": 0.45084087968952136,
+   "w": 0.14
+  },
+  {
+   "ood_ba": 0.5774358974358975,
+   "ood_ba_ci95_grouped": [
+    0.4147965922965923,
+    0.7396212406015031
+   ],
+   "ood_ba_rankavg": 0.7076023391812865,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.5207402597402597,
+    0.8317330158159597
+   ],
+   "ood_err": 0.4225641025641025,
+   "ood_err_rankavg": 0.29239766081871355,
+   "ood_fn": 23,
+   "ood_fn_rankavg": 36,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 88,
+   "ood_n_decided_rankavg": 85,
+   "ood_n_good_decided": 75,
+   "ood_review_share": 0.44999999999999996,
+   "review_share_1546": 0.5336351875808538,
+   "w": 0.16
+  },
+  {
+   "ood_ba": 0.6118881118881119,
+   "ood_ba_ci95_grouped": [
+    0.4224003232758621,
+    0.8059057486631015
+   ],
+   "ood_ba_rankavg": 0.7017857142857142,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.5099530537030537,
+    0.8370317725752507
+   ],
+   "ood_err": 0.3881118881118881,
+   "ood_err_rankavg": 0.29821428571428577,
+   "ood_fn": 15,
+   "ood_fn_rankavg": 33,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 11,
+   "ood_n_decided": 76,
+   "ood_n_decided_rankavg": 78,
+   "ood_n_good_decided": 65,
+   "ood_review_share": 0.525,
+   "review_share_1546": 0.6073738680465718,
+   "w": 0.18
+  },
+  {
+   "ood_ba": 0.6137931034482759,
+   "ood_ba_ci95_grouped": [
+    0.4024058854718982,
+    0.8048553361053361
+   ],
+   "ood_ba_rankavg": 0.6866359447004609,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4732855902777778,
+    0.8333333333333333
+   ],
+   "ood_err": 0.38620689655172413,
+   "ood_err_rankavg": 0.31336405529953915,
+   "ood_fn": 10,
+   "ood_fn_rankavg": 30,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 10,
+   "ood_n_decided": 68,
+   "ood_n_decided_rankavg": 69,
+   "ood_n_good_decided": 58,
+   "ood_review_share": 0.575,
+   "review_share_1546": 0.6623544631306598,
+   "w": 0.2
+  },
+  {
+   "ood_ba": 0.5863095238095238,
+   "ood_ba_ci95_grouped": [
+    0.3971967087638729,
+    0.8200209137709138
+   ],
+   "ood_ba_rankavg": 0.674025974025974,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4552754790940767,
+    0.8253968253968254
+   ],
+   "ood_err": 0.41369047619047616,
+   "ood_err_rankavg": 0.325974025974026,
+   "ood_fn": 9,
+   "ood_fn_rankavg": 28,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 9,
+   "ood_n_decided": 65,
+   "ood_n_decided_rankavg": 62,
+   "ood_n_good_decided": 56,
+   "ood_review_share": 0.59375,
+   "review_share_1546": 0.702457956015524,
+   "w": 0.22
+  },
+  {
+   "ood_ba": 0.5947802197802198,
+   "ood_ba_ci95_grouped": [
+    0.40961363636363635,
+    0.8
+   ],
+   "ood_ba_rankavg": 0.6834733893557423,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4623670212765958,
+    0.8362483421750664
+   ],
+   "ood_err": 0.4052197802197802,
+   "ood_err_rankavg": 0.3165266106442577,
+   "ood_fn": 5,
+   "ood_fn_rankavg": 25,
+   "ood_fp": 5,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 7,
+   "ood_n_decided": 59,
+   "ood_n_decided_rankavg": 58,
+   "ood_n_good_decided": 52,
+   "ood_review_share": 0.63125,
+   "review_share_1546": 0.7276843467011643,
+   "w": 0.24
+  },
+  {
+   "ood_ba": 0.5583333333333333,
+   "ood_ba_ci95_grouped": [
+    0.4033287577213452,
+    0.9184108527131781
+   ],
+   "ood_ba_rankavg": 0.7012987012987013,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.48146710374971247,
+    0.8534745584524811
+   ],
+   "ood_err": 0.44166666666666665,
+   "ood_err_rankavg": 0.2987012987012987,
+   "ood_fn": 4,
+   "ood_fn_rankavg": 20,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 5,
+   "ood_n_decided": 53,
+   "ood_n_decided_rankavg": 51,
+   "ood_n_good_decided": 48,
+   "ood_review_share": 0.66875,
+   "review_share_1546": 0.7723156532988357,
+   "w": 0.26
+  },
+  {
+   "ood_ba": 0.5880952380952381,
+   "ood_ba_ci95_grouped": [
+    0.4666666666666667,
+    0.9685416666666664
+   ],
+   "ood_ba_rankavg": 0.7166666666666667,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.47805059523809523,
+    0.8786525974025974
+   ],
+   "ood_err": 0.4119047619047619,
+   "ood_err_rankavg": 0.2833333333333333,
+   "ood_fn": 1,
+   "ood_fn_rankavg": 16,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 5,
+   "ood_n_decided": 47,
+   "ood_n_decided_rankavg": 46,
+   "ood_n_good_decided": 42,
+   "ood_review_share": 0.70625,
+   "review_share_1546": 0.8046571798188874,
+   "w": 0.28
+  },
+  {
+   "ood_ba": 0.4861111111111111,
+   "ood_ba_ci95_grouped": [
+    0.44701597744360905,
+    0.5
+   ],
+   "ood_ba_rankavg": 0.7030303030303031,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.33365384615384613,
+    0.8888888888888888
+   ],
+   "ood_err": 0.5138888888888888,
+   "ood_err_rankavg": 0.2969696969696969,
+   "ood_fn": 1,
+   "ood_fn_rankavg": 13,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 4,
+   "ood_n_decided": 40,
+   "ood_n_decided_rankavg": 38,
+   "ood_n_good_decided": 36,
+   "ood_review_share": 0.75,
+   "review_share_1546": 0.8292367399741267,
+   "w": 0.3
+  }
+ ],
+ "band_frontier_fine": [
+  {
+   "ood_ba": 0.5464426877470355,
+   "ood_ba_ci95_grouped": [
+    0.4391702091447389,
+    0.654917531793739
+   ],
+   "ood_ba_rankavg": 0.5263504611330698,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3845379478677351,
+    0.658929307005252
+   ],
+   "ood_err": 0.4535573122529645,
+   "ood_err_rankavg": 0.4736495388669302,
+   "ood_fn": 75,
+   "ood_fn_rankavg": 68,
+   "ood_fp": 8,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 22,
+   "ood_n_decided": 160,
+   "ood_n_decided_rankavg": 160,
+   "ood_n_good_decided": 138,
+   "ood_review_share": 0.0,
+   "review_share_1546": 0.0,
+   "review_share_1546_rankavg": 0.0,
+   "w": 0.0
+  },
+  {
+   "ood_ba": 0.5394508168230796,
+   "ood_ba_ci95_grouped": [
+    0.4217027659141753,
+    0.6532797774751855
+   ],
+   "ood_ba_rankavg": 0.5245791245791245,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.38115250410509033,
+    0.6577707831384301
+   ],
+   "ood_err": 0.4605491831769204,
+   "ood_err_rankavg": 0.4754208754208755,
+   "ood_fn": 74,
+   "ood_fn_rankavg": 67,
+   "ood_fp": 8,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 21,
+   "ood_n_decided": 158,
+   "ood_n_decided_rankavg": 157,
+   "ood_n_good_decided": 137,
+   "ood_review_share": 0.012499999999999956,
+   "review_share_1546": 0.0071151358344113845,
+   "review_share_1546_rankavg": 0.014230271668822769,
+   "w": 0.005
+  },
+  {
+   "ood_ba": 0.5445984363894811,
+   "ood_ba_ci95_grouped": [
+    0.4239067441698815,
+    0.658741690621631
+   ],
+   "ood_ba_rankavg": 0.5245791245791245,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.38115250410509033,
+    0.6577707831384301
+   ],
+   "ood_err": 0.45540156361051887,
+   "ood_err_rankavg": 0.4754208754208755,
+   "ood_fn": 71,
+   "ood_fn_rankavg": 67,
+   "ood_fp": 8,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 21,
+   "ood_n_decided": 155,
+   "ood_n_decided_rankavg": 157,
+   "ood_n_good_decided": 134,
+   "ood_review_share": 0.03125,
+   "review_share_1546": 0.014230271668822769,
+   "review_share_1546_rankavg": 0.03234152652005175,
+   "w": 0.01
+  },
+  {
+   "ood_ba": 0.5426065162907268,
+   "ood_ba_ci95_grouped": [
+    0.4239067441698815,
+    0.6565608874533256
+   ],
+   "ood_ba_rankavg": 0.5176299527444566,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3815508177133431,
+    0.6498410870788994
+   ],
+   "ood_err": 0.45739348370927324,
+   "ood_err_rankavg": 0.48237004725554344,
+   "ood_fn": 71,
+   "ood_fn_rankavg": 64,
+   "ood_fp": 8,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 21,
+   "ood_n_decided": 154,
+   "ood_n_decided_rankavg": 152,
+   "ood_n_good_decided": 133,
+   "ood_review_share": 0.03749999999999998,
+   "review_share_1546": 0.019404915912031046,
+   "review_share_1546_rankavg": 0.05109961190168176,
+   "w": 0.015
+  },
+  {
+   "ood_ba": 0.5426065162907268,
+   "ood_ba_ci95_grouped": [
+    0.4239067441698815,
+    0.6565608874533256
+   ],
+   "ood_ba_rankavg": 0.517718715393134,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.38094262295081965,
+    0.6498072099078139
+   ],
+   "ood_err": 0.45739348370927324,
+   "ood_err_rankavg": 0.48228128460686603,
+   "ood_fn": 71,
+   "ood_fn_rankavg": 63,
+   "ood_fp": 8,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 21,
+   "ood_n_decided": 154,
+   "ood_n_decided_rankavg": 150,
+   "ood_n_good_decided": 133,
+   "ood_review_share": 0.03749999999999998,
+   "review_share_1546": 0.02652005174644243,
+   "review_share_1546_rankavg": 0.06532988357050452,
+   "w": 0.02
+  },
+  {
+   "ood_ba": 0.5426065162907268,
+   "ood_ba_ci95_grouped": [
+    0.4239067441698815,
+    0.6565608874533256
+   ],
+   "ood_ba_rankavg": 0.5158110119047619,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3801770431464508,
+    0.6473762261399787
+   ],
+   "ood_err": 0.45739348370927324,
+   "ood_err_rankavg": 0.48418898809523814,
+   "ood_fn": 71,
+   "ood_fn_rankavg": 63,
+   "ood_fp": 8,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 21,
+   "ood_n_decided": 154,
+   "ood_n_decided_rankavg": 149,
+   "ood_n_good_decided": 133,
+   "ood_review_share": 0.03749999999999998,
+   "review_share_1546": 0.03428201811125485,
+   "review_share_1546_rankavg": 0.08344113842173351,
+   "w": 0.025
+  },
+  {
+   "ood_ba": 0.5443722943722944,
+   "ood_ba_ci95_grouped": [
+    0.4258818043295502,
+    0.6602765453296702
+   ],
+   "ood_ba_rankavg": 0.5081967213114754,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3588501351659246,
+    0.6424408853858006
+   ],
+   "ood_err": 0.4556277056277056,
+   "ood_err_rankavg": 0.4918032786885246,
+   "ood_fn": 70,
+   "ood_fn_rankavg": 59,
+   "ood_fp": 8,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 21,
+   "ood_n_decided": 153,
+   "ood_n_decided_rankavg": 142,
+   "ood_n_good_decided": 132,
+   "ood_review_share": 0.043749999999999956,
+   "review_share_1546": 0.03945666235446313,
+   "review_share_1546_rankavg": 0.09702457956015524,
+   "w": 0.03
+  },
+  {
+   "ood_ba": 0.5461650308978554,
+   "ood_ba_ci95_grouped": [
+    0.4258818043295502,
+    0.6625400641025638
+   ],
+   "ood_ba_rankavg": 0.4931446262715612,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.34261926817971283,
+    0.6294232238349885
+   ],
+   "ood_err": 0.4538349691021446,
+   "ood_err_rankavg": 0.5068553737284388,
+   "ood_fn": 69,
+   "ood_fn_rankavg": 58,
+   "ood_fp": 8,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 21,
+   "ood_n_decided": 152,
+   "ood_n_decided_rankavg": 138,
+   "ood_n_good_decided": 131,
+   "ood_review_share": 0.050000000000000044,
+   "review_share_1546": 0.0517464424320828,
+   "review_share_1546_rankavg": 0.11513583441138421,
+   "w": 0.035
+  },
+  {
+   "ood_ba": 0.5653100775193799,
+   "ood_ba_ci95_grouped": [
+    0.44129340903628933,
+    0.6916846508550705
+   ],
+   "ood_ba_rankavg": 0.49107939339875106,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.34261926817971283,
+    0.6260521447384924
+   ],
+   "ood_err": 0.4346899224806201,
+   "ood_err_rankavg": 0.5089206066012489,
+   "ood_fn": 67,
+   "ood_fn_rankavg": 58,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 10,
+   "ood_n_bad_decided": 20,
+   "ood_n_decided": 149,
+   "ood_n_decided_rankavg": 137,
+   "ood_n_good_decided": 129,
+   "ood_review_share": 0.06874999999999998,
+   "review_share_1546": 0.05821474773609314,
+   "review_share_1546_rankavg": 0.1384217335058215,
+   "w": 0.04
+  },
+  {
+   "ood_ba": 0.5671875,
+   "ood_ba_ci95_grouped": [
+    0.4441574612403101,
+    0.6918812191513152
+   ],
+   "ood_ba_rankavg": 0.4875065070275898,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.32290949923547396,
+    0.6462105263157893
+   ],
+   "ood_err": 0.43281250000000004,
+   "ood_err_rankavg": 0.5124934929724102,
+   "ood_fn": 66,
+   "ood_fn_rankavg": 56,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 9,
+   "ood_n_bad_decided": 20,
+   "ood_n_decided": 148,
+   "ood_n_decided_rankavg": 130,
+   "ood_n_good_decided": 128,
+   "ood_review_share": 0.07499999999999996,
+   "review_share_1546": 0.06985769728331177,
+   "review_share_1546_rankavg": 0.15459249676584735,
+   "w": 0.045
+  },
+  {
+   "ood_ba": 0.5538847117794485,
+   "ood_ba_ci95_grouped": [
+    0.42371461742591776,
+    0.6839781214467062
+   ],
+   "ood_ba_rankavg": 0.49205087440381556,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.32707541823014386,
+    0.6488986088817549
+   ],
+   "ood_err": 0.44611528822055146,
+   "ood_err_rankavg": 0.5079491255961844,
+   "ood_fn": 66,
+   "ood_fn_rankavg": 54,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 9,
+   "ood_n_bad_decided": 19,
+   "ood_n_decided": 145,
+   "ood_n_decided_rankavg": 128,
+   "ood_n_good_decided": 126,
+   "ood_review_share": 0.09375,
+   "review_share_1546": 0.07826649417852523,
+   "review_share_1546_rankavg": 0.16882276843467012,
+   "w": 0.05
+  },
+  {
+   "ood_ba": 0.5474910394265233,
+   "ood_ba_ci95_grouped": [
+    0.4031003937007874,
+    0.6827783339571784
+   ],
+   "ood_ba_rankavg": 0.49217485159201296,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3281630201807884,
+    0.6472148231035509
+   ],
+   "ood_err": 0.45250896057347667,
+   "ood_err_rankavg": 0.507825148407987,
+   "ood_fn": 64,
+   "ood_fn_rankavg": 53,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 9,
+   "ood_n_bad_decided": 18,
+   "ood_n_decided": 142,
+   "ood_n_decided_rankavg": 126,
+   "ood_n_good_decided": 124,
+   "ood_review_share": 0.11250000000000004,
+   "review_share_1546": 0.09120310478654592,
+   "review_share_1546_rankavg": 0.18240620957309184,
+   "w": 0.055
+  },
+  {
+   "ood_ba": 0.5380200860832138,
+   "ood_ba_ci95_grouped": [
+    0.39446466227962285,
+    0.6780725153454356
+   ],
+   "ood_ba_rankavg": 0.48992374727668847,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.32470024161884625,
+    0.6445735359361134
+   ],
+   "ood_err": 0.46197991391678617,
+   "ood_err_rankavg": 0.5100762527233116,
+   "ood_fn": 63,
+   "ood_fn_rankavg": 53,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 9,
+   "ood_n_bad_decided": 17,
+   "ood_n_decided": 140,
+   "ood_n_decided_rankavg": 125,
+   "ood_n_good_decided": 123,
+   "ood_review_share": 0.125,
+   "review_share_1546": 0.1093143596377749,
+   "review_share_1546_rankavg": 0.19469598965071153,
+   "w": 0.06
+  },
+  {
+   "ood_ba": 0.5379192999513855,
+   "ood_ba_ci95_grouped": [
+    0.3976941558441559,
+    0.67712212867975
+   ],
+   "ood_ba_rankavg": 0.4852941176470588,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3226972853535353,
+    0.6400116131496586
+   ],
+   "ood_err": 0.46208070004861446,
+   "ood_err_rankavg": 0.5147058823529411,
+   "ood_fn": 62,
+   "ood_fn_rankavg": 53,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 9,
+   "ood_n_bad_decided": 17,
+   "ood_n_decided": 138,
+   "ood_n_decided_rankavg": 123,
+   "ood_n_good_decided": 121,
+   "ood_review_share": 0.13749999999999996,
+   "review_share_1546": 0.13001293661060803,
+   "review_share_1546_rankavg": 0.21021992238033635,
+   "w": 0.065
+  },
+  {
+   "ood_ba": 0.5399509803921568,
+   "ood_ba_ci95_grouped": [
+    0.3977555397727273,
+    0.6787156341642225
+   ],
+   "ood_ba_rankavg": 0.4975728155339806,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.33135512084758856,
+    0.6673361109402866
+   ],
+   "ood_err": 0.46004901960784317,
+   "ood_err_rankavg": 0.5024271844660194,
+   "ood_fn": 61,
+   "ood_fn_rankavg": 52,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 8,
+   "ood_n_bad_decided": 17,
+   "ood_n_decided": 137,
+   "ood_n_decided_rankavg": 119,
+   "ood_n_good_decided": 120,
+   "ood_review_share": 0.14375000000000004,
+   "review_share_1546": 0.148124191461837,
+   "review_share_1546_rankavg": 0.22121604139715395,
+   "w": 0.07
+  },
+  {
+   "ood_ba": 0.5462543991955757,
+   "ood_ba_ci95_grouped": [
+    0.40420861148197595,
+    0.6862812556215147
+   ],
+   "ood_ba_rankavg": 0.4975728155339806,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.33135512084758856,
+    0.6673361109402866
+   ],
+   "ood_err": 0.4537456008044243,
+   "ood_err_rankavg": 0.5024271844660194,
+   "ood_fn": 58,
+   "ood_fn_rankavg": 52,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 8,
+   "ood_n_bad_decided": 17,
+   "ood_n_decided": 134,
+   "ood_n_decided_rankavg": 119,
+   "ood_n_good_decided": 117,
+   "ood_review_share": 0.16249999999999998,
+   "review_share_1546": 0.17076326002587322,
+   "review_share_1546_rankavg": 0.23479948253557567,
+   "w": 0.075
+  },
+  {
+   "ood_ba": 0.5356359649122807,
+   "ood_ba_ci95_grouped": [
+    0.37190241228070176,
+    0.6850475136339111
+   ],
+   "ood_ba_rankavg": 0.505,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3376053946053946,
+    0.6720894255123184
+   ],
+   "ood_err": 0.4643640350877193,
+   "ood_err_rankavg": 0.495,
+   "ood_fn": 56,
+   "ood_fn_rankavg": 49,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 8,
+   "ood_n_bad_decided": 16,
+   "ood_n_decided": 130,
+   "ood_n_decided_rankavg": 116,
+   "ood_n_good_decided": 114,
+   "ood_review_share": 0.1875,
+   "review_share_1546": 0.19922380336351875,
+   "review_share_1546_rankavg": 0.24967658473479948,
+   "w": 0.08
+  },
+  {
+   "ood_ba": 0.5425112612612613,
+   "ood_ba_ci95_grouped": [
+    0.379697507658034,
+    0.6926112085459183
+   ],
+   "ood_ba_rankavg": 0.5025773195876289,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.331769934968793,
+    0.6648596938775508
+   ],
+   "ood_err": 0.45748873873873874,
+   "ood_err_rankavg": 0.49742268041237114,
+   "ood_fn": 53,
+   "ood_fn_rankavg": 48,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 8,
+   "ood_n_bad_decided": 16,
+   "ood_n_decided": 127,
+   "ood_n_decided_rankavg": 113,
+   "ood_n_good_decided": 111,
+   "ood_review_share": 0.20625000000000004,
+   "review_share_1546": 0.21604139715394566,
+   "review_share_1546_rankavg": 0.259379042690815,
+   "w": 0.085
+  },
+  {
+   "ood_ba": 0.5427178899082569,
+   "ood_ba_ci95_grouped": [
+    0.3819222200697404,
+    0.6927652318803307
+   ],
+   "ood_ba_rankavg": 0.5078947368421053,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3370100849468584,
+    0.669090452981651
+   ],
+   "ood_err": 0.45728211009174313,
+   "ood_err_rankavg": 0.4921052631578947,
+   "ood_fn": 52,
+   "ood_fn_rankavg": 46,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 8,
+   "ood_n_bad_decided": 16,
+   "ood_n_decided": 125,
+   "ood_n_decided_rankavg": 111,
+   "ood_n_good_decided": 109,
+   "ood_review_share": 0.21875,
+   "review_share_1546": 0.24514877102199223,
+   "review_share_1546_rankavg": 0.27102199223803364,
+   "w": 0.09
+  },
+  {
+   "ood_ba": 0.5380952380952381,
+   "ood_ba_ci95_grouped": [
+    0.3795864045864046,
+    0.6903528423726066
+   ],
+   "ood_ba_rankavg": 0.5247311827956989,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.34922084623323013,
+    0.6838447195548022
+   ],
+   "ood_err": 0.46190476190476193,
+   "ood_err_rankavg": 0.47526881720430114,
+   "ood_fn": 48,
+   "ood_fn_rankavg": 45,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 7,
+   "ood_n_bad_decided": 15,
+   "ood_n_decided": 120,
+   "ood_n_decided_rankavg": 108,
+   "ood_n_good_decided": 105,
+   "ood_review_share": 0.25,
+   "review_share_1546": 0.2703751617076326,
+   "review_share_1546_rankavg": 0.28654592496765846,
+   "w": 0.095
+  },
+  {
+   "ood_ba": 0.5240384615384616,
+   "ood_ba_ci95_grouped": [
+    0.37386679063860667,
+    0.6744034090909089
+   ],
+   "ood_ba_rankavg": 0.5221014492753624,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.34463254172015406,
+    0.6817072226866041
+   ],
+   "ood_err": 0.47596153846153844,
+   "ood_err_rankavg": 0.4778985507246376,
+   "ood_fn": 47,
+   "ood_fn_rankavg": 45,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 7,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 118,
+   "ood_n_decided_rankavg": 107,
+   "ood_n_good_decided": 104,
+   "ood_review_share": 0.26249999999999996,
+   "review_share_1546": 0.29560155239327296,
+   "review_share_1546_rankavg": 0.3027166882276843,
+   "w": 0.1
+  },
+  {
+   "ood_ba": 0.525,
+   "ood_ba_ci95_grouped": [
+    0.3711916692765424,
+    0.6822268471349902
+   ],
+   "ood_ba_rankavg": 0.5250936329588015,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.34630495150187734,
+    0.6865373951165693
+   ],
+   "ood_err": 0.475,
+   "ood_err_rankavg": 0.4749063670411985,
+   "ood_fn": 45,
+   "ood_fn_rankavg": 43,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 7,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 114,
+   "ood_n_decided_rankavg": 104,
+   "ood_n_good_decided": 100,
+   "ood_review_share": 0.2875,
+   "review_share_1546": 0.31953428201811124,
+   "review_share_1546_rankavg": 0.315006468305304,
+   "w": 0.105
+  },
+  {
+   "ood_ba": 0.5306122448979591,
+   "ood_ba_ci95_grouped": [
+    0.37739109848484853,
+    0.6887636092109065
+   ],
+   "ood_ba_rankavg": 0.5280303030303031,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3493987124647563,
+    0.6898324140329954
+   ],
+   "ood_err": 0.4693877551020409,
+   "ood_err_rankavg": 0.47196969696969693,
+   "ood_fn": 43,
+   "ood_fn_rankavg": 42,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 7,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 112,
+   "ood_n_decided_rankavg": 103,
+   "ood_n_good_decided": 98,
+   "ood_review_share": 0.30000000000000004,
+   "review_share_1546": 0.3369987063389392,
+   "review_share_1546_rankavg": 0.32858990944372574,
+   "w": 0.11
+  },
+  {
+   "ood_ba": 0.5335051546391752,
+   "ood_ba_ci95_grouped": [
+    0.37921127423629514,
+    0.6953368637834656
+   ],
+   "ood_ba_rankavg": 0.547077922077922,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3651714699113247,
+    0.7235627340823968
+   ],
+   "ood_err": 0.46649484536082475,
+   "ood_err_rankavg": 0.45292207792207795,
+   "ood_fn": 42,
+   "ood_fn_rankavg": 42,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 6,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 111,
+   "ood_n_decided_rankavg": 102,
+   "ood_n_good_decided": 97,
+   "ood_review_share": 0.30625,
+   "review_share_1546": 0.34928848641655885,
+   "review_share_1546_rankavg": 0.3389391979301423,
+   "w": 0.115
+  },
+  {
+   "ood_ba": 0.5364583333333333,
+   "ood_ba_ci95_grouped": [
+    0.3826883332335822,
+    0.6967152244257532
+   ],
+   "ood_ba_rankavg": 0.5473421926910299,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.36369458128078824,
+    0.7272452856740782
+   ],
+   "ood_err": 0.46354166666666674,
+   "ood_err_rankavg": 0.4526578073089701,
+   "ood_fn": 41,
+   "ood_fn_rankavg": 41,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 6,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 110,
+   "ood_n_decided_rankavg": 100,
+   "ood_n_good_decided": 96,
+   "ood_review_share": 0.3125,
+   "review_share_1546": 0.36998706338939197,
+   "review_share_1546_rankavg": 0.351875808538163,
+   "w": 0.12
+  },
+  {
+   "ood_ba": 0.5394736842105263,
+   "ood_ba_ci95_grouped": [
+    0.38540625,
+    0.7009469696969691
+   ],
+   "ood_ba_rankavg": 0.5693202146690519,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3973995695839312,
+    0.7345699317738791
+   ],
+   "ood_err": 0.4605263157894737,
+   "ood_err_rankavg": 0.4306797853309481,
+   "ood_fn": 40,
+   "ood_fn_rankavg": 41,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 5,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 109,
+   "ood_n_decided_rankavg": 99,
+   "ood_n_good_decided": 95,
+   "ood_review_share": 0.31875,
+   "review_share_1546": 0.3984476067270375,
+   "review_share_1546_rankavg": 0.3628719275549806,
+   "w": 0.125
+  },
+  {
+   "ood_ba": 0.5467032967032968,
+   "ood_ba_ci95_grouped": [
+    0.3916532258064516,
+    0.705246575342465
+   ],
+   "ood_ba_rankavg": 0.5980392156862745,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4236030251141553,
+    0.7743919008483563
+   ],
+   "ood_err": 0.45329670329670324,
+   "ood_err_rankavg": 0.4019607843137255,
+   "ood_fn": 37,
+   "ood_fn_rankavg": 40,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 4,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 105,
+   "ood_n_decided_rankavg": 97,
+   "ood_n_good_decided": 91,
+   "ood_review_share": 0.34375,
+   "review_share_1546": 0.4113842173350582,
+   "review_share_1546_rankavg": 0.37128072445019406,
+   "w": 0.13
+  },
+  {
+   "ood_ba": 0.5568181818181819,
+   "ood_ba_ci95_grouped": [
+    0.39790341713968713,
+    0.7216610549943883
+   ],
+   "ood_ba_rankavg": 0.6283422459893049,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.44354301075268815,
+    0.7830462733773375
+   ],
+   "ood_err": 0.4431818181818181,
+   "ood_err_rankavg": 0.3716577540106951,
+   "ood_fn": 34,
+   "ood_fn_rankavg": 40,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 3,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 102,
+   "ood_n_decided_rankavg": 96,
+   "ood_n_good_decided": 88,
+   "ood_review_share": 0.36250000000000004,
+   "review_share_1546": 0.4346701164294955,
+   "review_share_1546_rankavg": 0.3809831824062096,
+   "w": 0.135
+  },
+  {
+   "ood_ba": 0.5425339366515838,
+   "ood_ba_ci95_grouped": [
+    0.3802767499229109,
+    0.7051061980859515
+   ],
+   "ood_ba_rankavg": 0.6290684624017957,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4431569602272727,
+    0.7844351771354052
+   ],
+   "ood_err": 0.4574660633484162,
+   "ood_err_rankavg": 0.3709315375982043,
+   "ood_fn": 32,
+   "ood_fn_rankavg": 38,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 3,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 98,
+   "ood_n_decided_rankavg": 92,
+   "ood_n_good_decided": 85,
+   "ood_review_share": 0.38749999999999996,
+   "review_share_1546": 0.45084087968952136,
+   "review_share_1546_rankavg": 0.3958602846054334,
+   "w": 0.14
+  },
+  {
+   "ood_ba": 0.5500463392029658,
+   "ood_ba_ci95_grouped": [
+    0.3870423320890286,
+    0.7121643017476349
+   ],
+   "ood_ba_rankavg": 0.6261363636363637,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4388690476190476,
+    0.7816838235294117
+   ],
+   "ood_err": 0.44995366079703425,
+   "ood_err_rankavg": 0.3738636363636363,
+   "ood_fn": 30,
+   "ood_fn_rankavg": 38,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 3,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 96,
+   "ood_n_decided_rankavg": 91,
+   "ood_n_good_decided": 83,
+   "ood_review_share": 0.4,
+   "review_share_1546": 0.47477360931435963,
+   "review_share_1546_rankavg": 0.40426908150064683,
+   "w": 0.145
+  },
+  {
+   "ood_ba": 0.5620192307692308,
+   "ood_ba_ci95_grouped": [
+    0.39779584831644327,
+    0.7261166007905137
+   ],
+   "ood_ba_rankavg": 0.6294591484464902,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4409635685599541,
+    0.7857142857142857
+   ],
+   "ood_err": 0.43798076923076923,
+   "ood_err_rankavg": 0.3705408515535098,
+   "ood_fn": 27,
+   "ood_fn_rankavg": 37,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 3,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 93,
+   "ood_n_decided_rankavg": 90,
+   "ood_n_good_decided": 80,
+   "ood_review_share": 0.41874999999999996,
+   "review_share_1546": 0.49547218628719275,
+   "review_share_1546_rankavg": 0.41591203104786545,
+   "w": 0.15
+  },
+  {
+   "ood_ba": 0.5728744939271255,
+   "ood_ba_ci95_grouped": [
+    0.4082969425966414,
+    0.7349838682527212
+   ],
+   "ood_ba_rankavg": 0.7076023391812865,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.5207402597402597,
+    0.8317330158159597
+   ],
+   "ood_err": 0.4271255060728745,
+   "ood_err_rankavg": 0.29239766081871355,
+   "ood_fn": 24,
+   "ood_fn_rankavg": 36,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 89,
+   "ood_n_decided_rankavg": 85,
+   "ood_n_good_decided": 76,
+   "ood_review_share": 0.44375,
+   "review_share_1546": 0.5148771021992238,
+   "review_share_1546_rankavg": 0.42755498059508407,
+   "w": 0.155
+  },
+  {
+   "ood_ba": 0.5774358974358975,
+   "ood_ba_ci95_grouped": [
+    0.4147965922965923,
+    0.7396212406015031
+   ],
+   "ood_ba_rankavg": 0.7076023391812865,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.5207402597402597,
+    0.8317330158159597
+   ],
+   "ood_err": 0.4225641025641025,
+   "ood_err_rankavg": 0.29239766081871355,
+   "ood_fn": 23,
+   "ood_fn_rankavg": 36,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 88,
+   "ood_n_decided_rankavg": 85,
+   "ood_n_good_decided": 75,
+   "ood_review_share": 0.44999999999999996,
+   "review_share_1546": 0.5336351875808538,
+   "review_share_1546_rankavg": 0.44178525226390686,
+   "w": 0.16
+  },
+  {
+   "ood_ba": 0.5869336143308745,
+   "ood_ba_ci95_grouped": [
+    0.42705592105263157,
+    0.7519010980513454
+   ],
+   "ood_ba_rankavg": 0.7044444444444444,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.518425925925926,
+    0.8281094892894462
+   ],
+   "ood_err": 0.41306638566912546,
+   "ood_err_rankavg": 0.29555555555555557,
+   "ood_fn": 21,
+   "ood_fn_rankavg": 36,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 86,
+   "ood_n_decided_rankavg": 84,
+   "ood_n_good_decided": 73,
+   "ood_review_share": 0.4625,
+   "review_share_1546": 0.555627425614489,
+   "review_share_1546_rankavg": 0.4514877102199224,
+   "w": 0.165
+  },
+  {
+   "ood_ba": 0.600334448160535,
+   "ood_ba_ci95_grouped": [
+    0.4402145606884058,
+    0.767214161706349
+   ],
+   "ood_ba_rankavg": 0.6944444444444444,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.5062747161533218,
+    0.8269562334217506
+   ],
+   "ood_err": 0.39966555183946495,
+   "ood_err_rankavg": 0.3055555555555556,
+   "ood_fn": 18,
+   "ood_fn_rankavg": 35,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 82,
+   "ood_n_decided_rankavg": 80,
+   "ood_n_good_decided": 69,
+   "ood_review_share": 0.48750000000000004,
+   "review_share_1546": 0.574385510996119,
+   "review_share_1546_rankavg": 0.46248382923674,
+   "w": 0.17
+  },
+  {
+   "ood_ba": 0.5833333333333334,
+   "ood_ba_ci95_grouped": [
+    0.40359050626713666,
+    0.7543770858409011
+   ],
+   "ood_ba_rankavg": 0.6980633802816901,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.508241341991342,
+    0.8316123188405796
+   ],
+   "ood_err": 0.41666666666666663,
+   "ood_err_rankavg": 0.3019366197183099,
+   "ood_fn": 17,
+   "ood_fn_rankavg": 34,
+   "ood_fp": 7,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 12,
+   "ood_n_decided": 80,
+   "ood_n_decided_rankavg": 79,
+   "ood_n_good_decided": 68,
+   "ood_review_share": 0.5,
+   "review_share_1546": 0.5899094437257438,
+   "review_share_1546_rankavg": 0.47736093143596375,
+   "w": 0.175
+  },
+  {
+   "ood_ba": 0.6118881118881119,
+   "ood_ba_ci95_grouped": [
+    0.4224003232758621,
+    0.8059057486631015
+   ],
+   "ood_ba_rankavg": 0.7017857142857142,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.5099530537030537,
+    0.8370317725752507
+   ],
+   "ood_err": 0.3881118881118881,
+   "ood_err_rankavg": 0.29821428571428577,
+   "ood_fn": 15,
+   "ood_fn_rankavg": 33,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 11,
+   "ood_n_decided": 76,
+   "ood_n_decided_rankavg": 78,
+   "ood_n_good_decided": 65,
+   "ood_review_share": 0.525,
+   "review_share_1546": 0.6073738680465718,
+   "review_share_1546_rankavg": 0.49029754204398446,
+   "w": 0.18
+  },
+  {
+   "ood_ba": 0.6356060606060606,
+   "ood_ba_ci95_grouped": [
+    0.44997512437810944,
+    0.8285747354497354
+   ],
+   "ood_ba_rankavg": 0.6928571428571428,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.46957859848484845,
+    0.8371446488294314
+   ],
+   "ood_err": 0.3643939393939394,
+   "ood_err_rankavg": 0.30714285714285716,
+   "ood_fn": 11,
+   "ood_fn_rankavg": 33,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 11,
+   "ood_n_decided": 71,
+   "ood_n_decided_rankavg": 77,
+   "ood_n_good_decided": 60,
+   "ood_review_share": 0.55625,
+   "review_share_1546": 0.6235446313065977,
+   "review_share_1546_rankavg": 0.5025873221216042,
+   "w": 0.185
+  },
+  {
+   "ood_ba": 0.6340523882896765,
+   "ood_ba_ci95_grouped": [
+    0.44875382612271003,
+    0.8275435808039376
+   ],
+   "ood_ba_rankavg": 0.6932773109243697,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.47364921612541994,
+    0.8369446343130553
+   ],
+   "ood_err": 0.36594761171032353,
+   "ood_err_rankavg": 0.3067226890756303,
+   "ood_fn": 11,
+   "ood_fn_rankavg": 32,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 11,
+   "ood_n_decided": 70,
+   "ood_n_decided_rankavg": 75,
+   "ood_n_good_decided": 59,
+   "ood_review_share": 0.5625,
+   "review_share_1546": 0.6364812419146184,
+   "review_share_1546_rankavg": 0.5129366106080206,
+   "w": 0.19
+  },
+  {
+   "ood_ba": 0.6067796610169491,
+   "ood_ba_ci95_grouped": [
+    0.3979487673343606,
+    0.7962506469979297
+   ],
+   "ood_ba_rankavg": 0.6901098901098901,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4722222222222222,
+    0.8333333333333333
+   ],
+   "ood_err": 0.39322033898305087,
+   "ood_err_rankavg": 0.3098901098901099,
+   "ood_fn": 11,
+   "ood_fn_rankavg": 31,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 10,
+   "ood_n_decided": 69,
+   "ood_n_decided_rankavg": 72,
+   "ood_n_good_decided": 59,
+   "ood_review_share": 0.56875,
+   "review_share_1546": 0.6494178525226391,
+   "review_share_1546_rankavg": 0.5316946959896507,
+   "w": 0.195
+  },
+  {
+   "ood_ba": 0.6137931034482759,
+   "ood_ba_ci95_grouped": [
+    0.4024058854718982,
+    0.8048553361053361
+   ],
+   "ood_ba_rankavg": 0.6866359447004609,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4732855902777778,
+    0.8333333333333333
+   ],
+   "ood_err": 0.38620689655172413,
+   "ood_err_rankavg": 0.31336405529953915,
+   "ood_fn": 10,
+   "ood_fn_rankavg": 30,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 10,
+   "ood_n_decided": 68,
+   "ood_n_decided_rankavg": 69,
+   "ood_n_good_decided": 58,
+   "ood_review_share": 0.575,
+   "review_share_1546": 0.6623544631306598,
+   "review_share_1546_rankavg": 0.5446313065976714,
+   "w": 0.2
+  },
+  {
+   "ood_ba": 0.612280701754386,
+   "ood_ba_ci95_grouped": [
+    0.4,
+    0.8043604266030737
+   ],
+   "ood_ba_rankavg": 0.6826697892271663,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.47203590785907856,
+    0.830783371040724
+   ],
+   "ood_err": 0.387719298245614,
+   "ood_err_rankavg": 0.31733021077283374,
+   "ood_fn": 10,
+   "ood_fn_rankavg": 30,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 10,
+   "ood_n_decided": 67,
+   "ood_n_decided_rankavg": 68,
+   "ood_n_good_decided": 57,
+   "ood_review_share": 0.58125,
+   "review_share_1546": 0.6746442432082794,
+   "review_share_1546_rankavg": 0.5549805950840879,
+   "w": 0.205
+  },
+  {
+   "ood_ba": 0.6196428571428572,
+   "ood_ba_ci95_grouped": [
+    0.4,
+    0.8247098131705513
+   ],
+   "ood_ba_rankavg": 0.6785714285714286,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.47203590785907856,
+    0.8284093232467798
+   ],
+   "ood_err": 0.38035714285714284,
+   "ood_err_rankavg": 0.3214285714285714,
+   "ood_fn": 9,
+   "ood_fn_rankavg": 30,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 10,
+   "ood_n_decided": 66,
+   "ood_n_decided_rankavg": 67,
+   "ood_n_good_decided": 56,
+   "ood_review_share": 0.5875,
+   "review_share_1546": 0.6836998706338939,
+   "review_share_1546_rankavg": 0.5627425614489003,
+   "w": 0.21
+  },
+  {
+   "ood_ba": 0.6196428571428572,
+   "ood_ba_ci95_grouped": [
+    0.4,
+    0.8247098131705513
+   ],
+   "ood_ba_rankavg": 0.6785714285714286,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4633207070707071,
+    0.8290523516237402
+   ],
+   "ood_err": 0.38035714285714284,
+   "ood_err_rankavg": 0.3214285714285714,
+   "ood_fn": 9,
+   "ood_fn_rankavg": 29,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 10,
+   "ood_n_decided": 66,
+   "ood_n_decided_rankavg": 65,
+   "ood_n_good_decided": 56,
+   "ood_review_share": 0.5875,
+   "review_share_1546": 0.6953428201811126,
+   "review_share_1546_rankavg": 0.57503234152652,
+   "w": 0.215
+  },
+  {
+   "ood_ba": 0.5863095238095238,
+   "ood_ba_ci95_grouped": [
+    0.3971967087638729,
+    0.8200209137709138
+   ],
+   "ood_ba_rankavg": 0.674025974025974,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4552754790940767,
+    0.8253968253968254
+   ],
+   "ood_err": 0.41369047619047616,
+   "ood_err_rankavg": 0.325974025974026,
+   "ood_fn": 9,
+   "ood_fn_rankavg": 28,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 9,
+   "ood_n_decided": 65,
+   "ood_n_decided_rankavg": 62,
+   "ood_n_good_decided": 56,
+   "ood_review_share": 0.59375,
+   "review_share_1546": 0.702457956015524,
+   "review_share_1546_rankavg": 0.5866752910737387,
+   "w": 0.22
+  },
+  {
+   "ood_ba": 0.5863095238095238,
+   "ood_ba_ci95_grouped": [
+    0.3971967087638729,
+    0.8200209137709138
+   ],
+   "ood_ba_rankavg": 0.674025974025974,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4552754790940767,
+    0.8253968253968254
+   ],
+   "ood_err": 0.41369047619047616,
+   "ood_err_rankavg": 0.325974025974026,
+   "ood_fn": 9,
+   "ood_fn_rankavg": 28,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 9,
+   "ood_n_decided": 65,
+   "ood_n_decided_rankavg": 62,
+   "ood_n_good_decided": 56,
+   "ood_review_share": 0.59375,
+   "review_share_1546": 0.7082794307891332,
+   "review_share_1546_rankavg": 0.6015523932729625,
+   "w": 0.225
+  },
+  {
+   "ood_ba": 0.610062893081761,
+   "ood_ba_ci95_grouped": [
+    0.424451394585726,
+    0.8435520552560647
+   ],
+   "ood_ba_rankavg": 0.683288409703504,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.46525096525096526,
+    0.8369881193124368
+   ],
+   "ood_err": 0.389937106918239,
+   "ood_err_rankavg": 0.316711590296496,
+   "ood_fn": 6,
+   "ood_fn_rankavg": 26,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 9,
+   "ood_n_decided": 62,
+   "ood_n_decided_rankavg": 60,
+   "ood_n_good_decided": 53,
+   "ood_review_share": 0.6125,
+   "review_share_1546": 0.7121604139715395,
+   "review_share_1546_rankavg": 0.6170763260025873,
+   "w": 0.23
+  },
+  {
+   "ood_ba": 0.5683962264150944,
+   "ood_ba_ci95_grouped": [
+    0.39949404761904767,
+    0.7838709677419355
+   ],
+   "ood_ba_rankavg": 0.683288409703504,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.46525096525096526,
+    0.8369881193124368
+   ],
+   "ood_err": 0.43160377358490565,
+   "ood_err_rankavg": 0.316711590296496,
+   "ood_fn": 6,
+   "ood_fn_rankavg": 26,
+   "ood_fp": 6,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 8,
+   "ood_n_decided": 61,
+   "ood_n_decided_rankavg": 60,
+   "ood_n_good_decided": 53,
+   "ood_review_share": 0.61875,
+   "review_share_1546": 0.7192755498059509,
+   "review_share_1546_rankavg": 0.628072445019405,
+   "w": 0.235
+  },
+  {
+   "ood_ba": 0.5947802197802198,
+   "ood_ba_ci95_grouped": [
+    0.40961363636363635,
+    0.8
+   ],
+   "ood_ba_rankavg": 0.6834733893557423,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4623670212765958,
+    0.8362483421750664
+   ],
+   "ood_err": 0.4052197802197802,
+   "ood_err_rankavg": 0.3165266106442577,
+   "ood_fn": 5,
+   "ood_fn_rankavg": 25,
+   "ood_fp": 5,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 7,
+   "ood_n_decided": 59,
+   "ood_n_decided_rankavg": 58,
+   "ood_n_good_decided": 52,
+   "ood_review_share": 0.63125,
+   "review_share_1546": 0.7276843467011643,
+   "review_share_1546_rankavg": 0.6371280724450195,
+   "w": 0.24
+  },
+  {
+   "ood_ba": 0.6028571428571429,
+   "ood_ba_ci95_grouped": [
+    0.42426681706316655,
+    0.8045075757575753
+   ],
+   "ood_ba_rankavg": 0.6785714285714286,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4613712549759061,
+    0.8333333333333333
+   ],
+   "ood_err": 0.39714285714285713,
+   "ood_err_rankavg": 0.3214285714285714,
+   "ood_fn": 4,
+   "ood_fn_rankavg": 25,
+   "ood_fp": 5,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 7,
+   "ood_n_decided": 57,
+   "ood_n_decided_rankavg": 57,
+   "ood_n_good_decided": 50,
+   "ood_review_share": 0.64375,
+   "review_share_1546": 0.740620957309185,
+   "review_share_1546_rankavg": 0.6513583441138422,
+   "w": 0.245
+  },
+  {
+   "ood_ba": 0.6028571428571429,
+   "ood_ba_ci95_grouped": [
+    0.42426681706316655,
+    0.8045075757575753
+   ],
+   "ood_ba_rankavg": 0.6838905775075987,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4619401737967915,
+    0.8334276018099547
+   ],
+   "ood_err": 0.39714285714285713,
+   "ood_err_rankavg": 0.31610942249240126,
+   "ood_fn": 4,
+   "ood_fn_rankavg": 23,
+   "ood_fp": 5,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 7,
+   "ood_n_decided": 57,
+   "ood_n_decided_rankavg": 54,
+   "ood_n_good_decided": 50,
+   "ood_review_share": 0.64375,
+   "review_share_1546": 0.7542043984476067,
+   "review_share_1546_rankavg": 0.6636481241914618,
+   "w": 0.25
+  },
+  {
+   "ood_ba": 0.5433333333333333,
+   "ood_ba_ci95_grouped": [
+    0.4058910472972973,
+    0.7890951178451177
+   ],
+   "ood_ba_rankavg": 0.6952380952380952,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.47581845238095233,
+    0.8462519623233908
+   ],
+   "ood_err": 0.45666666666666667,
+   "ood_err_rankavg": 0.3047619047619048,
+   "ood_fn": 4,
+   "ood_fn_rankavg": 21,
+   "ood_fp": 5,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 6,
+   "ood_n_decided": 56,
+   "ood_n_decided_rankavg": 52,
+   "ood_n_good_decided": 50,
+   "ood_review_share": 0.65,
+   "review_share_1546": 0.7632600258732212,
+   "review_share_1546_rankavg": 0.6778783958602846,
+   "w": 0.255
+  },
+  {
+   "ood_ba": 0.5583333333333333,
+   "ood_ba_ci95_grouped": [
+    0.4033287577213452,
+    0.9184108527131781
+   ],
+   "ood_ba_rankavg": 0.7012987012987013,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.48146710374971247,
+    0.8534745584524811
+   ],
+   "ood_err": 0.44166666666666665,
+   "ood_err_rankavg": 0.2987012987012987,
+   "ood_fn": 4,
+   "ood_fn_rankavg": 20,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 5,
+   "ood_n_decided": 53,
+   "ood_n_decided_rankavg": 51,
+   "ood_n_good_decided": 48,
+   "ood_review_share": 0.66875,
+   "review_share_1546": 0.7723156532988357,
+   "review_share_1546_rankavg": 0.6869340232858991,
+   "w": 0.26
+  },
+  {
+   "ood_ba": 0.5673913043478261,
+   "ood_ba_ci95_grouped": [
+    0.42562578222778474,
+    0.9314935064935062
+   ],
+   "ood_ba_rankavg": 0.707641196013289,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.48922697368421053,
+    0.86
+   ],
+   "ood_err": 0.43260869565217386,
+   "ood_err_rankavg": 0.292358803986711,
+   "ood_fn": 3,
+   "ood_fn_rankavg": 19,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 5,
+   "ood_n_decided": 51,
+   "ood_n_decided_rankavg": 50,
+   "ood_n_good_decided": 46,
+   "ood_review_share": 0.68125,
+   "review_share_1546": 0.7800776196636481,
+   "review_share_1546_rankavg": 0.6972833117723156,
+   "w": 0.265
+  },
+  {
+   "ood_ba": 0.5772727272727273,
+   "ood_ba_ci95_grouped": [
+    0.4460881934566145,
+    0.9577380952380944
+   ],
+   "ood_ba_rankavg": 0.7142857142857142,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.49122162022703814,
+    0.8621228448275862
+   ],
+   "ood_err": 0.42272727272727273,
+   "ood_err_rankavg": 0.2857142857142858,
+   "ood_fn": 2,
+   "ood_fn_rankavg": 18,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 5,
+   "ood_n_decided": 49,
+   "ood_n_decided_rankavg": 49,
+   "ood_n_good_decided": 44,
+   "ood_review_share": 0.69375,
+   "review_share_1546": 0.7884864165588615,
+   "review_share_1546_rankavg": 0.7108667529107374,
+   "w": 0.27
+  },
+  {
+   "ood_ba": 0.5772727272727273,
+   "ood_ba_ci95_grouped": [
+    0.4460881934566145,
+    0.9577380952380944
+   ],
+   "ood_ba_rankavg": 0.7212543554006968,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.49534427284427285,
+    0.8703703703703703
+   ],
+   "ood_err": 0.42272727272727273,
+   "ood_err_rankavg": 0.2787456445993032,
+   "ood_fn": 2,
+   "ood_fn_rankavg": 17,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 5,
+   "ood_n_decided": 49,
+   "ood_n_decided_rankavg": 48,
+   "ood_n_good_decided": 44,
+   "ood_review_share": 0.69375,
+   "review_share_1546": 0.796895213454075,
+   "review_share_1546_rankavg": 0.7218628719275549,
+   "w": 0.275
+  },
+  {
+   "ood_ba": 0.5880952380952381,
+   "ood_ba_ci95_grouped": [
+    0.4666666666666667,
+    0.9685416666666664
+   ],
+   "ood_ba_rankavg": 0.7166666666666667,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.47805059523809523,
+    0.8786525974025974
+   ],
+   "ood_err": 0.4119047619047619,
+   "ood_err_rankavg": 0.2833333333333333,
+   "ood_fn": 1,
+   "ood_fn_rankavg": 16,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 5,
+   "ood_n_decided": 47,
+   "ood_n_decided_rankavg": 46,
+   "ood_n_good_decided": 42,
+   "ood_review_share": 0.70625,
+   "review_share_1546": 0.8046571798188874,
+   "review_share_1546_rankavg": 0.7328589909443726,
+   "w": 0.28
+  },
+  {
+   "ood_ba": 0.4875,
+   "ood_ba_ci95_grouped": [
+    0.45284598214285715,
+    0.5
+   ],
+   "ood_ba_rankavg": 0.7115384615384616,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.46937957875457875,
+    0.8758844339622641
+   ],
+   "ood_err": 0.5125,
+   "ood_err_rankavg": 0.28846153846153844,
+   "ood_fn": 1,
+   "ood_fn_rankavg": 16,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 4,
+   "ood_n_decided": 44,
+   "ood_n_decided_rankavg": 45,
+   "ood_n_good_decided": 40,
+   "ood_review_share": 0.725,
+   "review_share_1546": 0.8124191461836999,
+   "review_share_1546_rankavg": 0.7445019404915912,
+   "w": 0.285
+  },
+  {
+   "ood_ba": 0.4875,
+   "ood_ba_ci95_grouped": [
+    0.45284598214285715,
+    0.5
+   ],
+   "ood_ba_rankavg": 0.713963963963964,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.47111344537815125,
+    0.87817237969677
+   ],
+   "ood_err": 0.5125,
+   "ood_err_rankavg": 0.286036036036036,
+   "ood_fn": 1,
+   "ood_fn_rankavg": 15,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 4,
+   "ood_n_decided": 44,
+   "ood_n_decided_rankavg": 43,
+   "ood_n_good_decided": 40,
+   "ood_review_share": 0.725,
+   "review_share_1546": 0.815653298835705,
+   "review_share_1546_rankavg": 0.7542043984476067,
+   "w": 0.29
+  },
+  {
+   "ood_ba": 0.4864864864864865,
+   "ood_ba_ci95_grouped": [
+    0.44855216622458005,
+    0.5
+   ],
+   "ood_ba_rankavg": 0.713963963963964,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.47111344537815125,
+    0.87817237969677
+   ],
+   "ood_err": 0.5135135135135135,
+   "ood_err_rankavg": 0.286036036036036,
+   "ood_fn": 1,
+   "ood_fn_rankavg": 15,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 4,
+   "ood_n_decided": 41,
+   "ood_n_decided_rankavg": 43,
+   "ood_n_good_decided": 37,
+   "ood_review_share": 0.74375,
+   "review_share_1546": 0.8221216041397154,
+   "review_share_1546_rankavg": 0.7613195342820182,
+   "w": 0.295
+  },
+  {
+   "ood_ba": 0.4861111111111111,
+   "ood_ba_ci95_grouped": [
+    0.44701597744360905,
+    0.5
+   ],
+   "ood_ba_rankavg": 0.7030303030303031,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.33365384615384613,
+    0.8888888888888888
+   ],
+   "ood_err": 0.5138888888888888,
+   "ood_err_rankavg": 0.2969696969696969,
+   "ood_fn": 1,
+   "ood_fn_rankavg": 13,
+   "ood_fp": 4,
+   "ood_fp_rankavg": 1,
+   "ood_n_bad_decided": 4,
+   "ood_n_decided": 40,
+   "ood_n_decided_rankavg": 38,
+   "ood_n_good_decided": 36,
+   "ood_review_share": 0.75,
+   "review_share_1546": 0.8292367399741267,
+   "review_share_1546_rankavg": 0.7703751617076326,
+   "w": 0.3
+  }
+ ],
+ "branch": "m/review160",
+ "frac_review_1546_at_w0.30": 0.8292367399741267,
+ "gate_frontier": [
+  {
+   "coverage": 0.4,
+   "ood_ba": 0.5939393939393939,
+   "ood_ba_ci95_grouped": [
+    0.4056472746331237,
+    0.8333333333333333
+   ],
+   "ood_ba_fixed_cutoff": 0.5871212121212122,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.4078825536062378,
+    0.761658481207732
+   ],
+   "ood_ba_rankavg": 0.6741854636591478,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4551977040816326,
+    0.8261155606407322
+   ],
+   "ood_err": 0.4060606060606061,
+   "ood_err_rankavg": 0.3258145363408522,
+   "ood_fn": 8,
+   "ood_fn_fixed_cutoff": 16,
+   "ood_fn_rankavg": 29,
+   "ood_fp": 6,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 1,
+   "ood_margin_cutoff_from_1546": 0.1779,
+   "ood_n_bad_decided": 9,
+   "ood_n_decided": 64,
+   "ood_n_decided_fixed_cutoff": 78,
+   "ood_n_decided_rankavg": 64,
+   "ood_n_good_decided": 55,
+   "review_share_1546": 0.6,
+   "review_share_1546_rankavg": 0.6
+  },
+  {
+   "coverage": 0.45,
+   "ood_ba": 0.6289120715350224,
+   "ood_ba_ci95_grouped": [
+    0.4437790697674418,
+    0.82214527027027
+   ],
+   "ood_ba_fixed_cutoff": 0.5869336143308745,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.42705592105263157,
+    0.7519010980513454
+   ],
+   "ood_ba_rankavg": 0.6901098901098901,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.4722222222222222,
+    0.8333333333333333
+   ],
+   "ood_err": 0.3710879284649776,
+   "ood_err_rankavg": 0.3098901098901099,
+   "ood_fn": 12,
+   "ood_fn_fixed_cutoff": 21,
+   "ood_fn_rankavg": 31,
+   "ood_fp": 6,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 1,
+   "ood_margin_cutoff_from_1546": 0.1639,
+   "ood_n_bad_decided": 11,
+   "ood_n_decided": 72,
+   "ood_n_decided_fixed_cutoff": 86,
+   "ood_n_decided_rankavg": 72,
+   "ood_n_good_decided": 61,
+   "review_share_1546": 0.55,
+   "review_share_1546_rankavg": 0.55
+  },
+  {
+   "coverage": 0.5,
+   "ood_ba": 0.5833333333333334,
+   "ood_ba_ci95_grouped": [
+    0.40359050626713666,
+    0.7543770858409011
+   ],
+   "ood_ba_fixed_cutoff": 0.5705128205128205,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.4054656910253925,
+    0.7358319665409218
+   ],
+   "ood_ba_rankavg": 0.6944444444444444,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.5062747161533218,
+    0.8269562334217506
+   ],
+   "ood_err": 0.41666666666666663,
+   "ood_err_rankavg": 0.3055555555555556,
+   "ood_fn": 17,
+   "ood_fn_fixed_cutoff": 25,
+   "ood_fn_rankavg": 35,
+   "ood_fp": 7,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 1,
+   "ood_margin_cutoff_from_1546": 0.1513,
+   "ood_n_bad_decided": 12,
+   "ood_n_decided": 80,
+   "ood_n_decided_fixed_cutoff": 91,
+   "ood_n_decided_rankavg": 80,
+   "ood_n_good_decided": 68,
+   "review_share_1546": 0.5,
+   "review_share_1546_rankavg": 0.5
+  },
+  {
+   "coverage": 0.55,
+   "ood_ba": 0.5774358974358975,
+   "ood_ba_ci95_grouped": [
+    0.4147965922965923,
+    0.7396212406015031
+   ],
+   "ood_ba_fixed_cutoff": 0.5425339366515838,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.3802767499229109,
+    0.7051061980859515
+   ],
+   "ood_ba_rankavg": 0.6298701298701299,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.43749193201376935,
+    0.7884789156626505
+   ],
+   "ood_err": 0.4225641025641025,
+   "ood_err_rankavg": 0.3701298701298701,
+   "ood_fn": 23,
+   "ood_fn_fixed_cutoff": 32,
+   "ood_fn_rankavg": 36,
+   "ood_fp": 7,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 3,
+   "ood_margin_cutoff_from_1546": 0.13959999999999995,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 88,
+   "ood_n_decided_fixed_cutoff": 98,
+   "ood_n_decided_rankavg": 88,
+   "ood_n_good_decided": 75,
+   "review_share_1546": 0.44999999999999996,
+   "review_share_1546_rankavg": 0.44999999999999996
+  },
+  {
+   "coverage": 0.6,
+   "ood_ba": 0.5500463392029658,
+   "ood_ba_ci95_grouped": [
+    0.3870423320890286,
+    0.7121643017476349
+   ],
+   "ood_ba_fixed_cutoff": 0.5425531914893618,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.38714170506912443,
+    0.7043323863636364
+   ],
+   "ood_ba_rankavg": 0.6283422459893049,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.44354301075268815,
+    0.7830462733773375
+   ],
+   "ood_err": 0.44995366079703425,
+   "ood_err_rankavg": 0.3716577540106951,
+   "ood_fn": 30,
+   "ood_fn_fixed_cutoff": 39,
+   "ood_fn_rankavg": 40,
+   "ood_fp": 7,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 3,
+   "ood_margin_cutoff_from_1546": 0.1259,
+   "ood_n_bad_decided": 13,
+   "ood_n_decided": 96,
+   "ood_n_decided_fixed_cutoff": 108,
+   "ood_n_decided_rankavg": 96,
+   "ood_n_good_decided": 83,
+   "review_share_1546": 0.4,
+   "review_share_1546_rankavg": 0.4
+  },
+  {
+   "coverage": 0.65,
+   "ood_ba": 0.55,
+   "ood_ba_ci95_grouped": [
+    0.3938813025210084,
+    0.7099095005571211
+   ],
+   "ood_ba_fixed_cutoff": 0.5335051546391752,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.37921127423629514,
+    0.6953368637834656
+   ],
+   "ood_ba_rankavg": 0.5250936329588015,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.34630495150187734,
+    0.6865373951165693
+   ],
+   "ood_err": 0.44999999999999996,
+   "ood_err_rankavg": 0.4749063670411985,
+   "ood_fn": 36,
+   "ood_fn_fixed_cutoff": 42,
+   "ood_fn_rankavg": 43,
+   "ood_fp": 7,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 7,
+   "ood_margin_cutoff_from_1546": 0.11559999999999998,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 104,
+   "ood_n_decided_fixed_cutoff": 111,
+   "ood_n_decided_rankavg": 104,
+   "ood_n_good_decided": 90,
+   "review_share_1546": 0.35,
+   "review_share_1546_rankavg": 0.35
+  },
+  {
+   "coverage": 0.7,
+   "ood_ba": 0.5306122448979591,
+   "ood_ba_ci95_grouped": [
+    0.37739109848484853,
+    0.6887636092109065
+   ],
+   "ood_ba_fixed_cutoff": 0.5240384615384616,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.37386679063860667,
+    0.6744034090909089
+   ],
+   "ood_ba_rankavg": 0.5052083333333333,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3337809230601569,
+    0.6670947945403217
+   ],
+   "ood_err": 0.4693877551020409,
+   "ood_err_rankavg": 0.49479166666666674,
+   "ood_fn": 43,
+   "ood_fn_fixed_cutoff": 47,
+   "ood_fn_rankavg": 47,
+   "ood_fp": 7,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 8,
+   "ood_margin_cutoff_from_1546": 0.10070000000000001,
+   "ood_n_bad_decided": 14,
+   "ood_n_decided": 112,
+   "ood_n_decided_fixed_cutoff": 118,
+   "ood_n_decided_rankavg": 112,
+   "ood_n_good_decided": 98,
+   "review_share_1546": 0.30000000000000004,
+   "review_share_1546_rankavg": 0.30000000000000004
+  },
+  {
+   "coverage": 0.75,
+   "ood_ba": 0.5380952380952381,
+   "ood_ba_ci95_grouped": [
+    0.3795864045864046,
+    0.6903528423726066
+   ],
+   "ood_ba_fixed_cutoff": 0.5330218068535826,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.3734708171904147,
+    0.6852864474235442
+   ],
+   "ood_ba_rankavg": 0.5,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3333198924731183,
+    0.6674944506104327
+   ],
+   "ood_err": 0.46190476190476193,
+   "ood_err_rankavg": 0.5,
+   "ood_fn": 48,
+   "ood_fn_fixed_cutoff": 50,
+   "ood_fn_rankavg": 52,
+   "ood_fp": 7,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 8,
+   "ood_margin_cutoff_from_1546": 0.09179999999999999,
+   "ood_n_bad_decided": 15,
+   "ood_n_decided": 120,
+   "ood_n_decided_fixed_cutoff": 122,
+   "ood_n_decided_rankavg": 120,
+   "ood_n_good_decided": 105,
+   "review_share_1546": 0.25,
+   "review_share_1546_rankavg": 0.25
+  },
+  {
+   "coverage": 0.8,
+   "ood_ba": 0.5401785714285714,
+   "ood_ba_ci95_grouped": [
+    0.3776359812153026,
+    0.687563131313131
+   ],
+   "ood_ba_fixed_cutoff": 0.5356359649122807,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.37190241228070176,
+    0.6850475136339111
+   ],
+   "ood_ba_rankavg": 0.49205087440381556,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.32707541823014386,
+    0.6488986088817549
+   ],
+   "ood_err": 0.4598214285714286,
+   "ood_err_rankavg": 0.5079491255961844,
+   "ood_fn": 54,
+   "ood_fn_fixed_cutoff": 56,
+   "ood_fn_rankavg": 54,
+   "ood_fp": 7,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 9,
+   "ood_margin_cutoff_from_1546": 0.08090000000000003,
+   "ood_n_bad_decided": 16,
+   "ood_n_decided": 128,
+   "ood_n_decided_fixed_cutoff": 130,
+   "ood_n_decided_rankavg": 128,
+   "ood_n_good_decided": 112,
+   "review_share_1546": 0.19999999999999996,
+   "review_share_1546_rankavg": 0.19999999999999996
+  },
+  {
+   "coverage": 0.85,
+   "ood_ba": 0.5420168067226891,
+   "ood_ba_ci95_grouped": [
+    0.39951541318994704,
+    0.6813101135190918
+   ],
+   "ood_ba_fixed_cutoff": 0.5399509803921568,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.3977555397727273,
+    0.6787156341642225
+   ],
+   "ood_ba_rankavg": 0.48897885739991,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.33845108695652176,
+    0.6243609022556391
+   ],
+   "ood_err": 0.45798319327731085,
+   "ood_err_rankavg": 0.51102114260009,
+   "ood_fn": 60,
+   "ood_fn_fixed_cutoff": 61,
+   "ood_fn_rankavg": 58,
+   "ood_fp": 7,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 10,
+   "ood_margin_cutoff_from_1546": 0.07030000000000003,
+   "ood_n_bad_decided": 17,
+   "ood_n_decided": 136,
+   "ood_n_decided_fixed_cutoff": 137,
+   "ood_n_decided_rankavg": 136,
+   "ood_n_good_decided": 119,
+   "review_share_1546": 0.15000000000000002,
+   "review_share_1546_rankavg": 0.15000000000000002
+  },
+  {
+   "coverage": 0.9,
+   "ood_ba": 0.5557894736842105,
+   "ood_ba_ci95_grouped": [
+    0.42372852913841175,
+    0.6870778350515464
+   ],
+   "ood_ba_fixed_cutoff": 0.5380200860832138,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.39446466227962285,
+    0.6780725153454356
+   ],
+   "ood_ba_rankavg": 0.5220673635307782,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.38369416350611035,
+    0.6522725783678067
+   ],
+   "ood_err": 0.4442105263157895,
+   "ood_err_rankavg": 0.4779326364692218,
+   "ood_fn": 65,
+   "ood_fn_fixed_cutoff": 63,
+   "ood_fn_rankavg": 59,
+   "ood_fp": 7,
+   "ood_fp_fixed_cutoff": 7,
+   "ood_fp_rankavg": 10,
+   "ood_margin_cutoff_from_1546": 0.05790000000000001,
+   "ood_n_bad_decided": 19,
+   "ood_n_decided": 144,
+   "ood_n_decided_fixed_cutoff": 140,
+   "ood_n_decided_rankavg": 144,
+   "ood_n_good_decided": 125,
+   "review_share_1546": 0.09999999999999998,
+   "review_share_1546_rankavg": 0.09999999999999998
+  },
+  {
+   "coverage": 0.95,
+   "ood_ba": 0.5461650308978554,
+   "ood_ba_ci95_grouped": [
+    0.4258818043295502,
+    0.6625400641025638
+   ],
+   "ood_ba_fixed_cutoff": 0.5461650308978554,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.4258818043295502,
+    0.6625400641025638
+   ],
+   "ood_ba_rankavg": 0.5176299527444566,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3815508177133431,
+    0.6498410870788994
+   ],
+   "ood_err": 0.4538349691021446,
+   "ood_err_rankavg": 0.48237004725554344,
+   "ood_fn": 69,
+   "ood_fn_fixed_cutoff": 69,
+   "ood_fn_rankavg": 64,
+   "ood_fp": 8,
+   "ood_fp_fixed_cutoff": 8,
+   "ood_fp_rankavg": 10,
+   "ood_margin_cutoff_from_1546": 0.034399999999999986,
+   "ood_n_bad_decided": 21,
+   "ood_n_decided": 152,
+   "ood_n_decided_fixed_cutoff": 152,
+   "ood_n_decided_rankavg": 152,
+   "ood_n_good_decided": 131,
+   "review_share_1546": 0.050000000000000044,
+   "review_share_1546_rankavg": 0.050000000000000044
+  },
+  {
+   "coverage": 1.0,
+   "ood_ba": 0.5464426877470355,
+   "ood_ba_ci95_grouped": [
+    0.4391702091447389,
+    0.654917531793739
+   ],
+   "ood_ba_fixed_cutoff": 0.5464426877470355,
+   "ood_ba_fixed_cutoff_ci95_grouped": [
+    0.4391702091447389,
+    0.654917531793739
+   ],
+   "ood_ba_rankavg": 0.5263504611330698,
+   "ood_ba_rankavg_ci95_grouped": [
+    0.3845379478677351,
+    0.658929307005252
+   ],
+   "ood_err": 0.4535573122529645,
+   "ood_err_rankavg": 0.4736495388669302,
+   "ood_fn": 75,
+   "ood_fn_fixed_cutoff": 75,
+   "ood_fn_rankavg": 68,
+   "ood_fp": 8,
+   "ood_fp_fixed_cutoff": 8,
+   "ood_fp_rankavg": 10,
+   "ood_margin_cutoff_from_1546": 0.00029999999999996696,
+   "ood_n_bad_decided": 22,
+   "ood_n_decided": 160,
+   "ood_n_decided_fixed_cutoff": 160,
+   "ood_n_decided_rankavg": 160,
+   "ood_n_good_decided": 138,
+   "review_share_1546": 0.0,
+   "review_share_1546_rankavg": 0.0
+  }
+ ],
+ "id": "O3.01",
+ "inputs": {
+  "e8_jsonl": "/workspace/artifacts/windows_rescored.jsonl",
+  "e8_results_json": "/workspace/wt/exp-rescore/eval/results/exp_rescore/E8.01.json",
+  "ood160_labels": "/workspace/jadal_pod_bundle/labels/ood160_labels.json",
+  "ood_scores": "/workspace/jadal_pod_bundle/caches/ensemble/ood_scores.json",
+  "ood_scores2": "/workspace/jadal_pod_bundle/caches/ensemble/ood_scores2.json"
+ },
+ "label_source": {
+  "e8_1546": "none",
+  "ood160": "human-labelled Egocentric-10K sample (138 good / 22 bad, one labeller)"
+ },
+ "n": {
+  "e8_1546": 1546,
+  "e8_factories": 47,
+  "ood160": 160,
+  "ood_bad": 22,
+  "ood_factories": 47,
+  "ood_good": 138
+ },
+ "owner": "O3",
+ "protocol": {
+  "band_rule": "accept if score>=0.5+w; reject if score<=0.5-w; else review",
+  "ci": "factory-grouped bootstrap 2000x of the 47 factories (all windows of a sampled factory enter together)",
+  "gate_rule": "decide top-`coverage` fraction by cost-margin |p-0.5| (cost 1:1); review the rest; review% on 1546 = 1-coverage exactly",
+  "ood_error": "balanced accuracy over DECIDED windows of the 160 human-labelled OOD set (138 good / 22 bad, 47 factories); PRE-REGISTERED TEST, evaluation only, nothing fit on it",
+  "rankavg": "0.5*(avg-rank(p_eg2)+avg-rank(p_pixel)) scaled to [0,1] within each dataset; no new inference",
+  "review_denominator": "n=1546 Egocentric-10K rescored windows, label_source=none (DESCRIPTIVE/workload)",
+  "score": "frozen ensemble_v1 prob-average (usable_prob = mean(p_eg2,p_pixel))",
+  "seed": 7
+ },
+ "reproduction": {
+  "e8_profile_rule_reproduced_rows": 1546,
+  "e8_verdict_distribution": {
+   "accept": 296,
+   "reject": 83,
+   "review": 1167
+  },
+  "note": "stored ood_scores verdicts use band [0.4,0.6]; the deployed E8 profile band is [0.25,0.75] (75.5% review). Both reproduced row-for-row.",
+  "ood_auroc_p_eg2": 0.5890974967061924,
+  "ood_auroc_p_pixel": 0.5202569169960475,
+  "ood_auroc_rankavg": 0.5634057971014492,
+  "ood_auroc_rankavg_ci95_grouped": [
+   0.39627694859038143,
+   0.7048349228684595
+  ],
+  "ood_auroc_usable_prob": 0.5660408432147562,
+  "ood_auroc_usable_prob_ci95_grouped": [
+   0.4221246520679579,
+   0.7019755268250726
+  ],
+  "ood_ba_frozen_profile_band_w0.25": 0.6028571428571429,
+  "ood_ba_full_decision_w0": 0.5464426877470355,
+  "ood_n_decided_frozen_w0.25": 57,
+  "stored_verdict_distribution": {
+   "accept": 64,
+   "reject": 54,
+   "review": 42
+  },
+  "stored_verdict_reproduced_rows": 160,
+  "stored_verdict_rule": "accept>=0.6, reject<=0.4, else review (band w=0.1)",
+  "usable_prob_equals_probavg_maxdiff": 5.0000000000105516e-05
+ },
+ "title": "Review-vs-OOD-error frontier on the 160-window pre-registered OOD test"
+}
