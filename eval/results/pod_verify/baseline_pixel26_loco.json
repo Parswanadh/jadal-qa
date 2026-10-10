@@ -1,0 +1,27 @@
+{
+ "experiment": "baseline-26-feature-logistic-LOCO",
+ "verified_by": "lead-b (LB1)",
+ "n": 150,
+ "n_clips": 7,
+ "n_bad": 50,
+ "label_source": "human gold IndEgo (labels/manifest_gold.json, READ-ONLY)",
+ "protocol": "LOCO logistic C=0.3 class_weight=balanced on 26 GPU per-pixel features; pooled AUROC; clip per-clip AUROC",
+ "command": "OMP_NUM_THREADS=2 python3 tools/port/baseline_logistic_loco.py",
+ "data": "/workspace/jadal_pod_bundle/caches/gpu/features.json",
+ "auroc_all": 0.81,
+ "auroc_good_vs_semantic_bad": 0.797,
+ "auroc_good_vs_quality_bad": 0.846,
+ "per_clip_auroc": {
+  "desk": 0.8,
+  "ecu_full": 0.95,
+  "ecu_late": 0.65,
+  "logistics4": 0.9,
+  "organise": 0.91,
+  "pallet": 0.5,
+  "pallet2": 0.5
+ },
+ "within_clip_z_auroc_all": 0.601,
+ "claimed_reference": 0.81,
+ "reproduced": true,
+ "ts": "2026-10-10T15:59:46.158130Z"
+}

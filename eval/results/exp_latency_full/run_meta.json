@@ -1,0 +1,19 @@
+{
+ "device": "A40",
+ "errors": [],
+ "manifest": {
+  "n_clips": 58,
+  "n_windows": 1546,
+  "total_hours": 4.404
+ },
+ "max_rss_gb": null,
+ "n_errors": 0,
+ "n_requested": 190,
+ "n_windows": 190,
+ "omp_threads": "1",
+ "partial": true,
+ "policy_probe": [],
+ "smi": [],
+ "wall_s": 237.32172679901123,
+ "workers": 4
+}

@@ -1,0 +1,43 @@
+{
+ "source": "stream_events.jsonl",
+ "label_note": "replay of a real clip with a scripted blackout; not accuracy",
+ "events": 16,
+ "window_ids": [
+  "f69_w4_t0000",
+  "f69_w4_t0010",
+  "f69_w4_t0020",
+  "f69_w4_t0030"
+ ],
+ "chunk_s": 2.0,
+ "decisions": {
+  "continue": 5,
+  "accept": 1,
+  "early_reject": 10
+ },
+ "chunk_latency_ms": {
+  "p50": 574.6,
+  "max": 820.9,
+  "mean": 606.1,
+  "method": "median and max over every event; chunk compute only"
+ },
+ "first_early_reject": {
+  "t_s": 12.0,
+  "chunk": 7,
+  "s0_rule": "black"
+ },
+ "scripted_blackout": {
+  "t_s": 12.0,
+  "note": "injected by scripts/poc_stream_replay.py --degrade blackout; not from the footage"
+ },
+ "first_reject_minus_blackout_s": 0.0,
+ "ram_mb": {
+  "max": 170.6,
+  "last": 170.6
+ },
+ "decode": [
+  "cpu"
+ ],
+ "s0_source": [
+  "local-fallback"
+ ]
+}

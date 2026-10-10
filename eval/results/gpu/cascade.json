@@ -1,0 +1,216 @@
+{
+ "device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
+ "regenerate": "python eval/gpu/run_features.py && python eval/gpu/cascade.py",
+ "features_source": "eval/results/gpu/features.json",
+ "loco": {
+  "auc": 0.8016000000000001,
+  "auc_ci95": [
+   0.7095588235294117,
+   0.8697318007662834
+  ],
+  "threshold": 0.6,
+  "n": 150,
+  "n_good": 100,
+  "n_bad": 50
+ },
+ "margin": 0.25,
+ "s0_rules": [
+  [
+   "black",
+   "p95",
+   "<",
+   0.03
+  ],
+  [
+   "dark",
+   "mean",
+   "<",
+   0.05
+  ],
+  [
+   "lens_blocked",
+   "spatial_var",
+   "<",
+   1e-05
+  ],
+  [
+   "overexposed",
+   "p5",
+   ">",
+   0.7
+  ],
+  [
+   "frozen",
+   "temp_e",
+   "<",
+   0.0005
+  ]
+ ],
+ "gold_exits": {
+  "S2": 45,
+  "S1_accept": 75,
+  "S1_reject": 27,
+  "S0": 3
+ },
+ "gold_exit_frac": {
+  "S2": 0.3,
+  "S1_accept": 0.5,
+  "S1_reject": 0.18,
+  "S0": 0.02
+ },
+ "decided": {
+  "tp": 67,
+  "tn": 22,
+  "fp": 8,
+  "fn": 8,
+  "balanced_acc": 0.813,
+  "coverage": 0.7
+ },
+ "false_rejects": [
+  {
+   "id": "g058",
+   "stage": "S1",
+   "p": 0.2454014294784745
+  },
+  {
+   "id": "g101",
+   "stage": "S1",
+   "p": 0.10594660705188413
+  },
+  {
+   "id": "g102",
+   "stage": "S1",
+   "p": 0.23116688451207962
+  },
+  {
+   "id": "g104",
+   "stage": "S1",
+   "p": 0.0842597899660551
+  },
+  {
+   "id": "g105",
+   "stage": "S1",
+   "p": 0.015694288637857507
+  },
+  {
+   "id": "g122",
+   "stage": "S1",
+   "p": 0.24136127468734064
+  },
+  {
+   "id": "g140",
+   "stage": "S1",
+   "p": 0.1642784500149117
+  },
+  {
+   "id": "g144",
+   "stage": "S1",
+   "p": 0.2155418364819179
+  }
+ ],
+ "n_false_reject": 8,
+ "synth_exits": {
+  "clean": {
+   "S1_or_S2": 6
+  },
+  "blur": {
+   "S1_or_S2": 6
+  },
+  "darken": {
+   "S0": 6
+  },
+  "overexpose": {
+   "S1_or_S2": 6
+  },
+  "frozen": {
+   "S0": 6
+  },
+  "black": {
+   "S0": 6
+  },
+  "shake": {
+   "S1_or_S2": 6
+  },
+  "noise": {
+   "S1_or_S2": 6
+  },
+  "lowbitrate": {
+   "S1_or_S2": 6
+  },
+  "static": {
+   "S1_or_S2": 6
+  }
+ },
+ "cost_model": {
+  "H_S2_assumed_NOT_measured": 5.0,
+  "compute_saved_frac": 0.637
+ },
+ "streaming_ttd_s": {
+  "gold:NO_ACTIVE_WORK": 4.0,
+  "gold:DUPLICATE": 2.0,
+  "gold:UNDECODABLE": 2.0,
+  "gold:HANDS_NOT_VISIBLE": 2.0,
+  "gold:TOO_DARK": 2.0,
+  "blur": 2.0,
+  "darken": 2.0,
+  "overexpose": 2.0,
+  "frozen": 2.0,
+  "black": 2.0,
+  "shake": 4.0,
+  "noise": 2.0,
+  "lowbitrate": 4.0,
+  "static": 2.0
+ },
+ "s2": {
+  "method": "STUB: mediapipe-hands CPU or EG2 GPU (not run here)",
+  "queued": [
+   "g000",
+   "g001",
+   "g027",
+   "g028",
+   "g032",
+   "g035",
+   "g036",
+   "g039",
+   "g040",
+   "g041",
+   "g045",
+   "g047",
+   "g048",
+   "g049",
+   "g057",
+   "g059",
+   "g061",
+   "g062",
+   "g065",
+   "g066",
+   "g075",
+   "g076",
+   "g077",
+   "g078",
+   "g081",
+   "g082",
+   "g085",
+   "g087",
+   "g089",
+   "g090",
+   "g094",
+   "g097",
+   "g107",
+   "g108",
+   "g111",
+   "g117",
+   "g129",
+   "g132",
+   "g136",
+   "g137",
+   "g141",
+   "g142",
+   "g143",
+   "g145",
+   "g147"
+  ],
+  "n_queued": 45
+ },
+ "wall_s": 1.8
+}
