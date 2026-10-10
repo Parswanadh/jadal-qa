@@ -5,19 +5,23 @@
 Crowd-captured head-camera video is the raw material for robot learning. Much of it is
 unusable: dark, blocked, frozen, duplicated, hands out of view, nothing happening.
 Jadal QA is a deterministic funnel that marks each 10-second window
-**accept / reject / review**, with the reason, the measured value, and the threshold
-for every reject, plus a content-hashed receipt.
+**accept / reject / review**, with a content-hashed receipt. S0 rejects carry
+per-rule `{feature, value, op, threshold}`; S1 rejects carry the head score
+`s1_score` against the 0.6 threshold (all 702 PoC rejects are `S1_UNUSABLE`).
 
 | At a glance | Scope |
 |---|---|
-| Ensemble AUROC **0.834 [0.715, 0.914]** | IndEgo, n=150 windows, 7 clips, nested leave-one-clip-out |
-| Factory AUROC **0.600 [0.474, 0.724]**, rejects 53/138 good (38%) | Egocentric-10K, n=160 windows, 47 factories — close to chance |
+| Ensemble AUROC **0.834 [0.715, 0.914]** — pre-registered gates NOT met (AUROC >= 0.85, CI-low >= 0.72) | IndEgo, n=150 windows, 7 clips, nested leave-one-clip-out |
+| Factory AUROC **0.600 [0.474, 0.724]**, rejects 53/138 good (38%) | Egocentric-10K, n=160 windows, 47 factories — close to chance; source: sync doc, results file pending merge |
 | PoC run: **1,587 windows, 4.404 h, 702 rejected (44.2%)** | 47 factories, descriptive only (unlabelled) |
 | **750 tests, OK** | `make test` on this branch |
 
 Sources: `eval/results/ensemble/nested_loco.json`,
-`docs/pod/SYNC_UPDATE_2026-10-10_2145.md:22`,
-`eval/results/poc/run_summary.json`. CIs bootstrap windows and ignore
+`docs/pod/SYNC_UPDATE_2026-10-10_2145.md:22` (the 160-window OOD numbers),
+`eval/results/poc/run_summary.json`. The OOD evaluation outputs
+'ood_eval_*_160.txt' live in the pod data bundle (Hugging Face dataset repo
+Havoc1904/jadal-pod-data, private) and are not yet merged — OOD rows below are
+marked 'source: sync doc; results file pending merge'. CIs bootstrap windows and ignore
 clip/factory correlation, so they are optimistic.
 
 ![Jadal QA funnel: S0 exact rules, S1 spectral features with logistic head, S2 review of uncertain windows, each reject with reason, evidence and content-hashed receipt](docs/assets/funnel.svg)
@@ -28,8 +32,9 @@ clip/factory correlation, so they are optimistic.
 
 - Robot-learning pipelines eat factory video. Bad clips waste labelling, training, and trust.
 - Hand-checking every 10-second window does not scale across dozens of factories.
-- Existing filters say accept/reject with no reason. Operators cannot argue with a score.
-- Jadal rejects with `{feature, value, op, threshold}` so a decision can be checked.
+- Jadal rejects with checkable evidence: S0 rejects carry `{feature, value, op,
+  threshold}` per firing rule; S1 rejects carry the head score `s1_score`
+  against the 0.6 threshold.
 - When the scorer fails out of domain, the table says so. That honesty is the point.
 
 ## How the funnel decides
@@ -39,7 +44,11 @@ clip/factory correlation, so they are optimistic.
   Each firing carries `{feature, value, op, threshold}`. On the PoC footage S0
   fired 0 times — all decisions fell to S1/S2 (`eval/results/poc/run_summary.json`).
 - **S1 whole-window head**: 26 per-pixel spectral + temporal features, small
-  logistic head, operating point threshold 0.6, margin 0.25. No generic VLM in
+  logistic head retrained deterministically in-process from a recorded recipe
+  on the 150 IndEgo windows (no frozen-coefficient file in the repo; the head
+  sha256 is stored in each receipt), operating point threshold 0.6, margin
+  0.25. S1 rejects carry `{feature: s1_score, value, op, threshold}` only.
+  No generic VLM in
   the core; EmbeddingGemma 2 is an optional helper for hub search and frame heads.
 - **S2 review queue**: `|p − 0.5| < 0.25` goes to review (176 windows in the PoC run,
   handed on; heavy tier not run in the PoC).
@@ -48,7 +57,9 @@ clip/factory correlation, so they are optimistic.
 
 ## What a rejection looks like
 
-Real schema, shortened paths, from `tests/fixtures/poc/windows.jsonl`:
+Illustrative test fixture, not a PoC output (from `tests/fixtures/poc/windows.jsonl`,
+shortened paths; note the PoC run itself had S0 fire 0 times, so all 702 real
+PoC rejects are stage-S1 `S1_UNUSABLE` with `s1_score` vs the 0.6 threshold):
 
 ```json
 {
@@ -56,7 +67,7 @@ Real schema, shortened paths, from `tests/fixtures/poc/windows.jsonl`:
   "verdict": "reject",
   "stage": "S0",
   "reasons": [
-    {"code": "OCCLUDED", "evidence": {"feature": "edge_density", "value": 0.0071, "op": "<", "threshold": 0.02}}
+    {"code": "TOO_DARK", "evidence": {"feature": "mean", "value": 0.0312, "op": "<", "threshold": 0.05}}
   ],
   "score": 0.2448,
   "features_digest": "dd200988…",
@@ -71,17 +82,18 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/reports/verify.md`
 
 ## The honest scoreboard
 
-Out-of-domain result leads, not trails: the funnel works on the footage it was trained on.
+Out-of-domain result leads, not trails: the funnel scores above chance in-domain
+on 7 clips (exploratory; weakest clip 0.606).
 Factory transfer is the open problem, and the repo is organised to attack it.
 
 | Result | n, source | AUROC [95% CI] | Status |
 |---|---|---|---|
-| Frozen ensemble, factory footage | 160 windows (138 good / 22 bad), 47 factories, one labeller | **0.566 (0.433–0.693)** | measured, near chance |
-| Shipped PoC cascade, factory footage | same 160 | **0.600 (0.474–0.724)**, rejects 53/138 good (38%) | measured, near chance |
-| 60-window precursor (ensemble / PoC) | 60 windows (51 good / 9 bad) | 0.415 [0.210, 0.647] / 0.529 [0.316, 0.728] | exploratory (`n_bad=9 < 10`) |
-| Ensemble prob-average, IndEgo | 150 windows, 7 clips, nested LOCO | **0.834 [0.715, 0.914]** | measured, exploratory (one labeller) |
+| Frozen ensemble, factory footage | 160 windows (138 good / 22 bad), 47 factories, one labeller | **0.566 (0.433–0.693)** | measured, near chance; source: sync doc, results file pending merge |
+| PoC cascade, factory footage | same 160 | **0.600 (0.474–0.724)**, rejects 53/138 good (38%) | measured, near chance; source: sync doc, results file pending merge |
+| 60-window precursor (ensemble / PoC) | 60 windows (51 good / 9 bad) | 0.415 [0.210, 0.647] / 0.529 [0.316, 0.728] | exploratory (`n_bad=9 < 10`), superseded by the 160-window rows |
+| Ensemble prob-average, IndEgo | 150 windows, 7 clips, nested LOCO | **0.834 [0.715, 0.914]** | measured, exploratory (one labeller); pre-registered gates NOT met (AUROC >= 0.85, CI-low >= 0.72) |
 | EG2 view / pixel view, IndEgo | same 150 | 0.846 [0.728, 0.913] / 0.792 [0.666, 0.882] | measured |
-| Shipped S1 head, IndEgo | same 150 | 0.802 [0.710, 0.870], thr 0.6 | measured |
+| S1 head (retrained in-process, recipe-recorded), IndEgo | same 150 | 0.802 [0.710, 0.870], thr 0.6 | measured |
 | Per-pixel conv1d / HGB / physics-LR | same 150 | 0.782 / 0.758 / 0.715 | measured |
 | PoC run reject share | 1,587 windows, 4.404 h, unlabelled | 702 rejected (44.2%) | descriptive, not accuracy |
 | 3.33 fps vs 10 fps (26 feats) | IndEgo 150 | 0.807 vs 0.809 | descriptive, CIs ~±0.1 |
@@ -99,12 +111,13 @@ Files: `docs/pod/SYNC_UPDATE_2026-10-10_2145.md`,
 
 Read it plainly: per-clip ensemble AUROC ranges 0.606 (pallet) to 0.981 (ecu_full);
 pallet-type logistics motion does not transfer even in-domain
-(`eval/results/ensemble/nested_loco.json:239-303`). Coverage helps little:
-balanced accuracy 0.795 at full coverage vs 0.852 at 60% most-confident
-(same file). The PoC's ~44% reject share on factory footage is mostly false
-rejects, not a quality measurement (`docs/reports/poc_run.md:86-87`). The
-per-pixel pipeline costs RTF 2.14 on one CPU core — 769 windows/hour/core, so
-5000x needs ~2340 cores (`eval/results/perpixel/cost.json`): a
+(`eval/results/ensemble/nested_loco.json:239-303`). Coverage from full to 60%
+most-confident moves balanced accuracy 0.795 to 0.852, with overlapping CIs
+(same file). On the 160 labelled windows, 53 of 66 rejects were good windows;
+the other rejects of the 702 are unlabelled (`docs/reports/poc_run.md:86-87`). The
+per-pixel pipeline processes 2.14 video-seconds per CPU-core-second (n=6 windows)
+— 769 windows/hour/core, so 5000x real-time (a target, not reached) would need
+~2340 cores (`eval/results/perpixel/cost.json`): a
 verification-grade scorer, not the streaming tier.
 
 ## Try it in 60 seconds
@@ -143,9 +156,11 @@ override `PY=` for your machine. Secrets come from a git-ignored `.env`.
 
 ## How it is built
 
-**Determinism.** Same input plus same pinned weights and config gives the same
+**Determinism.** Same input plus same config and the recorded S1-head recipe gives the same
 output: no sampling, fixed seeds, batch-size-1 model calls, floats rounded to
-4 decimals before receipts. The CPU feature-path digest was identical across
+4 decimals before receipts. The S1 head is retrained deterministically in-process
+from a recorded recipe on the 150 IndEgo windows; the head sha256 is stored in
+each receipt (`docs/reports/poc_run.md:28-33`). The CPU feature-path digest was identical across
 repeats and across 1-core vs 4-core runs (`docs/reports/edge.md:81-83`).
 GPU numerics across devices are not claimed identical. See
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
@@ -228,8 +243,15 @@ branch; open an issue or PR against `main` (never push to `main` directly).
 Secrets live in env vars (`SARVAM_API_KEY`, `CF_API_TOKEN`, `CF_ACCOUNT_ID`)
 via a git-ignored `.env` — never commit a key.
 
-Credits: IndEgo (Fraunhofer IPK, CC BY 4.0) and Egocentric-10K-Evaluation
-(Build AI, Apache-2.0 brief; AI labels from gemini-2.5-flash, not human-checked)
+Credits: IndEgo (Fraunhofer IPK, CC BY 4.0, per the project brief, unverified;
+see [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md)) and Egocentric-10K-Evaluation
+(Build AI, Apache-2.0 brief, per the project brief, unverified; AI labels from
+gemini-2.5-flash, not human-checked)
 are third-party datasets — see [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md)
-and each dataset's own licence. No dataset frames or clips are in this repo.
+and each dataset's own licence. Dataset frames in this repo: `docs/screens/poc_*`
+dashboard screenshots contain real Egocentric-10K thumbnails (checked: `file` on
+all `docs/screens/*.png`, viewed `poc_gallery_rejects.png` and `poc_overview.png`;
+see `docs/screens/README.md`); no raw dataset clips are in git
+(`docs/screens/poc_demo_backup.mp4` is a synthetic card render, and
+`eval/results/ensemble/ood_frames.npz` holds float16 768-d embeddings, not images).
 A drop-videos portal is in progress (not in this repo).
