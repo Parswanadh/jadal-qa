@@ -1,6 +1,6 @@
 # STATUS — pod wave (lead agent)
 
-Updated: 2026-10-10 21:46 IST (16:16 UTC) · branch `pod/kit` (lead) · A40 pod
+Updated: 2026-10-10 22:05 IST (16:35 UTC) · branch `pod/kit` (lead) · A40 pod
 
 ## Environment (verified this session)
 - opencode v2.0.26; agents present: lead, experimenter, explorer, reviewer, tester, docs, infra.
@@ -51,6 +51,31 @@ Updated: 2026-10-10 21:46 IST (16:16 UTC) · branch `pod/kit` (lead) · A40 pod
   (uniform20 0.787 [0.650,0.866] beats motion20 0.762, keyframe 0.780, random20 0.739 → negative result).
 - #84/#85 `feat/exp-fps`, `feat/exp-temporal` — NOT ours: the human builder pushed branch-recovery commits at
   21:03 IST ("save local work") carrying the same E1/E3 code as `pod/base`. Note the overlap when merging.
+
+## Final state (2026-10-10 22:05 IST / 16:35 UTC)
+All 8 experiment branches are committed, pushed and have open PRs to `main`; the docs refresh is the last writer.
+
+| PR | branch | ids | verdict |
+|---|---|---|---|
+| #95 | `feat/exp-mosaic` | E2.01-E2.07 | mosaic **drop** as model input, **adopt** as evidence artefact |
+| #88 | `feat/exp-fps-pod` | E1.03, E1.04, E1.05 | OOD no transfer at any fps; **drop** all selection arms (uniform wins) |
+| #83 | `feat/exp-regimes-pod` | E4.01-E4.04 | descriptors **adopt**, splits **drop**, gap control **drop**, router **adopt** |
+| #87 | `feat/exp-domain-adapt` | E5.00-E5.04 | heads **maybe**, few-shot **maybe**, sign table **maybe**, E5.04 **inconclusive** |
+| #89 | `feat/exp-motion-cue` | E6.01-E6.04 | all **drop** — the cue is ego-motion magnitude |
+| #90 | `feat/exp-cost-model` | E7.01 | **adopt** — 15.2 video-h per wall-h, feature-bound |
+| #113 | `feat/exp-rescore` | E8.01 | **adopt** (descriptive) — 1,546 windows re-scored |
+| #81 | `pod/prwatch` | E9.01 | **adopt** — dispatcher + standard eval harness |
+| #82 | `docs/pod-docs` | — | docs: env page, union registry, wave-1 summary |
+
+Not ours: #84/#85 (`feat/exp-fps`, `feat/exp-temporal`, builder branch-recovery), and the builder's parallel
+`b/*` PRs (#91-#94, #96-#99). All reviews of my PRs are file-only (the `reviewer` agent has no `bash`); the
+`tester` agent ran the suites.
+
+E8.01 detail (descriptive, `label_source: "none"`): n=1,546 Egocentric-10K windows, verdicts accept 296 (19.2%)
+/ reject 83 (5.4%) / review 1,167 (75.5%), accept-share 95% CI [0.136, 0.254] (58-clip bootstrap); profiles
+factory_1080p30 1,540 + default 6 (UNSEEN_REGIME); 5,761 ms/window (p50 5,195, p95 9,371). The E3.04 sparse+exit
+policy was NOT applied (the contract needs one verdict per window). Decode path is not bit-identical to the
+frozen swscale (Δp_pixel ≤ 0.048, n=6 control). Full file `/workspace/artifacts/windows_rescored.jsonl`.
 
 ## Headline numbers for this wave (all from results JSONs; read with `tools/pod/collect_results.py`)
 | id | verdict | headline (n, label source, protocol) | regime |
