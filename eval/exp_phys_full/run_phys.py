@@ -30,7 +30,7 @@ repeats of the same window must produce byte-identical receipts. The full line
 keeps ``latency_ms`` for reporting.
 
 Run:
-  source /workspace/env.sh
+  source "${JADAL_ENV:-env.sh}"
   export OMP_NUM_THREADS=1 JADAL_GPU_SLOTS=6
   bash tools/pod/gpu_run.sh python3 eval/exp_phys_full/run_phys.py \
         --workers 7 --pixel-fps 3.33 --eg2-fps 1 --early-exit-s 4 \
@@ -65,7 +65,7 @@ from jadal.gpu.features import cpu_window_features  # noqa: E402
 from jadal.perpixel import physics as PP  # noqa: E402
 from jadal.regimes.router import choose_profile  # noqa: E402
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 MANIFEST = os.path.join(BUNDLE, "queues", "manifest_scale.json")
 OUTDIR = os.path.join(REPO, "eval", "results", "exp_phys_full")
 RULES_PATH = os.path.join(HERE, "rule_table.json")
@@ -81,7 +81,7 @@ _RULES = None
 _REJECT_THR = None
 _RULES_SHA = None
 
-POD_EG2 = ("/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2"
+POD_EG2 = (os.path.join(os.environ.get("JADAL_POD_ROOT", ""), '.cache/huggingface/hub/models--google--embeddinggemma-2')
            "/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b")
 
 smi_log = []

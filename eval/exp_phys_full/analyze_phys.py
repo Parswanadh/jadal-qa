@@ -4,7 +4,7 @@
 Inputs
   eval/results/exp_phys_full/windows.jsonl   (Q5 rows; one per window)
   eval/results/exp_phys_full/run_meta.json   (wall, opts, determinism probe)
-  /workspace/artifacts/windows_rescored.jsonl (E8.01 full per-window verdicts)
+  $JADAL_POD_ROOT/artifacts/windows_rescored.jsonl (E8.01 full per-window verdicts)
   <m/latency-fast>/eval/results/exp_latency_fast/windows.jsonl (L3 per-window)
   <m/latency-full>/eval/results/exp_latency_full/L2.01.json    (L2 partial)
 
@@ -32,11 +32,11 @@ REPORT = os.path.join(REPO, "docs", "reports", "exp_phys_full.md")
 
 WINDOWS = os.path.join(OUT, "windows.jsonl")
 RUN_META = os.path.join(OUT, "run_meta.json")
-E8_WINDOWS = "/workspace/artifacts/windows_rescored.jsonl"
-E8_JSON = "/workspace/wt/m-latency-fast/eval/results/exp_rescore/E8.01.json"
-L3_WINDOWS = "/workspace/wt/m-latency-fast/eval/results/exp_latency_fast/windows.jsonl"
-L3_META = "/workspace/wt/m-latency-fast/eval/results/exp_latency_fast/run_meta_stride1.json"
-L2_JSON = "/workspace/wt/m-latency-full/eval/results/exp_latency_full/L2.01.json"
+E8_WINDOWS = os.path.join(os.environ.get("JADAL_ARTIFACTS", "artifacts"), 'windows_rescored.jsonl')
+E8_JSON = os.path.join(os.environ.get("JADAL_WT", "wt"), 'm-latency-fast/eval/results/exp_rescore/E8.01.json')
+L3_WINDOWS = os.path.join(os.environ.get("JADAL_WT", "wt"), 'm-latency-fast/eval/results/exp_latency_fast/windows.jsonl')
+L3_META = os.path.join(os.environ.get("JADAL_WT", "wt"), 'm-latency-fast/eval/results/exp_latency_fast/run_meta_stride1.json')
+L2_JSON = os.path.join(os.environ.get("JADAL_WT", "wt"), 'm-latency-full/eval/results/exp_latency_full/L2.01.json')
 
 STAGES = ("io_probe", "decode", "pixel_features", "descriptors", "eg2_embed",
           "phys_features", "decision", "write", "total")

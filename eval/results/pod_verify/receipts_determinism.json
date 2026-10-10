@@ -1,0 +1,38 @@
+{
+ "experiment": "LB1-receipts-determinism",
+ "verified_by": "lead-b",
+ "claims": [
+  "receipts are SHA-256 of canonical JSON, not signed",
+  "a tampered receipt fails to verify",
+  "the CPU feature path gives an identical quantised digest over 10 repeated runs"
+ ],
+ "hash_stable_across_calls": true,
+ "timestamp_excluded": true,
+ "receipt_sha256": "0e941577b19eba68bf64d27ae6c08a00fd9b5f928ed77d8b9497eb3ce5656e90",
+ "receipt_id_is_prefix16": true,
+ "canonical_hash_matches_manual": true,
+ "tamper_detected_per_field": {
+  "segment_sha256": true,
+  "signals": true,
+  "decisions": true,
+  "verdict": true,
+  "config": true
+ },
+ "tamper_all_detected": true,
+ "key_order_irrelevant": true,
+ "canonical_sort_keys": false,
+ "signature_fields_in_receipt": [],
+ "is_not_signed": true,
+ "feature_runs": 10,
+ "feature_digest_unique": 1,
+ "feature_digest": "72dcc4720e44f32cfdf5a42c485dcc6f4dd49ac25425bedc21e391c1c1c1e203",
+ "feature_identical_digest_10_runs": true,
+ "feature_max_abs_spread": 0.0,
+ "cross_process_digest_match": true,
+ "cross_process_stderr": "",
+ "conclusion": {
+  "receipts_content_hashed": true,
+  "receipts_not_signed": true,
+  "feature_path_deterministic_10_runs": true
+ }
+}

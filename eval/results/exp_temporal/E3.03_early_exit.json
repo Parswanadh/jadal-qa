@@ -1,0 +1,38 @@
+{
+ "n_windows": 150,
+ "label_source": "human gold (IndEgo)",
+ "protocol": "LOCO logistic (StandardScaler, C=0.01 balanced) on L2-normalised mean of first m EG2 frames (2 fps); pooled OOF AUROC/acc; recipe mirrors E0 baseline",
+ "curve": [
+  {
+   "prefix_frames": 4,
+   "seconds": 2.0,
+   "auroc": 0.8038,
+   "acc": 0.7266666666666667
+  },
+  {
+   "prefix_frames": 8,
+   "seconds": 4.0,
+   "auroc": 0.8595999999999999,
+   "acc": 0.7666666666666667
+  },
+  {
+   "prefix_frames": 12,
+   "seconds": 6.0,
+   "auroc": 0.8694000000000001,
+   "acc": 0.7733333333333333
+  },
+  {
+   "prefix_frames": 16,
+   "seconds": 8.0,
+   "auroc": 0.8573999999999999,
+   "acc": 0.7866666666666666
+  },
+  {
+   "prefix_frames": 21,
+   "seconds": 10.5,
+   "auroc": 0.848,
+   "acc": 0.78
+  }
+ ],
+ "command": "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_temporal/run_e3.py --out eval/results/exp_temporal"
+}

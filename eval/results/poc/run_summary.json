@@ -1,0 +1,46 @@
+{
+ "generated_utc": "2026-10-10T15:42:57+00:00",
+ "source": "windows.jsonl",
+ "label_note": "descriptive rates on unlabelled video, NOT accuracy",
+ "partial": false,
+ "lines_read": 1587,
+ "duplicates_dropped": 0,
+ "malformed_dropped": 0,
+ "unique_windows": 1587,
+ "clips": 58,
+ "factories": 47,
+ "hours": 4.404,
+ "verdicts": {
+  "accept": 709,
+  "reject": 702,
+  "review": 176
+ },
+ "verdict_share": {
+  "accept": 0.4468,
+  "reject": 0.4423,
+  "review": 0.1109
+ },
+ "stages": {
+  "S0": 0,
+  "S1": 1411,
+  "S2": 176
+ },
+ "reasons": {
+  "S1_UNUSABLE": 702,
+  "S1_USABLE": 709,
+  "UNCERTAIN": 176
+ },
+ "throughput": {
+  "video_h_per_compute_h": 17.91,
+  "note": "video hours divided by the summed per-window sequential compute time (latency_ms.total); concurrency and wall-clock are not included"
+ },
+ "latency_ms": {
+  "total_p50": 548.1,
+  "total_p90": 699.2,
+  "total_p99": 1202.2,
+  "features_p50": 548.1,
+  "features_p90": 699.2,
+  "n": 1587,
+  "note": "sequential single-process per-window compute time from latency_ms"
+ }
+}
