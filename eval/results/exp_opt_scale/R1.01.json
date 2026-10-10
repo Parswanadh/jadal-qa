@@ -1,0 +1,140 @@
+{
+ "experiment": "R1.01",
+ "title": "Optimized + recalibrated pipeline over the expanded 27.66 h corpus",
+ "status": "partial",
+ "recipe": {
+  "config": "configs/ensemble_v1_sparse.json",
+  "abstain_band": [
+   0.4193,
+   0.6112
+  ],
+  "optimizations": {
+   "pixel_fps": 3.33,
+   "eg2_fps": 1.0,
+   "early_exit_s": 4.0,
+   "window_stride": 1,
+   "skip_mosaic": true
+  },
+  "decode": "NVDEC(cuda)+scale_cuda",
+  "workers": 6,
+  "gpu_slots": 4,
+  "omp_num_threads": 1
+ },
+ "manifest": {
+  "path": "/workspace/jadal_pod_bundle/queues/manifest_scale_all.json",
+  "n_windows": 9757,
+  "n_clips": 391,
+  "total_hours": 27.661,
+  "n_factories": 85
+ },
+ "coverage": {
+  "n_windows_scored": 830,
+  "frac_of_manifest": 0.0851,
+  "processed_footage_h": 2.306,
+  "processed_frac_of_footage": 0.0834
+ },
+ "throughput": {
+  "wall_s": 1509.0,
+  "windows_per_s": 0.55,
+  "processed_footage_h_per_wall_h": 5.5,
+  "corpus_footage_h_per_wall_h": 65.99,
+  "extrapolated_full_corpus_wall_s": 17738.9,
+  "extrapolated_full_corpus_wall_min": 295.6,
+  "extrapolated_full_corpus_wall_h": 4.93
+ },
+ "verdict_distribution": {
+  "accept": 210,
+  "reject": 100,
+  "review": 520
+ },
+ "verdict_share": {
+  "accept": 0.253,
+  "reject": 0.1205,
+  "review": 0.6265
+ },
+ "profile_distribution": {
+  "default": 3,
+  "factory_1080p30": 827
+ },
+ "worker_distribution": {
+  "worker_001": 119,
+  "worker_002": 116,
+  "worker_004": 238,
+  "worker_006": 238,
+  "worker_010": 119
+ },
+ "score_stats": {
+  "mean": 0.4853,
+  "p50": 0.3891,
+  "p05": 0.2131,
+  "p95": 0.8885
+ },
+ "per_stage_ms": {
+  "io_probe": {
+   "n": 830,
+   "p50_ms": 13.8,
+   "p95_ms": 94.7,
+   "mean_ms": 27.0
+  },
+  "decode": {
+   "n": 830,
+   "p50_ms": 7590.4,
+   "p95_ms": 18100.9,
+   "mean_ms": 8032.2
+  },
+  "pixel_features": {
+   "n": 830,
+   "p50_ms": 214.9,
+   "p95_ms": 706.3,
+   "mean_ms": 288.8
+  },
+  "descriptors": {
+   "n": 830,
+   "p50_ms": 1402.7,
+   "p95_ms": 4538.7,
+   "mean_ms": 1729.3
+  },
+  "eg2_embed": {
+   "n": 830,
+   "p50_ms": 463.8,
+   "p95_ms": 1112.9,
+   "mean_ms": 737.9
+  },
+  "mosaic": {
+   "n": 830,
+   "p50_ms": 0,
+   "p95_ms": 0,
+   "mean_ms": 0.0
+  },
+  "decision": {
+   "n": 830,
+   "p50_ms": 1.0,
+   "p95_ms": 1.7,
+   "mean_ms": 2.7
+  },
+  "write": {
+   "n": 0,
+   "p50_ms": 0,
+   "p95_ms": 0,
+   "mean_ms": null
+  },
+  "total": {
+   "n": 830,
+   "p50_ms": 10002.5,
+   "p95_ms": 23568.7,
+   "mean_ms": 10819.1
+  }
+ },
+ "gpu_vram": {
+  "n_samples": 49,
+  "gpu_util_pct_mean": 12.37,
+  "gpu_util_pct_p50": 1.0,
+  "gpu_util_pct_p95": 90.0,
+  "gpu_util_pct_max": 100.0,
+  "vram_mib_mean": 13489.7,
+  "vram_mib_p95": 16740.6,
+  "vram_mib_max": 16942.0
+ },
+ "errors": 0,
+ "note": "corpus verdicts are UNLABELLED (label_source=none); the accept/reject share is DESCRIPTIVE, not accuracy"
+}

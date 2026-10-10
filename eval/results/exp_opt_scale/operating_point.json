@@ -1,0 +1,140 @@
+{
+ "experiment": "R1.03-operating-point",
+ "source_features": "N5 sparse-sampled features (pixel 3.33 fps, EG2 1 fps, 4 s prefix)",
+ "feature_files": {
+  "gold150": "wt/m-recal/eval/results/exp_recal/sparse_gold.npz",
+  "ood160": "wt/m-recal/eval/results/exp_recal/sparse_ood160.npz"
+ },
+ "frozen_config": "configs/ensemble_v1.json",
+ "sparse_config": "configs/ensemble_v1_sparse.json",
+ "frozen_band": [
+  0.4,
+  0.6
+ ],
+ "sparse_band": [
+  0.4193,
+  0.6112
+ ],
+ "sets": {
+  "gold150": {
+   "n": 150,
+   "n_good": 100,
+   "n_bad": 50,
+   "n_clips": 7,
+   "mean_prob_frozen_heads": 0.7022,
+   "mean_prob_sparse_heads": 0.5685,
+   "frozen_heads": {
+    "frozen_band": {
+     "n": 150,
+     "n_good": 100,
+     "n_bad": 50,
+     "accept": 103,
+     "reject": 19,
+     "review": 28,
+     "review_share": 0.1867,
+     "confident_n": 122,
+     "confident_balacc": 0.7632,
+     "auroc": 0.9204
+    },
+    "sparse_band": {
+     "n": 150,
+     "n_good": 100,
+     "n_bad": 50,
+     "accept": 100,
+     "reject": 21,
+     "review": 29,
+     "review_share": 0.1933,
+     "confident_n": 121,
+     "confident_balacc": 0.7856,
+     "auroc": 0.9204
+    }
+   },
+   "sparse_heads": {
+    "frozen_band": {
+     "n": 150,
+     "n_good": 100,
+     "n_bad": 50,
+     "accept": 77,
+     "reject": 45,
+     "review": 28,
+     "review_share": 0.1867,
+     "confident_n": 122,
+     "confident_balacc": 0.9073,
+     "auroc": 0.9332
+    },
+    "sparse_band": {
+     "n": 150,
+     "n_good": 100,
+     "n_bad": 50,
+     "accept": 75,
+     "reject": 47,
+     "review": 28,
+     "review_share": 0.1867,
+     "confident_n": 122,
+     "confident_balacc": 0.9015,
+     "auroc": 0.9332
+    }
+   }
+  },
+  "ood160": {
+   "n": 160,
+   "n_good": 138,
+   "n_bad": 22,
+   "n_clips": 47,
+   "mean_prob_frozen_heads": 0.6889,
+   "mean_prob_sparse_heads": 0.4628,
+   "frozen_heads": {
+    "frozen_band": {
+     "n": 160,
+     "n_good": 138,
+     "n_bad": 22,
+     "accept": 107,
+     "reject": 29,
+     "review": 24,
+     "review_share": 0.15,
+     "confident_n": 136,
+     "confident_balacc": 0.5563,
+     "auroc": 0.6347
+    },
+    "sparse_band": {
+     "n": 160,
+     "n_good": 138,
+     "n_bad": 22,
+     "accept": 105,
+     "reject": 34,
+     "review": 21,
+     "review_share": 0.1313,
+     "confident_n": 139,
+     "confident_balacc": 0.5617,
+     "auroc": 0.6347
+    }
+   },
+   "sparse_heads": {
+    "frozen_band": {
+     "n": 160,
+     "n_good": 138,
+     "n_bad": 22,
+     "accept": 39,
+     "reject": 88,
+     "review": 33,
+     "review_share": 0.2062,
+     "confident_n": 127,
+     "confident_balacc": 0.5042,
+     "auroc": 0.5231
+    },
+    "sparse_band": {
+     "n": 160,
+     "n_good": 138,
+     "n_bad": 22,
+     "accept": 39,
+     "reject": 97,
+     "review": 24,
+     "review_share": 0.15,
+     "confident_n": 136,
+     "confident_balacc": 0.5006,
+     "auroc": 0.5231
+    }
+   }
+  }
+ }
+}
