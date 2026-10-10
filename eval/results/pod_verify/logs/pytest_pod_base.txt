@@ -1,0 +1,118 @@
+.......................................................s.............................F.FF...F............................................................................................................................................................. [ 53%]
+..........................................................................................................................................................................................................................                                                       [100%]
+========================================================================================================================================================= ERRORS =========================================================================================================================================================
+_______________________________________________________________________________________________________________________________________ ERROR collecting tests/test_eval_splits.py _______________________________________________________________________________________________________________________________________
+ImportError while importing test module '/workspace/wt/b-verify-gate/tests/test_eval_splits.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_eval_splits.py:26: in <module>
+    from eval.make_splits import (
+eval/make_splits.py:57: in <module>
+    import imagehash
+E   ModuleNotFoundError: No module named 'imagehash'
+_______________________________________________________________________________________________________________________________________ ERROR collecting tests/test_integration.py _______________________________________________________________________________________________________________________________________
+ImportError while importing test module '/workspace/wt/b-verify-gate/tests/test_integration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_integration.py:23: in <module>
+    from fastapi.testclient import TestClient
+E   ModuleNotFoundError: No module named 'fastapi'
+_________________________________________________________________________________________________________________________________________ ERROR collecting tests/test_service.py _________________________________________________________________________________________________________________________________________
+ImportError while importing test module '/workspace/wt/b-verify-gate/tests/test_service.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_service.py:23: in <module>
+    from fastapi.testclient import TestClient
+E   ModuleNotFoundError: No module named 'fastapi'
+_________________________________________________________________________________________________________________________________________ ERROR collecting tests/test_signals.py _________________________________________________________________________________________________________________________________________
+ImportError while importing test module '/workspace/wt/b-verify-gate/tests/test_signals.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_signals.py:23: in <module>
+    from jadal import segmenter, signals
+jadal/signals.py:51: in <module>
+    import imagehash
+E   ModuleNotFoundError: No module named 'imagehash'
+======================================================================================================================================================== FAILURES ========================================================================================================================================================
+_________________________________________________________________________________________________________________________________________________ test_clear_stationary __________________________________________________________________________________________________________________________________________________
+
+    def test_clear_stationary():
+        r = choose_profile(dict(BASE))
+>       assert r["profile"] == "clear_stationary", r
+E       AssertionError: {'profile': 'blurry_lowlight', 'margin': 0.88, 'reasons': ['quality: sharp_norm=300.0 luma=0.450 clip=0.050'], 'unseen_regime': False}
+E       assert 'blurry_lowlight' == 'clear_stationary'
+E         
+E         - clear_stationary
+E         + blurry_lowlight
+
+tests/test_exp_regimes_router.py:17: AssertionError
+____________________________________________________________________________________________________________________________________________ test_walking_logistics_by_motion ____________________________________________________________________________________________________________________________________________
+
+    def test_walking_logistics_by_motion():
+        d = dict(BASE, shift_mean=12.0, static_frac=0.1)
+        r = choose_profile(d)
+>       assert r["profile"] == "walking_logistics", r
+E       AssertionError: {'profile': 'blurry_lowlight', 'margin': 0.88, 'reasons': ['quality: sharp_norm=300.0 luma=0.450 clip=0.050'], 'unseen_regime': False}
+E       assert 'blurry_lowlight' == 'walking_logistics'
+E         
+E         - walking_logistics
+E         + blurry_lowlight
+
+tests/test_exp_regimes_router.py:30: AssertionError
+___________________________________________________________________________________________________________________________________________ test_blurry_lowlight_by_sharpness ____________________________________________________________________________________________________________________________________________
+
+    def test_blurry_lowlight_by_sharpness():
+        d = dict(BASE, sharp_norm=10.0)
+        r = choose_profile(dict(d))["profile"] == "blurry_lowlight"
+>       assert r
+E       assert False
+
+tests/test_exp_regimes_router.py:36: AssertionError
+________________________________________________________________________________________________________________________________________ test_deterministic_and_receipt_fragment _________________________________________________________________________________________________________________________________________
+
+    def test_deterministic_and_receipt_fragment():
+        d = dict(BASE)
+        a, b = choose_profile(d), choose_profile(d)
+        assert a == b
+        frag = receipt_fragment(d, a)
+>       assert frag == {"profile": "clear_stationary", "router_margin": a["margin"],
+                        "router_reasons": a["reasons"], "unseen_regime": False,
+                        "descriptors_sha": "abc123"}, frag
+E       AssertionError: {'profile': 'blurry_lowlight', 'router_margin': 0.88, 'router_reasons': ['quality: sharp_norm=300.0 luma=0.450 clip=0.050'], 'unseen_regime': False, ...}
+E       assert {'profile': '...': False, ...} == {'profile': '...': False, ...}
+E         
+E         Omitting 4 identical items, use -vv to show
+E         Differing items:
+E         {'profile': 'blurry_lowlight'} != {'profile': 'clear_stationary'}
+E         Use -v to get more diff
+
+tests/test_exp_regimes_router.py:61: AssertionError
+==================================================================================================================================================== warnings summary ====================================================================================================================================================
+tests/test_decision.py::TestDeciderDeterminism::test_alone_vs_in_batch_of_5_identical
+  /usr/local/lib/python3.12/dist-packages/torch/cuda/__init__.py:182: UserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 304: OS call failed or operation not supported on this OS (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:109.)
+    return torch._C._cuda_getDeviceCount() > 0
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================================================================================================================================ short test summary info =================================================================================================================================================
+FAILED tests/test_exp_regimes_router.py::test_clear_stationary - AssertionError: {'profile': 'blurry_lowlight', 'margin': 0.88, 'reasons': ['quality: sharp_norm=300.0 luma=0.450 clip=0.050'], 'unseen_regime': False}
+FAILED tests/test_exp_regimes_router.py::test_walking_logistics_by_motion - AssertionError: {'profile': 'blurry_lowlight', 'margin': 0.88, 'reasons': ['quality: sharp_norm=300.0 luma=0.450 clip=0.050'], 'unseen_regime': False}
+FAILED tests/test_exp_regimes_router.py::test_blurry_lowlight_by_sharpness - assert False
+FAILED tests/test_exp_regimes_router.py::test_deterministic_and_receipt_fragment - AssertionError: {'profile': 'blurry_lowlight', 'router_margin': 0.88, 'router_reasons': ['quality: sharp_norm=300.0 luma=0.450 clip=0.050'], 'unseen_regime': False, ...}
+ERROR tests/test_eval_splits.py
+ERROR tests/test_integration.py
+ERROR tests/test_service.py
+ERROR tests/test_signals.py
+4 failed, 463 passed, 1 skipped, 1 warning, 4 errors, 90 subtests passed in 16.24s
+EXIT=1

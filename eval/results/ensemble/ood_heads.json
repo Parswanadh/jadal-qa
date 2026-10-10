@@ -1,0 +1,41 @@
+{
+ "status": "EXPLORATORY (n_bad < 10 pre-registered minimum; not confirmatory)",
+ "scores": "eval/results/ensemble/ood_scores.json",
+ "labels_source": "env JADAL_OOD_LABELS (default ../ood_labels/labels.json)",
+ "n": 60,
+ "n_good": 51,
+ "n_bad": 9,
+ "labels_dropped_no_score": 0,
+ "bootstrap": {
+  "method": "window-bootstrap",
+  "n": 2000,
+  "seed": 0
+ },
+ "heads": {
+  "p_eg2": {
+   "auroc": 0.586,
+   "ci95": [
+    0.333,
+    0.818
+   ],
+   "auroc_if_sign_flipped": 0.414
+  },
+  "p_pixel": {
+   "auroc": 0.342,
+   "ci95": [
+    0.18,
+    0.516
+   ],
+   "auroc_if_sign_flipped": 0.658
+  },
+  "usable_prob": {
+   "auroc": 0.415,
+   "ci95": [
+    0.21,
+    0.647
+   ],
+   "auroc_if_sign_flipped": 0.585
+  }
+ },
+ "note": "Frozen heads, no refit. p_pixel is inverted (AUROC < 0.5) on this set. Higher score = predicted good."
+}
