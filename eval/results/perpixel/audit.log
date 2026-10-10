@@ -1,0 +1,22 @@
+AI audit active_labor: n=6000 oof_auc=0.929 flagged=217
+AI audit hands_ok: n=6000 oof_auc=0.980 flagged=85
+human flagged: 12
+Traceback (most recent call last):
+  File "/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/eval/perpixel/audit.py", line 217, in <module>
+    main()
+  File "/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/eval/perpixel/audit.py", line 205, in main
+    retr = retrain_variants(fl)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/eval/perpixel/audit.py", line 194, in retrain_variants
+    out["auroc_soft"] = run(np.ones(len(ida), bool), soft=True)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/eval/perpixel/audit.py", line 186, in run
+    mm.fit(sc.transform(Xm[tr]), ym[tr])
+  File "/home/parshu/envs/jadal/lib/python3.12/site-packages/sklearn/base.py", line 1403, in wrapper
+    return fit_method(estimator, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/parshu/envs/jadal/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py", line 1447, in fit
+    check_classification_targets(y)
+  File "/home/parshu/envs/jadal/lib/python3.12/site-packages/sklearn/utils/multiclass.py", line 230, in check_classification_targets
+    raise ValueError(
+ValueError: Unknown label type: continuous. Maybe you are trying to fit a classifier, which expects discrete classes on a regression target with continuous values.

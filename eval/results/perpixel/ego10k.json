@@ -1,0 +1,4 @@
+{
+ "status": "placeholder",
+ "note": "no human-labelled Egocentric-10K sample available; frozen scorer untouched. Run with --manifest when it lands; report once; do not tune."
+}

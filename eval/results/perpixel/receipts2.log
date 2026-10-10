@@ -1,0 +1,1 @@
+[{"id": "g001", "decisions": ["GOOD", "GOOD", "GOOD"], "digests_identical": true}, {"id": "g000", "decisions": ["BAD:loop", "BAD:loop", "BAD:loop"], "digests_identical": true}]

@@ -1,0 +1,40 @@
+{
+ "git_sha": "cebafa1",
+ "command": "PYTHONNOUSERSITE=1 JADAL_MODELS_DIR=/home/parshu/projects/jadal-qa/models /home/parshu/envs/jadal/bin/python eval/perpixel/make_table.py",
+ "resolutions": {
+  "armB_T1": "160x160 + ffprobe packet stats (jadal/spectral/features.py, read-only)",
+  "gpu_ref": "160x90 stack (same decode as series; fps=T/10s measured)",
+  "series": "every decoded frame at 160x90 rgb24 via ffmpeg scale=160:90"
+ },
+ "feature_groups": {
+  "B_*": "40 arm-B T1 scalars (8 families); units per docs/reports/spectral_features.md",
+  "G_*": "26 GPU CPU-reference scalars (jadal/gpu/features.py FEATURE_NAMES); luma fractions in [0,1], energies raw, shift in px, illum normalised",
+  "P_*": "jadal/perpixel/series.py descriptors: band fractions of non-DC energy, entropy nats/ln(nbins), ac peak/lag(frames), burstiness=std/|mean|, motion floor=median+MAD of diff_e, still_run_frac, shift px@160x90, saturation fractions, dct_hf log1p-mean"
+ },
+ "series_channels": [
+  "luma_mean[0,1]",
+  "lap_var raw",
+  "diff_e mean|d|",
+  "skin_frac[0,1]",
+  "shift_px@160x90 vs frame0",
+  "under_frac luma<0.05",
+  "over_frac luma>0.95",
+  "dct_hf mean|DCT| 8x8-blocked"
+ ],
+ "gold": {
+  "manifest": "manifest_gold.json",
+  "n_ok": 150,
+  "n_total": 150,
+  "seconds": 54.84495210647583,
+  "fails": [],
+  "F": 121
+ },
+ "synth": {
+  "manifest": "manifest_synth.json",
+  "n_ok": 60,
+  "n_total": 60,
+  "seconds": 21.451924085617065,
+  "fails": [],
+  "F": 121
+ }
+}

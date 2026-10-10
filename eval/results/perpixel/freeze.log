@@ -1,0 +1,8 @@
+freeze intersection n=150
+/home/parshu/projects/jadal-qa-wt/perpixel-accuracy/eval/perpixel/freeze.py:247: RuntimeWarning: All-NaN slice encountered
+  med = np.nanmedian(Xtr, axis=0)
+theory+physics: auroc=0.697 ci=[0.551, 0.813]
+all: auroc=0.768 ci=[0.603, 0.886]
+activity feature choice: {'m1': 0.6727027027027028, 'theory+physics': 0.697027027027027, 'all': 0.7681081081081081} -> all
+froze /home/parshu/projects/jadal-qa-wt/perpixel-accuracy/configs/perpixel_v1.json 7fb2a95511caa35d
+wrote compare.json
