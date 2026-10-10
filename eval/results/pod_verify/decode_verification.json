@@ -1,0 +1,2330 @@
+{
+  "schema": "jadal.pod_verify.decode_verification/1",
+  "claim_id": "LB1-decode",
+  "generated_utc": "2026-10-10T17:47:39Z",
+  "device": {
+    "gpu": "NVIDIA A40, 580.173.02, 46068 MiB",
+    "nproc": 96,
+    "cuda_visible_devices": null,
+    "note": "pod is shared with another swarm; absolute fps carry contention noise (host CPU and GPU both shared)"
+  },
+  "ffmpeg": {
+    "version_line": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "hwaccels": [
+      "Hardware acceleration methods:",
+      "vdpau",
+      "cuda",
+      "vaapi",
+      "qsv",
+      "drm",
+      "opencl",
+      "vulkan"
+    ]
+  },
+  "clips": {
+    "indego_480": {
+      "codec_name": "h264",
+      "width": 480,
+      "height": 480,
+      "pix_fmt": "yuv420p",
+      "r_frame_rate": "10/1",
+      "avg_frame_rate": "10/1",
+      "duration": "698.300000",
+      "bit_rate": "414146",
+      "nb_frames": "6983",
+      "fps": 10.0,
+      "frames": 6983,
+      "path": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4"
+    },
+    "ego10k_1080": {
+      "codec_name": "hevc",
+      "width": 1920,
+      "height": 1080,
+      "pix_fmt": "yuv420p",
+      "r_frame_rate": "30/1",
+      "avg_frame_rate": "30/1",
+      "duration": "179.766667",
+      "bit_rate": "4000939",
+      "nb_frames": "5393",
+      "fps": 30.0,
+      "frames": 5393,
+      "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4"
+    }
+  },
+  "parity": {
+    "indego_480_head_2s": {
+      "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+      "width": 480,
+      "height": 480,
+      "frames_requested": 20,
+      "seek_ss": null,
+      "cpu_rc": 0,
+      "cpu_frames": 20,
+      "cpu_wall_s": 0.181,
+      "cpu_cmd": "ffmpeg -hide_banner -nostdin -v error -y -threads 1 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -an -sn -dn -frames:v 20 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p480_cpu.raw",
+      "nvdec_cuvid_rc": 0,
+      "nvdec_cuvid_frames": 20,
+      "nvdec_cuvid_wall_s": 0.926,
+      "nvdec_cuvid_cmd": "ffmpeg -hide_banner -nostdin -v error -y -c:v h264_cuvid -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -an -sn -dn -frames:v 20 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p480_nvdec_cuvid.raw",
+      "nvdec_hwaccel_rc": 0,
+      "nvdec_hwaccel_frames": 20,
+      "nvdec_hwaccel_wall_s": 0.959,
+      "nvdec_hwaccel_cmd": "ffmpeg -hide_banner -nostdin -v error -y -hwaccel cuda -threads 1 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -an -sn -dn -frames:v 20 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p480_nvdec_hwaccel.raw",
+      "nvdec_cuvid_frame_count_match": true,
+      "nvdec_cuvid_comparison": {
+        "frames_compared": 20,
+        "mae_all_planes": 0.0,
+        "max_abs_diff": 0,
+        "frac_frames_bit_exact": 1.0,
+        "psnr_db": null,
+        "psnr_infinite": true,
+        "mae_luma": 0.0,
+        "max_abs_diff_luma": 0,
+        "pct_pixels_diff_gt2": 0.0
+      },
+      "nvdec_hwaccel_frame_count_match": true,
+      "nvdec_hwaccel_comparison": {
+        "frames_compared": 20,
+        "mae_all_planes": 0.0,
+        "max_abs_diff": 0,
+        "frac_frames_bit_exact": 1.0,
+        "psnr_db": null,
+        "psnr_infinite": true,
+        "mae_luma": 0.0,
+        "max_abs_diff_luma": 0,
+        "pct_pixels_diff_gt2": 0.0
+      },
+      "reference_frame_to_frame_mae_cpu": 3.340529
+    },
+    "ego10k_1080_head_2s": {
+      "clip": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+      "width": 1920,
+      "height": 1080,
+      "frames_requested": 60,
+      "seek_ss": null,
+      "cpu_rc": 0,
+      "cpu_frames": 60,
+      "cpu_wall_s": 1.911,
+      "cpu_cmd": "ffmpeg -hide_banner -nostdin -v error -y -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -frames:v 60 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p1080_cpu.raw",
+      "nvdec_cuvid_rc": 0,
+      "nvdec_cuvid_frames": 60,
+      "nvdec_cuvid_wall_s": 1.512,
+      "nvdec_cuvid_cmd": "ffmpeg -hide_banner -nostdin -v error -y -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -frames:v 60 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p1080_nvdec_cuvid.raw",
+      "nvdec_hwaccel_rc": 0,
+      "nvdec_hwaccel_frames": 60,
+      "nvdec_hwaccel_wall_s": 0.929,
+      "nvdec_hwaccel_cmd": "ffmpeg -hide_banner -nostdin -v error -y -hwaccel cuda -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -frames:v 60 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p1080_nvdec_hwaccel.raw",
+      "nvdec_cuvid_frame_count_match": true,
+      "nvdec_cuvid_comparison": {
+        "frames_compared": 60,
+        "mae_all_planes": 0.0,
+        "max_abs_diff": 0,
+        "frac_frames_bit_exact": 1.0,
+        "psnr_db": null,
+        "psnr_infinite": true,
+        "mae_luma": 0.0,
+        "max_abs_diff_luma": 0,
+        "pct_pixels_diff_gt2": 0.0
+      },
+      "nvdec_hwaccel_frame_count_match": true,
+      "nvdec_hwaccel_comparison": {
+        "frames_compared": 60,
+        "mae_all_planes": 0.0,
+        "max_abs_diff": 0,
+        "frac_frames_bit_exact": 1.0,
+        "psnr_db": null,
+        "psnr_infinite": true,
+        "mae_luma": 0.0,
+        "max_abs_diff_luma": 0,
+        "pct_pixels_diff_gt2": 0.0
+      },
+      "reference_frame_to_frame_mae_cpu": 6.776682
+    },
+    "ego10k_1080_midstream_2s": {
+      "clip": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+      "width": 1920,
+      "height": 1080,
+      "frames_requested": 60,
+      "seek_ss": 30.0,
+      "cpu_rc": 0,
+      "cpu_frames": 60,
+      "cpu_wall_s": 3.212,
+      "cpu_cmd": "ffmpeg -hide_banner -nostdin -v error -y -ss 30.0 -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -frames:v 60 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p1080mid_cpu.raw",
+      "nvdec_cuvid_rc": 0,
+      "nvdec_cuvid_frames": 60,
+      "nvdec_cuvid_wall_s": 1.186,
+      "nvdec_cuvid_cmd": "ffmpeg -hide_banner -nostdin -v error -y -ss 30.0 -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -frames:v 60 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p1080mid_nvdec_cuvid.raw",
+      "nvdec_hwaccel_rc": 0,
+      "nvdec_hwaccel_frames": 60,
+      "nvdec_hwaccel_wall_s": 1.485,
+      "nvdec_hwaccel_cmd": "ffmpeg -hide_banner -nostdin -v error -y -ss 30.0 -hwaccel cuda -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -frames:v 60 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p1080mid_nvdec_hwaccel.raw",
+      "nvdec_cuvid_frame_count_match": true,
+      "nvdec_cuvid_comparison": {
+        "frames_compared": 60,
+        "mae_all_planes": 0.0,
+        "max_abs_diff": 0,
+        "frac_frames_bit_exact": 1.0,
+        "psnr_db": null,
+        "psnr_infinite": true,
+        "mae_luma": 0.0,
+        "max_abs_diff_luma": 0,
+        "pct_pixels_diff_gt2": 0.0
+      },
+      "nvdec_hwaccel_frame_count_match": true,
+      "nvdec_hwaccel_comparison": {
+        "frames_compared": 60,
+        "mae_all_planes": 0.0,
+        "max_abs_diff": 0,
+        "frac_frames_bit_exact": 1.0,
+        "psnr_db": null,
+        "psnr_infinite": true,
+        "mae_luma": 0.0,
+        "max_abs_diff_luma": 0,
+        "pct_pixels_diff_gt2": 0.0
+      },
+      "reference_frame_to_frame_mae_cpu": 8.105371
+    },
+    "indego_480_midstream_2s": {
+      "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+      "width": 480,
+      "height": 480,
+      "frames_requested": 20,
+      "seek_ss": 30.0,
+      "cpu_rc": 0,
+      "cpu_frames": 20,
+      "cpu_wall_s": 0.287,
+      "cpu_cmd": "ffmpeg -hide_banner -nostdin -v error -y -ss 30.0 -threads 1 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -an -sn -dn -frames:v 20 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p480mid_cpu.raw",
+      "nvdec_cuvid_rc": 0,
+      "nvdec_cuvid_frames": 20,
+      "nvdec_cuvid_wall_s": 1.12,
+      "nvdec_cuvid_cmd": "ffmpeg -hide_banner -nostdin -v error -y -ss 30.0 -c:v h264_cuvid -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -an -sn -dn -frames:v 20 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p480mid_nvdec_cuvid.raw",
+      "nvdec_hwaccel_rc": 0,
+      "nvdec_hwaccel_frames": 20,
+      "nvdec_hwaccel_wall_s": 0.714,
+      "nvdec_hwaccel_cmd": "ffmpeg -hide_banner -nostdin -v error -y -ss 30.0 -hwaccel cuda -threads 1 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -an -sn -dn -frames:v 20 -pix_fmt yuv420p -f rawvideo /tmp/lb1_decode/p480mid_nvdec_hwaccel.raw",
+      "nvdec_cuvid_frame_count_match": true,
+      "nvdec_cuvid_comparison": {
+        "frames_compared": 20,
+        "mae_all_planes": 0.0,
+        "max_abs_diff": 0,
+        "frac_frames_bit_exact": 1.0,
+        "psnr_db": null,
+        "psnr_infinite": true,
+        "mae_luma": 0.0,
+        "max_abs_diff_luma": 0,
+        "pct_pixels_diff_gt2": 0.0
+      },
+      "nvdec_hwaccel_frame_count_match": true,
+      "nvdec_hwaccel_comparison": {
+        "frames_compared": 20,
+        "mae_all_planes": 0.0,
+        "max_abs_diff": 0,
+        "frac_frames_bit_exact": 1.0,
+        "psnr_db": null,
+        "psnr_infinite": true,
+        "mae_luma": 0.0,
+        "max_abs_diff_luma": 0,
+        "pct_pixels_diff_gt2": 0.0
+      },
+      "reference_frame_to_frame_mae_cpu": 2.364362
+    }
+  },
+  "throughput": {
+    "indego_480_cpu_1thread": {
+      "ok": true,
+      "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 1 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -an -sn -dn -f null -",
+      "rtime_s": 13.875,
+      "wall_s": 13.98,
+      "utime_s": 9.32,
+      "stime_s": 0.221,
+      "startup_overhead_s": 0.106,
+      "frames_total": 6983,
+      "fps": 503.3,
+      "fps_per_session": 503.3,
+      "fps_from_external_wall": 499.5,
+      "rtf": 50.33,
+      "rtf_per_session": 50.33,
+      "n_sessions": 1
+    },
+    "indego_480_cpu_process_auto": {
+      "ok": true,
+      "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -an -sn -dn -f null -",
+      "rtime_s": 11.49,
+      "wall_s": 11.59,
+      "utime_s": 36.253,
+      "stime_s": 1.651,
+      "startup_overhead_s": 0.099,
+      "frames_total": 6983,
+      "fps": 607.7,
+      "fps_per_session": 607.7,
+      "fps_from_external_wall": 602.5,
+      "rtf": 60.77,
+      "rtf_per_session": 60.77,
+      "n_sessions": 1
+    },
+    "indego_480_nvdec_cuvid": {
+      "ok": true,
+      "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -c:v h264_cuvid -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -an -sn -dn -f null -",
+      "rtime_s": 3.762,
+      "wall_s": 4.8,
+      "utime_s": 1.833,
+      "stime_s": 0.924,
+      "startup_overhead_s": 1.037,
+      "frames_total": 6983,
+      "fps": 1856.2,
+      "fps_per_session": 1856.2,
+      "fps_from_external_wall": 1454.8,
+      "rtf": 185.62,
+      "rtf_per_session": 185.62,
+      "n_sessions": 1
+    },
+    "ego10k_1080_cpu_1thread": {
+      "ok": true,
+      "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -",
+      "rtime_s": 67.365,
+      "wall_s": 67.49,
+      "utime_s": 51.762,
+      "stime_s": 0.302,
+      "startup_overhead_s": 0.126,
+      "frames_total": 5393,
+      "fps": 80.1,
+      "fps_per_session": 80.1,
+      "fps_from_external_wall": 79.9,
+      "rtf": 2.67,
+      "rtf_per_session": 2.67,
+      "n_sessions": 1
+    },
+    "ego10k_1080_cpu_process_auto": {
+      "ok": true,
+      "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -",
+      "rtime_s": 65.937,
+      "wall_s": 66.06,
+      "utime_s": 206.161,
+      "stime_s": 2.195,
+      "startup_overhead_s": 0.128,
+      "frames_total": 5393,
+      "fps": 81.8,
+      "fps_per_session": 81.8,
+      "fps_from_external_wall": 81.6,
+      "rtf": 2.73,
+      "rtf_per_session": 2.73,
+      "n_sessions": 1
+    },
+    "ego10k_1080_nvdec_cuvid": {
+      "ok": true,
+      "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -",
+      "rtime_s": 5.971,
+      "wall_s": 6.71,
+      "utime_s": 4.059,
+      "stime_s": 0.741,
+      "startup_overhead_s": 0.743,
+      "frames_total": 5393,
+      "fps": 903.2,
+      "fps_per_session": 903.2,
+      "fps_from_external_wall": 803.7,
+      "rtf": 30.11,
+      "rtf_per_session": 30.11,
+      "n_sessions": 1
+    },
+    "ego10k_1080_nvdec_hwaccel": {
+      "ok": true,
+      "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -hwaccel cuda -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -",
+      "rtime_s": 10.307,
+      "wall_s": 11.03,
+      "utime_s": 4.289,
+      "stime_s": 0.841,
+      "startup_overhead_s": 0.72,
+      "frames_total": 5393,
+      "fps": 523.2,
+      "fps_per_session": 523.2,
+      "fps_from_external_wall": 488.9,
+      "rtf": 17.44,
+      "rtf_per_session": 17.44,
+      "n_sessions": 1
+    },
+    "nvdec_1080p_concurrency": {
+      "nvdec_1080p_1sess": {
+        "ok": true,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -benchmark -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -",
+        "rtime_s": null,
+        "frames_total": 5393,
+        "fps": 999.5,
+        "fps_per_session": 999.5,
+        "rtf": 33.32,
+        "rtf_per_session": 33.32,
+        "n_sessions": 1,
+        "note": "same run as nvdec_1080p_1sess"
+      },
+      "nvdec_1080p_2sess": {
+        "n_sessions": 2,
+        "rcs": [
+          0,
+          0
+        ],
+        "rtimes_s": [
+          null,
+          null
+        ],
+        "concurrent_wall_s": 6.44,
+        "frames_total": 10786,
+        "aggregate_fps": 1674.9,
+        "fps_per_session": 837.4,
+        "aggregate_rtf": 55.83,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -benchmark -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -",
+        "gpu_mem_before": "0, 1",
+        "gpu_mem_after": "0, 11"
+      },
+      "nvdec_1080p_4sess": {
+        "n_sessions": 4,
+        "rcs": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "rtimes_s": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "concurrent_wall_s": 8.45,
+        "frames_total": 21572,
+        "aggregate_fps": 2552.6,
+        "fps_per_session": 638.2,
+        "aggregate_rtf": 85.09,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -benchmark -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -",
+        "gpu_mem_before": "0, 11",
+        "gpu_mem_after": "0, 4"
+      },
+      "scaling_summary": {
+        "aggregate_fps_by_sessions": {
+          "nvdec_1080p_2sess": 1674.9,
+          "nvdec_1080p_4sess": 2552.6
+        },
+        "flat_ratio_max_over_min": 1.524,
+        "claim_evaluated": "NVDEC saturates at one engine (flat across 1-4 concurrent sessions)"
+      }
+    },
+    "process_startup_cost": {
+      "cpu_1080p_0p1s": {
+        "rc": 0,
+        "wall_s": 0.149,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 0.1 -f null -"
+      },
+      "nvdec_cuvid_1080p_0p1s": {
+        "rc": 0,
+        "wall_s": 0.649,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 0.1 -f null -"
+      },
+      "nvdec_hwaccel_1080p_0p1s": {
+        "rc": 0,
+        "wall_s": 0.969,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 0.1 -f null -"
+      },
+      "cpu_480p_0p1s": {
+        "rc": 0,
+        "wall_s": 0.081,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -threads 1 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -t 0.1 -f null -"
+      },
+      "nvdec_cuvid_480p_0p1s": {
+        "rc": 0,
+        "wall_s": 0.614,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -c:v h264_cuvid -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -t 0.1 -f null -"
+      }
+    },
+    "gpu_mem_before_all": "0, 0",
+    "gpu_mem_after_all": "0, 2"
+  },
+  "scorer_delta": {
+    "schema": "jadal.pod_verify.decode_scorer_delta/1",
+    "generated_utc": "2026-10-10T17:37:22Z",
+    "config": "/workspace/wt/b-verify-decode/configs/ensemble_v1.json",
+    "question": "does swapping CPU decode -> NVDEC change the frozen pixel-view probability for the same window?",
+    "work_res": "160x90",
+    "window_s": 10.0,
+    "windows": {
+      "ego10k_1080@30s": {
+        "clip": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+        "ss": 30.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "feats": {
+            "temp_b0": 95.79538510546168,
+            "temp_b1": 2.2022670266443547,
+            "temp_b2": 0.5135760684334318,
+            "temp_b3": 0.0494250231383423,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0005014680962612435,
+            "radial_slope": -3.259171299635741,
+            "hf_ratio": 0.04753398595687081,
+            "dct_energy": 0.025123944065462363,
+            "pca_resid": 0.002881658705848058,
+            "pca_top1_share": 0.9641004659519568,
+            "luma_mean": 0.4968686891557737,
+            "luma_p05": 0.04862745098039215,
+            "luma_p50": 0.4191529411764706,
+            "luma_p95": 0.9999999999999999,
+            "dark_frac": 0.059251851851851854,
+            "bright_frac": 0.13838819444444445,
+            "motion_energy": 0.023172629037605388,
+            "global_shift": 4.47213595499958,
+            "skin_frac": 0.04165895061728395,
+            "illum_r": 0.31148921767127336,
+            "illum_g": 0.3454197105505889,
+            "illum_b": 0.34309107177813775,
+            "rppg_pulse": 0.1268322680092924,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.806599506363941
+          },
+          "p_pixel": 0.9899543247329134,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 30.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "nvdec": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "feats": {
+            "temp_b0": 95.79538510546168,
+            "temp_b1": 2.2022670266443547,
+            "temp_b2": 0.5135760684334318,
+            "temp_b3": 0.0494250231383423,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0005014680962612435,
+            "radial_slope": -3.259171299635741,
+            "hf_ratio": 0.04753398595687081,
+            "dct_energy": 0.025123944065462363,
+            "pca_resid": 0.002881658705848058,
+            "pca_top1_share": 0.9641004659519568,
+            "luma_mean": 0.4968686891557737,
+            "luma_p05": 0.04862745098039215,
+            "luma_p50": 0.4191529411764706,
+            "luma_p95": 0.9999999999999999,
+            "dark_frac": 0.059251851851851854,
+            "bright_frac": 0.13838819444444445,
+            "motion_energy": 0.023172629037605388,
+            "global_shift": 4.47213595499958,
+            "skin_frac": 0.04165895061728395,
+            "illum_r": 0.31148921767127336,
+            "illum_g": 0.3454197105505889,
+            "illum_b": 0.34309107177813775,
+            "rppg_pulse": 0.1268322680092924,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.806599506363941
+          },
+          "p_pixel": 0.9899543247329134,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -hwaccel cuda -c:v hevc_cuvid -ss 30.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "feature_delta": {
+          "n_features": 26,
+          "max_abs_delta": 0.0,
+          "max_abs_delta_feature": "bright_frac",
+          "max_rel_delta": 0.0,
+          "n_features_changed_gt_1e-3": 0
+        },
+        "p_pixel_cpu": 0.989954,
+        "p_pixel_nvdec": 0.989954,
+        "p_pixel_abs_delta": 0.0,
+        "cpu_margin_to_0.5": 0.489954,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      },
+      "ego10k_1080@60s": {
+        "clip": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+        "ss": 60.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "feats": {
+            "temp_b0": 91.01100361098698,
+            "temp_b1": 2.684673554433221,
+            "temp_b2": 0.7654451579546617,
+            "temp_b3": 0.07219682515097231,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0007637182932034832,
+            "radial_slope": -3.3946356123659487,
+            "hf_ratio": 0.03581340079559698,
+            "dct_energy": 0.02325019669679606,
+            "pca_resid": 0.0031350418527926246,
+            "pca_top1_share": 0.9667904579609417,
+            "luma_mean": 0.4874211808959698,
+            "luma_p05": 0.053192156862745095,
+            "luma_p50": 0.4148705882352941,
+            "luma_p95": 0.9999999999999999,
+            "dark_frac": 0.0559224537037037,
+            "bright_frac": 0.14521296296296296,
+            "motion_energy": 0.029021043723267855,
+            "global_shift": 20.8806130178211,
+            "skin_frac": 0.03118827160493827,
+            "illum_r": 0.3091819542555867,
+            "illum_g": 0.3445552546918904,
+            "illum_b": 0.3462627910525229,
+            "rppg_pulse": 0.08354470905774548,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.8275273121617642
+          },
+          "p_pixel": 0.45563539814244086,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 60.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "nvdec": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "feats": {
+            "temp_b0": 91.01100361098698,
+            "temp_b1": 2.684673554433221,
+            "temp_b2": 0.7654451579546617,
+            "temp_b3": 0.07219682515097231,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0007637182932034832,
+            "radial_slope": -3.3946356123659487,
+            "hf_ratio": 0.03581340079559698,
+            "dct_energy": 0.02325019669679606,
+            "pca_resid": 0.0031350418527926246,
+            "pca_top1_share": 0.9667904579609417,
+            "luma_mean": 0.4874211808959698,
+            "luma_p05": 0.053192156862745095,
+            "luma_p50": 0.4148705882352941,
+            "luma_p95": 0.9999999999999999,
+            "dark_frac": 0.0559224537037037,
+            "bright_frac": 0.14521296296296296,
+            "motion_energy": 0.029021043723267855,
+            "global_shift": 20.8806130178211,
+            "skin_frac": 0.03118827160493827,
+            "illum_r": 0.3091819542555867,
+            "illum_g": 0.3445552546918904,
+            "illum_b": 0.3462627910525229,
+            "rppg_pulse": 0.08354470905774548,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.8275273121617642
+          },
+          "p_pixel": 0.45563539814244086,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -hwaccel cuda -c:v hevc_cuvid -ss 60.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "feature_delta": {
+          "n_features": 26,
+          "max_abs_delta": 0.0,
+          "max_abs_delta_feature": "bright_frac",
+          "max_rel_delta": 0.0,
+          "n_features_changed_gt_1e-3": 0
+        },
+        "p_pixel_cpu": 0.455635,
+        "p_pixel_nvdec": 0.455635,
+        "p_pixel_abs_delta": 0.0,
+        "cpu_margin_to_0.5": 0.044365,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      },
+      "ego10k_1080@90s": {
+        "clip": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+        "ss": 90.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "feats": {
+            "temp_b0": 88.9308065315693,
+            "temp_b1": 2.959919689855101,
+            "temp_b2": 0.8062479136960562,
+            "temp_b3": 0.08006781831329787,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0008630132695272302,
+            "radial_slope": -3.3001247667083717,
+            "hf_ratio": 0.0381729124265769,
+            "dct_energy": 0.018224032795494782,
+            "pca_resid": 0.0032140184889643863,
+            "pca_top1_share": 0.9664271083619475,
+            "luma_mean": 0.48441845191993466,
+            "luma_p05": 0.056152941176470586,
+            "luma_p50": 0.4122156862745098,
+            "luma_p95": 0.9999999999999999,
+            "dark_frac": 0.053020601851851853,
+            "bright_frac": 0.14769791666666668,
+            "motion_energy": 0.03023470848999207,
+            "global_shift": 4.0,
+            "skin_frac": 0.03574845679012345,
+            "illum_r": 0.30928245529384757,
+            "illum_g": 0.3442262027508182,
+            "illum_b": 0.3464913419553342,
+            "rppg_pulse": 0.030988681660985805,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.577656625337675
+          },
+          "p_pixel": 0.31499200052681187,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 90.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "nvdec": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "feats": {
+            "temp_b0": 88.9308065315693,
+            "temp_b1": 2.959919689855101,
+            "temp_b2": 0.8062479136960562,
+            "temp_b3": 0.08006781831329787,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0008630132695272302,
+            "radial_slope": -3.3001247667083717,
+            "hf_ratio": 0.0381729124265769,
+            "dct_energy": 0.018224032795494782,
+            "pca_resid": 0.0032140184889643863,
+            "pca_top1_share": 0.9664271083619475,
+            "luma_mean": 0.48441845191993466,
+            "luma_p05": 0.056152941176470586,
+            "luma_p50": 0.4122156862745098,
+            "luma_p95": 0.9999999999999999,
+            "dark_frac": 0.053020601851851853,
+            "bright_frac": 0.14769791666666668,
+            "motion_energy": 0.03023470848999207,
+            "global_shift": 4.0,
+            "skin_frac": 0.03574845679012345,
+            "illum_r": 0.30928245529384757,
+            "illum_g": 0.3442262027508182,
+            "illum_b": 0.3464913419553342,
+            "rppg_pulse": 0.030988681660985805,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.577656625337675
+          },
+          "p_pixel": 0.31499200052681187,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -hwaccel cuda -c:v hevc_cuvid -ss 90.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "feature_delta": {
+          "n_features": 26,
+          "max_abs_delta": 0.0,
+          "max_abs_delta_feature": "bright_frac",
+          "max_rel_delta": 0.0,
+          "n_features_changed_gt_1e-3": 0
+        },
+        "p_pixel_cpu": 0.314992,
+        "p_pixel_nvdec": 0.314992,
+        "p_pixel_abs_delta": 0.0,
+        "cpu_margin_to_0.5": 0.185008,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      },
+      "indego_480@30s": {
+        "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+        "ss": 30.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "feats": {
+            "temp_b0": 11.55198653668855,
+            "temp_b1": 0.33472097599688755,
+            "temp_b2": 0.05193567721520703,
+            "temp_b3": 0.0,
+            "frozen_frac": 0.002361111111111111,
+            "flicker_idx": 0.0,
+            "radial_slope": -3.7099132955589966,
+            "hf_ratio": 0.022590516427999554,
+            "dct_energy": 0.011106807047126471,
+            "pca_resid": 0.00022360332888296904,
+            "pca_top1_share": 0.968919580380055,
+            "luma_mean": 0.28716233501906324,
+            "luma_p05": 0.011529411764705884,
+            "luma_p50": 0.26791372549019604,
+            "luma_p95": 0.6666039215686274,
+            "dark_frac": 0.19103402777777778,
+            "bright_frac": 8.472222222222222e-05,
+            "motion_energy": 0.02599802875706961,
+            "global_shift": 7.0,
+            "skin_frac": 0.05046296296296296,
+            "illum_r": 0.3041839993215376,
+            "illum_g": 0.3232745139582381,
+            "illum_b": 0.37254148672022425,
+            "rppg_pulse": 0.5511119721346637,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.38378846206646816
+          },
+          "p_pixel": 0.8714537398596232,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 30.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "nvdec": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "feats": {
+            "temp_b0": 11.55198653668855,
+            "temp_b1": 0.33472097599688755,
+            "temp_b2": 0.05193567721520703,
+            "temp_b3": 0.0,
+            "frozen_frac": 0.002361111111111111,
+            "flicker_idx": 0.0,
+            "radial_slope": -3.7099132955589966,
+            "hf_ratio": 0.022590516427999554,
+            "dct_energy": 0.011106807047126471,
+            "pca_resid": 0.00022360332888296904,
+            "pca_top1_share": 0.968919580380055,
+            "luma_mean": 0.28716233501906324,
+            "luma_p05": 0.011529411764705884,
+            "luma_p50": 0.26791372549019604,
+            "luma_p95": 0.6666039215686274,
+            "dark_frac": 0.19103402777777778,
+            "bright_frac": 8.472222222222222e-05,
+            "motion_energy": 0.02599802875706961,
+            "global_shift": 7.0,
+            "skin_frac": 0.05046296296296296,
+            "illum_r": 0.3041839993215376,
+            "illum_g": 0.3232745139582381,
+            "illum_b": 0.37254148672022425,
+            "rppg_pulse": 0.5511119721346637,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.38378846206646816
+          },
+          "p_pixel": 0.8714537398596232,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -hwaccel cuda -c:v h264_cuvid -ss 30.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "feature_delta": {
+          "n_features": 26,
+          "max_abs_delta": 0.0,
+          "max_abs_delta_feature": "bright_frac",
+          "max_rel_delta": 0.0,
+          "n_features_changed_gt_1e-3": 0
+        },
+        "p_pixel_cpu": 0.871454,
+        "p_pixel_nvdec": 0.871454,
+        "p_pixel_abs_delta": 0.0,
+        "cpu_margin_to_0.5": 0.371454,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      },
+      "indego_480@90s": {
+        "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+        "ss": 90.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "feats": {
+            "temp_b0": 10.24057313622686,
+            "temp_b1": 0.2639669540272016,
+            "temp_b2": 0.03445956751528581,
+            "temp_b3": 0.0,
+            "frozen_frac": 0.00020833333333333335,
+            "flicker_idx": 0.0,
+            "radial_slope": -3.769215318938802,
+            "hf_ratio": 0.02161084968433744,
+            "dct_energy": 0.011063335662589227,
+            "pca_resid": 0.0001877089571203425,
+            "pca_top1_share": 0.974033423682175,
+            "luma_mean": 0.2620977435811548,
+            "luma_p05": 0.011529411764705884,
+            "luma_p50": 0.22812549019607845,
+            "luma_p95": 0.6461803921568627,
+            "dark_frac": 0.2060486111111111,
+            "bright_frac": 0.002684722222222222,
+            "motion_energy": 0.019550785576351752,
+            "global_shift": 2.0,
+            "skin_frac": 0.0701003086419753,
+            "illum_r": 0.31288383470824654,
+            "illum_g": 0.3200455528696449,
+            "illum_b": 0.3670706124221084,
+            "rppg_pulse": 0.12864023070025932,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.5976891579204319
+          },
+          "p_pixel": 0.9682416413443039,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 90.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "nvdec": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "feats": {
+            "temp_b0": 10.24057313622686,
+            "temp_b1": 0.2639669540272016,
+            "temp_b2": 0.03445956751528581,
+            "temp_b3": 0.0,
+            "frozen_frac": 0.00020833333333333335,
+            "flicker_idx": 0.0,
+            "radial_slope": -3.769215318938802,
+            "hf_ratio": 0.02161084968433744,
+            "dct_energy": 0.011063335662589227,
+            "pca_resid": 0.0001877089571203425,
+            "pca_top1_share": 0.974033423682175,
+            "luma_mean": 0.2620977435811548,
+            "luma_p05": 0.011529411764705884,
+            "luma_p50": 0.22812549019607845,
+            "luma_p95": 0.6461803921568627,
+            "dark_frac": 0.2060486111111111,
+            "bright_frac": 0.002684722222222222,
+            "motion_energy": 0.019550785576351752,
+            "global_shift": 2.0,
+            "skin_frac": 0.0701003086419753,
+            "illum_r": 0.31288383470824654,
+            "illum_g": 0.3200455528696449,
+            "illum_b": 0.3670706124221084,
+            "rppg_pulse": 0.12864023070025932,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.5976891579204319
+          },
+          "p_pixel": 0.9682416413443039,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -hwaccel cuda -c:v h264_cuvid -ss 90.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "feature_delta": {
+          "n_features": 26,
+          "max_abs_delta": 0.0,
+          "max_abs_delta_feature": "bright_frac",
+          "max_rel_delta": 0.0,
+          "n_features_changed_gt_1e-3": 0
+        },
+        "p_pixel_cpu": 0.968242,
+        "p_pixel_nvdec": 0.968242,
+        "p_pixel_abs_delta": 0.0,
+        "cpu_margin_to_0.5": 0.468242,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      },
+      "indego_480@150s": {
+        "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+        "ss": 150.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "feats": {
+            "temp_b0": 10.181400426311962,
+            "temp_b1": 0.4696111088115016,
+            "temp_b2": 0.10982280700320865,
+            "temp_b3": 0.0,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0,
+            "radial_slope": -3.8279452785328587,
+            "hf_ratio": 0.018982880271901505,
+            "dct_energy": 0.008259086571489983,
+            "pca_resid": 0.0002477102984611166,
+            "pca_top1_share": 0.9752595175224187,
+            "luma_mean": 0.27873457308823524,
+            "luma_p05": 0.011529411764705884,
+            "luma_p50": 0.27602745098039216,
+            "luma_p95": 0.6207882352941176,
+            "dark_frac": 0.18169305555555557,
+            "bright_frac": 0.0029083333333333335,
+            "motion_energy": 0.044212242605796516,
+            "global_shift": 11.661903789690601,
+            "skin_frac": 0.05171296296296297,
+            "illum_r": 0.3114358490076986,
+            "illum_g": 0.32139376400924924,
+            "illum_b": 0.36717038698305215,
+            "rppg_pulse": 0.2963963126239122,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.38834092613664506
+          },
+          "p_pixel": 0.6656428218122384,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 150.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "nvdec": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "feats": {
+            "temp_b0": 10.181400426311962,
+            "temp_b1": 0.4696111088115016,
+            "temp_b2": 0.10982280700320865,
+            "temp_b3": 0.0,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0,
+            "radial_slope": -3.8279452785328587,
+            "hf_ratio": 0.018982880271901505,
+            "dct_energy": 0.008259086571489983,
+            "pca_resid": 0.0002477102984611166,
+            "pca_top1_share": 0.9752595175224187,
+            "luma_mean": 0.27873457308823524,
+            "luma_p05": 0.011529411764705884,
+            "luma_p50": 0.27602745098039216,
+            "luma_p95": 0.6207882352941176,
+            "dark_frac": 0.18169305555555557,
+            "bright_frac": 0.0029083333333333335,
+            "motion_energy": 0.044212242605796516,
+            "global_shift": 11.661903789690601,
+            "skin_frac": 0.05171296296296297,
+            "illum_r": 0.3114358490076986,
+            "illum_g": 0.32139376400924924,
+            "illum_b": 0.36717038698305215,
+            "rppg_pulse": 0.2963963126239122,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.38834092613664506
+          },
+          "p_pixel": 0.6656428218122384,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -hwaccel cuda -c:v h264_cuvid -ss 150.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "feature_delta": {
+          "n_features": 26,
+          "max_abs_delta": 0.0,
+          "max_abs_delta_feature": "bright_frac",
+          "max_rel_delta": 0.0,
+          "n_features_changed_gt_1e-3": 0
+        },
+        "p_pixel_cpu": 0.665643,
+        "p_pixel_nvdec": 0.665643,
+        "p_pixel_abs_delta": 0.0,
+        "cpu_margin_to_0.5": 0.165643,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      }
+    },
+    "summary": {
+      "n_windows": 6,
+      "max_p_pixel_abs_delta": 0.0,
+      "n_verdict_flips_at_0.5": 0,
+      "all_frame_counts_equal": true
+    }
+  },
+  "extensions": {
+    "schema": "jadal.pod_verify.decode_extensions/1",
+    "generated_utc": "2026-10-10T17:39:45Z",
+    "gpu_state_at_start": "0, 0",
+    "cpu_thread_scaling_1080p_30s_span": {
+      "threads_1": {
+        "threads": 1,
+        "rc": 0,
+        "rtime_s": 7.736,
+        "wall_s": 7.815,
+        "fps": 116.3,
+        "rtf": 3.88,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      },
+      "threads_2": {
+        "threads": 2,
+        "rc": 0,
+        "rtime_s": 4.808,
+        "wall_s": 4.89,
+        "fps": 187.2,
+        "rtf": 6.24,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 2 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      },
+      "threads_4": {
+        "threads": 4,
+        "rc": 0,
+        "rtime_s": 2.678,
+        "wall_s": 2.763,
+        "fps": 336.1,
+        "rtf": 11.2,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 4 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      },
+      "threads_8": {
+        "threads": 8,
+        "rc": 0,
+        "rtime_s": 2.86,
+        "wall_s": 2.951,
+        "fps": 314.7,
+        "rtf": 10.49,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 8 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      },
+      "threads_16": {
+        "threads": 16,
+        "rc": 0,
+        "rtime_s": 6.146,
+        "wall_s": 6.267,
+        "fps": 146.4,
+        "rtf": 4.88,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 16 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      },
+      "threads_0": {
+        "threads": 0,
+        "rc": 0,
+        "rtime_s": 6.186,
+        "wall_s": 6.299,
+        "fps": 145.5,
+        "rtf": 4.85,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      }
+    },
+    "nvdec_paths_1080p": {
+      "nvdec_cuvid": {
+        "rc": 0,
+        "rtime_s": 5.114,
+        "wall_s": 5.861,
+        "fps": 1054.6,
+        "rtf": 35.15,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -"
+      },
+      "nvdec_hwaccel_auto": {
+        "rc": 0,
+        "rtime_s": 5.703,
+        "wall_s": 6.258,
+        "fps": 945.6,
+        "rtf": 31.52,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -hwaccel cuda -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -"
+      },
+      "nvdec_hwaccel_t1": {
+        "rc": 0,
+        "rtime_s": 8.947,
+        "wall_s": 9.512,
+        "fps": 602.8,
+        "rtf": 20.09,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -hwaccel cuda -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -"
+      }
+    },
+    "nvdec_concurrency_1080p": {
+      "1sess": {
+        "n_sessions": 1,
+        "concurrent_wall_s": 4.92,
+        "session_rtimes_s": [
+          4.481
+        ],
+        "aggregate_fps": 1096.1,
+        "fps_per_session": 1096.1,
+        "aggregate_rtf": 36.54,
+        "gpu_mem_before": "0, 2",
+        "gpu_mem_after": "0, 5",
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -"
+      },
+      "2sess": {
+        "n_sessions": 2,
+        "concurrent_wall_s": 7.4,
+        "session_rtimes_s": [
+          6.349,
+          6.721
+        ],
+        "aggregate_fps": 1458.4,
+        "fps_per_session": 729.2,
+        "aggregate_rtf": 48.61,
+        "gpu_mem_before": "0, 5",
+        "gpu_mem_after": "0, 10",
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -"
+      },
+      "4sess": {
+        "n_sessions": 4,
+        "concurrent_wall_s": 8.89,
+        "session_rtimes_s": [
+          7.17,
+          7.217,
+          7.189,
+          7.585
+        ],
+        "aggregate_fps": 2425.9,
+        "fps_per_session": 606.5,
+        "aggregate_rtf": 80.86,
+        "gpu_mem_before": "0, 10",
+        "gpu_mem_after": "0, 2",
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -"
+      },
+      "8sess": {
+        "n_sessions": 8,
+        "concurrent_wall_s": 17.23,
+        "session_rtimes_s": [
+          14.838,
+          14.276,
+          14.82,
+          14.798,
+          14.727,
+          14.831,
+          14.812,
+          14.754
+        ],
+        "aggregate_fps": 2504.4,
+        "fps_per_session": 313.0,
+        "aggregate_rtf": 83.48,
+        "gpu_mem_before": "0, 11",
+        "gpu_mem_after": "0, 11",
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -an -sn -dn -f null -"
+      }
+    },
+    "pipeline_window_wall_time": {
+      "1080p_window2s_cpu": {
+        "wall_s_median": 1.86,
+        "wall_s_runs": [
+          1.919,
+          1.718,
+          1.86
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 60,
+        "effective_fps": 32.3,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "1080p_window2s_nvdec_cuvid": {
+        "wall_s_median": 1.069,
+        "wall_s_runs": [
+          0.904,
+          1.263,
+          1.069
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 60,
+        "effective_fps": 56.1,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -c:v hevc_cuvid -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "1080p_window2s_nvdec_scale_cuda": {
+        "wall_s_median": 0.914,
+        "wall_s_runs": [
+          0.611,
+          1.074,
+          0.914
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 60,
+        "effective_fps": 65.6,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -hwaccel_output_format cuda -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12 -f rawvideo -pix_fmt nv12 -vsync 0 -y /dev/null"
+      },
+      "1080p_window10s_cpu": {
+        "wall_s_median": 4.24,
+        "wall_s_runs": [
+          4.063,
+          4.349,
+          4.24
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 300,
+        "effective_fps": 70.7,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -ss 30 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "1080p_window10s_nvdec_cuvid": {
+        "wall_s_median": 2.255,
+        "wall_s_runs": [
+          2.352,
+          1.9,
+          2.255
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 300,
+        "effective_fps": 133.1,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -c:v hevc_cuvid -ss 30 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "1080p_window10s_nvdec_scale_cuda": {
+        "wall_s_median": 0.975,
+        "wall_s_runs": [
+          0.912,
+          1.003,
+          0.975
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 300,
+        "effective_fps": 307.8,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -hwaccel_output_format cuda -ss 30 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12 -f rawvideo -pix_fmt nv12 -vsync 0 -y /dev/null"
+      },
+      "480p_window2s_cpu": {
+        "wall_s_median": 0.125,
+        "wall_s_runs": [
+          0.125,
+          0.12,
+          0.134
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 20,
+        "effective_fps": 160.2,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "480p_window2s_nvdec_cuvid": {
+        "wall_s_median": 0.765,
+        "wall_s_runs": [
+          0.765,
+          0.789,
+          0.707
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 20,
+        "effective_fps": 26.1,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -c:v h264_cuvid -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "480p_window2s_nvdec_scale_cuda": {
+        "wall_s_median": 0.64,
+        "wall_s_runs": [
+          0.676,
+          0.64,
+          0.637
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 20,
+        "effective_fps": 31.2,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -hwaccel_output_format cuda -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12 -f rawvideo -pix_fmt nv12 -vsync 0 -y /dev/null"
+      }
+    },
+    "gpu_state_at_end": "0, 7"
+  },
+  "pipeline_parity": {
+    "schema": "jadal.pod_verify.decode_pipeline_parity/1",
+    "generated_utc": "2026-10-10T17:46:36Z",
+    "note": "parity at the pipeline working resolution; mirrors jadal/poc_stream/replay.py and eval/gpu/decode.py NVDEC_CHAIN",
+    "work_res": "160x90",
+    "cases": {
+      "indego_480": {
+        "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+        "work_res": "160x90",
+        "ss": 30.0,
+        "dur_s": 2.0,
+        "extract_fps": 10,
+        "cpu_scale_bgr24": {
+          "rc": 0,
+          "frames": 20,
+          "wall_s": 0.122,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90:flags=bicubic,fps=10 -f rawvideo -pix_fmt bgr24 -vsync 0 pipe:1"
+        },
+        "nvdec_cuvid_scale_bgr24": {
+          "rc": 0,
+          "frames": 20,
+          "wall_s": 0.736,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -c:v h264_cuvid -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90:flags=bicubic,fps=10 -f rawvideo -pix_fmt bgr24 -vsync 0 pipe:1"
+        },
+        "nvdec_scale_cuda_nv12": {
+          "rc": 0,
+          "frames": 20,
+          "wall_s": 0.767,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -hwaccel_output_format cuda -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12,fps=10 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+        },
+        "nvdec_cuvid_scale_bgr24_vs_cpu": {
+          "frames_compared": 20,
+          "mae": 0.0,
+          "max_abs_diff": 0,
+          "psnr_db": null,
+          "psnr_infinite": true,
+          "frac_frames_bitexact": 1.0,
+          "max_per_frame_mae": 0.0,
+          "pct_pixels_diff_gt2": 0.0,
+          "pct_pixels_diff_gt8": 0.0,
+          "frame_count_equal": true,
+          "channel_order": "BGR (unchanged, both sides bgr24)"
+        },
+        "nvdec_scale_cuda_nv12_vs_cpu": {
+          "frames_compared": 20,
+          "mae": 4.911941,
+          "max_abs_diff": 98,
+          "psnr_db": 29.379,
+          "psnr_infinite": false,
+          "frac_frames_bitexact": 0.0,
+          "max_per_frame_mae": 4.965208,
+          "pct_pixels_diff_gt2": 47.175347,
+          "pct_pixels_diff_gt8": 16.273958,
+          "frame_count_equal": true,
+          "channel_order": "RGB (bgr24 reference flipped)"
+        },
+        "reference_frame_to_frame_mae_cpu": 2.571809
+      },
+      "ego10k_1080": {
+        "clip": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+        "work_res": "160x90",
+        "ss": 30.0,
+        "dur_s": 2.0,
+        "extract_fps": 30,
+        "cpu_scale_bgr24": {
+          "rc": 0,
+          "frames": 60,
+          "wall_s": 1.802,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90:flags=bicubic,fps=30 -f rawvideo -pix_fmt bgr24 -vsync 0 pipe:1"
+        },
+        "nvdec_cuvid_scale_bgr24": {
+          "rc": 0,
+          "frames": 60,
+          "wall_s": 1.044,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -c:v hevc_cuvid -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90:flags=bicubic,fps=30 -f rawvideo -pix_fmt bgr24 -vsync 0 pipe:1"
+        },
+        "nvdec_scale_cuda_nv12": {
+          "rc": 0,
+          "frames": 60,
+          "wall_s": 0.906,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -hwaccel_output_format cuda -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12,fps=30 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+        },
+        "nvdec_cuvid_scale_bgr24_vs_cpu": {
+          "frames_compared": 60,
+          "mae": 0.0,
+          "max_abs_diff": 0,
+          "psnr_db": null,
+          "psnr_infinite": true,
+          "frac_frames_bitexact": 1.0,
+          "max_per_frame_mae": 0.0,
+          "pct_pixels_diff_gt2": 0.0,
+          "pct_pixels_diff_gt8": 0.0,
+          "frame_count_equal": true,
+          "channel_order": "BGR (unchanged, both sides bgr24)"
+        },
+        "nvdec_scale_cuda_nv12_vs_cpu": {
+          "frames_compared": 60,
+          "mae": 10.434081,
+          "max_abs_diff": 229,
+          "psnr_db": 21.757,
+          "psnr_infinite": false,
+          "frac_frames_bitexact": 0.0,
+          "max_per_frame_mae": 11.610509,
+          "pct_pixels_diff_gt2": 67.803164,
+          "pct_pixels_diff_gt8": 28.249306,
+          "frame_count_equal": true,
+          "channel_order": "RGB (bgr24 reference flipped)"
+        },
+        "reference_frame_to_frame_mae_cpu": 7.244248
+      }
+    }
+  },
+  "nv12_path_attribution": {
+    "schema": "jadal.pod_verify.decode_nv12_attribution/1",
+    "generated_utc": "2026-10-10T17:44:19Z",
+    "work_res": "160x90",
+    "ss": 30.0,
+    "dur_s": 2.0,
+    "clip_color_metadata": {
+      "indego_480": {},
+      "ego10k_1080": {
+        "color_range": "tv"
+      }
+    },
+    "cases": {
+      "indego_480": {
+        "decodes": {
+          "cpu_bicubic_bgr24": {
+            "rc": 0,
+            "frames": 20,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90:flags=bicubic,fps=10,format=bgr24 -f rawvideo -pix_fmt bgr24 -vsync 0 pipe:1"
+          },
+          "cpu_bilinear_bgr24": {
+            "rc": 0,
+            "frames": 20,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90:flags=bilinear,fps=10,format=bgr24 -f rawvideo -pix_fmt bgr24 -vsync 0 pipe:1"
+          },
+          "cpu_bicubic_nv12": {
+            "rc": 0,
+            "frames": 20,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90:flags=bicubic,fps=10,format=nv12 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+          },
+          "cpu_bilinear_nv12": {
+            "rc": 0,
+            "frames": 20,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90:flags=bilinear,fps=10,format=nv12 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+          },
+          "cuvid_bilinear_bgr24": {
+            "rc": 0,
+            "frames": 20,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -c:v h264_cuvid -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90:flags=bilinear,fps=10,format=bgr24 -f rawvideo -pix_fmt bgr24 -vsync 0 pipe:1"
+          },
+          "cuda_scale_nv12": {
+            "rc": 0,
+            "frames": 20,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -hwaccel_output_format cuda -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12,fps=10 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+          }
+        },
+        "channel_order_note": "bgr24 outputs flipped to RGB for comparisons against nv12_to_rgb output",
+        "c1_resampler_bicubic_vs_bilinear": {
+          "frames_compared": 20,
+          "mae": 1.92969,
+          "max_abs_diff": 26,
+          "psnr_db": 39.09,
+          "pct_gt8": 1.723
+        },
+        "c2_conversion_nv12numpy_vs_swscale_bgr24_same_scale": {
+          "frames_compared": 20,
+          "mae": 2.43649,
+          "max_abs_diff": 27,
+          "psnr_db": 38.57,
+          "pct_gt8": 1.528
+        },
+        "c3_decoder_cuvid_vs_cpu_matched_bilinear": {
+          "frames_compared": 20,
+          "mae": 0.0,
+          "max_abs_diff": 0,
+          "psnr_db": null,
+          "pct_gt8": 0.0
+        },
+        "c4_scale_cuda_vs_cpu_bilinear_same_conversion": {
+          "frames_compared": 20,
+          "mae": 4.8201,
+          "max_abs_diff": 109,
+          "psnr_db": 28.88,
+          "pct_gt8": 17.592
+        },
+        "c5_scale_cuda_vs_cpu_bicubic_same_conversion": {
+          "frames_compared": 20,
+          "mae": 4.40584,
+          "max_abs_diff": 100,
+          "psnr_db": 29.65,
+          "pct_gt8": 15.559
+        },
+        "c6_scale_cuda_vs_cpu_bilinear_bgr24_endtoend": {
+          "frames_compared": 20,
+          "mae": 5.03553,
+          "max_abs_diff": 105,
+          "psnr_db": 28.77,
+          "pct_gt8": 17.716
+        }
+      },
+      "ego10k_1080": {
+        "decodes": {
+          "cpu_bicubic_bgr24": {
+            "rc": 0,
+            "frames": 60,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90:flags=bicubic,fps=30,format=bgr24 -f rawvideo -pix_fmt bgr24 -vsync 0 pipe:1"
+          },
+          "cpu_bilinear_bgr24": {
+            "rc": 0,
+            "frames": 60,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90:flags=bilinear,fps=30,format=bgr24 -f rawvideo -pix_fmt bgr24 -vsync 0 pipe:1"
+          },
+          "cpu_bicubic_nv12": {
+            "rc": 0,
+            "frames": 60,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90:flags=bicubic,fps=30,format=nv12 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+          },
+          "cpu_bilinear_nv12": {
+            "rc": 0,
+            "frames": 60,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90:flags=bilinear,fps=30,format=nv12 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+          },
+          "cuvid_bilinear_bgr24": {
+            "rc": 0,
+            "frames": 60,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -c:v hevc_cuvid -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90:flags=bilinear,fps=30,format=bgr24 -f rawvideo -pix_fmt bgr24 -vsync 0 pipe:1"
+          },
+          "cuda_scale_nv12": {
+            "rc": 0,
+            "frames": 60,
+            "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -hwaccel_output_format cuda -ss 30.000 -t 2.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12,fps=30 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+          }
+        },
+        "channel_order_note": "bgr24 outputs flipped to RGB for comparisons against nv12_to_rgb output",
+        "c1_resampler_bicubic_vs_bilinear": {
+          "frames_compared": 60,
+          "mae": 3.40024,
+          "max_abs_diff": 48,
+          "psnr_db": 33.74,
+          "pct_gt8": 9.948
+        },
+        "c2_conversion_nv12numpy_vs_swscale_bgr24_same_scale": {
+          "frames_compared": 60,
+          "mae": 4.15778,
+          "max_abs_diff": 93,
+          "psnr_db": 33.31,
+          "pct_gt8": 5.594
+        },
+        "c3_decoder_cuvid_vs_cpu_matched_bilinear": {
+          "frames_compared": 60,
+          "mae": 0.0,
+          "max_abs_diff": 0,
+          "psnr_db": null,
+          "pct_gt8": 0.0
+        },
+        "c4_scale_cuda_vs_cpu_bilinear_same_conversion": {
+          "frames_compared": 60,
+          "mae": 9.88998,
+          "max_abs_diff": 200,
+          "psnr_db": 21.5,
+          "pct_gt8": 25.88
+        },
+        "c5_scale_cuda_vs_cpu_bicubic_same_conversion": {
+          "frames_compared": 60,
+          "mae": 9.10699,
+          "max_abs_diff": 208,
+          "psnr_db": 21.96,
+          "pct_gt8": 24.008
+        },
+        "c6_scale_cuda_vs_cpu_bilinear_bgr24_endtoend": {
+          "frames_compared": 60,
+          "mae": 10.18928,
+          "max_abs_diff": 221,
+          "psnr_db": 21.45,
+          "pct_gt8": 26.161
+        }
+      }
+    }
+  },
+  "scorer_delta_scale_cuda_path": {
+    "schema": "jadal.pod_verify.decode_scorer_delta_scalecuda/1",
+    "generated_utc": "2026-10-10T17:45:01Z",
+    "config": "/workspace/wt/b-verify-decode/configs/ensemble_v1.json",
+    "question": "does the eval/gpu/decode.py scale_cuda+nv12 path change the frozen pixel-view probability?",
+    "windows": {
+      "ego10k_1080@30s": {
+        "clip": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+        "ss": 30.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "feats": {
+            "temp_b0": 95.79538510546168,
+            "temp_b1": 2.2022670266443547,
+            "temp_b2": 0.5135760684334318,
+            "temp_b3": 0.0494250231383423,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0005014680962612435,
+            "radial_slope": -3.259171299635741,
+            "hf_ratio": 0.04753398595687081,
+            "dct_energy": 0.025123944065462363,
+            "pca_resid": 0.002881658705848058,
+            "pca_top1_share": 0.9641004659519568,
+            "luma_mean": 0.4968686891557737,
+            "luma_p05": 0.04862745098039215,
+            "luma_p50": 0.4191529411764706,
+            "luma_p95": 0.9999999999999999,
+            "dark_frac": 0.059251851851851854,
+            "bright_frac": 0.13838819444444445,
+            "motion_energy": 0.023172629037605388,
+            "global_shift": 4.47213595499958,
+            "skin_frac": 0.04165895061728395,
+            "illum_r": 0.31148921767127336,
+            "illum_g": 0.3454197105505889,
+            "illum_b": 0.34309107177813775,
+            "rppg_pulse": 0.1268322680092924,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.806599506363941
+          },
+          "p_pixel": 0.9899543247329134,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 30.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "scale_cuda": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "p_pixel": 0.9771546252731755,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -hwaccel_output_format cuda -ss 30.000 -t 10.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12,fps=30 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+        },
+        "feature_delta": {
+          "max_abs_delta": 0.5619306510172721,
+          "max_abs_delta_feature": "temp_b2",
+          "n_features_changed_gt_1e-3": 17
+        },
+        "p_pixel_cpu": 0.989954,
+        "p_pixel_scale_cuda": 0.977155,
+        "p_pixel_abs_delta": 0.0128,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      },
+      "ego10k_1080@60s": {
+        "clip": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+        "ss": 60.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "feats": {
+            "temp_b0": 91.01100361098698,
+            "temp_b1": 2.684673554433221,
+            "temp_b2": 0.7654451579546617,
+            "temp_b3": 0.07219682515097231,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0007637182932034832,
+            "radial_slope": -3.3946356123659487,
+            "hf_ratio": 0.03581340079559698,
+            "dct_energy": 0.02325019669679606,
+            "pca_resid": 0.0031350418527926246,
+            "pca_top1_share": 0.9667904579609417,
+            "luma_mean": 0.4874211808959698,
+            "luma_p05": 0.053192156862745095,
+            "luma_p50": 0.4148705882352941,
+            "luma_p95": 0.9999999999999999,
+            "dark_frac": 0.0559224537037037,
+            "bright_frac": 0.14521296296296296,
+            "motion_energy": 0.029021043723267855,
+            "global_shift": 20.8806130178211,
+            "skin_frac": 0.03118827160493827,
+            "illum_r": 0.3091819542555867,
+            "illum_g": 0.3445552546918904,
+            "illum_b": 0.3462627910525229,
+            "rppg_pulse": 0.08354470905774548,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.8275273121617642
+          },
+          "p_pixel": 0.45563539814244086,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 60.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "scale_cuda": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "p_pixel": 0.07342557030068074,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -hwaccel_output_format cuda -ss 60.000 -t 10.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12,fps=30 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+        },
+        "feature_delta": {
+          "max_abs_delta": 0.48335121821746485,
+          "max_abs_delta_feature": "temp_b2",
+          "n_features_changed_gt_1e-3": 17
+        },
+        "p_pixel_cpu": 0.455635,
+        "p_pixel_scale_cuda": 0.073426,
+        "p_pixel_abs_delta": 0.38221,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      },
+      "ego10k_1080@90s": {
+        "clip": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+        "ss": 90.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "feats": {
+            "temp_b0": 88.9308065315693,
+            "temp_b1": 2.959919689855101,
+            "temp_b2": 0.8062479136960562,
+            "temp_b3": 0.08006781831329787,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0008630132695272302,
+            "radial_slope": -3.3001247667083717,
+            "hf_ratio": 0.0381729124265769,
+            "dct_energy": 0.018224032795494782,
+            "pca_resid": 0.0032140184889643863,
+            "pca_top1_share": 0.9664271083619475,
+            "luma_mean": 0.48441845191993466,
+            "luma_p05": 0.056152941176470586,
+            "luma_p50": 0.4122156862745098,
+            "luma_p95": 0.9999999999999999,
+            "dark_frac": 0.053020601851851853,
+            "bright_frac": 0.14769791666666668,
+            "motion_energy": 0.03023470848999207,
+            "global_shift": 4.0,
+            "skin_frac": 0.03574845679012345,
+            "illum_r": 0.30928245529384757,
+            "illum_g": 0.3442262027508182,
+            "illum_b": 0.3464913419553342,
+            "rppg_pulse": 0.030988681660985805,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.577656625337675
+          },
+          "p_pixel": 0.31499200052681187,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 90.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "scale_cuda": {
+          "ok": true,
+          "n_frames": 300,
+          "fps": 30.0,
+          "p_pixel": 0.13981679431017247,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -hwaccel_output_format cuda -ss 90.000 -t 10.000 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12,fps=30 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+        },
+        "feature_delta": {
+          "max_abs_delta": 0.5135751476207324,
+          "max_abs_delta_feature": "radial_slope",
+          "n_features_changed_gt_1e-3": 16
+        },
+        "p_pixel_cpu": 0.314992,
+        "p_pixel_scale_cuda": 0.139817,
+        "p_pixel_abs_delta": 0.175175,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      },
+      "indego_480@30s": {
+        "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+        "ss": 30.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "feats": {
+            "temp_b0": 11.55198653668855,
+            "temp_b1": 0.33472097599688755,
+            "temp_b2": 0.05193567721520703,
+            "temp_b3": 0.0,
+            "frozen_frac": 0.002361111111111111,
+            "flicker_idx": 0.0,
+            "radial_slope": -3.7099132955589966,
+            "hf_ratio": 0.022590516427999554,
+            "dct_energy": 0.011106807047126471,
+            "pca_resid": 0.00022360332888296904,
+            "pca_top1_share": 0.968919580380055,
+            "luma_mean": 0.28716233501906324,
+            "luma_p05": 0.011529411764705884,
+            "luma_p50": 0.26791372549019604,
+            "luma_p95": 0.6666039215686274,
+            "dark_frac": 0.19103402777777778,
+            "bright_frac": 8.472222222222222e-05,
+            "motion_energy": 0.02599802875706961,
+            "global_shift": 7.0,
+            "skin_frac": 0.05046296296296296,
+            "illum_r": 0.3041839993215376,
+            "illum_g": 0.3232745139582381,
+            "illum_b": 0.37254148672022425,
+            "rppg_pulse": 0.5511119721346637,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.38378846206646816
+          },
+          "p_pixel": 0.8714537398596232,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 30.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "scale_cuda": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "p_pixel": 0.9582480464195011,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -hwaccel_output_format cuda -ss 30.000 -t 10.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12,fps=10 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+        },
+        "feature_delta": {
+          "max_abs_delta": 0.9172374697017807,
+          "max_abs_delta_feature": "global_shift",
+          "n_features_changed_gt_1e-3": 19
+        },
+        "p_pixel_cpu": 0.871454,
+        "p_pixel_scale_cuda": 0.958248,
+        "p_pixel_abs_delta": 0.086794,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      },
+      "indego_480@90s": {
+        "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+        "ss": 90.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "feats": {
+            "temp_b0": 10.24057313622686,
+            "temp_b1": 0.2639669540272016,
+            "temp_b2": 0.03445956751528581,
+            "temp_b3": 0.0,
+            "frozen_frac": 0.00020833333333333335,
+            "flicker_idx": 0.0,
+            "radial_slope": -3.769215318938802,
+            "hf_ratio": 0.02161084968433744,
+            "dct_energy": 0.011063335662589227,
+            "pca_resid": 0.0001877089571203425,
+            "pca_top1_share": 0.974033423682175,
+            "luma_mean": 0.2620977435811548,
+            "luma_p05": 0.011529411764705884,
+            "luma_p50": 0.22812549019607845,
+            "luma_p95": 0.6461803921568627,
+            "dark_frac": 0.2060486111111111,
+            "bright_frac": 0.002684722222222222,
+            "motion_energy": 0.019550785576351752,
+            "global_shift": 2.0,
+            "skin_frac": 0.0701003086419753,
+            "illum_r": 0.31288383470824654,
+            "illum_g": 0.3200455528696449,
+            "illum_b": 0.3670706124221084,
+            "rppg_pulse": 0.12864023070025932,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.5976891579204319
+          },
+          "p_pixel": 0.9682416413443039,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 90.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "scale_cuda": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "p_pixel": 0.9798905188916246,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -hwaccel_output_format cuda -ss 90.000 -t 10.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12,fps=10 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+        },
+        "feature_delta": {
+          "max_abs_delta": 0.49989273410723145,
+          "max_abs_delta_feature": "radial_slope",
+          "n_features_changed_gt_1e-3": 16
+        },
+        "p_pixel_cpu": 0.968242,
+        "p_pixel_scale_cuda": 0.979891,
+        "p_pixel_abs_delta": 0.011649,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      },
+      "indego_480@150s": {
+        "clip": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+        "ss": 150.0,
+        "dur_s": 10.0,
+        "cpu": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "feats": {
+            "temp_b0": 10.181400426311962,
+            "temp_b1": 0.4696111088115016,
+            "temp_b2": 0.10982280700320865,
+            "temp_b3": 0.0,
+            "frozen_frac": 0.0,
+            "flicker_idx": 0.0,
+            "radial_slope": -3.8279452785328587,
+            "hf_ratio": 0.018982880271901505,
+            "dct_energy": 0.008259086571489983,
+            "pca_resid": 0.0002477102984611166,
+            "pca_top1_share": 0.9752595175224187,
+            "luma_mean": 0.27873457308823524,
+            "luma_p05": 0.011529411764705884,
+            "luma_p50": 0.27602745098039216,
+            "luma_p95": 0.6207882352941176,
+            "dark_frac": 0.18169305555555557,
+            "bright_frac": 0.0029083333333333335,
+            "motion_energy": 0.044212242605796516,
+            "global_shift": 11.661903789690601,
+            "skin_frac": 0.05171296296296297,
+            "illum_r": 0.3114358490076986,
+            "illum_g": 0.32139376400924924,
+            "illum_b": 0.36717038698305215,
+            "rppg_pulse": 0.2963963126239122,
+            "dup_hash_mean": 0.5,
+            "zncc_self": 0.38834092613664506
+          },
+          "p_pixel": 0.6656428218122384,
+          "cmd": "ffmpeg -hide_banner -v error -nostdin -ss 150.0 -t 10.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 pipe:1"
+        },
+        "scale_cuda": {
+          "ok": true,
+          "n_frames": 100,
+          "fps": 10.0,
+          "p_pixel": 0.696620630260391,
+          "cmd": "ffmpeg -hide_banner -loglevel error -nostdin -hwaccel cuda -hwaccel_output_format cuda -ss 150.000 -t 10.000 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12,fps=10 -f rawvideo -pix_fmt nv12 -vsync 0 pipe:1"
+        },
+        "feature_delta": {
+          "max_abs_delta": 27.542687778134717,
+          "max_abs_delta_feature": "global_shift",
+          "n_features_changed_gt_1e-3": 17
+        },
+        "p_pixel_cpu": 0.665643,
+        "p_pixel_scale_cuda": 0.696621,
+        "p_pixel_abs_delta": 0.030978,
+        "verdict_flip_at_0.5": false,
+        "frame_count_equal": true
+      }
+    },
+    "summary": {
+      "n_windows": 6,
+      "max_p_pixel_abs_delta": 0.38221,
+      "mean_p_pixel_abs_delta": 0.116601,
+      "n_verdict_flips_at_0.5": 0,
+      "all_frame_counts_equal": true
+    }
+  },
+  "parity_threshold_reasoning": {
+    "criterion_pre_registered": "PASS if per-pixel max|delta| <= 2 LSB and mean|delta| <= 0.5 LSB, because conformant H.264/HEVC decoders may differ by +/-1-2 LSB in the inverse transform; anything larger could move a threshold decision in the downstream scorer. A bit-exact result passes strictly and makes the threshold non-load-bearing.",
+    "observed_full_res": {
+      "n_spans": 4,
+      "spans": [
+        "indego_480_head_2s",
+        "ego10k_1080_head_2s",
+        "ego10k_1080_midstream_2s",
+        "indego_480_midstream_2s"
+      ],
+      "max_abs_diff_all_spans": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "mae_all_spans": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "hwaccel_path_also_bit_exact": true,
+      "reference_frame_to_frame_mae_lsb": {
+        "indego_480_head_2s": 3.340529,
+        "ego10k_1080_head_2s": 6.776682,
+        "ego10k_1080_midstream_2s": 8.105371,
+        "indego_480_midstream_2s": 2.364362
+      }
+    },
+    "verdict": "STRICT PASS, bit-exact (max|delta| = 0, mean|delta| = 0.0) on every span and both NVDEC invocation paths. The decoder difference is 0% of the 2.4-8.1 LSB frame-to-frame signal the scorer sees.",
+    "verdict_path_evidence": {
+      "cuvid_path_max_abs_delta_p_pixel": 0.0,
+      "n_windows": 6,
+      "n_flips": 0,
+      "note": "6 x 10 s windows, 160x90 working resolution, frozen configs/ensemble_v1.json pixel view; includes a window at p=0.4556, only 0.044 from the 0.5 boundary."
+    },
+    "not_negligible_other_path": {
+      "chain": "eval/gpu/decode.py NVDEC_CHAIN (-hwaccel cuda -hwaccel_output_format cuda + scale_cuda + numpy nv12->rgb)",
+      "work_res_mae_lsb": {
+        "indego_480": 4.911941,
+        "ego10k_1080": 10.434081
+      },
+      "max_p_pixel_abs_delta": 0.38221,
+      "attribution": {
+        "decoder_alone_matched_resampler": {
+          "indego_480": 0.0,
+          "ego10k_1080": 0.0
+        },
+        "resampler_bicubic_vs_bilinear": {
+          "indego_480": 1.92969,
+          "ego10k_1080": 3.40024
+        },
+        "nv12_numpy_rgb_vs_swscale_bgr24": {
+          "indego_480": 2.43649,
+          "ego10k_1080": 4.15778
+        },
+        "scale_cuda_resize_residual": {
+          "indego_480": 4.8201,
+          "ego10k_1080": 9.88998
+        },
+        "conclusion": "the NVDEC *decoder* is exact (c3 = 0.0000); the difference in this path comes from the GPU resizer + the hand-rolled nv12->rgb conversion, not from NVDEC."
+      }
+    }
+  },
+  "facts_comparison": {
+    "claim_1_480p_nvdec_not_faster_than_cpu": {
+      "facts_text": "NVDEC (GPU decode) is NOT faster than CPU decode for a single 480p stream (2,348 vs 2,820 fps); this chip has one NVDEC engine. [laptop RTX 4070]",
+      "facts_device": "laptop RTX 4070",
+      "this_device": "NVIDIA A40 (pod)",
+      "comparable": "different device (and a different 480p: FACTS does not say the resolution; here it is 480x480@10fps)",
+      "measured_decode_only_fps": {
+        "cpu_1_thread": 503.3,
+        "cpu_1_process_auto_threads": 607.7,
+        "nvdec_hevc_cuvid": 1856.2
+      },
+      "measured_end_to_end_2s_window_480p_s": {
+        "cpu": 0.125,
+        "nvdec_cuvid": 0.765,
+        "nvdec_scale_cuda": 0.64
+      },
+      "verdict": "NOT REPRODUCED AS STATED (ordering reverses: NVDEC is 3.1-3.7x FASTER than CPU decode-only on this pod). However the SPIRIT holds for the pipeline's actual unit of work: for a 2 s 480p window spawned as one ffmpeg process, CPU is 5-6x faster end-to-end because NVDEC pays ~0.61 s of process/CUDA init against ~0.08 s for CPU."
+    },
+    "claim_2_1080p_cpu_core_43_55fps": {
+      "facts_text": "one CPU core decodes 43-55 fps (RTF 1.4-1.8) on real 1080p/30 HEVC",
+      "facts_device": "laptop RTX 4070 (host CPU)",
+      "this_device": "pod server CPU, NVIDIA A40 pod",
+      "comparable": "different CPU / different device",
+      "measured": {
+        "fps_full_clip": 80.1,
+        "rtf_full_clip": 2.67,
+        "fps_30s_span": 116.3,
+        "rtf_30s_span": 3.88
+      },
+      "verdict": "DIRECTION CONFIRMED, MAGNITUDE DIFFERENT (higher here): 1 core is 1.5-3.9x real time, vs 1.4-1.8x on the laptop."
+    },
+    "claim_3_1080p_nvdec_620_730fps": {
+      "facts_text": "NVDEC decodes 620-730 fps (RTF 21-24) on real 1080p/30 HEVC",
+      "facts_device": "laptop RTX 4070",
+      "this_device": "NVIDIA A40 (pod)",
+      "comparable": "different device; measured range brackets the FACTS range, so the FACTS number is plausible on the A40 too",
+      "measured_fps": {
+        "hevc_cuvid_A": 903.2,
+        "hevc_cuvid_B": 1054.6,
+        "hwaccel_auto": 945.6,
+        "hwaccel_threads1": 602.8
+      },
+      "measured_rtf": {
+        "hevc_cuvid_A": 30.11,
+        "hevc_cuvid_B": 35.15
+      },
+      "verdict": "SAME ORDER OF MAGNITUDE / DIRECTION CONFIRMED on this device (NVDEC 11-13x faster than 1 CPU core). Absolute fps are device-specific. NOTE: `-hwaccel cuda` combined with `-threads 1` costs ~40% of throughput; do not benchmark that combination."
+    },
+    "claim_4_nvdec_flat_across_1_to_4_sessions": {
+      "facts_text": "NVDEC ... saturates at one engine (flat across 1-4 concurrent sessions)",
+      "facts_device": "laptop RTX 4070",
+      "this_device": "NVIDIA A40 (pod)",
+      "comparable": "different device",
+      "measured_aggregate_fps_by_sessions": {
+        "run_A_1080p": {
+          "nvdec_1080p_2sess": 1674.9,
+          "nvdec_1080p_4sess": 2552.6
+        },
+        "run_B_1080p": {
+          "1sess": 1096.1,
+          "2sess": 1458.4,
+          "4sess": 2425.9,
+          "8sess": 2504.4
+        }
+      },
+      "verdict": "NOT REPRODUCED on this device: aggregate throughput is NOT flat across 1-4 sessions. Run A: 1->4 sessions gives 2.4x the aggregate; run B (with 8 sessions) shows the plateau is at 4-8 sessions. A single ffmpeg+NVDEC session reaches only ~40-45% of the achievable NVDEC aggregate here, so 'one session saturates the engine' is false for this pod."
+    },
+    "claim_5_this_chip_has_one_nvdec_engine": {
+      "facts_text": "this chip has one NVDEC engine",
+      "verdict": "COULD NOT VERIFY from the pod. nvidia-smi exposes no NVDEC engine count (only SM utilisation, which stays 0-11% during pure NVDEC work) and no other tool is available. The observed scaling is inconsistent with a single session already saturating a single engine."
+    },
+    "claim_6_gpu_kernels_700_hours_per_hour": {
+      "facts_text": "GPU kernels alone reach ~700 hours of video per hour at 4.6 GiB",
+      "verdict": "NOT TESTED - that is the feature/kernel stage, outside the decode claim (LB1-decode covers decode only)."
+    }
+  },
+  "contention_replicate": {
+    "provenance": "second execution of the same concurrency loop at 17:24-17:30 UTC, transcribed from the run log; that run crashed on an unrelated KeyError before writing its JSON, so these three numbers exist only there",
+    "nvidia_smi_co_tenant_resident_mib": 944,
+    "aggregate_fps_by_sessions": {
+      "1": 440.8,
+      "2": 710.5,
+      "4": 1018.4
+    },
+    "per_session_fps": {
+      "1": 440.8,
+      "2": 355.3,
+      "4": 254.6
+    },
+    "reading": "the same nominal measurement moves by 2.3x (441 vs 1096 fps for one session) depending on whether the co-tenant GPU job is active; the *shape* (aggregate rising with sessions) is the same in both runs, so the 'not flat' finding is robust to contention, the absolute fps are not"
+  },
+  "new_findings": {
+    "per_process_startup_cost_s": {
+      "cpu_1080p_0p1s": {
+        "rc": 0,
+        "wall_s": 0.149,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 0.1 -f null -"
+      },
+      "nvdec_cuvid_1080p_0p1s": {
+        "rc": 0,
+        "wall_s": 0.649,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -c:v hevc_cuvid -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 0.1 -f null -"
+      },
+      "nvdec_hwaccel_1080p_0p1s": {
+        "rc": 0,
+        "wall_s": 0.969,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 0.1 -f null -"
+      },
+      "cpu_480p_0p1s": {
+        "rc": 0,
+        "wall_s": 0.081,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -threads 1 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -t 0.1 -f null -"
+      },
+      "nvdec_cuvid_480p_0p1s": {
+        "rc": 0,
+        "wall_s": 0.614,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -c:v h264_cuvid -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -t 0.1 -f null -"
+      }
+    },
+    "startup_reading": "NVDEC pays 0.61-0.97 s of ffmpeg+CUDA init per process vs 0.08-0.15 s for CPU. Any design that spawns one ffmpeg per short window (replay.py does) pays this on every window; at 2 s / 480p it makes NVDEC slower than CPU end-to-end.",
+    "window_wall_time_s": {
+      "1080p_window2s_cpu": {
+        "wall_s_median": 1.86,
+        "wall_s_runs": [
+          1.919,
+          1.718,
+          1.86
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 60,
+        "effective_fps": 32.3,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "1080p_window2s_nvdec_cuvid": {
+        "wall_s_median": 1.069,
+        "wall_s_runs": [
+          0.904,
+          1.263,
+          1.069
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 60,
+        "effective_fps": 56.1,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -c:v hevc_cuvid -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "1080p_window2s_nvdec_scale_cuda": {
+        "wall_s_median": 0.914,
+        "wall_s_runs": [
+          0.611,
+          1.074,
+          0.914
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 60,
+        "effective_fps": 65.6,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -hwaccel_output_format cuda -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12 -f rawvideo -pix_fmt nv12 -vsync 0 -y /dev/null"
+      },
+      "1080p_window10s_cpu": {
+        "wall_s_median": 4.24,
+        "wall_s_runs": [
+          4.063,
+          4.349,
+          4.24
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 300,
+        "effective_fps": 70.7,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -ss 30 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "1080p_window10s_nvdec_cuvid": {
+        "wall_s_median": 2.255,
+        "wall_s_runs": [
+          2.352,
+          1.9,
+          2.255
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 300,
+        "effective_fps": 133.1,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -c:v hevc_cuvid -ss 30 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "1080p_window10s_nvdec_scale_cuda": {
+        "wall_s_median": 0.975,
+        "wall_s_runs": [
+          0.912,
+          1.003,
+          0.975
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 300,
+        "effective_fps": 307.8,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -hwaccel_output_format cuda -ss 30 -t 10.0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12 -f rawvideo -pix_fmt nv12 -vsync 0 -y /dev/null"
+      },
+      "480p_window2s_cpu": {
+        "wall_s_median": 0.125,
+        "wall_s_runs": [
+          0.125,
+          0.12,
+          0.134
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 20,
+        "effective_fps": 160.2,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "480p_window2s_nvdec_cuvid": {
+        "wall_s_median": 0.765,
+        "wall_s_runs": [
+          0.765,
+          0.789,
+          0.707
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 20,
+        "effective_fps": 26.1,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -c:v h264_cuvid -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale=160:90,format=rgb24 -f rawvideo -pix_fmt rgb24 -vsync 0 -y /dev/null"
+      },
+      "480p_window2s_nvdec_scale_cuda": {
+        "wall_s_median": 0.64,
+        "wall_s_runs": [
+          0.676,
+          0.64,
+          0.637
+        ],
+        "returncodes": [
+          0,
+          0,
+          0
+        ],
+        "frames_in_window": 20,
+        "effective_fps": 31.2,
+        "cmd": "ffmpeg -hide_banner -nostdin -v error -hwaccel cuda -hwaccel_output_format cuda -ss 30 -t 2.0 -i /workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4 -vf scale_cuda=160:90:format=nv12,hwdownload,format=nv12 -f rawvideo -pix_fmt nv12 -vsync 0 -y /dev/null"
+      }
+    },
+    "cpu_thread_scaling_1080p_30s_span": {
+      "threads_1": {
+        "threads": 1,
+        "rc": 0,
+        "rtime_s": 7.736,
+        "wall_s": 7.815,
+        "fps": 116.3,
+        "rtf": 3.88,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 1 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      },
+      "threads_2": {
+        "threads": 2,
+        "rc": 0,
+        "rtime_s": 4.808,
+        "wall_s": 4.89,
+        "fps": 187.2,
+        "rtf": 6.24,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 2 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      },
+      "threads_4": {
+        "threads": 4,
+        "rc": 0,
+        "rtime_s": 2.678,
+        "wall_s": 2.763,
+        "fps": 336.1,
+        "rtf": 11.2,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 4 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      },
+      "threads_8": {
+        "threads": 8,
+        "rc": 0,
+        "rtime_s": 2.86,
+        "wall_s": 2.951,
+        "fps": 314.7,
+        "rtf": 10.49,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 8 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      },
+      "threads_16": {
+        "threads": 16,
+        "rc": 0,
+        "rtime_s": 6.146,
+        "wall_s": 6.267,
+        "fps": 146.4,
+        "rtf": 4.88,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 16 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      },
+      "threads_0": {
+        "threads": 0,
+        "rc": 0,
+        "rtime_s": 6.186,
+        "wall_s": 6.299,
+        "fps": 145.5,
+        "rtf": 4.85,
+        "cmd": "ffmpeg -hide_banner -nostdin -v info -nostats -benchmark -threads 0 -i /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4 -t 30 -an -sn -dn -f null -"
+      }
+    },
+    "thread_scaling_reading": "the software HEVC decoder peaks at 4 threads (336 fps) and DEGRADES at 8/16/auto (315/146/146 fps); `-threads 0` (ffmpeg auto) is a bad default on this pod.",
+    "scale_cuda_pixel_view_impact": {
+      "n_windows": 6,
+      "max_p_pixel_abs_delta": 0.38221,
+      "mean_p_pixel_abs_delta": 0.116601,
+      "n_verdict_flips_at_0.5": 0,
+      "all_frame_counts_equal": true
+    },
+    "scale_cuda_reading": "eval/gpu/decode.py's NVDEC chain is not interchangeable with the CPU decode the ensemble was frozen on: MAE 5-10 LSB at the 160x90 working resolution and up to 0.38 change in the frozen pixel-view probability.",
+    "nvdec_resource_use_4_concurrent_sessions": {
+      "vram_peak_mib_total": 1672,
+      "vram_per_session_mib": 418,
+      "baseline_mib": 0,
+      "nvidia_smi_utilization_gpu_pct": {
+        "median": 79,
+        "max": 89,
+        "n_samples": 19,
+        "interval_s": 0.5
+      },
+      "reading": "4 concurrent hevc_cuvid sessions hold ~1.7 GiB and drive nvidia-smi utilization.gpu to 79-89%; a naive monitor reads that as 'GPU saturated' although the work is decoder+copy, not SM compute. Sampled at 0.5 s, so peaks may be slightly under-read."
+    },
+    "cuvid_reading": "jadal/poc_stream/replay.py's chain (-hwaccel cuda -c:v hevc_cuvid + CPU swscale) is bit-exact against CPU decode and left the pixel-view probability unchanged to 6 decimals on all 6 windows."
+  }
+}
