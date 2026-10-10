@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 EXAMPLES_DIR = ROOT / "docs" / "api_examples"
+_MISSING = object()
 VOLATILE_KEYS = frozenset({"created_utc", "started_utc", "failed_utc"})
 VOLATILE_VALUES = {
     "receipt_sha256": "<sha256>",
@@ -70,9 +71,11 @@ def _normalized(obj):
 def build_examples() -> dict:
     """Run the stub-mode service and return {file_stem: payload}.
 
-    Stub callables are injected (not just the env flag), so the output is
-    identical whether or not the real jadal.signals / decision / segmenter
-    modules are importable.
+    Stub callables are injected (not just the env flag) AND the real
+    L0/L1/segmenter modules are blocked, so the output -- including the
+    receipt ``versions`` block -- is identical whether or not those modules
+    are importable. The funnel module stays live (its route + evidence are
+    part of the documented behavior).
     """
     from fastapi.testclient import TestClient
     from jadal import pipeline
@@ -89,11 +92,16 @@ def build_examples() -> dict:
         mock.patch.object(pipeline, "_split_clip_fn",
                           new=lambda: stubs.stub_split_clip),
     ]
+    blocked = ("jadal.signals", "jadal.decision", "jadal.segmenter")
+    old_modules = {name: sys.modules.get(name,
+                                         _MISSING) for name in blocked}
     with mock.patch.dict(os.environ, {"JADAL_USE_STUBS": "1",
                                       "JADAL_EVAL_RESULTS_DIR":
                                           str(EXAMPLES_DIR)}):
         for patcher in stage_patches:
             patcher.start()
+        for name in blocked:
+            sys.modules[name] = None  # type: ignore[assignment]
         try:
             with tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
@@ -144,6 +152,11 @@ def build_examples() -> dict:
                     }
                 stubs.clear_test_overrides()
         finally:
+            for name in blocked:
+                if old_modules[name] is _MISSING:
+                    sys.modules.pop(name, None)
+                else:
+                    sys.modules[name] = old_modules[name]
             for patcher in reversed(stage_patches):
                 patcher.stop()
     return {name: _normalized(payload) for name, payload in out.items()}
