@@ -18,6 +18,11 @@
     "B32": 1997.6
    },
    "why": "batched GPU kernels remove per-launch overhead; kernels-only ceiling before decode is added"
+  },
+  {
+   "rung": "R3_nvdec_pipeline",
+   "hours_per_hour": 2.9,
+   "why": "NVDEC decode + scale_cuda at source + pinned H2D + batched kernels: decode and compute overlap"
   }
  ]
 }
