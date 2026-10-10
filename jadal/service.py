@@ -231,6 +231,11 @@ class _Service:
                     f"ThresholdsError: {batch['thresholds_error']}")
             log.warning("batch for %s closed fail-closed: %s",
                         site_id, batch["thresholds_error"])
+        else:
+            # A healthy batch clears a stale fail-closed error from an
+            # earlier ingest-driven batch (thresholds fixed since then).
+            with self._lock:
+                self._errors.pop(f"batch:{site_id}", None)
         self._emit_batch(batch, receipts)
         # a clip that yielded many segments may leave a full batch behind
         with self._lock:
@@ -537,7 +542,7 @@ def create_app(config: Config | None = None, *, batch_max_age_s: float | None = 
 
     @app.get("/batches/failed")
     def batches_failed() -> dict:
-        """Segments parked after FLUSH_MAX_ATTEMPTS failed timeout flushes.
+        """Segments parked after FLUSH_MAX_FAILURES (6) failed timeout flushes.
 
         Each entry carries the site, segment id, source clip, the terminal
         error and the parking time: parked segments are queryable here, never

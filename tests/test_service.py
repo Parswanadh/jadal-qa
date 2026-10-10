@@ -1445,6 +1445,32 @@ class TestThresholdsFailClosed(BucketCase):
             self.assertIn("batch:closed", errors)
             self.assertIn("ThresholdsError", errors["batch:closed"])
 
+    def test_ingest_batch_clears_stale_thresholds_error_after_fix(self) -> None:
+        from jadal import funnel as funnel_mod
+        good_path = funnel_mod.DEFAULT_THRESHOLDS_PATH
+        self._point_funnel_at(self._tampered_file())
+        store_mod.init_db(self.cfg.db_path)
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        with TestClient(app) as client:
+            for i in range(5):
+                path = self.fake_clip(f"stale_bad_{i}.mp4")
+                client.post("/ingest/event", json={
+                    "path": path, "worker_id": "w", "site_id": "stale"})
+            errors = client.get("/ingest/errors").json()["errors"]
+            self.assertIn("batch:stale", errors)
+            # thresholds fixed; the next size-triggered batch succeeds
+            self._point_funnel_at(good_path)
+            last = None
+            for i in range(5):
+                path = self.fake_clip(f"stale_ok_{i}.mp4")
+                response = client.post("/ingest/event", json={
+                    "path": path, "worker_id": "w", "site_id": "stale"})
+                self.assertEqual(response.status_code, 200, response.text)
+                last = response.json()
+            self.assertNotIn("thresholds_error", last["batch"])
+            errors = client.get("/ingest/errors").json()["errors"]
+            self.assertNotIn("batch:stale", errors)
+
 
 class TestWatcherCap(BucketCase):
     """Watcher retries are capped: a poison file is parked, not spun on."""

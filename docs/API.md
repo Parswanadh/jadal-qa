@@ -44,7 +44,7 @@ inside the service bucket dir (`realpath` check), else `400`.
 {"status": "ok", "pipeline_version": "0.1.0", "pending_segments": 0, "failed_segments": 0, "started_utc": "2026-10-10T06:10:54.233520+00:00"}
 ```
 
-`failed_segments` counts segments parked after `FLUSH_MAX_ATTEMPTS` failed
+`failed_segments` counts segments parked after `FLUSH_MAX_FAILURES` (6) failed
 timeout flushes (see `GET /batches/failed`).
 
 ## GET /batches → {"batches": BatchSummary[]}
@@ -90,8 +90,8 @@ order — resolve segment → receipt via each receipt's `verdict.segment_id`.
 
 ## GET /batches/failed → {"failed": FailedSegment[]}
 
-Segments parked after `FLUSH_MAX_ATTEMPTS` (5) failed batch-timeout flushes
-(retried at 1, 2, 4, 8, 16 s backoff; every failure recorded under
+Segments parked after `FLUSH_MAX_FAILURES` (6) failed batch-timeout flushes
+(the first 5 failures are retried at 1, 2, 4, 8, 16 s backoff; every failure recorded under
 `batch:<site>` in `GET /ingest/errors`). Parked segments stay queryable
 here — never silently dropped, never retried forever. Real (empty) output:
 `{"failed": []}`.
@@ -159,8 +159,8 @@ config (live-config drift does not affect it) and compares hashes.
 Last ingest error per clip path (watcher retries with exponential backoff:
 2^attempts s, capped at 30 s, parked after 5 attempts — a poison file never
 spins the poll loop). Timeout-flush failures are recorded under
-`batch:<site_id>` (attempt counter, then a terminal "gave up after 5
-attempts" message once the segments park at `GET /batches/failed`).
+`batch:<site_id>` (attempt counter, then a terminal "gave up after 6
+failures" message once the segments park at `GET /batches/failed`).
 Real example: `{"errors": {"/…/data_runtime/bucket/poison.mp4":
 "RuntimeError: cannot decode"}}`. Empty object when nothing has failed.
 
