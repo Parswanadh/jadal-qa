@@ -309,16 +309,11 @@ def main():
                       best_at_agree90_err07=best_at(0.07), best_at_agree90_err10=best_at(0.10),
                       frontier_by_cost=frontier, per_clip_detail=detail)
 
-    for fname, obj in (("SKIP.01_section_drop.json", skip01_out),
-                       ("SKIP.02_probe_dense.json", skip02_out),
-                       ("SKIP.03_decision.json", skip03_out)):
+    for fname, obj in (("SKIP.01.json", skip01_out),
+                       ("SKIP.02.json", skip02_out),
+                       ("SKIP.03.json", skip03_out)):
         json.dump(obj, open(os.path.join(a.out, fname), "w"), indent=1)
         print("wrote", os.path.join(a.out, fname))
-
-    # mirror of the exact names requested
-    json.dump(skip01_out, open(os.path.join(a.out, "SKIP.01.json"), "w"), indent=1)
-    json.dump(skip02_out, open(os.path.join(a.out, "SKIP.02.json"), "w"), indent=1)
-    json.dump(skip03_out, open(os.path.join(a.out, "SKIP.03.json"), "w"), indent=1)
 
     # ------- console summary -------
     print("\n=== section position profile (mean bad frac by section) ===")
@@ -333,7 +328,7 @@ def main():
         if "mean_frac" in v: print(f"  {name:32s} frac={v['mean_frac']:.3f} err_L={v['mean_err_L']:.3f} agree_L={v['agree_L']:.2f}")
     print("\n=== SKIP.03 best cell ===")
     print("  best:", skip03_out["best_cell"])
-    print("\nwrote copies SKIP.01..03.json")
+    print("\nwrote SKIP.01..03.json")
 
 
 if __name__ == "__main__":
