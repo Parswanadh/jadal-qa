@@ -60,9 +60,9 @@ log = logging.getLogger("jadal.service")
 WATCH_MAX_ATTEMPTS = 5
 
 # A failing batch-timeout flush is retried with backoff 1, 2, 4, 8, 16 s
-# (2**(attempt-1), capped at 16 s); after FLUSH_MAX_ATTEMPTS failures the
-# segments move to the failed state instead of retrying forever.
-FLUSH_MAX_ATTEMPTS = 5
+# (2**(failure-1) after failures 1..5); the 6th consecutive failure parks the
+# segments as failed instead of retrying forever.
+FLUSH_MAX_FAILURES = 6
 
 # Every /ws receive wait is bounded by this (env-overridable); an idle client
 # simply waits again instead of blocking forever.
@@ -223,6 +223,14 @@ class _Service:
                     [{"segment": s, "ts": self._now()} for s in segments]
                     + buf)
             raise
+        if batch.get("thresholds_error"):
+            # Fail-closed batch: closed visibly, but the cause stays in the
+            # errors store (GET /ingest/errors) -- never silent.
+            with self._lock:
+                self._errors[f"batch:{site_id}"] = (
+                    f"ThresholdsError: {batch['thresholds_error']}")
+            log.warning("batch for %s closed fail-closed: %s",
+                        site_id, batch["thresholds_error"])
         self._emit_batch(batch, receipts)
         # a clip that yielded many segments may leave a full batch behind
         with self._lock:
@@ -326,12 +334,17 @@ class _Service:
             if gate is not None and now < gate["next_ts"]:
                 continue
             try:
-                self.flush_site(site)
+                batch = self.flush_site(site)
             except Exception as exc:
                 self._record_flush_failure(site, exc, now)
             else:
                 with self._lock:
                     self._flush_backoff.pop(site, None)
+                    # Recovery clears the recorded flush error so
+                    # /ingest/errors stops reporting a healed site -- but a
+                    # fail-closed batch keeps its thresholds error.
+                    if batch is None or not batch.get("thresholds_error"):
+                        self._errors.pop(f"batch:{site}", None)
         if self.watch_bucket:
             try:
                 self._watch_bucket_tick()
@@ -344,13 +357,14 @@ class _Service:
 
         Each failure is recorded in the errors store (surfaced by
         GET /ingest/errors) and retried with exponential backoff (1, 2, 4, 8,
-        16 s). After FLUSH_MAX_ATTEMPTS failures the site's segments move to
-        the failed state (visible at GET /batches/failed): never silently
-        dropped, never retried forever.
+        16 s after failures 1..5). The 6th consecutive failure moves the
+        site's segments to the failed state (visible at GET /batches/failed):
+        never silently dropped, never retried forever. A later success clears
+        the recorded error (see the flush path).
         """
         with self._lock:
             attempts = self._flush_backoff.get(site_id, {}).get("attempts", 0) + 1
-            if attempts >= FLUSH_MAX_ATTEMPTS:
+            if attempts >= FLUSH_MAX_FAILURES:
                 buf = self._pending.pop(site_id, [])
                 self._flush_backoff.pop(site_id, None)
                 for entry in buf:
@@ -361,17 +375,18 @@ class _Service:
                     })
                 self._errors[f"batch:{site_id}"] = (
                     f"{type(exc).__name__}: {exc} "
-                    f"(gave up after {attempts} attempts; "
+                    f"(gave up after {attempts} failures; "
                     f"{len(buf)} segment(s) moved to failed)")
                 parked, count = True, len(buf)
             else:
                 self._flush_backoff[site_id] = {
                     "attempts": attempts,
-                    "next_ts": now + min(2.0 ** (attempts - 1), 16.0),
+                    "next_ts": now + 2.0 ** (attempts - 1),  # 1,2,4,8,16 s
                 }
                 self._errors[f"batch:{site_id}"] = (
                     f"{type(exc).__name__}: {exc} "
-                    f"(timeout-flush attempt {attempts}/{FLUSH_MAX_ATTEMPTS})")
+                    f"(timeout-flush failure {attempts}/"
+                    f"{FLUSH_MAX_FAILURES - 1} backoffs)")
                 parked, count = False, 0
         if parked:
             log.warning("timeout flush for %s parked %d segment(s) as failed "

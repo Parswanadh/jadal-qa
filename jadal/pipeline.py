@@ -239,6 +239,16 @@ def pick_threshold(config: Any) -> dict:
     )
 
 
+class ThresholdsError(RuntimeError):
+    """The funnel thresholds file failed its hash check (tampered/corrupt).
+
+    Raised by :func:`thresholds_snapshot` instead of falling back to other
+    thresholds: a hash mismatch must fail closed, never silently degrade the
+    router. Callers turn this into review verdicts with mismatch evidence
+    (never accepts) and record it in the errors store.
+    """
+
+
 def thresholds_snapshot(config: Any) -> dict:
     """The thresholds a receipt records (also the ones re-verify replays with).
 
@@ -246,9 +256,11 @@ def thresholds_snapshot(config: Any) -> dict:
     ``jadal.funnel.load_thresholds``, hash-verified by that module) so the
     router can enforce every rule it calibrates (motion_min, min_duration_s,
     accept_conf, calibration gate), with the service Config values overlaid
-    on the shared L0 keys. When the funnel module (or its file) is
-    unavailable the snapshot is Config-only and the inline verdict path uses
-    it alone. The file content is stored verbatim, so re-verify replays the
+    on the shared L0 keys. A hash mismatch (tampered or corrupt file) raises
+    :class:`ThresholdsError` -- fail closed, never a silent fallback. Only a
+    missing file (nothing configured to verify) or a missing funnel module
+    falls back to the Config-only snapshot, which the inline verdict path
+    uses alone. The file content is stored verbatim, so re-verify replays the
     exact thresholds behind the receipt even if the file later changes.
     """
     snapshot = {
@@ -271,8 +283,16 @@ def thresholds_snapshot(config: Any) -> dict:
         load_thresholds = getattr(_funnel_mod, "load_thresholds", None)
         thresholds_hash = getattr(_funnel_mod, "thresholds_hash", None)
         file_thresholds = load_thresholds() if callable(load_thresholds) else None
-    except Exception:
+    except ValueError as exc:
+        # Hash mismatch (or otherwise invalid file content): fail closed.
+        raise ThresholdsError(
+            f"funnel thresholds file failed verification: {exc}") from exc
+    except (ImportError, OSError):
+        # No funnel module, or no file configured to verify: the documented
+        # Config-only fallback.
         file_thresholds = None
+        thresholds_hash = None
+        log.warning("funnel thresholds unavailable; Config-only snapshot")
     if isinstance(file_thresholds, dict):
         merged = {k: v for k, v in file_thresholds.items() if k != "sha256"}
         merged.update(snapshot)  # service Config wins the shared L0 keys
@@ -514,17 +534,48 @@ def route_verdict(segment: dict, signals: dict, decisions: dict,
     return out
 
 
+def _thresholds_mismatch_verdict(segment: dict, decimals: int) -> dict:
+    """Fail-closed verdict when the thresholds file hash does not match.
+
+    Review (never accept), with evidence naming the cause so a worker can
+    dispute it and the batch stays visibly non-accepting.
+    """
+    return {
+        "segment_id": segment["segment_id"],
+        "verdict": "review",
+        "reasons": ["LOW_CONFIDENCE"],
+        "answer_conf": 0.0,
+        "threshold": round(float(stubs.STUB_THRESHOLD), decimals),
+        "evidence": [{
+            "check": "thresholds",
+            "value": "hash mismatch",
+            "op": "==",
+            "threshold": "valid-hash",
+            "code": "LOW_CONFIDENCE",
+        }],
+    }
+
+
 def run_batch(segments: list[dict], config: Any) -> tuple[dict, list[dict]]:
     """Process a batch of segments per SPEC and return (batch, receipts).
 
     Stages are strictly per segment (batch size 1) so receipts do not depend on
     how the segments were grouped; phash duplicates are detected in input order.
+
+    A tampered thresholds file fails closed: every segment routes to review
+    with 'thresholds hash mismatch' evidence (never an accept, never a
+    silent fallback), and the batch still closes visibly.
     """
     if not segments:
         raise ValueError("run_batch needs at least one segment")
     ensure_determinism(config)
     decimals = int(config.float_decimals)
-    block = config_block(config)
+    try:
+        block = config_block(config)
+    except ThresholdsError as exc:
+        log.warning("thresholds verification failed (%s); batch fails closed "
+                    "to review", exc)
+        return _closed_mismatch_batch(segments, config, decimals, str(exc))
     compute_signals = _compute_signals_fn()
     decider_cls = _decider_class()
     try:
@@ -563,6 +614,63 @@ def run_batch(segments: list[dict], config: Any) -> tuple[dict, list[dict]]:
         "k": int(config.batch_reject_k),
         "n": len(verdicts),
         "created_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    return batch, receipts
+
+
+def _closed_mismatch_batch(segments: list[dict], config: Any, decimals: int,
+                           error: str) -> tuple[dict, list[dict]]:
+    """Fail-closed batch: real L0/L1 stages, every verdict review-with-evidence.
+
+    The receipt block records ``{"thresholds_error": ...}`` instead of
+    thresholds (there are none to trust). The batch carries
+    ``"thresholds_error"`` too so the service records it in the errors store;
+    the store layer ignores the extra key. These receipts never re-verify
+    MATCH (a later replay runs the live router on the stored duress block and
+    gets a different verdict) -- honest: trust was unverifiable when made.
+    """
+    block = {
+        "thresholds": {"thresholds_error": error},
+        "pipeline_version": str(config.pipeline_version),
+        "versions": impl_versions(config),
+    }
+    compute_signals = _compute_signals_fn()
+    decider_cls = _decider_class()
+    try:
+        decider = decider_cls(config)
+    except TypeError:
+        decider = decider_cls()
+    phash_index: dict[str, str] = {}
+    receipts: list[dict] = []
+    for seg in segments:
+        signals = _compute_signals_safe(compute_signals, seg["path"],
+                                        config, decimals)
+        phash = str(signals.get("phash") or "")
+        if phash and phash in phash_index:
+            signals["dup_of"] = phash_index[phash]
+        elif phash:
+            phash_index[phash] = seg["segment_id"]
+        decisions = _round_floats(decider.decide(seg["path"], signals), decimals)
+        verdict = _thresholds_mismatch_verdict(seg, decimals)
+        receipts.append(receipts_mod.make_receipt(
+            seg, signals, decisions, verdict, block))
+    verdicts = [r["verdict"] for r in receipts]
+    segment_ids = [s["segment_id"] for s in segments]
+    site_id = segments[0].get("site_id", "")
+    batch_id = "b" + hashlib.sha256(
+        "|".join([site_id, *segment_ids, str(config.batch_reject_k)])
+        .encode("utf-8")).hexdigest()[:16]
+    batch = {
+        "batch_id": batch_id,
+        "site_id": site_id,
+        "segment_ids": segment_ids,
+        "verdicts": verdicts,
+        "batch_decision": certify_mod.batch_rule(verdicts, int(config.batch_reject_k)),
+        "rule": BATCH_RULE_TEXT,
+        "k": int(config.batch_reject_k),
+        "n": len(verdicts),
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "thresholds_error": error,
     }
     return batch, receipts
 
@@ -974,7 +1082,7 @@ def sop_gaps_from_verdicts(batches: list[dict]) -> list[dict]:
 
 
 __all__ = [
-    "REASON_ORDER", "HARD_REASONS", "BATCH_RULE_TEXT",
+    "REASON_ORDER", "HARD_REASONS", "BATCH_RULE_TEXT", "ThresholdsError",
     "impl_versions", "ensure_determinism", "pick_threshold", "thresholds_snapshot", "config_block",
     "stored_config", "process_clip", "make_verdict", "route_verdict", "run_batch",
     "reverify_receipt", "compare_versions", "risk_coverage",

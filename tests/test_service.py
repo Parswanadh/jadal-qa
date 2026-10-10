@@ -1132,19 +1132,35 @@ class TestRiskCoverageHeads(BucketCase):
         self.assertEqual(by_head["accept"]["chosen_threshold"], 0.4)
         self.assertEqual(by_head["accept"]["label_source"], "synthetic")
 
-    def test_committed_examples_match_live_responses(self) -> None:
-        # docs/api_examples/*.json regenerates from the running service (stub
-        # mode); this fails on ANY drift between the committed examples and
-        # the live endpoint, so docs/API.md can quote them as real output.
+    def test_all_committed_examples_match_live_responses(self) -> None:
+        # docs/api_examples/*.json regenerates via scripts/gen_api_examples.py
+        # (stub mode, fixed clip bytes); this rebuilds the same dict live and
+        # fails on ANY drift, so docs/API.md quotes real output.
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "gen_api_examples",
+            ROOT / "scripts" / "gen_api_examples.py")
+        assert spec is not None and spec.loader is not None
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        live = mod.build_examples()
         examples = ROOT / "docs" / "api_examples"
-        store_mod.init_db(self.cfg.db_path)
-        with mock.patch.dict(os.environ,
-                             {"JADAL_EVAL_RESULTS_DIR": str(examples)}):
-            app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
-            with TestClient(app) as client:
-                live = client.get("/stats/risk_coverage").json()
-        expected = json.loads((examples / "risk_coverage.json").read_text())
-        self.assertEqual(live, expected)
+        self.assertEqual(sorted(live), sorted(
+            p.stem for p in examples.glob("*.json")
+            if p.stem not in ("decider_baseline", "funnel_calibration")))
+        for name, payload in live.items():
+            with self.subTest(endpoint=name):
+                if name == "pico_status":
+                    # Live hardware answers heartbeats on /dev/ttyACM0, so
+                    # values vary run to run: pin the shape, not the values.
+                    self.assertEqual(set(payload),
+                                     {"connected", "port", "last_hb_age_s",
+                                      "last_hb_ticks_ms", "last_hb_led"})
+                    self.assertIsInstance(payload["connected"], bool)
+                    continue
+                expected = json.loads(
+                    (examples / f"{name}.json").read_text(encoding="utf-8"))
+                self.assertEqual(payload, expected)
 
 
 class TestHubMount(BucketCase):
@@ -1232,7 +1248,7 @@ class TestFlushCap(BucketCase):
 
         with mock.patch.object(store_mod.Store, "save_batch", _full):
             with TestClient(app) as client:
-                for _ in range(service_mod.FLUSH_MAX_ATTEMPTS - 1):
+                for _ in range(service_mod.FLUSH_MAX_FAILURES - 1):
                     now["t"] += 60.0
                     svc._tick()
                     self.assertEqual(svc.pending_count(), 2)
@@ -1277,13 +1293,109 @@ class TestFlushCap(BucketCase):
         with mock.patch.object(service_mod.pipeline, "run_batch",
                                side_effect=_boom):
             waits = []
-            for _ in range(service_mod.FLUSH_MAX_ATTEMPTS - 1):
+            for _ in range(service_mod.FLUSH_MAX_FAILURES - 1):
                 now["t"] += 60.0
                 svc._tick()
                 gate = svc._flush_backoff.get("sched")
                 self.assertIsNotNone(gate)
                 waits.append(round(gate["next_ts"] - now["t"], 6))
-        self.assertEqual(waits, [1.0, 2.0, 4.0, 8.0])
+        self.assertEqual(waits, [1.0, 2.0, 4.0, 8.0, 16.0])
+
+    def test_recovered_site_clears_flush_error(self) -> None:
+        from jadal import service as service_mod
+        store_mod.init_db(self.cfg.db_path)
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        svc = app.state.service
+        now = {"t": 3000.0}
+        svc._clock = lambda: now["t"]
+        paths = [self.fake_clip(f"heal_{i}.mp4") for i in range(2)]
+        segs = [s for p in paths
+                for s in pipeline.process_clip(p, "w", "s", self.cfg)]
+        for seg in segs:
+            svc._pending.setdefault("heal", []).append(
+                {"segment": seg, "ts": now["t"]})
+        calls = {"n": 0}
+        real_save = store_mod.Store.save_batch
+
+        def _flaky(self, batch, receipts, segments):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise RuntimeError("disk full once")
+            return real_save(self, batch, receipts, segments)
+
+        with mock.patch.object(store_mod.Store, "save_batch", _flaky):
+            with TestClient(app) as client:
+                now["t"] += 60.0
+                svc._tick()
+                self.assertIn("batch:heal", svc._errors)
+                now["t"] += 60.0
+                svc._tick()
+                self.assertNotIn("batch:heal", svc._errors)
+                self.assertEqual(
+                    client.get("/ingest/errors").json()["errors"], {})
+
+
+class TestThresholdsFailClosed(BucketCase):
+    """A tampered thresholds file fails closed, never silently degrades."""
+
+    def _point_funnel_at(self, path) -> None:
+        from jadal import funnel as funnel_mod
+        old = funnel_mod.DEFAULT_THRESHOLDS_PATH
+        funnel_mod.DEFAULT_THRESHOLDS_PATH = path
+        self.addCleanup(setattr, funnel_mod, "DEFAULT_THRESHOLDS_PATH", old)
+
+    def _tampered_file(self) -> str:
+        from jadal import funnel as funnel_mod
+        good = json.loads(Path(funnel_mod.DEFAULT_THRESHOLDS_PATH
+                               ).read_text(encoding="utf-8"))
+        bad = dict(good)
+        bad["accept_conf"] = 0.0  # edited without rehashing
+        path = self.cfg.bucket_dir / "tampered_thresholds.json"
+        path.write_text(json.dumps(bad), encoding="utf-8")
+        return str(path)
+
+    def test_tampered_file_raises_thresholds_error(self) -> None:
+        self._point_funnel_at(self._tampered_file())
+        with self.assertRaises(pipeline.ThresholdsError):
+            pipeline.thresholds_snapshot(self.cfg)
+
+    def test_missing_file_falls_back_to_config_only(self) -> None:
+        self._point_funnel_at(str(self.cfg.bucket_dir / "no-such-file.json"))
+        snap = pipeline.thresholds_snapshot(self.cfg)
+        self.assertNotIn("calibration", snap)
+        self.assertNotIn("motion_min", snap)
+        self.assertNotIn("funnel_thresholds_sha256", snap)
+        self.assertIn("answer_threshold", snap)
+
+    def test_valid_file_enriches_snapshot(self) -> None:
+        snap = pipeline.thresholds_snapshot(self.cfg)
+        self.assertIn("calibration", snap)
+        self.assertIn("motion_min", snap)
+        self.assertIn("funnel_thresholds_sha256", snap)
+
+    def test_batch_fails_closed_to_review_with_mismatch_evidence(self) -> None:
+        self._point_funnel_at(self._tampered_file())
+        store_mod.init_db(self.cfg.db_path)
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        with TestClient(app) as client:
+            paths = [self.fake_clip(f"closed_{i}.mp4") for i in range(5)]
+            last = None
+            for path in paths:
+                response = client.post("/ingest/event", json={
+                    "path": path, "worker_id": "w", "site_id": "closed"})
+                self.assertEqual(response.status_code, 200, response.text)
+                last = response.json()
+            batch = last["batch"]
+            self.assertIsNotNone(batch, "fail-closed batch must still close")
+            self.assertIn("thresholds_error", batch)
+            for verdict in batch["verdicts"]:
+                self.assertNotEqual(verdict["verdict"], "accept")
+                self.assertEqual(verdict["verdict"], "review")
+                checks = [e["check"] for e in verdict.get("evidence", [])]
+                self.assertIn("thresholds", checks)
+            errors = client.get("/ingest/errors").json()["errors"]
+            self.assertIn("batch:closed", errors)
+            self.assertIn("ThresholdsError", errors["batch:closed"])
 
 
 class TestWatcherCap(BucketCase):

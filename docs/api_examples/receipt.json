@@ -1,0 +1,177 @@
+{
+ "config": {
+  "pipeline_version": "0.1.0",
+  "thresholds": {
+   "accept_conf": null,
+   "answer_threshold": 0.9,
+   "batch_reject_k": 1,
+   "batch_size": 5,
+   "blur_var_min": 60.0,
+   "brightness_min": 40.0,
+   "calibration": {
+    "note": "Auto-accept is OFF: accept_conf is null and route() additionally gates on calibration.status. Pass allow_uncalibrated_accept=True for demo accepts only.",
+    "status": "placeholder"
+   },
+   "delta": 0.1,
+   "float_decimals": 4,
+   "funnel_thresholds_sha256": "c93e17767045e37832523c4afda6acca58187fc068aaecee539dbbf238a8c421",
+   "hands_visible_frac_min": 0.5,
+   "min_accepted": 30,
+   "min_duration_s": 5.0,
+   "motion_max": 12.0,
+   "motion_min": 0.5,
+   "over_exposed_frac_max": 0.35,
+   "seed": 1234,
+   "segment_seconds": 20.0,
+   "target_error": 0.05,
+   "under_exposed_frac_max": 0.35,
+   "version": "funnel-v1-placeholder"
+  },
+  "versions": {
+   "certify": "jadal.certify",
+   "decision": "stubs.decision",
+   "python": "3.12.15",
+   "receipts": "jadal.receipts",
+   "segmenter": "stubs.segmenter",
+   "signals": "stubs.signals"
+  }
+ },
+ "decisions": {
+  "active_work": {
+   "p_yes": 0.93
+  },
+  "hands_ok": {
+   "p_yes": 0.97
+  },
+  "model_versions": {
+   "stub": "0.1.0"
+  },
+  "step": {
+   "answer_conf": 0.93,
+   "choice": "wash",
+   "probs": {
+    "wash": 0.93
+   }
+  }
+ },
+ "receipt_id": "6cd913b6043b967a",
+ "receipt_sha256": "6cd913b6043b967a7bcd42b70d8414e4f79693430d56d19c4c4686ee1dfab2ff",
+ "segment_sha256": "3beacaf56065c3fc6606ae12eecb122c13f006ec5d6b39fc170ed3522e5885d4",
+ "signals": {
+  "blur_var": 120.0,
+  "brightness_mean": 90.0,
+  "decodable": true,
+  "dup_of": null,
+  "faces_blurred": 0,
+  "faces_found": 0,
+  "hand_count_mode": 2,
+  "hands_visible_frac": 0.8,
+  "motion_mean": 2.0,
+  "over_exposed_frac": 0.02,
+  "phash": "6cd952f89e5f709c",
+  "under_exposed_frac": 0.0
+ },
+ "verdict": {
+  "answer_conf": 0.93,
+  "evidence": [
+   {
+    "check": "decodable",
+    "code": "UNDECODABLE",
+    "op": "==",
+    "threshold": true,
+    "value": true
+   },
+   {
+    "check": "missing:duration_s",
+    "code": "LOW_CONFIDENCE",
+    "op": "==",
+    "threshold": "valid-number",
+    "value": "missing"
+   },
+   {
+    "check": "blur_var",
+    "code": "BLUR",
+    "op": ">=",
+    "threshold": 60.0,
+    "value": 120.0
+   },
+   {
+    "check": "brightness_mean",
+    "code": "TOO_DARK",
+    "op": ">=",
+    "threshold": 40.0,
+    "value": 90.0
+   },
+   {
+    "check": "under_exposed_frac",
+    "code": "TOO_DARK",
+    "op": "<=",
+    "threshold": 0.35,
+    "value": 0.0
+   },
+   {
+    "check": "over_exposed_frac",
+    "code": "OVEREXPOSED",
+    "op": "<=",
+    "threshold": 0.35,
+    "value": 0.02
+   },
+   {
+    "check": "motion_mean",
+    "code": "SHAKY",
+    "op": "<=",
+    "threshold": 12.0,
+    "value": 2.0
+   },
+   {
+    "check": "motion_mean_static",
+    "code": "NO_ACTIVE_WORK",
+    "op": ">=",
+    "threshold": 0.5,
+    "value": 2.0
+   },
+   {
+    "check": "hands_visible_frac",
+    "code": "HANDS_NOT_VISIBLE",
+    "op": ">=",
+    "threshold": 0.5,
+    "value": 0.8
+   },
+   {
+    "check": "hands_ok.p_yes",
+    "code": "LOW_CONFIDENCE",
+    "op": ">=",
+    "threshold": 1.0,
+    "value": 0.97
+   },
+   {
+    "check": "active_work.p_yes",
+    "code": "NO_ACTIVE_WORK",
+    "op": ">=",
+    "threshold": 1.0,
+    "value": 0.93
+   },
+   {
+    "check": "step.choice",
+    "code": "WRONG_STEP",
+    "op": "==",
+    "threshold": "wash",
+    "value": "wash"
+   },
+   {
+    "check": "step.answer_conf",
+    "code": "LOW_CONFIDENCE",
+    "op": ">=",
+    "threshold": 1.0,
+    "value": 0.93
+   }
+  ],
+  "reasons": [
+   "NO_ACTIVE_WORK",
+   "LOW_CONFIDENCE"
+  ],
+  "segment_id": "seg-3beacaf56065-0000",
+  "threshold": 0.9,
+  "verdict": "review"
+ }
+}
