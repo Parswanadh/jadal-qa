@@ -1,0 +1,321 @@
+{
+ "experiment": "Y3.01",
+ "title": "Cached-view inventory + two-view baseline reproduction",
+ "owner": "Y3 (claim Y3)",
+ "device": "CPU (OMP_NUM_THREADS=2)",
+ "data": "150-window IndEgo human gold (LOCO); 60-window Human-labelled Egocentric-10K OOD",
+ "views_available": {
+  "pixel26": 26,
+  "eg2": 768,
+  "perpixel121": 121,
+  "physics16": 16,
+  "theory18": 18,
+  "series16": 16
+ },
+ "views_absent": [
+  "EG2@1fps",
+  "EG2@0.5fps (only segments.npz @2fps exists)"
+ ],
+ "per_view_nested_loco": {
+  "pixel26": {
+   "n": 150,
+   "n_features": 26,
+   "label_source": "human (manifest_gold.json)",
+   "protocol": "nested LOCO (outer 7 clips; inner LOCO picks C)",
+   "C_by_fold": {
+    "desk": {
+     "C": 0.03,
+     "inner_auc": 0.7799
+    },
+    "ecu_full": {
+     "C": 0.1,
+     "inner_auc": 0.7236
+    },
+    "ecu_late": {
+     "C": 0.3,
+     "inner_auc": 0.8179
+    },
+    "logistics4": {
+     "C": 0.3,
+     "inner_auc": 0.7778
+    },
+    "organise": {
+     "C": 0.3,
+     "inner_auc": 0.7346
+    },
+    "pallet": {
+     "C": 1.0,
+     "inner_auc": 0.8282
+    },
+    "pallet2": {
+     "C": 0.3,
+     "inner_auc": 0.8314
+    }
+   },
+   "auroc": 0.7916,
+   "amb_raw": 0.2467
+  },
+  "eg2": {
+   "n": 150,
+   "n_features": 768,
+   "label_source": "human (manifest_gold.json)",
+   "protocol": "nested LOCO (outer 7 clips; inner LOCO picks C)",
+   "C_by_fold": {
+    "desk": {
+     "C": 0.003,
+     "inner_auc": 0.8423
+    },
+    "ecu_full": {
+     "C": 0.003,
+     "inner_auc": 0.7766
+    },
+    "ecu_late": {
+     "C": 0.003,
+     "inner_auc": 0.8541
+    },
+    "logistics4": {
+     "C": 0.01,
+     "inner_auc": 0.8652
+    },
+    "organise": {
+     "C": 0.003,
+     "inner_auc": 0.7995
+    },
+    "pallet": {
+     "C": 0.01,
+     "inner_auc": 0.8882
+    },
+    "pallet2": {
+     "C": 0.01,
+     "inner_auc": 0.8543
+    }
+   },
+   "auroc": 0.8458,
+   "amb_raw": 0.16
+  },
+  "perpixel121": {
+   "n": 150,
+   "n_features": 121,
+   "label_source": "human (manifest_gold.json)",
+   "protocol": "nested LOCO (outer 7 clips; inner LOCO picks C)",
+   "C_by_fold": {
+    "desk": {
+     "C": 0.01,
+     "inner_auc": 0.8012
+    },
+    "ecu_full": {
+     "C": 0.003,
+     "inner_auc": 0.7996
+    },
+    "ecu_late": {
+     "C": 0.01,
+     "inner_auc": 0.8742
+    },
+    "logistics4": {
+     "C": 0.003,
+     "inner_auc": 0.8142
+    },
+    "organise": {
+     "C": 0.01,
+     "inner_auc": 0.7308
+    },
+    "pallet": {
+     "C": 0.01,
+     "inner_auc": 0.8374
+    },
+    "pallet2": {
+     "C": 0.01,
+     "inner_auc": 0.8398
+    }
+   },
+   "auroc": 0.814,
+   "amb_raw": 0.32
+  },
+  "physics16": {
+   "n": 150,
+   "n_features": 16,
+   "label_source": "human (manifest_gold.json)",
+   "protocol": "nested LOCO (outer 7 clips; inner LOCO picks C)",
+   "C_by_fold": {
+    "desk": {
+     "C": 1.0,
+     "inner_auc": 0.751
+    },
+    "ecu_full": {
+     "C": 0.1,
+     "inner_auc": 0.6499
+    },
+    "ecu_late": {
+     "C": 0.03,
+     "inner_auc": 0.7734
+    },
+    "logistics4": {
+     "C": 0.03,
+     "inner_auc": 0.7806
+    },
+    "organise": {
+     "C": 0.3,
+     "inner_auc": 0.7321
+    },
+    "pallet": {
+     "C": 0.3,
+     "inner_auc": 0.7635
+    },
+    "pallet2": {
+     "C": 1.0,
+     "inner_auc": 0.7948
+    }
+   },
+   "auroc": 0.7608,
+   "amb_raw": 0.1467
+  },
+  "theory18": {
+   "n": 150,
+   "n_features": 18,
+   "label_source": "human (manifest_gold.json)",
+   "protocol": "nested LOCO (outer 7 clips; inner LOCO picks C)",
+   "C_by_fold": {
+    "desk": {
+     "C": 0.3,
+     "inner_auc": 0.7828
+    },
+    "ecu_full": {
+     "C": 0.003,
+     "inner_auc": 0.6604
+    },
+    "ecu_late": {
+     "C": 1.0,
+     "inner_auc": 0.7116
+    },
+    "logistics4": {
+     "C": 0.3,
+     "inner_auc": 0.6361
+    },
+    "organise": {
+     "C": 1.0,
+     "inner_auc": 0.6547
+    },
+    "pallet": {
+     "C": 1.0,
+     "inner_auc": 0.7851
+    },
+    "pallet2": {
+     "C": 1.0,
+     "inner_auc": 0.7258
+    }
+   },
+   "auroc": 0.6698,
+   "amb_raw": 0.4667
+  },
+  "series16": {
+   "n": 150,
+   "n_features": 16,
+   "label_source": "human (manifest_gold.json)",
+   "protocol": "nested LOCO (outer 7 clips; inner LOCO picks C)",
+   "C_by_fold": {
+    "desk": {
+     "C": 0.03,
+     "inner_auc": 0.7806
+    },
+    "ecu_full": {
+     "C": 0.03,
+     "inner_auc": 0.7965
+    },
+    "ecu_late": {
+     "C": 0.1,
+     "inner_auc": 0.8558
+    },
+    "logistics4": {
+     "C": 0.1,
+     "inner_auc": 0.8063
+    },
+    "organise": {
+     "C": 1.0,
+     "inner_auc": 0.7104
+    },
+    "pallet": {
+     "C": 0.1,
+     "inner_auc": 0.7971
+    },
+    "pallet2": {
+     "C": 0.1,
+     "inner_auc": 0.8443
+    }
+   },
+   "auroc": 0.7912,
+   "amb_raw": 0.2267
+  }
+ },
+ "baseline_anchor_fixedC": {
+  "combo": "pixel26+eg2 fixed-C (frozen ensemble_v1 anchor)",
+  "views": [
+   "pixel26(C=0.3)",
+   "eg2(C=0.01)"
+  ],
+  "fusion": "probavg",
+  "n": 150,
+  "label_source": "human (manifest_gold.json)",
+  "protocol": "LOCO, fixed C from ensemble_v1.json (no inner selection)",
+  "auroc": 0.8534,
+  "auroc_ci95": [
+   0.7295,
+   0.9285
+  ],
+  "amb_raw": 0.1733,
+  "amb_cal": 0.1267,
+  "amb_raw_profileband_0.25_0.75": 0.4267,
+  "median_stay_w0.1": 0.65
+ },
+ "ood_descriptive": [
+  {
+   "score": "p_eg2",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "label_source": "human (ood_labels.json)",
+   "protocol": "evaluation only; calibrator fit on in-domain gold OOF, applied to OOD",
+   "auroc": 0.5861,
+   "amb_raw": 0.1333,
+   "amb_cal": 0.0
+  },
+  {
+   "score": "p_pixel",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "label_source": "human (ood_labels.json)",
+   "protocol": "evaluation only; calibrator fit on in-domain gold OOF, applied to OOD",
+   "auroc": 0.342,
+   "amb_raw": 0.0333,
+   "amb_cal": 0.05
+  },
+  {
+   "score": "probavg (deployed usable_prob)",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "label_source": "human (ood_labels.json)",
+   "protocol": "evaluation only; calibrator fit on in-domain gold OOF, applied to OOD",
+   "auroc": 0.415,
+   "amb_raw": 0.2333,
+   "amb_cal": 0.5
+  },
+  {
+   "score": "rankavg",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "label_source": "human (ood_labels.json)",
+   "protocol": "evaluation only; calibrator fit on in-domain gold OOF, applied to OOD",
+   "auroc": 0.4684,
+   "amb_raw": 0.3333,
+   "amb_cal": 0.1833
+  }
+ ],
+ "e8_1546_review_share": {
+  "n": 1546,
+  "label_source": "none (descriptive)",
+  "protocol": "E8.01 re-score, ensemble_v1 score",
+  "amb_raw": 0.2962
+ }
+}

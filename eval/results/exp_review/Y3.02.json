@@ -1,0 +1,433 @@
+{
+ "experiment": "Y3.02",
+ "title": "Cheap view-ensembling combo sweep (LOCO)",
+ "owner": "Y3 (claim Y3)",
+ "device": "CPU (OMP_NUM_THREADS=2)",
+ "band": [
+  0.4,
+  0.6
+ ],
+ "nested_loco": true,
+ "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+ "protocol": "nested LOCO over 7 clips; inner-LOCO C per view; probavg/rankavg fusion",
+ "baseline_anchor": {
+  "combo": "pixel26+eg2 fixed-C (frozen ensemble_v1 anchor)",
+  "views": [
+   "pixel26(C=0.3)",
+   "eg2(C=0.01)"
+  ],
+  "fusion": "probavg",
+  "n": 150,
+  "label_source": "human (manifest_gold.json)",
+  "protocol": "LOCO, fixed C from ensemble_v1.json (no inner selection)",
+  "auroc": 0.8534,
+  "auroc_ci95": [
+   0.7295,
+   0.9285
+  ],
+  "amb_raw": 0.1733,
+  "amb_cal": 0.1267,
+  "amb_raw_profileband_0.25_0.75": 0.4267,
+  "median_stay_w0.1": 0.65
+ },
+ "combos": [
+  {
+   "combo": "pixel26",
+   "views": [
+    "pixel26"
+   ],
+   "fusion": "probavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.7916,
+   "auroc_ci95": [
+    0.6679,
+    0.8858
+   ],
+   "amb_raw": 0.2467,
+   "amb_cal": 0.1667,
+   "amb_raw_profileband_0.25_0.75": 0.6133,
+   "amb_cal_profileband_0.25_0.75": 0.6733,
+   "median_stay_w0.1": 0.51
+  },
+  {
+   "combo": "pixel26",
+   "views": [
+    "pixel26"
+   ],
+   "fusion": "rankavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.7916,
+   "auroc_ci95": [
+    0.6679,
+    0.8802
+   ],
+   "amb_raw": 0.2067,
+   "amb_cal": 0.34,
+   "amb_raw_profileband_0.25_0.75": 0.5,
+   "amb_cal_profileband_0.25_0.75": 0.7333,
+   "median_stay_w0.1": 0.63
+  },
+  {
+   "combo": "eg2",
+   "views": [
+    "eg2"
+   ],
+   "fusion": "probavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8458,
+   "auroc_ci95": [
+    0.7173,
+    0.9147
+   ],
+   "amb_raw": 0.16,
+   "amb_cal": 0.0933,
+   "amb_raw_profileband_0.25_0.75": 0.42,
+   "amb_cal_profileband_0.25_0.75": 0.3533,
+   "median_stay_w0.1": 0.66
+  },
+  {
+   "combo": "eg2",
+   "views": [
+    "eg2"
+   ],
+   "fusion": "rankavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8458,
+   "auroc_ci95": [
+    0.7175,
+    0.9135
+   ],
+   "amb_raw": 0.2067,
+   "amb_cal": 0.12,
+   "amb_raw_profileband_0.25_0.75": 0.5,
+   "amb_cal_profileband_0.25_0.75": 0.4267,
+   "median_stay_w0.1": 0.64
+  },
+  {
+   "combo": "pixel26+eg2 (baseline)",
+   "views": [
+    "pixel26",
+    "eg2"
+   ],
+   "fusion": "probavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8336,
+   "auroc_ci95": [
+    0.7243,
+    0.9127
+   ],
+   "amb_raw": 0.2133,
+   "amb_cal": 0.14,
+   "amb_raw_profileband_0.25_0.75": 0.6533,
+   "amb_cal_profileband_0.25_0.75": 0.36,
+   "median_stay_w0.1": 0.56
+  },
+  {
+   "combo": "pixel26+eg2 (baseline)",
+   "views": [
+    "pixel26",
+    "eg2"
+   ],
+   "fusion": "rankavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.844,
+   "auroc_ci95": [
+    0.7239,
+    0.9238
+   ],
+   "amb_raw": 0.18,
+   "amb_cal": 0.1667,
+   "amb_raw_profileband_0.25_0.75": 0.6067,
+   "amb_cal_profileband_0.25_0.75": 0.3867,
+   "median_stay_w0.1": 0.67
+  },
+  {
+   "combo": "pixel26+eg2+perpixel121",
+   "views": [
+    "pixel26",
+    "eg2",
+    "perpixel121"
+   ],
+   "fusion": "probavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8322,
+   "auroc_ci95": [
+    0.7164,
+    0.9169
+   ],
+   "amb_raw": 0.2267,
+   "amb_cal": 0.1467,
+   "amb_raw_profileband_0.25_0.75": 0.7,
+   "amb_cal_profileband_0.25_0.75": 0.3867,
+   "median_stay_w0.1": 0.55
+  },
+  {
+   "combo": "pixel26+eg2+perpixel121",
+   "views": [
+    "pixel26",
+    "eg2",
+    "perpixel121"
+   ],
+   "fusion": "rankavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8366,
+   "auroc_ci95": [
+    0.725,
+    0.9162
+   ],
+   "amb_raw": 0.2067,
+   "amb_cal": 0.1467,
+   "amb_raw_profileband_0.25_0.75": 0.5867,
+   "amb_cal_profileband_0.25_0.75": 0.4067,
+   "median_stay_w0.1": 0.62
+  },
+  {
+   "combo": "pixel26+eg2+physics16",
+   "views": [
+    "pixel26",
+    "eg2",
+    "physics16"
+   ],
+   "fusion": "probavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8194,
+   "auroc_ci95": [
+    0.6868,
+    0.9016
+   ],
+   "amb_raw": 0.1733,
+   "amb_cal": 0.16,
+   "amb_raw_profileband_0.25_0.75": 0.6133,
+   "amb_cal_profileband_0.25_0.75": 0.4,
+   "median_stay_w0.1": 0.64
+  },
+  {
+   "combo": "pixel26+eg2+physics16",
+   "views": [
+    "pixel26",
+    "eg2",
+    "physics16"
+   ],
+   "fusion": "rankavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8327,
+   "auroc_ci95": [
+    0.7019,
+    0.9104
+   ],
+   "amb_raw": 0.2267,
+   "amb_cal": 0.1533,
+   "amb_raw_profileband_0.25_0.75": 0.5733,
+   "amb_cal_profileband_0.25_0.75": 0.42,
+   "median_stay_w0.1": 0.57
+  },
+  {
+   "combo": "pixel26+eg2+series16",
+   "views": [
+    "pixel26",
+    "eg2",
+    "series16"
+   ],
+   "fusion": "probavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8348,
+   "auroc_ci95": [
+    0.6942,
+    0.9192
+   ],
+   "amb_raw": 0.2133,
+   "amb_cal": 0.1533,
+   "amb_raw_profileband_0.25_0.75": 0.68,
+   "amb_cal_profileband_0.25_0.75": 0.42,
+   "median_stay_w0.1": 0.57
+  },
+  {
+   "combo": "pixel26+eg2+series16",
+   "views": [
+    "pixel26",
+    "eg2",
+    "series16"
+   ],
+   "fusion": "rankavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8425,
+   "auroc_ci95": [
+    0.7089,
+    0.9246
+   ],
+   "amb_raw": 0.2067,
+   "amb_cal": 0.1467,
+   "amb_raw_profileband_0.25_0.75": 0.5733,
+   "amb_cal_profileband_0.25_0.75": 0.4467,
+   "median_stay_w0.1": 0.62
+  },
+  {
+   "combo": "pixel26+eg2+perpixel121+physics16",
+   "views": [
+    "pixel26",
+    "eg2",
+    "perpixel121",
+    "physics16"
+   ],
+   "fusion": "probavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8214,
+   "auroc_ci95": [
+    0.6884,
+    0.9072
+   ],
+   "amb_raw": 0.22,
+   "amb_cal": 0.14,
+   "amb_raw_profileband_0.25_0.75": 0.7067,
+   "amb_cal_profileband_0.25_0.75": 0.4133,
+   "median_stay_w0.1": 0.55
+  },
+  {
+   "combo": "pixel26+eg2+perpixel121+physics16",
+   "views": [
+    "pixel26",
+    "eg2",
+    "perpixel121",
+    "physics16"
+   ],
+   "fusion": "rankavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.829,
+   "auroc_ci95": [
+    0.6942,
+    0.9057
+   ],
+   "amb_raw": 0.1933,
+   "amb_cal": 0.14,
+   "amb_raw_profileband_0.25_0.75": 0.58,
+   "amb_cal_profileband_0.25_0.75": 0.4133,
+   "median_stay_w0.1": 0.64
+  },
+  {
+   "combo": "pixel26+eg2+perpixel121+physics16+theory18",
+   "views": [
+    "pixel26",
+    "eg2",
+    "perpixel121",
+    "physics16",
+    "theory18"
+   ],
+   "fusion": "probavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8072,
+   "auroc_ci95": [
+    0.6768,
+    0.8919
+   ],
+   "amb_raw": 0.2067,
+   "amb_cal": 0.16,
+   "amb_raw_profileband_0.25_0.75": 0.8067,
+   "amb_cal_profileband_0.25_0.75": 0.5133,
+   "median_stay_w0.1": 0.57
+  },
+  {
+   "combo": "pixel26+eg2+perpixel121+physics16+theory18",
+   "views": [
+    "pixel26",
+    "eg2",
+    "perpixel121",
+    "physics16",
+    "theory18"
+   ],
+   "fusion": "rankavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8159,
+   "auroc_ci95": [
+    0.6869,
+    0.9021
+   ],
+   "amb_raw": 0.2267,
+   "amb_cal": 0.1467,
+   "amb_raw_profileband_0.25_0.75": 0.6333,
+   "amb_cal_profileband_0.25_0.75": 0.52,
+   "median_stay_w0.1": 0.56
+  },
+  {
+   "combo": "pixel26+eg2+perpixel121+physics16+series16+theory18",
+   "views": [
+    "pixel26",
+    "eg2",
+    "perpixel121",
+    "physics16",
+    "series16",
+    "theory18"
+   ],
+   "fusion": "probavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8124,
+   "auroc_ci95": [
+    0.6833,
+    0.8988
+   ],
+   "amb_raw": 0.2267,
+   "amb_cal": 0.14,
+   "amb_raw_profileband_0.25_0.75": 0.7867,
+   "amb_cal_profileband_0.25_0.75": 0.52,
+   "median_stay_w0.1": 0.55
+  },
+  {
+   "combo": "pixel26+eg2+perpixel121+physics16+series16+theory18",
+   "views": [
+    "pixel26",
+    "eg2",
+    "perpixel121",
+    "physics16",
+    "series16",
+    "theory18"
+   ],
+   "fusion": "rankavg",
+   "n": 150,
+   "label_source": "human (manifest_gold.json, 100 good / 50 bad)",
+   "protocol": "nested LOCO over 7 clips; inner-LOCO C per view",
+   "auroc": 0.8211,
+   "auroc_ci95": [
+    0.6846,
+    0.9077
+   ],
+   "amb_raw": 0.2333,
+   "amb_cal": 0.1533,
+   "amb_raw_profileband_0.25_0.75": 0.64,
+   "amb_cal_profileband_0.25_0.75": 0.52,
+   "median_stay_w0.1": 0.56
+  }
+ ]
+}
