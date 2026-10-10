@@ -14,3 +14,11 @@
 
 ## Results
 (pending — `exp.py finish` fills the registry; put figures/JSON in this folder)
+
+**Verdict (2026-10-10 16:07): drop.** pooled per-tile stats concat(mean,std) of N=9 tile embeddings IndEgo 0.826 [0.69,0.88], OOD 0.586. Control confirms layout/timestamp are not load-bearing and it does not beat mean-of-frames 0.852.
+
+Results file: eval/results/exp_mosaic/E2.07.json
+
+Decision: Drop as a method; record as the no-layout control.
+
+Cost: 9 embed passes/window; A40

@@ -14,3 +14,11 @@
 
 ## Results
 (pending — `exp.py finish` fills the registry; put figures/JSON in this folder)
+
+**Verdict (2026-10-10 16:07): drop.** shuffled tile placement IndEgo 0.801 [0.64,0.89] vs ordered mosaic N9 0.785 [0.64,0.86]: delta +0.016, inside the CI; OOD 0.423. Tile order does not carry load-bearing signal -> no reason to shuffle.
+
+Results file: eval/results/exp_mosaic/E2.03.json
+
+Decision: Drop shuffled-order input.
+
+Cost: 1 embed pass/window; A40
