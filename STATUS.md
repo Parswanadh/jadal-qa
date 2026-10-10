@@ -1,6 +1,6 @@
 # STATUS — pod wave (lead agent)
 
-Updated: 2026-10-10 21:31 IST (16:01 UTC) · branch `pod/kit` (lead) · A40 pod
+Updated: 2026-10-10 21:46 IST (16:16 UTC) · branch `pod/kit` (lead) · A40 pod
 
 ## Environment (verified this session)
 - opencode v2.0.26; agents present: lead, experimenter, explorer, reviewer, tester, docs, infra.
@@ -27,9 +27,8 @@ Updated: 2026-10-10 21:31 IST (16:01 UTC) · branch `pod/kit` (lead) · A40 pod
 - GPU slot helper `tools/pod/gpu_run.sh`; artifact dirs under `/workspace/artifacts/`.
 
 ## Running
-- A1 exp-mosaic, A2 exp-fps-pod, A4 exp-motion-cue, A5 exp-domain-adapt; B1 exp-cost-model, B2 exp-rescore;
-  infra fix pass on `pod/prwatch` (reviewer findings I1/I2).
-- Done: A3 exp-regimes-pod, A6 prwatch (PR #81), A7 pod-docs (PR #82).
+- A1/A2/A3/A4/A5/A6/A7 done (PRs #81, #82, #83, #87, #88, #89, #90, #95). Still running: the E1 and E5
+  review-fix passes, B2 `exp-rescore` (E8.01), and the docs summary fill.
 
 ## PRs open (mine)
 - #81 `pod/prwatch` — dispatcher + standard eval harness (`eval/standard/run_all.py` reproduces pixel26 0.8100
@@ -52,6 +51,27 @@ Updated: 2026-10-10 21:31 IST (16:01 UTC) · branch `pod/kit` (lead) · A40 pod
   (uniform20 0.787 [0.650,0.866] beats motion20 0.762, keyframe 0.780, random20 0.739 → negative result).
 - #84/#85 `feat/exp-fps`, `feat/exp-temporal` — NOT ours: the human builder pushed branch-recovery commits at
   21:03 IST ("save local work") carrying the same E1/E3 code as `pod/base`. Note the overlap when merging.
+
+## Headline numbers for this wave (all from results JSONs; read with `tools/pod/collect_results.py`)
+| id | verdict | headline (n, label source, protocol) | regime |
+|---|---|---|---|
+| E1.03 | — | frozen IndEgo model on the 60 human OOD windows: AUROC 0.3595 [0.180,0.554] @30 fps → 0.4314 [0.237,0.627] @10 → ~0.50 @5-1; Spearman rank stability 30-vs-1 fps 0.83. **Failure to transfer at every fps.** n_bad=9, exploratory | 1080p/30 HEVC OOD |
+| E1.04 | drop | equal 20-frame budget on 150 IndEgo: uniform20 0.7866 [0.650,0.866] > keyframe 0.780 > motion20 0.762 > random20 0.739 → **no selection beats uniform** | 480p/10 in-domain |
+| E2.01 | drop | mosaic as model input: best N=9 0.785 [0.64,0.86] vs matched mean-of-frames 0.852 [0.75,0.91]; OOD 0.155-0.638 vs 0.42-0.63 | IndEgo + OOD |
+| E2.02 | adopt | mean-of-frames control 0.822-0.860 (reproduces cached 0.848 [0.73,0.91]) | IndEgo |
+| E2.03/04/07 | drop | tile order, timestamps, pooled layout not load-bearing | IndEgo |
+| E4.01 | adopt | deterministic descriptors; 6 content descriptors shrink after re-encode; resolution/fps/codec separate by construction | mixed |
+| E4.02 | drop | no regime-specific split beats global (all deltas' CIs span 0) | IndEgo terciles |
+| E4.03 | drop | re-encoding to the IndEgo spec narrows the descriptor gap but is descriptor-only — the frozen scorer was NOT re-scored, no transfer claim | 480p transcode |
+| E4.04 | adopt | 5 profiles + deterministic router, UNSEEN_REGIME → default, `receipt_fragment()` helper (**not wired** into the receipt), 13 tests | all |
+| E5.01 | maybe | AI-frame heads pooled → 0.789-0.826 LOCO on the 150 **human** IndEgo windows (frame-level 0.911/0.957 is AI-vs-AI, not accuracy) | 10k AI frames |
+| E5.02 | maybe | few-shot ON the 60 OOD labels (grouped by factory): pixel26 0.756 [0.575,0.902], two-view 0.767 [0.596,0.904]; ~12 labels → 0.71 (std 0.10); smallest fold n_bad=7 | OOD n_bad=9 |
+| E5.03 | maybe | sign table: 8 stable / 14 flip / 4 chance; sharpness holds, motion inverts | both |
+| E5.04 | inconclusive | labels2 not delivered (n=0); 160 windows scored descriptively only | OOD |
+| E6.01-04 | drop | the cue is essentially ego-motion magnitude (wearer not walking); residual motion after translation-only compensation adds nothing; frozen orientation does not transfer (0.281 [0.145,0.434]) | IndEgo + OOD |
+| E7.01 | adopt | best profile ≈ **15.2 video-hours per wall-hour** on the A40 (vs default 29.84x speed-up); **feature/embedding-bound**, decode only 16.7% of the total | measured |
+| E9.01 | adopt | standard eval harness: pixel26 0.8100 [0.6934,0.8872], eg2 0.8480 [0.7344,0.9087], n=150 human LOCO | IndEgo |
+| E8.01 | pending | re-scoring all 1,546 Egocentric-10K windows (descriptive) — running | 1080p/30 |
 
 ## Facts worth carrying into the docs
 - `nproc` prints 4 only because coreutils honours `OMP_NUM_THREADS=4` from `/workspace/env.sh`; the cgroup
