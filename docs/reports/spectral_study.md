@@ -1,6 +1,6 @@
 # Spectral study — harness-scored comparison
 
-_Generated 2026-10-10T10:16:25Z by eval/spectral/score.py. Every number below comes from eval/results/spectral/summary.json._
+_Generated 2026-10-10T10:27:20Z by eval/spectral/score.py. Every number below comes from eval/results/spectral/summary.json._
 
 ## Question
 
@@ -22,9 +22,11 @@ Does per-pixel frequency/temporal-spectral analysis of RGB video (arm B), a boun
 | A-full | 0.675 (0.6–0.8) | 0.642 | 0.0 | — | RUN |
 | E | 0.596 (0.505–0.817) | 0.553 | 0.67 | 0.909 | RUN |
 | B | — | — | — | — | NOT RUN |
+| C | — | — | — | — | NOT RUN |
 | D | — | — | — | — | NOT RUN |
 | B-T0 | 0.43 (0.359–0.683) | 0.448 | 0.67 | — | RUN |
 | B-T1 | 0.481 (0.41–0.667) | 0.448 | 1.0 | — | RUN |
+| D-SmolVLM2-2.2B-Instruct | 0.59 (0.375–0.7) | 0.509 | — | — | RUN |
 
 ### Gold detail (per arm, LOCO folds)
 
@@ -38,21 +40,23 @@ Does per-pixel frequency/temporal-spectral analysis of RGB video (arm B), a boun
 
 **B-T1** n=79 (good=65, bad=14, clips=3): `{"head": {"auroc": 0.481, "auroc_ci95": [0.41, 0.667], "n_boot": 1000, "balanced_accuracy": 0.448, "folds": [{"test_clip": "desk", "n_test": 17, "train_threshold": 0.6814}, {"test_clip": "ecu_full", "n_test": 48, "train_threshold": 0.5566}, {"test_clip": "ecu_late", "n_test": 14, "train_threshold": 0.5384}]}, "as_is": {"auroc": 0.678, "auroc_ci95": [0.5, 0.684], "n_boot": 1000}, "score_logistic": {"auroc": 0.364, "folds": [{"test_clip": "desk", "n_test": 17, "train_threshold": 0.8584}, {"test_clip": "ecu_full", "n_test": 48, "train_threshold": 0.7265}, {"test_clip": "ecu_late", "n_test": 14, "train_threshold": 0.8926}]}}`
 
+**D-SmolVLM2-2.2B-Instruct** n=79 (good=65, bad=14, clips=3): `{"head": {"auroc": 0.59, "auroc_ci95": [0.375, 0.7], "n_boot": 1000, "balanced_accuracy": 0.509, "folds": [{"test_clip": "desk", "n_test": 17, "train_threshold": 0.8569}, {"test_clip": "ecu_full", "n_test": 48, "train_threshold": 0.7407}, {"test_clip": "ecu_late", "n_test": 14, "train_threshold": 0.8416}]}, "as_is": {"auroc": 0.765, "auroc_ci95": [0.517, 0.972], "n_boot": 1000}, "score_logistic": {"auroc": 0.569, "folds": [{"test_clip": "desk", "n_test": 17, "train_threshold": 0.7845}, {"test_clip": "ecu_full", "n_test": 48, "train_threshold": 0.6916}, {"test_clip": "ecu_late", "n_test": 14, "train_threshold": 0.7881}]}}`
+
 ### Synthetic detail (sensitivity at 5% FAR)
 
 **A** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.5695, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 0.0}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 0.167, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.333, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 0.167, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}}}`
 
 **E** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.976, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.667, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 0.167}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 0.667, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.333, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 0.333, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.333, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 0.5, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}}}`
 
-**B** `{"status": "NOT RUN"}`
-
 **B-T0** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.6347, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 1.0}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 0.333, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.667, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}}}`
 
-**B-T1** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.6616, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 0.833}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 0.833, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.167, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}}}`
+**B-T1** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.6616, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 1.0}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 0.833, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.167, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}}}`
+
+**B** `{"status": "NOT RUN"}`
 
 **C** `{"status": "NOT RUN"}`
 
-**D** `{"status": "NOT RUN"}`
+**D-SmolVLM2-2.2B-Instruct** `{"status": "NOT RUN"}`
 
 **A-full** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.5478, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 0.167}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 0.667, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 0.667, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}}}`
 
@@ -62,15 +66,15 @@ Does per-pixel frequency/temporal-spectral analysis of RGB video (arm B), a boun
 
 **E** `{"status": "RUN", "method": "eg2_cosine", "threshold_maxF1_half1": 0.9894, "heldout_overall": {"n": 64, "P": 0.833, "R": 1.0, "F1": 0.909}, "per_kind": {"bright": {"n": 3, "recall_detect_rate": 1.0}, "crop5": {"n": 5, "recall_detect_rate": 1.0}, "easy_negative": {"n": 25, "false_positive_rate": 0.0, "specificity": 1.0}, "hard_negative": {"n": 19, "false_positive_rate": 0.211, "specificity": 0.789}, "offset1": {"n": 5, "recall_detect_rate": 1.0}, "reencode": {"n": 4, "recall_detect_rate": 1.0}, "speed11": {"n": 3, "recall_detect_rate": 1.0}}, "protocol": "threshold on held-out half 1, metrics on half 2"}`
 
-**B** `{"status": "RUN", "method": null, "threshold_maxF1_half1": 0.9149, "heldout_overall": {"n": 64, "P": 1.0, "R": 0.9, "F1": 0.947}, "per_kind": {"bright": {"n": 3, "recall_detect_rate": 1.0}, "crop5": {"n": 5, "recall_detect_rate": 1.0}, "easy_negative": {"n": 25, "false_positive_rate": 0.0, "specificity": 1.0}, "hard_negative": {"n": 19, "false_positive_rate": 0.0, "specificity": 1.0}, "offset1": {"n": 5, "recall_detect_rate": 0.6}, "reencode": {"n": 4, "recall_detect_rate": 1.0}, "speed11": {"n": 3, "recall_detect_rate": 1.0}}, "protocol": "threshold on held-out half 1, metrics on half 2"}`
-
 **B-T0** `{"status": "NOT RUN"}`
 
 **B-T1** `{"status": "NOT RUN"}`
 
+**B** `{"status": "RUN", "method": null, "threshold_maxF1_half1": 0.9149, "heldout_overall": {"n": 64, "P": 1.0, "R": 0.9, "F1": 0.947}, "per_kind": {"bright": {"n": 3, "recall_detect_rate": 1.0}, "crop5": {"n": 5, "recall_detect_rate": 1.0}, "easy_negative": {"n": 25, "false_positive_rate": 0.0, "specificity": 1.0}, "hard_negative": {"n": 19, "false_positive_rate": 0.0, "specificity": 1.0}, "offset1": {"n": 5, "recall_detect_rate": 0.6}, "reencode": {"n": 4, "recall_detect_rate": 1.0}, "speed11": {"n": 3, "recall_detect_rate": 1.0}}, "protocol": "threshold on held-out half 1, metrics on half 2"}`
+
 **C** `{"status": "NOT RUN"}`
 
-**D** `{"status": "NOT RUN"}`
+**D-SmolVLM2-2.2B-Instruct** `{"status": "NOT RUN"}`
 
 **A-full** `{"status": "NOT RUN"}`
 
@@ -104,15 +108,15 @@ EG2: 2209 seg/h/GPU → 1629.7 GPU-h (0.19 GPU-years) for 10,000 h = 3.6M segmen
 
 **E** `{"status": "RUN", "operating_threshold": 0.976, "per_chunk_latency_s_mean": 0.144, "realtime_capable": true, "ttd_per_degradation": {"black": {"n": 6, "median_ttd_s": 2.0, "never_decided": 0}, "blur": {"n": 6, "median_ttd_s": 2.0, "never_decided": 0}, "darken": {"n": 6, "median_ttd_s": 2.0, "never_decided": 0}, "frozen": {"n": 6, "median_ttd_s": 2.0, "never_decided": 2}, "lowbitrate": {"n": 6, "median_ttd_s": 2.0, "never_decided": 1}, "noise": {"n": 6, "median_ttd_s": 2.0, "never_decided": 1}, "overexpose": {"n": 6, "median_ttd_s": 2.0, "never_decided": 1}, "shake": {"n": 6, "median_ttd_s": 2.0, "never_decided": 2}, "static": {"n": 6, "median_ttd_s": 2.0, "never_decided": 0}}, "note": "prefix-recompute latency is an UPPER bound; true incremental is cheaper"}`
 
-**B** `{"status": "NOT RUN"}`
-
 **B-T0** `{"status": "NOT STREAMABLE", "reason": "no chunk scores exposed"}`
 
 **B-T1** `{"status": "NOT STREAMABLE", "reason": "no chunk scores exposed"}`
 
+**B** `{"status": "NOT RUN"}`
+
 **C** `{"status": "NOT RUN"}`
 
-**D** `{"status": "NOT RUN"}`
+**D-SmolVLM2-2.2B-Instruct** `{"status": "NOT STREAMABLE", "reason": "no chunk scores exposed"}`
 
 **A-full** `{"status": "NOT STREAMABLE", "reason": "no chunk scores exposed"}`
 
@@ -128,7 +132,7 @@ EG2: 2209 seg/h/GPU → 1629.7 GPU-h (0.19 GPU-years) for 10,000 h = 3.6M segmen
 
 _TBD once arms B and D report; current partial read below._
 
-Partial (arms B-final/D pending): A: AUROC 0.457 CI [0.375, 0.521]; E: AUROC 0.596 CI [0.505, 0.817]; B-T0: AUROC 0.43 CI [0.359, 0.683] (PROVISIONAL filename); B-T1: AUROC 0.481 CI [0.41, 0.667] (PROVISIONAL filename); A-full: AUROC 0.675 CI [0.6, 0.8]. CAVEAT on B-T0, B-T1: as-is scores {'B-T0': 0.637, 'B-T1': 0.678} were NOT fitted under LOCO and may be tuned in-sample (optimistic); the LOCO-clean head on the same features scores lower — treat the head number as the honest one until arm B publishes its final protocol. Arm A at chance (CI spans 0.5) means the 16-frame MediaPipe baseline carries no usable-activity signal on current labels; A-full (whole-video cheap signals) leads but its synth profile (catches darken only) shows it keys on activity/motion, not capture quality. Spectral-gold-to-synth transfer warning (B-T0 clean-FAR 1.0; B-T1 clean-FAR 0.833 at the 5%-gold-FAR threshold): scores shift between gold originals and re-encoded synth mp4s, so those sensitivity numbers are not a usable operating point.
+Partial (arms B-final/D pending): A: head 0.457 CI [0.375, 0.521]; E: head 0.596 CI [0.505, 0.817]; B-T0: head 0.43 CI [0.359, 0.683] (PROVISIONAL filename) / as-is 0.637 CI [0.467, 0.693]; B-T1: head 0.481 CI [0.41, 0.667] (PROVISIONAL filename) / as-is 0.678 CI [0.5, 0.684]; D-SmolVLM2-2.2B-Instruct: head 0.59 CI [0.375, 0.7] (PROVISIONAL filename) / as-is 0.765 CI [0.517, 0.972]; A-full: head 0.675 CI [0.6, 0.8]. CAVEAT on B-T0, B-T1, D-SmolVLM2-2.2B-Instruct: as-is scores {'B-T0': 0.637, 'B-T1': 0.678, 'D-SmolVLM2-2.2B-Instruct': 0.765} were NOT fitted under LOCO and may be tuned in-sample (optimistic); the LOCO-clean head on the same features scores lower — treat the head number as the honest one until arm B publishes its final protocol. Arm A at chance (CI spans 0.5) means the 16-frame MediaPipe baseline carries no usable-activity signal on current labels; A-full (whole-video cheap signals) leads but its synth profile (catches darken only) shows it keys on activity/motion, not capture quality. Spectral-gold-to-synth transfer warning (B-T0 clean-FAR 1.0; B-T1 clean-FAR 1.0 at the 5%-gold-FAR threshold): scores shift between gold originals and re-encoded synth mp4s, so those sensitivity numbers are not a usable operating point.
 
 ## Limitations
 

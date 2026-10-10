@@ -260,41 +260,94 @@ def main() -> None:
     def token_match(stem: str, token: str) -> bool:
         return token in stem.split("_")
 
+    def dir_docs(d: Path) -> dict:
+        import time as _t
+        docs = {}
+        for f in sorted(d.glob("*.json")):
+            # other workers may be mid-write (non-atomic); retry briefly
+            for attempt in range(6):
+                try:
+                    docs[f.stem] = json.loads(f.read_text())
+                    break
+                except Exception:
+                    _t.sleep(2)
+        return docs
+
     # Unified entries: contract arms + provisional non-contract variants.
     # A variant key f"{arm}-{token}" links gold_<token> with any synth/dups/
     # chunks file whose stem contains the token as an underscore-delimited part.
+    # Extra dirs like arms/D_<model>/ are scanned too (key D-<model>).
     entries = []
+    arm_dirs = {}
     for a in ARMS:
-        docs = dir_docs(a)
-        g = docs.get("gold")
-        if g and isinstance(g, dict) and g.get("items"):
-            entries.append({"key": a, "arm": a, "gold": g,
-                            "synth": docs.get("synth"), "dups": docs.get("dups"),
-                            "chunks": docs.get("chunks"), "provisional": False})
-        else:
+        dirs = []
+        base = DATA / "arms" / a
+        if base.is_dir():
+            dirs.append((a, base))
+        for extra in sorted((DATA / "arms").glob(f"{a}_*")):
+            if extra.is_dir():
+                dirs.append((f"{a}-{extra.name[len(a) + 1:]}", extra))
+        arm_dirs[a] = [k for k, _ in dirs]
+        if not dirs:
             entries.append({"key": a, "arm": a, "gold": None, "synth": None,
-                            "dups": docs.get("dups"), "chunks": None,
-                            "provisional": False})
-            for stem, gd in sorted(docs.items()):
-                if not stem.startswith("gold_") or not isinstance(gd, dict) \
-                        or not gd.get("items"):
-                    continue
-                tok = stem[len("gold_"):]
-                syn = next((v for s, v in sorted(docs.items())
-                            if s.startswith("synth") and token_match(s, tok)), None)
-                dup = next((v for s, v in sorted(docs.items())
-                            if s.startswith("dups") and token_match(s, tok)), None)
-                chu = next((v for s, v in sorted(docs.items())
-                            if s.startswith("chunks") and token_match(s, tok)), None)
-                linked = [s for s in sorted(docs)
-                            if s[:5] in ("synth", "dups_", "chunk")
-                            and token_match(s, tok)]
-                entries.append({"key": f"{a}-{tok}", "arm": a, "gold": gd,
-                                "synth": syn, "dups": dup, "chunks": chu,
-                                "provisional": True,
-                                "variant_files": [stem] + linked,
-                                "note": ("non-contract filenames scored as-is; final "
+                            "dups": None, "chunks": None, "provisional": False})
+            continue
+        for key, d in dirs:
+            docs = dir_docs(d)
+            contract = docs.get("gold")
+            contract_ok = isinstance(contract, dict) and contract.get("items")
+            cands = [(s, gd) for s, gd in sorted(docs.items())
+                     if isinstance(gd, dict) and gd.get("items") and
+                     (s.startswith("gold") or s.startswith("manifest"))]
+            if contract_ok:
+                entries.append({"key": key, "arm": a, "gold": contract,
+                                "synth": docs.get("synth"), "dups": docs.get("dups"),
+                                "chunks": docs.get("chunks"), "provisional": key != a,
+                                "note": ("" if key == a else
+                                         "non-contract dir scored as-is; final numbers "
+                                         f"wait for arms/{a}/gold.json")})
+                continue
+            # no contract file: bare NOT RUN entry (keeps dups if present) +
+            # one provisional entry per gold-variant doc
+            linked_stems: set[str] = set()
+            n_variant = 0
+            for stem, gd in cands:
+                tok = stem[len("gold_"):] if stem.startswith("gold_") else stem
+                vkey = f"{key}-{tok}" if (key == a or len(cands) > 1) else key
+                n_variant += 1
+                got = {}
+
+                def link(prefix):
+                    hit = next((s for s in sorted(docs)
+                                if s.startswith(prefix) and token_match(s, tok)), None)
+                    if hit is not None:
+                        linked_stems.add(hit)
+                        return docs[hit]
+                    return None
+
+                got = {"synth": link("synth"), "dups": link("dups"),
+                       "chunks": link("chunks")}
+                entries.append({"key": vkey, "arm": a, "gold": gd,
+                                "synth": got["synth"], "dups": got["dups"],
+                                "chunks": got["chunks"], "provisional": True,
+                                "variant_files": [f"{d.name}/{stem}"],
+                                "note": ("non-contract filename/dir scored as-is; final "
                                          f"numbers wait for arms/{a}/gold.json etc.")})
+            # unlinked non-gold docs attach to the bare entry (scored once);
+            # skipped when a variant already occupies this key
+            def orphan(prefix):
+                hit = next((s for s in sorted(docs)
+                            if s.startswith(prefix) and s not in linked_stems
+                            and not s.startswith("gold")
+                            and not s.startswith("manifest")), None)
+                return docs[hit] if hit else None
+
+            if all(e2["key"] != key for e2 in entries):
+                entries.append({"key": key, "arm": a, "gold": None, "synth": None,
+                                "dups": orphan("dups"), "chunks": None,
+                                "provisional": key != a,
+                                "note": ("shared/unlinked arm files; tier variants "
+                                         "scored separately") if key != a else ""})
     af = load(DATA / "arms" / "A" / "allframes.json")
     entries.append({"key": "A-full", "arm": "A", "gold": af,
                     "synth": {"items": (af or {}).get("items", {})} if af else None,
@@ -617,8 +670,8 @@ def write_report(s: dict) -> None:
     L.append("## Results per task\n")
     L.append("| arm | gold AUROC (95% CI) | bal.acc | synth sens. (median over degs) | dups F1 | status |")
     L.append("|---|---|---|---|---|---|")
-    table_arms = ["A", "A-full", "E", "B", "D"] + sorted(
-        k for k in s["arms"] if k.startswith("B-") or k.startswith("D-"))
+    table_arms = ["A", "A-full", "E", "B", "C", "D"] + sorted(
+        k for k in s["arms"] if "-" in k and k != "A-full")
     for a in table_arms:
         e = s["arms"].get(a, {})
         g = e.get("gold") or {}
@@ -716,9 +769,13 @@ def partial_recommendation(s: dict) -> str:
     bits = []
     for a, e in s["arms"].items():
         g = (e.get("gold") or {}).get("results", {}).get("head", {})
+        ai = (e.get("gold") or {}).get("results", {}).get("as_is", {})
         if g.get("auroc") is not None:
             flag = " (PROVISIONAL filename)" if e.get("provisional") else ""
-            bits.append(f"{a}: AUROC {g['auroc']} CI {g.get('auroc_ci95')}{flag}")
+            cell = f"{a}: head {g['auroc']} CI {g.get('auroc_ci95')}{flag}"
+            if ai.get("auroc") is not None:
+                cell += f" / as-is {ai['auroc']} CI {ai.get('auroc_ci95')}"
+            bits.append(cell)
     out = ("Partial (arms B-final/D pending): " + "; ".join(bits) + "." if bits
            else "No arms scored yet.")
     prov = [a for a, e in s["arms"].items() if e.get("provisional")]

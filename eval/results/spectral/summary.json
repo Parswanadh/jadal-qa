@@ -1,5 +1,5 @@
 {
- "created_utc": "2026-10-10T10:16:25Z",
+ "created_utc": "2026-10-10T10:27:20Z",
  "label_source": "human gold (IndEgo workers; NOT Awign footage)",
  "gold_snapshot": {
   "snapshot_utc": "2026-10-10T10:14:34Z",
@@ -274,16 +274,6 @@
    },
    "feature_keys": []
   },
-  "B": {
-   "status": "NOT RUN",
-   "files": {
-    "gold.json": false,
-    "synth.json": false,
-    "dups.json": true,
-    "chunks.json": false,
-    "cost.json": false
-   }
-  },
   "B-T0": {
    "status": "RUN",
    "files": {
@@ -294,10 +284,9 @@
     "cost.json": false
    },
    "provisional": true,
-   "note": "non-contract filenames scored as-is; final numbers wait for arms/B/gold.json etc.",
+   "note": "non-contract filename/dir scored as-is; final numbers wait for arms/B/gold.json etc.",
    "variant_files": [
-    "gold_T0",
-    "synth_T0_synth"
+    "B/gold_T0"
    ],
    "gold": {
     "n": 79,
@@ -497,10 +486,9 @@
     "cost.json": false
    },
    "provisional": true,
-   "note": "non-contract filenames scored as-is; final numbers wait for arms/B/gold.json etc.",
+   "note": "non-contract filename/dir scored as-is; final numbers wait for arms/B/gold.json etc.",
    "variant_files": [
-    "gold_T1",
-    "synth_T1_synth"
+    "B/gold_T1"
    ],
    "gold": {
     "n": 79,
@@ -690,6 +678,16 @@
     "wav_LH"
    ]
   },
+  "B": {
+   "status": "NOT RUN",
+   "files": {
+    "gold.json": false,
+    "synth.json": false,
+    "dups.json": true,
+    "chunks.json": false,
+    "cost.json": false
+   }
+  },
   "C": {
    "status": "NOT RUN",
    "files": {
@@ -700,15 +698,174 @@
     "cost.json": false
    }
   },
-  "D": {
-   "status": "NOT RUN",
+  "D-SmolVLM2-2.2B-Instruct": {
+   "status": "RUN",
    "files": {
     "gold.json": false,
     "synth.json": false,
     "dups.json": false,
     "chunks.json": false,
     "cost.json": false
-   }
+   },
+   "provisional": true,
+   "note": "non-contract filename/dir scored as-is; final numbers wait for arms/D/gold.json etc.",
+   "variant_files": [
+    "D_SmolVLM2-2.2B-Instruct/manifest_gold"
+   ],
+   "gold": {
+    "n": 79,
+    "n_good": 65,
+    "n_bad": 14,
+    "n_clips": 3,
+    "protocol": "leave-one-clip-out",
+    "n_features": 7,
+    "results": {
+     "head": {
+      "auroc": 0.59,
+      "auroc_ci95": [
+       0.375,
+       0.7
+      ],
+      "n_boot": 1000,
+      "balanced_accuracy": 0.509,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 17,
+        "train_threshold": 0.8569
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.7407
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.8416
+       }
+      ]
+     },
+     "as_is": {
+      "auroc": 0.765,
+      "auroc_ci95": [
+       0.517,
+       0.972
+      ],
+      "n_boot": 1000
+     },
+     "score_logistic": {
+      "auroc": 0.569,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 17,
+        "train_threshold": 0.7845
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.6916
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.7881
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078"
+    ]
+   },
+   "feature_keys": [
+    "decode_s",
+    "input_tokens",
+    "n_frames",
+    "output_tokens",
+    "p_usable_logprob",
+    "parsed_score",
+    "peak_vram_gb"
+   ]
   },
   "A-full": {
    "status": "RUN",
@@ -963,9 +1120,6 @@
     }
    }
   },
-  "B": {
-   "status": "NOT RUN"
-  },
   "B-T0": {
    "status": "RUN",
    "threshold_5pct_FAR_on_gold_good": 0.6347,
@@ -1041,7 +1195,7 @@
     "clean": {
      "n": 6,
      "sensitivity_at_5pct_FAR": null,
-     "control_FAR": 0.833
+     "control_FAR": 1.0
     },
     "darken": {
      "n": 6,
@@ -1080,10 +1234,13 @@
     }
    }
   },
+  "B": {
+   "status": "NOT RUN"
+  },
   "C": {
    "status": "NOT RUN"
   },
-  "D": {
+  "D-SmolVLM2-2.2B-Instruct": {
    "status": "NOT RUN"
   },
   "A-full": {
@@ -1233,6 +1390,12 @@
    },
    "protocol": "threshold on held-out half 1, metrics on half 2"
   },
+  "B-T0": {
+   "status": "NOT RUN"
+  },
+  "B-T1": {
+   "status": "NOT RUN"
+  },
   "B": {
    "status": "RUN",
    "method": null,
@@ -1277,16 +1440,10 @@
    },
    "protocol": "threshold on held-out half 1, metrics on half 2"
   },
-  "B-T0": {
-   "status": "NOT RUN"
-  },
-  "B-T1": {
-   "status": "NOT RUN"
-  },
   "C": {
    "status": "NOT RUN"
   },
-  "D": {
+  "D-SmolVLM2-2.2B-Instruct": {
    "status": "NOT RUN"
   },
   "A-full": {
@@ -1549,9 +1706,6 @@
    },
    "note": "prefix-recompute latency is an UPPER bound; true incremental is cheaper"
   },
-  "B": {
-   "status": "NOT RUN"
-  },
   "B-T0": {
    "status": "NOT STREAMABLE",
    "reason": "no chunk scores exposed"
@@ -1560,11 +1714,15 @@
    "status": "NOT STREAMABLE",
    "reason": "no chunk scores exposed"
   },
+  "B": {
+   "status": "NOT RUN"
+  },
   "C": {
    "status": "NOT RUN"
   },
-  "D": {
-   "status": "NOT RUN"
+  "D-SmolVLM2-2.2B-Instruct": {
+   "status": "NOT STREAMABLE",
+   "reason": "no chunk scores exposed"
   },
   "A-full": {
    "status": "NOT STREAMABLE",
@@ -1577,5 +1735,5 @@
  "vlm_verdict": {
   "status": "NOT RUN"
  },
- "scorer_wall_s": 12.0
+ "scorer_wall_s": 14.4
 }
