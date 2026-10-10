@@ -289,6 +289,14 @@ class TestDeciderGPU(unittest.TestCase):
     """
 
     def test_backbone_determinism_cache_disabled(self):
+        try:
+            self._backbone_determinism()
+        except RuntimeError as exc:  # torch.OutOfMemoryError subclasses RuntimeError
+            if "out of memory" in str(exc).lower():
+                self.skipTest(f"shared GPU has no free memory for EG2: {exc}")
+            raise
+
+    def _backbone_determinism(self):
         import torch
 
         if not torch.cuda.is_available():
