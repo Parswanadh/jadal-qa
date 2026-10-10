@@ -110,6 +110,7 @@ async function shot(page, name, url, viewport, colorScheme) {
     await shot(page, 'insights-390.png', BASE + '#/insights', { width: 390, height: 844 });
     await shot(page, 'batches-dark-1280.png', BASE + '#/batches', { width: 1280, height: 900 }, 'dark');
     await shot(page, 'segment-dark-1280.png', BASE + '#/segment/' + segId, { width: 1280, height: 900 }, 'dark');
+    await shot(page, 'insights-dark-1280.png', BASE + '#/insights', { width: 1280, height: 900 }, 'dark');
     console.log('ALL SHOTS OK');
   } finally {
     await browser.close();
