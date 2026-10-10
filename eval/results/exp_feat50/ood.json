@@ -1,0 +1,91 @@
+{
+ "n_gold": 150,
+ "n_good_gold": 100,
+ "n_ood": 160,
+ "n_good_ood": 138,
+ "n_factories_ood": 47,
+ "n_hold": 108,
+ "n_good_hold": 92,
+ "device": "CPU (numpy/sklearn; decode by ffmpeg)",
+ "protocol": "In-domain = LOCO logistic C=0.3 balanced over 7 IndEgo clips, clip-bootstrap CI. OOD = adapted per-domain z-score (per-domain mean/std, sign from IndEgo AUROC, equal-weight mean), FACTORY-GROUPED bootstrap CI (n_boot=2000). Hold-out108 scored once.",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "experiment": "F50.02",
+ "title": "OOD160 adapted per-domain z-score: 26 vs 50 features",
+ "baseline_26_documented_auroc": 0.781,
+ "frozen_26_documented_auroc": 0.566,
+ "rows": {
+  "f26_all": {
+   "tag": "26 (frozen pixel baseline set)",
+   "n_features": 26,
+   "indego_auroc": 0.7832,
+   "ood_auroc": 0.3864,
+   "ood_ci95_factory": [
+    0.2308,
+    0.5251
+   ],
+   "ood_ba": 0.4127
+  },
+  "f50_all": {
+   "tag": "50 (26 + 24 new)",
+   "n_features": 50,
+   "indego_auroc": 0.7928,
+   "ood_auroc": 0.4789,
+   "ood_ci95_factory": [
+    0.3191,
+    0.6162
+   ],
+   "ood_ba": 0.47
+  },
+  "fnew24_only": {
+   "tag": "24 new only",
+   "n_features": 24,
+   "indego_auroc": 0.777,
+   "ood_auroc": 0.5547,
+   "ood_ci95_factory": [
+    0.3751,
+    0.7235
+   ],
+   "ood_ba": 0.5491
+  },
+  "documented_baseline_26_stable8+transfer6": {
+   "tag": "stable8(26)+transfer6(new)",
+   "n_features": 14,
+   "indego_auroc": 0.7118,
+   "ood_auroc": 0.7246,
+   "ood_ci95_factory": [
+    0.5765,
+    0.8483
+   ],
+   "ood_ba": 0.6736
+  },
+  "documented_recipe_plus_18new": {
+   "tag": "stable8+transfer6+18 remaining new",
+   "n_features": 32,
+   "indego_auroc": 0.772,
+   "ood_auroc": 0.6159,
+   "ood_ci95_factory": [
+    0.4464,
+    0.7753
+   ],
+   "ood_ba": 0.58
+  },
+  "frozen_ensemble_v1": {
+   "ood_auroc": 0.566,
+   "ood_ci95_factory": [
+    0.4238,
+    0.6999
+   ],
+   "ood_ba": 0.5464,
+   "missing": 0
+  }
+ },
+ "paired_gain_50_vs_26_factory_grouped": {
+  "mean": 0.0928,
+  "ci95": [
+   -0.0075,
+   0.2015
+  ],
+  "frac_gt_0": 0.9635,
+  "n_boot": 2000
+ }
+}
