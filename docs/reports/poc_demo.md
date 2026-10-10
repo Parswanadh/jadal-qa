@@ -58,3 +58,52 @@ S0 thresholds are the shared a-priori constants (frozen 5e-4 justified by the
 codec-noise floor in cascade.py), not certified on this video. The running
 score is a fixed-weight descriptive composite, not a validated classifier.
 Blur has no S0 rule by design — blurry-but-bright footage is an S1/S2 job.
+
+## Fix round 1 (review of PR #66 — all Critical + Important + Minors fixed)
+
+- C1 (module poisoning): `make_spectral_stream()` no longer touches
+  `sys.path`/`sys.modules` at all. origin/main merged spectral-features
+  in-tree, so it is a plain `from jadal.spectral.stream import
+  SpectralStream`. Probe: `jadal.__file__` identical before/after, and
+  `jadal.pico_link` still resolves to poc-demo — SAME, no poisoning.
+  Engine tag is now `jadal.spectral.stream.SpectralStream (in-tree)`.
+- I1 (append forever): `replay(..., append=False)` truncates `--out` at
+  start; CLI gains `--append`. Test `test_rerun_starts_fresh_unless_append`:
+  4 lines after run 1, still 4 after run 2, 8 with `append=True`.
+- I2 (window cap): cap is now `round(per_window*chunk_s*fps)+8` = 58 frames
+  for the 10 s window (was 33 ≈ 6.6 s). The "10 s window" label is now true.
+  TTR re-measured after the fix: blackout 0.0 s, freeze 0.0 s, blur no
+  reject — unchanged (chunk-scope check fires first).
+- I3 (wrong-rule test): `test_frozen_rule_fires` uses one fixed noise
+  pattern ×6 (high spatial_var, zero temp_e) and asserts
+  `rule=="frozen"`; uniform-grey case kept separately as
+  `test_lens_blocked_rule_fires` asserting `rule=="lens_blocked"`.
+- I4 (stub leak + unclosed file): `_run` saves/restores
+  `make_spectral_stream` in `finally`; events read via `with open(...)`.
+  No ResourceWarning.
+- I5 (non-16:9 garble): `-vf scale=160:90` exact + hard error on raw-size
+  mismatch or zero frames (was: silent mis-slice).
+- I6 (fresh-clone crash): `poc_record.py` creates `.scratch/` if missing.
+- M1: demo default clip pinned to the measured file, find-fallback kept.
+- M2: DEMO.md AUROC now cites `gpu-pipeline/eval/results/gpu/cascade.json`
+  (`loco`: auc 0.8016, CI95 0.7096–0.8697, n=150) and
+  `spectral_data/GOLD_FINAL_150*`.
+- M3: single-open lock fd + non-blocking flock (`pico: busy` instead of a
+  hang); headless test mocks `PicoLink.connect` so it is deterministic even
+  with /dev/ttyACM0 present (it is, on this machine).
+- M4: card footer prints the event's `engine` field. M5: freeze
+  comprehension simplified.
+- M6 (re-checkable artefact): `poc_data/stream_events.jsonl` =
+  16 lines, sha256
+  `f5f9a97af6dd615ab8e9a43df09cfbfc85f3b61441b4224f4a19e0a23a8d17f4`,
+  decisions continue×4, accept, continue, early_reject×10 (blackout t=12 s),
+  latency 345.7–783.2 ms, RAM 79.4–171.1 MB this run. Backup mp4 re-rendered
+  (80 s, 16 cards).
+
+Real command outputs:
+- `python -m unittest tests.test_poc_demo` → `Ran 14 tests in 0.329s` / `OK`
+- `PYTHONNOUSERSITE=1 timeout 250 python -m unittest discover -s tests`
+  → `Ran 596 tests in 28.036s` / `OK (skipped=8)`
+- Receipts/contract/probes (review §11–12): receipts remain poc-run-owned
+  (windows.jsonl `receipt_sha256`); stream chunk events carry evidence, not
+  receipts — unchanged by design, documented in DEMO.md.

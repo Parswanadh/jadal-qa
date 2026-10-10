@@ -64,7 +64,7 @@ def draw_card(ev, history, n_total, out_path):
               if s0 else f"reason: {json.dumps(reason)[:110]}")
     d.text((60, 560), ev_txt, fill=(230, 230, 230))
     d.text((60, 600), f"decode={ev.get('decode')} latency={ev.get('latency_ms')}ms "
-                      f"engine=spectral-stream-or-local-fallback", fill=(150, 150, 150))
+                      f"engine={str(ev.get('engine', '?'))[:70]}", fill=(150, 150, 150))
     d.text((60, 646), "DEMO RENDER from stream_events.jsonl: descriptive rates on "
                       "unlabelled Egocentric-10K video - NOT accuracy.",
            fill=(140, 140, 140))
@@ -87,7 +87,9 @@ def main():
     total = max(60.0, len(evs) * args.hold_s)
     hold = total / len(evs)
     fps = 30
-    with tempfile.TemporaryDirectory(dir=os.path.join(root, ".scratch")) as tmp:
+    scratch = os.path.join(root, ".scratch")
+    os.makedirs(scratch, exist_ok=True)  # judge-day fallback: fresh clones
+    with tempfile.TemporaryDirectory(dir=scratch) as tmp:
         sizes = []
         for i, e in enumerate(evs):
             card = os.path.join(tmp, f"card_{i:03d}.png")

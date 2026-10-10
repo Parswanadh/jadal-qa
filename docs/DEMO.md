@@ -33,7 +33,10 @@ green/amber/red — under `flock tools/pico.lock`. No hardware today? It logs
 
 2:40 — Close: "This is descriptive behaviour on unlabelled video, not
 accuracy. Accuracy is measured only on 150 human-labelled windows
-(AUROC ~0.7–0.8, leave-one-clip-out)."
+(AUROC ~0.7–0.8, leave-one-clip-out; re-verify at
+`/home/parshu/projects/jadal-qa-wt/gpu-pipeline/eval/results/gpu/cascade.json`
+(`loco.auc`, `loco.auc_ci95`, n=150) and the label snapshot
+`/home/parshu/projects/jadal-qa-wt/spectral_data/GOLD_FINAL_150*`)."
 
 ## Expected output
 

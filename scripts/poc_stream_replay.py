@@ -32,6 +32,8 @@ def main():
     ap.add_argument("--fps", type=int, default=5)
     ap.add_argument("--width", type=int, default=160)
     ap.add_argument("--cuda", action="store_true")
+    ap.add_argument("--append", action="store_true",
+                    help="append to --out instead of starting a fresh file")
     args = ap.parse_args()
     os.environ.setdefault("OMP_NUM_THREADS", "2")
     summary = replay(args.clip, args.out, chunk_s=args.chunk_s,
@@ -39,7 +41,7 @@ def main():
                      max_chunks=args.max_chunks, degrade=args.degrade,
                      degrade_at=args.degrade_at, accept_thr=args.accept_thr,
                      use_pico=args.pico, fps=args.fps, width=args.width,
-                     use_cuda=args.cuda)
+                     use_cuda=args.cuda, append=args.append)
     print(json.dumps(summary, indent=1))
 
 

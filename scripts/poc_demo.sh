@@ -8,7 +8,14 @@ PY=/home/parshu/envs/jadal/bin/python
 export PYTHONNOUSERSITE=1
 export OMP_NUM_THREADS=2
 
-CLIP="${1:-$(find /home/parshu/projects/awing/data/ego10k_scale/clips -name '*.mp4' | head -n 1)}"
+DEFAULT_CLIP=/home/parshu/projects/awing/data/ego10k_scale/clips/factory_069/worker_004/factory069_worker004_00077.mp4
+if [[ -n "${1:-}" ]]; then
+  CLIP="$1"
+elif [[ -f "$DEFAULT_CLIP" ]]; then
+  CLIP="$DEFAULT_CLIP"  # pinned: DEMO.md expected scores were measured here
+else
+  CLIP="$(find /home/parshu/projects/awing/data/ego10k_scale/clips -name '*.mp4' | head -n 1)"
+fi
 EVENTS="${EVENTS:-/home/parshu/projects/jadal-qa-wt/poc_data/stream_events.jsonl}"
 PORT=8840
 SERVER_PID=""
