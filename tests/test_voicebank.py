@@ -68,9 +68,16 @@ def simulate_missing_sdk():
     Works whether or not the sarvamai SDK is installed: sys.modules is
     seeded with None (the legacy "module is known to be absent" signal)
     and builtins.__import__ is patched to raise ImportError for sarvamai
-    and any sarvamai.* submodule. Everything is restored on exit.
+    and any sarvamai.* submodule. Only sarvamai keys are touched: on exit
+    the keys added during the context are deleted and the saved entries
+    restored, so every other module object keeps its identity (no
+    sys.modules.clear()).
     """
-    saved = dict(sys.modules)
+    saved = {
+        key: value
+        for key, value in sys.modules.items()
+        if key == "sarvamai" or key.startswith("sarvamai.")
+    }
     real_import = builtins.__import__
 
     def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
@@ -81,14 +88,18 @@ def simulate_missing_sdk():
         return real_import(name, globals, locals, fromlist, level)
 
     sys.modules["sarvamai"] = None  # type: ignore[assignment]
-    for key in [k for k in saved if k.startswith("sarvamai.")]:
-        sys.modules.pop(key, None)
+    for key in [k for k in sys.modules if k.startswith("sarvamai.")]:
+        del sys.modules[key]
     with mock.patch("builtins.__import__", side_effect=fake_import):
         sys.modules["sarvamai"] = None  # type: ignore[assignment]
         try:
             yield
         finally:
-            sys.modules.clear()
+            for key in [
+                k for k in sys.modules
+                if k == "sarvamai" or k.startswith("sarvamai.")
+            ]:
+                del sys.modules[key]
             sys.modules.update(saved)
 
 
@@ -291,6 +302,32 @@ class SynthesisTests(unittest.TestCase):
             cwd=str(REPO_ROOT),
         )
         self.assertEqual(proc.returncode, 0, msg=proc.stderr[-2000:])
+
+
+class SimulateMissingSdkTests(unittest.TestCase):
+    def test_leaves_rest_of_sys_modules_untouched(self) -> None:
+        import os as os_mod
+
+        before = dict(sys.modules)
+        probe = object()
+        with simulate_missing_sdk():
+            with self.assertRaises(ImportError):
+                import sarvamai  # noqa: F401
+            # A non-sarvamai entry added inside the context must survive:
+            # the finally block restores by key diff, never sys.modules.clear().
+            sys.modules["test_voicebank_probe_module"] = probe
+        self.assertIs(sys.modules.get("test_voicebank_probe_module"), probe)
+        del sys.modules["test_voicebank_probe_module"]
+        # Every pre-existing non-sarvamai entry keeps its object identity.
+        for key, value in before.items():
+            if key == "sarvamai" or key.startswith("sarvamai."):
+                continue
+            self.assertIs(sys.modules.get(key), value, f"replaced: {key}")
+        self.assertIs(sys.modules["os"], os_mod)
+        # Saved sarvamai entries are restored as-is.
+        for key, value in before.items():
+            if key == "sarvamai" or key.startswith("sarvamai."):
+                self.assertIs(sys.modules.get(key), value, f"not restored: {key}")
 
 
 class AtomicWriteTests(ScratchTestCase):
