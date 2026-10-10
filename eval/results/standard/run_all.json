@@ -1,0 +1,105 @@
+{
+ "bundle": "/workspace/jadal_pod_bundle",
+ "command": "python3 eval/standard/run_all.py",
+ "created_utc": "2026-10-10T15:47:42+00:00",
+ "device": "cpu-inference / NVIDIA A40",
+ "experiment": "E9.01",
+ "git_sha": "a035aa661d8fe68988d1ba49c8c26542eb88b292",
+ "honesty": {
+  "ci": "clip-bootstrap CI is wide; window-bootstrap OOD CI is optimistic",
+  "n": "150 windows / 7 clips / ~3 wearers, one labeller -> wide CIs",
+  "no_transfer": "the IndEgo-trained model does not transfer to OOD; reported, not hidden",
+  "no_tuning": "model C values are the documented ones; never tuned on a held-out clip"
+ },
+ "host": "389d1d2d7b93",
+ "label_source": "human IndEgo gold manifest_gold.json (one labeller, ~3 wearers); windows within a clip are correlated",
+ "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+ "n": 150,
+ "n_bad": 50,
+ "n_clips": 7,
+ "n_good": 100,
+ "ood": {
+  "ci95_window_bootstrap": [
+   0.5,
+   0.5
+  ],
+  "documented_range": "0.4-0.53 (IndEgo-trained models did NOT transfer)",
+  "e103_reference_auroc_fps10": 0.4314,
+  "e103_reference_ci95_window_bootstrap": [
+   0.2373,
+   0.6271
+  ],
+  "e103_reference_protocol": "frozen IndEgo logistic trained on the E1.01 sweep 10fps features (shard_sweep), applied to the same OOD windows",
+  "feature_names": [
+   "temp_b0",
+   "temp_b1",
+   "temp_b2",
+   "temp_b3",
+   "frozen_frac",
+   "flicker_idx",
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy",
+   "pca_resid",
+   "pca_top1_share",
+   "luma_mean",
+   "luma_p05",
+   "luma_p50",
+   "luma_p95",
+   "dark_frac",
+   "bright_frac",
+   "motion_energy",
+   "global_shift",
+   "skin_frac",
+   "illum_r",
+   "illum_g",
+   "illum_b",
+   "rppg_pulse",
+   "dup_hash_mean",
+   "zncc_self"
+  ],
+  "feature_order_reordered": false,
+  "frozen_pixel26_auroc": 0.5,
+  "label_source": "human ood_labels.json (one labeller; out-of-domain, exploratory)",
+  "n": 60,
+  "n_bad": 9,
+  "n_good": 51,
+  "note_saturated": "all OOD windows scored p=1.0 (the features.json scale is far outside the IndEgo training range); the value is reported, not hidden",
+  "protocol": "frozen IndEgo pixel26 logistic (trained on all 150 IndEgo windows, features.json) applied to the cached OOD 26-feature windows at fps=10; CI = window-bootstrap B=2000 seed0 (optimistic: ~1 window/factory)",
+  "saturated": true
+ },
+ "protocol": "in-domain = leave-one-clip-out (LOCO) over the 7 IndEgo clips; 95% CI = clip-level bootstrap B=1000 seed0",
+ "title": "standard eval harness (PR comparison baseline)",
+ "views": {
+  "eg2": {
+   "auroc": 0.848,
+   "bal_acc": 0.77,
+   "ci95_clip_bootstrap": [
+    0.7344,
+    0.9087
+   ],
+   "documented_auroc": 0.85,
+   "features": "caches/frames10k/segments.npz F (counts-aware window mean, L2-normalised)",
+   "model": "StandardScaler + LogisticRegression C=0.01 class_weight=balanced",
+   "n": 150,
+   "protocol": "leave-one-clip-out over the 7 IndEgo clips; EG2 embedding frozen (no fine-tune)"
+  },
+  "pixel26": {
+   "auroc": 0.81,
+   "bal_acc": 0.74,
+   "ci95_clip_bootstrap": [
+    0.6934,
+    0.8872
+   ],
+   "documented_auroc": 0.81,
+   "features": "caches/gpu/features.json windows[id]['full'] (26 per-pixel features)",
+   "model": "StandardScaler + LogisticRegression C=0.3 class_weight=balanced",
+   "n": 150,
+   "n_bad": 50,
+   "n_clips": 7,
+   "n_good": 100,
+   "protocol": "leave-one-clip-out over the 7 IndEgo clips"
+  }
+ },
+ "wall_s": 9.8
+}
