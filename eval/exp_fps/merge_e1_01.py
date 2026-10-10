@@ -1,4 +1,8 @@
-"""Merge sweep shards -> LOCO eval per fps -> eval/results/exp_fps/e1_01.json"""
+"""Merge sweep shards -> LOCO eval per fps -> eval/results/exp_fps/e1_01.json
+
+Regen: OMP_NUM_THREADS=1 python3 eval/exp_fps/run_fps.py --mode sweep --shard {0,1}/2
+       python3 eval/exp_fps/merge_e1_01.py
+"""
 import json
 import os
 import sys
@@ -6,9 +10,10 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
-from fps_lib import FPS_STEPS, loco_proba, clip_bootstrap_ci, bal_acc
+from fps_lib import (FPS_STEPS, RESULTS, git_sha, loco_proba,
+                     clip_bootstrap_ci, bal_acc)
 
-D = os.path.join(os.path.dirname(__file__), "..", "results", "exp_fps")
+D = RESULTS
 shards = [json.load(open(os.path.join(D, f"shard_sweep_{i}of2.json")))
           for i in range(2)]
 order = np.argsort([x for s in shards for x in s["ids"]], kind="stable")
@@ -65,6 +70,8 @@ res = {
     "protocol": "leave-one-clip-out, StandardScaler+LogisticRegression C=0.3 balanced; CI=clip-bootstrap B=1000 seed0",
     "subsample_rule": "decode once native ~10fps via POS_MSEC seek + consecutive reads at 160x90; idx=arange(0,T,step), step {10:1,5:2,3.33:3,2:5,1:10}; cpu_window_features with TRUE effective fps (10/step)",
     "command": "eval/exp_fps/run_fps.py --mode sweep --shard {0,1}/2, merged by merge_e1_01.py",
+    "device": "A40 (pod host); decode=CPU cv2 160x90, features=CPU float64",
+    "git_sha": git_sha(),
     "rows": rows, "per_feature_signed_auroc": pf_auc,
     "fps_comparability": {
         "NOT_comparable_across_fps": [

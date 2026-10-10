@@ -1,15 +1,39 @@
-"""E1 shared lib: deterministic decode-once + index-subsample + LOCO eval."""
+"""E1 shared lib: deterministic decode-once + index-subsample + LOCO eval.
+
+All data paths resolve from $JADAL_BUNDLE (no laptop paths).
+"""
 import json
 import os
+import subprocess
 import time
 
 import cv2
 import numpy as np
 
+# keep one process = one core (pod rule: <=75% of cores, no oversubscription)
+cv2.setNumThreads(int(os.environ.get("JADAL_CV_THREADS", "1")))
+
 BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
 MANIFEST = os.path.join(BUNDLE, "labels", "manifest_gold.json")
+QUEUE1 = os.path.join(BUNDLE, "queues", "label_queue_random.json")
+QUEUE2 = os.path.join(BUNDLE, "queues", "label_queue_random2.json")
+OOD_LABELS = os.path.join(BUNDLE, "labels", "ood_labels.json")
+OOD_LABELS2 = os.path.join(BUNDLE, "labels", "ood_labels2.json")
+SEGMENTS_NPZ = os.path.join(BUNDLE, "caches", "frames10k", "segments.npz")
 _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 GPU_SRC = os.path.join(_root, "jadal", "gpu")
+# merged + shard results land in the repo; override with $JADAL_FPS_RESULTS
+RESULTS = os.environ.get("JADAL_FPS_RESULTS",
+                        os.path.join(_root, "eval", "results", "exp_fps"))
+
+
+def git_sha():
+    try:
+        return subprocess.run(["git", "-C", _root, "rev-parse", "--short", "HEAD"],
+                              capture_output=True, text=True,
+                              timeout=10).stdout.strip() or "unknown"
+    except Exception:
+        return "unknown"
 
 W, H = 160, 90          # decode size (matches perpixel series_gold: every frame at 160x90)
 NATIVE_FPS = 10.0
@@ -103,3 +127,23 @@ def clip_bootstrap_ci(y, p, clips, B=1000, seed=0):
 def bal_acc(y, p, t=0.5):
     pr = (p > t).astype(int)
     return float(((pr[y == 1] == 1).mean() + (pr[y == 0] == 0).mean()) / 2)
+
+
+def jaccard(a, b):
+    """Jaccard overlap of two frame-index collections."""
+    A, B = set(int(x) for x in a), set(int(x) for x in b)
+    return len(A & B) / max(len(A | B), 1)
+
+
+def pareto_front(points):
+    """Indices of the non-dominated points (maximise acc, minimise cost).
+
+    points: list of (acc, cost). Returns sorted list of indices.
+    """
+    keep = []
+    for i, (ai, ci) in enumerate(points):
+        dominated = any((aj >= ai and cj <= ci) and (aj > ai or cj < ci)
+                        for j, (aj, cj) in enumerate(points) if j != i)
+        if not dominated:
+            keep.append(i)
+    return sorted(keep)
