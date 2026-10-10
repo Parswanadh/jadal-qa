@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="340" viewBox="0 0 800 340" role="img" aria-label="Jadal QA funnel: S0 exact rules, S1 spectral features with logistic head, S2 review of uncertain windows, each reject with reason, evidence and content-hashed receipt">
+  <rect x="0" y="0" width="800" height="340" rx="12" fill="#f8fafc"/>
+  <text x="24" y="34" font-family="Inter, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">Jadal QA funnel — every 10-s window</text>
+  <text x="24" y="54" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12.5" fill="#475569">accept / reject / review, each reject with reason + measured evidence + receipt</text>
+
+  <!-- S0 -->
+  <g>
+    <rect x="24" y="72" width="220" height="150" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+    <rect x="24" y="72" width="220" height="34" rx="10" fill="#0f172a"/>
+    <rect x="24" y="96" width="220" height="10" fill="#0f172a"/>
+    <text x="38" y="94" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">S0 · exact rules</text>
+    <text x="38" y="126" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#0f172a">first seconds only</text>
+    <text x="38" y="144" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#334155">dark · black · frozen</text>
+    <text x="38" y="162" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#334155">blocked · over-exposed</text>
+    <text x="38" y="184" font-family="monospace, monospace" font-size="11" fill="#64748b">p95 &lt; 0.03 · mean &lt; 0.05</text>
+    <text x="38" y="202" font-family="monospace, monospace" font-size="11" fill="#64748b">temp_e &lt; 5e-4 · p5 &gt; 0.70</text>
+  </g>
+  <!-- arrow -->
+  <g fill="none" stroke="#94a3b8" stroke-width="2">
+    <line x1="244" y1="147" x2="272" y2="147"/>
+    <polyline points="264,139 274,147 264,155" fill="none"/>
+  </g>
+  <!-- S1 -->
+  <g>
+    <rect x="274" y="72" width="240" height="150" rx="10" fill="#ffffff" stroke="#0ea5e9" stroke-width="2"/>
+    <rect x="274" y="72" width="240" height="34" rx="10" fill="#0ea5e9"/>
+    <rect x="274" y="96" width="240" height="10" fill="#0ea5e9"/>
+    <text x="288" y="94" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">S1 · spectral + logistic head</text>
+    <text x="288" y="126" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#0f172a">whole window, per-pixel</text>
+    <text x="288" y="144" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#334155">26 spectral / temporal feats</text>
+    <text x="288" y="162" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#334155">small logistic head · thr 0.6</text>
+    <text x="288" y="184" font-family="monospace, monospace" font-size="11" fill="#64748b">RGB only · deterministic</text>
+    <text x="288" y="202" font-family="monospace, monospace" font-size="11" fill="#64748b">margin 0.25 → S2 if unsure</text>
+  </g>
+  <g fill="none" stroke="#94a3b8" stroke-width="2">
+    <line x1="514" y1="147" x2="542" y2="147"/>
+    <polyline points="534,139 544,147 534,155" fill="none"/>
+  </g>
+  <!-- S2 -->
+  <g>
+    <rect x="544" y="72" width="232" height="150" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+    <rect x="544" y="72" width="232" height="34" rx="10" fill="#f59e0b"/>
+    <rect x="544" y="96" width="232" height="10" fill="#f59e0b"/>
+    <text x="558" y="94" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">S2 · uncertain only</text>
+    <text x="558" y="126" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#0f172a">|p − 0.5| &lt; 0.25 → review</text>
+    <text x="558" y="144" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#334155">heavier check, handed on</text>
+    <text x="558" y="162" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#334155">not run in PoC (176 queued)</text>
+    <text x="558" y="184" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748b">no generic VLM in core</text>
+    <text x="558" y="202" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748b">EmbeddingGemma 2 optional</text>
+  </g>
+
+  <!-- receipt card -->
+  <g>
+    <rect x="24" y="236" width="752" height="84" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+    <circle cx="46" cy="262" r="8" fill="#ef4444"/>
+    <text x="41" y="267" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">R</text>
+    <text x="62" y="266" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#0f172a">reject · OCCLUDED</text>
+    <text x="62" y="284" font-family="monospace, monospace" font-size="11.5" fill="#334155">edge_density 0.0071 &lt; 0.02 · score 0.24 · stage S0</text>
+    <text x="62" y="302" font-family="monospace, monospace" font-size="10" fill="#64748b">receipt_sha256 36edf68c… · features_digest dd200988… · fixture schema</text>
+    <rect x="600" y="252" width="152" height="52" rx="8" fill="#f1f5f9"/>
+    <text x="612" y="272" font-family="monospace, monospace" font-size="11" fill="#0f172a">SHA-256</text>
+    <text x="612" y="288" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#475569">content hash,</text>
+    <text x="612" y="300" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#475569">not signed</text>
+  </g>
+</svg>

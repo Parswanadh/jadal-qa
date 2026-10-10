@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300" viewBox="0 0 800 300" role="img" aria-label="Honest scoreboard: in-domain AUROC about 0.8 on IndEgo versus out-of-domain AUROC about 0.6 on factory footage, with confidence intervals">
+  <rect x="0" y="0" width="800" height="300" rx="12" fill="#f8fafc"/>
+  <text x="24" y="32" font-family="Inter, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#0f172a">The honest scoreboard</text>
+  <text x="24" y="52" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12.5" fill="#475569">AUROC with 95% CI · dashed line = chance (0.5) · CIs bootstrap windows, optimistic</text>
+
+  <!-- axis -->
+  <line x1="290" y1="70" x2="290" y2="250" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="290" y1="250" x2="770" y2="250" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="530" y1="70" x2="530" y2="250" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="518" y="264" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#64748b">0.5</text>
+  <text x="290" y="264" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#64748b">0.3</text>
+  <text x="756" y="264" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#64748b">1.0</text>
+
+  <!-- in-domain ensemble 0.834 [0.715, 0.914], n=150 -->
+  <text x="24" y="102" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#0f172a">in-domain · ensemble</text>
+  <text x="24" y="120" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748b">IndEgo · n=150 · 7 clips</text>
+  <g>
+    <line x1="480" y1="108" x2="709" y2="108" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+    <rect x="589" y="98" width="90" height="20" rx="5" fill="#0ea5e9"/>
+    <text x="596" y="112" font-family="monospace, monospace" font-size="12" font-weight="700" fill="#ffffff">0.834</text>
+  </g>
+
+  <!-- in-domain S1 0.802 -->
+  <text x="24" y="152" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12.5" fill="#0f172a">in-domain · S1 head</text>
+  <text x="24" y="170" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748b">IndEgo · n=150</text>
+  <g>
+    <line x1="476" y1="158" x2="688" y2="158" stroke="#64748b" stroke-width="3" stroke-linecap="round"/>
+    <rect x="565" y="148" width="90" height="20" rx="5" fill="#334155"/>
+    <text x="572" y="162" font-family="monospace, monospace" font-size="12" font-weight="700" fill="#ffffff">0.802</text>
+  </g>
+
+  <!-- OOD cascade 0.600 [0.474, 0.724] -->
+  <text x="24" y="206" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#b45309">out-of-domain · cascade</text>
+  <text x="24" y="224" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748b">factories · n=160 · 47 sites</text>
+  <g>
+    <line x1="411" y1="212" x2="578" y2="212" stroke="#b45309" stroke-width="3" stroke-linecap="round"/>
+    <rect x="500" y="202" width="90" height="20" rx="5" fill="#f59e0b"/>
+    <text x="507" y="216" font-family="monospace, monospace" font-size="12" font-weight="700" fill="#ffffff">0.600</text>
+  </g>
+
+  <!-- OOD ensemble 0.566 -->
+  <text x="24" y="248" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12.5" fill="#0f172a">out-of-domain · ensemble</text>
+  <text x="24" y="264" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" fill="#64748b">factories · n=160</text>
+  <g>
+    <line x1="391" y1="250" x2="555" y2="250" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+    <rect x="472" y="240" width="90" height="20" rx="5" fill="#94a3b8"/>
+    <text x="479" y="254" font-family="monospace, monospace" font-size="12" font-weight="700" fill="#ffffff">0.566</text>
+  </g>
+
+  <text x="24" y="288" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" fill="#475569">Works on the footage it was trained on. Factory transfer is the open problem.</text>
+</svg>
