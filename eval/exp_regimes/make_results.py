@@ -146,7 +146,8 @@ def e404():
         "id": "E4.04", "track": "E4",
         "title": "Profiles product layer: schema + 5 profiles + deterministic router",
         "verdict": "adopt",
-        "n": None,
+        "n": passed,
+        "n_note": "n = unit tests executed; router itself is deterministic over any descriptor dict",
         "label_source": "n/a — synthetic descriptors + E4.01 ranges",
         "protocol": ("unit tests on synthetic descriptors; determinism; UNSEEN_REGIME "
                      "fallback; profile schema conformance"),
