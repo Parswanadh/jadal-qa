@@ -1,0 +1,15 @@
+eval/bench_eg2.py
+eval/edge_bench.py
+eval/gold/segments.json
+eval/make_splits.py
+eval/results/dataset_report.json
+eval/results/gold_l0_signals.json
+eval/results/indego_signals_User_15_410_0411_2_480.json
+eval/results/indego_signals_User_1_2110_Organisation_480.json
+eval/results/indego_signals_User_1_412_2010_3_480.json
+eval/results/indego_signals_User_1_H_pal_transport2_Nar_480.json
+eval/results/indego_signals_User_1_H_pal_transport_Nar_480.json
+eval/results/indego_signals_User_1_User_15_411_2910_2_1_480.json
+eval/results/indego_signals_User_1_User_16_451_3101_Logistics_4_480.json
+eval/results/splits.json
+eval/train_heads.py
