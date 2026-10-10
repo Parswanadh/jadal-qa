@@ -80,9 +80,18 @@ class TestGoldTask(unittest.TestCase):
     def test_feat_matrix_emb(self):
         items = {"a": {"features": {"emb": [0.1, 0.2]}},
                  "b": {"features": {"emb": [0.3, 0.4]}}}
-        X, ids = feat_matrix(items, [])
+        X, ids, nd = feat_matrix(items, [])
         self.assertEqual(X.shape, (2, 2))
         self.assertEqual(ids, ["a", "b"])
+        self.assertEqual(nd, 0)
+
+    def test_feat_matrix_drops_nonnfinite(self):
+        items = {"a": {"features": {"emb": [0.1, 0.2]}},
+                 "b": {"features": {"emb": [float("nan"), 0.4]}}}
+        X, ids, nd = feat_matrix(items, [])
+        self.assertEqual(X.shape, (1, 2))
+        self.assertEqual(ids, ["a"])
+        self.assertEqual(nd, 1)
 
 
 if __name__ == "__main__":

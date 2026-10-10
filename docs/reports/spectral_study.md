@@ -1,6 +1,6 @@
 # Spectral study — harness-scored comparison
 
-_Generated 2026-10-10T10:27:20Z by eval/spectral/score.py. Every number below comes from eval/results/spectral/summary.json._
+_Generated 2026-10-10T10:36:14Z by eval/spectral/score.py. Every number below comes from eval/results/spectral/summary.json._
 
 ## Question
 
@@ -24,8 +24,8 @@ Does per-pixel frequency/temporal-spectral analysis of RGB video (arm B), a boun
 | B | — | — | — | — | NOT RUN |
 | C | — | — | — | — | NOT RUN |
 | D | — | — | — | — | NOT RUN |
-| B-T0 | 0.43 (0.359–0.683) | 0.448 | 0.67 | — | RUN |
-| B-T1 | 0.481 (0.41–0.667) | 0.448 | 1.0 | — | RUN |
+| B-T0 | 0.43 (0.359–0.683) | 0.448 | 0.67 | 0.947 | RUN |
+| B-T1 | 0.481 (0.41–0.667) | 0.448 | 1.0 | 0.947 | RUN |
 | D-SmolVLM2-2.2B-Instruct | 0.59 (0.375–0.7) | 0.509 | — | — | RUN |
 
 ### Gold detail (per arm, LOCO folds)
@@ -56,7 +56,7 @@ Does per-pixel frequency/temporal-spectral analysis of RGB video (arm B), a boun
 
 **C** `{"status": "NOT RUN"}`
 
-**D-SmolVLM2-2.2B-Instruct** `{"status": "NOT RUN"}`
+**D-SmolVLM2-2.2B-Instruct** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.6401, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": null}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": null}}}`
 
 **A-full** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.5478, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 0.167}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 0.667, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 0.667, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}}}`
 
@@ -66,11 +66,11 @@ Does per-pixel frequency/temporal-spectral analysis of RGB video (arm B), a boun
 
 **E** `{"status": "RUN", "method": "eg2_cosine", "threshold_maxF1_half1": 0.9894, "heldout_overall": {"n": 64, "P": 0.833, "R": 1.0, "F1": 0.909}, "per_kind": {"bright": {"n": 3, "recall_detect_rate": 1.0}, "crop5": {"n": 5, "recall_detect_rate": 1.0}, "easy_negative": {"n": 25, "false_positive_rate": 0.0, "specificity": 1.0}, "hard_negative": {"n": 19, "false_positive_rate": 0.211, "specificity": 0.789}, "offset1": {"n": 5, "recall_detect_rate": 1.0}, "reencode": {"n": 4, "recall_detect_rate": 1.0}, "speed11": {"n": 3, "recall_detect_rate": 1.0}}, "protocol": "threshold on held-out half 1, metrics on half 2"}`
 
-**B-T0** `{"status": "NOT RUN"}`
+**B-T0** `{"status": "RUN", "method": null, "threshold_maxF1_half1": 0.9149, "heldout_overall": {"n": 64, "P": 1.0, "R": 0.9, "F1": 0.947}, "per_kind": {"bright": {"n": 3, "recall_detect_rate": 1.0}, "crop5": {"n": 5, "recall_detect_rate": 1.0}, "easy_negative": {"n": 25, "false_positive_rate": 0.0, "specificity": 1.0}, "hard_negative": {"n": 19, "false_positive_rate": 0.0, "specificity": 1.0}, "offset1": {"n": 5, "recall_detect_rate": 0.6}, "reencode": {"n": 4, "recall_detect_rate": 1.0}, "speed11": {"n": 3, "recall_detect_rate": 1.0}}, "protocol": "threshold on held-out half 1, metrics on half 2"}`
 
-**B-T1** `{"status": "NOT RUN"}`
+**B-T1** `{"status": "RUN", "method": null, "threshold_maxF1_half1": 0.9149, "heldout_overall": {"n": 64, "P": 1.0, "R": 0.9, "F1": 0.947}, "per_kind": {"bright": {"n": 3, "recall_detect_rate": 1.0}, "crop5": {"n": 5, "recall_detect_rate": 1.0}, "easy_negative": {"n": 25, "false_positive_rate": 0.0, "specificity": 1.0}, "hard_negative": {"n": 19, "false_positive_rate": 0.0, "specificity": 1.0}, "offset1": {"n": 5, "recall_detect_rate": 0.6}, "reencode": {"n": 4, "recall_detect_rate": 1.0}, "speed11": {"n": 3, "recall_detect_rate": 1.0}}, "protocol": "threshold on held-out half 1, metrics on half 2"}`
 
-**B** `{"status": "RUN", "method": null, "threshold_maxF1_half1": 0.9149, "heldout_overall": {"n": 64, "P": 1.0, "R": 0.9, "F1": 0.947}, "per_kind": {"bright": {"n": 3, "recall_detect_rate": 1.0}, "crop5": {"n": 5, "recall_detect_rate": 1.0}, "easy_negative": {"n": 25, "false_positive_rate": 0.0, "specificity": 1.0}, "hard_negative": {"n": 19, "false_positive_rate": 0.0, "specificity": 1.0}, "offset1": {"n": 5, "recall_detect_rate": 0.6}, "reencode": {"n": 4, "recall_detect_rate": 1.0}, "speed11": {"n": 3, "recall_detect_rate": 1.0}}, "protocol": "threshold on held-out half 1, metrics on half 2"}`
+**B** `{"status": "NOT RUN"}`
 
 **C** `{"status": "NOT RUN"}`
 

@@ -126,7 +126,9 @@ def feat_matrix(items: dict, keys: list[str]):
         else:
             X.append([float(f[k]) for k in keys])
         ids.append(i)
-    return np.array(X), ids
+    X = np.array(X)
+    ok = np.all(np.isfinite(X), axis=1)
+    return X[ok], [i for i, o in zip(ids, ok) if o], int((~ok).sum())
 
 
 # --- gold task ---------------------------------------------------------------
@@ -145,21 +147,21 @@ def gold_task(arm: str, gold_doc: dict, gold_manifest: dict, feat_keys: list[str
            "n_clips": len(set(clips)), "protocol": "leave-one-clip-out"}
     uclips = sorted(set(clips))
 
-    def run_loco(X):
+    def run_loco(X, yy, cc, uuclips):
         pred, thr_pred, folds = [], [], []
-        for tc in uclips:
-            tr = [i for i in range(len(ids)) if clips[i] != tc]
-            te = [i for i in range(len(ids)) if clips[i] == tc]
-            if len(set(y[tr])) < 2 or not te:
+        for tc in uuclips:
+            tr = [i for i in range(len(yy)) if cc[i] != tc]
+            te = [i for i in range(len(yy)) if cc[i] == tc]
+            if len(set(yy[tr])) < 2 or not te:
                 pred += [float("nan")] * len(te)
                 thr_pred += [0] * len(te)
                 folds.append({"test_clip": tc, "skipped": True})
                 continue
-            head = make_head().fit(X[tr], y[tr])
+            head = make_head().fit(X[tr], yy[tr])
             p = head.predict_proba(X[te])[:, 1]
             # Youden threshold on TRAIN fold
             from sklearn.metrics import roc_curve
-            fpr, tpr, th = roc_curve(y[tr], head.predict_proba(X[tr])[:, 1])
+            fpr, tpr, th = roc_curve(yy[tr], head.predict_proba(X[tr])[:, 1])
             jt = th[int(np.argmax(tpr - fpr))]
             pred += [float(v) for v in p]
             thr_pred += [int(v >= jt) for v in p]
@@ -169,29 +171,36 @@ def gold_task(arm: str, gold_doc: dict, gold_manifest: dict, feat_keys: list[str
 
     results = {}
     if has_feat:
-        X, _ = feat_matrix({i: gold_doc["items"][i] for i in ids}, feat_keys)
+        X, xids, nd = feat_matrix({i: gold_doc["items"][i] for i in ids}, feat_keys)
         out["n_features"] = X.shape[1]
-        pred, thr_pred, folds = run_loco(X)
+        out["n_dropped_nonfinite"] = nd
+        yy = np.array([lab_of[i] for i in xids])
+        cc = [clip_of[i] for i in xids]
+        pred, thr_pred, folds = run_loco(X, yy, cc, sorted(set(cc)))
         ok = ~np.isnan(pred)
-        a = auroc(y[ok], pred[ok]) if ok.sum() else None
-        ci, nb = clip_bootstrap_ci([c for c, o in zip(clips, ok) if o],
-                                   y[ok], pred[ok]) if ok.sum() else (None, 0)
+        a = auroc(yy[ok], pred[ok]) if ok.sum() else None
+        ci, nb = clip_bootstrap_ci([c for c, o in zip(cc, ok) if o],
+                                   yy[ok], pred[ok]) if ok.sum() else (None, 0)
         from sklearn.metrics import balanced_accuracy_score
-        ba = float(balanced_accuracy_score(y[ok], thr_pred[ok])) if ok.sum() else None
+        ba = float(balanced_accuracy_score(yy[ok], thr_pred[ok])) if ok.sum() else None
         results["head"] = {"auroc": round(a, 3) if a is not None else None,
                            "auroc_ci95": ci, "n_boot": nb,
                            "balanced_accuracy": round(ba, 3) if ba is not None else None,
                            "folds": folds}
     if has_score:
-        s = np.array([gold_doc["items"][i]["score"] for i in ids], dtype=float)
-        a = auroc(y, s)
-        ci, nb = clip_bootstrap_ci(clips, y, s)
+        sall = np.array([gold_doc["items"][i]["score"] for i in ids], dtype=float)
+        finite = np.isfinite(sall)
+        out["n_dropped_nanscore"] = int((~finite).sum())
+        s, yf = sall[finite], y[finite]
+        cf = [c for c, o in zip(clips, finite) if o]
+        a = auroc(yf, s)
+        ci, nb = clip_bootstrap_ci(cf, yf, s)
         results["as_is"] = {"auroc": round(a, 3) if a is not None else None,
                             "auroc_ci95": ci, "n_boot": nb}
         X1 = s.reshape(-1, 1)
-        pred, thr_pred, folds = run_loco(X1)
+        pred, thr_pred, folds = run_loco(X1, yf, cf, sorted(set(cf)))
         ok = ~np.isnan(pred)
-        a2 = auroc(y[ok], pred[ok]) if ok.sum() else None
+        a2 = auroc(yf[ok], pred[ok]) if ok.sum() else None
         results["score_logistic"] = {
             "auroc": round(a2, 3) if a2 is not None else None, "folds": folds}
     out["results"] = results
@@ -206,9 +215,12 @@ def fit_full_head(gold_doc: dict, gold_manifest: dict, feat_keys: list[str]):
     y = np.array([lab_of[i] for i in ids])
     has_score = gold_doc["items"][ids[0]].get("score") is not None
     if has_score and not gold_doc["items"][ids[0]].get("features"):
-        X = np.array([gold_doc["items"][i]["score"] for i in ids]).reshape(-1, 1)
+        sall = np.array([gold_doc["items"][i]["score"] for i in ids], dtype=float)
+        keep = np.isfinite(sall)
+        X, y = sall[keep].reshape(-1, 1), y[keep]
     else:
-        X, _ = feat_matrix({i: gold_doc["items"][i] for i in ids}, feat_keys)
+        X, xids, _nd = feat_matrix({i: gold_doc["items"][i] for i in ids}, feat_keys)
+        y = np.array([lab_of[i] for i in xids])
     head = make_head().fit(X, y)
     s_good = head.predict_proba(X[y == 1])[:, 1]
     return head, float(np.percentile(s_good, 5)), ids
@@ -220,7 +232,10 @@ def apply_head(head, feats: dict, feat_keys: list[str]) -> float | None:
             X = np.array([[float(x) for x in feats["emb"]]])
         else:
             X = np.array([[float(feats[k]) for k in feat_keys]])
-        return float(head.predict_proba(X)[0, 1])
+        if not np.all(np.isfinite(X)):
+            return None
+        s = float(head.predict_proba(X)[0, 1])
+        return s if np.isfinite(s) else None
     except Exception:
         return None
 
@@ -297,8 +312,8 @@ def main() -> None:
             contract = docs.get("gold")
             contract_ok = isinstance(contract, dict) and contract.get("items")
             cands = [(s, gd) for s, gd in sorted(docs.items())
-                     if isinstance(gd, dict) and gd.get("items") and
-                     (s.startswith("gold") or s.startswith("manifest"))]
+                     if isinstance(gd, dict) and isinstance(gd.get("items"), dict)
+                     and (s.startswith("gold") or s == "manifest_gold")]
             if contract_ok:
                 entries.append({"key": key, "arm": a, "gold": contract,
                                 "synth": docs.get("synth"), "dups": docs.get("dups"),
@@ -318,8 +333,14 @@ def main() -> None:
                 got = {}
 
                 def link(prefix):
-                    hit = next((s for s in sorted(docs)
-                                if s.startswith(prefix) and token_match(s, tok)), None)
+                    pool = [s for s in sorted(docs)
+                            if (s.startswith(prefix) or
+                                s.startswith("manifest_" + prefix))
+                            and s != stem
+                            and not (s.startswith("gold") or
+                                     s.startswith("manifest_gold"))]
+                    tok_hits = [s for s in pool if token_match(s, tok)]
+                    hit = (tok_hits or pool or [None])[0]
                     if hit is not None:
                         linked_stems.add(hit)
                         return docs[hit]
@@ -337,9 +358,11 @@ def main() -> None:
             # skipped when a variant already occupies this key
             def orphan(prefix):
                 hit = next((s for s in sorted(docs)
-                            if s.startswith(prefix) and s not in linked_stems
+                            if (s.startswith(prefix) or
+                                s.startswith("manifest_" + prefix))
+                            and s not in linked_stems
                             and not s.startswith("gold")
-                            and not s.startswith("manifest")), None)
+                            and not s.startswith("manifest_gold")), None)
                 return docs[hit] if hit else None
 
             if all(e2["key"] != key for e2 in entries):
