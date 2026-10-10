@@ -398,14 +398,19 @@ measurements still fail closed (now to reject, never accept). The shipped
 `configs/funnel_thresholds.json` gains `"mode": "supervised"` (sha
 `304b96a418e8819d840989bc0cc5ad336fe32441c5205aee65b45b158b7b1e3d`).
 `calibrate_two_sided` additionally measures `union_autonomous` on CERTIFY
-at full delta: evidence rejects PLUS fallback rejects — this bound
-INCLUDES the LOW_CONFIDENCE count and IS the safety claim with no human
-backstop. New `tests/test_funnel_autonomous.py` (12 tests): 3000-case
+at full delta under BOTH policies (fix round 1: `union_autonomous` for
+`evidence_reject`, `union_autonomous_integrity_only` for `integrity_only`,
+mirroring the supervised dual-union — `route()` permits
+autonomous+integrity_only, whose larger fallback reject set needs its own
+bound): evidence rejects PLUS fallback rejects — these bounds INCLUDE the
+LOW_CONFIDENCE count and ARE the safety claim with no human backstop.
+New `tests/test_funnel_autonomous.py` (13 tests): 3000-case
 seeded fuzz (autonomous never emits `review`; every reject carries
-evidence with check/value/op/threshold/code), mode switch, L1-never-rejects,
-garbage-decodable fails closed, `union_autonomous` fired >= `union` fired,
-tampered-thresholds-file raises, forged `human_gold` records without the
-schema-checked gold path stay `provisional`.
+evidence with check/value/op/threshold/code), mode switch,
+mode-argument-wins-over-file precedence, L1-never-rejects,
+garbage-decodable fails closed, `union_autonomous` fired >= `union` fired
+under both policies, tampered-thresholds-file raises, forged `human_gold`
+records without the schema-checked gold path stay `provisional`.
 
 ### Human gold snapshot (READ-ONLY source, copied once)
 
@@ -455,6 +460,9 @@ label_source=human_gold, delta_per_rule=0.0125)
 target_beta — support floor 86)
 union CERTIFY (evidence_reject): rejected=0 errors=0 UCB=None (n_certify=84)
 union_autonomous CERTIFY: rejected=84 errors=58 UCB=0.757 (n_certify=84)
+union_autonomous_integrity_only CERTIFY: rejected=84 errors=58 UCB=0.757
+(n_certify=84; identical here because decisions None rejects everything
+under both policies)
 ```
 
 Read it plainly. **Nothing certifies at N=150 with 7 clips**: the
@@ -469,10 +477,13 @@ The autonomous union rejects all 84 CERTIFY clips with 58 false
 autonomous mode rejects everything, goods included. The 7-clip split
 means this openly: SELECT is 4 clips, CERTIFY 3 — one odd clip swings
 every bound, and wearer coverage is 3 ids with unknown labeller.
-`configs/funnel_thresholds.calibrated.json` is therefore written with
-status **`provisional`** (all quality thresholds nulled/disabled,
+`configs/funnel_thresholds.gold150.provisional.json` is therefore written
+with status **`provisional`** (all quality thresholds nulled/disabled,
 `load_thresholds()`-verified) and says why in its note — no placeholder
-is presented as calibrated.
+is presented as calibrated. The filename states the content: gold150 +
+provisional, never "calibrated". Regenerated ONLY through the fixed gate
+(`eval/compute_gold_l0.py --write-config`, which calls
+`apply_to_config`); the exact command is in the verification list below.
 
 ### Descriptive only (NO certificate): eval/results/funnel_gold_descriptive.json
 
@@ -498,10 +509,11 @@ stops, and here it did.
 
 ### Verification commands (all ran)
 
-- `python -m unittest discover -s tests -p 'test_funnel*'` → Ran 120
-  tests, OK (53 round-1 + 55 round-2/fix-round-1 + 12 autonomous).
-- `python -m unittest discover -s tests` → Ran 565 tests, OK
-  (skipped=8). Two service tests needed attention after the legitimate
+- `python -m unittest discover -s tests -p 'test_funnel*'` → Ran 123
+  tests, OK (53 round-1 + 55 round-2/fix-round-1 + 15 autonomous/gate).
+- `PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m
+  unittest discover -s tests` → Ran 568 tests, OK (skipped=8), 54.4 s.
+  Two service tests needed attention after the legitimate
   thresholds change and are green again: `receipt.json` in
   `docs/api_examples/` regenerated via the documented
   `scripts/gen_api_examples.py` (receipt hashes cover the thresholds, and
@@ -512,6 +524,16 @@ stops, and here it did.
 - End-to-end gold commands above; all outputs committed under
   `eval/results/` with snapshot sha `43ab44e5…` and mediapipe backends
   pinned beside the signals.
+- Fix-round-1 regeneration (the committed provisional config's provenance):
+  `cp configs/funnel_thresholds.json
+  configs/funnel_thresholds.gold150.provisional.json`, then
+  `JADAL_MODELS_DIR=/home/parshu/projects/jadal-qa/models
+  PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python
+  eval/compute_gold_l0.py --jobs 6 --write-config
+  configs/funnel_thresholds.gold150.provisional.json` → status=provisional
+  ("no threshold certified on CERTIFY: accept null, every reject rule
+  disabled, and the union fired 0 with bound None (target 0.05)"),
+  `load_thresholds()`-verified on load.
 
 ### NOT DONE / caveats
 
@@ -523,3 +545,63 @@ stops, and here it did.
   wearers — nothing here transfers to Awign footage without re-calibration.
 - Learned/spectral tier for the 23 NO_ACTIVE_WORK bads is other workers'
   scope; this report only bounds what L0 cannot do.
+
+---
+
+## Fix round 1 (review of PR #59: REFUSE → fixes; all numbers below are
+generated from the committed JSON artifacts, not hand-typed)
+
+Two Important findings blocked approval; both are fixed in owned files
+only (protected files untouched — verified: no diff in `docs/SPEC.md`,
+`docs/BASELINE.md`, `jadal/config.py`, `jadal/__init__.py`; the service
+`receipt.json` regen was mechanical, see above).
+
+- Important 1 (vacuous `calibrated` gate, proven by the reviewer's
+  `probe1_vacuous_gate.py`): `written_bounds_ok`
+  (`eval/calibrate_funnel.py`) returned `(True, [])` when NOTHING was
+  written. It now requires ≥1 written threshold (each meeting its bound),
+  or — with nothing written — a measured union (fired > 0) whose
+  false-reject bound meets target_beta; else it fails with "no threshold
+  certified on CERTIFY: accept null, every reject rule disabled, and the
+  union fired 0 …". Pinned by
+  `TestWriteConfigGating.test_vacuous_result_stays_provisional` (watched
+  fail with `'calibrated' != 'provisional'` before the fix). The committed
+  provisional config is now reproducible by a committed command (see the
+  regeneration command above): the reviewer's "NOT reproducible"
+  consequence is closed — the file the gate emits carries status
+  `provisional` with exactly that note.
+- Important 2 (autonomous bound covered one operating point):
+  `_calibrate_source` (`jadal/funnel.py`) now measures
+  `union_autonomous` AND `union_autonomous_integrity_only` (dual-policy,
+  mirroring the supervised dual-union); both carry provenance and ride
+  into the config as `union_autonomous_certify` /
+  `union_autonomous_integrity_only_certify` and into `--markdown` tables.
+  Pinned by
+  `TestAutonomousBounds.test_union_autonomous_measured_under_both_policies`
+  (watched fail, key missing, before the fix). On the gold data both
+  autonomous unions read rejected=84 errors=58 UCB=0.757 (identical here:
+  decisions None rejects everything under both policies).
+- Minor 1: `configs/funnel_thresholds.calibrated.json` (status
+  provisional, name claiming "calibrated") renamed to
+  `configs/funnel_thresholds.gold150.provisional.json`, regenerated via
+  the fixed gate (not hand-edited).
+- Minor 2: (a) `eval/analyze_gold_l0.py` uses ROOT-anchored paths
+  (verified runnable with cwd outside the repo); (b)
+  `human_provenance.file` is repo-relative
+  (`eval/results/gold_labels_snapshot.json`, sha still pins bytes);
+  (c) `gold_l0_signals.json` logs all 7 source clips' size_bytes +
+  mtime_utc beside `labels_snapshot_sha256`, so reused cuts under
+  git-ignored `data_runtime/` cannot go stale silently.
+- Minor 3: `TestModeDefault.test_mode_argument_wins_over_file` pins that
+  the `mode=` argument wins over the file both directions (plus bogus
+  argument raises).
+
+### Verification commands (all ran)
+
+- `python -m unittest discover -s tests -p 'test_funnel*'` → Ran 123
+  tests, OK.
+- `PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m
+  unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+  ` → Ran 568 tests / OK (skipped=8).
+- `git fetch origin && git merge origin/main` → clean merge (dashboard3
+  screenshots only), suite re-run after the merge.

@@ -325,21 +325,46 @@ def build_gold_records(manifest: dict, labels: dict, signals_fn=None,
 
 
 def written_bounds_ok(src_res: dict, targets: dict) -> tuple[bool, list[str]]:
-    """Every WRITTEN threshold's CERTIFY bound met its target?"""
+    """Every WRITTEN threshold's CERTIFY bound met its target — and at
+    least one threshold was written.
+
+    Fix round 1 (PR #59 review, Important 1): an empty certificate (accept
+    null, every reject rule disabled, union fired 0) used to satisfy this
+    vacuously and stamp 'calibrated'. A result that certifies nothing now
+    fails with an explicit "no threshold certified" note: 'calibrated'
+    requires ≥1 written threshold (each meeting its bound), or — when no
+    threshold was written — a measured union (fired > 0) whose
+    false-reject CERTIFY bound meets target_beta.
+    """
     notes: list[str] = []
     ok = True
+    written = 0
     accept = src_res["accept"]
     if accept["threshold"] is not None:
+        written += 1
         bound = accept["certify"].get("upper_bound")
         if bound is None or bound > targets["target_alpha"]:
             ok = False
             notes.append(f"accept certify bound {bound} > {targets['target_alpha']}")
     for key, entry in src_res["reject_rules"].items():
         if not entry["disabled"]:
+            written += 1
             bound = entry["certify"].get("upper_bound")
             if bound is None or bound > targets["target_beta"]:
                 ok = False
                 notes.append(f"{key} certify bound {bound} > {targets['target_beta']}")
+    if written == 0:
+        union = src_res.get("union", {}) or {}
+        union_ok = ((union.get("fired") or 0) > 0
+                    and union.get("upper_bound") is not None
+                    and union["upper_bound"] <= targets["target_beta"])
+        if not union_ok:
+            ok = False
+            notes.append("no threshold certified on CERTIFY: accept null, "
+                         "every reject rule disabled, and the union fired "
+                         f"{union.get('fired', 0)} with bound "
+                         f"{union.get('upper_bound')} "
+                         f"(target {targets['target_beta']})")
     return ok, notes
 
 
@@ -423,6 +448,8 @@ def apply_to_config(result: dict, source: str, path: Path,
         "union_certify": src_res["union"],
         "union_integrity_only_certify": src_res.get("union_integrity_only"),
         "union_autonomous_certify": src_res.get("union_autonomous"),
+        "union_autonomous_integrity_only_certify": src_res.get(
+            "union_autonomous_integrity_only"),
         "provenance": src_res.get("provenance"),
         "human_provenance": human_prov or None,
         "disabled_rules": disabled,
@@ -488,10 +515,13 @@ def markdown_tables(result: dict) -> str:
                              f"rule — {entry.get('reason')}")
             elif entry["disabled"]:
                 lines.append(f"DISABLED ({key}): {entry.get('reason')}")
-        for key in ("union", "union_integrity_only", "union_autonomous"):
+        for key in ("union", "union_integrity_only", "union_autonomous",
+                      "union_autonomous_integrity_only"):
             block = src["union"] if key == "union" else src.get(
-                "union_integrity_only" if key == "union_integrity_only"
-                else "union_autonomous", {})
+                {"union_integrity_only": "union_integrity_only",
+                 "union_autonomous": "union_autonomous",
+                 "union_autonomous_integrity_only":
+                 "union_autonomous_integrity_only"}[key], {})
             if not block:
                 continue
             uprov = block.get("provenance", {})

@@ -1090,29 +1090,38 @@ def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
         }
     union = unions["evidence_reject"]
 
-    # -- (d) autonomous union: route() with mode 'autonomous' has no review
-    # bucket, so every non-accepted CERTIFY clip rejects (evidence rejects
-    # PLUS LOW_CONFIDENCE fallbacks). This bound INCLUDES the fallback
-    # rejects and IS the safety claim for autonomous operation (round 3,
-    # issue #56: no human backstop). Measured once on CERTIFY at full
-    # delta, like the other unions.
-    auto_thresh = {k: v for k, v in updates.items()}
-    auto_thresh["hard_reject_policy"] = "evidence_reject"
-    auto_thresh["mode"] = "autonomous"
-    auto_rejected = [
-        r for r in certify
-        if route(r["signals"], r["decisions"], auto_thresh,
-                 allow_uncalibrated_accept=True)["verdict"] == "reject"]
-    auto_stats = _rate_bound([r["label"] for r in auto_rejected], delta)
-    union_autonomous = {
-        **auto_stats, "n_certify": len(certify),
-        "policy": "autonomous", "profile": "default",
-        "provenance": dict(provenance),
-        "note": ("union of evidence rejects and LOW_CONFIDENCE fallback "
-                 "rejects as route() with mode 'autonomous' applies them "
-                 "(profile 'default'); this bound includes the fallback "
-                 "rejects and is the safety claim with no human backstop"),
-    }
+    # -- (d) autonomous unions: route() with mode 'autonomous' has no
+    # review bucket, so every non-accepted CERTIFY clip rejects (evidence
+    # rejects PLUS LOW_CONFIDENCE fallbacks). These bounds INCLUDE the
+    # fallback rejects and ARE the safety claim for autonomous operation
+    # (round 3, issue #56: no human backstop). Measured under BOTH
+    # policies on CERTIFY at full delta, like the supervised unions (fix
+    # round 1, PR #59 review Important 2: route() permits
+    # autonomous+integrity_only, whose larger fallback reject set needs
+    # its own bound).
+    auto_unions: dict[str, dict] = {}
+    for auto_policy in ("evidence_reject", "integrity_only"):
+        auto_thresh = {k: v for k, v in updates.items()}
+        auto_thresh["hard_reject_policy"] = auto_policy
+        auto_thresh["mode"] = "autonomous"
+        auto_rejected = [
+            r for r in certify
+            if route(r["signals"], r["decisions"], auto_thresh,
+                     allow_uncalibrated_accept=True)["verdict"] == "reject"]
+        auto_stats = _rate_bound([r["label"] for r in auto_rejected], delta)
+        auto_unions[auto_policy] = {
+            **auto_stats, "n_certify": len(certify),
+            "policy": "autonomous", "profile": "default",
+            "provenance": dict(provenance),
+            "note": ("union of evidence rejects and LOW_CONFIDENCE "
+                     "fallback rejects as route() with mode 'autonomous' "
+                     f"and hard_reject_policy '{auto_policy}' applies them "
+                     "(profile 'default'); this bound includes the fallback "
+                     "rejects and is the safety claim with no human "
+                     "backstop"),
+        }
+    union_autonomous = auto_unions["evidence_reject"]
+    union_autonomous_integrity_only = auto_unions["integrity_only"]
 
     select_groups = sorted({r["group"] for r in select
                             if r["group"] is not None})
@@ -1132,6 +1141,7 @@ def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
         "union": union,
         "union_integrity_only": unions["integrity_only"],
         "union_autonomous": union_autonomous,
+        "union_autonomous_integrity_only": union_autonomous_integrity_only,
         "threshold_updates": updates,
     }
 

@@ -21,15 +21,15 @@
     "disabled_rules": [
       "blur_var_min",
       "brightness_min",
-      "hands_visible_frac_min",
-      "min_duration_s",
+      "under_exposed_frac_max",
+      "over_exposed_frac_max",
       "motion_max",
       "motion_min",
-      "over_exposed_frac_max",
-      "under_exposed_frac_max"
+      "hands_visible_frac_min",
+      "min_duration_s"
     ],
     "human_provenance": {
-      "file": "/home/parshu/projects/jadal-qa-wt/funnel3/eval/results/gold_labels_snapshot.json",
+      "file": "eval/results/gold_labels_snapshot.json",
       "labellers": "unknown",
       "n_entries": 150,
       "ok": true,
@@ -40,7 +40,7 @@
     "n": 150,
     "n_certify": 84,
     "n_select": 66,
-    "note": "Provisional (label_source=human_gold): no L0 quality rule certified \u2014 Bonferroni support floor 86 exceeds CERTIFY n=84, so no rule could pass; accept_conf null (no decider scores exist for these windows: spectral_data/arms/E/gold.json carries 79 embeddings, all score null); union fired 0 (no measurable bound); autonomous union rejects 84/84 CERTIFY with 58 false (UCB 0.757): without a confidence signal autonomous mode rejects everything, goods included. All quality thresholds nulled (disabled).",
+    "note": "Provisional (label_source=human_gold; no threshold certified on CERTIFY: accept null, every reject rule disabled, and the union fired 0 with bound None (target 0.05)). Bounds carry only the certificate of their label source. Per-rule bounds do not bound the union; see union_certify.",
     "provenance": {
       "delta_per_rule": 0.0125,
       "label_source": "human_gold",
@@ -51,7 +51,6 @@
     },
     "seed": 1234,
     "status": "provisional",
-    "support_floor": 86,
     "targets": {
       "accept_step": 0.05,
       "bonferroni": true,
@@ -65,7 +64,24 @@
       "errors": 58,
       "fired": 84,
       "n_certify": 84,
-      "note": "union of evidence rejects and LOW_CONFIDENCE fallback rejects as route() with mode 'autonomous' applies them (profile 'default'); this bound includes the fallback rejects and is the safety claim with no human backstop",
+      "note": "union of evidence rejects and LOW_CONFIDENCE fallback rejects as route() with mode 'autonomous' and hard_reject_policy 'evidence_reject' applies them (profile 'default'); this bound includes the fallback rejects and is the safety claim with no human backstop",
+      "policy": "autonomous",
+      "profile": "default",
+      "provenance": {
+        "delta_per_rule": 0.0125,
+        "label_source": "human_gold",
+        "n_clips": 7,
+        "n_labellers": "unknown",
+        "n_segments": 150,
+        "n_wearers": 3
+      },
+      "upper_bound": 0.757
+    },
+    "union_autonomous_integrity_only_certify": {
+      "errors": 58,
+      "fired": 84,
+      "n_certify": 84,
+      "note": "union of evidence rejects and LOW_CONFIDENCE fallback rejects as route() with mode 'autonomous' and hard_reject_policy 'integrity_only' applies them (profile 'default'); this bound includes the fallback rejects and is the safety claim with no human backstop",
       "policy": "autonomous",
       "profile": "default",
       "provenance": {
@@ -131,7 +147,7 @@
       "requires_hands": false
     }
   },
-  "sha256": "530c2c2b976ff5ffb7df66dae29325ae1c88ceddadc4988712a263efffadc651",
+  "sha256": "aace119c694bb0f5829151e048a563d19e31337913ec31ff2dc85d0c0e2d3e02",
   "under_exposed_frac_max": null,
-  "version": "funnel-v1-human-gold150-provisional"
+  "version": "funnel-v1-placeholder"
 }

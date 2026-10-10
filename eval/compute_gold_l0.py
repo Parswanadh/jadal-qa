@@ -70,6 +70,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--calibration-out", type=Path,
                         default=ROOT / "eval" / "results"
                         / "funnel_gold_calibration.json")
+    parser.add_argument("--write-config", type=Path, default=None,
+                        help="merge the human_gold result into this thresholds "
+                             "file via eval.calibrate_funnel.apply_to_config "
+                             "(same gate as --from-gold --write-config); "
+                             "the file must already exist (copy the shipped "
+                             "config first)")
     parser.add_argument("--jobs", type=int, default=6)
     parser.add_argument("--seed", type=int, default=1234)
     parser.add_argument("--alpha", type=float, default=0.05)
@@ -102,11 +108,26 @@ def main(argv: list[str] | None = None) -> int:
     with Pool(args.jobs) as pool:
         results = pool.map(_one, jobs)
     cached = {r["segment_id"]: r["signals"] for r in results}
+    # Fix round 1 (PR #59 review, Minor 2c): cuts are reused (recut=False)
+    # under git-ignored data_runtime/, so log every source clip's size +
+    # mtime beside the snapshot sha — a re-encode/replace upstream can no
+    # longer persist silently.
+    import os
+    from datetime import timezone as _tz
+    source_clips = {}
+    for path in sorted({s["path"] for s in manifest["segments"]}):
+        stat = os.stat(path)
+        source_clips[path] = {
+            "size_bytes": stat.st_size,
+            "mtime_utc": datetime.fromtimestamp(
+                stat.st_mtime, tz=_tz.utc).isoformat(),
+        }
     args.signals_out.parent.mkdir(parents=True, exist_ok=True)
     args.signals_out.write_text(json.dumps({
         "labels_snapshot_sha256": file_sha256(args.snapshot),
         "n_windows": len(cached),
         "signal_backend_versions": versions,
+        "source_clips": source_clips,
         "signals": cached,
     }, indent=2, sort_keys=True) + "\n")
     print(f"wrote {args.signals_out} ({len(cached)} windows)")
@@ -129,10 +150,16 @@ def main(argv: list[str] | None = None) -> int:
         "delta": args.delta, "min_support": args.min_support,
         "min_accepted": args.min_accepted, "seed": args.seed})
     result["meta"]["provenance"] = f"gold-join-snapshot:{args.snapshot}"
+    try:
+        snapshot_rel = str(args.snapshot.resolve().relative_to(ROOT))
+    except ValueError:
+        snapshot_rel = str(args.snapshot)
     result["meta"]["human_provenance"] = {
         "ok": True,
         "schema": "gold-labels-v1",
-        "file": str(args.snapshot),
+        # Fix round 1 (PR #59 review, Minor 2b): repo-relative path, so a
+        # fresh clone resolves it; the sha256 pins the exact bytes.
+        "file": snapshot_rel,
         "sha256": file_sha256(args.snapshot),
         "labellers": gold_check["labellers"],
         "n_entries": gold_check["n_entries"],
@@ -144,6 +171,11 @@ def main(argv: list[str] | None = None) -> int:
         json.dumps(result, indent=2, sort_keys=True) + "\n")
     print(markdown_tables(result))
     print(f"wrote {args.calibration_out}")
+    if args.write_config is not None:
+        from eval.calibrate_funnel import apply_to_config
+        config = apply_to_config(result, "human_gold", args.write_config)
+        print(f"updated {args.write_config}: "
+              f"status={config['calibration']['status']}")
     return 0
 
 

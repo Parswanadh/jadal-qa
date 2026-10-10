@@ -87,6 +87,25 @@ class TestModeDefault(unittest.TestCase):
         with self.assertRaises(ValueError):
             route(sig(), dec(), thresh)
 
+    def test_mode_argument_wins_over_file(self):
+        # Fix round 1 (PR #59 review, Minor 3): explicit precedence pin.
+        weak = {
+            "hands_ok": {"p_yes": 0.5},
+            "active_work": {"p_yes": 0.5},
+            "step": {"choice": "assemble", "probs": {},
+                     "answer_conf": 0.5},
+        }
+        supervised_file = copy.deepcopy(THRESHOLDS)
+        supervised_file["mode"] = "supervised"
+        self.assertEqual(
+            route(sig(), weak, supervised_file,
+                  mode="autonomous")["verdict"], "reject")
+        self.assertEqual(
+            route(sig(), weak, autonomous(),
+                  mode="supervised")["verdict"], "review")
+        with self.assertRaises(ValueError):
+            route(sig(), dec(), autonomous(), mode="bogus")
+
 
 class TestModeSwitch(unittest.TestCase):
     def test_review_becomes_low_confidence_reject(self):
@@ -206,6 +225,22 @@ class TestAutonomousBounds(unittest.TestCase):
         self.assertEqual(auto["policy"], "autonomous")
         # The bound counts every autonomous reject (evidence + LOW_CONF).
         self.assertIsNotNone(auto["upper_bound"])
+
+    def test_union_autonomous_measured_under_both_policies(self):
+        # Fix round 1 (PR #59 review, Important 2): route() permits
+        # autonomous+integrity_only, so the fallback rejects need a bound
+        # under that policy too — mirroring the supervised dual-union.
+        result = funnel.calibrate_two_sided(
+            self._records(), {"seed": 11, "min_accepted": 5,
+                              "min_support": 3})
+        src = result["per_source"]["synthetic"]
+        self.assertIn("union_autonomous_integrity_only", src)
+        auto_io = src["union_autonomous_integrity_only"]
+        self.assertGreaterEqual(
+            auto_io["fired"], src["union_integrity_only"]["fired"])
+        self.assertIn("provenance", auto_io)
+        self.assertEqual(auto_io["policy"], "autonomous")
+        self.assertIn("integrity_only", auto_io.get("note", ""))
 
 
 class TestNoSelfDeclaredCalibrated(unittest.TestCase):

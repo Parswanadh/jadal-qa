@@ -5,7 +5,7 @@
     },
     "delta_per_rule": 0.0125,
     "human_provenance": {
-      "file": "/home/parshu/projects/jadal-qa-wt/funnel3/eval/results/gold_labels_snapshot.json",
+      "file": "eval/results/gold_labels_snapshot.json",
       "labellers": "unknown",
       "n_entries": 150,
       "ok": true,
@@ -291,7 +291,24 @@
         "errors": 58,
         "fired": 84,
         "n_certify": 84,
-        "note": "union of evidence rejects and LOW_CONFIDENCE fallback rejects as route() with mode 'autonomous' applies them (profile 'default'); this bound includes the fallback rejects and is the safety claim with no human backstop",
+        "note": "union of evidence rejects and LOW_CONFIDENCE fallback rejects as route() with mode 'autonomous' and hard_reject_policy 'evidence_reject' applies them (profile 'default'); this bound includes the fallback rejects and is the safety claim with no human backstop",
+        "policy": "autonomous",
+        "profile": "default",
+        "provenance": {
+          "delta_per_rule": 0.0125,
+          "label_source": "human_gold",
+          "n_clips": 7,
+          "n_labellers": "unknown",
+          "n_segments": 150,
+          "n_wearers": 3
+        },
+        "upper_bound": 0.757
+      },
+      "union_autonomous_integrity_only": {
+        "errors": 58,
+        "fired": 84,
+        "n_certify": 84,
+        "note": "union of evidence rejects and LOW_CONFIDENCE fallback rejects as route() with mode 'autonomous' and hard_reject_policy 'integrity_only' applies them (profile 'default'); this bound includes the fallback rejects and is the safety claim with no human backstop",
         "policy": "autonomous",
         "profile": "default",
         "provenance": {
@@ -324,7 +341,7 @@
     }
   },
   "sidecar": {
-    "produced_utc": "2026-10-10T10:32:12.593299+00:00"
+    "produced_utc": "2026-10-10T11:59:42.291027+00:00"
   },
   "threshold_updates": {
     "human_gold": {

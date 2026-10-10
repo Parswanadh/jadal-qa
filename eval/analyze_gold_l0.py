@@ -41,7 +41,9 @@ def _median(values: list[float]) -> float | None:
 
 
 def main() -> int:
-    results = Path("eval/results")
+    # Fix round 1 (PR #59 review, Minor 2a): ROOT-anchored paths, so this
+    # runs from any working directory.
+    results = ROOT / "eval" / "results"
     cache = json.loads((results / "gold_l0_signals.json").read_text())
     labels = json.loads((results / "gold_labels_snapshot.json").read_text())
     shipped = funnel.load_thresholds()

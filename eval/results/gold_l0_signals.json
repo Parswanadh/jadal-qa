@@ -2260,5 +2260,35 @@
       "phash": "c3c9111d4e863f9b",
       "under_exposed_frac": 0.1395
     }
+  },
+  "source_clips": {
+    "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4": {
+      "mtime_utc": "2026-10-10T05:57:51.139683+00:00",
+      "size_bytes": 36162864
+    },
+    "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4": {
+      "mtime_utc": "2026-10-10T05:57:50.133761+00:00",
+      "size_bytes": 47698669
+    },
+    "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4": {
+      "mtime_utc": "2026-10-10T05:57:48.925854+00:00",
+      "size_bytes": 17165640
+    },
+    "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4": {
+      "mtime_utc": "2026-10-10T05:57:49.571805+00:00",
+      "size_bytes": 24575269
+    },
+    "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_H_pal_transport2_Nar_480.mp4": {
+      "mtime_utc": "2026-10-10T05:57:44.571194+00:00",
+      "size_bytes": 10633389
+    },
+    "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_H_pal_transport_Nar_480.mp4": {
+      "mtime_utc": "2026-10-10T05:58:16.759778+00:00",
+      "size_bytes": 20723172
+    },
+    "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_User_16_451_3101_Logistics_4_480.mp4": {
+      "mtime_utc": "2026-10-10T05:57:47.829940+00:00",
+      "size_bytes": 23412244
+    }
   }
 }
