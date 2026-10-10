@@ -1,0 +1,39 @@
+{
+  "n": 150,
+  "n_good": 100,
+  "n_bad": 50,
+  "clips": {
+    "desk": {
+      "n": 29,
+      "n_good": 16
+    },
+    "ecu_full": {
+      "n": 48,
+      "n_good": 43
+    },
+    "ecu_late": {
+      "n": 14,
+      "n_good": 10
+    },
+    "logistics4": {
+      "n": 17,
+      "n_good": 14
+    },
+    "organise": {
+      "n": 19,
+      "n_good": 9
+    },
+    "pallet": {
+      "n": 17,
+      "n_good": 6
+    },
+    "pallet2": {
+      "n": 6,
+      "n_good": 2
+    }
+  },
+  "wearers": [
+    "user_1",
+    "user_15"
+  ]
+}

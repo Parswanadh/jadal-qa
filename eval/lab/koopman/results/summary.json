@@ -1,0 +1,132 @@
+{
+ "n_windows": 150,
+ "n_clips": 7,
+ "pooled": {
+  "auc_score": 0.4146,
+  "auc_logistic": 0.2886,
+  "auc_score_ci95": [
+   0.3388133184702545,
+   0.546875
+  ],
+  "auc_logistic_ci95": [
+   0.2356811145510836,
+   0.46981566820276494
+  ]
+ },
+ "per_clip": {
+  "desk": {
+   "n": 29,
+   "n_pos": 16,
+   "thresh_train": 0.007884559524091658,
+   "auc_thresh_score": 0.40865384615384615,
+   "auc_logistic": 0.4278846153846154
+  },
+  "ecu_full": {
+   "n": 48,
+   "n_pos": 43,
+   "thresh_train": 0.2906007890757221,
+   "auc_thresh_score": 0.2558139534883721,
+   "auc_logistic": 0.6186046511627907
+  },
+  "ecu_late": {
+   "n": 14,
+   "n_pos": 10,
+   "thresh_train": 0.2507622541838588,
+   "auc_thresh_score": 0.775,
+   "auc_logistic": 0.19999999999999998
+  },
+  "logistics4": {
+   "n": 17,
+   "n_pos": 14,
+   "thresh_train": 0.2507622541838588,
+   "auc_thresh_score": 0.42857142857142855,
+   "auc_logistic": 0.30952380952380953
+  },
+  "organise": {
+   "n": 19,
+   "n_pos": 9,
+   "thresh_train": 0.21762307634220965,
+   "auc_thresh_score": 0.28888888888888886,
+   "auc_logistic": 0.23333333333333334
+  },
+  "pallet": {
+   "n": 17,
+   "n_pos": 6,
+   "thresh_train": 0.2906007890757221,
+   "auc_thresh_score": 0.40909090909090906,
+   "auc_logistic": 0.8181818181818181
+  },
+  "pallet2": {
+   "n": 6,
+   "n_pos": 2,
+   "thresh_train": 0.2906007890757221,
+   "auc_thresh_score": 0.5,
+   "auc_logistic": 0.625
+  }
+ },
+ "per_reason": {
+  "NO_ACTIVE_WORK": {
+   "n": 23,
+   "pos": 0,
+   "mean_score": 0.079811026977502,
+   "std_score": 0.06597168928621228,
+   "frac_usable": 0.0
+  },
+  "null": {
+   "n": 100,
+   "pos": 100,
+   "mean_score": 0.08030195592728505,
+   "std_score": 0.08208943192984595,
+   "frac_usable": 1.0
+  },
+  "DUPLICATE": {
+   "n": 6,
+   "pos": 0,
+   "mean_score": 0.08486420470529543,
+   "std_score": 0.0358775393427326,
+   "frac_usable": 0.0
+  },
+  "UNDECODABLE": {
+   "n": 1,
+   "pos": 0,
+   "mean_score": 0.05143154621948191,
+   "std_score": 0.0,
+   "frac_usable": 0.0
+  },
+  "HANDS_NOT_VISIBLE": {
+   "n": 14,
+   "pos": 0,
+   "mean_score": 0.10111460834196546,
+   "std_score": 0.07192412329980055,
+   "frac_usable": 0.0
+  },
+  "TOO_DARK": {
+   "n": 6,
+   "pos": 0,
+   "mean_score": 0.13818461708464255,
+   "std_score": 0.06826312190921931,
+   "frac_usable": 0.0
+  }
+ },
+ "cost_ms": {
+  "decode_mean": 264.73489512670017,
+  "decode_p50": 264.7348951267001,
+  "dmd_mean": 45.445460900058,
+  "dmd_p50": 47.82560049898166,
+  "total_mean_incl_decode": 310.18035602675815
+ },
+ "determinism": {
+  "rerun_abs_diff": 0.0,
+  "deterministic": true
+ },
+ "hash_example": "e387e6ff27551a02",
+ "streaming": true,
+ "streaming_note": "windowed DMD uses only past 2-s buffer; no full-window state needed",
+ "hashable": true,
+ "hash_how": "round(feature_vector,6) -> json(sort_keys) -> sha256",
+ "input": "frame-difference 32x32, 60 frames/10s, rank 15, sub 12/6 rank 8",
+ "baseline_compare": {
+  "task_baseline": 0.8,
+  "direction1": 0.31
+ }
+}

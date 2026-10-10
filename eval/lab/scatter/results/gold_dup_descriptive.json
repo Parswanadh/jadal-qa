@@ -1,0 +1,18 @@
+{
+ "dup_ids": [
+  "g072",
+  "g077",
+  "g088",
+  "g089",
+  "g090",
+  "g149"
+ ],
+ "n_dupdup": 15,
+ "dupdup_median": 15.155887726814532,
+ "dupdup_min": 5.965235950100801,
+ "bg_median": 16.562829983618954,
+ "bg_p05": 5.769361611643146,
+ "dupdup_auc_vs_bg": 0.5463333333333333,
+ "constructed_dup_test_median_pos": 1.652056294102822,
+ "constructed_dup_test_median_neg": 10.478866084929443
+}

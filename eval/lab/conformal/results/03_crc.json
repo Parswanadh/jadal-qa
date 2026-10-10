@@ -1,0 +1,43 @@
+{
+  "cal_clips": [
+    "ecu_full",
+    "desk",
+    "organise",
+    "pallet"
+  ],
+  "test_clips": [
+    "logistics4",
+    "ecu_late",
+    "pallet2"
+  ],
+  "n_cal_good": 74,
+  "n_test_good": 26,
+  "levels": {
+    "0.05": {
+      "tau_hat": 0.43323522276131593,
+      "cal_emp_risk": 0.02702702702702703,
+      "k_cal": 2,
+      "n_cal": 74,
+      "cal_cp_upper_95": 0.08264214420941249,
+      "hb_pvalue_H0_risk_ge_alpha": 0.6126142788950218,
+      "test_emp_risk": 0.46153846153846156,
+      "k_test": 12,
+      "n_test": 26,
+      "test_cp_upper_95": 0.637910760927509,
+      "test_retention_all": 0.5945945945945946
+    },
+    "0.1": {
+      "tau_hat": 0.5186344224832691,
+      "cal_emp_risk": 0.08108108108108109,
+      "k_cal": 6,
+      "n_cal": 74,
+      "cal_cp_upper_95": 0.15376543821044722,
+      "hb_pvalue_H0_risk_ge_alpha": 0.8553115478800507,
+      "test_emp_risk": 0.5,
+      "k_test": 13,
+      "n_test": 26,
+      "test_cp_upper_95": 0.6733579712456376,
+      "test_retention_all": 0.5675675675675675
+    }
+  }
+}

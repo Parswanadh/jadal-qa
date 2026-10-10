@@ -1,0 +1,16 @@
+{
+  "compressed_no_decode_s_total": 48.43430471420288,
+  "compressed_ms_per_window": 324.10143693288165,
+  "ffprobe_per_clip_s": {
+    "ecu_full": 12.932026147842407,
+    "ecu_late": 4.8647072315216064,
+    "desk": 9.29740595817566,
+    "pallet2": 2.5840811729431152,
+    "pallet": 5.552703142166138,
+    "organise": 6.386524200439453,
+    "logistics4": 6.816856861114502
+  },
+  "pixel_decode_s_total": 57.96605062484741,
+  "pixel_ms_per_window": 386.44033749898273,
+  "note": "compressed path parses ffprobe frame headers only (no pixel output); pixel path = cv2 decode+resize(64x64)+MAD+PE. Timings on this box, OMP_NUM_THREADS=2."
+}

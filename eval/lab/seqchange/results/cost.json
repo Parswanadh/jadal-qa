@@ -1,0 +1,8 @@
+{
+ "feature_extract_ms_per_window_mean": 800.9558788935343,
+ "feature_extract_ms_p95": 1263.743460178375,
+ "detect_update_ms_per_window_mean": 0.11207898457845052,
+ "total_feature_s": 120.1,
+ "synth_decode_ms_mean": 648.8773266474406,
+ "note": "single core, 64x64, OMP_NUM_THREADS=2"
+}
