@@ -1,0 +1,242 @@
+{
+ "task": "LB1-eg2-repro",
+ "what": "re-embed a sample of IndEgo gold windows from the source video and compare to the cached frames10k/human_segments/segments.npz EG2 rows",
+ "verdict": "RECIPE MATCHES IN SUBSTANCE BUT NOT BIT-EXACTLY: see per-window metrics",
+ "model": {
+  "id": "google/embeddinggemma-2",
+  "revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "local_path": "/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "device": "NVIDIA A40",
+  "dtype": "torch.bfloat16",
+  "offline": true,
+  "loaded_via": "SentenceTransformer(..., trust_remote_code=True).encode",
+  "prompt_prefix": "none (pure image encode; no prompt/text anywhere in the cache-producing path)",
+  "file_sha256": {
+   "config.json": "b8f1e9931b57fbc054acdb445c41765d55b0074c58d145fa82839941ad1b5bb3",
+   "config_sentence_transformers.json": "031e56a498d33c349ab489a21885bcfe25b4fcba841149dc99e1e90d4a7c28f5",
+   "modules.json": "3d02572a0455b832de67fb8e63a54981bc7e8b46e337c95e917bd8122a533bfd",
+   "preprocessor_config.json": "ea2ae257e901064abdd98dceb19f2b0da06af600bed15e0f99f5c85c37ee9d78",
+   "processor_config.json": "168f6a08522f3ce5dea596d94d003af2fd691742d4f41fe1f9d8cce76bfbf69c",
+   "1_Pooling/config.json": "8759bdf7c77efc7df7723f64856a593c8943b71ee38baf2a88771fbaf78438f9",
+   "model.safetensors_size_bytes": 1488915288,
+   "model.safetensors_sha256": "b8683d21ce7095fb0e55d67532d1a3f1d878fd0c5c3339e36f058bed7154186e"
+  }
+ },
+ "recipe": {
+  "source_script": "eval/frames10k/embed_segments.py (cache producer; configs/ensemble_v1.json embed_command has no --gpu-decode)",
+  "decode": "cv2.VideoCapture + CAP_PROP_POS_MSEC seek + read; BGR->RGB; PIL convert RGB; thumbnail((512,512), Image.BILINEAR)",
+  "step_s": 0.5,
+  "frame_index_rule": "np.arange(start_s, min(end_s, dur), 0.5) in float64; unreadable frames skipped (no substitution)",
+  "encode": "batch_size=32, normalize_embeddings=True, processing_kwargs={'image': {'max_soft_tokens': 140}}",
+  "storage": "frame embeddings cast to fp16",
+  "pooling": "per-window mean over L2-normalised frame embeddings, then L2-normalise (eval/exp_fps/run_eg2.py window_mean)",
+  "cv2": "5.0.0",
+  "pil": "11.0.0",
+  "torch": "2.8.0+cu128",
+  "sentence_transformers": "6.1.0"
+ },
+ "sample": {
+  "n_windows": 10,
+  "sampling_rule": "deterministic clip-stratified: all 7 clips get the median window of their contiguous block in manifest_gold order; the 3 largest blocks (by window count) get one extra window at the first quartile of their block; 10 windows total",
+  "manifest_order_indices": [
+   12,
+   23,
+   54,
+   69,
+   76,
+   93,
+   105,
+   118,
+   123,
+   141
+  ],
+  "ids": [
+   "g012",
+   "g023",
+   "g054",
+   "g069",
+   "g076",
+   "g093",
+   "g105",
+   "g118",
+   "g123",
+   "g141"
+  ],
+  "clips_covered": [
+   "desk",
+   "ecu_full",
+   "ecu_late",
+   "logistics4",
+   "organise",
+   "pallet",
+   "pallet2"
+  ]
+ },
+ "per_window": [
+  {
+   "k": 12,
+   "id": "g012",
+   "clip": "ecu_full",
+   "frames_mine": 20,
+   "frames_cache": 20,
+   "frame_count_match": true,
+   "cosine_window": 0.9996418952941895,
+   "max_abs_elementwise_diff_normalised": 0.0034079328179359436,
+   "min_frame_cosine": 0.988966703414917,
+   "median_frame_cosine": 0.9963594675064087,
+   "mean_frame_cosine": 0.9962223172187805
+  },
+  {
+   "k": 23,
+   "id": "g023",
+   "clip": "ecu_full",
+   "frames_mine": 20,
+   "frames_cache": 20,
+   "frame_count_match": true,
+   "cosine_window": 0.999663770198822,
+   "max_abs_elementwise_diff_normalised": 0.0032269880175590515,
+   "min_frame_cosine": 0.9891499876976013,
+   "median_frame_cosine": 0.9950947761535645,
+   "mean_frame_cosine": 0.9952724575996399
+  },
+  {
+   "k": 54,
+   "id": "g054",
+   "clip": "ecu_late",
+   "frames_mine": 20,
+   "frames_cache": 20,
+   "frame_count_match": true,
+   "cosine_window": 0.9996163845062256,
+   "max_abs_elementwise_diff_normalised": 0.003119988366961479,
+   "min_frame_cosine": 0.990864098072052,
+   "median_frame_cosine": 0.9962840676307678,
+   "mean_frame_cosine": 0.9958410263061523
+  },
+  {
+   "k": 69,
+   "id": "g069",
+   "clip": "desk",
+   "frames_mine": 20,
+   "frames_cache": 20,
+   "frame_count_match": true,
+   "cosine_window": 0.9992192983627319,
+   "max_abs_elementwise_diff_normalised": 0.004833841696381569,
+   "min_frame_cosine": 0.9789103865623474,
+   "median_frame_cosine": 0.9945492744445801,
+   "mean_frame_cosine": 0.9932847023010254
+  },
+  {
+   "k": 76,
+   "id": "g076",
+   "clip": "desk",
+   "frames_mine": 20,
+   "frames_cache": 20,
+   "frame_count_match": true,
+   "cosine_window": 0.9997565150260925,
+   "max_abs_elementwise_diff_normalised": 0.002936623990535736,
+   "min_frame_cosine": 0.9927487373352051,
+   "median_frame_cosine": 0.9960964918136597,
+   "mean_frame_cosine": 0.9960942268371582
+  },
+  {
+   "k": 93,
+   "id": "g093",
+   "clip": "pallet2",
+   "frames_mine": 20,
+   "frames_cache": 20,
+   "frame_count_match": true,
+   "cosine_window": 0.9997494220733643,
+   "max_abs_elementwise_diff_normalised": 0.003024023026227951,
+   "min_frame_cosine": 0.9945464730262756,
+   "median_frame_cosine": 0.9971782565116882,
+   "mean_frame_cosine": 0.9978812336921692
+  },
+  {
+   "k": 105,
+   "id": "g105",
+   "clip": "pallet",
+   "frames_mine": 20,
+   "frames_cache": 20,
+   "frame_count_match": true,
+   "cosine_window": 0.9996920824050903,
+   "max_abs_elementwise_diff_normalised": 0.0034378468990325928,
+   "min_frame_cosine": 0.9933687448501587,
+   "median_frame_cosine": 0.9984908103942871,
+   "mean_frame_cosine": 0.9984247088432312
+  },
+  {
+   "k": 118,
+   "id": "g118",
+   "clip": "organise",
+   "frames_mine": 20,
+   "frames_cache": 20,
+   "frame_count_match": true,
+   "cosine_window": 0.9996253252029419,
+   "max_abs_elementwise_diff_normalised": 0.0034563150256872177,
+   "min_frame_cosine": 0.9915264248847961,
+   "median_frame_cosine": 0.9958939552307129,
+   "mean_frame_cosine": 0.9958141446113586
+  },
+  {
+   "k": 123,
+   "id": "g123",
+   "clip": "organise",
+   "frames_mine": 20,
+   "frames_cache": 20,
+   "frame_count_match": true,
+   "cosine_window": 0.999048113822937,
+   "max_abs_elementwise_diff_normalised": 0.005093125626444817,
+   "min_frame_cosine": 0.9816504120826721,
+   "median_frame_cosine": 0.9958099722862244,
+   "mean_frame_cosine": 0.9953956604003906
+  },
+  {
+   "k": 141,
+   "id": "g141",
+   "clip": "logistics4",
+   "frames_mine": 20,
+   "frames_cache": 20,
+   "frame_count_match": true,
+   "cosine_window": 0.9994996190071106,
+   "max_abs_elementwise_diff_normalised": 0.0037595750764012337,
+   "min_frame_cosine": 0.9852567315101624,
+   "median_frame_cosine": 0.9940545558929443,
+   "mean_frame_cosine": 0.9932214021682739
+  }
+ ],
+ "summary": {
+  "cosine_min": 0.999048113822937,
+  "cosine_median": 0.9996336102485657,
+  "cosine_max": 0.9997565150260925,
+  "max_abs_elementwise_diff_normalised": 0.005093125626444817,
+  "frame_count_agreement": "10/10",
+  "frame_counts": [
+   20,
+   20,
+   20,
+   20,
+   20,
+   20,
+   20,
+   20,
+   20,
+   20
+  ],
+  "frame_cosine_min": 0.9789103865623474,
+  "frame_cosine_median": 0.9959848821163177,
+  "frame_cosine_max": 1.0044969320297241
+ },
+ "timing_s": {
+  "model_load": 7.6,
+  "encode": 7.4
+ },
+ "vram_peak_gb": 2.824759808,
+ "cache": {
+  "path": "/workspace/jadal_pod_bundle/caches/frames10k/segments.npz",
+  "n_windows": 150,
+  "max_frames": 21,
+  "dim": 768,
+  "dtype": "float16",
+  "counts_sum": 3005
+ }
+}
