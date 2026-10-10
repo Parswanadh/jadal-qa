@@ -1,0 +1,37 @@
+{
+ "experiment": "F30.02",
+ "n_windows": 12,
+ "frames_per_window_mean": 300.0,
+ "decode": "ffmpeg cpu rgb24 160x90, 10 s window (native fps)",
+ "device": "CPU (single process, OMP_NUM_THREADS=2)",
+ "ms_per_window": {
+  "decode": {
+   "mean": 7303.03,
+   "median": 7147.85,
+   "min": 2608.25,
+   "max": 12704.27
+  },
+  "features_26": {
+   "mean": 11215.15,
+   "median": 11896.33,
+   "min": 5283.65,
+   "max": 14304.54
+  },
+  "added_4_invariants": {
+   "mean": 3515.49,
+   "median": 3644.91,
+   "min": 1517.15,
+   "max": 5195.37
+  },
+  "features_30_total": {
+   "mean": 14999.52,
+   "median": 16601.44,
+   "min": 4983.61,
+   "max": 20605.18
+  }
+ },
+ "marginal_4_over_26": 3515.49,
+ "marginal_4_over_26_frac_of_26": 0.3135,
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_feat30/measure_cost.py",
+ "note": "timing only (no GPU); per-window = one 10-s 160x90 window. The 4 invariants are O(HW) per frame plus one 64x64 DCT."
+}
