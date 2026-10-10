@@ -1,0 +1,159 @@
+{
+  "claim": "LB1-gate",
+  "task": "measure the merge gate (merged tree must pass the full test suite) on pod/base and origin/main",
+  "measured_utc": "2026-10-10T16:40:00Z",
+  "measured_by": "independent verifier B1-verify (worktree /workspace/wt/b-verify-gate)",
+  "device": "pod CPU only (no GPU); interpreter /usr/local/bin/python Python 3.12.3; pytest 9.1.1; OMP_NUM_THREADS=2; RAM <= 1.5 GB; timeout 1200",
+  "documented_full_suite_command": {
+    "from": "Makefile `test` target (only definition of the suite in the repo); docs/BASELINE.md row B1",
+    "make_test": [
+      "timeout 150 env PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests",
+      "timeout 150 env PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s web"
+    ],
+    "make_test_runnable_here": false,
+    "make_test_failure": "env: '/home/parshu/envs/jadal/bin/python': No such file or directory -> make: *** [Makefile:14: test] Error 127 (laptop interpreter path hardcoded in the Makefile; the pod has /usr/local/bin/python)",
+    "github_workflows": "none (.github/workflows does not exist); no CI enforces the gate",
+    "pytest_config": "none (no pytest.ini / pyproject.toml / setup.cfg / tox.ini); pytest is not the documented runner but locates 9 tests that unittest discovery cannot see"
+  },
+  "commands_run": {
+    "mission_exact": "cd <worktree> && OMP_NUM_THREADS=2 timeout 1200 python -m pytest tests/ -q",
+    "mission_exact_plus_flag": "python -m pytest tests/ -q --continue-on-collection-errors  (flag needed to obtain any test results)",
+    "documented": "python -m unittest discover -s tests   and   python -m unittest discover -s web"
+  },
+  "mission_exact_command_result": {
+    "note": "On BOTH trees the literal mission command executes ZERO tests: pytest aborts on 4 collection errors.",
+    "pod_base": "Interrupted: 4 errors during collection (1 warning, 4 errors in 3.11s)",
+    "main": "Interrupted: 4 errors during collection (1 warning, 4 errors in 1.72s)"
+  },
+  "pod_base": {
+    "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+    "git_ref": "pod/base",
+    "pytest_with_continue_on_collection_errors": {
+      "collected": 468,
+      "collected_including_error_modules": 472,
+      "passed": 463,
+      "failed": 4,
+      "errors": 4,
+      "skipped": 1,
+      "subtests_passed": 90,
+      "exit_code": 1,
+      "wall_seconds": 16.24
+    },
+    "unittest_discover_tests": {
+      "ran": 463,
+      "passed": 459,
+      "failed": 0,
+      "errors": 4,
+      "skipped": 1,
+      "exit_code": 1,
+      "note": "459 real TestCase methods + 4 unittest.loader._FailedTest import errors; 0 assertion failures, because unittest discovery cannot see the 9 module-level test functions"
+    },
+    "unittest_discover_web": {"ran": 32, "failed": 0, "errors": 0, "exit_code": 0},
+    "failing_tests": [
+      "tests/test_exp_regimes_router.py::test_clear_stationary",
+      "tests/test_exp_regimes_router.py::test_walking_logistics_by_motion",
+      "tests/test_exp_regimes_router.py::test_blurry_lowlight_by_sharpness",
+      "tests/test_exp_regimes_router.py::test_deterministic_and_receipt_fragment"
+    ],
+    "erroring_modules": [
+      "tests/test_eval_splits.py",
+      "tests/test_integration.py",
+      "tests/test_service.py",
+      "tests/test_signals.py"
+    ]
+  },
+  "main": {
+    "git_sha": "65f37dc35b45385d66229b093ae234f3fb753757",
+    "git_ref": "origin/main",
+    "pytest_with_continue_on_collection_errors": {
+      "collected": 496,
+      "passed": 493,
+      "failed": 0,
+      "errors": 4,
+      "skipped": 3,
+      "subtests_passed": 90,
+      "exit_code": 1,
+      "wall_seconds": 15.85
+    },
+    "unittest_discover_tests": {"ran": 500, "passed": 496, "failed": 0, "errors": 4, "skipped": 3, "exit_code": 1},
+    "unittest_discover_web": {"ran": 32, "failed": 0, "errors": 0, "exit_code": 0},
+    "failing_tests": [],
+    "erroring_modules": [
+      "tests/test_eval_splits.py",
+      "tests/test_integration.py",
+      "tests/test_service.py",
+      "tests/test_signals.py"
+    ]
+  },
+  "failure_set_comparison": {
+    "shared": "exactly the same 4 collection errors on both trees (missing optional deps, see classifications)",
+    "pod_base_only": "the 4 tests/test_exp_regimes_router.py failures (that file exists only on pod/base, added by 4c418d4 'pod/base: port laptop feature+experiment code')",
+    "main_only": "none",
+    "test_count_delta": "main has 496 collected vs pod/base 468 (hosted by later merges on main); no test present on main fails"
+  },
+  "classifications": [
+    {
+      "class": "a_missing_optional_dependency",
+      "dep": "imagehash",
+      "affects": ["tests/test_eval_splits.py", "tests/test_signals.py"],
+      "detail": "tests/test_signals.py -> jadal/signals.py:51 `import imagehash`; imagehash is NOT installed on the pod and cannot be installed (no network / no package installs allowed). It IS declared in requirements-edge.txt (ImageHash) as an edge-tier dependency.",
+      "env_specific": true,
+      "present_on": ["pod/base", "main"]
+    },
+    {
+      "class": "a_missing_optional_dependency",
+      "dep": "fastapi",
+      "affects": ["tests/test_integration.py", "tests/test_service.py"],
+      "detail": "tests/test_service.py:23 `from fastapi.testclient import TestClient`; requirements-edge.txt explicitly documents fastapi/uvicorn as CENTRAL-tier and not needed on the edge, so it is an environment gap on this pod, not a repo defect.",
+      "env_specific": true,
+      "present_on": ["pod/base", "main"]
+    },
+    {
+      "class": "b_genuine_pre_existing_bug_on_pod_base",
+      "affects": ["tests/test_exp_regimes_router.py (4 of its 9 tests)"],
+      "detail": "The test fixtures use the PRE-calibration descriptor scale (BASE sharp_norm=300.0, and test_blurry_lowlight_by_sharpness uses sharp_norm=10.0), while jadal/regimes/router.py is calibrated v0.2.0 on E4.01 data: THRESHOLDS.sharp_norm_lo=2500.0 and TRAINING_RANGES.sharp_norm=[150.0, 55000.0]. Therefore sharp_norm=300 -> 'blurry_lowlight' (test expects 'clear_stationary') and sharp_norm=10 -> UNSEEN_REGIME -> 'default' (test expects 'blurry_lowlight'). Pure deterministic Python (stdlib only), no deps/torch/CUDA involved -> NOT environment-specific.",
+      "env_specific": false,
+      "present_on": ["pod/base"],
+      "root_cause": "stale synthetic test fixtures vs calibrated router thresholds (single root cause for all 4 failures)"
+    },
+    {
+      "class": "c_environment_specific",
+      "affects": ["make test", "pytest exact command", "torch CUDA warning"],
+      "detail": "Makefile hardcodes /home/parshu/envs/jadal/bin/python (absent on the pod) -> `make test` exits 127 before running anything. pytest's exact mission form aborts the whole run on the 4 dep import errors, so it reports nothing. tests/test_decision.py::TestDeciderDeterminism::test_alone_vs_in_batch_of_5_identical emits a CUDA-initialisation UserWarning, expected on a GPU-less pod, and the test still passes.",
+      "env_specific": true
+    }
+  ],
+  "blind_spot": {
+    "finding": "9 module-level pytest test functions live in tests/test_exp_regimes_router.py; `python -m unittest discover -s tests` (the documented/lib gate) collects TestCase methods only and reports 'Ran 463 ... FAILED (errors=4)' with ZERO assertion failures on pod/base, i.e. the documented gate cannot see any of the 4 real failures.",
+    "unittest_methods_collected": 459,
+    "pytest_top_level_functions": 9,
+    "consequence": "A merged tree carrying these 4 broken tests would still show `Ran N tests` + errors-only under make test; the merge gate as written is weaker than the pytest run."
+  },
+  "gate_booleans": {
+    "gate_green_on_main": false,
+    "gate_green_on_main_reason": "literal gate (exit code) is RED: pytest/unittest exit 1 because 4 modules cannot be imported (imagehash, fastapi missing on this pod). Zero test failures: 493 passed / 0 failed / 4 collection errors. Not fixable here (no network, no installs).",
+    "gate_green_on_main_if_optional_deps_installed": true,
+    "gate_green_on_pod_base": false,
+    "gate_green_on_pod_base_reason": "literal gate RED: the same 4 collection errors PLUS 4 genuine assertion failures in tests/test_exp_regimes_router.py (stale fixtures vs calibrated router). 463 passed / 4 failed / 4 errors.",
+    "gate_green_on_pod_base_if_optional_deps_installed": false,
+    "main_is_green_at_test_level": true,
+    "pod_base_is_green_at_test_level": false
+  },
+  "honesty_notes": [
+    "Nothing was fixed, installed or modified: this is a measurement task only.",
+    "The mission's exact pytest command cannot produce a verdict on any tree as written; the --continue-on-collection-errors flag was added solely to obtain counts, and both raw outputs are committed.",
+    "Web dashboard suite was run on both trees: 32 tests, OK, and is NOT included in `pytest tests/`.",
+    "An explicit pre-existing failure set on pod/base (4 router tests) exists in addition to the shared missing-dependency errors; the merge gate is RED on both trees and RED at test level only on pod/base."
+  ],
+  "raw_logs": [
+    "eval/results/pod_verify/logs/pytest_pod_base.txt",
+    "eval/results/pod_verify/logs/pytest_main.txt",
+    "eval/results/pod_verify/logs/unittest_pod_base.txt",
+    "eval/results/pod_verify/logs/unittest_main.txt"
+  ],
+  "regenerate": [
+    "cd /workspace/wt/b-verify-gate && OMP_NUM_THREADS=2 PYTHONNOUSERSITE=1 timeout 1200 python -m pytest tests/ -q --continue-on-collection-errors",
+    "cd /workspace/wt/b-verify-gate && PYTHONNOUSERSITE=1 timeout 300 python -m unittest discover -s tests && PYTHONNOUSERSITE=1 timeout 300 python -m unittest discover -s web",
+    "cd /workspace/wt/b-verify-gate-main && OMP_NUM_THREADS=2 PYTHONNOUSERSITE=1 timeout 1200 python -m pytest tests/ -q --continue-on-collection-errors"
+  ]
+}

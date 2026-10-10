@@ -1,0 +1,912 @@
+{
+  "artifacts": {
+    "features": "/workspace/wt/b-verify-cascade/eval/results/gpu/features.json",
+    "features_pod_copy": "/workspace/jadal_pod_bundle/caches/gpu/features.json",
+    "features_sha256_pod": "6d27d872e9ac285c4abddcb61eef70a2eed565aa3adc16ab0900e3cb3d5b1483",
+    "features_sha256_repo": "6d27d872e9ac285c4abddcb61eef70a2eed565aa3adc16ab0900e3cb3d5b1483",
+    "gold_manifest": "/workspace/jadal_pod_bundle/labels/manifest_gold.json",
+    "oof_probs": "/workspace/jadal_pod_bundle/caches/ensemble/oof_probs.npz",
+    "segments": "/workspace/jadal_pod_bundle/caches/frames10k/segments.npz"
+  },
+  "claim": "LB1-cascade",
+  "claims": {
+    "1_cascade_split": {
+      "artifact": "labels/manifest_gold.json + eval/results/gpu/features.json (identical to caches/gpu/features.json, sha-checked)",
+      "command": "OMP_NUM_THREADS=2 python eval/pod_verify/cascade_selective_verify.py",
+      "label_source": "human gold (single labeller) + synthetic-by-construction",
+      "n": 150,
+      "published": {
+        "S0": 0.02,
+        "S1_accept": 0.5,
+        "S1_reject": 0.18,
+        "S2": 0.3,
+        "synthetic_dark_black_frozen_S0": "6/6 each"
+      },
+      "recomputed": {
+        "gold_exit_frac": {
+          "S0": 0.02,
+          "S1_accept": 0.5,
+          "S1_reject": 0.18,
+          "S2": 0.3
+        },
+        "gold_exits": {
+          "S0": 3,
+          "S1_accept": 75,
+          "S1_reject": 27,
+          "S2": 45
+        },
+        "synthetic_by_degradation": {
+          "black": {
+            "S0": 6,
+            "S1_or_S2": 0,
+            "n": 6,
+            "s0_rules": {
+              "black": 6
+            }
+          },
+          "blur": {
+            "S0": 0,
+            "S1_or_S2": 6,
+            "n": 6,
+            "s0_rules": {}
+          },
+          "clean": {
+            "S0": 0,
+            "S1_or_S2": 6,
+            "n": 6,
+            "s0_rules": {}
+          },
+          "darken": {
+            "S0": 6,
+            "S1_or_S2": 0,
+            "n": 6,
+            "s0_rules": {
+              "black": 6
+            }
+          },
+          "frozen": {
+            "S0": 6,
+            "S1_or_S2": 0,
+            "n": 6,
+            "s0_rules": {
+              "frozen": 6
+            }
+          },
+          "lowbitrate": {
+            "S0": 0,
+            "S1_or_S2": 6,
+            "n": 6,
+            "s0_rules": {}
+          },
+          "noise": {
+            "S0": 0,
+            "S1_or_S2": 6,
+            "n": 6,
+            "s0_rules": {}
+          },
+          "overexpose": {
+            "S0": 0,
+            "S1_or_S2": 6,
+            "n": 6,
+            "s0_rules": {}
+          },
+          "shake": {
+            "S0": 0,
+            "S1_or_S2": 6,
+            "n": 6,
+            "s0_rules": {}
+          },
+          "static": {
+            "S0": 0,
+            "S1_or_S2": 6,
+            "n": 6,
+            "s0_rules": {}
+          }
+        }
+      },
+      "text": "Early-reject cascade: ~2% exit at stage 0 (dark/black/frozen caught 6/6 each on synthetic), 50% accepted at stage 1, 18% rejected at stage 1, 30% uncertain (hand to the expensive tier)."
+    },
+    "2_decided_accuracy": {
+      "artifact": "same as claim 1",
+      "command": "same as claim 1",
+      "label_source": "human gold (single labeller)",
+      "n": 150,
+      "published": {
+        "bad_accepted": "8/30",
+        "balanced_acc": 0.81,
+        "coverage": 0.7,
+        "good_falsely_rejected": "8/75"
+      },
+      "recomputed": {
+        "bad_accepted": 8,
+        "bad_decided": 30,
+        "bad_rejected": 22,
+        "balanced_acc": 0.8133,
+        "coverage": 0.7,
+        "good_accepted": 67,
+        "good_decided": 75,
+        "good_falsely_rejected": 8,
+        "n_decided": 105
+      },
+      "text": "On the 70% decided windows: balanced accuracy 0.81; 8 of the 75 good decided windows were falsely rejected; 8 of the 30 bad decided windows were accepted."
+    },
+    "3_selective_pixel26": {
+      "artifact": "eval/results/gpu/features.json + caches/frames10k/segments.npz (exploratory) / caches/ensemble/oof_probs.npz p_pixel (nested)",
+      "command": "same as claim 1",
+      "label_source": "human gold (single labeller), LOCO over 7 clips",
+      "n": 150,
+      "published": {
+        "cov100": {
+          "balanced_acc": 0.74,
+          "good_wrongly_rejected": "26/100"
+        },
+        "cov50": {
+          "balanced_acc": 0.81
+        },
+        "cov80": {
+          "bad_rejected": "88%",
+          "balanced_acc": 0.84,
+          "good_wrongly_rejected": "15/80"
+        }
+      },
+      "recomputed_exploratory": [
+        {
+          "bad_rejected": 37,
+          "bad_rejected_frac": 0.74,
+          "balanced_acc": 0.74,
+          "boundary_conf": 0.003281,
+          "boundary_ties": 1,
+          "coverage": 1.0,
+          "good_wrongly_rejected": 26,
+          "k": 150,
+          "n_bad": 50,
+          "n_good": 100
+        },
+        {
+          "bad_rejected": 35,
+          "bad_rejected_frac": 0.875,
+          "balanced_acc": 0.8438,
+          "boundary_conf": 0.114915,
+          "boundary_ties": 1,
+          "coverage": 0.8,
+          "good_wrongly_rejected": 15,
+          "k": 120,
+          "n_bad": 40,
+          "n_good": 80
+        },
+        {
+          "bad_rejected": 26,
+          "bad_rejected_frac": 0.8387,
+          "balanced_acc": 0.8261,
+          "boundary_conf": 0.22049,
+          "boundary_ties": 1,
+          "coverage": 0.6,
+          "good_wrongly_rejected": 11,
+          "k": 90,
+          "n_bad": 31,
+          "n_good": 59
+        },
+        {
+          "bad_rejected": 24,
+          "bad_rejected_frac": 0.8276,
+          "balanced_acc": 0.8051,
+          "boundary_conf": 0.261126,
+          "boundary_ties": 1,
+          "coverage": 0.5,
+          "good_wrongly_rejected": 10,
+          "k": 75,
+          "n_bad": 29,
+          "n_good": 46
+        },
+        {
+          "_tie_check": {
+            "n_exact_ties_in_conf": 0,
+            "note": "ties broken by original window order",
+            "ordering": "np.argsort(-|p-0.5|) (stable)"
+          }
+        }
+      ],
+      "recomputed_nested": [
+        {
+          "bad_rejected": 39,
+          "bad_rejected_frac": 0.78,
+          "balanced_acc": 0.76,
+          "boundary_conf": 0.00275,
+          "boundary_ties": 1,
+          "coverage": 1.0,
+          "good_wrongly_rejected": 26,
+          "k": 150,
+          "n_bad": 50,
+          "n_good": 100
+        },
+        {
+          "bad_rejected": 33,
+          "bad_rejected_frac": 0.825,
+          "balanced_acc": 0.8125,
+          "boundary_conf": 0.073173,
+          "boundary_ties": 1,
+          "coverage": 0.8,
+          "good_wrongly_rejected": 16,
+          "k": 120,
+          "n_bad": 40,
+          "n_good": 80
+        },
+        {
+          "bad_rejected": 28,
+          "bad_rejected_frac": 0.8485,
+          "balanced_acc": 0.819,
+          "boundary_conf": 0.155,
+          "boundary_ties": 1,
+          "coverage": 0.6,
+          "good_wrongly_rejected": 12,
+          "k": 90,
+          "n_bad": 33,
+          "n_good": 57
+        },
+        {
+          "bad_rejected": 23,
+          "bad_rejected_frac": 0.8214,
+          "balanced_acc": 0.8043,
+          "boundary_conf": 0.203606,
+          "boundary_ties": 1,
+          "coverage": 0.5,
+          "good_wrongly_rejected": 10,
+          "k": 75,
+          "n_bad": 28,
+          "n_good": 47
+        },
+        {
+          "_tie_check": {
+            "n_exact_ties_in_conf": 0,
+            "note": "ties broken by original window order",
+            "ordering": "np.argsort(-|p-0.5|) (stable)"
+          }
+        }
+      ],
+      "text": "Selective accuracy (26 features + logistic, LOCO, n=150): deciding all 150 windows: balanced accuracy 0.74 (26 of 100 good windows wrongly rejected); keeping the 80% most confident windows: 0.84 (15 of 80 good wrongly rejected, 88% of bad rejected); 50% most confident: 0.81. The curve is not monotone.",
+      "view": "pixel26 (26 per-pixel features + logistic, LOCO)"
+    },
+    "4a_selective_summary": {
+      "artifact": "same as claim 3",
+      "command": "same as claim 1",
+      "label_source": "human gold (single labeller), LOCO over 7 clips",
+      "n": 150,
+      "published": {
+        "cov100": 0.74,
+        "cov80": 0.84
+      },
+      "recomputed_exploratory": {
+        "cov100": {
+          "bad_rejected": 37,
+          "bad_rejected_frac": 0.74,
+          "balanced_acc": 0.74,
+          "boundary_conf": 0.003281,
+          "boundary_ties": 1,
+          "coverage": 1.0,
+          "good_wrongly_rejected": 26,
+          "k": 150,
+          "n_bad": 50,
+          "n_good": 100
+        },
+        "cov80": {
+          "bad_rejected": 35,
+          "bad_rejected_frac": 0.875,
+          "balanced_acc": 0.8438,
+          "boundary_conf": 0.114915,
+          "boundary_ties": 1,
+          "coverage": 0.8,
+          "good_wrongly_rejected": 15,
+          "k": 120,
+          "n_bad": 40,
+          "n_good": 80
+        }
+      },
+      "recomputed_nested": {
+        "cov100": {
+          "bad_rejected": 39,
+          "bad_rejected_frac": 0.78,
+          "balanced_acc": 0.76,
+          "boundary_conf": 0.00275,
+          "boundary_ties": 1,
+          "coverage": 1.0,
+          "good_wrongly_rejected": 26,
+          "k": 150,
+          "n_bad": 50,
+          "n_good": 100
+        },
+        "cov80": {
+          "bad_rejected": 33,
+          "bad_rejected_frac": 0.825,
+          "balanced_acc": 0.8125,
+          "boundary_conf": 0.073173,
+          "boundary_ties": 1,
+          "coverage": 0.8,
+          "good_wrongly_rejected": 16,
+          "k": 120,
+          "n_bad": 40,
+          "n_good": 80
+        }
+      },
+      "text": "Selective accuracy: 0.74 deciding all 150 windows -> 0.84 on the 80% most confident",
+      "view": "pixel26, EXPLORATORY (fixed C=0.3, non-nested); nested pixel26 gives 0.76 -> 0.81"
+    },
+    "4b_selective_eg2_or_probavg": {
+      "artifact": "same as claim 3",
+      "command": "same as claim 1",
+      "label_source": "human gold (single labeller), LOCO over 7 clips",
+      "n": 150,
+      "published": {
+        "balanced_acc_at_0.5": 0.79,
+        "cov60": 0.89,
+        "good_wrongly_rejected_at_cov60": "7/63"
+      },
+      "recomputed_exploratory": {
+        "eg2": {
+          "balanced_acc_at_0.5": 0.77,
+          "cov60": {
+            "bad_rejected": 21,
+            "bad_rejected_frac": 0.84,
+            "balanced_acc": 0.8662,
+            "boundary_conf": 0.311859,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 7,
+            "k": 90,
+            "n_bad": 25,
+            "n_good": 65
+          }
+        },
+        "pixel26": {
+          "balanced_acc_at_0.5": 0.74,
+          "cov60": {
+            "bad_rejected": 26,
+            "bad_rejected_frac": 0.8387,
+            "balanced_acc": 0.8261,
+            "boundary_conf": 0.22049,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 11,
+            "k": 90,
+            "n_bad": 31,
+            "n_good": 59
+          }
+        },
+        "prob_avg": {
+          "balanced_acc_at_0.5": 0.79,
+          "cov60": {
+            "bad_rejected": 24,
+            "bad_rejected_frac": 0.8889,
+            "balanced_acc": 0.8889,
+            "boundary_conf": 0.241111,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 7,
+            "k": 90,
+            "n_bad": 27,
+            "n_good": 63
+          }
+        }
+      },
+      "recomputed_nested": {
+        "eg2": {
+          "balanced_acc_at_0.5": 0.77,
+          "cov60": {
+            "bad_rejected": 23,
+            "bad_rejected_frac": 0.8214,
+            "balanced_acc": 0.8543,
+            "boundary_conf": 0.242449,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 7,
+            "k": 90,
+            "n_bad": 28,
+            "n_good": 62
+          }
+        },
+        "prob_avg": {
+          "balanced_acc_at_0.5": 0.795,
+          "cov60": {
+            "bad_rejected": 26,
+            "bad_rejected_frac": 0.8387,
+            "balanced_acc": 0.8516,
+            "boundary_conf": 0.191866,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 8,
+            "k": 90,
+            "n_bad": 31,
+            "n_good": 59
+          }
+        }
+      },
+      "text": "balanced accuracy 0.79 at threshold 0.5, 0.89 when deciding only the 60% most confident windows (7 of 63 good windows wrongly rejected)",
+      "view": "probability average of EG2 + pixel26, EXPLORATORY (the FACTS sentence is ambiguous: it follows a list of three models, and the referent of 'balanced accuracy 0.79' is not named; only prob-avg matches both numbers)"
+    }
+  },
+  "protocols": {
+    "cascade": "eval/gpu/cascade.py: S0 exact rules on the 2-s probe; S1 = StandardScaler + LogisticRegression(26 feats, no class_weight, max_iter=2000), LOCO; threshold=argmax(tpr+tnr-1) over linspace(0.05,0.95,37) with pred=(p>=t); MARGIN=0.25 -> S2",
+    "selective": "confidence=|p-0.5|, order=argsort(-conf) (stable), k=int(cov*n), decision=(p>0.5), balanced accuracy on the selected k only; nested view = oof_probs.npz, exploratory view = fixed C (EG2 0.01 / pixel 0.3), class_weight=balanced"
+  },
+  "selective": {
+    "exploratory_view": {
+      "aurocs": {
+        "eg2": 0.848,
+        "pixel26": 0.81,
+        "prob_avg": 0.8534,
+        "rank_avg": 0.8557
+      },
+      "balanced_acc_at_0.5": {
+        "eg2": 0.77,
+        "pixel26": 0.74,
+        "prob_avg": 0.79,
+        "rank_avg": 0.795
+      },
+      "curves": {
+        "eg2": [
+          {
+            "bad_rejected": 37,
+            "bad_rejected_frac": 0.74,
+            "balanced_acc": 0.77,
+            "boundary_conf": 0.017688,
+            "boundary_ties": 1,
+            "coverage": 1.0,
+            "good_wrongly_rejected": 20,
+            "k": 150,
+            "n_bad": 50,
+            "n_good": 100
+          },
+          {
+            "bad_rejected": 26,
+            "bad_rejected_frac": 0.7647,
+            "balanced_acc": 0.7951,
+            "boundary_conf": 0.173658,
+            "boundary_ties": 1,
+            "coverage": 0.8,
+            "good_wrongly_rejected": 15,
+            "k": 120,
+            "n_bad": 34,
+            "n_good": 86
+          },
+          {
+            "bad_rejected": 21,
+            "bad_rejected_frac": 0.84,
+            "balanced_acc": 0.8662,
+            "boundary_conf": 0.311859,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 7,
+            "k": 90,
+            "n_bad": 25,
+            "n_good": 65
+          },
+          {
+            "bad_rejected": 21,
+            "bad_rejected_frac": 0.875,
+            "balanced_acc": 0.8787,
+            "boundary_conf": 0.341429,
+            "boundary_ties": 1,
+            "coverage": 0.5,
+            "good_wrongly_rejected": 6,
+            "k": 75,
+            "n_bad": 24,
+            "n_good": 51
+          },
+          {
+            "_tie_check": {
+              "n_exact_ties_in_conf": 0,
+              "note": "ties broken by original window order",
+              "ordering": "np.argsort(-|p-0.5|) (stable)"
+            }
+          }
+        ],
+        "pixel26": [
+          {
+            "bad_rejected": 37,
+            "bad_rejected_frac": 0.74,
+            "balanced_acc": 0.74,
+            "boundary_conf": 0.003281,
+            "boundary_ties": 1,
+            "coverage": 1.0,
+            "good_wrongly_rejected": 26,
+            "k": 150,
+            "n_bad": 50,
+            "n_good": 100
+          },
+          {
+            "bad_rejected": 35,
+            "bad_rejected_frac": 0.875,
+            "balanced_acc": 0.8438,
+            "boundary_conf": 0.114915,
+            "boundary_ties": 1,
+            "coverage": 0.8,
+            "good_wrongly_rejected": 15,
+            "k": 120,
+            "n_bad": 40,
+            "n_good": 80
+          },
+          {
+            "bad_rejected": 26,
+            "bad_rejected_frac": 0.8387,
+            "balanced_acc": 0.8261,
+            "boundary_conf": 0.22049,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 11,
+            "k": 90,
+            "n_bad": 31,
+            "n_good": 59
+          },
+          {
+            "bad_rejected": 24,
+            "bad_rejected_frac": 0.8276,
+            "balanced_acc": 0.8051,
+            "boundary_conf": 0.261126,
+            "boundary_ties": 1,
+            "coverage": 0.5,
+            "good_wrongly_rejected": 10,
+            "k": 75,
+            "n_bad": 29,
+            "n_good": 46
+          },
+          {
+            "_tie_check": {
+              "n_exact_ties_in_conf": 0,
+              "note": "ties broken by original window order",
+              "ordering": "np.argsort(-|p-0.5|) (stable)"
+            }
+          }
+        ],
+        "prob_avg": [
+          {
+            "bad_rejected": 38,
+            "bad_rejected_frac": 0.76,
+            "balanced_acc": 0.79,
+            "boundary_conf": 0.001872,
+            "boundary_ties": 1,
+            "coverage": 1.0,
+            "good_wrongly_rejected": 18,
+            "k": 150,
+            "n_bad": 50,
+            "n_good": 100
+          },
+          {
+            "bad_rejected": 32,
+            "bad_rejected_frac": 0.8,
+            "balanced_acc": 0.8313,
+            "boundary_conf": 0.112612,
+            "boundary_ties": 1,
+            "coverage": 0.8,
+            "good_wrongly_rejected": 11,
+            "k": 120,
+            "n_bad": 40,
+            "n_good": 80
+          },
+          {
+            "bad_rejected": 24,
+            "bad_rejected_frac": 0.8889,
+            "balanced_acc": 0.8889,
+            "boundary_conf": 0.241111,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 7,
+            "k": 90,
+            "n_bad": 27,
+            "n_good": 63
+          },
+          {
+            "bad_rejected": 22,
+            "bad_rejected_frac": 0.88,
+            "balanced_acc": 0.88,
+            "boundary_conf": 0.27517,
+            "boundary_ties": 1,
+            "coverage": 0.5,
+            "good_wrongly_rejected": 6,
+            "k": 75,
+            "n_bad": 25,
+            "n_good": 50
+          },
+          {
+            "_tie_check": {
+              "n_exact_ties_in_conf": 0,
+              "note": "ties broken by original window order",
+              "ordering": "np.argsort(-|p-0.5|) (stable)"
+            }
+          }
+        ],
+        "rank_avg": [
+          {
+            "bad_rejected": 43,
+            "bad_rejected_frac": 0.86,
+            "balanced_acc": 0.795,
+            "boundary_conf": 0.003333,
+            "boundary_ties": 1,
+            "coverage": 1.0,
+            "good_wrongly_rejected": 27,
+            "k": 150,
+            "n_bad": 50,
+            "n_good": 100
+          },
+          {
+            "bad_rejected": 38,
+            "bad_rejected_frac": 0.8636,
+            "balanced_acc": 0.82,
+            "boundary_conf": 0.1,
+            "boundary_ties": 1,
+            "coverage": 0.8,
+            "good_wrongly_rejected": 17,
+            "k": 120,
+            "n_bad": 44,
+            "n_good": 76
+          },
+          {
+            "bad_rejected": 32,
+            "bad_rejected_frac": 0.9143,
+            "balanced_acc": 0.8571,
+            "boundary_conf": 0.18,
+            "boundary_ties": 2,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 11,
+            "k": 90,
+            "n_bad": 35,
+            "n_good": 55
+          },
+          {
+            "bad_rejected": 28,
+            "bad_rejected_frac": 0.9333,
+            "balanced_acc": 0.8556,
+            "boundary_conf": 0.223333,
+            "boundary_ties": 3,
+            "coverage": 0.5,
+            "good_wrongly_rejected": 10,
+            "k": 75,
+            "n_bad": 30,
+            "n_good": 45
+          },
+          {
+            "_tie_check": {
+              "n_exact_ties_in_conf": 54,
+              "note": "ties broken by original window order",
+              "ordering": "np.argsort(-|p-0.5|) (stable)"
+            }
+          }
+        ]
+      },
+      "note": "fixed C, class_weight=balanced, plain LOCO (scripts/ensemble_views_exploratory.py)"
+    },
+    "nested_view": {
+      "curves": {
+        "eg2": [
+          {
+            "bad_rejected": 38,
+            "bad_rejected_frac": 0.76,
+            "balanced_acc": 0.77,
+            "boundary_conf": 0.001149,
+            "boundary_ties": 1,
+            "coverage": 1.0,
+            "good_wrongly_rejected": 22,
+            "k": 150,
+            "n_bad": 50,
+            "n_good": 100
+          },
+          {
+            "bad_rejected": 28,
+            "bad_rejected_frac": 0.7568,
+            "balanced_acc": 0.794,
+            "boundary_conf": 0.117416,
+            "boundary_ties": 1,
+            "coverage": 0.8,
+            "good_wrongly_rejected": 14,
+            "k": 120,
+            "n_bad": 37,
+            "n_good": 83
+          },
+          {
+            "bad_rejected": 23,
+            "bad_rejected_frac": 0.8214,
+            "balanced_acc": 0.8543,
+            "boundary_conf": 0.242449,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 7,
+            "k": 90,
+            "n_bad": 28,
+            "n_good": 62
+          },
+          {
+            "bad_rejected": 20,
+            "bad_rejected_frac": 0.9091,
+            "balanced_acc": 0.8885,
+            "boundary_conf": 0.272401,
+            "boundary_ties": 1,
+            "coverage": 0.5,
+            "good_wrongly_rejected": 7,
+            "k": 75,
+            "n_bad": 22,
+            "n_good": 53
+          },
+          {
+            "_tie_check": {
+              "n_exact_ties_in_conf": 0,
+              "note": "ties broken by original window order",
+              "ordering": "np.argsort(-|p-0.5|) (stable)"
+            }
+          }
+        ],
+        "pixel26": [
+          {
+            "bad_rejected": 39,
+            "bad_rejected_frac": 0.78,
+            "balanced_acc": 0.76,
+            "boundary_conf": 0.00275,
+            "boundary_ties": 1,
+            "coverage": 1.0,
+            "good_wrongly_rejected": 26,
+            "k": 150,
+            "n_bad": 50,
+            "n_good": 100
+          },
+          {
+            "bad_rejected": 33,
+            "bad_rejected_frac": 0.825,
+            "balanced_acc": 0.8125,
+            "boundary_conf": 0.073173,
+            "boundary_ties": 1,
+            "coverage": 0.8,
+            "good_wrongly_rejected": 16,
+            "k": 120,
+            "n_bad": 40,
+            "n_good": 80
+          },
+          {
+            "bad_rejected": 28,
+            "bad_rejected_frac": 0.8485,
+            "balanced_acc": 0.819,
+            "boundary_conf": 0.155,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 12,
+            "k": 90,
+            "n_bad": 33,
+            "n_good": 57
+          },
+          {
+            "bad_rejected": 23,
+            "bad_rejected_frac": 0.8214,
+            "balanced_acc": 0.8043,
+            "boundary_conf": 0.203606,
+            "boundary_ties": 1,
+            "coverage": 0.5,
+            "good_wrongly_rejected": 10,
+            "k": 75,
+            "n_bad": 28,
+            "n_good": 47
+          },
+          {
+            "_tie_check": {
+              "n_exact_ties_in_conf": 0,
+              "note": "ties broken by original window order",
+              "ordering": "np.argsort(-|p-0.5|) (stable)"
+            }
+          }
+        ],
+        "prob_avg": [
+          {
+            "bad_rejected": 39,
+            "bad_rejected_frac": 0.78,
+            "balanced_acc": 0.795,
+            "boundary_conf": 0.001067,
+            "boundary_ties": 1,
+            "coverage": 1.0,
+            "good_wrongly_rejected": 19,
+            "k": 150,
+            "n_bad": 50,
+            "n_good": 100
+          },
+          {
+            "bad_rejected": 32,
+            "bad_rejected_frac": 0.8421,
+            "balanced_acc": 0.8418,
+            "boundary_conf": 0.098614,
+            "boundary_ties": 1,
+            "coverage": 0.8,
+            "good_wrongly_rejected": 13,
+            "k": 120,
+            "n_bad": 38,
+            "n_good": 82
+          },
+          {
+            "bad_rejected": 26,
+            "bad_rejected_frac": 0.8387,
+            "balanced_acc": 0.8516,
+            "boundary_conf": 0.191866,
+            "boundary_ties": 1,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 8,
+            "k": 90,
+            "n_bad": 31,
+            "n_good": 59
+          },
+          {
+            "bad_rejected": 21,
+            "bad_rejected_frac": 0.84,
+            "balanced_acc": 0.84,
+            "boundary_conf": 0.211905,
+            "boundary_ties": 1,
+            "coverage": 0.5,
+            "good_wrongly_rejected": 8,
+            "k": 75,
+            "n_bad": 25,
+            "n_good": 50
+          },
+          {
+            "_tie_check": {
+              "n_exact_ties_in_conf": 0,
+              "note": "ties broken by original window order",
+              "ordering": "np.argsort(-|p-0.5|) (stable)"
+            }
+          }
+        ],
+        "rank_avg": [
+          {
+            "bad_rejected": 43,
+            "bad_rejected_frac": 0.86,
+            "balanced_acc": 0.805,
+            "boundary_conf": 0.003333,
+            "boundary_ties": 1,
+            "coverage": 1.0,
+            "good_wrongly_rejected": 25,
+            "k": 150,
+            "n_bad": 50,
+            "n_good": 100
+          },
+          {
+            "bad_rejected": 37,
+            "bad_rejected_frac": 0.8605,
+            "balanced_acc": 0.8198,
+            "boundary_conf": 0.12,
+            "boundary_ties": 1,
+            "coverage": 0.8,
+            "good_wrongly_rejected": 17,
+            "k": 120,
+            "n_bad": 43,
+            "n_good": 77
+          },
+          {
+            "bad_rejected": 32,
+            "bad_rejected_frac": 0.8889,
+            "balanced_acc": 0.8426,
+            "boundary_conf": 0.196667,
+            "boundary_ties": 5,
+            "coverage": 0.6,
+            "good_wrongly_rejected": 11,
+            "k": 90,
+            "n_bad": 36,
+            "n_good": 54
+          },
+          {
+            "bad_rejected": 28,
+            "bad_rejected_frac": 0.9032,
+            "balanced_acc": 0.838,
+            "boundary_conf": 0.213333,
+            "boundary_ties": 2,
+            "coverage": 0.5,
+            "good_wrongly_rejected": 10,
+            "k": 75,
+            "n_bad": 31,
+            "n_good": 44
+          },
+          {
+            "_tie_check": {
+              "n_exact_ties_in_conf": 58,
+              "note": "ties broken by original window order",
+              "ordering": "np.argsort(-|p-0.5|) (stable)"
+            }
+          }
+        ]
+      },
+      "note": "oof_probs.npz (eval/ensemble_nested_loco.py)"
+    }
+  },
+  "source_of_truth": "docs/FACTS.md (pod bundle snapshot)",
+  "wall_s": 0.6
+}
