@@ -11,7 +11,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "results", "gpu", "determinism.json")
-GOLD = "/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"
+GOLD = "/workspace/jadal_pod_bundle/labels/manifest_gold.json"
 
 
 def canon(feats, nd=4):

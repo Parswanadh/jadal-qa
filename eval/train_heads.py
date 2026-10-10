@@ -2,15 +2,15 @@
 
 Full mode (once the FIXED eval manifests land on origin/main)::
 
-    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/train_heads.py \
+    PYTHONNOUSERSITE=1 python3 eval/train_heads.py \
         --splits eval/results/splits.json --out eval/results/decider_baseline.json
 
 Dev mode (default; tiny subset, DEV_ONLY outputs)::
 
-    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/train_heads.py \
+    PYTHONNOUSERSITE=1 python3 eval/train_heads.py \
         --dev-n 1500 --out eval/results/decider_baseline_DEV_ONLY.json
 
-Pipeline: read frames from ``/home/parshu/projects/awing/data/ego10k_eval/*.parquet``
+Pipeline: read frames from ``/workspace/jadal_pod_bundle/data/ego10k_eval/*.parquet``
 in small row-group batches (never print image bytes), thumbnail to 512 px,
 embed with EmbeddingGemma 2 (bfloat16, batch size 1, budget 140, fixed seed),
 train scikit-learn logistic regression on frozen embeddings for
@@ -50,7 +50,7 @@ from PIL import Image
 from jadal import certify as certify_mod
 from jadal import decision as decision_mod
 
-DATA_DIR = "/home/parshu/projects/awing/data/ego10k_eval"
+DATA_DIR = "/workspace/jadal_pod_bundle/data/ego10k_eval"
 FILES = ("ego4d.parquet", "egocentric_10k.parquet", "epic_kitchens.parquet")
 SEED = 1234
 BUDGET = 140
@@ -59,7 +59,7 @@ LABEL_CAVEAT_LONG = ("hand_count / active_labor labels were produced by gemini-2
                      "auto-labelling and were NOT human-checked: every accuracy / calibration "
                      "number here is model-vs-model agreement, not ground-truth performance.")
 
-INDEGO_DIR = "/home/parshu/projects/awing/data/indego"
+INDEGO_DIR = "/workspace/jadal_pod_bundle/data/indego"
 INDEGO_CLIPS = {
     "User_15_410_0411_2_480.mp4": (
         f"{INDEGO_DIR}/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",

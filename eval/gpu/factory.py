@@ -1,6 +1,6 @@
 """Factory-1080p/30fps-HEVC end-to-end (orchestrator order, replaces looped corpus).
 
-Corpus: /home/parshu/projects/awing/data/ego10k_scale/clips/factory_*/worker_*/*.mp4
+Corpus: /workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_*/worker_*/*.mp4
 (20-min 1920x1080 HEVC 30fps; use only complete files: size>500MB + ffprobe>1100s).
 
 Modes (each ONE lock hold; thread caps set by caller env):
@@ -22,7 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", ".."))
 OUT = os.path.join(HERE, "..", "results", "gpu", "factory.json")
 LAD = os.path.join(HERE, "..", "results", "gpu", "ladder.json")
-CLIP_GLOB = "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_*/worker_*/*.mp4"
+CLIP_GLOB = "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_*/worker_*/*.mp4"
 W, H, FPS, T = 160, 90, 30, 300  # 10-s window at 30 fps
 
 
@@ -56,7 +56,7 @@ def nvdec_cmd(path, off, dur, w=W, h=H):
 
 def mode_sweep():
     res = {"device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
-           "regenerate": "flock ... /home/parshu/envs/jadal/bin/python eval/gpu/factory.py --sweep"}
+           "regenerate": "flock ... python3 eval/gpu/factory.py --sweep"}
     clips = complete_clips()
     res["corpus"] = {"n_complete": len(clips), "files": [os.path.basename(c) for c in clips[:8]]}
     if not clips:
@@ -152,7 +152,7 @@ def mode_sustain(minutes=12, ndec=3, B=8):
     torch.cuda.reset_peak_memory_stats()
     clips = complete_clips()
     res = {"device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
-           "regenerate": "flock ... /home/parshu/envs/jadal/bin/python eval/gpu/factory.py --sustain",
+           "regenerate": "flock ... python3 eval/gpu/factory.py --sustain",
            "n_complete": len(clips)}
     if len(clips) < 2:
         res["error"] = "need >=2 complete clips"
@@ -164,7 +164,7 @@ def mode_sustain(minutes=12, ndec=3, B=8):
     X = np.stack([v["full"] for v in feats.values() if "full" in v])
     ids = [k for k, v in feats.items() if "full" in v]
     gold = {it["id"]: it["label"] for it in
-            json.load(open("/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"))["items"]}
+            json.load(open("/workspace/jadal_pod_bundle/labels/manifest_gold.json"))["items"]}
     gid = [i for i in ids if i in gold]
     Xg = np.stack([[feats[i]["full"][k] for k in names] for i in gid])
     yg = np.array([gold[i] for i in gid])

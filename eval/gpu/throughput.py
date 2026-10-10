@@ -22,7 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", ".."))
 THR = os.path.join(HERE, "..", "results", "gpu", "throughput.json")
 LAD = os.path.join(HERE, "..", "results", "gpu", "ladder.json")
-GOLD = "/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"
+GOLD = "/workspace/jadal_pod_bundle/labels/manifest_gold.json"
 
 W, H, FPS = 160, 90, 10
 WIN_FRAMES = 100  # 10 s @ 10 fps

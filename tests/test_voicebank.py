@@ -2,7 +2,7 @@
 
 Run from the repo root:
 
-    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests -v
+    PYTHONNOUSERSITE=1 python3 -m unittest discover -s tests -v
 
 No network, no API key, no sarvamai package needed: synthesis is exercised
 with an injected fake TTS client, and all output files land in a scratch
