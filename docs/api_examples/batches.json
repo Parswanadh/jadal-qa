@@ -22,8 +22,8 @@
        "check": "decodable",
        "code": "UNDECODABLE",
        "op": "==",
-       "threshold": true,
-       "value": true
+       "threshold": "true",
+       "value": "true"
       },
       {
        "check": "missing:duration_s",
@@ -117,7 +117,7 @@
      ],
      "segment_id": "seg-3e6cc9ce2f50-0000",
      "threshold": 0.9,
-     "verdict": "reject"
+     "verdict": "review"
     },
     {
      "answer_conf": 0.93,
@@ -126,8 +126,8 @@
        "check": "decodable",
        "code": "UNDECODABLE",
        "op": "==",
-       "threshold": true,
-       "value": true
+       "threshold": "true",
+       "value": "true"
       },
       {
        "check": "missing:duration_s",
@@ -229,8 +229,8 @@
        "check": "decodable",
        "code": "UNDECODABLE",
        "op": "==",
-       "threshold": true,
-       "value": true
+       "threshold": "true",
+       "value": "true"
       },
       {
        "check": "missing:duration_s",
@@ -332,8 +332,8 @@
        "check": "decodable",
        "code": "UNDECODABLE",
        "op": "==",
-       "threshold": true,
-       "value": true
+       "threshold": "true",
+       "value": "true"
       },
       {
        "check": "missing:duration_s",
@@ -435,8 +435,8 @@
        "check": "decodable",
        "code": "UNDECODABLE",
        "op": "==",
-       "threshold": true,
-       "value": true
+       "threshold": "true",
+       "value": "true"
       },
       {
        "check": "missing:duration_s",
