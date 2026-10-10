@@ -71,6 +71,30 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(len(L.FEATURE_NAMES), 26)
         self.assertEqual(len(set(L.FEATURE_NAMES)), 26)
 
+    def test_classify_transfer_rule_boundary(self):
+        # I-1: a feature informative in ONE domain only must NOT be 'chance'.
+        self.assertNotEqual(L.classify_transfer(0.62, 0.50), "chance")
+        self.assertEqual(L.classify_transfer(0.62, 0.51), "stable")
+        self.assertEqual(L.classify_transfer(0.62, 0.49), "flip")
+        # both near 0.5 -> chance
+        self.assertEqual(L.classify_transfer(0.50, 0.50), "chance")
+        self.assertEqual(L.classify_transfer(0.52, 0.48), "chance")
+        # tolerance boundary: exactly 0.05 is informative, 0.049 is not
+        self.assertNotEqual(L.classify_transfer(0.55, 0.50), "chance")
+        self.assertEqual(L.classify_transfer(0.549, 0.50), "chance")
+        # identical positive AUROCs in both domains -> stable
+        self.assertEqual(L.classify_transfer(0.70, 0.70), "stable")
+        self.assertEqual(L.classify_transfer(0.30, 0.30), "stable")
+
+    def test_canonical_config_sha_strips_only_paths(self):
+        cfg = {"views": {"eg2": {"embed_model_dir": "/a", "w": 1}},
+               "embed_command": "x", "pixel_command": "y", "threshold": 0.5}
+        cfg2 = {"views": {"eg2": {"embed_model_dir": "/different", "w": 1}},
+                "embed_command": "z", "pixel_command": "w", "threshold": 0.5}
+        self.assertEqual(L.canonical_config_sha256(cfg), L.canonical_config_sha256(cfg2))
+        cfg3 = {**cfg, "threshold": 0.6}
+        self.assertNotEqual(L.canonical_config_sha256(cfg), L.canonical_config_sha256(cfg3))
+
 
 class TestResultsSchema(unittest.TestCase):
     REQUIRED = ("n", "label_source", "protocol", "device", "git_sha")
@@ -80,13 +104,20 @@ class TestResultsSchema(unittest.TestCase):
         self.assertTrue(p.exists(), f"missing results file {p}")
         return json.load(open(p))
 
-    def test_all_four_exist_with_core_fields(self):
-        for name in ("E5.01.json", "E5.02.json", "E5.03.json", "E5.04.json"):
+    def test_all_results_exist_with_core_fields(self):
+        for name in ("E5.00.json", "E5.01.json", "E5.02.json", "E5.03.json", "E5.04.json"):
             d = self._load(name)
             for k in self.REQUIRED:
                 self.assertIn(k, d, f"{name} missing {k}")
             self.assertTrue(str(d["label_source"]).strip())
             self.assertTrue(str(d["command"]).strip(), f"{name} empty command")
+
+    def test_e500_reproduces_frozen_ood_prior(self):
+        d = self._load("E5.00.json")
+        self.assertEqual(d["n"], 60)
+        self.assertEqual(d["n_bad"], 9)
+        self.assertEqual(len(d["ci95"]), 2)
+        self.assertAlmostEqual(d["ood_auroc"], 0.415, places=2)
 
     def test_e501_model_vs_model_caveat_and_ci(self):
         d = self._load("E5.01.json")
@@ -120,6 +151,28 @@ class TestResultsSchema(unittest.TestCase):
             self.assertEqual(len(r["ood_10fps_ci95"]), 2)
             self.assertIn(r["class"], ("stable", "flip", "chance"))
 
+    def test_e503_class_matches_documented_rule(self):
+        # I-1: the stored class must equal the one rule, applied to the stored AUROCs.
+        d = self._load("E5.03.json")
+        for r in d["table"]:
+            self.assertEqual(r["class"],
+                             L.classify_transfer(r["indego_auroc"], r["ood_10fps_auroc"]),
+                             r["feature"])
+            # I-2: every row also carries the native-30 class under the same rule.
+            self.assertEqual(r["class_native30"],
+                             L.classify_transfer(r["indego_auroc"], r["ood_native30_auroc"]),
+                             r["feature"])
+            self.assertEqual(r["class_agrees_native30_vs_10fps"],
+                             r["class"] == r["class_native30"])
+            # a feature not chance in either domain is never a one-domain fluke
+            if r["class"] != "chance":
+                self.assertGreater(max(abs(r["indego_auroc"] - 0.5),
+                                       abs(r["ood_10fps_auroc"] - 0.5)), 0.049)
+        n30 = d["counts_native30"]
+        self.assertEqual(sum(n30.values()), 26)
+        self.assertEqual(sorted(d["native30_vs_10fps_class_disagreements"]),
+                         sorted(r["feature"] for r in d["table"] if r["class"] != r["class_native30"]))
+
     def test_e504_inconclusive_when_labels_missing(self):
         d = self._load("E5.04.json")
         self.assertEqual(d["n_scored"], 160)
@@ -129,6 +182,20 @@ class TestResultsSchema(unittest.TestCase):
             self.assertEqual(d["ci95"], "n/a (no labels)")
             self.assertIn("INCONCLUSIVE", d["verdict_note"])
             self.assertTrue(d["descriptive"]["n_scored"] == 160)
+
+    def test_e504_label_source_and_config_assert(self):
+        # M-4: the 160 scored windows carry NO labels.
+        d = self._load("E5.04.json")
+        self.assertIn("NONE", d["label_source"])
+        self.assertIn("ood_labels2.json NOT delivered", d["label_source"])
+        # M-8: observed config sha stored; canonical content asserted against the frozen one.
+        self.assertEqual(len(d["config_sha256_observed"]), 64)
+        self.assertEqual(d["config_canonical_sha256_observed"],
+                         d["config_canonical_sha256_expected"])
+        import hashlib
+        cfg = ROOT / "configs" / "ensemble_v1.json"
+        with open(cfg, "rb") as f:
+            self.assertEqual(hashlib.sha256(f.read()).hexdigest(), d["config_sha256_observed"])
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 """E5 input prep (CPU): OOD pixel features + OOD EG2 window means.
 
-Outputs (committed, small):
+Outputs (regenerate via this script; the ``*.npz`` files are git-ignored):
   eval/results/exp_domain/inputs/ood_pixel_selfdec.npz
       {ids (60,), y (60,), factory (60,), names (26,), X_native (60,26), X_10fps (60,26)}
       Decoded from the label_windows transcodes with the frozen pixel recipe

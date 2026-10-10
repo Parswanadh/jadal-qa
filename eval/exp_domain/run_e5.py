@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""E5.01-E5.04 domain-adaptation experiments (CPU only; fixed seeds).
+"""E5.00-E5.04 domain-adaptation experiments (CPU only; fixed seeds).
 
+E5.00  reproduce the frozen ensemble OOD prior (usable_prob AUROC on the 60
+       human-labelled OOD windows); the E5 report cites this number.
 E5.01  heads trained on the 10k AI-labelled FACTORY frames (EG2 embeddings),
        pooled per IndEgo window -> LOCO AUROC vs human gold. Model-vs-model
        agreement, NOT ground-truth accuracy.
@@ -13,7 +15,7 @@ E5.04  frozen ensemble scores on the 160 OOD windows; if labels2 is absent the
        confirmatory eval is logged inconclusive and only descriptive stats are
        emitted (no accuracy).
 
-Run:  OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py {e5_01,e5_02,e5_03,e5_04,all}
+Run:  OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py {e5_00,e5_01,e5_02,e5_03,e5_04,all}
 """
 from __future__ import annotations
 
@@ -29,6 +31,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(HERE)))
 from eval.exp_domain import e5lib as L  # noqa: E402
 
 OOD_LABELS2 = os.path.join(L.BUNDLE, "labels", "ood_labels2.json")
+CONFIG_PATH = os.path.join(L.REPO, "configs", "ensemble_v1.json")
+# Frozen sha recorded by the scorer in $JADAL_BUNDLE/caches/ensemble/ood_scores.json
+# (raw bytes of configs/ensemble_v1.json on main / PR #79).
+CONFIG_SHA256_EXPECTED = "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31"
+# Same content with the pod path/provenance keys stripped (remap_paths.py rewrites
+# embed_model_dir / embed_command / pixel_command, which do not affect scoring).
+CONFIG_CANONICAL_SHA256_EXPECTED = "f43654d784e2690a2c8e5a316e9f90a3e2da4615ca6bbd93f625c2f5b29d100d"
 
 
 def _write(name, rep):
@@ -39,6 +48,43 @@ def _write(name, rep):
     with open(p, "w") as f:
         json.dump(rep, f, indent=1)
     print("wrote", p, flush=True)
+
+
+# ----------------------------------------------------------------- E5.00
+def e5_00():
+    """Reproduce the frozen-ensemble OOD prior quoted in the E5 report.
+
+    This is the only number in the E5 report that was previously cited from a
+    report not present on this branch (`docs/reports/ensemble_views.md`, main /
+    PR #79). Recomputed here from the frozen batch-1 scores so it traces to a
+    committed results JSON.
+    """
+    from sklearn.metrics import balanced_accuracy_score, roc_auc_score
+
+    scores = L.load_frozen_ood_scores()
+    ref = L.load_ood()
+    lab = {sid: int(v) for sid, v in zip(ref["ids"], ref["y"])}
+    ids = [s["id"] for s in scores if s["id"] in lab]
+    y = np.asarray([lab[i] for i in ids], int)
+    p = np.asarray([next(s["usable_prob"] for s in scores if s["id"] == i) for i in ids], float)
+    m, lo, hi = L.boot_ci(y, p, roc_auc_score)
+    rep = {"experiment": "E5.00", "n": int(len(ids)), "n_good": int(y.sum()),
+           "n_bad": int((1 - y).sum()),
+           "label_source": "human (ood_labels.json, single labeller; OOD n_bad=9 exploratory)",
+           "protocol": "frozen ensemble_v1 usable_prob vs human OOD labels; "
+                       "window bootstrap CI (optimistic: ~1 window/factory)",
+           "device": "CPU (numpy); frozen scores from the pod bundle",
+           "cost": {"n_scored": int(len(ids))},
+           "ood_auroc": float(roc_auc_score(y, p)), "boot_mean": m, "ci95": [lo, hi],
+           "balacc_at_0.5": float(balanced_accuracy_score(y, p > 0.5)),
+           "prior_reference": {"report": "docs/reports/ensemble_views.md (main / PR #79, NOT on "
+                                          "this branch)",
+                               "report_ci95": [0.210, 0.647],
+                               "scores_in_bundle": "$JADAL_BUNDLE/caches/ensemble/ood_scores.json"},
+           "command": "OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py e5_00"}
+    print(f"  frozen ensemble OOD AUROC {rep['ood_auroc']:.4f} "
+          f"ci95={[round(c, 3) for c in rep['ci95']]} (report quoted 0.210, 0.647)")
+    _write("E5.00.json", rep)
 
 
 # ----------------------------------------------------------------- E5.01
@@ -106,7 +152,9 @@ def e5_01():
            "n_bad": int((1 - y).sum()), "clips": sorted(set(clips.tolist())),
            "label_source": "head trained on AI labels (10k FACTORY frames, NOT human); "
                            "evaluated vs HUMAN IndEgo gold (single labeller)",
-           "caveat": "model-vs-model agreement on AI targets, NOT ground-truth accuracy",
+           "caveat": "the frame-level 0.911/0.957 is AI-vs-AI (model-vs-model), NOT ground-truth; "
+                     "the window-level 0.789-0.826 IS scored against the human IndEgo gold labels "
+                     "(single labeller) but the head itself was trained on AI labels",
            "protocol": "LOCO over 7 IndEgo clips; clip-bootstrap CI (2000); "
                        "frame heads C=1 fixed on 10k AI frames",
            "device": "CPU (numpy/sklearn); GPU not used",
@@ -220,6 +268,8 @@ def e5_03():
     pix = L.load_ood_pixel_selfdec()
     yo = pix["y"]
     rows, n_stable, n_flip, n_chance = [], 0, 0, 0
+    n_n30 = {"stable": 0, "flip": 0, "chance": 0}
+    disagree_n30 = []
     for j, name in enumerate(L.FEATURE_NAMES):
         xg = gold["X26"][:, j]
         ag = float(roc_auc_score(gold["y"], xg))
@@ -232,20 +282,28 @@ def e5_03():
         t10m, t10lo, t10hi = L.boot_ci(yo, x10, roc_auc_score)
         sg = "high-usable" if ag >= 0.5 else "low-usable"
         s10 = "high-usable" if a10 >= 0.5 else "low-usable"
-        d10 = abs(a10 - 0.5)
-        dg = abs(ag - 0.5)
-        if max(dg, d10) < 0.05:
-            cls = "chance"; n_chance += 1
-        elif (ag - 0.5) * (a10 - 0.5) > 0:
-            cls = "stable"; n_stable += 1
+        sn = "high-usable" if an >= 0.5 else "low-usable"
+        # primary class uses the 10 fps-effective OOD column (matches IndEgo's ~10 fps);
+        # class_native30 is the same rule applied to the native ~30 fps OOD column.
+        cls = L.classify_transfer(ag, a10)
+        cls_n30 = L.classify_transfer(ag, an)
+        if cls == "chance":
+            n_chance += 1
+        elif cls == "stable":
+            n_stable += 1
         else:
-            cls = "flip"; n_flip += 1
+            n_flip += 1
+        n_n30[cls_n30] += 1
+        if cls_n30 != cls:
+            disagree_n30.append(name)
         rows.append({"feature": name, "indego_auroc": ag, "indego_ci95": [glo, ghi],
                      "indego_sign": sg, "ood_native30_auroc": an, "ood_native30_ci95": [nlo, nhi],
-                     "ood_10fps_auroc": a10, "ood_10fps_ci95": [t10lo, t10hi],
-                     "ood_10fps_sign": s10, "class": cls,
-                     "sign_agrees_10fps": bool((ag - 0.5) * (a10 - 0.5) >= 0)})
-        print(f"  {name:16s} indego {ag:.3f} ({sg})  ood10 {a10:.3f} ({s10})  -> {cls}")
+                     "ood_native30_sign": sn, "ood_10fps_auroc": a10, "ood_10fps_ci95": [t10lo, t10hi],
+                     "ood_10fps_sign": s10, "class": cls, "class_native30": cls_n30,
+                     "sign_agrees_10fps": bool((ag - 0.5) * (a10 - 0.5) >= 0),
+                     "class_agrees_native30_vs_10fps": bool(cls_n30 == cls)})
+        print(f"  {name:16s} indego {ag:.3f} ({sg})  ood10 {a10:.3f} ({s10}) -> {cls} "
+              f"| ood30 {an:.3f} ({sn}) -> {cls_n30}")
 
     rep = {"experiment": "E5.03", "n": int(len(gold["y"]) + len(yo)),
            "n_indego": int(len(gold["y"])), "n_good_indego": int(gold["y"].sum()),
@@ -260,9 +318,12 @@ def e5_03():
                      "10fps effective; both decoded 160x90",
            "device": "CPU (numpy)",
            "cost": {"features": 26, "indego_windows": 150, "ood_windows": 60},
-           "classification_rule": "stable/flip require both |AUROC-0.5|>=0.05 on the same/opposite "
-                                  "side; else 'chance'",
+           "classification_rule": "chance iff BOTH |AUROC-0.5| < 0.05 (tol); otherwise stable "
+                                  "if both AUROCs are on the same side of 0.5, flip if opposite "
+                                  "(e5lib.classify_transfer)",
            "counts": {"stable": n_stable, "flip": n_flip, "chance": n_chance},
+           "counts_native30": n_n30,
+           "native30_vs_10fps_class_disagreements": disagree_n30,
            "table": rows,
            "command": "OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py e5_03"}
     _write("E5.03.json", rep)
@@ -302,6 +363,13 @@ def _descriptive(scored, batch_of):
 def e5_04():
     from sklearn.metrics import roc_auc_score
 
+    cfg = json.load(open(CONFIG_PATH))
+    config_sha = L.file_sha256(CONFIG_PATH)
+    config_canonical_sha = L.canonical_config_sha256(cfg)
+    assert config_canonical_sha == CONFIG_CANONICAL_SHA256_EXPECTED, (
+        f"ensemble_v1 config content changed (path fields stripped): "
+        f"{config_canonical_sha} != {CONFIG_CANONICAL_SHA256_EXPECTED}")
+
     s1 = L.load_frozen_ood_scores()
     s2, s2path = _load_batch2_scores()
     scored = {s["id"]: s for s in s1}
@@ -321,8 +389,15 @@ def e5_04():
     rep = {"experiment": "E5.04", "n_scored": len(ordered),
            "n_batch1": len(s1), "n_batch2": len(s2),
            "labels2_present": bool(labels_present2), "n_labels2": int(n_labels2),
-           "scores2_path": s2path, "config_sha256_expected": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
-           "label_source": "human (ood_labels.json 60 windows) -- ood_labels2.json NOT delivered",
+           "scores2_path": s2path, "config_sha256_expected": CONFIG_SHA256_EXPECTED,
+           "config_sha256_observed": config_sha,
+           "config_sha256_match": bool(config_sha == CONFIG_SHA256_EXPECTED),
+           "config_canonical_sha256_expected": CONFIG_CANONICAL_SHA256_EXPECTED,
+           "config_canonical_sha256_observed": config_canonical_sha,
+           "config_assert": ("canonical content (path/provenance keys stripped) matches the frozen "
+                             "config; raw sha differs only by pod path remapping"),
+           "label_source": "NONE for the 160 scored windows (descriptive only, no accuracy); "
+                           "ood_labels2.json NOT delivered (0 human labels)",
            "protocol": "frozen ensemble_v1 scores, no tuning; confirmatory OOD eval requires labels2",
            "device": "frozen scores cached (batch1: bundle caches; batch2: origin/feat/ensemble-views)",
            "cost": {"n_windows_scored": len(ordered)},
@@ -353,9 +428,9 @@ def e5_04():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["e5_01", "e5_02", "e5_03", "e5_04", "all"])
+    ap.add_argument("cmd", choices=["e5_00", "e5_01", "e5_02", "e5_03", "e5_04", "all"])
     a = ap.parse_args()
-    cmds = ["e5_01", "e5_02", "e5_03", "e5_04"] if a.cmd == "all" else [a.cmd]
+    cmds = ["e5_00", "e5_01", "e5_02", "e5_03", "e5_04"] if a.cmd == "all" else [a.cmd]
     for c in cmds:
         print(f"=== {c} ===", flush=True)
         globals()[c]()

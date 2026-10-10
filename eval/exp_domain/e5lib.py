@@ -28,6 +28,56 @@ FEATURE_NAMES = [
     "rppg_pulse", "dup_hash_mean", "zncc_self",
 ]
 
+# Volatile path/provenance keys added on the pod by scripts/remap_paths.py; they
+# do NOT affect scoring, so the canonical config hash strips them recursively.
+CONFIG_VOLATILE_KEYS = ("embed_model_dir", "embed_command", "pixel_command")
+
+
+# ---------------- domain-transfer classification ----------------
+
+def classify_transfer(auroc_a, auroc_b, tol=0.05):
+    """Classify one feature's signed AUROC across two domains (E5.03 rule).
+
+    THE rule (the one the code has always used; the docs now match it):
+
+      * ``chance`` -- BOTH domains are uninformative: ``max(|AUROC_a-0.5|,
+        |AUROC_b-0.5|) < tol``;
+      * ``stable`` -- informative in at least one domain and the two AUROCs
+        fall on the SAME side of 0.5 (``(AUROC_a-0.5)*(AUROC_b-0.5) > 0``);
+      * ``flip``   -- informative in at least one domain but OPPOSITE sides.
+
+    Consequence (asserted in tests/test_exp_domain.py): a feature informative
+    in ONE domain only (e.g. 0.62 vs 0.50) is NOT ``chance``; it is
+    ``stable``/``flip``. Only a feature near 0.5 in BOTH domains is ``chance``.
+    """
+    da, db = abs(auroc_a - 0.5), abs(auroc_b - 0.5)
+    if max(da, db) < tol:
+        return "chance"
+    return "stable" if (auroc_a - 0.5) * (auroc_b - 0.5) > 0 else "flip"
+
+
+# ---------------- ensemble config hashing ----------------
+
+def _strip_volatile(obj):
+    if isinstance(obj, dict):
+        return {k: _strip_volatile(v) for k, v in obj.items() if k not in CONFIG_VOLATILE_KEYS}
+    if isinstance(obj, list):
+        return [_strip_volatile(x) for x in obj]
+    return obj
+
+
+def canonical_config_sha256(cfg):
+    """sha256 over the config with pod path/provenance keys stripped recursively."""
+    import hashlib
+    blob = json.dumps(_strip_volatile(cfg), sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(blob).hexdigest()
+
+
+def file_sha256(path):
+    import hashlib
+    with open(path, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
 
 # ---------------- numeric helpers ----------------
 
