@@ -1,0 +1,12 @@
+{
+ "domain": "ood",
+ "n": 160,
+ "errors": 0,
+ "wall_s": 493.9,
+ "ms_per_window_mean": 18060.6,
+ "ms_per_window_median": 11892.8,
+ "decode_ms_median": 1297.5,
+ "flow_ms_median": 5200.1,
+ "hand_ms_median": 2846.8,
+ "fullres_ms_median": 2910.6
+}

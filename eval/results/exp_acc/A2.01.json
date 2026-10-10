@@ -1,0 +1,233 @@
+{
+ "baseline_ensemble": {
+  "gold_loco_auroc": 0.8336,
+  "ood_auroc": 0.566,
+  "ood_auroc_ci95_grouped": [
+   0.4238,
+   0.6999
+  ]
+ },
+ "device": "CPU (numpy/sklearn; MediaPipe HandLandmarker + Farneback flow extracted separately)",
+ "experiment": "A2.01",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "note": "sign (direction of 'higher=bad') is fit on gold AUROC then applied to OOD",
+ "signals": {
+  "flow_active_frac": {
+   "gold_auroc": 0.6264,
+   "group": "flow",
+   "ood_auroc": 0.442,
+   "ood_auroc_ci95_grouped": [
+    0.3161,
+    0.5553
+   ]
+  },
+  "flow_curl_abs_mean": {
+   "gold_auroc": 0.734,
+   "group": "flow",
+   "ood_auroc": 0.4924,
+   "ood_auroc_ci95_grouped": [
+    0.3308,
+    0.6285
+   ]
+  },
+  "flow_curl_abs_p90": {
+   "gold_auroc": 0.7152,
+   "group": "flow",
+   "ood_auroc": 0.473,
+   "ood_auroc_ci95_grouped": [
+    0.3099,
+    0.6168
+   ]
+  },
+  "flow_div_abs_mean": {
+   "gold_auroc": 0.7224,
+   "group": "flow",
+   "ood_auroc": 0.4885,
+   "ood_auroc_ci95_grouped": [
+    0.3209,
+    0.6316
+   ]
+  },
+  "flow_div_abs_p90": {
+   "gold_auroc": 0.7108,
+   "group": "flow",
+   "ood_auroc": 0.4773,
+   "ood_auroc_ci95_grouped": [
+    0.3069,
+    0.6286
+   ]
+  },
+  "flow_mag_mean": {
+   "gold_auroc": 0.729,
+   "group": "flow",
+   "ood_auroc": 0.4704,
+   "ood_auroc_ci95_grouped": [
+    0.3391,
+    0.5892
+   ]
+  },
+  "flow_mag_p90": {
+   "gold_auroc": 0.7302,
+   "group": "flow",
+   "ood_auroc": 0.502,
+   "ood_auroc_ci95_grouped": [
+    0.3577,
+    0.6273
+   ]
+  },
+  "flow_mag_p99": {
+   "gold_auroc": 0.753,
+   "group": "flow",
+   "ood_auroc": 0.5662,
+   "ood_auroc_ci95_grouped": [
+    0.453,
+    0.6683
+   ]
+  },
+  "flow_mag_spatial_std": {
+   "gold_auroc": 0.7482,
+   "group": "flow",
+   "ood_auroc": 0.502,
+   "ood_auroc_ci95_grouped": [
+    0.3436,
+    0.6489
+   ]
+  },
+  "flow_mag_temporal_std": {
+   "gold_auroc": 0.7228,
+   "group": "flow",
+   "ood_auroc": 0.5527,
+   "ood_auroc_ci95_grouped": [
+    0.4651,
+    0.639
+   ]
+  },
+  "flow_peak_frac": {
+   "gold_auroc": 0.5266,
+   "group": "flow",
+   "ood_auroc": 0.5774,
+   "ood_auroc_ci95_grouped": [
+    0.4419,
+    0.707
+   ]
+  },
+  "flow_stability": {
+   "gold_auroc": 0.5038,
+   "group": "flow",
+   "ood_auroc": 0.527,
+   "ood_auroc_ci95_grouped": [
+    0.3517,
+    0.6907
+   ]
+  },
+  "flow_static_frac": {
+   "gold_auroc": 0.5248,
+   "group": "flow",
+   "ood_auroc": 0.3794,
+   "ood_auroc_ci95_grouped": [
+    0.2471,
+    0.5027
+   ]
+  },
+  "fr_hf_band_frac": {
+   "gold_auroc": 0.569,
+   "group": "fullres",
+   "ood_auroc": 0.4974,
+   "ood_auroc_ci95_grouped": [
+    0.3576,
+    0.6444
+   ]
+  },
+  "fr_lap_var_mean": {
+   "gold_auroc": 0.6946,
+   "group": "fullres",
+   "ood_auroc": 0.6446,
+   "ood_auroc_ci95_grouped": [
+    0.4511,
+    0.8178
+   ]
+  },
+  "fr_lap_var_p10": {
+   "gold_auroc": 0.7884,
+   "group": "fullres",
+   "ood_auroc": 0.6973,
+   "ood_auroc_ci95_grouped": [
+    0.5182,
+    0.8578
+   ]
+  },
+  "fr_noise_mean": {
+   "gold_auroc": 0.5564,
+   "group": "fullres",
+   "ood_auroc": 0.4677,
+   "ood_auroc_ci95_grouped": [
+    0.3959,
+    0.5151
+   ]
+  },
+  "fr_noise_p90": {
+   "gold_auroc": 0.5114,
+   "group": "fullres",
+   "ood_auroc": 0.4582,
+   "ood_auroc_ci95_grouped": [
+    0.3864,
+    0.5074
+   ]
+  },
+  "fr_sharp_temporal_cv": {
+   "gold_auroc": 0.7878,
+   "group": "fullres",
+   "ood_auroc": 0.6199,
+   "ood_auroc_ci95_grouped": [
+    0.4702,
+    0.7626
+   ]
+  },
+  "hand_flow_excess_mean": {
+   "gold_auroc": 0.5036,
+   "group": "hand",
+   "ood_auroc": 0.4121,
+   "ood_auroc_ci95_grouped": [
+    0.2788,
+    0.5668
+   ]
+  },
+  "hand_motion_frac": {
+   "gold_auroc": 0.7646,
+   "group": "hand",
+   "ood_auroc": 0.6097,
+   "ood_auroc_ci95_grouped": [
+    0.4942,
+    0.7211
+   ]
+  },
+  "hand_n_mean": {
+   "gold_auroc": 0.7546,
+   "group": "hand",
+   "ood_auroc": 0.6334,
+   "ood_auroc_ci95_grouped": [
+    0.4925,
+    0.776
+   ]
+  },
+  "hand_occupancy_mean": {
+   "gold_auroc": 0.7168,
+   "group": "hand",
+   "ood_auroc": 0.5501,
+   "ood_auroc_ci95_grouped": [
+    0.4076,
+    0.6925
+   ]
+  },
+  "hand_present_frac": {
+   "gold_auroc": 0.7553,
+   "group": "hand",
+   "ood_auroc": 0.6178,
+   "ood_auroc_ci95_grouped": [
+    0.4734,
+    0.7621
+   ]
+  }
+ },
+ "title": "Each new full-res signal alone (bad-score AUROC)"
+}

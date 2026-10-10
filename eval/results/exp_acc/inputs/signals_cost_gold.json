@@ -1,0 +1,12 @@
+{
+ "domain": "gold",
+ "n": 150,
+ "errors": 0,
+ "wall_s": 510.8,
+ "ms_per_window_mean": 19349.9,
+ "ms_per_window_median": 19993.9,
+ "decode_ms_median": 1084.9,
+ "flow_ms_median": 9420.6,
+ "hand_ms_median": 7103.9,
+ "fullres_ms_median": 1916.3
+}
