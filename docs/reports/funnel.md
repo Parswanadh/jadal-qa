@@ -12,116 +12,95 @@ everything else queues for QA ranked by uncertainty. Voice untouched.
 
 ## Phase 1 — interface (DONE, pushed)
 
-`route(signals, decisions, thresholds)` is pure (no I/O, randomness, clock).
-Choices, all documented in the module docstring:
+`route(signals, decisions, thresholds, allow_uncalibrated_accept=False)` is pure
+(no I/O, randomness, clock). Safety rule (C1): every REQUIRED L0 field
+(`decodable` plus each measurement whose rule is configured) goes through a
+strict path — missing, non-numeric, NaN/inf or garbage yields `review` with
+`LOW_CONFIDENCE` and a `missing:<field>` evidence entry, never accept, never
+reject. Only `decodable` explicitly false rejects. Static motion =>
+`NO_ACTIVE_WORK`, too-short/undecodable => `UNDECODABLE` (no new reason codes).
 
-- `answer_conf` = min of available L1 head probs (weakest head governs accept).
-- `queue_priority` = mean per-head `1 - |2p - 1|` for review (higher = more
-  uncertain), `0.0` for accept/reject, `1.0` when L1 is entirely missing;
-  ties break by segment_id via `queue_rank_key()`.
-- Missing L0 measurement or missing L1 decision => `review` (`LOW_CONFIDENCE`),
-  never reject, never accept, never crash. Static motion => `NO_ACTIVE_WORK`,
-  too-short/undecodable => `UNDECODABLE` (no new reason codes).
-- `thresholds_hash()` pins the config minus its own `sha256` field.
-- `configs/funnel_thresholds.json` = PLACEHOLDERS from `jadal.config.DEFAULT`
-  (`accept_conf` 0.9, `motion_min` 0.5, `under_exposed_frac_max` 0.35,
-  `min_duration_s` 5.0) + `calibration.status: placeholder`. No bound claimed.
+Auto-accept additionally requires `thresholds['calibration']['status']` in
+(`calibrated`, `provisional`), unless the caller passes
+`allow_uncalibrated_accept=True` (demo pattern; the flag lands in evidence).
+The shipped config has `accept_conf: null` and status `placeholder`, with a
+real pinned `sha256` that `load_thresholds()` verifies (tampering raises).
 
-Tests: `tests/test_funnel.py`, 35 tests, all pass
-(`python -m unittest tests.test_funnel` → OK). Covers one test per hard rule,
-L1-cannot-reject x4, multi-failure stable ordering, determinism hash,
-boundaries, missing fields, calibration (6 tests), threshold helpers.
+Choices, all documented in the module docstring: `answer_conf` = min of
+available L1 head probs; `queue_priority` = mean per-head `1 - |2p - 1|` for
+review (`0.0` accept/reject, `1.0` missing L1); ties break by segment_id.
+
+Tests: `tests/test_funnel.py`, 50 tests, all pass
+(`python -m unittest tests.test_funnel` → OK), including a 1000-case seeded
+fuzz proving accept is unreachable unless every required L0 field is valid
+and passing. Full-suite note: `discover -s tests` has 2 pre-existing
+`test_voicebank` failures (Sarvam API 403, needs credentials; unrelated).
 
 Integration owner: `from jadal.funnel import route, load_thresholds`;
-`route(signals, decisions, load_thresholds())`. Thresholds without
-`accept_conf` disable auto-accept; `null` rule thresholds disable that rule.
+`route(signals, decisions, load_thresholds())`. `null` rule thresholds disable
+that rule; `null` accept_conf disables auto-accept.
 
 ## Phase 2 — two-sided calibration (machinery DONE, gold numbers PENDING)
 
-`calibrate_two_sided(records, targets)` + `eval/calibrate_funnel.py`.
-Stratified seeded calib/heldout split; accept via `pick_threshold` on confs
-floored to a fixed `accept_step` (default 0.05) grid — without this,
-continuous confs stop the fixed-sequence scan at the first candidate
-(documented in code); reject side scans strictest→loosest per rule with a
-label-independent support floor `max(min_support, ceil(log(delta)/log(1-beta)))`
-(the exact bound with 0 errors on fewer clips already exceeds beta).
-Every bound reported overall AND per label source; unknown sources raise.
+`calibrate_two_sided(records, targets)` + `eval/calibrate_funnel.py`. Per
+label source, never pooled: group-based SELECT/CERTIFY split (same clip never
+spans the split), select with fixed-sequence on SELECT, WRITE only on CERTIFY
+gates (reject: bound <= beta and support >= min_support; accept: bound <=
+alpha and accepted >= min_support), else threshold null + reason. Union
+false-reject rate of route() measured on CERTIFY with its exact bound
+(no Bonferroni; per-rule bounds do not bound the union — stated).
 
-Synthetic machinery check (labels synthetic, MUST NOT be quoted as real):
-
-```
-python eval/calibrate_funnel.py --synthetic 1200 --seed 7
-records=1200 (calib=600, heldout=600) sources={'synthetic': 1200}
-accept_conf=0.4 heldout defect errors=9/364, upper_bound=0.0387 (delta=0.1)
-blur_var_min=90.5 heldout FR 0/88 bound=0.0274 | brightness_min=80.9 1/92 0.0435
-over_exposed_frac_max=0.0497 1/89 0.043 | motion_max=7.97 1/71 0.0537
-motion_min=2.03 2/68 0.0764 | hands_visible_frac_min=0.70 8/92 0.1374
-under_exposed_frac_max + min_duration_s: disabled (never fire in fixtures)
-```
-
-Saved to `eval/results/funnel_calibration_synthetic.json`. The live
-`configs/funnel_thresholds.json` was deliberately NOT overwritten with
-synthetic numbers — placeholders stay until human gold labels exist, then:
+Gold path (proven end-to-end in a throwaway worktree with real
+`jadal.signals` from `origin/feat/signals`): `--from-gold` cuts exactly
+[start_s, end_s), runs `compute_signals`, joins labels → human_gold records
+(group=clip, decisions None). Verified on 2 segments: full SPEC signals
+(blur_var ~830-930 normalised, motion px/sec, hands proxy, phash). After the
+labelling session:
 
 ```
-python eval/calibrate_funnel.py --records eval/gold/labels.json --write-config
+PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/calibrate_funnel.py --from-gold --source human_gold --write-config
 ```
 
-which writes `eval/results/funnel_calibration.json` and updates the config
-(calibration block: sources, N per source, bounds, seed, date, disabled rules,
-fresh `sha256`). Two bugs found and fixed while validating (both covered by
-tests): accept-side heldout counted good-among-accepted as errors (inverted —
-defects are bad-among-accepted); `%`-formatting in the label page.
+`--write-config` sets status `calibrated` only for human_gold N>=100 with all
+CERTIFY bounds met, else `provisional` (source stated).
 
 ## Phase 3 — gold labels (tool DONE + verified; labelling session PENDING)
 
-- Manifest: `eval/gold/segments.json`, 150 x 10 s segments, deterministic
-  (largest-remainder counts over durations, evenly spaced starts, no RNG):
+- Manifest: `eval/gold/segments.json`, 150 x 10 s segments, deterministic:
   ecu_full 48, ecu_late 14, desk 29, pallet2 6, pallet 17, organise 19,
   logistics4 17. Clips read-only, never copied into the repo.
-- Labelling: `tools/gold_label/label_server.py` (stdlib only). Start with:
+- Labelling: `tools/gold_label/label_server.py` (stdlib only, untouched by fix
+  round 1). Start with:
 
 ```
 PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python tools/gold_label/label_server.py
 ```
 
-  then open http://127.0.0.1:8811/ — 6-frame contact sheets (OpenCV JPEGs,
-  cached `data_runtime/gold/`), GOOD/BAD + keys g/b/s/skip/u/undo, reason
-  dropdown (existing codes, required for BAD), note, progress + ETA, NO model
-  verdict shown. Clicks save atomically to `eval/gold/labels.json`
-  (append-only history + latest map; resume-safe).
-- Verified live: label POST → 200, undo round-trip, frame JPEGs 360x360, and
-  Playwright screenshots (system Chrome — no MCP playwright tool in this
-  environment) inspected: header, progress, buttons above the grid, 6 frames.
+  then open http://127.0.0.1:8811/ — 6-frame contact sheets, GOOD/BAD +
+  g/b/s/u keys, reason dropdown (required for BAD), note, progress + ETA, NO
+  model verdict shown. Clicks save atomically to `eval/gold/labels.json`.
+- Verified live: label POST → 200, undo round-trip, frame JPEGs, Playwright
+  screenshots (system Chrome) inspected.
 
 ## Phase 4 — scale + funnel report (DONE on fixtures)
 
-`eval/scale_bench.py --limit 150` (all 150 manifest segments, 10 fixed frames
-each, real IndEgo decode on THIS laptop; L0 = documented PROXY stats since
-`jadal.signals` is not on main; `jadal.decision` not importable so L1 skipped
-after checking `nvidia-smi` — GPU showed 17% from another worker, untouched):
+Scale (`eval/scale_bench.py --limit 150`; L0 = documented PROXY since
+`jadal.signals` is not on main; `jadal.decision` absent so L1 skipped after
+`nvidia-smi` showed GPU 17% from another worker, untouched):
 
 | workers | seg/h | decode mean | l0_proxy mean | route mean |
 |---|---|---|---|---|
-| 1 | 16579.5 | 213.5 ms | 2.9 ms | 0.06 ms |
-| 2 | 24419.8 | 289.8 ms | 3.9 ms | 0.08 ms |
-| 4 | 28917.8 | 490.2 ms | 4.7 ms | 0.10 ms |
-| 8 | 29424.2 | 960.6 ms | 6.0 ms | 0.13 ms |
+| 1 | 12961.0 | 273.663 ms | 3.332 ms | 0.074 ms |
+| 2 | 18179.5 | 391.156 ms | 4.04 ms | 0.091 ms |
+| 4 | 23179.1 | 612.987 ms | 5.147 ms | 0.112 ms |
+| 8 | 24901.1 | 1135.069 ms | 6.321 ms | 0.162 ms |
 
-Decode-bound; little gain past P=4 on this disk. Cross-process determinism:
-IDENTICAL route() hashes for all 150 segments across P={1,2,4,8}. Scale-out is
-by processes, never batching, one segment at a time. Saved to
-`eval/results/funnel_scale.json`. Bench verdict mix (146 reject / 4 accept) is
-a FIXTURE artifact: motion is differenced on 1 s-apart frames, so 144/150 trip
-the placeholder SHAKY gate — speed numbers only, no quality claim.
-
-`eval/funnel_report.py --synthetic 1200 --seed 7` (placeholder thresholds,
-labels synthetic, N=1200): split 59.25% accept / 40.75% reject / 0% review;
-false-reject bound 0/489 → 0.0047; defect bound 0/711 → 0.0032 (delta=0.1).
-Enrichment is vacuous on these separable fixtures (queue defect rate 0) —
-real gold labels will populate all three bins. Saved to
-`eval/results/funnel_report_synthetic.json`. No QA-cost illustration (no
-user-supplied minutes-per-review; `--minutes-per-review` supported).
+Decode-bound; little gain past P=4. Cross-process determinism: IDENTICAL
+route() hashes, 150 segments x 4 worker counts. Scale-out by processes, never
+batching. Bench verdict mix (146 reject / 4 review) is a FIXTURE artifact
+(144 SHAKY: motion on 1 s-apart frames vs placeholder gate). Saved to
+`eval/results/funnel_scale.json`. No QA-cost illustration (no user-supplied
+minutes-per-review; `--minutes-per-review` supported).
 
 ## NOT DONE
 
@@ -129,3 +108,67 @@ user-supplied minutes-per-review; `--minutes-per-review` supported).
 - Real `jadal.signals` / `jadal.decision` swap-ins (bench + report rerun).
 - Funnel wiring into `jadal/pipeline.py` (integration owner; do NOT merge this
   branch — PR only).
+
+---
+
+## Fix round 1 (review of PR #29: SPEC FAIL → fixes; all numbers below are
+generated from the JSON artifacts, not hand-typed)
+
+Rulings addressed: C1 strict missing-L0 path + 1000-case fuzz; C2
+SELECT/CERTIFY disjoint gating (rules now DISABLE when CERTIFY fails — the
+previously-hidden held-out failures gate the output); C3 artifacts
+regenerated, tables below are `--markdown` output; C4 per-source only, status
+`calibrated` solely for human_gold N>=100 with bounds met; I1 real sha256 +
+verify-on-load; I2 `accept_conf: null` + placeholder accept gate with
+`allow_uncalibrated_accept` flag; I3 `--from-gold` join proven with real
+signals; I4 measured union bound on CERTIFY (no Bonferroni — stated).
+
+### Calibration artifact: eval/results/funnel_calibration_synthetic.json
+
+`eval/calibrate_funnel.py --synthetic 1200 --seed 7`
+(provenance=synthetic-fixtures — machinery check, never human-grade):
+
+records=1200 sources={'synthetic': 1200} seed=7
+
+## source=synthetic (N=1200, select=600, certify=600)
+| side | threshold | certify fired | certify errors | certify UCB | gate |
+|---|---|---|---|---|---|
+| accept | 0.4 | 364 | 9 | 0.0387 | WRITTEN |
+| rule | threshold | disabled | certify fired | certify errors | certify UCB |
+|---|---|---|---|---|---|---|
+| blur_var_min | 90.0458 | False | 91 | 0 | 0.025 |
+| brightness_min | 80.1498 | False | 88 | 0 | 0.0258 |
+| under_exposed_frac_max | None | True | 0 | 0 | None |
+| over_exposed_frac_max | 0.0497 | False | 95 | 1 | 0.0403 |
+| motion_max | None | True | 70 | 3 | 0.093 |
+| motion_min | 2.0011 | False | 69 | 0 | 0.0328 |
+| hands_visible_frac_min | None | True | 82 | 2 | 0.0636 |
+| min_duration_s | None | True | 0 | 0 | None |
+union CERTIFY: rejected=223 errors=1 UCB=0.0173 (n_certify=600)
+
+Read it plainly: motion_max (CERTIFY 3/70 → 0.093) and
+hands_visible_frac_min (CERTIFY 2/82 → 0.0636) are now DISABLED — the old
+report's hidden held-out failures gate the config. under_exposed_frac_max
+and min_duration_s never fire in these fixtures (disabled, said so).
+The live `configs/funnel_thresholds.json` was NOT overwritten (placeholders
+stay until human gold). Support floor for beta=0.05/delta=0.1 is 45.
+
+### Funnel report artifact: eval/results/funnel_report_synthetic.json
+
+`eval/funnel_report.py --synthetic 1200 --seed 7 --allow-uncalibrated`
+(shipped placeholder config: accept_conf null → confident goods review;
+per-source section, labels synthetic, N=1200):
+split accept=0 / reject=489 (40.75%) / review=711 (59.25%);
+false_reject 0/489 → UCB 0.0047; defect among accepted n/a (accepted=0);
+queue defect rate 0.0 vs unfiltered 0.4075; QA workload reduction
+1 - review share = 0.4075. Enrichment is vacuous on these separable
+fixtures — real gold labels will populate all three bins.
+
+### Verification commands (all ran)
+
+- `python -m unittest tests.test_funnel` → Ran 50 tests, OK.
+- `discover -s tests`: only the 2 pre-existing voicebank API-credential
+  failures (unrelated, out of scope).
+- Throwaway-worktree `--from-gold` with real `jadal.signals`: 2/2 records
+  built with full SPEC signals (fake labels lived only in /tmp; the branch's
+  `eval/gold/` untouched, no `git clean`, no resets).

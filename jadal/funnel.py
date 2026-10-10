@@ -33,10 +33,12 @@ Accepted/rejected clips score 0.0 (they never enter the queue). The
 score is monotone in uncertainty: a clip closer to the decision
 boundary always ranks higher.
 
-Missing fields: a missing/unparseable L0 measurement can never prove a
-clip is bad, so it demotes to ``review`` (``LOW_CONFIDENCE``) instead
-of rejecting. A missing L1 decision (``None`` or ``{}``) likewise means
-``review``, never a crash and never an accept. ``dup_of`` missing or
+Missing fields: a missing, non-numeric, NaN/inf or garbage REQUIRED L0
+measurement (``decodable`` plus every measurement whose rule threshold is
+configured) can never prove anything, so it yields ``review`` with
+``LOW_CONFIDENCE`` and a ``missing:<field>`` evidence entry — never
+reject, never accept. A missing L1 decision (``None`` or ``{}``) likewise
+means ``review``, never a crash and never an accept. ``dup_of`` missing or
 null simply means "not a duplicate".
 
 NOT DONE (Phase 3+):
@@ -51,8 +53,6 @@ from __future__ import annotations
 import hashlib
 import json
 import math
-import random
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Optional
 
@@ -96,12 +96,24 @@ def thresholds_hash(thresholds: Mapping[str, Any]) -> str:
 
 
 def load_thresholds(path: str | Path | None = None) -> dict:
-    """Load funnel thresholds from JSON (default: configs/funnel_thresholds.json)."""
+    """Load funnel thresholds, verifying the pinned ``sha256`` (I1).
+
+    The ``sha256`` field must equal :func:`thresholds_hash` over the rest
+    of the file; a mismatch (tampering, hand-edit without rehashing, stale
+    placeholder) raises ``ValueError`` instead of silently loading.
+    """
     src = Path(path) if path is not None else DEFAULT_THRESHOLDS_PATH
     with open(src, "r", encoding="utf-8") as fh:
         data = json.load(fh)
     if not isinstance(data, dict):
         raise ValueError(f"thresholds file {src} must contain a JSON object")
+    stored = data.get("sha256")
+    computed = thresholds_hash(data)
+    if stored != computed:
+        raise ValueError(
+            f"thresholds file {src} fails hash verification: "
+            f"stored sha256={stored!r} != computed {computed!r}. "
+            f"Recompute with jadal.funnel.thresholds_hash after editing.")
     return data
 
 
@@ -167,7 +179,6 @@ def _head_probs(decisions: Mapping[str, Any] | None) -> list[float]:
 
 def _uncertainty(prob: float) -> float:
     """u(p) = 1 - |2p - 1|; 0 = certain, 1 = coin-flip."""
-    """u(p) = 1 - |2p - 1|; 0 = certain, 1 = coin-flip."""
     return 1.0 - abs(2.0 * prob - 1.0)
 
 
@@ -187,7 +198,8 @@ def queue_rank_key(segment_id: str, queue_priority: float | None) -> tuple:
 # --------------------------------------------------------------------------
 def route(signals: Mapping[str, Any] | None,
           decisions: Mapping[str, Any] | None,
-          thresholds: Mapping[str, Any]) -> dict:
+          thresholds: Mapping[str, Any],
+          allow_uncalibrated_accept: bool = False) -> dict:
     """Route one segment to accept | reject | review (pure, deterministic).
 
     Returns ``{"verdict", "reasons", "evidence", "answer_conf",
@@ -195,6 +207,22 @@ def route(signals: Mapping[str, Any] | None,
     :data:`REASON_ORDER`; ``evidence`` follows :data:`CHECK_ORDER` then
     L1 checks (``hands_ok``, ``active_work``, ``step``); floats are
     rounded to 4 decimals.
+
+    Safety (C1): every REQUIRED L0 field — ``decodable`` plus each
+    measurement whose rule threshold is configured — goes through the
+    strict :func:`need_float` path. A missing, non-numeric, NaN/inf or
+    garbage value can never prove anything, so it yields ``review`` with
+    ``LOW_CONFIDENCE`` and an evidence entry
+    ``{check: 'missing:<field>', ...}`` — never reject, never accept.
+    Only ``decodable`` explicitly false (or 0) rejects (``UNDECODABLE``).
+    ``dup_of`` is not required: missing/null simply means "not a duplicate".
+
+    Calibration gate: auto-accept additionally requires
+    ``thresholds['calibration']['status']`` to be ``'calibrated'`` or
+    ``'provisional'``, unless the caller passes
+    ``allow_uncalibrated_accept=True`` (the demo sets it; the evidence
+    then carries the flag). Otherwise a clean, confident clip still goes
+    to ``review`` with an ``accept_uncalibrated`` evidence entry.
     """
     signals = dict(signals) if isinstance(signals, Mapping) else {}
     decisions = dict(decisions) if isinstance(decisions, Mapping) else {}
@@ -206,16 +234,27 @@ def route(signals: Mapping[str, Any] | None,
     missing_l0 = False  # any required L0 measurement missing/unparseable
 
     def need_float(name: str) -> float | None:
+        """Strict required-field read: records missing-evidence on failure."""
         nonlocal missing_l0
-        number = _as_float(signals.get(name))
+        raw = signals.get(name, signals.get("segment_duration_s")
+                          if name == "duration_s" else None)
+        number = _as_float(raw)
         if number is None:
             missing_l0 = True
+            soft.add("LOW_CONFIDENCE")
+            evidence.append({
+                "check": f"missing:{name}",
+                "value": raw if raw is not None else "missing",
+                "op": "==",
+                "threshold": "valid-number",
+                "code": "LOW_CONFIDENCE",
+            })
         return number
 
     # -- L0 hard checks (exact rules only) -------------------------------
     # decodable
     decodable = signals.get("decodable")
-    if decodable is False or (isinstance(decodable, (int,))
+    if decodable is False or (isinstance(decodable, int)
                               and not isinstance(decodable, bool)
                               and int(decodable) == 0):
         hard.add("UNDECODABLE")
@@ -225,23 +264,21 @@ def route(signals: Mapping[str, Any] | None,
         evidence.append(_evidence("decodable", True, "==", True,
                                   "UNDECODABLE"))
     else:
-        missing_l0 = True
-        evidence.append(_evidence("decodable", "missing", "==", True,
-                                  "UNDECODABLE"))
+        need_float("decodable")
 
-    # duration (optional signal; skipped silently when absent)
+    # duration (required whenever min_duration_s is configured)
     min_duration = _as_float(thresh.get("min_duration_s"))
-    duration = _as_float(signals.get("duration_s",
-                                    signals.get("segment_duration_s")))
-    if min_duration is not None and duration is not None:
-        if duration < min_duration:
-            hard.add("UNDECODABLE")
-        evidence.append(_evidence("duration_s", duration, ">=",
-                                  min_duration, "UNDECODABLE"))
+    if min_duration is not None:
+        duration = need_float("duration_s")
+        if duration is not None:
+            if duration < min_duration:
+                hard.add("UNDECODABLE")
+            evidence.append(_evidence("duration_s", duration, ">=",
+                                      min_duration, "UNDECODABLE"))
 
     # blur (blur_var is brightness- and resolution-normalised upstream)
     blur_min = _as_float(thresh.get("blur_var_min"))
-    blur = need_float("blur_var")
+    blur = need_float("blur_var") if blur_min is not None else None
     if blur_min is not None and blur is not None:
         if blur < blur_min:
             hard.add("BLUR")
@@ -249,21 +286,22 @@ def route(signals: Mapping[str, Any] | None,
 
     # brightness / exposure
     bright_min = _as_float(thresh.get("brightness_min"))
-    bright = need_float("brightness_mean")
+    bright = need_float("brightness_mean") if bright_min is not None else None
     if bright_min is not None and bright is not None:
         if bright < bright_min:
             hard.add("TOO_DARK")
         evidence.append(_evidence("brightness_mean", bright, ">=",
                                   bright_min, "TOO_DARK"))
     under_max = _as_float(thresh.get("under_exposed_frac_max"))
-    under = _as_float(signals.get("under_exposed_frac"))
+    under = (need_float("under_exposed_frac")
+             if under_max is not None else None)
     if under_max is not None and under is not None:
         if under > under_max:
             hard.add("TOO_DARK")
         evidence.append(_evidence("under_exposed_frac", under, "<=",
                                   under_max, "TOO_DARK"))
     over_max = _as_float(thresh.get("over_exposed_frac_max"))
-    over = need_float("over_exposed_frac")
+    over = need_float("over_exposed_frac") if over_max is not None else None
     if over_max is not None and over is not None:
         if over > over_max:
             hard.add("OVEREXPOSED")
@@ -273,7 +311,8 @@ def route(signals: Mapping[str, Any] | None,
     # motion: too shaky (SHAKY) or static (NO_ACTIVE_WORK)
     motion_max = _as_float(thresh.get("motion_max"))
     motion_min = _as_float(thresh.get("motion_min"))
-    motion = need_float("motion_mean")
+    motion = (need_float("motion_mean")
+              if motion_max is not None or motion_min is not None else None)
     if motion is not None:
         if motion_max is not None:
             if motion > motion_max:
@@ -288,7 +327,8 @@ def route(signals: Mapping[str, Any] | None,
 
     # hands visible fraction
     hands_min = _as_float(thresh.get("hands_visible_frac_min"))
-    hands_frac = need_float("hands_visible_frac")
+    hands_frac = (need_float("hands_visible_frac")
+                  if hands_min is not None else None)
     if hands_min is not None and hands_frac is not None:
         if hands_frac < hands_min:
             hard.add("HANDS_NOT_VISIBLE")
@@ -342,12 +382,25 @@ def route(signals: Mapping[str, Any] | None,
 
     if missing_l0:
         # A missing L0 measurement proves nothing: review, never reject.
+        # (need_float already added LOW_CONFIDENCE + missing evidence.)
         soft.add("LOW_CONFIDENCE")
     if not heads:
         # No usable L1 signal at all: review, never accept.
         soft.add("LOW_CONFIDENCE")
 
     answer_conf: float | None = round(min(heads), 4) if heads else None
+
+    # Calibration gate: auto-accept only on calibrated thresholds, unless
+    # the caller explicitly opts into uncalibrated demo accepts.
+    calib_block = thresh.get("calibration")
+    calib_status = calib_block.get("status") if isinstance(
+        calib_block, Mapping) else None
+    calibrated = calib_status in ("calibrated", "provisional")
+
+    def _review_priority() -> float:
+        return round(
+            sum(_uncertainty(p) for p in heads) / len(heads), 4
+        ) if heads else 1.0
 
     # -- verdict -----------------------------------------------------------
     if hard:
@@ -365,13 +418,20 @@ def route(signals: Mapping[str, Any] | None,
             reasons_set.add("LOW_CONFIDENCE")
         reasons = sorted(reasons_set,
                          key=lambda c: _REASON_RANK.get(c, len(REASON_ORDER)))
-        queue_priority = round(
-            sum(_uncertainty(p) for p in heads) / len(heads), 4
-        ) if heads else 1.0
+        queue_priority = _review_priority()
+    elif not calibrated and not allow_uncalibrated_accept:
+        verdict = "review"
+        reasons = ["LOW_CONFIDENCE"]
+        evidence.append(_evidence("accept_uncalibrated", answer_conf, ">=",
+                                  accept_conf, "LOW_CONFIDENCE"))
+        queue_priority = _review_priority()
     else:
         verdict = "accept"
         reasons = []
         queue_priority = 0.0
+        if allow_uncalibrated_accept and not calibrated:
+            evidence.append(_evidence("allow_uncalibrated_accept", True,
+                                      "==", True, "LOW_CONFIDENCE"))
 
     return {
         "verdict": verdict,
@@ -415,11 +475,10 @@ DEFAULT_TARGETS = {
     "target_alpha": 0.05,   # defect rate among accepted
     "delta": 0.1,           # 1 - delta confidence for every bound
     "target_beta": 0.05,    # false-reject rate per reject rule
-    "min_support": 10,      # a rule must fire on this many calib clips
-    "min_accepted": 30,     # accept side must cover this many calib clips
+    "min_support": 10,      # CERTIFY support required to write a threshold
+    "min_accepted": 30,     # accept side must cover this many SELECT clips
     "accept_step": 0.05,    # accept-side candidate grid resolution
-    "calib_frac": 0.5,      # stratified calibration share
-    "seed": 1234,
+    "seed": 1234,           # salts the deterministic group split
 }
 
 
@@ -442,19 +501,25 @@ def _validate_records(records: list[dict]) -> list[dict]:
         decisions = record.get("decisions")
         if decisions is not None and not isinstance(decisions, Mapping):
             raise ValueError(f"record {i} decisions must be a mapping or None")
+        group = record.get("group")
         cleaned.append({
             "signals": dict(signals),
             "decisions": dict(decisions) if decisions is not None else None,
             "label": label,
             "reason_gold": record.get("reason_gold"),
             "label_source": source,
+            # Optional grouping for the SELECT/CERTIFY split (clip id or
+            # near-duplicate component). Absent => each record is its own
+            # group (fine for independent synthetic draws).
+            "group": str(group) if group is not None else None,
+            "segment_id": record.get("segment_id"),
         })
     if not cleaned:
         raise ValueError("need at least one labelled record")
     return cleaned
 
 
-def _record_key(record: dict) -> str:
+def _content_key(record: dict) -> str:
     return hashlib.sha256(canonical_json({
         "signals": record["signals"], "decisions": record["decisions"],
         "label": record["label"], "reason_gold": record.get("reason_gold"),
@@ -462,30 +527,29 @@ def _record_key(record: dict) -> str:
     })).hexdigest()
 
 
-def _split_calib_heldout(records: list[dict], calib_frac: float,
-                         seed: int) -> tuple[list[dict], list[dict]]:
-    """Stratified (by label) calibration/held-out split, fully deterministic.
+def _split_select_certify(records: list[dict],
+                          seed: int) -> tuple[list[dict], list[dict]]:
+    """Deterministic SELECT/CERTIFY split by group, never by frame.
 
-    Records are first sorted by content hash (input-order independent),
-    then shuffled within each label stratum with ``random.Random(seed)``.
+    Records sharing a ``group`` (clip id / near-duplicate component, else
+    their content hash) always land on the SAME side: groups are ordered by
+    ``sha256(seed + group)`` and dealt alternately to SELECT and CERTIFY,
+    so neighbouring segments of one clip cannot leak across the split.
+    No RNG anywhere; input order is irrelevant.
     """
-    ordered = sorted(records, key=_record_key)
-    rng = random.Random(int(seed))
-    strata: dict[str, list[dict]] = {"good": [], "bad": []}
-    for record in ordered:
-        strata[record["label"]].append(record)
-    calib: list[dict] = []
-    heldout: list[dict] = []
-    for stratum in strata.values():
-        rng.shuffle(stratum)
-        total = len(stratum)
-        if total == 0:
-            continue
-        take = min(max(1, int(round(float(calib_frac) * total))), total - 1) \
-            if total >= 2 else 1
-        calib.extend(stratum[:take])
-        heldout.extend(stratum[take:])
-    return calib, heldout
+    groups: dict[str, list[dict]] = {}
+    for record in records:
+        key = record["group"] if record["group"] is not None \
+            else "content:" + _content_key(record)
+        groups.setdefault(key, []).append(record)
+    ordered = sorted(
+        groups, key=lambda g: hashlib.sha256(
+            f"{int(seed)}/funnel-select-certify/{g}".encode()).hexdigest())
+    select: list[dict] = []
+    certify: list[dict] = []
+    for i, key in enumerate(ordered):
+        (select if i % 2 == 0 else certify).extend(groups[key])
+    return select, certify
 
 
 def _rate_bound(fired_labels: list[str], delta: float,
@@ -506,16 +570,6 @@ def _rate_bound(fired_labels: list[str], delta: float,
     }
 
 
-def _bound_by_source(fired: list[dict], delta: float,
-                     error_label: str = "good") -> dict:
-    by_source: dict[str, dict] = {}
-    for source in LABEL_SOURCES:
-        subset = [r["label"] for r in fired if r["label_source"] == source]
-        if subset:
-            by_source[source] = _rate_bound(subset, delta, error_label)
-    return by_source
-
-
 def _measure(rule: dict, signals: Mapping[str, Any]) -> float | None:
     value = _as_float(signals.get(rule["signal"]))
     if value is None and rule["signal"] == "duration_s":
@@ -523,41 +577,200 @@ def _measure(rule: dict, signals: Mapping[str, Any]) -> float | None:
     return value
 
 
+def _conf_of(record: dict) -> float | None:
+    heads = _head_probs(record["decisions"])
+    return min(heads) if heads else None
+
+
+def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
+                      support_floor: int) -> dict:
+    """Select on SELECT, certify on CERTIFY (disjoint by group)."""
+    alpha = float(cfg["target_alpha"])
+    beta = float(cfg["target_beta"])
+    min_support = int(cfg["min_support"])
+    min_accepted = int(cfg["min_accepted"])
+    accept_step = float(cfg["accept_step"])
+    select, certify = _split_select_certify(subset, int(cfg["seed"]))
+
+    # -- (a) accept side: select on SELECT, gate on CERTIFY ----------------
+    select_conf = [(_conf_of(r), r["label"] == "good") for r in select]
+    n_no_conf = sum(1 for conf, _ in select_conf if conf is None)
+    usable = [(conf, ok) for conf, ok in select_conf if conf is not None]
+    quantised = [round(math.floor(c / accept_step) * accept_step, 10)
+                 for c, _ in usable]
+    picked = certify_mod.pick_threshold(
+        conf=quantised, correct=[ok for _, ok in usable],
+        target_err=alpha, delta=delta, min_accepted=min_accepted)
+    candidate = (round(float(picked["threshold"]), 4)
+                 if picked["threshold"] is not None else None)
+    accept_out: dict[str, Any] = {
+        "candidate": candidate,
+        "n_select": len(select),
+        "n_no_conf": n_no_conf,
+        "select_certified": {
+            "accepted": picked["accepted"],
+            "errors": picked["errors"],
+            "upper_bound": (round(picked["upper_bound"], 4)
+                            if picked["upper_bound"] is not None else None),
+            "coverage": round(picked["coverage"], 4),
+        },
+    }
+    accept_threshold: float | None = None
+    if candidate is not None:
+        fired = [r for r in certify
+                 if (_conf_of(r) is not None and _conf_of(r) >= candidate)]
+        stats = _rate_bound([r["label"] for r in fired], delta,
+                            error_label="bad")
+        accept_out["certify"] = {**stats, "n_certify": len(certify)}
+        if stats["upper_bound"] is not None \
+                and stats["upper_bound"] <= alpha \
+                and stats["fired"] >= min_support:
+            accept_threshold = candidate
+        else:
+            accept_out["gate"] = (
+                "candidate rejected on CERTIFY: "
+                f"bound={stats['upper_bound']} (target {alpha}), "
+                f"support={stats['fired']} (min {min_support})")
+    else:
+        accept_out["certify"] = {"fired": 0, "errors": 0, "upper_bound": None,
+                                 "n_certify": len(certify),
+                                 "note": "no candidate selected: "
+                                         "auto-accept stays disabled"}
+    accept_out["threshold"] = accept_threshold
+
+    # -- (b) reject side: select per rule on SELECT, gate on CERTIFY -------
+    reject_out: dict[str, dict] = {}
+    updates: dict[str, Any] = {"accept_conf": accept_threshold}
+    for rule in REJECT_RULES:
+        key = rule["key"]
+        measured = [(m, r) for r in select
+                    if (m := _measure(rule, r["signals"])) is not None]
+        values = sorted({_round4(m) for m, _ in measured})
+        if rule["direction"] == "lt":
+            candidates = values  # strictest (fewest fires) first
+        else:
+            candidates = values[::-1]
+
+        def _fires(measured_pairs: list, threshold: float) -> list[dict]:
+            return [r for m, r in measured_pairs
+                    if (m < threshold if rule["direction"] == "lt"
+                        else m > threshold)]
+
+        # Label-independent support pre-filter (keeps the certificate);
+        # support_floor also guarantees the first tested candidate CAN pass.
+        eligible = [t for t in candidates
+                    if sum(1 for m, _ in measured
+                           if (m < t if rule["direction"] == "lt"
+                               else m > t)) >= support_floor]
+        best: float | None = None
+        best_stats: dict | None = None
+        for threshold in eligible:
+            stats = _rate_bound(
+                [r["label"] for r in _fires(measured, threshold)], delta)
+            if stats["upper_bound"] is not None \
+                    and stats["upper_bound"] <= beta:
+                best = threshold
+                best_stats = stats
+            else:
+                break  # fixed-sequence stopping rule
+        cert_measured = [(m, r) for r in certify
+                         if (m := _measure(rule, r["signals"])) is not None]
+        if best is not None:
+            cert_fired = _fires(cert_measured, best)
+            cert_stats = _rate_bound(
+                [r["label"] for r in cert_fired], delta)
+            gate_ok = cert_stats["upper_bound"] is not None \
+                and cert_stats["upper_bound"] <= beta \
+                and cert_stats["fired"] >= min_support
+        else:
+            cert_stats = {"fired": 0, "errors": 0, "upper_bound": None}
+            gate_ok = False
+        if best is not None and gate_ok:
+            entry: dict[str, Any] = {
+                "threshold": best, "disabled": False,
+                "code": rule["code"],
+                "select": best_stats,
+                "certify": {**cert_stats, "n_certify": len(certify)},
+                "n_eligible_candidates": len(eligible),
+            }
+        else:
+            if best is None:
+                reason = ("no candidate certified on SELECT: the strictest "
+                          f"candidate with support >= {support_floor} already "
+                          "exceeds target_beta (or no candidate reaches "
+                          "support)")
+            else:
+                reason = ("SELECT candidate rejected on CERTIFY: "
+                          f"bound={cert_stats['upper_bound']} "
+                          f"(target {beta}), support={cert_stats['fired']} "
+                          f"(min {min_support})")
+            entry = {
+                "threshold": None, "disabled": True,
+                "code": rule["code"],
+                "reason": reason,
+                "select_candidate": best,
+                "certify": {**cert_stats, "n_certify": len(certify)},
+                "n_eligible_candidates": len(eligible),
+            }
+        reject_out[key] = entry
+        updates[key] = entry["threshold"]
+
+    # -- (c) union: measured end-to-end on CERTIFY with selected thresholds.
+    # No Bonferroni correction across rules (at N~150 it would certify
+    # nothing); instead the UNION false-reject rate of route() itself is
+    # measured on CERTIFY with its exact bound. Per-rule bounds do NOT bound
+    # the union — only this number describes route().
+    route_thresh = {k: v for k, v in updates.items()}
+    union_rejected = [
+        r for r in certify
+        if route(r["signals"], r["decisions"], route_thresh,
+                 allow_uncalibrated_accept=True)["verdict"] == "reject"]
+    union_stats = _rate_bound([r["label"] for r in union_rejected], delta)
+    union = {**union_stats, "n_certify": len(certify),
+             "note": ("union of all selected reject rules as route() "
+                      "applies them; per-rule bounds do not bound this")}
+
+    return {
+        "n_total": len(subset),
+        "n_select": len(select),
+        "n_certify": len(certify),
+        "accept": accept_out,
+        "reject_rules": reject_out,
+        "union": union,
+        "threshold_updates": updates,
+    }
+
+
 def calibrate_two_sided(records: list[dict],
                         targets: dict | None = None) -> dict:
     """Two-sided calibration with exact-binomial certificates (deterministic).
 
     ``records``: ``{signals, decisions|None, label: 'good'|'bad',
-    reason_gold: code|None, label_source}``. ``targets`` overrides any of
-    :data:`DEFAULT_TARGETS`.
+    reason_gold: code|None, label_source}`` plus optional ``group``
+    (clip id / near-duplicate component) and ``segment_id``. ``targets``
+    overrides any of :data:`DEFAULT_TARGETS`.
 
-    (a) ACCEPT side: ``answer_conf`` (= min L1 head prob, same definition
-    as :func:`route`) threshold via ``jadal.certify.pick_threshold``
-    (fixed-sequence, exact binomial) on the CALIBRATION split so the
-    DEFECT rate among accepted clips <= ``target_alpha``. Confs are
-    floored to a fixed ``accept_step`` grid BEFORE the scan: this makes
-    the candidate set a pre-declared grid (equivalent to scanning the raw
-    confs at grid thresholds, since ``floor(c) >= t ⟺ c >= t`` on-grid),
-    without which continuous confs would stop the scan at the first
-    candidate. The reported bound is re-estimated on the DISJOINT
-    held-out split, overall and per label source. Records with no usable
-    L1 head can never accept and are counted as ``n_no_conf``.
-    (b) REJECT side: per tunable rule, candidates ordered strictest
-    (fires fewest, most-certainly-bad clips) to loosest; the SAME
-    fixed-sequence logic bounds the FALSE-REJECT rate (fraction of fired
-    clips that are actually good) <= ``target_beta``. Candidates firing
-    on fewer than ``max(min_support, n_power)`` calib clips are excluded
-    BEFORE testing, where ``n_power = ceil(log(delta)/log(1-beta))`` is
-    the smallest support at which a clean rule CAN pass (the exact upper
-    bound with 0 errors on fewer clips already exceeds beta). Both
-    filters use measurements only — never labels — so the certificate
-    stands. The scan stops at the first bound failure. A rule with no
-    certifiable candidate is DISABLED (threshold None).
+    NEVER POOLED: each label source is calibrated independently and the
+    result carries ``per_source`` sub-results — no bound is ever computed
+    over a mix of sources.
 
-    Returns ``{"accept", "reject_rules", "threshold_updates", "meta"}``;
-    all floats rounded to 4 decimals. Label sources are NEVER pooled
-    silently: every bound is reported per source (``meta`` records the
-    source mix and N per source).
+    Per source: records are split into SELECT and CERTIFY parts by group
+    (same group never spans the split; see :func:`_split_select_certify`).
+    (a) ACCEPT side: ``answer_conf`` threshold selected with
+    ``jadal.certify.pick_threshold`` (fixed-sequence, exact binomial, confs
+    floored to the fixed ``accept_step`` grid) on SELECT; the threshold is
+    WRITTEN only if the CERTIFY defect bound <= ``target_alpha`` with
+    CERTIFY support >= ``min_support``. (b) REJECT side: per tunable rule,
+    candidates strictest-first on SELECT with the same fixed-sequence
+    logic; WRITTEN only if the CERTIFY false-reject bound <=
+    ``target_beta`` with CERTIFY support >= ``min_support``, else the rule
+    is DISABLED (threshold None) and the reason says so. (c) UNION: the
+    measured false-reject rate of the full route() union on CERTIFY with
+    its exact bound (per-rule bounds do not bound the union).
+
+    Pure function: no I/O, no randomness, no clock. Returns
+    ``{"per_source", "threshold_updates" (per source), "meta"}``; all
+    floats rounded to 4 decimals.
     """
     cfg = dict(DEFAULT_TARGETS)
     cfg.update(targets or {})
@@ -568,7 +781,7 @@ def calibrate_two_sided(records: list[dict],
     min_accepted = int(cfg["min_accepted"])
     accept_step = float(cfg["accept_step"])
     seed = int(cfg["seed"])
-    if not 0.0 < alpha < 1.0 and alpha != 0.0:
+    if not 0.0 < alpha < 1.0:
         raise ValueError("target_alpha must be in (0, 1)")
     if not 0.0 < delta < 1.0:
         raise ValueError("delta must be in (0, 1)")
@@ -581,141 +794,36 @@ def calibrate_two_sided(records: list[dict],
     support_floor = max(min_support, n_power)
 
     cleaned = _validate_records(records)
-    calib, heldout = _split_calib_heldout(cleaned, float(cfg["calib_frac"]),
-                                          seed)
-
-    def conf_of(record: dict) -> float | None:
-        heads = _head_probs(record["decisions"])
-        return min(heads) if heads else None
-
-    # -- (a) accept side --------------------------------------------------
-    calib_conf = [(conf_of(r), r["label"] == "good", r) for r in calib]
-    n_no_conf = sum(1 for conf, _, _ in calib_conf if conf is None)
-    usable = [(conf, ok) for conf, ok, _ in calib_conf if conf is not None]
-    quantised = [round(math.floor(c / accept_step) * accept_step, 10)
-                 for c, _ in usable]
-    picked = certify_mod.pick_threshold(
-        conf=quantised, correct=[ok for _, ok in usable],
-        target_err=alpha, delta=delta, min_accepted=min_accepted)
-    accept_threshold = (round(float(picked["threshold"]), 4)
-                        if picked["threshold"] is not None else None)
-    accept_out: dict[str, Any] = {
-        "threshold": accept_threshold,
-        "n_calib": len(calib),
-        "n_no_conf": n_no_conf,
-        "calib_certified": {
-            "accepted": picked["accepted"],
-            "errors": picked["errors"],
-            "upper_bound": (round(picked["upper_bound"], 4)
-                            if picked["upper_bound"] is not None else None),
-            "coverage": round(picked["coverage"], 4),
-        },
-    }
-    if accept_threshold is not None:
-        fired = [r for r in heldout
-                 if (conf_of(r) is not None and conf_of(r) >= accept_threshold)]
-        accept_out["heldout"] = _rate_bound(
-            [r["label"] for r in fired], delta, error_label="bad")
-        accept_out["heldout"]["n_heldout"] = len(heldout)
-        accept_out["heldout_by_source"] = _bound_by_source(
-            fired, delta, error_label="bad")
-    else:
-        accept_out["heldout"] = {"fired": 0, "errors": 0,
-                                 "upper_bound": None,
-                                 "n_heldout": len(heldout),
-                                 "note": "no threshold certified: "
-                                         "auto-accept stays disabled"}
-        accept_out["heldout_by_source"] = {}
-
-    # -- (b) reject side --------------------------------------------------
-    reject_out: dict[str, dict] = {}
-    updates: dict[str, Any] = {"accept_conf": accept_threshold}
-    for rule in REJECT_RULES:
-        key = rule["key"]
-        measured = [(m, r) for r in calib
-                    if (m := _measure(rule, r["signals"])) is not None]
-        values = sorted({_round4(m) for m, _ in measured})
-        if rule["direction"] == "lt":
-            candidates = values  # strictest (fewest fires) first
-        else:
-            candidates = values[::-1]
-        # Label-independent support pre-filter (keeps the certificate);
-        # support_floor also guarantees the first tested candidate CAN pass.
-        eligible = [t for t in candidates
-                    if sum(1 for m, _ in measured
-                           if (m < t if rule["direction"] == "lt"
-                               else m > t)) >= support_floor]
-        best: float | None = None
-        best_stats: dict | None = None
-        for threshold in eligible:
-            fired = [r for m, r in measured
-                     if (m < threshold if rule["direction"] == "lt"
-                         else m > threshold)]
-            stats = _rate_bound([r["label"] for r in fired], delta)
-            if stats["upper_bound"] is not None \
-                    and stats["upper_bound"] <= beta:
-                best = threshold
-                best_stats = stats
-            else:
-                break  # fixed-sequence stopping rule
-        if best is None:
-            entry: dict[str, Any] = {
-                "threshold": None, "disabled": True,
-                "code": rule["code"],
-                "reason": ("no candidate certified: the strictest candidate "
-                           f"with support >= {support_floor} already exceeds "
-                           "target_beta (or no candidate reaches support)"),
-                "n_eligible_candidates": len(eligible),
-            }
-        else:
-            entry = {
-                "threshold": best, "disabled": False,
-                "code": rule["code"],
-                "calib": best_stats,
-                "n_eligible_candidates": len(eligible),
-            }
-        # Held-out diagnostic for the selected (or disabled) rule.
-        held = [(m, r) for r in heldout
-                if (m := _measure(rule, r["signals"])) is not None]
-        if best is not None:
-            fired_hold = [r for m, r in held
-                          if (m < best if rule["direction"] == "lt"
-                              else m > best)]
-            entry["heldout"] = _rate_bound(
-                [r["label"] for r in fired_hold], delta)
-            entry["heldout_by_source"] = _bound_by_source(fired_hold, delta)
-        else:
-            entry["heldout"] = {"fired": 0, "errors": 0,
-                                "upper_bound": None,
-                                "note": "rule disabled: fires on nothing"}
-            entry["heldout_by_source"] = {}
-        reject_out[key] = entry
-        updates[key] = best
-
+    per_source: dict[str, dict] = {}
+    updates_all: dict[str, dict] = {}
     by_source: dict[str, int] = {}
-    for record in cleaned:
-        by_source[record["label_source"]] = \
-            by_source.get(record["label_source"], 0) + 1
+    for source in LABEL_SOURCES:
+        subset = [r for r in cleaned if r["label_source"] == source]
+        if not subset:
+            continue
+        by_source[source] = len(subset)
+        per_source[source] = _calibrate_source(subset, cfg, delta,
+                                               support_floor)
+        updates_all[source] = per_source[source]["threshold_updates"]
     meta = {
         "n_total": len(cleaned),
-        "n_calib": len(calib),
-        "n_heldout": len(heldout),
-        "n_good": sum(1 for r in cleaned if r["label"] == "good"),
-        "n_bad": sum(1 for r in cleaned if r["label"] == "bad"),
         "by_source": by_source,
         "targets": {k: cfg[k] for k in
                     ("target_alpha", "delta", "target_beta", "min_support",
-                     "min_accepted", "accept_step", "calib_frac")},
+                     "min_accepted", "accept_step")},
         "support_floor": support_floor,
         "seed": seed,
-        "date_utc": datetime.now(timezone.utc).isoformat(),
+        "method": ("per-source independent calibration; group-based "
+                   "SELECT/CERTIFY split; no Bonferroni — measured union "
+                   "bound on CERTIFY instead"),
     }
-    return {"accept": accept_out, "reject_rules": reject_out,
-            "threshold_updates": updates, "meta": meta}
+    return {"per_source": per_source, "threshold_updates": updates_all,
+            "meta": meta}
 
 
 __all__ = [
     "REASON_ORDER", "CHECK_ORDER", "DEFAULT_THRESHOLDS_PATH",
+    "LABEL_SOURCES", "REJECT_RULES", "DEFAULT_TARGETS",
     "canonical_json", "thresholds_hash", "load_thresholds",
     "queue_rank_key", "route", "calibrate_two_sided",
 ]

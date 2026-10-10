@@ -1,21 +1,26 @@
-"""Two-sided funnel calibration driver (GitHub issue #26, Phase 2).
+"""Two-sided funnel calibration driver (GitHub issue #26, fix round 1).
 
-Reads labelled records ``{signals, decisions|None, label, reason_gold,
-label_source}`` from a JSON file, or generates deterministic SYNTHETIC
-fixtures (``--synthetic N``) to exercise the pipeline end to end, then runs
-``jadal.funnel.calibrate_two_sided`` and writes
-``eval/results/funnel_calibration.json``.
+Sources (exactly one of):
+  --records PATH   JSON list of labelled records (or {"records": [...]})
+  --synthetic N    deterministic synthetic fixtures (label_source synthetic)
+  --from-gold      join eval/gold/labels.json with the manifest segments and
+                   compute REAL L0 signals on EXACTLY the gold segments
+                   (clip, start_s, end_s) via jadal.signals (needs the
+                   signals module importable, else a clear error).
 
-Label honesty: synthetic fixtures are labelled ``label_source:
-'synthetic'`` and every bound is reported per source. A synthetic run NEVER
-overwrites ``configs/funnel_thresholds.json`` unless ``--write-config`` is
-passed explicitly (human gold runs should pass it).
+Never pools label sources: calibration runs per source; --source selects
+which source's thresholds go into the config file (default: the sole
+source, or an error asking for --source). Saved JSON gains produced_utc
++ provenance at write time (funnel output itself has no clock).
+
+status rule: 'calibrated' ONLY for human_gold with N >= 100 and every
+written threshold's CERTIFY bound met; else 'provisional' (source stated).
 
 Usage:
     PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python \\
         eval/calibrate_funnel.py --synthetic 400 --seed 7
     PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python \\
-        eval/calibrate_funnel.py --records eval/gold/labels.json --write-config
+        eval/calibrate_funnel.py --from-gold --source human_gold --write-config
 """
 from __future__ import annotations
 
@@ -23,6 +28,7 @@ import argparse
 import json
 import random
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -31,7 +37,11 @@ sys.path.insert(0, str(ROOT))
 from jadal import funnel  # noqa: E402
 
 RESULTS_PATH = ROOT / "eval" / "results" / "funnel_calibration.json"
+GOLD_RECORDS_PATH = ROOT / "eval" / "results" / "funnel_gold_records.json"
 CONFIG_PATH = ROOT / "configs" / "funnel_thresholds.json"
+MANIFEST_PATH = ROOT / "eval" / "gold" / "segments.json"
+LABELS_PATH = ROOT / "eval" / "gold" / "labels.json"
+CUTS_DIR = ROOT / "data_runtime" / "gold_cuts"
 
 
 def synthetic_records(n: int, seed: int) -> list[dict]:
@@ -95,41 +105,232 @@ def synthetic_records(n: int, seed: int) -> list[dict]:
     return records
 
 
-def apply_to_config(result: dict, path: Path) -> dict:
-    """Merge calibrated thresholds into the config file; recompute sha256."""
+def cut_segment(src: str, start_s: float, end_s: float, out_path: Path,
+                recut: bool = False) -> Path:
+    """Deterministically cut [start_s, end_s) to out_path (mp4v re-encode).
+
+    Frame indices round(start*fps)..round(end*fps)-1; source only read.
+    Cached: existing cuts are reused unless recut=True.
+    """
+    if out_path.is_file() and not recut:
+        return out_path
+    import cv2
+    cap = cv2.VideoCapture(src)
+    if not cap.isOpened():
+        raise RuntimeError(f"cannot open clip (read-only check): {src}")
+    try:
+        fps = float(cap.get(cv2.CAP_PROP_FPS)) or 10.0
+        i0, i1 = int(round(start_s * fps)), int(round(end_s * fps))
+        if i1 <= i0:
+            raise ValueError(f"empty window [{start_s}, {end_s}) in {src}")
+        ok, frame = cap.read()
+        if not ok or frame is None:
+            raise RuntimeError(f"cannot read {src}")
+        height, width = frame.shape[:2]
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        writer = cv2.VideoWriter(str(out_path),
+                                 cv2.VideoWriter_fourcc(*"mp4v"),
+                                 fps, (width, height))
+        if not writer.isOpened():
+            raise RuntimeError(f"cannot open writer for {out_path}")
+        try:
+            index = 0
+            while True:
+                if i0 <= index < i1:
+                    writer.write(frame)
+                index += 1
+                if index >= i1:
+                    break
+                ok, frame = cap.read()
+                if not ok:
+                    break
+        finally:
+            writer.release()
+    finally:
+        cap.release()
+    return out_path
+
+
+def _real_signals_fn():
+    try:
+        from jadal import signals as signals_mod
+    except ImportError as exc:
+        raise RuntimeError(
+            "jadal.signals is not importable in this worktree, so gold "
+            "records cannot be built here. Run --from-gold where the "
+            "signals module is available."
+        ) from exc
+    return signals_mod
+
+
+def build_gold_records(manifest: dict, labels: dict, signals_fn=None,
+                       cuts_dir: Path | None = CUTS_DIR,
+                       recut: bool = False, cut_fn=None) -> list[dict]:
+    """Join gold labels with manifest segments + real L0 signals.
+
+    For every LABELED manifest segment (manifest order): cut exactly
+    [start_s, end_s), compute signals with ``signals_fn(cut_path, segment)``
+    (defaults to the real ``jadal.signals.compute_signals``), add
+    ``duration_s`` from the manifest, resolve near-duplicates by exact
+    phash match in manifest order (conservative subset of the pipeline's
+    Hamming lookup — documented). Unlabeled segments are skipped (said in
+    the returned stats). decisions are None (L1 not built yet). ``cut_fn``
+    (same signature as :func:`cut_segment`) is injectable for tests.
+    """
+    if signals_fn is None:
+        signals_mod = _real_signals_fn()
+        signals_fn = lambda cut, seg: signals_mod.compute_signals(str(cut))
+    if cut_fn is None:
+        cut_fn = cut_segment
+    latest = labels.get("latest", {}) if isinstance(labels, dict) else {}
+    segments = manifest.get("segments", [])
+    records: list[dict] = []
+    phash_index: dict[str, str] = {}
+    skipped = 0
+    for segment in segments:
+        segment_id = segment["segment_id"]
+        entry = latest.get(segment_id)
+        if entry is None:
+            skipped += 1
+            continue
+        verdict = entry.get("verdict")
+        if verdict not in ("good", "bad"):
+            raise ValueError(f"segment {segment_id}: verdict must be "
+                             f"good|bad, got {verdict!r}")
+        reason = entry.get("reason")
+        if verdict == "bad" and reason not in funnel.REASON_ORDER:
+            raise ValueError(f"segment {segment_id}: bad verdict needs a "
+                             f"valid reason code, got {reason!r}")
+        cut = cut_fn(segment["path"], float(segment["start_s"]),
+                     float(segment["end_s"]),
+                     (cuts_dir or CUTS_DIR) / f"{segment_id}.mp4",
+                     recut=recut)
+        signals = dict(signals_fn(str(cut), segment))
+        signals["duration_s"] = round(
+            float(segment["end_s"]) - float(segment["start_s"]), 1)
+        phash = signals.get("phash")
+        if phash:
+            if phash in phash_index:
+                signals["dup_of"] = phash_index[phash]
+            else:
+                phash_index[phash] = segment_id
+        records.append({
+            "segment_id": segment_id,
+            "signals": signals,
+            "decisions": None,
+            "label": verdict,
+            "reason_gold": reason if verdict == "bad" else None,
+            "label_source": "human_gold",
+            "group": segment.get("clip"),
+        })
+    print(f"gold join: {len(records)} labelled, {skipped} unlabeled skipped")
+    return records
+
+
+def written_bounds_ok(src_res: dict, targets: dict) -> tuple[bool, list[str]]:
+    """Every WRITTEN threshold's CERTIFY bound met its target?"""
+    notes: list[str] = []
+    ok = True
+    accept = src_res["accept"]
+    if accept["threshold"] is not None:
+        bound = accept["certify"].get("upper_bound")
+        if bound is None or bound > targets["target_alpha"]:
+            ok = False
+            notes.append(f"accept certify bound {bound} > {targets['target_alpha']}")
+    for key, entry in src_res["reject_rules"].items():
+        if not entry["disabled"]:
+            bound = entry["certify"].get("upper_bound")
+            if bound is None or bound > targets["target_beta"]:
+                ok = False
+                notes.append(f"{key} certify bound {bound} > {targets['target_beta']}")
+    return ok, notes
+
+
+def apply_to_config(result: dict, source: str, path: Path) -> dict:
+    """Merge one source's calibrated thresholds into the config file."""
+    if source not in result["per_source"]:
+        raise ValueError(f"source {source!r} not in calibration result "
+                         f"(have {sorted(result['per_source'])})")
     with open(path, "r", encoding="utf-8") as fh:
         config = json.load(fh)
-    updates = result["threshold_updates"]
-    disabled = [k for k, v in updates.items()
-                if v is None and k != "accept_conf"]
+    src_res = result["per_source"][source]
+    meta = result["meta"]
+    n = meta["by_source"][source]
+    updates = result["threshold_updates"][source]
     for key, value in updates.items():
         config[key] = value
-    meta = result["meta"]
-    accept = result["accept"]
+    targets = meta["targets"]
+    bounds_ok, bound_notes = written_bounds_ok(src_res, targets)
+    if source == "human_gold" and n >= 100 and bounds_ok:
+        status = "calibrated"
+        note = (f"Calibrated on {n} human gold labels; every written "
+                f"threshold met its CERTIFY bound.")
+    else:
+        status = "provisional"
+        reasons = [f"label_source={source}"]
+        if source != "human_gold":
+            reasons.append("not human gold")
+        if n < 100:
+            reasons.append(f"N={n} < 100")
+        if not bounds_ok:
+            reasons.extend(bound_notes)
+        note = "Provisional (" + "; ".join(reasons) + ")."
+    disabled = [k for k, e in src_res["reject_rules"].items()
+                if e["disabled"]]
     config["calibration"] = {
-        "status": ("calibrated" if meta["by_source"].get("human_gold")
-                   else "synthetic-only"
-                   if set(meta["by_source"]) == {"synthetic"}
-                   else "mixed-nonhuman"),
-        "label_sources": meta["by_source"],
-        "n_total": meta["n_total"],
-        "n_calib": meta["n_calib"],
-        "n_heldout": meta["n_heldout"],
-        "targets": meta["targets"],
+        "status": status,
+        "label_source": source,
+        "n": n,
+        "n_select": src_res["n_select"],
+        "n_certify": src_res["n_certify"],
+        "targets": targets,
         "seed": meta["seed"],
-        "date_utc": meta["date_utc"],
-        "accept_heldout": accept.get("heldout"),
-        "accept_heldout_by_source": accept.get("heldout_by_source"),
+        "accept_certify": src_res["accept"]["certify"],
+        "union_certify": src_res["union"],
         "disabled_rules": disabled,
-        "note": ("Bounds carry only the certificate of their label source. "
-                 "Synthetic/Gemini numbers are machinery checks, never "
-                 "human-grade claims."),
+        "note": note + (" Bounds carry only the certificate of their label "
+                        "source. Per-rule bounds do not bound the union; "
+                        "see union_certify."),
     }
     config["sha256"] = funnel.thresholds_hash(config)
     with open(path, "w", encoding="utf-8") as fh:
         json.dump(config, fh, indent=2, sort_keys=True)
         fh.write("\n")
+    funnel.load_thresholds(path)  # raises if the hash is wrong
     return config
+
+
+def markdown_tables(result: dict) -> str:
+    """Render accept/reject/union tables from the result JSON (for the report)."""
+    lines = []
+    meta = result["meta"]
+    lines.append(f"records={meta['n_total']} sources={meta['by_source']} "
+                 f"seed={meta['seed']}")
+    for source, src in result["per_source"].items():
+        lines.append(f"\n## source={source} "
+                     f"(N={meta['by_source'][source]}, "
+                     f"select={src['n_select']}, certify={src['n_certify']})")
+        accept = src["accept"]
+        lines.append("| side | threshold | certify fired | certify errors | "
+                     "certify UCB | gate |")
+        lines.append("|---|---|---|---|---|---|")
+        cert = accept["certify"]
+        lines.append(f"| accept | {accept['threshold']} | {cert['fired']} | "
+                     f"{cert['errors']} | {cert['upper_bound']} | "
+                     f"{accept.get('gate', 'WRITTEN')} |")
+        lines.append("| rule | threshold | disabled | certify fired | "
+                     "certify errors | certify UCB |")
+        lines.append("|---|---|---|---|---|---|---|")
+        for key, entry in src["reject_rules"].items():
+            cert = entry["certify"]
+            lines.append(f"| {key} | {entry['threshold']} | "
+                         f"{entry['disabled']} | {cert['fired']} | "
+                         f"{cert['errors']} | {cert['upper_bound']} |")
+        union = src["union"]
+        lines.append(f"union CERTIFY: rejected={union['fired']} "
+                     f"errors={union['errors']} UCB={union['upper_bound']} "
+                     f"(n_certify={union['n_certify']})")
+    return "\n".join(lines)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -139,6 +340,15 @@ def main(argv: list[str] | None = None) -> int:
                        help="JSON file with a list of labelled records")
     group.add_argument("--synthetic", type=int, metavar="N",
                        help="generate N deterministic synthetic records")
+    group.add_argument("--from-gold", action="store_true",
+                       help="build records from eval/gold labels + real L0")
+    parser.add_argument("--manifest", type=Path, default=MANIFEST_PATH)
+    parser.add_argument("--labels", type=Path, default=LABELS_PATH)
+    parser.add_argument("--cuts-dir", type=Path, default=CUTS_DIR)
+    parser.add_argument("--recut", action="store_true")
+    parser.add_argument("--save-records", type=Path, default=None)
+    parser.add_argument("--source", type=str, default=None,
+                        help="label source whose thresholds update the config")
     parser.add_argument("--seed", type=int, default=1234)
     parser.add_argument("--alpha", type=float, default=0.05)
     parser.add_argument("--beta", type=float, default=0.05)
@@ -148,7 +358,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, default=RESULTS_PATH)
     parser.add_argument("--config", type=Path, default=CONFIG_PATH)
     parser.add_argument("--write-config", action="store_true",
-                        help="also merge the result into the thresholds file")
+                        help="also merge one source's result into thresholds")
+    parser.add_argument("--markdown", action="store_true",
+                        help="print report tables generated from the JSON")
     args = parser.parse_args(argv)
 
     if args.records:
@@ -156,38 +368,59 @@ def main(argv: list[str] | None = None) -> int:
             payload = json.load(fh)
         records = payload if isinstance(payload, list) \
             else payload.get("records", [])
-    else:
+        provenance = f"records-file:{args.records}"
+    elif args.synthetic is not None:
         records = synthetic_records(args.synthetic, args.seed)
+        provenance = "synthetic-fixtures"
+    else:
+        with open(args.manifest, "r", encoding="utf-8") as fh:
+            manifest = json.load(fh)
+        labels_path = args.labels
+        if not labels_path.is_file():
+            raise SystemExit(f"no labels yet at {labels_path}; label first, "
+                             f"then rerun --from-gold")
+        with open(labels_path, "r", encoding="utf-8") as fh:
+            labels = json.load(fh)
+        records = build_gold_records(manifest, labels, signals_fn=None,
+                                     cuts_dir=args.cuts_dir, recut=args.recut)
+        provenance = f"gold-join:{args.labels}"
+        if args.save_records is None:
+            args.save_records = GOLD_RECORDS_PATH
+    if args.save_records is not None:
+        args.save_records.parent.mkdir(parents=True, exist_ok=True)
+        with open(args.save_records, "w", encoding="utf-8") as fh:
+            json.dump(records, fh, indent=2, sort_keys=True)
+            fh.write("\n")
+        print(f"wrote {args.save_records} ({len(records)} records)")
+
     result = funnel.calibrate_two_sided(records, {
         "target_alpha": args.alpha, "target_beta": args.beta,
         "delta": args.delta, "min_support": args.min_support,
         "min_accepted": args.min_accepted, "seed": args.seed})
-    result["meta"]["provenance"] = (
-        "synthetic-fixtures" if args.records is None
-        else f"records-file:{args.records}")
+    result["meta"]["provenance"] = provenance
+    result["meta"]["produced_utc"] = datetime.now(timezone.utc).isoformat()
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as fh:
         json.dump(result, fh, indent=2, sort_keys=True)
         fh.write("\n")
 
-    accept = result["accept"]
-    print(f"records={result['meta']['n_total']} "
-          f"(calib={result['meta']['n_calib']}, "
-          f"heldout={result['meta']['n_heldout']}) "
-          f"sources={result['meta']['by_source']}")
-    print(f"accept_conf={accept['threshold']} "
-          f"heldout={accept['heldout']}")
-    for key, entry in result["reject_rules"].items():
-        print(f"  {key}: threshold={entry['threshold']} "
-              f"disabled={entry['disabled']} "
-              f"heldout={entry['heldout']}")
+    print(markdown_tables(result))
     print(f"wrote {args.out}")
     if args.write_config:
-        apply_to_config(result, args.config)
-        print(f"updated {args.config}")
+        sources = sorted(result["per_source"])
+        source = args.source or (sources[0] if len(sources) == 1 else None)
+        if source is None:
+            raise SystemExit(
+                f"multiple sources {sources}: pass --source to choose which "
+                f"source updates the config (never pooled)")
+        apply_to_config(result, source, args.config)
+        print(f"updated {args.config} from source={source}")
     else:
         print("(config file untouched: pass --write-config to update it)")
+    if args.markdown:
+        print("---- markdown ----")
+        print(markdown_tables(result))
     return 0
 
 

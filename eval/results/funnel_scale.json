@@ -9,117 +9,117 @@
     {
       "workers": 1,
       "n_segments": 150,
-      "wall_s": 32.57,
-      "segments_per_hour": 16579.5,
+      "wall_s": 41.663,
+      "segments_per_hour": 12961.0,
       "per_stage": {
         "decode_s": {
-          "mean_ms": 213.51,
-          "p50_ms": 194.395,
-          "max_ms": 510.854
+          "mean_ms": 273.663,
+          "p50_ms": 247.338,
+          "max_ms": 971.243
         },
         "l0_proxy_s": {
-          "mean_ms": 2.89,
-          "p50_ms": 2.534,
-          "max_ms": 5.69
+          "mean_ms": 3.332,
+          "p50_ms": 2.794,
+          "max_ms": 8.925
         },
         "route_s": {
-          "mean_ms": 0.059,
-          "p50_ms": 0.051,
-          "max_ms": 0.119
+          "mean_ms": 0.074,
+          "p50_ms": 0.065,
+          "max_ms": 0.176
         }
       },
       "distinct_output_hashes": 150,
       "verdicts": {
-        "accept": 4,
+        "accept": 0,
         "reject": 146,
-        "review": 0
+        "review": 4
       }
     },
     {
       "workers": 2,
       "n_segments": 150,
-      "wall_s": 22.113,
-      "segments_per_hour": 24419.8,
+      "wall_s": 29.704,
+      "segments_per_hour": 18179.5,
       "per_stage": {
         "decode_s": {
-          "mean_ms": 289.771,
-          "p50_ms": 258.06,
-          "max_ms": 619.891
+          "mean_ms": 391.156,
+          "p50_ms": 359.697,
+          "max_ms": 858.45
         },
         "l0_proxy_s": {
-          "mean_ms": 3.853,
-          "p50_ms": 3.8,
-          "max_ms": 5.689
+          "mean_ms": 4.04,
+          "p50_ms": 3.993,
+          "max_ms": 7.459
         },
         "route_s": {
-          "mean_ms": 0.078,
-          "p50_ms": 0.077,
-          "max_ms": 0.153
+          "mean_ms": 0.091,
+          "p50_ms": 0.092,
+          "max_ms": 0.27
         }
       },
       "distinct_output_hashes": 150,
       "verdicts": {
-        "accept": 4,
+        "accept": 0,
         "reject": 146,
-        "review": 0
+        "review": 4
       }
     },
     {
       "workers": 4,
       "n_segments": 150,
-      "wall_s": 18.674,
-      "segments_per_hour": 28917.8,
+      "wall_s": 23.297,
+      "segments_per_hour": 23179.1,
       "per_stage": {
         "decode_s": {
-          "mean_ms": 490.174,
-          "p50_ms": 440.518,
-          "max_ms": 1038.51
+          "mean_ms": 612.987,
+          "p50_ms": 551.371,
+          "max_ms": 1236.711
         },
         "l0_proxy_s": {
-          "mean_ms": 4.69,
-          "p50_ms": 4.733,
-          "max_ms": 6.745
+          "mean_ms": 5.147,
+          "p50_ms": 5.099,
+          "max_ms": 9.728
         },
         "route_s": {
-          "mean_ms": 0.1,
-          "p50_ms": 0.095,
-          "max_ms": 0.71
+          "mean_ms": 0.112,
+          "p50_ms": 0.109,
+          "max_ms": 0.396
         }
       },
       "distinct_output_hashes": 150,
       "verdicts": {
-        "accept": 4,
+        "accept": 0,
         "reject": 146,
-        "review": 0
+        "review": 4
       }
     },
     {
       "workers": 8,
       "n_segments": 150,
-      "wall_s": 18.352,
-      "segments_per_hour": 29424.2,
+      "wall_s": 21.686,
+      "segments_per_hour": 24901.1,
       "per_stage": {
         "decode_s": {
-          "mean_ms": 960.603,
-          "p50_ms": 859.24,
-          "max_ms": 2109.444
+          "mean_ms": 1135.069,
+          "p50_ms": 1021.561,
+          "max_ms": 2766.244
         },
         "l0_proxy_s": {
-          "mean_ms": 5.968,
-          "p50_ms": 5.637,
-          "max_ms": 13.127
+          "mean_ms": 6.321,
+          "p50_ms": 5.758,
+          "max_ms": 16.238
         },
         "route_s": {
-          "mean_ms": 0.126,
-          "p50_ms": 0.102,
-          "max_ms": 1.285
+          "mean_ms": 0.162,
+          "p50_ms": 0.115,
+          "max_ms": 2.232
         }
       },
       "distinct_output_hashes": 150,
       "verdicts": {
-        "accept": 4,
+        "accept": 0,
         "reject": 146,
-        "review": 0
+        "review": 4
       }
     }
   ],
