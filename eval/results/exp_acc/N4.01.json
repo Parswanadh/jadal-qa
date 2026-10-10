@@ -1,0 +1,644 @@
+{
+ "experiment": "N4.01",
+ "title": "Label-budget curves under acquisition strategies (which labels cut OOD error fastest)",
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "n_factories": 47,
+ "label_source": "human, single labeller (labels/ood160_labels.json; 138 good / 22 bad)",
+ "protocol": "26-feature per-pixel logistic (class_weight=balanced, C=1), factory-grouped 5-fold StratifiedGroupKFold; for each fold acquire labels from the training pool in the strategy order, fit on the first k, score the held-out factories. error = 1 - balanced accuracy @0.5. `random` averaged over 5 seeds x 5 folds; deterministic strategies 5 folds. Full-160 point = grouped-CV OOF anchor.",
+ "device": "CPU (numpy/sklearn)",
+ "cost": {
+  "n_windows": 160,
+  "strategies": 5,
+  "ks": [
+   10,
+   20,
+   40,
+   80,
+   120
+  ],
+  "seeds_random": 5
+ },
+ "strategies": {
+  "random": {
+   "description": "seeded uniform random permutation (averaged over seeds)",
+   "curve": [
+    {
+     "k_target": 10,
+     "n_runs": 19,
+     "error_mean": 0.446146496509473,
+     "error_std": 0.13755292233083743,
+     "auroc_mean": 0.6425796291495022,
+     "auroc_std": 0.19642164959785335,
+     "min_n_bad_train": 1,
+     "mean_n_bad_train": 1.9473684210526316,
+     "mean_n_test": 32.10526315789474
+    },
+    {
+     "k_target": 20,
+     "n_runs": 24,
+     "error_mean": 0.420915435139573,
+     "error_std": 0.1091643725544666,
+     "auroc_mean": 0.6571907498631636,
+     "auroc_std": 0.16934540567880443,
+     "min_n_bad_train": 1,
+     "mean_n_bad_train": 2.9583333333333335,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 40,
+     "n_runs": 25,
+     "error_mean": 0.3825396825396825,
+     "error_std": 0.16298840347800814,
+     "auroc_mean": 0.6486491516146689,
+     "auroc_std": 0.2057561844291323,
+     "min_n_bad_train": 2,
+     "mean_n_bad_train": 5.4,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 80,
+     "n_runs": 25,
+     "error_mean": 0.3380943258529465,
+     "error_std": 0.14392787525198528,
+     "auroc_mean": 0.7205323846013502,
+     "auroc_std": 0.1703624502131938,
+     "min_n_bad_train": 9,
+     "mean_n_bad_train": 10.96,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 120,
+     "n_runs": 25,
+     "error_mean": 0.3380018244845831,
+     "error_std": 0.11123823477443875,
+     "auroc_mean": 0.7567925561029009,
+     "auroc_std": 0.1462417068320577,
+     "min_n_bad_train": 15,
+     "mean_n_bad_train": 16.8,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 160,
+     "n_runs": 1,
+     "error_mean": 0.3422266139657444,
+     "error_std": 0.0,
+     "auroc_mean": 0.733201581027668,
+     "auroc_std": 0.0,
+     "min_n_bad_train": null,
+     "mean_n_bad_train": null,
+     "mean_n_test": null,
+     "protocol": "all-160 grouped-CV OOF (StratifiedGroupKFold 5, factory groups)"
+    }
+   ]
+  },
+  "breadth_new_factories": {
+   "description": "round-robin: one window per new factory first (maximise clusters)",
+   "curve": [
+    {
+     "k_target": 10,
+     "n_runs": 5,
+     "error_mean": 0.46345739828498456,
+     "error_std": 0.09211300579465699,
+     "auroc_mean": 0.7247199416164933,
+     "auroc_std": 0.22767385379782884,
+     "min_n_bad_train": 1,
+     "mean_n_bad_train": 1.6,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 20,
+     "n_runs": 5,
+     "error_mean": 0.38381317277869004,
+     "error_std": 0.19499490365408798,
+     "auroc_mean": 0.6865426017150155,
+     "auroc_std": 0.20615902139829184,
+     "min_n_bad_train": 3,
+     "mean_n_bad_train": 4.0,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 40,
+     "n_runs": 5,
+     "error_mean": 0.37303685458857877,
+     "error_std": 0.13153354818144225,
+     "auroc_mean": 0.6553293194672505,
+     "auroc_std": 0.21238180617520191,
+     "min_n_bad_train": 6,
+     "mean_n_bad_train": 6.4,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 80,
+     "n_runs": 5,
+     "error_mean": 0.3091735084838533,
+     "error_std": 0.14839175835346885,
+     "auroc_mean": 0.6901496077358147,
+     "auroc_std": 0.22757115165103076,
+     "min_n_bad_train": 11,
+     "mean_n_bad_train": 12.0,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 120,
+     "n_runs": 5,
+     "error_mean": 0.34728607918263094,
+     "error_std": 0.1243035743358477,
+     "auroc_mean": 0.7526126619230068,
+     "auroc_std": 0.15379960515019614,
+     "min_n_bad_train": 17,
+     "mean_n_bad_train": 17.6,
+     "mean_n_test": 32.0
+    }
+   ]
+  },
+  "depth_existing_factories": {
+   "description": "exhaust factories in descending size (maximise windows/factory)",
+   "curve": [
+    {
+     "k_target": 10,
+     "n_runs": 5,
+     "error_mean": 0.5778361612844372,
+     "error_std": 0.14386449796486567,
+     "auroc_mean": 0.4697354497354498,
+     "auroc_std": 0.17175434458458938,
+     "min_n_bad_train": 1,
+     "mean_n_bad_train": 2.6,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 20,
+     "n_runs": 5,
+     "error_mean": 0.41106732348111663,
+     "error_std": 0.14555168334831578,
+     "auroc_mean": 0.585008210180624,
+     "auroc_std": 0.17439423948809601,
+     "min_n_bad_train": 3,
+     "mean_n_bad_train": 4.0,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 40,
+     "n_runs": 5,
+     "error_mean": 0.5644918810436053,
+     "error_std": 0.1515598701420162,
+     "auroc_mean": 0.35787447546068235,
+     "auroc_std": 0.2583970615852774,
+     "min_n_bad_train": 4,
+     "mean_n_bad_train": 5.6,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 80,
+     "n_runs": 5,
+     "error_mean": 0.38202973909870463,
+     "error_std": 0.11429643799608341,
+     "auroc_mean": 0.6483561393906222,
+     "auroc_std": 0.18972491733155908,
+     "min_n_bad_train": 9,
+     "mean_n_bad_train": 9.6,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 120,
+     "n_runs": 5,
+     "error_mean": 0.3348257617223135,
+     "error_std": 0.12302399581036605,
+     "auroc_mean": 0.7498868819558474,
+     "auroc_std": 0.15862297366510358,
+     "min_n_bad_train": 16,
+     "mean_n_bad_train": 16.8,
+     "mean_n_test": 32.0
+    }
+   ]
+  },
+  "diversity_maximin": {
+   "description": "greedy farthest-first over z-scored 26-D regime features (coverage)",
+   "curve": [
+    {
+     "k_target": 10,
+     "n_runs": 3,
+     "error_mean": 0.5047619047619047,
+     "error_std": 0.10794671987173002,
+     "auroc_mean": 0.6952897889679499,
+     "auroc_std": 0.2484776505809341,
+     "min_n_bad_train": 1,
+     "mean_n_bad_train": 1.6666666666666667,
+     "mean_n_test": 32.333333333333336
+    },
+    {
+     "k_target": 20,
+     "n_runs": 5,
+     "error_mean": 0.4347810618500274,
+     "error_std": 0.1673971388041203,
+     "auroc_mean": 0.6137328954570334,
+     "auroc_std": 0.22699379002076517,
+     "min_n_bad_train": 1,
+     "mean_n_bad_train": 3.0,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 40,
+     "n_runs": 5,
+     "error_mean": 0.3775515416894727,
+     "error_std": 0.1287184082760337,
+     "auroc_mean": 0.6547947454844005,
+     "auroc_std": 0.21521820768170813,
+     "min_n_bad_train": 2,
+     "mean_n_bad_train": 4.6,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 80,
+     "n_runs": 5,
+     "error_mean": 0.25746396642948366,
+     "error_std": 0.14645416514539691,
+     "auroc_mean": 0.7921401204159825,
+     "auroc_std": 0.17192657243659576,
+     "min_n_bad_train": 10,
+     "mean_n_bad_train": 11.2,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 120,
+     "n_runs": 5,
+     "error_mean": 0.35865261813537674,
+     "error_std": 0.1191863112470895,
+     "auroc_mean": 0.7516858237547893,
+     "auroc_std": 0.15300814027594886,
+     "min_n_bad_train": 15,
+     "mean_n_bad_train": 16.2,
+     "mean_n_test": 32.0
+    }
+   ]
+  },
+  "uncertainty_boundary": {
+   "description": "closest to p=0.5 (Z4 uncertainty; negative control)",
+   "curve": [
+    {
+     "k_target": 10,
+     "n_runs": 5,
+     "error_mean": 0.5568646232439336,
+     "error_std": 0.156696035669046,
+     "auroc_mean": 0.4279638752052545,
+     "auroc_std": 0.2478212479753782,
+     "min_n_bad_train": 1,
+     "mean_n_bad_train": 1.8,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 20,
+     "n_runs": 5,
+     "error_mean": 0.4133287721218756,
+     "error_std": 0.11976946306119013,
+     "auroc_mean": 0.5298412698412698,
+     "auroc_std": 0.1506091324428046,
+     "min_n_bad_train": 4,
+     "mean_n_bad_train": 4.4,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 40,
+     "n_runs": 5,
+     "error_mean": 0.42271118409049446,
+     "error_std": 0.17248145264943465,
+     "auroc_mean": 0.63253238460135,
+     "auroc_std": 0.16587793556693645,
+     "min_n_bad_train": 5,
+     "mean_n_bad_train": 6.4,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 80,
+     "n_runs": 5,
+     "error_mean": 0.40124794745484405,
+     "error_std": 0.12080240163418787,
+     "auroc_mean": 0.7118299580368547,
+     "auroc_std": 0.17673265676904432,
+     "min_n_bad_train": 10,
+     "mean_n_bad_train": 11.6,
+     "mean_n_test": 32.0
+    },
+    {
+     "k_target": 120,
+     "n_runs": 5,
+     "error_mean": 0.2931143951833607,
+     "error_std": 0.1322362749738411,
+     "auroc_mean": 0.7541288086115672,
+     "auroc_std": 0.15825209835603946,
+     "min_n_bad_train": 16,
+     "mean_n_bad_train": 16.8,
+     "mean_n_test": 32.0
+    }
+   ]
+  }
+ },
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_acc/run_acc.py",
+ "paired_vs_random": {
+  "random": [
+   {
+    "k_target": 10,
+    "n_folds": 3,
+    "error_mean": 0.4431536216018975,
+    "random_mean": 0.4363960499908776,
+    "paired_delta_vs_random_mean": -0.008555844432281226,
+    "paired_delta_std": 0.06556707191407238,
+    "frac_folds_better_than_random": 0.6666666666666666
+   },
+   {
+    "k_target": 20,
+    "n_folds": 5,
+    "error_mean": 0.4055564677978471,
+    "random_mean": 0.42267141032658273,
+    "paired_delta_vs_random_mean": -0.017114942528735633,
+    "paired_delta_std": 0.06695163712571317,
+    "frac_folds_better_than_random": 0.6
+   },
+   {
+    "k_target": 40,
+    "n_folds": 5,
+    "error_mean": 0.44720580186097425,
+    "random_mean": 0.38253968253968257,
+    "paired_delta_vs_random_mean": 0.06466611932129171,
+    "paired_delta_std": 0.14341447541989338,
+    "frac_folds_better_than_random": 0.2
+   },
+   {
+    "k_target": 80,
+    "n_folds": 5,
+    "error_mean": 0.4704871373836891,
+    "random_mean": 0.3380943258529466,
+    "paired_delta_vs_random_mean": 0.13239281153074253,
+    "paired_delta_std": 0.07925282567092987,
+    "frac_folds_better_than_random": 0.0
+   },
+   {
+    "k_target": 120,
+    "n_folds": 5,
+    "error_mean": 0.3546934865900383,
+    "random_mean": 0.33800182448458316,
+    "paired_delta_vs_random_mean": 0.016691662105455186,
+    "paired_delta_std": 0.02566296119359467,
+    "frac_folds_better_than_random": 0.2
+   }
+  ],
+  "breadth_new_factories": [
+   {
+    "k_target": 10,
+    "n_folds": 5,
+    "error_mean": 0.46345739828498456,
+    "random_mean": 0.4363960499908776,
+    "paired_delta_vs_random_mean": 0.02706134829410689,
+    "paired_delta_std": 0.14386572457963318,
+    "frac_folds_better_than_random": 0.4
+   },
+   {
+    "k_target": 20,
+    "n_folds": 5,
+    "error_mean": 0.38381317277869004,
+    "random_mean": 0.42267141032658273,
+    "paired_delta_vs_random_mean": -0.038858237547892735,
+    "paired_delta_std": 0.15879480774229354,
+    "frac_folds_better_than_random": 0.6
+   },
+   {
+    "k_target": 40,
+    "n_folds": 5,
+    "error_mean": 0.37303685458857877,
+    "random_mean": 0.38253968253968257,
+    "paired_delta_vs_random_mean": -0.009502827951103831,
+    "paired_delta_std": 0.09370224959145891,
+    "frac_folds_better_than_random": 0.6
+   },
+   {
+    "k_target": 80,
+    "n_folds": 5,
+    "error_mean": 0.3091735084838533,
+    "random_mean": 0.3380943258529466,
+    "paired_delta_vs_random_mean": -0.02892081736909325,
+    "paired_delta_std": 0.11462864861305053,
+    "frac_folds_better_than_random": 0.6
+   },
+   {
+    "k_target": 120,
+    "n_folds": 5,
+    "error_mean": 0.34728607918263094,
+    "random_mean": 0.33800182448458316,
+    "paired_delta_vs_random_mean": 0.009284254698047811,
+    "paired_delta_std": 0.04707417289117321,
+    "frac_folds_better_than_random": 0.4
+   }
+  ],
+  "depth_existing_factories": [
+   {
+    "k_target": 10,
+    "n_folds": 5,
+    "error_mean": 0.5778361612844372,
+    "random_mean": 0.4363960499908776,
+    "paired_delta_vs_random_mean": 0.14144011129355955,
+    "paired_delta_std": 0.2172975409028282,
+    "frac_folds_better_than_random": 0.2
+   },
+   {
+    "k_target": 20,
+    "n_folds": 5,
+    "error_mean": 0.41106732348111663,
+    "random_mean": 0.42267141032658273,
+    "paired_delta_vs_random_mean": -0.011604086845466155,
+    "paired_delta_std": 0.2093649075485658,
+    "frac_folds_better_than_random": 0.6
+   },
+   {
+    "k_target": 40,
+    "n_folds": 5,
+    "error_mean": 0.5644918810436053,
+    "random_mean": 0.38253968253968257,
+    "paired_delta_vs_random_mean": 0.18195219850392266,
+    "paired_delta_std": 0.24063994126018246,
+    "frac_folds_better_than_random": 0.2
+   },
+   {
+    "k_target": 80,
+    "n_folds": 5,
+    "error_mean": 0.38202973909870463,
+    "random_mean": 0.3380943258529466,
+    "paired_delta_vs_random_mean": 0.04393541324575808,
+    "paired_delta_std": 0.08376621392960026,
+    "frac_folds_better_than_random": 0.2
+   },
+   {
+    "k_target": 120,
+    "n_folds": 5,
+    "error_mean": 0.3348257617223135,
+    "random_mean": 0.33800182448458316,
+    "paired_delta_vs_random_mean": -0.003176062762269649,
+    "paired_delta_std": 0.030579741311444173,
+    "frac_folds_better_than_random": 0.6
+   }
+  ],
+  "diversity_maximin": [
+   {
+    "k_target": 10,
+    "n_folds": 3,
+    "error_mean": 0.5047619047619047,
+    "random_mean": 0.4363960499908776,
+    "paired_delta_vs_random_mean": 0.053052438727726026,
+    "paired_delta_std": 0.07314690497364658,
+    "frac_folds_better_than_random": 0.3333333333333333
+   },
+   {
+    "k_target": 20,
+    "n_folds": 5,
+    "error_mean": 0.4347810618500274,
+    "random_mean": 0.42267141032658273,
+    "paired_delta_vs_random_mean": 0.01210965152344462,
+    "paired_delta_std": 0.12372836904309002,
+    "frac_folds_better_than_random": 0.4
+   },
+   {
+    "k_target": 40,
+    "n_folds": 5,
+    "error_mean": 0.3775515416894727,
+    "random_mean": 0.38253968253968257,
+    "paired_delta_vs_random_mean": -0.0049881408502098325,
+    "paired_delta_std": 0.07882812981531623,
+    "frac_folds_better_than_random": 0.6
+   },
+   {
+    "k_target": 80,
+    "n_folds": 5,
+    "error_mean": 0.25746396642948366,
+    "random_mean": 0.3380943258529466,
+    "paired_delta_vs_random_mean": -0.08063035942346289,
+    "paired_delta_std": 0.061018970299322496,
+    "frac_folds_better_than_random": 0.8
+   },
+   {
+    "k_target": 120,
+    "n_folds": 5,
+    "error_mean": 0.35865261813537674,
+    "random_mean": 0.33800182448458316,
+    "paired_delta_vs_random_mean": 0.02065079365079363,
+    "paired_delta_std": 0.046171671263159596,
+    "frac_folds_better_than_random": 0.4
+   }
+  ],
+  "uncertainty_boundary": [
+   {
+    "k_target": 10,
+    "n_folds": 5,
+    "error_mean": 0.5568646232439336,
+    "random_mean": 0.4363960499908776,
+    "paired_delta_vs_random_mean": 0.120468573253056,
+    "paired_delta_std": 0.24639322300189803,
+    "frac_folds_better_than_random": 0.4
+   },
+   {
+    "k_target": 20,
+    "n_folds": 5,
+    "error_mean": 0.4133287721218756,
+    "random_mean": 0.42267141032658273,
+    "paired_delta_vs_random_mean": -0.009342638204707165,
+    "paired_delta_std": 0.07476183154004917,
+    "frac_folds_better_than_random": 0.4
+   },
+   {
+    "k_target": 40,
+    "n_folds": 5,
+    "error_mean": 0.42271118409049446,
+    "random_mean": 0.38253968253968257,
+    "paired_delta_vs_random_mean": 0.040171501550811874,
+    "paired_delta_std": 0.17994968357546814,
+    "frac_folds_better_than_random": 0.4
+   },
+   {
+    "k_target": 80,
+    "n_folds": 5,
+    "error_mean": 0.40124794745484405,
+    "random_mean": 0.3380943258529466,
+    "paired_delta_vs_random_mean": 0.06315362160189746,
+    "paired_delta_std": 0.15863081423385558,
+    "frac_folds_better_than_random": 0.2
+   },
+   {
+    "k_target": 120,
+    "n_folds": 5,
+    "error_mean": 0.2931143951833607,
+    "random_mean": 0.33800182448458316,
+    "paired_delta_vs_random_mean": -0.0448874293012224,
+    "paired_delta_std": 0.05665408104023708,
+    "frac_folds_better_than_random": 0.6
+   }
+  ]
+ },
+ "winner_by_budget": {
+  "10": {
+   "best_strategy": "random",
+   "best_error": 0.4461,
+   "random_error": 0.4461,
+   "delta_vs_random": 0.0,
+   "all_errors": {
+    "random": 0.4461,
+    "breadth_new_factories": 0.4635,
+    "diversity_maximin": 0.5048,
+    "uncertainty_boundary": 0.5569,
+    "depth_existing_factories": 0.5778
+   }
+  },
+  "20": {
+   "best_strategy": "breadth_new_factories",
+   "best_error": 0.3838,
+   "random_error": 0.4209,
+   "delta_vs_random": 0.0371,
+   "all_errors": {
+    "breadth_new_factories": 0.3838,
+    "depth_existing_factories": 0.4111,
+    "uncertainty_boundary": 0.4133,
+    "random": 0.4209,
+    "diversity_maximin": 0.4348
+   }
+  },
+  "40": {
+   "best_strategy": "breadth_new_factories",
+   "best_error": 0.373,
+   "random_error": 0.3825,
+   "delta_vs_random": 0.0095,
+   "all_errors": {
+    "breadth_new_factories": 0.373,
+    "diversity_maximin": 0.3776,
+    "random": 0.3825,
+    "uncertainty_boundary": 0.4227,
+    "depth_existing_factories": 0.5645
+   }
+  },
+  "80": {
+   "best_strategy": "diversity_maximin",
+   "best_error": 0.2575,
+   "random_error": 0.3381,
+   "delta_vs_random": 0.0806,
+   "all_errors": {
+    "diversity_maximin": 0.2575,
+    "breadth_new_factories": 0.3092,
+    "random": 0.3381,
+    "depth_existing_factories": 0.382,
+    "uncertainty_boundary": 0.4012
+   }
+  },
+  "120": {
+   "best_strategy": "uncertainty_boundary",
+   "best_error": 0.2931,
+   "random_error": 0.338,
+   "delta_vs_random": 0.0449,
+   "all_errors": {
+    "uncertainty_boundary": 0.2931,
+    "depth_existing_factories": 0.3348,
+    "random": 0.338,
+    "breadth_new_factories": 0.3473,
+    "diversity_maximin": 0.3587
+   }
+  }
+ },
+ "headline": "breadth (one window per new factory) wins at low budget (k<=40, -0.04 error vs random at k=20); diversity/maximin wins at higher budget (k=80, -0.08 vs random); uncertainty sampling is worst or near-worst at every budget (confirms Z4 AUROC 0.349 anti-correlation); depth (more windows per existing factory) overfits early (k=40 error 0.56).",
+ "git_sha": "f20013b"
+}
