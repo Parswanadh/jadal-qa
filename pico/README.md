@@ -1,6 +1,6 @@
-# Pico 2 status-LED module
+# Raspberry Pi Pico (RP2040 tested) status-LED module
 
-Firmware for a Raspberry Pi Pico 2 (RP2350) that drives a status LED, plus the
+Firmware for a Raspberry Pi Pico (RP2040 tested; RP2350 not tested) that drives a status LED, plus the
 host-side Python link in [`jadal/pico_link.py`](../../jadal/pico_link.py).
 USB serial only — **no Wi-Fi**. Protocol is defined in
 [`docs/SPEC.md`](../../docs/SPEC.md) at **115200 baud, newline-terminated ASCII**.
@@ -17,7 +17,7 @@ Unknown or malformed frames are silently ignored by the firmware (an unknown
 
 ## Hardware
 
-- Raspberry Pi Pico 2 (RP2350) running **MicroPython**.
+- Raspberry Pi Pico (RP2040 tested) running **MicroPython**.
 - Onboard LED (GP25) is always used and is visible to the camera.
 - Optional **external RGB LED**: wire three GPIOs and set `RGB_PINS = (r, g, b)`
   at the top of `main.py`. Colour mapping: `G` = green, `A` = red+green (amber),
@@ -33,7 +33,7 @@ Unknown or malformed frames are silently ignored by the firmware (an unknown
    # or:  pipx install mpremote
    ```
 
-2. Put the Pico 2 into **bootloader mode**: hold the **BOOTSEL** button, plug in
+2. Put the Pico into **bootloader mode**: hold the **BOOTSEL** button, plug in
    USB, then release. It mounts as a `RPI-RP2` mass-storage drive. (If
    MicroPython is already installed, you can skip the drag-drop below and flash
    straight to `/dev/ttyACM*` with mpremote.)
@@ -98,7 +98,9 @@ LED blink as a frame-accurate trigger.
 
 ## Status
 
-Firmware (`pico/main.py`) has **not been run on real hardware from this repo**
-(no device in CI); it is syntax-checked and logic-verified against stubs only.
+Firmware (`pico/main.py`) has been run on a real Raspberry Pi Pico (RP2040) with
+MicroPython 1.29.0: heartbeat, LED, FLASH and PING/PONG verified over USB serial;
+see `docs/reports/pico_hardware.md`. The onboard LED's colour output and the FLASH
+pattern were not observed by the agent.
 The host link and its fake serial are unit-tested. See `main.py`'s module
-docstring and `docs/reports/pico.md` for the NOT-DONE list.
+docstring (LIMITS section) and `docs/reports/pico.md` for the open points.

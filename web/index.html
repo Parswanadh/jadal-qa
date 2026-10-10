@@ -24,13 +24,14 @@
       </span>
     </div>
 
-    <div class="statusstrip" id="pico-status" aria-live="polite" aria-label="Pico status light">
-      <span class="status-led" id="pico-led" data-led="off" aria-hidden="true"></span>
-      <span class="statusstrip-body">
-        <span class="micro">Pico status light</span>
-        <span class="status-line" id="pico-line">checking…</span>
-      </span>
-    </div>
+    <details class="sysdrawer" id="sys-drawer">
+      <summary class="sysdrawer-sum" aria-label="System status">
+        <span class="status-led" id="pico-led" data-led="off" aria-hidden="true"></span>
+        <span class="sysdrawer-label" id="pico-line">checking…</span>
+        <span class="sysdrawer-caret" aria-hidden="true">▾</span>
+      </summary>
+      <div class="sysdrawer-body" id="sys-body" aria-live="off"></div>
+    </details>
   </div>
 
   <nav class="tabs" aria-label="Dashboard screens">
@@ -50,6 +51,53 @@
 
 <main id="main" class="wrap">
 
+  <!-- ── Global filter bar: real <select>s + search, state lives in the URL hash ── -->
+  <form class="filterbar" id="filterbar" role="search" aria-label="Filter batches">
+    <div class="field">
+      <label class="field-label" for="f-site">Site</label>
+      <select id="f-site" name="site"><option value="">All sites</option></select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-worker">Worker</label>
+      <select id="f-worker" name="worker"><option value="">All workers</option></select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-batch">Batch</label>
+      <select id="f-batch" name="batch"><option value="">All batches</option></select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-verdict">Verdict</label>
+      <select id="f-verdict" name="verdict">
+        <option value="">All verdicts</option>
+        <option value="accept">accept</option>
+        <option value="reject">reject</option>
+        <option value="review">review</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-reason">Reason</label>
+      <select id="f-reason" name="reason"><option value="">All reasons</option></select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-lang">Language</label>
+      <select id="f-lang" name="lang">
+        <option value="hi-IN">hi-IN</option>
+        <option value="kn-IN">kn-IN</option>
+        <option value="ta-IN">ta-IN</option>
+        <option value="te-IN">te-IN</option>
+        <option value="en-IN">en-IN</option>
+      </select>
+    </div>
+    <div class="field field-search">
+      <label class="field-label" for="f-q">Search</label>
+      <input id="f-q" name="q" type="search" placeholder="batch, segment, site…" autocomplete="off">
+    </div>
+    <div class="field field-go">
+      <button class="btn" type="submit">Apply</button>
+      <button class="btn btn-ghost" type="button" id="f-reset">Reset</button>
+    </div>
+  </form>
+
   <!-- ── Screen 1: batches ─────────────────────────────────────────────── -->
   <section class="view" id="view-batches" role="tabpanel" aria-labelledby="tab-batches" tabindex="0">
     <div class="view-head">
@@ -62,12 +110,6 @@
         <span class="pill pill-mock" id="mock-pill" hidden>mock data</span>
         <button class="btn" id="batches-refresh" type="button">Refresh</button>
       </div>
-    </div>
-
-    <div class="filters" id="batches-filters" role="group" aria-label="Filter batches">
-      <button class="chip is-on" type="button" data-filter="all" aria-pressed="true">All</button>
-      <button class="chip" type="button" data-filter="reject" aria-pressed="false">Rejected</button>
-      <button class="chip" type="button" data-filter="accept" aria-pressed="false">Accepted</button>
     </div>
 
     <p class="micro meta-line" id="batches-meta" hidden></p>
@@ -102,6 +144,11 @@
       </div>
     </div>
 
+    <div class="field field-inline" id="head-field">
+      <label class="field-label" for="f-head">Head / model</label>
+      <select id="f-head" name="head"><option value="">aggregate</option></select>
+    </div>
+
     <div id="insights-body" aria-live="polite" aria-busy="true"></div>
   </section>
 
@@ -111,6 +158,7 @@
   </footer>
 </main>
 
+<script src="api.js"></script>
 <script src="app.js" defer></script>
 </body>
 </html>
