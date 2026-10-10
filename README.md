@@ -2,12 +2,17 @@
 
 **QA for head-camera factory video that shows its evidence — including when it fails.**
 
-<!-- BRAG_VIDEO: placeholder. Owner: upload docs/assets/brag.mp4 in the GitHub editor (drag it into a comment box to get a user-attachments URL), then replace this line and the link target below with that URL for inline playback. -->
-[![Jadal QA launch video (click to play)](docs/assets/ui_tour.gif)](docs/assets/brag.mp4)
+<!-- BRAG_VIDEO_URL: paste the GitHub user-attachments URL of brag.mp4 here -->
+
+![Launch video: QA that shows its work, including where it fails](docs/assets/brag_preview.gif)
+
+*Launch video (35 s). Full video with sound: see the Releases page / upload placeholder.* Poster: [`docs/assets/brag_poster.jpg`](docs/assets/brag_poster.jpg).
 
 [![Jadal QA results explorer: funnel, scoreboard and experiment log](docs/assets/ui_hero.png)](https://parswanadh.github.io/jadal-qa/)
 
 *The explorer is a static TypeScript app in [`site/`](site/). It is live at the link above once GitHub Pages is enabled for this repository.*
+
+![Explorer tour: funnel stages, scoreboard, experiment log](docs/assets/ui_tour.gif)
 
 ### Run the explorer locally
 
@@ -195,10 +200,7 @@ deterministic merge gate that runs the full suite on the merged tree
 (`jadal/config.py`, `jadal/__init__.py`, `docs/SPEC.md`, `docs/BASELINE.md`)
 are untouched by docs work.
 
-**Experiment log.** No `experiments/registry.jsonl` on this branch. The pod-bundle
-snapshot lists 138 experiment/component ids (E/L/B series); continue E-series ids
-and merge by id, append-only. See `docs/pod/SYNC_UPDATE_2026-10-10_2145.md:50`
-and `docs/process/decision-log.md`.
+**Experiment log.** The registry on `main` (`experiments/registry.jsonl`) has 75 experiments, latest line per id. An earlier snapshot in the pod bundle lists 138 experiment/component ids (E/L/B series); the two numbers are different sources and are not mixed. See `docs/pod/SYNC_UPDATE_2026-10-10_2145.md:50` and `docs/process/decision-log.md`.
 
 **Edge tier.** The edge path pulls numpy, cv2, scipy, pillow + ImageHash — and no
 torch, transformers, sklearn, fastapi, or CUDA (`docs/reports/edge.md`,

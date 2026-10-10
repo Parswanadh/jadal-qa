@@ -77,7 +77,6 @@ describe("filters derive from registry fields", () => {
     row("Z3.02", { verdict: "no" }),
     row("E5.04", { verdict: "inconclusive" }),
     row("E4.01", { status: "running", verdict: null }),
-    row("E9.01", { title: "Spatial localisation WITHDRAWN" }),
   ];
 
   it("negative means verdict drop or no", () => {
@@ -87,10 +86,6 @@ describe("filters derive from registry fields", () => {
 
   it("open means not done", () => {
     expect(countBy(rows, "open")).toBe(1);
-  });
-
-  it("withdrawn matches the word in any text field", () => {
-    expect(countBy(rows, "withdrawn")).toBe(1);
   });
 
   it("search matches id, title, summary and track, case-insensitively", () => {

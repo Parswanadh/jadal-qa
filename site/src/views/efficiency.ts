@@ -92,7 +92,7 @@ export function efficiencyView(): HTMLElement {
       { className: "chart-card" },
       el("h2", { className: "eyebrow" }, `RES.03 · ${bake.res03.title}`),
       el("p", {}, bake.res03.summary),
-      el("p", { className: "fineprint" }, "Source: ", el("a", { href: repoHref("experiments/registry.jsonl", bake.res03.line) }, `experiments/registry.jsonl:${bake.res03.line}`), ". The results file it names is not in this repo; the figures above come from the registry line only."),
+      el("p", { className: "fineprint" }, "Source: ", el("a", { href: repoHref("experiments/registry.jsonl", bake.res03.line) }, `experiments/registry.jsonl:${bake.res03.line}`), " (registry line; results JSON not in repo)."),
     ),
   );
 }

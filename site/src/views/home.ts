@@ -100,7 +100,7 @@ export function homeView(still: number | null): HTMLElement {
       el(
         "p",
         { className: "fineprint" },
-        `${bake.registry_unique} experiments in the log (${bake.registry_lines} lines, latest line per id). `,
+        `${bake.registry_unique} experiments on main (experiments/registry.jsonl, latest line per id). `,
         el("a", { href: "#/experiments" }, "Browse the log"),
         ".",
       ),

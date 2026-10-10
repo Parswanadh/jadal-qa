@@ -7,7 +7,6 @@ export const FILTERS = [
   "negative",
   "inconclusive",
   "open",
-  "withdrawn",
 ] as const;
 export type Filter = (typeof FILTERS)[number];
 
@@ -20,7 +19,7 @@ export function isFilter(value: string | null): value is Filter {
 
 /**
  * Filters are derived from the registry's own fields:
- * negative = verdict drop or no; withdrawn = the word appears in any field.
+ * negative = verdict drop or no. Only fields the registry actually has are used.
  */
 export function matchesFilter(row: RegistryRow, filter: Filter): boolean {
   switch (filter) {
@@ -36,8 +35,6 @@ export function matchesFilter(row: RegistryRow, filter: Filter): boolean {
       return row.verdict === "inconclusive";
     case "open":
       return row.status !== "done";
-    case "withdrawn":
-      return `${row.title} ${row.summary}`.toLowerCase().includes("withdrawn");
   }
 }
 
