@@ -75,27 +75,31 @@ the branch runner): same LOCO recipe, own LOCO/bootstrap code, own frame-subsamp
 5. **E3.03 saturates at 4–6 s**, so the adopted "4 s early exit" is at the knee, not past it: 4 s = 0.860
    vs 10.5 s = 0.848. Reproduced, and it is the single largest cost win in the adopted stack (2.5×).
 
-## 4. Could NOT be verified here (explicit)
+## 4. Verification status — and what the GPU unlock changed
 
-1. **Anything requiring the GPU.** In this container `nvidia-smi` fails
-   (`Failed to initialize NVML: Unknown Error`) and `torch.cuda.is_available()` is `False` (CUDA error 304),
-   so **no CUDA job can run from this session**. Consequences:
-   - E1.02b (5/10 fps **re-embedding** with EmbeddingGemma-2) is not re-runnable — the cached
-     `segments.npz` is the only EG2 source. The fps *subsample* claim (E1.02) is verified; a *denser*
-     re-embed is not.
-   - Any claim whose number came from a GPU feature extraction that is not cached
-     (e.g. re-deriving `caches/gpu/features.json` from video) could only be checked against the cache,
-     not regenerated. I verified the *model/eval* half, not the *feature extraction* half.
-2. **E1.03 / E1.04 (OOD fps sweep, frame selection)** belong to Lead A (`feat/exp-fps-pod`, claim A2) and
-   were still running; verifying them concurrently would have duplicated a running claim, so they are
-   out of scope for LB1. Their IndEgo-side companion E1.01 **is** verified above.
-3. **E7 (cost model) and E8 (1,546-window re-score)** are Lead A's claims B1/B2; not touched.
-4. **The frozen pre-registered OOD run** (sha256 `4da1068a78d5d150…`) cannot be scored: `labels/ood_labels2.json`
-   is not delivered. OOD claims therefore stay at **n=60, n_bad=9** (score AUROC 0.529 [0.32, 0.74],
-   21/51 good windows rejected) — see LB4 for the staged one-command runner.
-5. **Wall-clock throughput claims** (×4.9, "7× real time", kernel hours/hour) were not re-measured: the pod
-   is saturated by another swarm and measuring throughput here would produce a number that says more
-   about contention than about the pipeline. Not reproduced, not contradicted.
+**Update: the GPU became reachable mid-session (see §9), so the feature-extraction half is now CLOSED.**
+
+1. **Feature extraction — VERIFIED (was the biggest gap).** `eval/pod_verify/verify_feature_reproduction.py`
+   re-decodes windows from the source video on this pod and recomputes the 26 features, comparing them to
+   `caches/gpu/features.json`. Six windows drawn from six *different* clips reproduce to
+   **max |Δ| = 7.1e-15** — floating-point noise, not drift (`eval/results/pod_verify/feature_reproduction.json`;
+   the all-150-window run writes `feature_reproduction_all150.json`). So the cached evidence chain is
+   reproducible from the videos, not merely internally consistent.
+2. **EG2 embedding cache** — under independent check in parallel (`b/verify-eg2`). The *model/eval* half of
+   the 0.848 was already verified in §1; whether the cached embeddings themselves reproduce from video
+   was not, and now is being tested rather than assumed.
+3. **E1.02b (denser EG2 re-embedding at 5/10 fps)** — previously impossible, now runnable and delegated
+   (`b/e102b`). This is the item the registry itself flagged as "only if GPU time remains".
+4. **E1.03 / E1.04 (OOD fps sweep, frame selection)** belong to Lead A (`feat/exp-fps-pod`, claim A2);
+   verifying them concurrently would have duplicated a running claim, so they are out of scope for LB1.
+   Their IndEgo-side companion E1.01 **is** verified in §1.
+5. **E7 (cost model) and E8 (1,546-window re-score)** are Lead A's claims B1/B2; not touched.
+6. **The frozen pre-registered OOD run** still cannot be scored: `labels/ood_labels2.json` is not
+   delivered. OOD claims therefore stay at **n=60, n_bad=9** — see LB4 for the staged one-command runner.
+7. **Wall-clock throughput claims** (×4.9, "7× real time", kernel hours/hour) were **not** re-measured
+   here: the pod is shared with another swarm, so a number taken now says more about contention than
+   about the pipeline. Not reproduced, not contradicted. (The A40 end-to-end figure is Lead A's E7 and
+   FACTS.md still lists it as PENDING.)
 
 ## 5. Artifact integrity — the frozen pre-registration does not verify on this pod
 
@@ -245,3 +249,33 @@ re-derive independently, and E1.02 survives a from-scratch re-implementation.
 
 The GPU half of the pipeline and the delivered-labels half of the out-of-domain work remain **unverified
 here** for environmental reasons that are stated above, not hidden.
+
+## 9. Appendix — the GPU unlock (why §4 changed mid-session)
+
+For most of this session `nvidia-smi` returned `Failed to initialize NVML: Unknown Error` and
+`torch.cuda.is_available()` was `False` (CUDA error 304). That looked like a missing driver or a broken
+pod. It was neither:
+
+| check | result |
+|---|---|
+| driver kernel module | **loaded**, `NVRM version: 580.173.02` (`/proc/driver/nvidia/version`) |
+| CUDA toolkit | **installed**, `nvcc` 12.8.93, `/usr/local/cuda`, `libcudart.so.12` |
+| userspace libs | `libcuda.so.1`, `libnvidia-ml.so.580.173.02` present |
+| device nodes | `/dev/nvidiactl`, `/dev/nvidia5`, `/dev/nvidia-uvm` present |
+| **`os.open("/dev/nvidiactl", O_RDWR)`** | **EACCES — permission denied** |
+| `NVIDIA_VISIBLE_DEVICES` | `void` |
+
+So the GPU was **never missing and CUDA never needed installing** — access to the device nodes was
+denied by the execution sandbox, which surfaced as NVML failing to initialise. Once device access was
+granted, the A40 came up immediately (`NVIDIA A40, 46068 MiB`, **0 MiB used, 0 % util, 23 °C**, no
+compute processes) and `torch.cuda.is_available()` flipped to `True` (44.4 GiB visible).
+
+**Lesson for whoever reads this next:** an NVML "Unknown Error" inside a sandboxed agent is a
+*permissions* symptom, not an installation problem. Check `os.open` on `/dev/nvidia*` before touching a
+driver or a toolkit. Also note `NVIDIA_VISIBLE_DEVICES=void` is a red herring here: NVML ignores it, and
+overriding it changes nothing while the device nodes are unreadable.
+
+With the GPU reachable, three previously-blocked items became actionable and were dispatched as
+independent tracks: feature-extraction reproduction (§4.1, **done, 7.1e-15**), EG2 embedding-cache
+reproduction, and E1.02b denser sampling — each in its own worktree, each holding a GPU slot via
+`flock /workspace/state/gpu.slot{1,2}.lock`, none of them touching Lead A's branches.
