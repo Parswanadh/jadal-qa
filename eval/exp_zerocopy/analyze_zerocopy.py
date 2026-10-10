@@ -363,7 +363,9 @@ def write_report(mosaic, zc, dec, up):
           "that is not present (driver 580 is CUDA 13 but only the CUDA-12.8 toolkit "
           "is installed, and the PyPI `*-cu13` packages are empty placeholders). "
           "`PyNvVideoCodec`, `cv2.cudacodec`, `decord`, `av` and `cupy` are all "
-          "absent. The measured GPU path is therefore the **partial** upload path "
+          "absent. `torchcodec` was installed into the pod env only to probe this "
+          "(it is **not** a repo dependency). The measured GPU path is therefore the "
+          "**partial** upload path "
           "(hwdownload, then one small upload of the pix+EG2 frames); the compute "
           "stages are genuinely device-resident, the decode hop is not.\n")
         A("\n| stage | hwdownload mean ms | GPU mean ms | speedup |")
