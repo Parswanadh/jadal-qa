@@ -1,0 +1,66 @@
+{
+  "backbone": "embeddinggemma2:budget=140:bfloat16",
+  "created_utc": "2026-10-10T06:43:25+00:00",
+  "cross_clip_detail": [
+    {
+      "pred": "11_attach_zip_ties",
+      "step": "08_attach_power_connection"
+    },
+    {
+      "pred": "10_attach_wooden_plate",
+      "step": "11_attach_zip_ties"
+    },
+    {
+      "pred": "12_plug_in",
+      "step": "12_plug_in"
+    },
+    {
+      "pred": "14_turn_on",
+      "step": "13_attach_monitor"
+    },
+    {
+      "pred": "14_turn_on",
+      "step": "14_turn_on"
+    }
+  ],
+  "cross_clip_n": 5,
+  "cross_clip_segment_accuracy": 0.4,
+  "loo_n": 2,
+  "loo_note": "only multi-segment steps are LOO-evaluable (13/14 train steps are singletons)",
+  "loo_train_clip_segment_accuracy": 0.5,
+  "mode": "step_prototypes",
+  "proto_file": "decider_step_prototypes.npz",
+  "proto_sha256": "dbf6b5ca8e480e5fe04bb44ec4f9128a60e0abe91a98cb0143055e27cec30e07",
+  "seed": 1234,
+  "temperature": 1.0,
+  "temperature_grid": [
+    0.005,
+    0.01,
+    0.02,
+    0.05,
+    0.1,
+    0.2,
+    0.5,
+    1.0
+  ],
+  "temperature_note": "edge_fallback_to_1(grid_best=0.005)",
+  "test_clip": "User_1_412_2010_3_480.mp4",
+  "train_clip": "User_15_410_0411_2_480.mp4",
+  "train_segments": 15,
+  "train_steps": [
+    "01_inspect_and_clean",
+    "02_attach_ram_chip",
+    "03_attach_hard_disk",
+    "04_attach_hard_disk_cables",
+    "05_attach_side_plates",
+    "06_attach_bottom_plate",
+    "07_attach_top_plate",
+    "08_attach_power_connection",
+    "09_attach_connector_plates",
+    "10_attach_wooden_plate",
+    "11_attach_zip_ties",
+    "12_plug_in",
+    "13_attach_monitor",
+    "14_turn_on"
+  ]
+}

@@ -15,16 +15,73 @@ NOT DONE (stubs only -- real models arrive with their modules):
 """
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import os
+import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 STUB_THRESHOLD = 0.9  # placeholder until pick_threshold has calibration data
 
 
 def stubs_enabled() -> bool:
     return os.environ.get("JADAL_USE_STUBS") == "1"
+
+
+_MISSING = object()
+
+
+@contextlib.contextmanager
+def blocked_imports(*names: str) -> Iterator[None]:
+    """Block imports of the named modules (tests only, not production).
+
+    Setting ``sys.modules[name] = None`` is NOT enough on its own: once the
+    real submodule has been imported anywhere in the process, the parent
+    package keeps it as an attribute, and ``from jadal import signals``
+    resolves through that attribute without consulting ``sys.modules``. So
+    this also removes the parent attribute, and restores everything after.
+    With the block active, both ``__import__`` and ``from`` imports of the
+    names raise ``ImportError``, and the pipeline falls back to stubs.
+    """
+    saved_modules: dict[str, Any] = {}
+    saved_attrs: dict[str, Any] = {}
+    for name in names:
+        saved_modules[name] = sys.modules.get(name, _MISSING)
+        sys.modules[name] = None  # type: ignore[assignment]
+        if "." in name:
+            parent_name, _, attr = name.rpartition(".")
+            parent = sys.modules.get(parent_name)
+            if parent is not None and hasattr(parent, attr):
+                saved_attrs[name] = getattr(parent, attr)
+                try:
+                    delattr(parent, attr)
+                except AttributeError:
+                    pass
+    try:
+        yield
+    finally:
+        for name in names:
+            if saved_modules[name] is _MISSING:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = saved_modules[name]
+        for name in names:
+            if "." not in name:
+                continue
+            parent_name, _, attr = name.rpartition(".")
+            parent = sys.modules.get(parent_name)
+            if parent is None:
+                continue
+            if saved_modules[name] is _MISSING:
+                # The module was never imported here: leave no stale parent
+                # attribute behind either.
+                try:
+                    delattr(parent, attr)
+                except AttributeError:
+                    pass
+            elif name in saved_attrs:
+                setattr(parent, attr, saved_attrs[name])
 
 
 # --------------------------------------------------------------------------
