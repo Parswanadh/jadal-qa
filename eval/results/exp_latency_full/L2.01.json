@@ -1,0 +1,276 @@
+{
+ "adopted_policy_vs_full": null,
+ "bottleneck": "decode(nvdec3)",
+ "bottleneck_mean_ms": 1780.43,
+ "command": "source /workspace/env.sh && export OMP_NUM_THREADS=1 && bash tools/pod/gpu_run.sh python3 eval/exp_latency_full/run_full.py --workers 4 --resume",
+ "contention_caveat": "pod load ~10-13/96 from peer opencode sessions; 4 single-threaded workers; GPU bursty",
+ "decode_cpu_vs_nvdec": {
+  "coverage": "first window of each processed clip",
+  "cpu_ffmpeg_swscale_ms": {
+   "max": 4305.96,
+   "mean": 4070.56,
+   "min": 3835.17,
+   "n": 2,
+   "p50": 4070.56,
+   "p95": 4282.42,
+   "p99": 4301.25
+  },
+  "n_compared": 2,
+  "note": "CPU and cuvid arms decode ONE 160x90 branch; the pipeline decode is the E8.01 three-branch NVDEC pass, not like-for-like",
+  "nvdec_hevc_cuvid_ms": {
+   "max": 1011.51,
+   "mean": 983.36,
+   "min": 955.2,
+   "n": 2,
+   "p50": 983.36,
+   "p95": 1008.7,
+   "p99": 1010.95
+  },
+  "pipeline_3branch_nvdec_ms": {
+   "max": 3703.47,
+   "mean": 1780.43,
+   "min": 1084.06,
+   "n": 190,
+   "p50": 1714.89,
+   "p95": 2492.12,
+   "p99": 3131.65
+  },
+  "speedup_cpu_over_cuvid_median": 4.139
+ },
+ "device": "A40",
+ "git_sha": "ae2df45",
+ "gpu": {
+  "cores": {
+   "note": "OMP_NUM_THREADS=1; 4 single-threaded workers",
+   "nproc": 96,
+   "omp_threads": "1",
+   "workers": 4
+  },
+  "device": "A40 (46068 MiB)",
+  "eg2_vram_peak_mib_per_window": {
+   "max": 2146.84,
+   "mean": 2146.81,
+   "min": 2145.61,
+   "n": 190,
+   "p50": 2146.84,
+   "p95": 2146.84,
+   "p99": 2146.84
+  },
+  "gpu_util_pct_per_stage": {},
+  "note": "nvidia-smi per-stage attribution unavailable in the partial (run_meta not written); EG2 torch VRAM peak per window is shown",
+  "run_util_pct": {},
+  "run_vram_mib": {},
+  "smi_samples": 0
+ },
+ "honesty_note": "These 1,546 Egocentric-10K windows have NO human labels: label_source is 'none' and every accept/reject/review verdict here is DESCRIPTIVE, not accuracy. IndEgo-trained models did not transfer out-of-domain (0.4-0.53 AUROC on the 60 human-labelled Egocentric-10K windows, n_bad=9), so the accept/reject share below is NOT a quality measure.",
+ "id": "L2.01",
+ "label_source": "none (unlabelled windows; verdicts DESCRIPTIVE)",
+ "n_clips": 2,
+ "outcomes": {
+  "clips_covered": 2,
+  "factories_covered": 2,
+  "failures": 0,
+  "features_digest_reproduced": 190,
+  "per_window_compared": 190,
+  "profile_distribution": {
+   "factory_1080p30": 190
+  },
+  "reference_E8_01_verdict_distribution_full": {
+   "accept": 296,
+   "reject": 83,
+   "review": 1167
+  },
+  "reference_E8_01_verdict_distribution_same_subset": {
+   "accept": 27,
+   "reject": 2,
+   "review": 161
+  },
+  "reference_E8_01_verdict_share_pct_same_subset": {
+   "accept": 14.21,
+   "reject": 1.05,
+   "review": 84.74
+  },
+  "reproduction": "EXACT on all compared windows",
+  "verdict_distribution": {
+   "accept": 27,
+   "reject": 2,
+   "review": 161
+  },
+  "verdict_mismatch_count": 0,
+  "verdict_mismatch_examples": [],
+  "verdict_share_pct": {
+   "accept": 14.21,
+   "reject": 1.05,
+   "review": 84.74
+  },
+  "windows_processed": 190,
+  "windows_requested": 190
+ },
+ "partial": true,
+ "partial_note": "The baseline full-corpus run was STOPPED and superseded by the optimized full-potential run (L3) and the zero-copy run (L4); these numbers are the N windows already written to windows.jsonl.partial, a contiguous prefix of the manifest (first 2 clips), not a stratified sample.",
+ "per_clip_table": [
+  {
+   "clip": "factory_001/worker_006/factory001_worker006_00008.mp4",
+   "duration_s": 1199.87,
+   "factory": "factory_001",
+   "ffprobe_cold_ms": 65.02362503670156,
+   "mean_decode_ms": 1738.0,
+   "mean_eg2_ms": 1346.5,
+   "mean_pixel_ms": 875.2,
+   "mean_total_ms": 4883.1,
+   "n_windows": 119,
+   "p95_total_ms": 5824.0,
+   "serial_clip_s": 581.1
+  },
+  {
+   "clip": "factory_003/worker_004/factory003_worker004_00003.mp4",
+   "duration_s": 1199.73,
+   "factory": "factory_003",
+   "ffprobe_cold_ms": 61.099431943148375,
+   "mean_decode_ms": 1851.5,
+   "mean_eg2_ms": 1048.8,
+   "mean_pixel_ms": 925.1,
+   "mean_total_ms": 4807.4,
+   "n_windows": 71,
+   "p95_total_ms": 6569.6,
+   "serial_clip_s": 341.3
+  }
+ ],
+ "per_stage_ms": {
+  "decision": {
+   "max": 1.97,
+   "mean": 1.05,
+   "min": 0.87,
+   "n": 190,
+   "p50": 1.06,
+   "p95": 1.2,
+   "p99": 1.42
+  },
+  "decode(nvdec3)": {
+   "max": 3703.47,
+   "mean": 1780.43,
+   "min": 1084.06,
+   "n": 190,
+   "p50": 1714.89,
+   "p95": 2492.12,
+   "p99": 3131.65
+  },
+  "descriptors": {
+   "max": 1499.52,
+   "mean": 734.61,
+   "min": 611.62,
+   "n": 190,
+   "p50": 719.98,
+   "p95": 863.41,
+   "p99": 1052.97
+  },
+  "eg2_embed": {
+   "max": 9967.58,
+   "mean": 1235.23,
+   "min": 517.49,
+   "n": 190,
+   "p50": 1101.45,
+   "p95": 1536.41,
+   "p99": 9622.97
+  },
+  "io_probe": {
+   "max": 6.98,
+   "mean": 1.8,
+   "min": 1.15,
+   "n": 190,
+   "p50": 1.48,
+   "p95": 3.15,
+   "p99": 5.15
+  },
+  "mosaic": {
+   "max": 375.72,
+   "mean": 207.82,
+   "min": 163.26,
+   "n": 190,
+   "p50": 203.3,
+   "p95": 266.07,
+   "p99": 324.24
+  },
+  "pixel-26": {
+   "max": 2603.38,
+   "mean": 893.86,
+   "min": 700.59,
+   "n": 190,
+   "p50": 838.35,
+   "p95": 1187.27,
+   "p99": 1668.57
+  },
+  "write": {}
+ },
+ "policy_note": "the every-2nd + 4 s early-exit probe runs after the pool; the run was stopped before it, so it is not captured in the partial",
+ "protocol": "repo E8.01 pipeline (eval/exp_rescore/run_e8.py) with perf_counter per stage; verdicts/score/features_digest reproduce E8.01; latency_ms carries more stages so receipt_sha256 differs (documented)",
+ "recipe": "ensemble_v1 (EG2+pixel equal-weight) + profiles/router (E4.04)",
+ "reference_cost": {
+  "ms_per_window_mean": 5761.4,
+  "ms_per_window_p50": 5195.0,
+  "ms_per_window_p95": 9370.8,
+  "policy_note": "E3.04 (every-2nd-window + 4 s early exit -> x4.9 less work) was NOT applied: the contract requires one verdict per window, and the profile factory_1080p30 sampling (fps=5, probe_every_k=2) was not applied to the pixel view either, because the frozen head was fit on full-window features. Reported as a measured alternative, not used.",
+  "protocol_work_per_window": {
+   "descriptor_frames": "8 native 1920x1080 (fps=0.8, (i+0.5)/8 grid)",
+   "eg2_frames": "20 at 512x288 (0.5 s grid)",
+   "ffmpeg_decodes_per_window": 1,
+   "model_forwards_per_window": 1,
+   "pixel_fps_histogram": {
+    "30.0": 1546
+   },
+   "pixel_frames": "300 x 160x90 rgb24 (30 fps)",
+   "sampling_at_inference": "none (fixed frames, fixed seed, deterministic)"
+  },
+  "stage_ms_mean": {
+   "decode": 2354.3,
+   "descriptors": 1055.1,
+   "eg2_embed": 1195.9,
+   "pixel_features": 1154.3,
+   "score": 1.7,
+   "total": 5761.4
+  },
+  "wall_s": 2263.1,
+  "windows_per_s": 0.6831,
+  "workers": 4
+ },
+ "run_utc": null,
+ "stage_mean_ms": {
+  "decision": 1.05,
+  "decode(nvdec3)": 1780.43,
+  "descriptors": 734.61,
+  "eg2_embed": 1235.23,
+  "io_probe": 1.8,
+  "mosaic": 207.82,
+  "pixel-26": 893.86,
+  "write": 0.0
+ },
+ "stage_share_pct": {
+  "decision": 0.02,
+  "decode(nvdec3)": 36.67,
+  "descriptors": 15.13,
+  "eg2_embed": 25.44,
+  "io_probe": 0.04,
+  "mosaic": 4.28,
+  "pixel-26": 18.41,
+  "write": 0.0
+ },
+ "time": {
+  "corpus_hours": 4.404,
+  "footage_h_per_wall_h": 8.006,
+  "max_rss_gb": null,
+  "mean_ms_per_window": 4854.8,
+  "n_windows": 190,
+  "omp_threads": "1",
+  "p50_ms_per_window": 4591.9,
+  "p95_ms_per_window": 6310.8,
+  "partial_footage_h": 0.528,
+  "wall_min": 3.96,
+  "wall_s": 237.32172679901123,
+  "windows_per_min": 48.0,
+  "windows_per_s": 0.8006,
+  "workers": 4
+ },
+ "title": "PARTIAL baseline: full-corpus PoC pipeline run \u2014 outcomes + atomic per-stage latency",
+ "track": "latency",
+ "write_stage_available": false
+}
