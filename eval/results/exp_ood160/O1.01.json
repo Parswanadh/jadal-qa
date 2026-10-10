@@ -1,0 +1,258 @@
+{
+ "auroc": {
+  "p_eg2": 0.5891,
+  "p_pixel": 0.5203,
+  "usable_prob": 0.566
+ },
+ "auroc_ci95": {
+  "p_eg2": {
+   "grouped": [
+    0.407,
+    0.743
+   ],
+   "window": [
+    0.457,
+    0.72
+   ]
+  },
+  "p_pixel": {
+   "grouped": [
+    0.393,
+    0.646
+   ],
+   "window": [
+    0.404,
+    0.638
+   ]
+  },
+  "usable_prob": {
+   "factory_grouped_bootstrap_honest": [
+    0.414,
+    0.697
+   ],
+   "window_bootstrap_optimistic": [
+    0.433,
+    0.693
+   ]
+  }
+ },
+ "auroc_detail": {
+  "p_eg2": {
+   "auroc": 0.5891,
+   "mean_bad": 0.7,
+   "mean_good": 0.7384
+  },
+  "p_pixel": {
+   "auroc": 0.5203,
+   "mean_bad": 0.3269,
+   "mean_good": 0.3962
+  },
+  "usable_prob": {
+   "auroc": 0.566,
+   "mean_bad": 0.5134,
+   "mean_good": 0.5673
+  }
+ },
+ "batch_split": {
+  "q1": {
+   "auroc": 0.415,
+   "n": 60,
+   "n_bad": 9,
+   "n_good": 51
+  },
+  "q2": {
+   "auroc": 0.6569,
+   "n": 100,
+   "n_bad": 13,
+   "n_good": 87
+  }
+ },
+ "bootstrap": {
+  "group_unit": "factory (47 groups; clip==window, so factory is the independent unit)",
+  "n_boot": 2000,
+  "seed": 0,
+  "window_unit": "10-s window (optimistic: correlated within factory)"
+ },
+ "cache_hygiene": {
+  "cached_verdict_counts": {
+   "accept": 64,
+   "reject": 54,
+   "review": 42
+  },
+  "mismatch_ids": [
+   "r019_53c94542d028",
+   "r028_35d5b1c8f28d",
+   "r040_32c42216af3d",
+   "r057_63507fe6bfb0",
+   "r062_46bd9c2db0af",
+   "r063_95837794bfcc",
+   "r094_c4353547155f"
+  ],
+  "n_cache_verdict_mismatch": 7,
+  "note": "ood_scores2.json (q2) stores 7 windows with usable_prob>0.5 as 'review' (wider band); verdicts here are recomputed from the frozen rule, not copied."
+ },
+ "caveats": [
+  "n_bad=22 now exceeds the pre-registered 10/class minimum (confirmatory), but the positives are still only 22 windows scattered over 47 factories.",
+  "The window bootstrap is optimistic: windows from the same factory share lighting, camera and work-cell, so they are not independent. The factory-grouped CI is the honest one.",
+  "Some factories contribute up to 13 windows and contain both classes, so the grouped resample can drop or duplicate a large fraction of the data -> wide, lumpy CI.",
+  "The shipped PoC cascade is a different scorer; its 160-window result is carried over from the handover and has no grouped CI."
+ ],
+ "claim": "O1",
+ "confusion_matrix": {
+  "bad": {
+   "accept": 8,
+   "n": 22,
+   "reject": 7,
+   "review": 7
+  },
+  "good": {
+   "accept": 63,
+   "n": 138,
+   "reject": 47,
+   "review": 28
+  }
+ },
+ "experiment": "O1",
+ "factories": {
+  "n": 47,
+  "sizes": {
+   "factory_001": 10,
+   "factory_003": 11,
+   "factory_009": 13,
+   "factory_010": 3,
+   "factory_013": 4,
+   "factory_014": 3,
+   "factory_016": 4,
+   "factory_019": 3,
+   "factory_020": 6,
+   "factory_021": 2,
+   "factory_022": 4,
+   "factory_023": 2,
+   "factory_024": 5,
+   "factory_026": 1,
+   "factory_028": 2,
+   "factory_029": 2,
+   "factory_033": 2,
+   "factory_035": 1,
+   "factory_036": 2,
+   "factory_037": 3,
+   "factory_038": 1,
+   "factory_039": 3,
+   "factory_040": 10,
+   "factory_041": 3,
+   "factory_042": 3,
+   "factory_044": 1,
+   "factory_046": 2,
+   "factory_051": 1,
+   "factory_053": 3,
+   "factory_054": 2,
+   "factory_056": 2,
+   "factory_057": 4,
+   "factory_058": 2,
+   "factory_060": 1,
+   "factory_061": 9,
+   "factory_062": 2,
+   "factory_066": 2,
+   "factory_068": 2,
+   "factory_069": 5,
+   "factory_070": 2,
+   "factory_073": 2,
+   "factory_076": 2,
+   "factory_077": 4,
+   "factory_079": 4,
+   "factory_080": 1,
+   "factory_084": 2,
+   "factory_085": 2
+  }
+ },
+ "frozen_config_sha256": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+ "label_source": {
+  "bad_reasons": {
+   "HANDS_NOT_VISIBLE": 2,
+   "NO_ACTIVE_WORK": 19,
+   "SHAKY": 1
+  },
+  "description": "160 random Egocentric-10K 10-s windows (47 factories), one human labeller. Merge of ood_labels.json (batch q1, 60) and ood_labels2.json (batch q2, 100); latest verdict per window. Third-party footage: do not publish the videos.",
+  "file": "labels/ood160_labels.json",
+  "n": 160,
+  "n_bad": 22,
+  "n_good": 138
+ },
+ "n": 160,
+ "n_bad": 22,
+ "n_factories": 47,
+ "n_good": 138,
+ "n_missing_scores": 0,
+ "old_n60": {
+  "ensemble_v1_auroc": 0.415,
+  "ensemble_v1_ci_window": [
+   0.207,
+   0.63
+  ],
+  "poc_cascade_auroc": 0.529,
+  "poc_cascade_ci_window": [
+   0.316,
+   0.728
+  ],
+  "source": "eval/results/poc/ood_check_60.json (b/verify-audit); n_bad=9 exploratory"
+ },
+ "operating_point": {
+  "ba_ci95_factory_grouped_bootstrap": [
+   0.277,
+   0.485
+  ],
+  "ba_ci95_window_bootstrap": [
+   0.285,
+   0.502
+  ],
+  "bad_accept_rate_binary": 0.3636,
+  "bad_reject_rate": 0.3182,
+  "balanced_accuracy_binary_at_0.5": 0.5464,
+  "balanced_accuracy_binary_note": "pre-registered scalar decision p>0.5 accept else reject (review counted as reject); this is the handover's 'balacc@0.5' convention",
+  "balanced_accuracy_review_as_miss": 0.3874,
+  "good_accept_rate": 0.4565,
+  "rule": "usable_prob>0.5 accept; 0.4<=p<=0.5 review; p<0.4 reject",
+  "verdict_distribution": {
+   "accept": 71,
+   "reject": 54,
+   "review": 35
+  }
+ },
+ "poc_cascade_handover_160": {
+  "auroc": 0.6,
+  "bad": {
+   "accept": 8,
+   "reject": 13,
+   "review": 1
+  },
+  "balanced_accuracy": 0.549,
+  "by_batch": {
+   "q1_n60": 0.529,
+   "q2_n100": 0.645
+  },
+  "ci_window_optimistic": [
+   0.474,
+   0.724
+  ],
+  "good": {
+   "accept": 70,
+   "reject": 53,
+   "review": 15
+  },
+  "provenance": "jadal_pod_bundle/docs/ood_eval_poc_cascade_160.txt and FACTS.md:97 (handover/ood_eval_poc_cascade_160.txt); the IndEgo-calibrated cascade heads are NOT in the pod bundle caches, so this number is carried over, not recomputed here; no factory-grouped CI available for it."
+ },
+ "protocol": "pre-registered, FROZEN ensemble_v1 (two-view equal-weight probability average, threshold 0.5, abstain band [0.4,0.6]); evaluation only - nothing fitted, tuned or re-thresholded",
+ "score_source": {
+  "ood_scores.json": {
+   "config_sha256": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+   "n_scores": 60,
+   "sha256": "300c1eda6e8c0b709b36da433b8b91c464e83b89b58af5b3613cc71b02d15e5b"
+  },
+  "ood_scores2.json": {
+   "config_sha256": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+   "n_scores": 100,
+   "sha256": "d5e68906fdd7fa914f31b9339052d550349ed42365d1712ef9f7c3c6f7ca988e"
+  }
+ },
+ "title": "Frozen PoC out-of-domain evaluation on the 160 human labels"
+}
