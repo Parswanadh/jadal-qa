@@ -1,0 +1,155 @@
+{
+ "experiment": "Q4.01",
+ "fallback": {
+  "gold_score": "caches/ensemble/oof_probs.npz p_ens (out-of-fold)",
+  "model": "ensemble_v1 (frozen logistic, no refit)",
+  "ood_score": "caches/ensemble/ood_scores{,2}.json usable_prob",
+  "rule": "REVIEW -> accept iff usable_prob >= 0.5"
+ },
+ "gold_loco": {
+  "determinism_cost_auroc": 0.0114,
+  "fallback_buys_balacc": 0.08,
+  "hybrid_rules_plus_fallback": {
+   "accept_share": 0.5867,
+   "auroc_ci95": [
+    0.7297,
+    0.8606
+   ],
+   "auroc_fallback_prob_only": 0.8336,
+   "auroc_hybrid_score": 0.8285,
+   "balacc": 0.79,
+   "balacc_ci95": [
+    0.692,
+    0.8283
+   ],
+   "fallback_flips_to_accept": 64,
+   "fallback_flips_to_reject": 26,
+   "reject_share": 0.4133,
+   "review_share_after_fallback": 0.0,
+   "review_share_before_fallback": 0.6,
+   "share_by_model": 0.6,
+   "share_decided_deterministically": 0.4
+  },
+  "logistic_oof_auroc": 0.8336,
+  "n": 150,
+  "n_bad": 50,
+  "n_clips": 7,
+  "n_good": 100,
+  "per_fold": {
+   "desk": {
+    "n": 29,
+    "n_thresholds": 64,
+    "reject_threshold": 15
+   },
+   "ecu_full": {
+    "n": 48,
+    "n_thresholds": 64,
+    "reject_threshold": 12
+   },
+   "ecu_late": {
+    "n": 14,
+    "n_thresholds": 64,
+    "reject_threshold": 14
+   },
+   "logistics4": {
+    "n": 17,
+    "n_thresholds": 64,
+    "reject_threshold": 14
+   },
+   "organise": {
+    "n": 19,
+    "n_thresholds": 64,
+    "reject_threshold": 14
+   },
+   "pallet": {
+    "n": 17,
+    "n_thresholds": 64,
+    "reject_threshold": 13
+   },
+   "pallet2": {
+    "n": 6,
+    "n_thresholds": 64,
+    "reject_threshold": 15
+   }
+  },
+  "pure_rules": {
+   "accept_share": 0.16,
+   "auroc_ci95": [
+    0.7126,
+    0.855
+   ],
+   "auroc_deterministic_score": 0.8222,
+   "balacc_ci95": [
+    0.6021,
+    0.7569
+   ],
+   "balacc_decided_only": 0.808,
+   "balacc_review_as_accept": 0.71,
+   "balacc_review_as_reject": 0.59,
+   "reject_share": 0.24,
+   "review_share": 0.6,
+   "share_by_model": 0.6,
+   "share_decided_deterministically": 0.4
+  }
+ },
+ "ood160": {
+  "determinism_cost_auroc": 0.1388,
+  "fallback_buys_balacc": 0.0778,
+  "hybrid_rules_plus_fallback": {
+   "accept_share": 0.0813,
+   "auroc_ci95": [
+    0.2751,
+    0.5564
+   ],
+   "auroc_fallback_prob_only": 0.566,
+   "auroc_hybrid_score": 0.4264,
+   "balacc": 0.4681,
+   "balacc_ci95": [
+    0.3809,
+    0.5427
+   ],
+   "fallback_flips_to_accept": 13,
+   "fallback_flips_to_reject": 44,
+   "reject_share": 0.9187,
+   "review_share_after_fallback": 0.0,
+   "review_share_before_fallback": 0.3563,
+   "share_by_model": 0.3563,
+   "share_decided_deterministically": 0.6438
+  },
+  "logistic_oof_auroc": 0.566,
+  "n": 160,
+  "n_bad": 22,
+  "n_factories": 47,
+  "n_good": 138,
+  "protocol": "frozen IndEgo rule table applied read-only; no OOD fitting. Factory-grouped bootstrap CI (n_boot=2000, seed=0) is the honest CI.",
+  "pure_rules": {
+   "accept_share": 0.0,
+   "auroc_ci95": [
+    0.2687,
+    0.562
+   ],
+   "auroc_deterministic_score": 0.4272,
+   "balacc_ci95": [
+    0.2565,
+    0.5216
+   ],
+   "balacc_decided_only": 0.5,
+   "balacc_review_as_accept": 0.3903,
+   "balacc_review_as_reject": 0.5,
+   "reject_share": 0.6438,
+   "review_share": 0.3563,
+   "share_by_model": 0.3563,
+   "share_decided_deterministically": 0.6438
+  }
+ },
+ "package": {
+  "code_sha256": "5627b1121e65bfe8a0421c7b0f58c05c56999779c702406288f8d93a1b0391d3",
+  "n_rules": 16,
+  "path": "tools/phys",
+  "quantisation": 4,
+  "reject_threshold": 14,
+  "rules_json_sha256": "52355d724b58b6f375f36d45be85b60d3bc0d5c2e40a6b9b6b7c1241faff7a1d"
+ },
+ "title": "Deterministic physics model: runnable package + pure-vs-hybrid comparison",
+ "wall_s": 16.34
+}
