@@ -1,46 +1,51 @@
-# rhythm STATUS
+# rhythm STATUS — COMPLETE
 
-Branch `feat/custom-algo-rhythm` — pushed to origin. Worktree
-`/home/parshu/projects/jadal-qa-wt/custom-algo`.
+Branch `feat/custom-algo-rhythm`, pushed. **PR #77 open** (do NOT merge):
+https://github.com/Parswanadh/jadal-qa/pull/77
 
-## done
-- Baseline reproduced exactly: 26 GPU per-pixel features + logistic, LOCO AUROC
-  **0.810** (handover: 0.81). Per-clip: ecu_full 0.95, logistics4 0.90,
-  organise 0.91, desk 0.80, ecu_late 0.65, **pallet 0.50, pallet2 0.50**.
-  Log `custom_algo_data/logs/baseline_repro.log`.
-- `jadal/rhythm/features.py` — representation R: 160x90, 10 fps, 6 grid channels
-  (res_mean, res_p90, skin_frac, tvar, flow_mag, flow_coh) + 8 global channels,
-  phase-correlation translation ego-motion compensation.
-- `jadal/rhythm/model.py` — K-member ensemble vectorised in grouped convs.
-  2,287 params/member. Gradients verified. G in {1,4,6} all work.
-- `eval/rhythm/extract.py` — sharded deterministic extractor (150 gold windows cached).
-- `eval/rhythm/train.py` — nested LOCO, per-member independent augmentation,
-  inner-LOCO member selection, `--folds` sharding.
-- `eval/rhythm/evaluate.py` — clip-bootstrap CI, per-clip, per-reason, coverage
-  curve, same-fold baselines.
-- `tests/test_rhythm_features.py` — 22 tests, all passing.
-- `docs/reports/rhythm.md` — skeleton, all numbers PENDING (to be filled).
-- Parallel tracks in `custom_algo_data/research/`: papers (24 verified sources),
-  ablations, rhythm_analysis, math_approaches.
+## Headline numbers (150 real human windows, LOCO, clip-bootstrap 2000)
 
-## running
-- 4 parallel GPU fold shards (`eval/results/rhythm/loco_shard{0..3}.json`),
-  K=48, top-M=24, 25 epochs, batch 8. GPU at 100%, ~4.6 GiB.
+| method | AUROC (95% CI) |
+|---|---|
+| **rhythm ensemble, no synthetic negatives** | **0.753 (0.651-0.813)** |
+| rhythm ensemble, WITH synthetic negatives | 0.351 (0.232-0.490) — below chance |
+| ablation (d): global channels only | 0.724 |
+| flow_act-like scalar family | 0.764 |
+| 26 GPU per-pixel features + logistic | 0.810 |
 
-## blockers / corrections
-- **BUG FOUND AND FIXED (by the test sub-agent, verified):**
-  `cv2.phaseCorrelate` mutates its inputs in place on OpenCV 5.0.0. The first
-  cache was computed on corrupted frames and has been DISCARDED
-  (`cache/main_INVALID_phasecorrelate_bug/`). Any number from the first
-  extraction is void. The fix (copying inputs) is now a regression test.
-  Evidence the fix matters: g000 `luma_mean` 0.0944 -> 0.2995,
-  `lap_var` 321 -> 1140, `under_frac` 0.538 -> 0.106.
-- The 0.810 baseline is the 26 GPU per-pixel features, NOT this tensor; it is
-  not directly comparable to numbers computed from `cache/main`.
+Per-clip: desk 0.707, ecu_full 0.740, ecu_late 0.625, logistics4 0.786,
+organise 0.856, **pallet 0.515, pallet2 0.500** (chance).
 
-## next
-- Merge fold shards -> pooled LOCO AUROC + CI; run baselines + ablations; freeze.
+**Outcome: documented negative result.** Did not reach AUROC >= 0.85 / CI lower
+bound >= 0.72 / no clip below 0.60. Does not beat the 0.810 logistic baseline.
 
-## headline numbers
-- baseline LOCO AUROC **0.810** (reproduced, other representation).
-- rhythm ensemble LOCO AUROC: **pending** (training running).
+## The decisive finding
+Tensor-level synthetic negatives make the model score **0.351 on real windows**
+while looking fine on synthetic-inclusive data. It learns the approximation, not
+the defect. Two full 7-fold runs differ only in that flag.
+
+## Real bug found and fixed
+`cv2.phaseCorrelate` mutates its inputs in place (OpenCV 5.0.0). The first cache
+was corrupt and was discarded; fix guarded by 3 regression tests. `luma_mean`
+0.094 -> 0.300, `under_frac` 0.538 -> 0.106.
+
+## Frozen artifact
+`configs/rhythm_v1.json` sha256 `0faf3609f4c849bc...`; `configs/rhythm_v1.npz`
+1427 bytes. LOCO estimate 0.759, **not certified**.
+
+## Tests
+Full suite: **575 tests OK** (skipped=3).
+
+## Independent tracks (`custom_algo_data/research/`, outside git)
+- `papers/` — 24 verified-fetched sources; no fetched paper benchmarks a binary
+  "hands visible AND actively working" label on egocentric video.
+- `ablations/` — `sp_cellmax` (6 hand-built spatial features) 0.799 vs a
+  size-matched global-only control averaging 0.725; beat 96.7% of matched draws.
+- `rhythm_analysis/` — temporal-spectrum features, raw vs variance-normalised.
+- `math_approaches/` — six framings; after removing magnitude NONE gave a
+  defensible gain; concatenating 206 features hurt (0.629 vs 0.738).
+
+## Not done (no number claimed)
+Ablations for no-ego-motion, no-skin, G in {1,4,8}, no-augmentation, single-vs-
+ensemble were NOT run in the time box. Streaming path not implemented. No GPU-vs-
+CPU determinism run. Cost in windows/hour not measured.
