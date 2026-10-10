@@ -1,0 +1,12 @@
+dark sens 0.0 FRR 0.43 bal 0.285
+overexp sens 0.286 FRR 0.68 bal 0.303
+blur sens 0.429 FRR 0.01 bal 0.709
+ten sens 0.286 FRR 0.04 bal 0.623
+frozen sens 0.0 FRR 0.0 bal 0.5
+madfroz sens 0.143 FRR 0.2 bal 0.471
+ffroz sens 0.0 FRR 0.0 bal 0.5
+pbytes sens 0.286 FRR 0.28 bal 0.503
+clipfrac sens 0.0 FRR 0.03 bal 0.485
+lowent sens 0.714 FRR 0.08 bal 0.817
+lowsnr sens 0.0 FRR 0.06 bal 0.47
+still sens 0.0 FRR 0.01 bal 0.495

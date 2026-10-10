@@ -41,12 +41,31 @@
    "version": "funnel-v1-placeholder"
   },
   "versions": {
+   "arch": "<version>",
    "certify": "<version>",
+   "certify_git_sha": "<version>",
    "decision": "<version>",
+   "decision_git_sha": "<version>",
+   "device": "<version>",
+   "face_detector_task": "<version>",
+   "funnel": "<version>",
+   "funnel_git_sha": "<version>",
+   "gpu_name": "<version>",
+   "hand_landmarker_task": "<version>",
+   "mediapipe_version": "<version>",
+   "numpy_version": "<version>",
+   "opencv_version": "<version>",
+   "platform": "<version>",
    "python": "<version>",
    "receipts": "<version>",
+   "receipts_git_sha": "<version>",
+   "repo_git_sha": "<version>",
    "segmenter": "<version>",
-   "signals": "<version>"
+   "segmenter_git_sha": "<version>",
+   "signals": "<version>",
+   "signals_git_sha": "<version>",
+   "torch_version": "<version>",
+   "transformers_version": "<version>"
   }
  },
  "decisions": {

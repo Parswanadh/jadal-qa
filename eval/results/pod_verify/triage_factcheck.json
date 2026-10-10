@@ -1,0 +1,235 @@
+{
+  "audit": "independent fact-check of docs/reports/branch_triage.md (LB5, branch b/triage, PR #94)",
+  "auditor": "lead-b-verify (B1-verify), branch b/verify-triage",
+  "verified_at_utc": "2026-10-10T16:15:13Z..16:27Z",
+  "read_only": true,
+  "summary": {
+    "entries_checked": 32,
+    "TRUE": 26,
+    "FALSE": 2,
+    "UNVERIFIABLE": 4,
+    "false_subclaims_total": 3,
+    "counting_note": "Each of the 32 claim entries is counted once by its primary verdict; entries with a split verdict (e.g. TRUE at snapshot / FALSE now) are counted under their first token. Three FALSE statements in total: two are primary entries (#14 exp_regimes.md x5, #17 experiments/EXPERIMENTS.md x8) and one is an embedded listing error inside the otherwise-TRUE section-4-A entry (docs/PUBLIC_SNAPSHOT_EXCLUDE.txt is not a conflict for #91).",
+    "note": "Snapshot claims were checked against origin/main=65f37dc and the branch state at report time, reconstructed from origin/wip/* snapshot refs and from pre-merge parents of merge commits where branches were force-pushed after the report. Live drift: 31 open PRs at 16:15:13Z; 5 of the report's 28 heads (#57,#63,#67,#76,#84) are now ancestors of main."
+  },
+  "claims": [
+    {
+      "claim": "Base ref origin/main = 65f37dc (Merge pull request #79 from Parswanadh/feat/ensemble-views, 2026-10-10T21:15:48+05:30).",
+      "verdict": "TRUE",
+      "evidence_command": "git -C /workspace/repo show -s --format='%H %ci %s' 65f37dc",
+      "evidence": "65f37dc35b45385d66229b093ae234f3fb753757 2026-10-10 21:15:48 +0530 Merge pull request #79 from Parswanadh/feat/ensemble-views"
+    },
+    {
+      "claim": "handover/BRANCH_TRIAGE_REPORT.md does not exist, on disk or in any git ref (all five sub-checks in report section 0).",
+      "verdict": "TRUE",
+      "evidence_command": "ls -la /workspace/repo/handover; git -C /workspace/repo log --all --oneline -- 'handover/BRANCH_TRIAGE_REPORT.md'; git -C /workspace/repo for-each-ref --format='%(refname)' | while read r; do git ls-tree -d --name-only \"$r\" | grep -qx handover && echo \"$r\"; done | wc -l; find / -name 'BRANCH_TRIAGE*' -not -path '/proc/*'",
+      "evidence": "ls: No such file or directory; git log --all empty (0 commits); 0 refs contain a handover/ directory; find returned no matches."
+    },
+    {
+      "claim": "The inventory command returned 25 open PRs at 15:57Z.",
+      "verdict": "TRUE",
+      "evidence_command": "gh pr list -R Parswanadh/jadal-qa --state all --limit 200 --json number,createdAt,mergedAt,closedAt  # then count PRs with createdAt<=T and (mergedAt is null or >T) and (closedAt is null or >T)",
+      "evidence": "Reconstructed count at 2026-10-10T15:57:00Z = 25: [25,28,30,45,47,57,61,63,67,68,69,70,71,72,73,75,76,77,80,81,82,83,84,87,88]."
+    },
+    {
+      "claim": "The inventory command returned 28 open PRs at 16:00Z (#89, #90, #91 opened mid-survey).",
+      "verdict": "TRUE",
+      "evidence_command": "same reconstructed timeline from gh pr list --state all --json createdAt,mergedAt,closedAt",
+      "evidence": "Exactly 28 were open during 16:01:12Z-16:02:36Z (#89 created 16:00:14Z, #90 16:00:37Z, #91 16:01:12Z). At the literal instant 16:00:00Z the count was 25; the report's 16:00Z label is ~1 minute early. STALENESS CAVEAT: 30 PRs were already open when the report was committed at 16:05:09Z (#92 16:02:37Z, #93 16:03:58Z), and 31 were open at 16:15:13Z."
+    },
+    {
+      "claim": "Open PRs: all base=main, none draft, none with a review decision, no requested reviewers.",
+      "verdict": "TRUE",
+      "evidence_command": "gh pr list -R Parswanadh/jadal-qa --state open --limit 100 --json number,isDraft,baseRefName,reviewDecision,reviewRequests",
+      "evidence": "31 open PRs at 16:15:13Z: drafts=[], non-main base=[], reviewDecision set=[], reviewRequests non-empty=[]."
+    },
+    {
+      "claim": "branches that are ancestors of main (nothing left to merge) = 0/28.",
+      "verdict": "TRUE at snapshot / FALSE at 16:15Z",
+      "evidence_command": "for b in <28 heads>; do git -C /workspace/repo merge-base --is-ancestor origin/$b 65f37dc && echo ANCESTOR $b; done   # then same test against origin/main",
+      "evidence": "Against the report's base 65f37dc: 0/28 (no branch was an ancestor). Against live origin/main (f18ca43) at 16:15Z: 5/28 are ancestors - #57 feat/gpu-pipeline, #63 feat/integration3, #67 feat/poc-dashboard (all merged into main 16:08:47-48Z), #76 integration/poc (16:08:46Z) and #84 feat/exp-fps (16:14:47Z). The report itself warns the queue is live, but its headline 'no close candidates' is obsolete."
+    },
+    {
+      "claim": "branch-only PRs = 28/28, 1 to 76 commits ahead.",
+      "verdict": "TRUE",
+      "evidence_command": "git -C /workspace/repo rev-list --left-right --count 65f37dc...<ref>  (per branch); min/max over the 28",
+      "evidence": "Per-branch right-counts reproduced exactly: min 1 (#67 feat/poc-dashboard, #73 feat/breakthrough-lab), max 76 (#76 integration/poc at pre-merge tip 1d4c8d5 = 7e88bbe^1, left/right = 32/76)."
+    },
+    {
+      "claim": "1,337 branch-only files in total (files present on a head branch and absent from origin/main).",
+      "verdict": "TRUE",
+      "evidence_command": "comm -13 <(git ls-tree -r --name-only 65f37dc|sort) <(git ls-tree -r --name-only <ref>|sort) | wc -l  (per branch, snapshot refs: origin/wip/$b when the branch was rewritten later, else origin/$b; #76 via 7e88bbe^1)",
+      "evidence": "Reproduced exactly for 22 rows (511 for the 18 untouched branches + #76 111 = 622; +810 for the 8 pod-lineage branches via origin/wip/*: 101+95+106+106+102+101+93+106). Report's table sums to 1337 and needs #84 = 16, whose snapshot tip is no longer in any ref. My wip-ref values differ by <=3 files on 5 rewritten branches (#87 +2, #88 +1, #89 -1, #90 -2, #91 +3), consistent with pushes between the 16:00Z count and the 16:04-16:10Z wip snapshots. #84 row unverifiable (see below)."
+    },
+    {
+      "claim": "GitHub mergeable: 18 MERGEABLE, 10 CONFLICTING (#68, #76, #81, #82, #83, #87, #88, #89, #90, #91).",
+      "verdict": "UNVERIFIABLE",
+      "evidence_command": "gh api repos/Parswanadh/jadal-qa/pulls/68 --jq .mergeable ; gh pr list --json number,mergeable",
+      "evidence": "GitHub recomputes mergeability live and does not expose historical values; at 16:15Z the list API returned UNKNOWN for all 31 open PRs and PR #68 returned mergeable=null/unknown while recomputing. Supporting (not proving) evidence: the local merge-tree reproduction below reproduces the exact conflicting set minus #68, as the report itself claims."
+    },
+    {
+      "claim": "local git merge-tree: 19 clean / 9 conflicting (same set as GitHub's 10 minus #68).",
+      "verdict": "TRUE",
+      "evidence_command": "git -C /workspace/repo merge-tree --write-tree 65f37dc <snapshot-ref>  # per branch; snapshot refs as above",
+      "evidence": "18 clean + 8 conflicting reproduced directly; #76 at 1d4c8d5 = 1 add/add conflict -> 9 conflicting {#76,#81,#82,#83,#87,#88,#89,#90,#91} = GitHub set minus #68, and #68 locally clean. #84's claimed clean row is unverifiable (branch rewritten)."
+    },
+    {
+      "claim": "Per-PR merge-tree tree OIDs in the queue table (e.g. #25 7e6d3d901b3d, #68 8ef2549d35b2, #80 d823c958b9f1).",
+      "verdict": "TRUE",
+      "evidence_command": "git -C /workspace/repo merge-tree --write-tree 65f37dc origin/wip/<branch>  (or origin/<branch>)",
+      "evidence": "All 18 tabulated tree OIDs reproduced byte-identically: 7e6d3d901b3d, 22646d450906, e2811244e1c8, 56b49128a1da, beb0abb4d178, 9d41c274a0b4, c65727add5ba, 12b46c3f39f1, 024b8e97aa40, 8ef2549d35b2, 8003514dee28, 2de3e85b96fc, db16d47e7812, b71b57fd394b, b1cbd31a24d2, 119bdc9e9977, 0d0d6eb7eec9, d823c958b9f1."
+    },
+    {
+      "claim": "Per-PR 'behind main by N commits' values in the queue table (#76 by 32, #25 by 141, ...).",
+      "verdict": "TRUE",
+      "evidence_command": "git -C /workspace/repo rev-list --left-right --count 65f37dc...<snapshot-ref>",
+      "evidence": "All reproduced exactly: 141,141,141,51,135,76,105,51,51,49,53,53,51,25,51,51,44,17,17,17,17,17,17,17,17,17 and #76 = 32 (left count at tip 1d4c8d5, right 76)."
+    },
+    {
+      "claim": "#84 feat/exp-fps row: 16 branch-only files, merge-tree clean tree 442ce43c8366, and the section 5 reproduce example 'git merge-tree --write-tree origin/main origin/feat/exp-fps -> 442ce43c8366df64'.",
+      "verdict": "UNVERIFIABLE",
+      "evidence_command": "git -C /workspace/repo log -1 origin/feat/exp-fps; git -C /workspace/repo merge-tree --write-tree 65f37dc origin/feat/exp-fps; git -C /workspace/repo rev-list --count 65f37dc..7d7861d",
+      "evidence": "feat/exp-fps was rewritten and merged after the report (PR #84 merged 16:14:47Z at 1acd7644, tip 258e899 = rebased stack containing b/verify commits). The ref now gives merge-tree cb2ce4cd8aef, 127 branch-only files, left/right = 0/83 (main is an ancestor), so the report-era tip (tree 442ce43c, 16 files) is not reachable from any ref I can find; candidate old tip 7d7861d is not in the new history and gives 102 files."
+    },
+    {
+      "claim": "Section 4-B: 'docs/reports/exp_regimes.md is added by five (#81, #82, #83, #87, #88)'.",
+      "verdict": "FALSE",
+      "evidence_command": "for b in oss/kit pod/prwatch docs/pod-docs feat/exp-regimes-pod feat/exp-domain-adapt feat/exp-fps-pod feat/exp-motion-cue feat/exp-cost-model b/verify; do git cat-file -e <snapshot-ref>:$b/docs/reports/exp_regimes.md; done   # file absent on 65f37dc",
+      "evidence": "Eight snapshot heads carry docs/reports/exp_regimes.md while 65f37dc does not: #81 pod/prwatch, #82 docs/pod-docs, #83 feat/exp-regimes-pod, #87 feat/exp-domain-adapt, #88 feat/exp-fps-pod, #89 feat/exp-motion-cue, #90 feat/exp-cost-model, #91 b/verify. The report undercounts by three (misses #89, #90, #91)."
+    },
+    {
+      "claim": "Section 4-B: 'docs/reports/gpu_pipeline.md by three (#57, #75, #76)'.",
+      "verdict": "TRUE",
+      "evidence_command": "git cat-file -e <snapshot-ref>:docs/reports/gpu_pipeline.md  # per branch; file absent on 65f37dc",
+      "evidence": "Snapshot adders are exactly #57 feat/gpu-pipeline, #75 feat/poc-run, #76 integration/poc (verified at 7e88bbe^1 for #76)."
+    },
+    {
+      "claim": "Section 4-B: 'Nine open PRs (#80, #81, #82, #83, #87, #88, #89, #90, #91) each add experiments/registry.jsonl'.",
+      "verdict": "TRUE",
+      "evidence_command": "git merge-base 65f37dc <snapshot-ref>; git diff --name-only <mb> <snapshot-ref> | grep -cx experiments/registry.jsonl",
+      "evidence": "Exactly those nine add it; origin/main has no experiments/registry.jsonl (git cat-file -e origin/main:experiments/registry.jsonl -> fatal: does not exist)."
+    },
+    {
+      "claim": "Section 4-B: 'eight add registry_snapshot.jsonl, experiments/EXPERIMENTS.md and docs/pod/*'.",
+      "verdict": "FALSE",
+      "evidence_command": "git ls-tree -r --name-only origin/wip/b/verify | grep -i EXPERIMENTS.md ; git diff --name-only <mb> <snapshot-ref> | grep -cx <path>",
+      "evidence": "registry_snapshot.jsonl: 8/9 TRUE. docs/pod/AGENTS_AND_SKILLS.md and docs/pod/EXPERIMENT_LOGGING.md: 8/9 TRUE. experiments/EXPERIMENTS.md: 7/9 - #91 b/verify has no EXPERIMENTS.md at any path in its snapshot tree (grep returned nothing) and #80 oss/kit has none. The sentence's 'eight ... experiments/EXPERIMENTS.md' is wrong; the correct number is seven."
+    },
+    {
+      "claim": "origin/main has no experiments/ directory.",
+      "verdict": "TRUE",
+      "evidence_command": "git -C /workspace/repo ls-tree -r --name-only origin/main -- experiments | wc -l",
+      "evidence": "0 files under experiments/ on origin/main, still true after #76 landed."
+    },
+    {
+      "claim": "CI status rollup: only check is CodeRabbit on all open PRs; origin/main has no .github/workflows, so there is no automated test CI and the merge gate is manual.",
+      "verdict": "TRUE",
+      "evidence_command": "gh pr list -R Parswanadh/jadal-qa --state open --json number,statusCheckRollup; git -C /workspace/repo ls-tree -r --name-only origin/main -- .github | wc -l",
+      "evidence": "Only check name across the 31 open PRs is CodeRabbit (32 rollup entries); .github file count on origin/main = 0."
+    },
+    {
+      "claim": "Section 6: the repo's canonical command is 'make test' running unittest discover -s tests and -s web.",
+      "verdict": "TRUE",
+      "evidence_command": "grep -n -A3 '^test:' /workspace/repo/Makefile",
+      "evidence": "Makefile:13-15 test: / timeout 150 env PYTHONNOUSERSITE=1 $(PY) -m unittest discover -s tests / timeout 150 env PYTHONNOUSERSITE=1 $(PY) -m unittest discover -s web  (verbatim modulo $(PY))."
+    },
+    {
+      "claim": "The interpreter /home/parshu/envs/jadal/bin/python does not exist on the pod, and there is no pinned requirements file for the service/edge tiers (requirements-edge.txt only).",
+      "verdict": "TRUE",
+      "evidence_command": "ls -l /home/parshu/envs/jadal/bin/python; ls /workspace/repo/requirements*.txt",
+      "evidence": "ls: cannot access '/home/parshu/envs/jadal/bin/python': No such file or directory; only requirements-edge.txt exists."
+    },
+    {
+      "claim": "The proxy command 'python -m pytest tests/ -q' covers tests/ only, not web/test_dashboard.py.",
+      "verdict": "TRUE",
+      "evidence_command": "git -C /workspace/repo cat-file -e 65f37dc:web/test_dashboard.py",
+      "evidence": "web/test_dashboard.py exists on main and is outside the 'tests/' path passed to pytest."
+    },
+    {
+      "claim": "Section 6 gate run 3 on origin/main 65f37dc, outside /tmp: '493 passed, 3 skipped, 4 errors, 90 subtests passed in 23.52s' -> main is green with 0 real failures.",
+      "verdict": "TRUE",
+      "evidence_command": "mkdir -p /workspace/wt/b-verify-triage/.gate-check && git -C /workspace/repo archive 65f37dc | tar -x -C /workspace/wt/b-verify-triage/.gate-check && cd /workspace/wt/b-verify-triage/.gate-check && OMP_NUM_THREADS=2 timeout 900 python3 -m pytest tests/ -q --continue-on-collection-errors",
+      "evidence": "493 passed, 3 skipped, 2 warnings, 4 errors, 90 subtests passed in 18.03s (identical counts to the report; wall time differs)."
+    },
+    {
+      "claim": "The 4 collection errors are pod environment gaps, not main defects: test_integration.py + test_service.py -> ModuleNotFoundError: fastapi; test_eval_splits.py + test_signals.py -> ModuleNotFoundError: imagehash.",
+      "verdict": "TRUE",
+      "evidence_command": "python3 -c 'import fastapi, imagehash, pandas, pydantic, uvicorn'; cd .gate-check && python3 -m pytest tests/test_eval_splits.py -q",
+      "evidence": "fastapi/imagehash/pandas/pydantic/uvicorn all ModuleNotFoundError; numpy/cv2/torch/scipy/PIL/sklearn present. test_signals.py traceback: jadal/signals.py:51 import imagehash; tests/test_eval_splits.py:26 ModuleNotFoundError: No module named 'imagehash'. Erroring files in my run: test_eval_splits.py, test_integration.py, test_service.py, test_signals.py (4)."
+    },
+    {
+      "claim": "Section 6 run 1 (collection interrupted, 1 warning 4 errors in 8.82s, exit 2) and run 2 (1 failed, 492 passed, 3 skipped, 4 errors, 90 subtests in 31.45s, failure = test_make_demo_clips.py::TestMakeDemoClips::test_missing_sources_exit_2 AssertionError 3 != 2, a /tmp false positive, exit 3 message reproduced).",
+      "verdict": "UNVERIFIABLE",
+      "evidence_command": "not re-run (only run 3 was reproduced)",
+      "evidence": "Run 3's identical totals (493/3/4/90) imply run 2's 492 passed + 1 failed is consistent, and the /tmp guard behaviour is plausible, but I did not re-execute runs 1-2 or the make_demo_clips.py repro, so these three numbers are taken as not independently verified. No contradiction found."
+    },
+    {
+      "claim": "Section 4-E: #68 is a criss-cross pair - git merge-base --all shows multiple merge bases, local merge-tree exits 0 (8ef2549d35b2) while GitHub reports CONFLICTING/DIRTY for head 8649018.",
+      "verdict": "TRUE (criss-cross) / UNVERIFIABLE (GitHub field)",
+      "evidence_command": "git -C /workspace/repo merge-base --all 65f37dc origin/feat/frames-spectral; git -C /workspace/repo merge-tree --write-tree 65f37dc origin/feat/frames-spectral; gh api repos/Parswanadh/jadal-qa/pulls/68 --jq .mergeable",
+      "evidence": "2 merge bases (e33cb7ee891f, e03eb3c341ee) -> criss-cross TRUE; local tree 8ef2549d35b2 reproduced TRUE; head 8649018 and 49-commits-behind reproduced TRUE. GitHub's CONFLICTING/DIRTY is not retrievable now (#68 returns mergeable=null/'unknown' while recomputing), so that specific field is UNVERIFIABLE. The report's advice 'do not merge on the strength of the local check alone' is well supported."
+    },
+    {
+      "claim": "Section 4-F: #76 integration/poc contains #57 feat/gpu-pipeline, #63 feat/integration3 and #67 feat/poc-dashboard (git merge-base --is-ancestor true for all three).",
+      "verdict": "TRUE",
+      "evidence_command": "for x in feat/gpu-pipeline feat/integration3 feat/poc-dashboard; do git -C /workspace/repo merge-base --is-ancestor origin/$x origin/integration/poc && echo CONTAINED $x; done",
+      "evidence": "CONTAINED for all three. Consequently, after #76 merged (16:08:46Z) all three heads became ancestors of main; they were merged (not merely closed) at 16:08:47-48Z, so the report's 'close as superseded' action is moot and nothing was lost - advisability of the recommendation is confirmed by the ancestry evidence."
+    },
+    {
+      "claim": "Section 4-A: for 9 conflicting PRs the conflict set is exactly the files main got from merged PRs #79/#85, every conflicted path already exists on origin/main (listed 6 files + five E3.0*.json + docs/PUBLIC_SNAPSHOT_EXCLUDE.txt for #76/#91), so keeping main's version loses no branch content and needs no hand-merging.",
+      "verdict": "TRUE (with one minor listing error)",
+      "evidence_command": "git merge-tree --write-tree 65f37dc origin/wip/<branch> | grep 'CONFLICT ('; git cat-file -e 65f37dc:<path>",
+      "evidence": "Reproduced: each of #81/#82/#83/#87/#88/#89/#90 has exactly 6 conflicts (configs/ensemble_v1.json, docs/reports/exp_temporal.md, eval/ensemble/eval_ood.py, eval/exp_temporal/run_e3.py, eval/exp_temporal/write_e305.py, jadal/ensemble/scorer.py) and #91 has 11 (those 6 + the five eval/results/exp_temporal/E3.0*.json); every path exists on 65f37dc (all YES). #76 at 1d4c8d5 has exactly 1 conflict, docs/PUBLIC_SNAPSHOT_EXCLUDE.txt (exists on main, YES). MINOR ERROR: docs/PUBLIC_SNAPSHOT_EXCLUDE.txt is NOT among #91's 11 conflicts (the report's parenthetical attaches it to '#76/#91'). Safety check beyond the report: the branch blobs for all 6 files are byte-identical across all 8 branches and equal the stale pre-review pod/base port (commit 4c418d4), while main holds the #79 review fix (ff88cb1 'ensemble: fix verdict band order, eval_ood gating, report numbers'); no branch-unique edit exists in these files, so 'keep main's version' is genuinely loss-free."
+    },
+    {
+      "claim": "Section 5: nothing was copied onto b/triage; no other branch was rebased, rewritten or force-pushed; the verification used git merge-tree only, which writes no refs.",
+      "verdict": "UNVERIFIABLE",
+      "evidence_command": "git -C /workspace/repo diff --stat pod/base origin/b/triage; git -C /workspace/repo log --oneline -1 origin/<branch>; git -C /workspace/repo log --oneline -1 origin/wip/<branch>",
+      "evidence": "'Nothing copied' is TRUE: b/triage differs from pod/base by exactly 2 files (docs/reports/branch_triage.md 242 lines, experiments/registry.jsonl 1 line). The no-other-ref-touched statement has no audit trail (no reflogs for remote refs) and cannot be attributed from git alone. Observed independently: during 16:04-16:15Z other workers force-pushed wip/* snapshots (origin/wip/* commits 'wip snapshot ... of <branch>') and rewrote several live branches (e.g. origin/pod/prwatch now eea340d vs snapshot wip/pod/prwatch 4c7ae4b; origin/feat/exp-cost-model f2862ae vs wip 8f2c62c; origin/feat/exp-fps rebased so that main is now its ancestor). Those pushes are not attributable to b/triage and do not falsify its own read-only claim, but the sentence as written reads repo-wide and is not supportable as such."
+    },
+    {
+      "claim": "Section 5: 19 PRs are conflict-free as-is; 9 need the recipe; all 73 distinct branch-only docs/experiments paths are 'on a branch but not on main'.",
+      "verdict": "TRUE",
+      "evidence_command": "merge-tree per branch as above; comm -13 <(git ls-tree -r --name-only 65f37dc|sort) <(git ls-tree -r --name-only <snapshot-ref>|sort) | sort -u | grep -cE '^(docs|experiments)/'",
+      "evidence": "Distinct branch-only docs/|experiments/ paths at snapshot = 73 exactly (union of the 18 untouched branches, the 8 origin/wip snapshots, #84's claimed row and #76 at 1d4c8d5; total distinct branch-only paths 555). 19 clean / 9 conflicting reproduced except #84's clean row (unverifiable, see above)."
+    },
+    {
+      "claim": "Section 8: PR #94's diff against main contains the whole pod/base tree (132 files) and GitHub reports the PR CONFLICTING; b/triage was cut from pod/base; the LB5 payload is exactly commit 056c68f = 2 files (report + one registry line, id LB5).",
+      "verdict": "TRUE",
+      "evidence_command": "gh api repos/Parswanadh/jadal-qa/pulls/94 --jq '{changed_files,mergeable,mergeable_state,base:.base.ref}'; git -C /workspace/repo diff --name-only origin/main...origin/b/triage | wc -l; git -C /workspace/repo show --stat 056c68f; git -C /workspace/repo show 056c68f:experiments/registry.jsonl",
+      "evidence": "changed_files=132, additions=9739, deletions=320, base=main, mergeable=false, mergeable_state=dirty; git diff --name-only origin/main...origin/b/triage = 132; 056c68f touches exactly docs/reports/branch_triage.md (+235) and experiments/registry.jsonl (+1 line, {\"id\": \"LB5\", ...}); branch tip adds only 7 more lines to the same report (7de5055). Cherry-pick advice is supported: merging the branch wholesale would drag 132 pod/base-lineage files."
+    },
+    {
+      "claim": "Section 7 merge order: Wave 1 'merge now' = #84, #70, #71, #73, #77, #72, #75, #69, #61, #47, #45, #30, #28, #25, #80 (commenting that #80 should drop its 0-byte experiments/registry.jsonl).",
+      "verdict": "TRUE at snapshot / partly obsolete now",
+      "evidence_command": "gh pr list --state all --json number,state,mergedAt; git -C /workspace/repo cat-file -s $(git rev-parse origin/oss/kit:experiments/registry.jsonl)",
+      "evidence": "All 15 were merge-tree clean at snapshot except #84 (unverifiable); #84 has since merged (16:14:47Z). Live at 16:15:13Z the still-open members are #70,#71,#73,#77,#72,#75,#69,#61,#47,#45,#30,#28,#25,#80. The 0-byte registry note is consistent with oss/kit's single-file add but I did not verify the byte size (registry.jsonl for #80 exists in its tree); no evidence contradicting the wave ordering was found."
+    }
+  ],
+  "flagged_recommendations": [
+    {
+      "recommendation": "Section 7 Wave 3: 'supersede/close #57, #63, #67 once #76 has landed'.",
+      "verdict": "EVIDENCE SUPPORTS IT",
+      "evidence": "git merge-base --is-ancestor origin/feat/gpu-pipeline origin/integration/poc (and the other two) -> all three CONTAINED in #76. In the event all three were merged, not closed (mergedAt 16:08:47-48Z), and their heads are now ancestors of main. Because their content is a subset of #76's, nothing was lost; no work was deleted."
+    },
+    {
+      "recommendation": "Section 4-A recipe: 'keep main's version for those paths ... no hand-merging of content is required' for the 9 conflicting PRs.",
+      "verdict": "EVIDENCE SUPPORTS IT",
+      "evidence": "All conflicted paths exist on main, and the branch-side blobs are the identical stale pod/base port across all 8 open branches (pre-#79-review), not branch-unique content. See claim entry above."
+    },
+    {
+      "recommendation": "Any recommendation to close/delete another worker's branch: none found unsupported. The only close recommendation (#57/#63/#67) is backed by ancestry evidence, and the report explicitly declines to copy/rewrite other branches."
+    }
+  ],
+  "false_claims_verbatim": [
+    "`docs/reports/exp_regimes.md` is added by five (#81, #82, #83, #87, #88)",
+    "eight add `registry_snapshot.jsonl`, `experiments/EXPERIMENTS.md` and `docs/pod/*`",
+    "(plus the five `eval/results/exp_temporal/E3.0*.json` files and `docs/PUBLIC_SNAPSHOT_EXCLUDE.txt` for #76/#91)"
+  ],
+  "live_state_at_16_15_13Z": {
+    "open_prs": 31,
+    "open_pr_numbers": [25,28,30,45,47,61,68,69,70,71,72,73,75,77,80,81,82,83,87,88,89,90,91,92,93,94,95,96,97,98,99],
+    "origin_main": "f18ca4347f4e161b2bd27df51ea661b6b01720e2",
+    "note": "origin/main advanced from 65f37dc to f18ca43 when #76 landed at 16:08:46Z; #57/#63/#67 merged 16:08:47-48Z and #84 at 16:14:47Z, so the report's queue table is a valid 16:00Z snapshot but must not be acted on without re-running its section 1."
+  }
+}

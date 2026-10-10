@@ -6,7 +6,7 @@ Data (read-only):
   labels/ood160_labels.json        160 human windows, 138 good / 22 bad, 47 factories
   eval/results/exp_fewshot/inputs/ood160_pixel.npz  frozen 26 per-pixel features (160)
   caches/ensemble/ood_scores{,2}.json  frozen ensemble_v1 per-window scores (160)
-  /workspace/artifacts/windows_rescored.jsonl  1,546 unlabelled Egocentric-10K windows
+  $JADAL_POD_ROOT/artifacts/windows_rescored.jsonl  1,546 unlabelled Egocentric-10K windows
                                   (same 47 factories; 26 per-pixel features + view scores)
 
 Label convention: y = 1 good/usable, y = 0 bad. error = 1 - balanced accuracy @0.5.
@@ -21,7 +21,7 @@ import os
 
 import numpy as np
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(REPO, "eval", "results", "exp_acc")
@@ -30,9 +30,9 @@ OUT = os.path.join(REPO, "eval", "results", "exp_acc")
 FEWSHOT_CANDIDATES = [
     os.path.join(REPO, "eval", "results", "exp_acc", "inputs"),
     os.path.join(REPO, "eval", "results", "exp_fewshot", "inputs"),
-    "/workspace/wt/m-fewshot160/eval/results/exp_fewshot/inputs",
+    os.path.join(os.environ.get("JADAL_WT", "wt"), 'm-fewshot160/eval/results/exp_fewshot/inputs'),
 ]
-RESCORED = "/workspace/artifacts/windows_rescored.jsonl"
+RESCORED = os.path.join(os.environ.get("JADAL_ARTIFACTS", "artifacts"), 'windows_rescored.jsonl')
 
 
 def _find_input(name):
