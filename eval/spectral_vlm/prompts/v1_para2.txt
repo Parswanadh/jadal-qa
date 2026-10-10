@@ -1,0 +1,1 @@
+The attached frames were recorded by a head-worn camera during a work shift. Output JSON only: {"hands_on_work": "yes"|"no", "footage_usable": "yes"|"no"}. hands_on_work is "yes" if the person wearing the camera is doing manual work with objects or equipment. footage_usable is "yes" if the frames are clear, bright enough to see, and not occluded. JSON only, no commentary.

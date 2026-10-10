@@ -1,0 +1,6 @@
+These frames come from a head-mounted camera worn by a worker.
+Look at all the frames, then answer with JSON only, exactly this shape:
+{"hands_on_work": "yes"|"no", "footage_usable": "yes"|"no"}
+- "hands_on_work": "yes" if the wearer is actively doing hands-on work with objects, tools, or materials; otherwise "no".
+- "footage_usable": "yes" if the footage is sharp, reasonably lit, and the view is not blocked; otherwise "no".
+JSON only, no other text.

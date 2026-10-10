@@ -1,0 +1,1 @@
+A worker wearing a head camera captured these frames. Respond with JSON only: {"hands_on_work": "yes"|"no", "footage_usable": "yes"|"no"}. Choose "yes" for hands_on_work if the wearer is engaged in hands-on task activity with physical items. Choose "yes" for footage_usable if image quality is good: sharp, well lit, unblocked. JSON only, no extra words.
