@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "provenance": "synthetic-fixtures",
+    "n_total": 1200,
+    "targets": {"target_alpha": 0.05, "target_beta": 0.05, "delta": 0.1}
+  },
+  "per_source": {
+    "synthetic": {
+      "accept": {
+        "threshold": 0.4,
+        "n_select": 600,
+        "select_certified": {"accepted": 364, "errors": 8, "upper_bound": 0.0355, "coverage": 0.6067},
+        "certify": {"errors": 9, "fired": 364, "n_certify": 600, "upper_bound": 0.0387}
+      },
+      "reject_rules": {
+        "blur_var_min": {
+          "threshold": 90.0458,
+          "code": "BLUR",
+          "disabled": false,
+          "select": {"errors": 0, "fired": 69, "upper_bound": 0.0328},
+          "certify": {"errors": 0, "fired": 91, "n_certify": 600, "upper_bound": 0.025}
+        }
+      }
+    }
+  }
+}

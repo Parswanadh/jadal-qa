@@ -1,0 +1,540 @@
+{
+ "batch_decision": "accept",
+ "batch_id": "b7fbf6b993398c2f4",
+ "k": 1,
+ "n": 5,
+ "receipt_ids": [
+  "<receipt-id>",
+  "<receipt-id>",
+  "<receipt-id>",
+  "<receipt-id>",
+  "<receipt-id>"
+ ],
+ "rule": "reject if rejected_count > k",
+ "segment_ids": [
+  "seg-3e6cc9ce2f50-0000",
+  "seg-5391030321c9-0000",
+  "seg-cab2ff2a8f0d-0000",
+  "seg-af9d62fe9a0f-0000",
+  "seg-3beacaf56065-0000"
+ ],
+ "site_id": "site-ex",
+ "verdicts": [
+  {
+   "answer_conf": 0.93,
+   "evidence": [
+    {
+     "check": "decodable",
+     "code": "UNDECODABLE",
+     "op": "==",
+     "threshold": true,
+     "value": true
+    },
+    {
+     "check": "missing:duration_s",
+     "code": "LOW_CONFIDENCE",
+     "op": "==",
+     "threshold": "valid-number",
+     "value": "missing"
+    },
+    {
+     "check": "blur_var",
+     "code": "BLUR",
+     "op": ">=",
+     "threshold": 60.0,
+     "value": 2.0
+    },
+    {
+     "check": "brightness_mean",
+     "code": "TOO_DARK",
+     "op": ">=",
+     "threshold": 40.0,
+     "value": 90.0
+    },
+    {
+     "check": "under_exposed_frac",
+     "code": "TOO_DARK",
+     "op": "<=",
+     "threshold": 0.35,
+     "value": 0.0
+    },
+    {
+     "check": "over_exposed_frac",
+     "code": "OVEREXPOSED",
+     "op": "<=",
+     "threshold": 0.35,
+     "value": 0.02
+    },
+    {
+     "check": "motion_mean",
+     "code": "SHAKY",
+     "op": "<=",
+     "threshold": 12.0,
+     "value": 2.0
+    },
+    {
+     "check": "motion_mean_static",
+     "code": "NO_ACTIVE_WORK",
+     "op": ">=",
+     "threshold": 0.5,
+     "value": 2.0
+    },
+    {
+     "check": "hands_visible_frac",
+     "code": "HANDS_NOT_VISIBLE",
+     "op": ">=",
+     "threshold": 0.5,
+     "value": 0.8
+    },
+    {
+     "check": "hands_ok.p_yes",
+     "code": "LOW_CONFIDENCE",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.97
+    },
+    {
+     "check": "active_work.p_yes",
+     "code": "NO_ACTIVE_WORK",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.93
+    },
+    {
+     "check": "step.choice",
+     "code": "WRONG_STEP",
+     "op": "==",
+     "threshold": "wash",
+     "value": "wash"
+    },
+    {
+     "check": "step.answer_conf",
+     "code": "LOW_CONFIDENCE",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.93
+    }
+   ],
+   "reasons": [
+    "BLUR",
+    "NO_ACTIVE_WORK",
+    "LOW_CONFIDENCE"
+   ],
+   "segment_id": "seg-3e6cc9ce2f50-0000",
+   "threshold": 0.9,
+   "verdict": "reject"
+  },
+  {
+   "answer_conf": 0.93,
+   "evidence": [
+    {
+     "check": "decodable",
+     "code": "UNDECODABLE",
+     "op": "==",
+     "threshold": true,
+     "value": true
+    },
+    {
+     "check": "missing:duration_s",
+     "code": "LOW_CONFIDENCE",
+     "op": "==",
+     "threshold": "valid-number",
+     "value": "missing"
+    },
+    {
+     "check": "blur_var",
+     "code": "BLUR",
+     "op": ">=",
+     "threshold": 60.0,
+     "value": 120.0
+    },
+    {
+     "check": "brightness_mean",
+     "code": "TOO_DARK",
+     "op": ">=",
+     "threshold": 40.0,
+     "value": 90.0
+    },
+    {
+     "check": "under_exposed_frac",
+     "code": "TOO_DARK",
+     "op": "<=",
+     "threshold": 0.35,
+     "value": 0.0
+    },
+    {
+     "check": "over_exposed_frac",
+     "code": "OVEREXPOSED",
+     "op": "<=",
+     "threshold": 0.35,
+     "value": 0.02
+    },
+    {
+     "check": "motion_mean",
+     "code": "SHAKY",
+     "op": "<=",
+     "threshold": 12.0,
+     "value": 2.0
+    },
+    {
+     "check": "motion_mean_static",
+     "code": "NO_ACTIVE_WORK",
+     "op": ">=",
+     "threshold": 0.5,
+     "value": 2.0
+    },
+    {
+     "check": "hands_visible_frac",
+     "code": "HANDS_NOT_VISIBLE",
+     "op": ">=",
+     "threshold": 0.5,
+     "value": 0.8
+    },
+    {
+     "check": "hands_ok.p_yes",
+     "code": "LOW_CONFIDENCE",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.97
+    },
+    {
+     "check": "active_work.p_yes",
+     "code": "NO_ACTIVE_WORK",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.93
+    },
+    {
+     "check": "step.choice",
+     "code": "WRONG_STEP",
+     "op": "==",
+     "threshold": "wash",
+     "value": "wash"
+    },
+    {
+     "check": "step.answer_conf",
+     "code": "LOW_CONFIDENCE",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.93
+    }
+   ],
+   "reasons": [
+    "NO_ACTIVE_WORK",
+    "LOW_CONFIDENCE"
+   ],
+   "segment_id": "seg-5391030321c9-0000",
+   "threshold": 0.9,
+   "verdict": "review"
+  },
+  {
+   "answer_conf": 0.93,
+   "evidence": [
+    {
+     "check": "decodable",
+     "code": "UNDECODABLE",
+     "op": "==",
+     "threshold": true,
+     "value": true
+    },
+    {
+     "check": "missing:duration_s",
+     "code": "LOW_CONFIDENCE",
+     "op": "==",
+     "threshold": "valid-number",
+     "value": "missing"
+    },
+    {
+     "check": "blur_var",
+     "code": "BLUR",
+     "op": ">=",
+     "threshold": 60.0,
+     "value": 120.0
+    },
+    {
+     "check": "brightness_mean",
+     "code": "TOO_DARK",
+     "op": ">=",
+     "threshold": 40.0,
+     "value": 90.0
+    },
+    {
+     "check": "under_exposed_frac",
+     "code": "TOO_DARK",
+     "op": "<=",
+     "threshold": 0.35,
+     "value": 0.0
+    },
+    {
+     "check": "over_exposed_frac",
+     "code": "OVEREXPOSED",
+     "op": "<=",
+     "threshold": 0.35,
+     "value": 0.02
+    },
+    {
+     "check": "motion_mean",
+     "code": "SHAKY",
+     "op": "<=",
+     "threshold": 12.0,
+     "value": 2.0
+    },
+    {
+     "check": "motion_mean_static",
+     "code": "NO_ACTIVE_WORK",
+     "op": ">=",
+     "threshold": 0.5,
+     "value": 2.0
+    },
+    {
+     "check": "hands_visible_frac",
+     "code": "HANDS_NOT_VISIBLE",
+     "op": ">=",
+     "threshold": 0.5,
+     "value": 0.8
+    },
+    {
+     "check": "hands_ok.p_yes",
+     "code": "LOW_CONFIDENCE",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.97
+    },
+    {
+     "check": "active_work.p_yes",
+     "code": "NO_ACTIVE_WORK",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.93
+    },
+    {
+     "check": "step.choice",
+     "code": "WRONG_STEP",
+     "op": "==",
+     "threshold": "wash",
+     "value": "wash"
+    },
+    {
+     "check": "step.answer_conf",
+     "code": "LOW_CONFIDENCE",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.93
+    }
+   ],
+   "reasons": [
+    "NO_ACTIVE_WORK",
+    "LOW_CONFIDENCE"
+   ],
+   "segment_id": "seg-cab2ff2a8f0d-0000",
+   "threshold": 0.9,
+   "verdict": "review"
+  },
+  {
+   "answer_conf": 0.93,
+   "evidence": [
+    {
+     "check": "decodable",
+     "code": "UNDECODABLE",
+     "op": "==",
+     "threshold": true,
+     "value": true
+    },
+    {
+     "check": "missing:duration_s",
+     "code": "LOW_CONFIDENCE",
+     "op": "==",
+     "threshold": "valid-number",
+     "value": "missing"
+    },
+    {
+     "check": "blur_var",
+     "code": "BLUR",
+     "op": ">=",
+     "threshold": 60.0,
+     "value": 120.0
+    },
+    {
+     "check": "brightness_mean",
+     "code": "TOO_DARK",
+     "op": ">=",
+     "threshold": 40.0,
+     "value": 90.0
+    },
+    {
+     "check": "under_exposed_frac",
+     "code": "TOO_DARK",
+     "op": "<=",
+     "threshold": 0.35,
+     "value": 0.0
+    },
+    {
+     "check": "over_exposed_frac",
+     "code": "OVEREXPOSED",
+     "op": "<=",
+     "threshold": 0.35,
+     "value": 0.02
+    },
+    {
+     "check": "motion_mean",
+     "code": "SHAKY",
+     "op": "<=",
+     "threshold": 12.0,
+     "value": 2.0
+    },
+    {
+     "check": "motion_mean_static",
+     "code": "NO_ACTIVE_WORK",
+     "op": ">=",
+     "threshold": 0.5,
+     "value": 2.0
+    },
+    {
+     "check": "hands_visible_frac",
+     "code": "HANDS_NOT_VISIBLE",
+     "op": ">=",
+     "threshold": 0.5,
+     "value": 0.8
+    },
+    {
+     "check": "hands_ok.p_yes",
+     "code": "LOW_CONFIDENCE",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.97
+    },
+    {
+     "check": "active_work.p_yes",
+     "code": "NO_ACTIVE_WORK",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.93
+    },
+    {
+     "check": "step.choice",
+     "code": "WRONG_STEP",
+     "op": "==",
+     "threshold": "wash",
+     "value": "wash"
+    },
+    {
+     "check": "step.answer_conf",
+     "code": "LOW_CONFIDENCE",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.93
+    }
+   ],
+   "reasons": [
+    "NO_ACTIVE_WORK",
+    "LOW_CONFIDENCE"
+   ],
+   "segment_id": "seg-af9d62fe9a0f-0000",
+   "threshold": 0.9,
+   "verdict": "review"
+  },
+  {
+   "answer_conf": 0.93,
+   "evidence": [
+    {
+     "check": "decodable",
+     "code": "UNDECODABLE",
+     "op": "==",
+     "threshold": true,
+     "value": true
+    },
+    {
+     "check": "missing:duration_s",
+     "code": "LOW_CONFIDENCE",
+     "op": "==",
+     "threshold": "valid-number",
+     "value": "missing"
+    },
+    {
+     "check": "blur_var",
+     "code": "BLUR",
+     "op": ">=",
+     "threshold": 60.0,
+     "value": 120.0
+    },
+    {
+     "check": "brightness_mean",
+     "code": "TOO_DARK",
+     "op": ">=",
+     "threshold": 40.0,
+     "value": 90.0
+    },
+    {
+     "check": "under_exposed_frac",
+     "code": "TOO_DARK",
+     "op": "<=",
+     "threshold": 0.35,
+     "value": 0.0
+    },
+    {
+     "check": "over_exposed_frac",
+     "code": "OVEREXPOSED",
+     "op": "<=",
+     "threshold": 0.35,
+     "value": 0.02
+    },
+    {
+     "check": "motion_mean",
+     "code": "SHAKY",
+     "op": "<=",
+     "threshold": 12.0,
+     "value": 2.0
+    },
+    {
+     "check": "motion_mean_static",
+     "code": "NO_ACTIVE_WORK",
+     "op": ">=",
+     "threshold": 0.5,
+     "value": 2.0
+    },
+    {
+     "check": "hands_visible_frac",
+     "code": "HANDS_NOT_VISIBLE",
+     "op": ">=",
+     "threshold": 0.5,
+     "value": 0.8
+    },
+    {
+     "check": "hands_ok.p_yes",
+     "code": "LOW_CONFIDENCE",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.97
+    },
+    {
+     "check": "active_work.p_yes",
+     "code": "NO_ACTIVE_WORK",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.93
+    },
+    {
+     "check": "step.choice",
+     "code": "WRONG_STEP",
+     "op": "==",
+     "threshold": "wash",
+     "value": "wash"
+    },
+    {
+     "check": "step.answer_conf",
+     "code": "LOW_CONFIDENCE",
+     "op": ">=",
+     "threshold": 1.0,
+     "value": 0.93
+    }
+   ],
+   "reasons": [
+    "NO_ACTIVE_WORK",
+    "LOW_CONFIDENCE"
+   ],
+   "segment_id": "seg-3beacaf56065-0000",
+   "threshold": 0.9,
+   "verdict": "review"
+  }
+ ]
+}
