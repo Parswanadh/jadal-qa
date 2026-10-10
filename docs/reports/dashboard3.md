@@ -209,3 +209,42 @@ OK (skipped=8)
 
 Screenshots not re-taken: no pixel-affecting change for contract data
 (lang/hub keys only alter the hash; the `hubSeq` guard is behavior-only).
+
+## Fix round 3 (review round 3 of PR #32, reviews/pr32-review.md)
+
+All findings were in owned files; none disputed. Fixed on `feat/dashboard3`
+(working tree was already up to date with `origin/main`), no new branch/PR:
+
+- I-1 (filter reset): the `f-reset` non-batches reroute now builds
+  `A.buildHash('batches', null, state.filters, withLang(null))` — filters
+  are just-cleared so this yields `#/batches` plus the non-default language,
+  exactly like the submit sibling.
+- M-1 (`openReceipt`): extra is now `withLang(null)`, so default-language
+  open-segment clicks yield a clean `#/segment/<id>` with no `?lang=hi-IN`
+  noise.
+- M-3 (unknown `qr`): `renderQueue` pushes the hash after coercing an
+  unknown `?qr` to All, so the URL stops advertising a filter the UI is not
+  showing. Loop-safe: the push only fires when `cur` is non-empty (the new
+  hash always differs), and the follow-up parse finds `qr` already cleared.
+- M-2 (report claim): resolved by fixing the code — all 17 hash builds in
+  `web/app.js` now go through `withLang` (verified by grep: no
+  `buildHash` call and no `location.hash = '#/...'` literal without it), so
+  the "EVERY hash built in the file" sentence is true as written.
+- Guard test extended with both newly-banned patterns
+  (`"location.hash = '#/batches'"`, `", { lang: state.lang })"`) plus
+  `test_unknown_queue_reason_pushes_coercion`.
+
+REAL command outputs (fix round 3):
+
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s web -t web
+Ran 32 tests in 0.422s
+OK
+$ node --check web/api.js && node --check web/app.js
+node --check: api.js + app.js OK
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 553 tests in 39.117s
+OK (skipped=8)
+```
+
+Screenshots not re-taken: hash-only and guard-only changes, no pixels affected.

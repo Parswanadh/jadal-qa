@@ -621,10 +621,17 @@ class Dashboard3(unittest.TestCase):
         for dropped in ["buildHash('batches', null, state.filters, null)",
                         "buildHash('segment', state.segmentId, null, null)",
                         "location.hash = '#/' + route",
-                        "location.hash = '#/segment'"]:
+                        "location.hash = '#/segment'",
+                        "location.hash = '#/batches'",
+                        ", { lang: state.lang })"]:
             self.assertNotIn(dropped, app,
                              f"hash build drops lang/route state: {dropped}")
         self.assertIn("withLang(", app)
+
+    def test_unknown_queue_reason_pushes_coercion(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("state.queueReason = ''; pushHash();", app,
+                      "coercing an unknown ?qr must push so the URL stops advertising it")
 
     def test_hub_search_has_stale_guard(self):
         app = (WEB / "app.js").read_text(encoding="utf-8")

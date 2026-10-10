@@ -176,7 +176,7 @@ async function openReceipt(batchId, segmentId, btn) {
     var rid = A.findReceiptForSegment(detail, bodies, segmentId);
     if (!rid) throw new Error('no receipt found for segment ' + segmentId);
     state.segBatch = detail;
-    location.hash = A.buildHash('segment', rid, null, { lang: state.lang });
+    location.hash = A.buildHash('segment', rid, null, withLang(null));
   } catch (e) {
     if (btn) { btn.disabled = true; btn.textContent = 'Unavailable'; btn.title = String((e && e.message) || e); }
   }
@@ -394,7 +394,9 @@ function bindFilterbar() {
   $('#f-reset').addEventListener('click', function () {
     state.filters = Object.assign({}, A.FILTER_DEFAULTS);
     syncControlsFromState();
-    if (state.route !== 'batches') location.hash = '#/batches';
+    // Filters are just-cleared, so this yields a bare #/batches — plus the
+    // non-default language, exactly like the submit sibling above.
+    if (state.route !== 'batches') location.hash = A.buildHash('batches', null, state.filters, withLang(null));
     else pushHash();
     renderBatches();
   });
@@ -1359,7 +1361,12 @@ function renderQueue() {
     reasons.map(function (c) {
       return '<option value="' + esc(c) + '"' + (c === cur ? ' selected' : '') + '>' + esc(c) + '</option>';
     }).join('');
-  if (reasons.indexOf(cur) === -1) { state.queueReason = ''; sel.value = ''; }
+  if (reasons.indexOf(cur) === -1) {
+    // Unknown ?qr=... (stale link, data changed): coerce to All and push
+    // so the URL stops advertising a filter the UI is not showing.
+    if (cur) { state.queueReason = ''; pushHash(); }
+    sel.value = '';
+  }
 
   var list = state.queueReason
     ? rows.filter(function (r) { return (r.reasons || []).indexOf(state.queueReason) !== -1; })
