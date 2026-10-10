@@ -45,7 +45,36 @@
    "per_reason",
    "protocol",
    "views"
-  ]
+  ],
+  "verified_from_artifact": {
+   "eg2_nested": 0.8458,
+   "pixel_nested": 0.7916,
+   "ensemble_probavg": 0.8336,
+   "ensemble_rankavg": 0.844,
+   "gates": {
+    "AUROC>=0.85": false,
+    "CI_low>=0.72": false,
+    "no_clip<0.60": true,
+    "min_clip_auroc": 0.6061
+   },
+   "coverage_curve_100pct": {
+    "balacc": 0.795,
+    "good_wrongly_rejected": "19/100"
+   },
+   "coverage_curve_80pct": {
+    "balacc": 0.8418,
+    "good_wrongly_rejected": "13/82"
+   },
+   "claimed_reference": {
+    "eg2": 0.846,
+    "pixel": 0.792,
+    "probavg": 0.834,
+    "rankavg": 0.844,
+    "min_clip": 0.606
+   },
+   "reproduced": true,
+   "note": "values read from caches/ensemble/nested_loco.json (per-fold C chosen by inner LOCO); raw OOF probs are not in the artifact, so AUROCs were not recomputed from scratch, but every published value matches the stored one and the gates match."
+  }
  },
  "artifact_integrity": {
   "audited": "SHA256SUMS.txt vs on-disk bytes",
@@ -70,5 +99,50 @@
   },
   "verdict": "The published OOD AUROC 0.529 cannot be reproduced from the artifacts shipped in this bundle; artifact drift is established independently by the checksum audit (14/316 files)."
  },
- "conclusion_ood": "NOT REPRODUCED: shipped score artifact gives AUROC 0.415 [0.207,0.630], 26/51 good windows rejected, 3/9 bad rejected, balanced accuracy 0.412, versus the published 0.529 / 21-51 / 5-9 / 0.51. The qualitative finding (at chance, heavy false rejects) is CONFIRMED and is worse than published."
+ "conclusion_ood": "NOT REPRODUCED: shipped score artifact gives AUROC 0.415 [0.207,0.630], 26/51 good windows rejected, 3/9 bad rejected, balanced accuracy 0.412, versus the published 0.529 / 21-51 / 5-9 / 0.51. The qualitative finding (at chance, heavy false rejects) is CONFIRMED and is worse than published.",
+ "gold_manifest_verified": {
+  "n": 150,
+  "n_good": 100,
+  "n_bad": 50,
+  "n_clips": 7,
+  "reasons": {
+   "NO_ACTIVE_WORK": 23,
+   "HANDS_NOT_VISIBLE": 14,
+   "DUPLICATE": 6,
+   "TOO_DARK": 6,
+   "UNDECODABLE": 1
+  },
+  "per_clip": {
+   "desk": {
+    "n": 29,
+    "bad": 13
+   },
+   "ecu_full": {
+    "n": 48,
+    "bad": 5
+   },
+   "ecu_late": {
+    "n": 14,
+    "bad": 4
+   },
+   "logistics4": {
+    "n": 17,
+    "bad": 3
+   },
+   "organise": {
+    "n": 19,
+    "bad": 10
+   },
+   "pallet": {
+    "n": 17,
+    "bad": 11
+   },
+   "pallet2": {
+    "n": 6,
+    "bad": 4
+   }
+  },
+  "label_source": "single human labeller",
+  "matches_FACTS": true
+ }
 }
