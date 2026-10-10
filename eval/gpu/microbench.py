@@ -357,20 +357,35 @@ def bench_kernels():
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--only", default="all",
+                    help="comma list of: memcpy,decode,kernels (default all)")
+    only = set(ap.parse_args().only.split(","))
+    want = lambda k: "all" in only or k in only
     assert torch.cuda.is_available(), "no GPU"
     torch.cuda.set_device(0)
     torch.cuda.reset_peak_memory_stats()
-    res = {
+    res = {}
+    if os.path.exists(OUT):
+        try:
+            res = json.load(open(OUT))
+        except Exception:
+            res = {}
+    res.update({
         "device": DEVICE,
         "torch": torch.__version__,
         "gpu_name": torch.cuda.get_device_name(0),
         "regenerate": "flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock "
-                      "/home/parshu/envs/jadal/bin/python eval/gpu/microbench.py",
-    }
+                      "/home/parshu/envs/jadal/bin/python eval/gpu/microbench.py [--only memcpy,kernels|decode]",
+    })
     t0 = time.perf_counter()
-    res["memcpy"] = bench_memcpy()
-    res["decode"] = bench_decode()
-    res["kernels"] = bench_kernels()
+    if want("memcpy"):
+        res["memcpy"] = bench_memcpy()
+    if want("decode"):
+        res["decode"] = bench_decode()
+    if want("kernels"):
+        res["kernels"] = bench_kernels()
     res["peak_vram_mib"] = round(torch.cuda.max_memory_reserved() / 2**20, 1)
     res["wall_s"] = round(time.perf_counter() - t0, 1)
     os.makedirs(os.path.dirname(OUT), exist_ok=True)

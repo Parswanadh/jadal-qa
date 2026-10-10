@@ -1,0 +1,8 @@
+{
+ "window": "g001",
+ "frames": 100,
+ "quantisation": "round(4) of each feature; fp_hash exact",
+ "cpu_10x_identical": true,
+ "cpu_digest": "af2c1375ae7a13c7f6cb8a43011a05c95c6794aea0c23a4309215d7207a53a3a",
+ "note": "GPU numerics are NOT claimed identical across devices or vs CPU (fp16/fp32 vs float64; tolerances in tests/). The edge (Pi) path keeps the CPU reference implementation. Only the quantised digest is claimed bit-identical across repeats."
+}

@@ -1,0 +1,40 @@
+{
+ "device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
+ "R0_cpu": {
+  "windows_s": 2.22,
+  "hours_per_hour": 22.2,
+  "video_s_per_wall_s": 22.2,
+  "nwin": 10,
+  "wall_s": 4.5,
+  "method": "ffmpeg CPU decode 160x90 rgb + cpu_window_features, 1 proc"
+ },
+ "memcpy": {
+  "d2d_gbps": 74.33,
+  "h2d_pinned_gbps": 7.56,
+  "theoretical_gb_s": 256,
+  "pcie_theoretical_gb_s": 16,
+  "note": "vs 256 GB/s GDDR6 theory and ~16 GB/s PCIe4x8 theory"
+ },
+ "kernels_only": {
+  "B1": {
+   "windows_s": 179.2,
+   "hours_per_hour": 1791.9
+  },
+  "B8": {
+   "windows_s": 178.4,
+   "hours_per_hour": 1784.3
+  },
+  "B32": {
+   "windows_s": 199.8,
+   "hours_per_hour": 1997.6
+  }
+ },
+ "gpu_peak_vram_mib_holdA": 4304.0,
+ "nvdec_rgb24_probe": {
+  "rc": 234,
+  "bytes": 0,
+  "expected": 2160000,
+  "ok": false,
+  "stderr_tail": "_hwdownload_1\n[vf#0:0 @ 0x61805088a540] Error reinitializing filters!\nFailed to inject frame into filter network: Invalid argument\nError while filtering: Invalid argument\n[out#0/rawvideo @ 0x6180508cff00] Nothing was written into output file, because at least one of its streams received no packets.\n"
+ }
+}
