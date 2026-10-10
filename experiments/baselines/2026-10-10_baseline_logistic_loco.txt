@@ -1,0 +1,6 @@
+# tools/port/baseline_logistic_loco.py - pod verification 2026-10-10T15:19:29Z - A40 pod, CPU only, PYTHONNOUSERSITE=1, OMP_NUM_THREADS=1
+n 150 features 26 bad by reason: {'TOO_DARK': 6, 'NO_ACTIVE_WORK': 23, 'DUPLICATE': 6, 'HANDS_NOT_VISIBLE': 14, 'UNDECODABLE': 1}
+bad rate per clip: {np.str_('desk'): '13/29', np.str_('ecu_full'): '5/48', np.str_('ecu_late'): '4/14', np.str_('logistics4'): '3/17', np.str_('organise'): '10/19', np.str_('pallet'): '11/17', np.str_('pallet2'): '4/6'}
+raw            all AUROC 0.810 | good-vs-SEMANTIC-bad 0.797 | good-vs-QUALITY-bad 0.846  | per-clip: {np.str_('desk'): 0.8, np.str_('ecu_full'): 0.95, np.str_('ecu_late'): 0.65, np.str_('logistics4'): 0.9, np.str_('organise'): 0.91, np.str_('pallet'): 0.5, np.str_('pallet2'): 0.5}
+within-clip z  all AUROC 0.601 | good-vs-SEMANTIC-bad 0.624 | good-vs-QUALITY-bad 0.534  | per-clip: {np.str_('desk'): 0.73, np.str_('ecu_full'): 0.81, np.str_('ecu_late'): 0.68, np.str_('logistics4'): 0.86, np.str_('organise'): 0.38, np.str_('pallet'): 0.39, np.str_('pallet2'): 0.88}
+top single features (semantic-bad vs good, pooled AUROC): [('temp_b2', 0.23), ('motion_energy', 0.24), ('temp_b1', 0.29), ('illum_g', 0.32), ('hf_ratio', 0.65)]
