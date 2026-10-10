@@ -3,25 +3,39 @@
 Computes the exact L0 signals defined in docs/SPEC.md for one video segment:
 decode with OpenCV (no torchcodec), fixed-rate frame sampling, blur (variance of
 Laplacian), brightness/exposure, motion (Farneback optical flow on a fixed grid),
-hands_visible_frac / hand_count_mode, faces_found / faces_blurred, a per-segment
-perceptual hash (pHash) and near-duplicate lookup. All floats are rounded to
-``config.float_decimals`` (4) before they are returned. Blurred output is written
-to a SEPARATE file under ``config.blurred_dir`` with its own sha256; the original
-segment is only ever read, never modified.
+hands_visible_frac / hand_count_mode (mediapipe HandLandmarker when its model
+file is available, else a colour proxy), faces_found / faces_blurred (mediapipe
+FaceDetector when its model file is available, else a colour proxy), a
+per-segment perceptual hash (pHash) and near-duplicate lookup. All floats are
+rounded to ``config.float_decimals`` (4) before they are returned. Blurred output
+is written to a SEPARATE file under ``config.blurred_dir`` with its own sha256;
+the original segment is only ever read, never modified.
+
+Model files resolve from ``config.face_detector_task`` /
+``config.hand_landmarker_task`` first; when the configured path is absent the
+absolute directory in env var ``JADAL_MODELS_DIR`` is also searched
+(``<JADAL_MODELS_DIR>/blaze_face_short_range.tflite``,
+``<JADAL_MODELS_DIR>/hand_landmarker.task``); when neither exists the offline
+OpenCV colour proxy is used. The active backend is inspectable via
+``backend_info()`` (never added to the SPEC Signals dict). Detectors are created
+once and cached at module level (CPU only, IMAGE running mode).
+
+Definitions: ``faces_found`` is the total faces detected across the sampled
+frames; ``faces_blurred`` is the total faces actually blurred across the same
+sampled frames (via ``blur_faces``). ``blur_and_hash_segment`` instead reports
+all-frame totals for the written artifact, which therefore differ from the
+sampled-frame signals by construction.
 
 WHAT IS NOT DONE:
-- mediapipe Hands / FaceDetector are NOT wired as the default. This environment
-  (mediapipe 1.1.0) ships only the ``tasks`` API and no offline ``.task`` model
-  files, and downloading models is disallowed (no network). If valid model paths
-  are supplied via env vars ``JADAL_HAND_LANDMARKER_TASK`` and
-  ``JADAL_FACE_DETECTOR_TASK`` the mediapipe adapters are used; otherwise a fully
-  offline, deterministic OpenCV colour (YCrCb skin-region) detector is used as a
-  PROXY. The colour proxy cannot read hand pose or verify faces; it partitions
-  skin blobs by size/aspect into "face-like" and "hand-like" regions. Faces/hands
-  counts are therefore approximate and are NOT a substitute for mediapipe.
+- The written blurred file is a best-effort privacy aid, NOT a guarantee: the
+  mediapipe face model can miss faces (profile views, occlusions, small faces)
+  and the colour fallback only blurs skin-coloured blobs. Do not expose the
+  blurred output as a privacy guarantee (e.g. on a dashboard).
 - Only face-classified regions are blurred in the blurred output video (not hands).
 - Blurring/encoding uses the mp4v codec (verified byte-deterministic on this
   OpenCV build in tests); no attempt at GOP-exact cutting or stream-copy.
+- Mediapipe confidence thresholds are fixed module constants (config carries no
+  L0 mediapipe threshold fields); hand counts are capped at 2 (num_hands=2).
 """
 from __future__ import annotations
 
@@ -53,6 +67,14 @@ FACE_AREA_MIN_PX = 600
 FACE_ASPECT_LO, FACE_ASPECT_HI = 0.6, 1.6
 FACE_FILL_MIN = 0.5          # blob_area / bbox_area for a filled/roundish region
 DEFAULT_PHASH_DUP_DISTANCE = 10  # Hamming distance (of 64) treated as a duplicate
+# Mediapipe model filenames (resolved from config paths, else $JADAL_MODELS_DIR).
+FACE_MODEL_NAME = "blaze_face_short_range.tflite"
+HAND_MODEL_NAME = "hand_landmarker.task"
+# Fixed mediapipe thresholds (config carries no L0 mediapipe threshold fields).
+MP_FACE_MIN_DETECTION_CONFIDENCE = 0.5
+MP_HAND_NUM_HANDS = 2
+MP_HAND_MIN_DETECTION_CONFIDENCE = 0.5
+MP_HAND_MIN_PRESENCE_CONFIDENCE = 0.5
 
 
 # --- small deterministic helpers ------------------------------------------------------
@@ -116,6 +138,8 @@ def _sample_indices(n_total: int, k: int) -> list[int]:
     """Deterministic, strictly increasing set of <=k even sample indices in [0, n_total-1]."""
     if n_total <= 0:
         return []
+    if k <= 1:
+        return [0]
     if n_total <= k:
         return list(range(n_total))
     idx = {int(round(i * (n_total - 1) / (k - 1))) for i in range(k)}
@@ -194,54 +218,159 @@ def _mode_smallest_on_tie(counts: Iterable[int]) -> int:
     return min(v for v, f in c.items() if f == best_freq)
 
 
-# --- mediapipe adapters (only used if a .task model path is provided; NOT DONE offline) -
-def _mp_available(model_env: str) -> bool:
-    return bool(os.environ.get(model_env))
+# --- detection backends: mediapipe (models) with colour-proxy fallback -------------------
+def _resolve_model(config_path, filename: str) -> Optional[Path]:
+    """Resolve a model file: config path first, then $JADAL_MODELS_DIR/<filename>."""
+    p = Path(config_path)
+    if p.is_file():
+        return p
+    d = os.environ.get("JADAL_MODELS_DIR")
+    if d:
+        q = Path(d) / filename
+        if q.is_file():
+            return q
+    return None
 
 
-def _mp_face_boxes(bgr: np.ndarray) -> Optional[list[tuple[int, int, int, int]]]:
-    model = os.environ.get("JADAL_FACE_DETECTOR_TASK")
-    if not model:
-        return None
-    try:
-        import mediapipe as mp
-        from mediapipe.tasks.python import core as mp_core
-        from mediapipe.tasks.python import vision as mp_vision
-        h, w = bgr.shape[:2]
-        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-        img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+def _face_model_path(config: Optional[Config]) -> Optional[Path]:
+    cfg = config if config is not None else DEFAULT
+    return _resolve_model(cfg.face_detector_task, FACE_MODEL_NAME)
+
+
+def _hand_model_path(config: Optional[Config]) -> Optional[Path]:
+    cfg = config if config is not None else DEFAULT
+    return _resolve_model(cfg.hand_landmarker_task, HAND_MODEL_NAME)
+
+
+_FACE_DETECTORS: dict[str, object] = {}
+_HAND_LANDMARKERS: dict[str, object] = {}
+
+
+def _get_face_detector(model_path: Path):
+    """Create (once per path, cached) the mediapipe FaceDetector. Errors propagate."""
+    import mediapipe as mp  # noqa: F401  (imported lazily; keeps module import light)
+    from mediapipe.tasks.python import vision as mp_vision
+    from mediapipe.tasks.python.core.base_options import BaseOptions
+
+    key = str(model_path)
+    det = _FACE_DETECTORS.get(key)
+    if det is None:
         det = mp_vision.FaceDetector.create_from_options(
             mp_vision.FaceDetectorOptions(
-                base_options=mp_core.BaseOptions(model_asset_path=model),
-                min_detection_confidence=0.5,
+                base_options=BaseOptions(model_asset_path=key),
+                min_detection_confidence=MP_FACE_MIN_DETECTION_CONFIDENCE,
             )
         )
-        res = det.detect(img)
-        out = []
-        for d in (res.detections or []):
-            b = d.bounding_box
-            out.append((int(b.origin_x), int(b.origin_y), int(b.width), int(b.height)))
-        return out
-    except Exception:
+        _FACE_DETECTORS[key] = det
+    return det
+
+
+def _get_hand_landmarker(model_path: Path):
+    """Create (once per path, cached) the mediapipe HandLandmarker. Errors propagate."""
+    from mediapipe.tasks.python import vision as mp_vision
+    from mediapipe.tasks.python.core.base_options import BaseOptions
+
+    key = str(model_path)
+    lm = _HAND_LANDMARKERS.get(key)
+    if lm is None:
+        lm = mp_vision.HandLandmarker.create_from_options(
+            mp_vision.HandLandmarkerOptions(
+                base_options=BaseOptions(model_asset_path=key),
+                num_hands=MP_HAND_NUM_HANDS,
+                min_hand_detection_confidence=MP_HAND_MIN_DETECTION_CONFIDENCE,
+                min_hand_presence_confidence=MP_HAND_MIN_PRESENCE_CONFIDENCE,
+            )
+        )
+        _HAND_LANDMARKERS[key] = lm
+    return lm
+
+
+def _mp_image(bgr: np.ndarray):
+    import mediapipe as mp
+
+    rgb = np.ascontiguousarray(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB))
+    return mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+
+
+def _mp_face_boxes(bgr: np.ndarray, model_path: Optional[Path]) -> Optional[list[tuple[int, int, int, int]]]:
+    """mediapipe face boxes, or None when no model file is available (proxy fallback).
+
+    A configured-but-broken model raises instead of silently falling back.
+    """
+    if model_path is None:
         return None
+    det = _get_face_detector(model_path)
+    res = det.detect(_mp_image(bgr))
+    out = []
+    for d in (res.detections or []):
+        b = d.bounding_box
+        out.append((int(b.origin_x), int(b.origin_y), int(b.width), int(b.height)))
+    return out
 
 
-def _detect_faces(bgr: np.ndarray) -> list[tuple[int, int, int, int]]:
-    """Face-like boxes for a frame (mediapipe if available, else the colour proxy)."""
-    boxes = _mp_face_boxes(bgr)
-    if boxes is not None:
-        return boxes
+def _mp_hand_count(bgr: np.ndarray, model_path: Optional[Path]) -> Optional[int]:
+    """mediapipe hand count (capped at num_hands), or None when no model is available.
+
+    A configured-but-broken model raises instead of silently falling back.
+    """
+    if model_path is None:
+        return None
+    lm = _get_hand_landmarker(model_path)
+    res = lm.detect(_mp_image(bgr))
+    return min(len(res.hand_landmarks or []), MP_HAND_NUM_HANDS)
+
+
+def _proxy_face_boxes(bgr: np.ndarray) -> list[tuple[int, int, int, int]]:
     min_area = _area_thresholds(bgr)
     return [(b["x"], b["y"], b["w"], b["h"]) for b in _skin_blobs(bgr, min_area) if b["face"]]
 
 
+def _proxy_hand_count(bgr: np.ndarray) -> int:
+    min_area = _area_thresholds(bgr)
+    return min(sum(1 for b in _skin_blobs(bgr, min_area) if not b["face"]), 2)
+
+
+def _detect_faces(bgr: np.ndarray, config: Optional[Config] = None) -> list[tuple[int, int, int, int]]:
+    """Face-like boxes for a frame (mediapipe when its model resolves, else colour proxy)."""
+    boxes = _mp_face_boxes(bgr, _face_model_path(config))
+    return boxes if boxes is not None else _proxy_face_boxes(bgr)
+
+
+def _count_hands(bgr: np.ndarray, config: Optional[Config] = None) -> int:
+    """Hand count for a frame (mediapipe when its model resolves, else colour proxy)."""
+    n = _mp_hand_count(bgr, _hand_model_path(config))
+    return n if n is not None else _proxy_hand_count(bgr)
+
+
+def _sha256_path(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def backend_info(config: Optional[Config] = None) -> dict:
+    """Inspectable active detection backend (never added to the SPEC Signals dict)."""
+    fm = _face_model_path(config)
+    hm = _hand_model_path(config)
+    return {
+        "faces": "mediapipe" if fm is not None else "proxy",
+        "hands": "mediapipe" if hm is not None else "proxy",
+        "face_model": str(fm) if fm is not None else None,
+        "hand_model": str(hm) if hm is not None else None,
+        "face_model_sha256": _sha256_path(fm) if fm is not None else None,
+        "hand_model_sha256": _sha256_path(hm) if hm is not None else None,
+    }
+
+
 # --- public: blur_faces ----------------------------------------------------------------
-def blur_faces(frame: np.ndarray) -> tuple[np.ndarray, int, int]:
+def blur_faces(frame: np.ndarray, config: Optional[Config] = None) -> tuple[np.ndarray, int, int]:
     """Detect faces in one BGR frame, blur them, return (frame, n_found, n_blurred)."""
     if frame is None:
         return frame, 0, 0
     out = frame.copy()
-    boxes = _detect_faces(out)
+    boxes = _detect_faces(out, config)
     n_found = len(boxes)
     n_blurred = 0
     h, w = out.shape[:2]
@@ -270,7 +399,10 @@ def find_duplicate(phash: str, index: dict, threshold: int = DEFAULT_PHASH_DUP_D
     """Return the segment_id whose stored phash is within `threshold` hamming of `phash`.
 
     ``index`` maps phash_hex -> segment_id. Ties break on sorted phash (first wins).
-    Returns None when no near-duplicate exists.
+    Returns None when no near-duplicate exists. The query's own entry is NOT
+    excluded: if the pipeline inserts a segment's phash before lookup, the segment
+    matches itself. Two segments sharing one phash overwrite each other in the
+    index; key the index by segment_id upstream if that matters.
     """
     if not phash or not index:
         return None
@@ -287,13 +419,15 @@ def find_duplicate(phash: str, index: dict, threshold: int = DEFAULT_PHASH_DUP_D
 def blur_and_hash_segment(path: str, config: Optional[Config] = None) -> dict:
     """Stream the segment, blur detected faces in every frame, write a SEPARATE video.
 
-    Returns {"path", "sha256", "faces_found", "faces_blurred"}. The original at
+    Returns {"path", "sha256", "faces_found", "faces_blurred"} counted across ALL
+    frames (unlike compute_signals, which uses sampled frames). The original at
     `path` is only read. Output lands under config.blurred_dir (deterministic name).
+    Best-effort privacy aid, NOT a guarantee (see module docstring).
     """
     cfg = config if config is not None else DEFAULT
     out_dir = Path(cfg.blurred_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    stem = Path(path).stem
+    stem = "".join(c if (c.isalnum() or c in "-_") else "_" for c in Path(path).stem)
     out_path = out_dir / f"{stem}_blurred.mp4"
     cap = _open(path)
     if cap is None:
@@ -310,7 +444,7 @@ def blur_and_hash_segment(path: str, config: Optional[Config] = None) -> dict:
         total_found = total_blurred = 0
         ok, frame = True, first
         while ok:
-            blurred, found, nblur = blur_faces(frame)
+            blurred, found, nblur = blur_faces(frame, cfg)
             total_found += found
             total_blurred += nblur
             writer.write(blurred)
@@ -331,8 +465,12 @@ def compute_signals(path: str, config: Optional[Config] = None, index: Optional[
     """Exact L0 signals for one segment (see docs/SPEC.md). Deterministic.
 
     Aggregated metrics use <SAMPLE_FRAMES> evenly-spaced frames; signals are
-    computed on the original frames only. If `index` (phash -> segment_id) is
+    computed on the original frames only. ``faces_found`` is the total faces
+    detected across the sampled frames and ``faces_blurred`` the total actually
+    blurred there (via ``blur_faces``). If `index` (phash -> segment_id) is
     provided, `dup_of` is filled via near-duplicate lookup, else it is None.
+    Hands use the mediapipe HandLandmarker when its model resolves, else the
+    colour proxy (see ``backend_info``).
     """
     cfg = config if config is not None else DEFAULT
     frames, _idx = _read_sampled_frames(path, SAMPLE_FRAMES)
@@ -348,19 +486,18 @@ def compute_signals(path: str, config: Optional[Config] = None, index: Optional[
 
     grays = [cv2.cvtColor(f, cv2.COLOR_BGR2GRAY) for f in frames]
     blur_var = float(np.mean([_laplacian_var(g) for g in grays]))
-    brightness = _brightness(grays[0])
+    brightness = float(np.mean([_brightness(g) for g in grays]))
     under = float(np.mean([_exposure_fracs(g)[0] for g in grays]))
     over = float(np.mean([_exposure_fracs(g)[1] for g in grays]))
     motion = _farneback_motion(grays, MOTION_GRID)
 
-    faces_found = 0
+    faces_found = faces_blurred = 0
     hand_counts = []
     for f in frames:
-        min_area = _area_thresholds(f)
-        blobs = _skin_blobs(f, min_area)
-        faces_found += sum(1 for b in blobs if b["face"])
-        n_hands = min(sum(1 for b in blobs if not b["face"]), 2)
-        hand_counts.append(n_hands)
+        _blurred, found, nblur = blur_faces(f, cfg)
+        faces_found += found
+        faces_blurred += nblur
+        hand_counts.append(_count_hands(f, cfg))
     hands_visible_frac = float(np.mean([c >= 1 for c in hand_counts])) if hand_counts else 0.0
     hand_count_mode = _mode_smallest_on_tie(hand_counts)
 
@@ -377,7 +514,7 @@ def compute_signals(path: str, config: Optional[Config] = None, index: Optional[
         "hands_visible_frac": _round(hands_visible_frac, cfg),
         "hand_count_mode": int(hand_count_mode),
         "faces_found": int(faces_found),
-        "faces_blurred": int(faces_found),
+        "faces_blurred": int(faces_blurred),
         "phash": phash,
         "dup_of": dup_of,
     }

@@ -11,6 +11,8 @@ WHAT IS NOT DONE:
   cutting or ffmpeg stream-copy is not attempted, so the segment bytes differ
   from the source bytes (only the sha256 of the written segment is stored).
 - No audio is carried into segments (video only).
+- segment_id embeds a short hash of the SOURCE file bytes
+  (``<stem>-<sha8>-<NNNN>``) so clips sharing a filename never collide.
 """
 from __future__ import annotations
 
@@ -45,7 +47,9 @@ def split_clip(
     """Split `path` into fixed `seg_seconds` segments; return a list of Segment dicts.
 
     Segments are written to `out_dir` (defaults to config.segments_dir) as
-    ``{stem}_seg{NNNN}.mp4``. Each Segment carries its own sha256. Returns an
+    ``<stem>-<sha8>-<NNNN>.mp4``, where sha8 is the first 8 hex chars of the
+    source file's sha256 (unique across same-named clips). Each Segment carries
+    its own sha256. At most one segment writer is open at a time. Returns an
     empty list when the clip is undecodable.
     """
     cfg = config if config is not None else DEFAULT
@@ -62,6 +66,7 @@ def split_clip(
     if not cap.isOpened():
         cap.release()
         return []
+    src_sha8 = _sha256_file(src)[:8]
     try:
         fps = float(cap.get(cv2.CAP_PROP_FPS))
         if fps <= 0:
@@ -74,42 +79,48 @@ def split_clip(
         h, w = first.shape[:2]
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 
-        writers: dict[int, cv2.VideoWriter] = {}
+        def _seg_name(seg: int) -> str:
+            return f"{stem}-{src_sha8}-{seg:04d}"
+
         counts: dict[int, int] = {}
-        seg_for: dict[int, int] = {}
-
-        def _writer(seg: int) -> cv2.VideoWriter:
-            if seg not in writers:
-                vw = cv2.VideoWriter(str(out_path / f"{stem}_seg{seg:04d}.mp4"), fourcc, fps, (w, h))
-                writers[seg] = vw
-            return writers[seg]
-
+        writer: Optional[cv2.VideoWriter] = None
+        writer_seg = -1
         i = 0
         frame = first
-        while True:
-            seg = i // seg_frames
-            _writer(seg).write(frame)
-            counts[seg] = counts.get(seg, 0) + 1
-            seg_for[i] = seg
-            ok, frame = cap.read()
-            i += 1
-            if not ok:
-                break
-        for vw in writers.values():
-            vw.release()
+        try:
+            while True:
+                seg = i // seg_frames
+                if seg != writer_seg:
+                    if writer is not None:
+                        writer.release()
+                    writer = cv2.VideoWriter(
+                        str(out_path / f"{_seg_name(seg)}.mp4"), fourcc, fps, (w, h)
+                    )
+                    if not writer.isOpened():
+                        raise RuntimeError(f"segmenter: cannot open writer for segment {seg}")
+                    writer_seg = seg
+                writer.write(frame)
+                counts[seg] = counts.get(seg, 0) + 1
+                ok, frame = cap.read()
+                i += 1
+                if not ok:
+                    break
+        finally:
+            if writer is not None:
+                writer.release()
 
         segments: list[dict] = []
         for seg in sorted(counts):
             n_frames = counts[seg]
             first_frame = seg * seg_frames
-            seg_file = out_path / f"{stem}_seg{seg:04d}.mp4"
+            seg_file = out_path / f"{_seg_name(seg)}.mp4"
             if not seg_file.exists():
                 continue
             start_s = round(first_frame / fps, _SEG_DECIMALS)
             end_s = round((first_frame + n_frames) / fps, _SEG_DECIMALS)
             segments.append(
                 {
-                    "segment_id": f"{stem}_seg{seg:04d}",
+                    "segment_id": _seg_name(seg),
                     "source_clip": source,
                     "worker_id": worker_id,
                     "site_id": site_id,
