@@ -240,11 +240,17 @@ def pick_threshold(config: Any) -> dict:
 
 
 def thresholds_snapshot(config: Any) -> dict:
-    """The thresholds a receipt records (also the ones re-verify replays with)."""
-    picked = pick_threshold(config)
-    answer_threshold = picked.get("threshold")
-    if answer_threshold is None:
-        answer_threshold = stubs.STUB_THRESHOLD  # nobody calibrated yet
+    """The thresholds a receipt records (also the ones re-verify replays with).
+
+    Starts from the funnel router's own thresholds file (via
+    ``jadal.funnel.load_thresholds``, hash-verified by that module) so the
+    router can enforce every rule it calibrates (motion_min, min_duration_s,
+    accept_conf, calibration gate), with the service Config values overlaid
+    on the shared L0 keys. When the funnel module (or its file) is
+    unavailable the snapshot is Config-only and the inline verdict path uses
+    it alone. The file content is stored verbatim, so re-verify replays the
+    exact thresholds behind the receipt even if the file later changes.
+    """
     snapshot = {
         "batch_size": int(config.batch_size),
         "batch_reject_k": int(config.batch_reject_k),
@@ -259,8 +265,28 @@ def thresholds_snapshot(config: Any) -> dict:
         "target_error": float(config.target_error),
         "delta": float(config.delta),
         "min_accepted": int(config.min_accepted),
-        "answer_threshold": float(answer_threshold),
     }
+    try:
+        from jadal import funnel as _funnel_mod
+        load_thresholds = getattr(_funnel_mod, "load_thresholds", None)
+        thresholds_hash = getattr(_funnel_mod, "thresholds_hash", None)
+        file_thresholds = load_thresholds() if callable(load_thresholds) else None
+    except Exception:
+        file_thresholds = None
+    if isinstance(file_thresholds, dict):
+        merged = {k: v for k, v in file_thresholds.items() if k != "sha256"}
+        merged.update(snapshot)  # service Config wins the shared L0 keys
+        snapshot = merged
+        if callable(thresholds_hash):
+            try:
+                snapshot["funnel_thresholds_sha256"] = thresholds_hash(file_thresholds)
+            except Exception:
+                pass
+    picked = pick_threshold(config)
+    answer_threshold = picked.get("threshold")
+    if answer_threshold is None:
+        answer_threshold = stubs.STUB_THRESHOLD  # nobody calibrated yet
+    snapshot["answer_threshold"] = float(answer_threshold)
     return snapshot
 
 
@@ -352,11 +378,13 @@ _UNDECODABLE_SIGNALS = {
     "dup_of": None,
 }
 
-# Transient decoder I/O is retried this many times, then the error propagates
-# (the service requeues the batch and records the error); anything else the
-# decoder raises becomes an UNDECODABLE verdict, never a retry.
+# Transient decoder I/O is retried this many times with doubling backoff,
+# then the error propagates (the service requeues the batch and records the
+# error); anything else the decoder raises becomes an UNDECODABLE verdict,
+# never a retry.
 _SIGNAL_IO_RETRIES = 3
-_SIGNAL_IO_SLEEP_S = 0.02
+_SIGNAL_IO_BASE_SLEEP_S = 0.02
+_SIGNAL_IO_MAX_SLEEP_S = 0.5
 
 
 def _compute_signals_safe(compute_signals: Any, seg_path: str,
@@ -370,7 +398,8 @@ def _compute_signals_safe(compute_signals: Any, seg_path: str,
             attempts += 1
             if attempts >= _SIGNAL_IO_RETRIES:
                 raise
-            time.sleep(_SIGNAL_IO_SLEEP_S)
+            time.sleep(min(_SIGNAL_IO_BASE_SLEEP_S * (2.0 ** (attempts - 1)),
+                           _SIGNAL_IO_MAX_SLEEP_S))
         except Exception as exc:
             log.warning("decoder failed for %s (%s: %s); verdict UNDECODABLE",
                         seg_path, type(exc).__name__, exc)
@@ -448,12 +477,15 @@ def route_verdict(segment: dict, signals: dict, decisions: dict,
     queue_priority}``); otherwise the inline :func:`make_verdict` logic runs.
     The funnel path carries the optional ``evidence`` list on the verdict
     (included in the receipt hash when present); the inline path never adds
-    the key, so existing receipt hashes are unchanged.
+    the key, so existing receipt hashes are unchanged. A ``route`` exception
+    is never swallowed into a verdict: it propagates to the caller's
+    failure path (batch requeue + recorded error), because a crashing router
+    is a bug, not a measurement.
     """
     fn = _funnel_route_fn()
     if fn is None:
         return make_verdict(segment, signals, decisions, thresholds, decimals)
-    routed = fn(signals, decisions, thresholds)
+    routed = fn(signals, decisions, thresholds)  # raises propagate, by design
     verdict = str(routed.get("verdict", "review"))
     if verdict not in ("accept", "reject", "review"):
         verdict = "review"
@@ -666,13 +698,15 @@ def _find_eval_file(results_dir: Path, stem: str) -> Path | None:
     return cands[0] if cands else None
 
 
-def _label_source(*texts: Any) -> str | None:
-    """Provenance text -> 'gemini' | 'human_gold' | 'synthetic' (None unknown).
+def _source_of(text: Any) -> str | None:
+    """One provenance text -> 'gemini' | 'human_gold' | 'synthetic' (None unknown).
 
-    An explicit auto-labeller mention wins: "labels by gemini-2.5-flash, not
-    human-checked" is gemini labels, not human gold.
+    An explicit auto-labeller mention wins inside a single text:
+    "labels by gemini-2.5-flash, not human-checked" is gemini labels.
     """
-    blob = " ".join(t for t in texts if isinstance(t, str)).lower()
+    if not isinstance(text, str):
+        return None
+    blob = text.lower()
     if "gemini" in blob:
         return "gemini"
     if "human" in blob:
@@ -680,6 +714,27 @@ def _label_source(*texts: Any) -> str | None:
     if "synthetic" in blob:
         return "synthetic"
     return None
+
+
+def _label_source(*texts: Any) -> str | None:
+    """First named source wins (most specific text first); conflicts reported.
+
+    Callers pass provenance texts from most specific (head level) to least
+    (artifact file level). The first text that names a source decides; when a
+    less specific text names a DIFFERENT source the disagreement is reported
+    as ``'conflict:<specific>|<general>'`` instead of being silently
+    overridden. Returns None when no text names a source.
+    """
+    decided: str | None = None
+    for text in texts:
+        source = _source_of(text)
+        if source is None:
+            continue
+        if decided is None:
+            decided = source
+        elif source != decided:
+            return f"conflict:{decided}|{source}"
+    return decided
 
 
 def _decider_head_entries(payload: dict, config: Any) -> list[dict]:
@@ -729,7 +784,16 @@ def _decider_head_entries(payload: dict, config: Any) -> list[dict]:
 
 
 def _funnel_entries(payload: dict) -> list[dict]:
-    """Accept entry plus one entry per reject rule in funnel_calibration.json."""
+    """Accept entry plus one entry per reject rule in funnel_calibration.json.
+
+    Understands both the original schema (top-level ``accept`` /
+    ``reject_rules`` with ``calib_certified`` / ``calib`` blocks) and the
+    post-fix-round-1 schema (``per_source.<origin>.accept`` /
+    ``reject_rules`` with ``select_certified`` / ``select`` blocks and a
+    ``certify`` held-out block). Numbers are only ever read, never made up:
+    ``n_calibration`` is the SELECT count, ``n_test`` the CERTIFY count, and
+    either key is absent when the file does not measure it.
+    """
     if not isinstance(payload, dict):
         return []
     meta = payload.get("meta") if isinstance(payload.get("meta"), dict) else {}
@@ -744,48 +808,74 @@ def _funnel_entries(payload: dict) -> list[dict]:
         delta_f = float(targets.get("delta", 0.1))
     except (TypeError, ValueError):
         delta_f = 0.1
-    source = _label_source(meta.get("provenance"), payload.get("provenance"))
-    n_calib = meta.get("n_calib")
-    n_heldout = meta.get("n_heldout")
+    per_source = payload.get("per_source")
+    groups: dict[str, dict] = {}
+    if isinstance(per_source, dict):
+        for origin, group in per_source.items():
+            if isinstance(group, dict):
+                groups[str(origin)] = group
+    else:
+        groups["file"] = payload
+    file_source = _label_source(meta.get("provenance"), payload.get("provenance"))
     entries = []
-    accept = payload.get("accept")
-    if isinstance(accept, dict):
-        certified = accept.get("calib_certified") if isinstance(
-            accept.get("calib_certified"), dict) else {}
-        entry: dict[str, Any] = {"head": "accept", "points": []}
-        if "threshold" in accept:
-            entry["chosen_threshold"] = accept["threshold"]
-            entry["upper_bound"] = certified.get("upper_bound", None)
-        entry["target_err"] = target_alpha_f
-        entry["delta"] = delta_f
-        n_c = accept.get("n_calib", n_calib)
-        if isinstance(n_c, int):
-            entry["n_calibration"] = n_c
-        if isinstance(n_heldout, int):
-            entry["n_test"] = n_heldout
-        if source is not None:
-            entry["label_source"] = source
-        entries.append(entry)
-    rules = payload.get("reject_rules")
-    if isinstance(rules, dict):
-        for key in sorted(rules):
-            rule = rules[key]
-            if not isinstance(rule, dict) or rule.get("disabled", False):
-                continue
-            calib = rule.get("calib") if isinstance(rule.get("calib"), dict) else {}
-            entry = {"head": f"reject:{key}", "points": []}
-            if "threshold" in rule:
-                entry["chosen_threshold"] = rule["threshold"]
-                entry["upper_bound"] = calib.get("upper_bound", None)
-            entry["target_err"] = target_beta_f
+    for origin in sorted(groups):
+        group = groups[origin]
+        source = _label_source(origin if origin != "file" else None,
+                               meta.get("provenance"),
+                               payload.get("provenance"))
+        if source is None:
+            source = file_source
+        accept = group.get("accept")
+        if isinstance(accept, dict):
+            certified = accept.get("select_certified")
+            if not isinstance(certified, dict):
+                certified = accept.get("calib_certified") if isinstance(
+                    accept.get("calib_certified"), dict) else {}
+            certify = accept.get("certify") if isinstance(
+                accept.get("certify"), dict) else {}
+            entry: dict[str, Any] = {"head": "accept", "points": []}
+            if "threshold" in accept:
+                entry["chosen_threshold"] = accept["threshold"]
+                entry["upper_bound"] = certified.get("upper_bound", None)
+            entry["target_err"] = target_alpha_f
             entry["delta"] = delta_f
-            if isinstance(n_calib, int):
-                entry["n_calibration"] = n_calib
-            if isinstance(n_heldout, int):
-                entry["n_test"] = n_heldout
+            n_c = accept.get("n_select", accept.get("n_calib",
+                             meta.get("n_calib")))
+            if isinstance(n_c, int):
+                entry["n_calibration"] = n_c
+            n_t = certify.get("n_certify", meta.get("n_heldout"))
+            if isinstance(n_t, int):
+                entry["n_test"] = n_t
             if source is not None:
                 entry["label_source"] = source
             entries.append(entry)
+        rules = group.get("reject_rules")
+        if isinstance(rules, dict):
+            for key in sorted(rules):
+                rule = rules[key]
+                if not isinstance(rule, dict) or rule.get("disabled", False):
+                    continue
+                select = rule.get("select")
+                if not isinstance(select, dict):
+                    select = rule.get("calib") if isinstance(
+                        rule.get("calib"), dict) else {}
+                certify = rule.get("certify") if isinstance(
+                    rule.get("certify"), dict) else {}
+                entry = {"head": f"reject:{key}", "points": []}
+                if "threshold" in rule:
+                    entry["chosen_threshold"] = rule["threshold"]
+                    entry["upper_bound"] = select.get("upper_bound", None)
+                entry["target_err"] = target_beta_f
+                entry["delta"] = delta_f
+                n_c = rule.get("n_select", meta.get("n_calib"))
+                if isinstance(n_c, int):
+                    entry["n_calibration"] = n_c
+                n_t = certify.get("n_certify", meta.get("n_heldout"))
+                if isinstance(n_t, int):
+                    entry["n_test"] = n_t
+                if source is not None:
+                    entry["label_source"] = source
+                entries.append(entry)
     return entries
 
 
@@ -802,9 +892,16 @@ def risk_coverage_report(config: Any = None,
     ``eval/results/calibration.json``. ``[]`` means no measured data --
     numbers are never invented. ``chosen_threshold`` is ``None`` when the
     head was measured but explicitly NOT certified; the key is absent only
-    when nothing about a threshold was measured. ``label_source`` is one of
-    ``'gemini' | 'human_gold' | 'synthetic'`` and is omitted when the file
-    states no provenance.
+    when nothing about a threshold was measured. The same rule governs every
+    measurement field: ``upper_bound`` is ``None`` only when a threshold
+    measurement exists but carries no bound (legacy fallback), otherwise the
+    key is absent; ``n_calibration`` / ``n_test`` are present only with real
+    counts (the store-backed head has no test set, so it omits ``n_test``).
+    ``label_source`` is one of ``'gemini' | 'human_gold' | 'synthetic'``,
+    head-level provenance first, and is omitted when no provenance is stated;
+    a head/file disagreement is reported as ``'conflict:<a>|<b>'``.
+    ``target_err`` / ``delta`` are the funnel file's targets on the funnel
+    path and the service config everywhere else.
     """
     from jadal.config import ROOT
     base = Path(results_dir) if results_dir else ROOT / "eval" / "results"
@@ -837,7 +934,8 @@ def risk_coverage_report(config: Any = None,
                 "target_err": float(getattr(config, "target_error", 0.05)),
                 "delta": float(getattr(config, "delta", 0.1)),
                 "n_calibration": len(store_points),
-                "n_test": 0,
+                # no "n_test": the store holds no test set, and an absent
+                # measurement must stay absent (never 0).
             })
         except (ValueError, TypeError, KeyError):
             pass

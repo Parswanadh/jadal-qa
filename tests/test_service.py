@@ -273,32 +273,59 @@ class TestPipeline(BucketCase):
         return [s for group in self.segments_for(*paths) for s in group]
 
     def test_clean_clip_is_accepted_with_no_reasons(self) -> None:
+        # Inline fallback truth (unit level): a clean clip accepts cleanly.
         segs = self.flat_segments(self.fake_clip("ok.mp4"))
+        signals = stubs.stub_compute_signals(segs[0]["path"], self.cfg)
+        decisions = stubs.StubDecider(self.cfg).decide(segs[0]["path"], signals)
+        verdict = pipeline.make_verdict(
+            segs[0], signals, decisions,
+            pipeline.thresholds_snapshot(self.cfg), 4)
+        self.assertEqual(verdict["verdict"], "accept")
+        self.assertEqual(verdict["reasons"], [])
+
+    def test_clean_clip_routes_to_review_until_calibrated(self) -> None:
+        # Merged truth: the real funnel decides run_batch verdicts, and with
+        # placeholder (uncalibrated) thresholds a clean, confident clip goes
+        # to review -- never an accept -- with evidence attached.
+        segs = self.flat_segments(self.fake_clip("ok2.mp4"))
         batch, receipts = pipeline.run_batch(segs, self.cfg)
         self.assertEqual(batch["n"], 1)
-        self.assertEqual(batch["verdicts"][0]["verdict"], "accept")
-        self.assertEqual(batch["verdicts"][0]["reasons"], [])
-        self.assertEqual(batch["batch_decision"], "accept")
-        self.assertEqual(receipts[0]["verdict"]["verdict"], "accept")
+        verdict = batch["verdicts"][0]
+        self.assertEqual(verdict["verdict"], "review")
+        self.assertIn("evidence", verdict)
+        self.assertTrue(verdict["evidence"])
+        self.assertEqual(receipts[0]["verdict"]["verdict"], "review")
 
     def test_reason_codes_for_bad_signals(self) -> None:
-        cases = {
+        # L0 hard rules reject; L1 model outputs only demote to review
+        # (funnel contract, enforced by the merged jadal.funnel.route).
+        reject_cases = {
             "UNDECODABLE": {"signals": {"decodable": False}},
             "BLUR": {"signals": {"blur_var": 5.0}},
             "TOO_DARK": {"signals": {"brightness_mean": 3.0}},
             "OVEREXPOSED": {"signals": {"over_exposed_frac": 0.9}},
             "SHAKY": {"signals": {"motion_mean": 50.0}},
             "HANDS_NOT_VISIBLE": {"signals": {"hands_visible_frac": 0.1}},
-            "NO_ACTIVE_WORK": {"decisions": {"active_work": {"p_yes": 0.2}}},
             "DUPLICATE": {"signals": {"dup_of": "seg-other"}},
         }
-        for code, payload in cases.items():
+        for code, payload in reject_cases.items():
             with self.subTest(code=code):
                 kw = {"signals": payload.get("signals"),
                       "decisions": payload.get("decisions")}
                 segs = self.flat_segments(self.fake_clip(f"bad_{code}.mp4", **kw))
                 batch, _ = pipeline.run_batch(segs, self.cfg)
                 self.assertEqual(batch["verdicts"][0]["verdict"], "reject", code)
+                self.assertIn(code, batch["verdicts"][0]["reasons"], code)
+        review_cases = {
+            "NO_ACTIVE_WORK": {"decisions": {"active_work": {"p_yes": 0.2}}},
+        }
+        for code, payload in review_cases.items():
+            with self.subTest(code=code):
+                kw = {"signals": payload.get("signals"),
+                      "decisions": payload.get("decisions")}
+                segs = self.flat_segments(self.fake_clip(f"soft_{code}.mp4", **kw))
+                batch, _ = pipeline.run_batch(segs, self.cfg)
+                self.assertEqual(batch["verdicts"][0]["verdict"], "review", code)
                 self.assertIn(code, batch["verdicts"][0]["reasons"], code)
 
     def test_low_confidence_is_review(self) -> None:
@@ -315,7 +342,7 @@ class TestPipeline(BucketCase):
         batch, _ = pipeline.run_batch(segs, self.cfg)
         by_id = {v["segment_id"]: v for v in batch["verdicts"]}
         first_id, second_id = [s["segment_id"] for s in segs]
-        self.assertEqual(by_id[first_id]["reasons"], [])
+        self.assertNotIn("DUPLICATE", by_id[first_id]["reasons"])
         self.assertEqual(by_id[second_id]["verdict"], "reject")
         self.assertIn("DUPLICATE", by_id[second_id]["reasons"])
 
@@ -423,9 +450,12 @@ class TestServiceAcceptance(BucketCase):
             self.assertEqual(batch["n"], 5)
             self.assertEqual(len(batch["verdicts"]), 5)
             self.assertEqual(len(batch["segment_ids"]), 5)
-            self.assertEqual(batch["batch_decision"], "accept")
+            # uncalibrated funnel: clean clips review, so nothing rejects and
+            # the fixed batch rule still accepts the batch.
             for v in batch["verdicts"]:
-                self.assertEqual(v["verdict"], "accept")
+                self.assertEqual(v["verdict"], "review")
+                self.assertIn("evidence", v)
+            self.assertEqual(batch["batch_decision"], "accept")
             r = c.get(f"/batches/{batch['batch_id']}")
             self.assertEqual(r.status_code, 200)
             self.assertEqual(r.json()["n"], 5)
@@ -629,13 +659,32 @@ class TestServiceAcceptance(BucketCase):
         with self.client() as c:
             r = c.get("/stats/risk_coverage")
             self.assertEqual(r.status_code, 200)
-            self.assertEqual(r.json(), [])
+            # main now ships eval/results/funnel_calibration_synthetic.json, so
+            # the default report surfaces its real (synthetic-labelled) heads;
+            # the honest-empty case is covered with a temp dir below.
+            body = r.json()
+            self.assertIsInstance(body, list)
+            self.assertTrue(body, "expected funnel heads from the shipped file")
+            by_head = {e["head"]: e for e in body}
+            self.assertIn("accept", by_head)
+            self.assertEqual(by_head["accept"]["label_source"], "synthetic")
             r = c.get("/stats/sop_gaps")
             self.assertEqual(r.status_code, 200)
             self.assertEqual(r.json(), [])
             r = c.get("/sop/search", params={"q": "wash", "lang": "en-IN"})
             self.assertEqual(r.status_code, 200)
             self.assertEqual(r.json(), {"results": []})
+
+    def test_risk_coverage_empty_without_measured_data(self) -> None:
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            with mock.patch.dict(os.environ, {"JADAL_EVAL_RESULTS_DIR": tmp}):
+                app = create_app(self.cfg, batch_max_age_s=30.0,
+                                 watch_bucket=False)
+                with TestClient(app) as c:
+                    r = c.get("/stats/risk_coverage")
+                    self.assertEqual(r.status_code, 200)
+                    self.assertEqual(r.json(), [])
 
 
 class TestWatcher(BucketCase):
@@ -767,6 +816,25 @@ class TestStubIndependence(BucketCase):
             faked = self._ingest_five(client, "faked", "indep-b")
         self.assertEqual(plain, faked)
         self.assertEqual(calls, {"signals": 0, "segmenter": 0})
+
+    def test_verdicts_identical_with_signals_blocked(self) -> None:
+        # Stronger: with jadal.signals made unimportable, the suite behaves
+        # exactly as with it importable (stub injection, never the decoder).
+        import sys
+        store_mod.init_db(self.cfg.db_path)
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        with TestClient(app) as client:
+            plain = self._ingest_five(client, "blk_plain", "blk-a")
+            old = sys.modules.get("jadal.signals")
+            sys.modules["jadal.signals"] = None
+            try:
+                blocked = self._ingest_five(client, "blk_faked", "blk-b")
+            finally:
+                if old is None:
+                    sys.modules.pop("jadal.signals", None)
+                else:
+                    sys.modules["jadal.signals"] = old
+        self.assertEqual(plain, blocked)
 
 
 class TestUndecodablePath(BucketCase):
@@ -904,6 +972,17 @@ class TestFunnelSeam(BucketCase):
         self.assertEqual(batch["verdicts"][0]["verdict"], "accept")
         self.assertNotIn("evidence", batch["verdicts"][0])
 
+    def test_funnel_route_exception_propagates(self) -> None:
+        # A crashing router is a bug, not a measurement: never swallowed.
+        def _raising(signals, decisions, thresholds):
+            raise RuntimeError("router bug")
+
+        self._install_fake_funnel(_raising)
+        segs = pipeline.process_clip(self.fake_clip("rb.mp4"), "w", "s",
+                                     self.cfg)
+        with self.assertRaises(RuntimeError):
+            pipeline.run_batch(segs, self.cfg)
+
 
 class TestRiskCoverageHeads(BucketCase):
     """Per-head /stats/risk_coverage entries from real measurement files."""
@@ -987,6 +1066,51 @@ class TestRiskCoverageHeads(BucketCase):
         self.assertEqual(accept["n_test"], 600)
         self.assertEqual(accept["label_source"], "synthetic")
 
+    def test_head_provenance_beats_file_provenance_with_conflict(self) -> None:
+        out = self._results_dir({"decider_baseline.json": {"heads": {
+            "step": {
+                "calibration": {
+                    "n": 200,
+                    "threshold_pick": {"threshold": 0.9, "accepted": 150,
+                                       "errors": 2, "upper_bound": 0.04,
+                                       "coverage": 0.75},
+                },
+                "test": {"n": 200},
+                # head says human gold, file says gemini: report the conflict,
+                # never silently override either side.
+                "label_caveat": "human gold labels v1",
+            },
+        }, "provenance": "labels by gemini-2.5-flash"}})
+        entries = pipeline.risk_coverage_report(config=self.cfg, results_dir=out)
+        by_head = {e["head"]: e for e in entries}
+        self.assertEqual(by_head["step"]["label_source"],
+                         "conflict:human_gold|gemini")
+
+    def test_label_source_omitted_without_provenance(self) -> None:
+        out = self._results_dir({"decider_baseline.json": {"heads": {
+            "x": {"calibration": {"n": 10,
+                                  "threshold_pick": {"threshold": None,
+                                                     "upper_bound": None}}},
+        }}})
+        entries = pipeline.risk_coverage_report(config=self.cfg, results_dir=out)
+        self.assertEqual(len(entries), 1)
+        self.assertNotIn("label_source", entries[0])
+        # measured but uncertified: null threshold, null bound.
+        self.assertIsNone(entries[0]["chosen_threshold"])
+        self.assertIsNone(entries[0]["upper_bound"])
+
+    def test_store_head_omits_n_test(self) -> None:
+        # The SQLite store holds no test set: n_test must be absent, never 0.
+        points = [{"conf": 0.9 - i * 0.01, "correct": 1} for i in range(40)]
+        entries = pipeline.risk_coverage_report(config=self.cfg,
+                                                results_dir="/nonexistent",
+                                                store_points=points)
+        self.assertEqual(len(entries), 1)
+        answer = entries[0]
+        self.assertEqual(answer["head"], "answer")
+        self.assertEqual(answer["n_calibration"], 40)
+        self.assertNotIn("n_test", answer)
+
     def test_empty_without_measured_data(self) -> None:
         out = self._results_dir({})
         self.assertEqual(
@@ -1008,24 +1132,30 @@ class TestRiskCoverageHeads(BucketCase):
         self.assertEqual(by_head["accept"]["chosen_threshold"], 0.4)
         self.assertEqual(by_head["accept"]["label_source"], "synthetic")
 
+    def test_committed_examples_match_live_responses(self) -> None:
+        # docs/api_examples/*.json regenerates from the running service (stub
+        # mode); this fails on ANY drift between the committed examples and
+        # the live endpoint, so docs/API.md can quote them as real output.
+        examples = ROOT / "docs" / "api_examples"
+        store_mod.init_db(self.cfg.db_path)
+        with mock.patch.dict(os.environ,
+                             {"JADAL_EVAL_RESULTS_DIR": str(examples)}):
+            app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+            with TestClient(app) as client:
+                live = client.get("/stats/risk_coverage").json()
+        expected = json.loads((examples / "risk_coverage.json").read_text())
+        self.assertEqual(live, expected)
+
 
 class TestHubMount(BucketCase):
-    """The optional /hub router mounts iff jadal.hub_api.router exists."""
+    """The optional /hub router serves under /hub exactly once, either way."""
 
-    def test_hub_absent_by_default(self) -> None:
-        if importlib.util.find_spec("jadal.hub_api") is not None:
-            self.skipTest("real jadal.hub_api present")
-        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
-        paths = [route.path for route in app.routes
-                 if hasattr(route, "path")]
-        self.assertFalse(any(p.startswith("/hub") for p in paths))
-
-    def test_fake_hub_router_mounts(self) -> None:
+    def _app_with_fake_hub(self, prefix):
         import sys
         import types
         from fastapi import APIRouter
         mod = types.ModuleType("jadal.hub_api")
-        router = APIRouter(prefix="/hub")
+        router = APIRouter() if prefix is None else APIRouter(prefix=prefix)
 
         @router.get("/ping")
         def ping() -> dict:
@@ -1035,16 +1165,34 @@ class TestHubMount(BucketCase):
         old = sys.modules.get("jadal.hub_api")
         sys.modules["jadal.hub_api"] = mod
         try:
-            app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+            return create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
         finally:
             if old is None:
                 sys.modules.pop("jadal.hub_api", None)
             else:
                 sys.modules["jadal.hub_api"] = old
+
+    def test_hub_absent_by_default(self) -> None:
+        if importlib.util.find_spec("jadal.hub_api") is not None:
+            self.skipTest("real jadal.hub_api present")
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        paths = [route.path for route in app.routes
+                 if hasattr(route, "path")]
+        self.assertFalse(any(p.startswith("/hub") for p in paths))
+
+    def test_prefixed_router_serves_under_hub_once(self) -> None:
+        app = self._app_with_fake_hub(prefix="/hub")
         with TestClient(app) as client:
-            response = client.get("/hub/ping")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {"pong": True})
+            self.assertEqual(client.get("/hub/ping").status_code, 200)
+            self.assertEqual(client.get("/hub/ping").json(), {"pong": True})
+            self.assertEqual(client.get("/ping").status_code, 404)
+
+    def test_unprefixed_router_is_mounted_under_hub(self) -> None:
+        app = self._app_with_fake_hub(prefix=None)
+        with TestClient(app) as client:
+            self.assertEqual(client.get("/hub/ping").status_code, 200)
+            self.assertEqual(client.get("/hub/ping").json(), {"pong": True})
+            self.assertEqual(client.get("/ping").status_code, 404)
 
 
 class TestWsTimeout(BucketCase):
@@ -1060,6 +1208,82 @@ class TestWsTimeout(BucketCase):
                 with self.assertRaises(TimeoutError) as ctx:
                     recv_json_with_timeout(ws, timeout=1.0)
                 self.assertIn("within 1.0s", str(ctx.exception))
+
+
+class TestFlushCap(BucketCase):
+    """A failing batch-timeout flush is capped, recorded, then parked."""
+
+    def test_failing_flush_parks_after_cap(self) -> None:
+        from jadal import service as service_mod
+        store_mod.init_db(self.cfg.db_path)
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        svc = app.state.service
+        now = {"t": 1000.0}
+        svc._clock = lambda: now["t"]
+        paths = [self.fake_clip(f"flushcap_{i}.mp4") for i in range(2)]
+        segs = [s for p in paths
+                for s in pipeline.process_clip(p, "w", "s", self.cfg)]
+        for seg in segs:
+            svc._pending.setdefault("cap", []).append(
+                {"segment": seg, "ts": now["t"]})
+
+        def _full(*args, **kwargs):
+            raise RuntimeError("disk full")
+
+        with mock.patch.object(store_mod.Store, "save_batch", _full):
+            with TestClient(app) as client:
+                for _ in range(service_mod.FLUSH_MAX_ATTEMPTS - 1):
+                    now["t"] += 60.0
+                    svc._tick()
+                    self.assertEqual(svc.pending_count(), 2)
+                    self.assertEqual(svc.failed_count(), 0)
+                    gate = svc._flush_backoff.get("cap")
+                    self.assertIsNotNone(gate)
+                # one more tick reaches the cap: segments park as failed.
+                now["t"] += 60.0
+                svc._tick()
+                self.assertEqual(svc.pending_count(), 0)
+                self.assertEqual(svc.failed_count(), 2)
+                self.assertNotIn("cap", svc._flush_backoff)
+                # every failure was recorded and is exposed...
+                errors = client.get("/ingest/errors").json()["errors"]
+                self.assertIn("batch:cap", errors)
+                self.assertIn("gave up", errors["batch:cap"])
+                # ...and the parked segments are visible in the API.
+                failed = client.get("/batches/failed").json()["failed"]
+                self.assertEqual(len(failed), 2)
+                self.assertTrue(all(f["site_id"] == "cap" for f in failed))
+                self.assertTrue(all("disk full" in f["error"] for f in failed))
+                self.assertEqual(
+                    client.get("/health").json()["failed_segments"], 2)
+                # no infinite loop: further ticks change nothing.
+                now["t"] += 600.0
+                svc._tick()
+                self.assertEqual(svc.failed_count(), 2)
+
+    def test_flush_backoff_schedule(self) -> None:
+        from jadal import service as service_mod
+        store_mod.init_db(self.cfg.db_path)
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        svc = app.state.service
+        now = {"t": 2000.0}
+        svc._clock = lambda: now["t"]
+        svc._pending["sched"] = [{"segment": {"segment_id": "s-1"},
+                                  "ts": now["t"]}]
+
+        def _boom(*args, **kwargs):
+            raise RuntimeError("transient")
+
+        with mock.patch.object(service_mod.pipeline, "run_batch",
+                               side_effect=_boom):
+            waits = []
+            for _ in range(service_mod.FLUSH_MAX_ATTEMPTS - 1):
+                now["t"] += 60.0
+                svc._tick()
+                gate = svc._flush_backoff.get("sched")
+                self.assertIsNotNone(gate)
+                waits.append(round(gate["next_ts"] - now["t"], 6))
+        self.assertEqual(waits, [1.0, 2.0, 4.0, 8.0])
 
 
 class TestWatcherCap(BucketCase):

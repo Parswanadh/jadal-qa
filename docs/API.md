@@ -1,10 +1,12 @@
 # Jadal QA — service API (integration owner contract)
 
 Source of truth: `jadal/service.py` (+ `pipeline.py`, `store.py`) on branch
-`feat/integration`. Every shape below was produced by **actually running the
+`feat/integration2`. Every shape below was produced by **actually running the
 service with stubs** (`JADAL_USE_STUBS=1`, FastAPI TestClient, 5 clips
 ingested → 1 batch of 5). Field names, types and nesting match the code
-byte-for-byte; key order in JSON responses is not significant.
+byte-for-byte; key order in JSON responses is not significant. The
+`/stats/risk_coverage` example is the committed
+`docs/api_examples/risk_coverage.json` (drift-tested).
 
 Base URL (demo): `http://127.0.0.1:8000`. Dashboard-v2 builds against this file.
 Errors: `400` clip not found / outside bucket, `404` unknown id / no voice
@@ -30,8 +32,11 @@ inside the service bucket dir (`realpath` check), else `400`.
 ## GET /health
 
 ```json
-{"status": "ok", "pipeline_version": "0.1.0", "pending_segments": 0, "started_utc": "2026-10-10T06:10:54.233520+00:00"}
+{"status": "ok", "pipeline_version": "0.1.0", "pending_segments": 0, "failed_segments": 0, "started_utc": "2026-10-10T06:10:54.233520+00:00"}
 ```
+
+`failed_segments` counts segments parked after `FLUSH_MAX_ATTEMPTS` failed
+timeout flushes (see `GET /batches/failed`).
 
 ## GET /batches → {"batches": BatchSummary[]}
 
@@ -42,7 +47,7 @@ inside the service bucket dir (`realpath` check), else `400`.
   "batch_id": "ba14b9f9a9a631df4",
   "site_id": "s-1",
   "segment_ids": ["seg-c11fecc12cc6-0000", "seg-6eec6ea4b6b3-0000"],
-  "verdicts": [{"segment_id": "seg-c11fecc12cc6-0000", "verdict": "accept", "reasons": [], "answer_conf": 0.93, "threshold": 0.9}],
+  "verdicts": [{"segment_id": "seg-c11fecc12cc6-0000", "verdict": "review", "reasons": ["NO_ACTIVE_WORK", "LOW_CONFIDENCE"], "answer_conf": 0.93, "threshold": 0.9, "evidence": […]}],
   "batch_decision": "accept",
   "rule": "reject if rejected_count > k",
   "k": 1,
@@ -54,6 +59,11 @@ inside the service bucket dir (`realpath` check), else `400`.
 - `batch_id: str` — `"b" + sha256(site|segment_ids|k)[:16]`.
 - `verdict: "accept"|"reject"|"review"`, `reasons: string[]` (SPEC reason
   codes, canonical order), `answer_conf/threshold: float` (4 dp).
+  With the merged funnel router and placeholder (uncalibrated) thresholds, a
+  clean stub clip routes to `review` with `evidence` attached (real example):
+  `{"segment_id": "seg-b710cd79b1b8-0000", "verdict": "review", "reasons":
+  ["NO_ACTIVE_WORK", "LOW_CONFIDENCE"], "answer_conf": 0.93, "threshold": 0.9,
+  "evidence": [{13 entries: L0 checks, `missing:duration_s`, L1 checks}]}`.
 - `batch_decision: "accept"|"reject"` — reject iff rejected_count > k.
   The rule is fixed; it carries no statistical guarantee for n = 5–10.
 
@@ -69,6 +79,20 @@ Same nine keys as above plus:
 order — resolve segment → receipt via each receipt's `verdict.segment_id`.
 `404 {"detail": "batch not found"}` when unknown.
 
+## GET /batches/failed → {"failed": FailedSegment[]}
+
+Segments parked after `FLUSH_MAX_ATTEMPTS` (5) failed batch-timeout flushes
+(retried at 1, 2, 4, 8, 16 s backoff; every failure recorded under
+`batch:<site>` in `GET /ingest/errors`). Parked segments stay queryable
+here — never silently dropped, never retried forever. Real (empty) output:
+`{"failed": []}`.
+
+```json
+{"failed": [{"site_id": "s-1", "segment_id": "seg-c11fecc12cc6-0000", "source_clip": "/…/bucket/c.mp4", "error": "RuntimeError: disk full", "failed_utc": "2026-10-10T07:30:00+00:00"}]}
+```
+
+`site_id/segment_id/source_clip/error: str`, `failed_utc: str` (ISO-8601).
+
 ## GET /receipts/{id} → Receipt
 
 ```json
@@ -76,9 +100,9 @@ order — resolve segment → receipt via each receipt's `verdict.segment_id`.
   "segment_sha256": "c11fecc12cc61b2712775db713bd2d2a8291aeac00bf1535a4817dab303fa5ce",
   "signals": {"decodable": true, "blur_var": 120.0, "brightness_mean": 90.0, "under_exposed_frac": 0.0, "over_exposed_frac": 0.02, "motion_mean": 2.0, "hands_visible_frac": 0.8, "hand_count_mode": 2, "faces_found": 0, "faces_blurred": 0, "phash": "ph_x", "dup_of": null},
   "decisions": {"hands_ok": {"p_yes": 0.97}, "active_work": {"p_yes": 0.93}, "step": {"choice": "wash", "probs": {"wash": 0.93}, "answer_conf": 0.93}, "model_versions": {"stub": "0.1.0"}},
-  "verdict": {"segment_id": "seg-b70ae1ab3f1e-0000", "verdict": "accept", "reasons": [], "answer_conf": 0.93, "threshold": 0.9},
+  "verdict": {"segment_id": "seg-b70ae1ab3f1e-0000", "verdict": "review", "reasons": ["NO_ACTIVE_WORK", "LOW_CONFIDENCE"], "answer_conf": 0.93, "threshold": 0.9, "evidence": [{"check": "blur_var", "value": 120.0, "op": ">=", "threshold": 60.0, "code": "BLUR"}, …]},
   "config": {
-    "thresholds": {"batch_size": 5, "batch_reject_k": 1, "segment_seconds": 20.0, "seed": 1234, "float_decimals": 4, "blur_var_min": 60.0, "brightness_min": 40.0, "over_exposed_frac_max": 0.35, "motion_max": 12.0, "hands_visible_frac_min": 0.5, "target_error": 0.05, "delta": 0.1, "min_accepted": 30, "answer_threshold": 0.9},
+    "thresholds": {"batch_size": 5, "batch_reject_k": 1, "segment_seconds": 20.0, "seed": 1234, "float_decimals": 4, "blur_var_min": 60.0, "brightness_min": 40.0, "over_exposed_frac_max": 0.35, "motion_max": 12.0, "hands_visible_frac_min": 0.5, "target_error": 0.05, "delta": 0.1, "min_accepted": 30, "answer_threshold": 0.9, "accept_conf": null, "min_duration_s": 5.0, "motion_min": 0.5, "under_exposed_frac_max": 0.35, "calibration": {"status": "placeholder", …}, "version": "funnel-v1-placeholder", "funnel_thresholds_sha256": "c93e1776…"},
     "pipeline_version": "0.1.0",
     "versions": {"python": "3.12.15", "signals": "stubs.signals", "decision": "stubs.decision", "segmenter": "stubs.segmenter", "certify": "jadal.certify", "receipts": "jadal.receipts"}
   },
@@ -91,10 +115,14 @@ order — resolve segment → receipt via each receipt's `verdict.segment_id`.
 - `receipt_sha256` = SHA-256 of canonical JSON (sorted keys, `(",", ":")`,
   UTF-8) of the receipt **without** `receipt_sha256`, `receipt_id`,
   `created_utc`. `receipt_id` = first 16 hex chars. Do not change this rule.
-- `verdict` gains the optional `evidence` list (SPEC funnel contract:
-  `[{check, value, op, threshold, code}]`) **only** on the funnel path (when
-  `jadal.funnel.route` decided the verdict); it is included in the hash when
-  present and never added by the inline path, so existing hashes are stable.
+- `verdict.evidence` (SPEC funnel contract: `[{check, value, op, threshold,
+  code}]`, 13 entries in the real stub-mode receipt above) is present
+  whenever the merged `jadal.funnel.route` decided the verdict; it is
+  included in the hash when present and never added by the inline fallback,
+  so pre-funnel hashes are stable. `thresholds` likewise store the funnel
+  file's router keys (`accept_conf`, `motion_min`, `min_duration_s`,
+  `under_exposed_frac_max`, `calibration`, `version`,
+  `funnel_thresholds_sha256`) so re-verify replays the exact router input.
 - `versions.*` names the implementation per stage (`stubs.*` until the real
   modules merge; then `jadal.signals` etc. plus backend/model versions).
 - `404 {"detail": "receipt not found"}` when unknown.
@@ -120,27 +148,35 @@ config (live-config drift does not affect it) and compares hashes.
 ## GET /ingest/errors → {"errors": {path: message}}
 
 Last ingest error per clip path (watcher retries with exponential backoff:
-2^attempts s, capped at 30 s — a poison file never spins the poll loop).
+2^attempts s, capped at 30 s, parked after 5 attempts — a poison file never
+spins the poll loop). Timeout-flush failures are recorded under
+`batch:<site_id>` (attempt counter, then a terminal "gave up after 5
+attempts" message once the segments park at `GET /batches/failed`).
 Real example: `{"errors": {"/…/data_runtime/bucket/poison.mp4":
 "RuntimeError: cannot decode"}}`. Empty object when nothing has failed.
 
 ## GET /stats/risk_coverage → RiskHead[]
 
-Per-head calibration report (real output below, produced by running the
-service with stubs and fixture `decider_baseline.json` +
-`funnel_calibration.json` in `JADAL_EVAL_RESULTS_DIR`). Sources in order:
-(1) `eval/results/decider_baseline.json` (one entry per L1 head; the
-`decider_baseline*.json` fallback only ever surfaces real measurement
+Per-head calibration report. The example below is the committed
+`docs/api_examples/risk_coverage.json`, generated by the running service in
+stub mode from `docs/api_examples/decider_baseline.json` +
+`docs/api_examples/funnel_calibration.json`
+(`JADAL_EVAL_RESULTS_DIR=docs/api_examples`); the test
+`test_committed_examples_match_live_responses` fails on any drift. Sources
+in order: (1) `eval/results/decider_baseline.json` (one entry per L1 head;
+the `decider_baseline*.json` fallback only ever surfaces real measurement
 files), (2) `eval/results/funnel_calibration.json` (`accept` entry plus one
-`reject:<rule>` entry per enabled hard-reject rule), (3) SQLite `calibration`
-rows (head `"answer"`), (4) legacy `eval/results/calibration.json`.
-`[]` means **no measured data** — never fabricated points.
+`reject:<rule>` entry per enabled hard-reject rule; both the original and
+the `per_source` schemas), (3) SQLite `calibration` rows (head `"answer"`),
+(4) legacy `eval/results/calibration.json`. `[]` means **no measured data**
+— never fabricated points.
 
 ```json
 [
   {"head": "hands_ok", "points": [], "chosen_threshold": null, "upper_bound": 0.1404, "target_err": 0.05, "delta": 0.1, "n_calibration": 300, "n_test": 300, "label_source": "gemini"},
+  {"head": "step", "points": [], "chosen_threshold": 0.9, "upper_bound": 0.04, "target_err": 0.05, "delta": 0.1, "n_calibration": 200, "n_test": 200, "label_source": "human_gold"},
   {"head": "accept", "points": [], "chosen_threshold": 0.4, "upper_bound": 0.0355, "target_err": 0.05, "delta": 0.1, "n_calibration": 600, "n_test": 600, "label_source": "synthetic"},
-  {"head": "reject:blur_var_min", "points": [], "chosen_threshold": 90.5116, "upper_bound": 0.0291, "target_err": 0.05, "delta": 0.1, "n_calibration": 600, "n_test": 600, "label_source": "synthetic"}
+  {"head": "reject:blur_var_min", "points": [], "chosen_threshold": 90.0458, "upper_bound": 0.0328, "target_err": 0.05, "delta": 0.1, "n_test": 600, "label_source": "synthetic"}
 ]
 ```
 
@@ -152,14 +188,21 @@ rows (head `"answer"`), (4) legacy `eval/results/calibration.json`.
 - `chosen_threshold: float|null` — `null` means the head was measured but is
   explicitly NOT certified; the key is **absent** only when nothing about a
   threshold was measured.
-- `upper_bound: float|null` — exact-binomial upper bound at the chosen
-  threshold (`null` when uncertified).
-- `target_err/delta: float` — certification parameters (file targets, else
-  the service config).
-- `n_calibration/n_test: int` — measured set sizes (`n_test` omitted when no
-  test set was measured; store rows report `n_test: 0`).
-- `label_source: "gemini"|"human_gold"|"synthetic"` — omitted when the file
-  states no provenance.
+- `upper_bound: float|null` — the exact-binomial upper bound measured at the
+  chosen threshold (kept even when the head is uncertified, e.g. `hands_ok`
+  above: `null` threshold, `0.1404` bound); `null` only in the legacy
+  fallback, which measures no bound; the key is absent when nothing about a
+  threshold was measured.
+- `target_err/delta: float` — certification parameters: the funnel file's
+  `targets` on the funnel path, the service config on the decider and
+  store/legacy paths.
+- `n_calibration/n_test: int` — present only with real counts (SELECT /
+  CERTIFY counts on the funnel path; the store-backed `answer` head has no
+  test set, so it omits `n_test` — never `0`).
+- `label_source: "gemini"|"human_gold"|"synthetic"` — the head's own
+  provenance when it names a source, else the artifact file's; a head/file
+  disagreement is reported as `"conflict:<head>|<file>"` (never silently
+  overridden); omitted when no provenance is stated.
 
 ## GET /stats/sop_gaps → SopGap[]
 
@@ -200,9 +243,12 @@ last_hb_age_s: float, last_hb_ticks_ms: int, last_hb_led: str}`.
 ## /hub/* (optional)
 
 Mounted only when `jadal.hub_api.router` is importable (hub worker owns
-it); no behaviour change when absent (no `/hub` routes at all — verified
-`hub_routes: []` on the running service above). Every `/ws` receive wait is
-bounded (`JADAL_WS_RECV_TIMEOUT_S`, default 60 s); idle clients wait again.
+it); the mount serves the router's routes under `/hub` exactly once (a
+router already carrying the `/hub` prefix is included as-is, any other
+router with `prefix="/hub"`). No behaviour change when absent (no `/hub`
+routes at all — verified `hub_routes: []` on the running service above).
+Every `/ws` receive wait is bounded (`JADAL_WS_RECV_TIMEOUT_S`, default
+60 s); idle clients wait again.
 
 ## WS /ws (events)
 
@@ -226,7 +272,8 @@ Full batch payload plus `receipt_ids`. Client `ping` → server
 
 1. **Per-verdict enrichment** (`receipt_id`, `source_clip`, `worker_id`,
    `site_id`, `latency_ms`): NOT exposed today. Verdicts carry only
-   `{segment_id, verdict, reasons, answer_conf, threshold}`; worker/clip/
+   `{segment_id, verdict, reasons, answer_conf, threshold}` plus the funnel
+   `evidence` list; worker/clip/
    latency live in the internal `segments` table. Planned: `GET
    /segments/{segment_id}` returning the stored Segment row
    (`segment_id, source_clip, worker_id, site_id, start_s, end_s, path,

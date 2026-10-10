@@ -1,0 +1,45 @@
+[
+ {
+  "head": "hands_ok",
+  "points": [],
+  "chosen_threshold": null,
+  "upper_bound": 0.1404,
+  "target_err": 0.05,
+  "delta": 0.1,
+  "n_calibration": 300,
+  "n_test": 300,
+  "label_source": "gemini"
+ },
+ {
+  "head": "step",
+  "points": [],
+  "chosen_threshold": 0.9,
+  "upper_bound": 0.04,
+  "target_err": 0.05,
+  "delta": 0.1,
+  "n_calibration": 200,
+  "n_test": 200,
+  "label_source": "human_gold"
+ },
+ {
+  "head": "accept",
+  "points": [],
+  "chosen_threshold": 0.4,
+  "upper_bound": 0.0355,
+  "target_err": 0.05,
+  "delta": 0.1,
+  "n_calibration": 600,
+  "n_test": 600,
+  "label_source": "synthetic"
+ },
+ {
+  "head": "reject:blur_var_min",
+  "points": [],
+  "chosen_threshold": 90.0458,
+  "upper_bound": 0.0328,
+  "target_err": 0.05,
+  "delta": 0.1,
+  "n_test": 600,
+  "label_source": "synthetic"
+ }
+]

@@ -321,12 +321,11 @@ class TestStatsFromRealData(IntegrationCase):
                                      watch_bucket=False, **kw))
 
     def test_risk_coverage_empty_without_measured_data(self) -> None:
-        with self._client() as c:
-            r = c.get("/stats/risk_coverage")
-            self.assertEqual(r.status_code, 200)
-            # no store rows and no eval/results/ in this worktree: honest empty
-            if not (ROOT / "eval" / "results" / "calibration.json").is_file():
-                self.assertEqual(r.json(), [])
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            entries = pipeline.risk_coverage_report(config=self.cfg,
+                                                    results_dir=tmp)
+            self.assertEqual(entries, [])
 
     def test_risk_coverage_from_eval_file(self) -> None:
         import tempfile
