@@ -12,18 +12,15 @@ otherwise a clear ``RuntimeError`` is raised. ``jadal.certify`` and
 ``jadal.receipts`` are always the real modules.
 
 NOT DONE:
-- L0/L1/segmenter are stubs (hash-derived fakes, whole clip = one segment)
-  until the real modules merge; set JADAL_USE_STUBS=1 to run on stubs. When
-  jadal.signals / jadal.decision / jadal.segmenter are importable they are
-  used automatically (no flag needed).
 - ``pick_threshold`` has no calibration data, so the answer threshold falls back
   to a recorded placeholder (0.9) until eval data exists.
 - Verdict reason rules live here (L2 certify API is thresholding + batch rule).
-- The real jadal.decision module does not exist yet (feat/decider has no
-  Decider); L1 stays on stubs until it lands.
 - Funnel routing (``jadal.funnel.route``) is a runtime seam only: when that
   module is importable it decides the verdict (with evidence); the funnel
   thresholds/logic themselves are owned by another worker.
+- ``receipt_problems`` treats the OpenCV colour proxy as a failure: the edge
+  path may legitimately run on the proxy (BASELINE amendment B9), but this
+  integration demo proves the full mediapipe path.
 """
 from __future__ import annotations
 
@@ -91,21 +88,108 @@ def _decider_class():
     return _load_stage("decision", "Decider", stubs.StubDecider, "L1 decision")
 
 
+# One Decider instance per (class, float_decimals) per process. The EG2
+# backbone load is expensive (multi-GB weights onto CUDA), so batches and
+# re-verifies share the instance instead of reloading per call. Keyed by the
+# class OBJECT so tests with injected fakes never share instances with
+# production (or each other); deciders are stateless across segments.
+_DECIDER_CACHE: dict[tuple, Any] = {}
+
+
+def _get_decider(decider_cls: Any, config: Any) -> Any:
+    key = (decider_cls, int(getattr(config, "float_decimals", 4)))
+    decider = _DECIDER_CACHE.get(key)
+    if decider is None:
+        try:
+            decider = decider_cls(config)
+        except TypeError:
+            decider = decider_cls()
+        _DECIDER_CACHE[key] = decider
+    return decider
+
+
 def _split_clip_fn():
     return _load_stage("segmenter", "split_clip",
                        stubs.stub_split_clip, "segmenter")
 
 
+def _git_file_sha(rel_path: str) -> str | None:
+    """Last-commit sha touching ``rel_path`` under the repo root (best-effort)."""
+    try:
+        from jadal.config import ROOT
+        import subprocess
+        out = subprocess.run(
+            ["git", "-C", str(ROOT), "log", "-1", "--format=%H", "--", rel_path],
+            capture_output=True, text=True, timeout=15)
+        sha = out.stdout.strip().splitlines()
+        return sha[0] if sha and len(sha[0]) == 40 else None
+    except Exception:
+        return None
+
+
+def _repo_head_sha() -> str | None:
+    try:
+        from jadal.config import ROOT
+        import subprocess
+        out = subprocess.run(
+            ["git", "-C", str(ROOT), "rev-parse", "HEAD"],
+            capture_output=True, text=True, timeout=15)
+        sha = out.stdout.strip().splitlines()
+        return sha[0] if sha and len(sha[0]) == 40 else None
+    except Exception:
+        return None
+
+
+def _lib_version(module_name: str) -> str | None:
+    try:
+        import importlib
+        mod = importlib.import_module(module_name)
+        return str(getattr(mod, "__version__", "unknown"))
+    except Exception:
+        return None
+
+
+def _device_info() -> tuple[str, str | None]:
+    """(device, gpu_name): device is 'cuda' or 'cpu' (best-effort, never raises)."""
+    try:
+        import torch
+        try:
+            if torch.cuda.is_available():
+                try:
+                    return "cuda", str(torch.cuda.get_device_name(0))
+                except Exception:
+                    return "cuda", "unknown"
+        except Exception:
+            pass
+        return "cpu", None
+    except Exception:
+        return "cpu", None
+
+
 def impl_versions(config: Any = None) -> dict[str, str]:
     """Which implementation each stage is running (goes into every receipt).
 
-    Beyond module names this records the L0 backend details reported by the
-    real signals module (``backend_versions()``, else ``backend_info()``) and
-    the sha256 of the face/hand model weight files when they exist on disk.
+    Beyond module names this records, per baseline B2/B3: the last-commit git
+    sha of each implementation file (signals, decision, segmenter, funnel,
+    certify, receipts) plus the repo HEAD; the compute device (cpu/cuda +
+    GPU name); torch/opencv/mediapipe/transformers/numpy versions; the L0
+    backend details reported by the real signals module (``backend_versions()``,
+    else ``backend_info()``); the sha256 of the face/hand task files; the
+    sha256 of the EmbeddingGemma-2 backbone weights and the decider head
+    files when present; python, platform and machine architecture (so
+    cross-architecture determinism is explicitly NOT claimed).
     Everything is best-effort: a missing module or file only means a missing
-    key, never an exception. Weight hashes are cached per process.
+    key, never an exception. Weight hashes are cached per process (the 1.4 G
+    backbone hashes once, then reuses the digest).
     """
-    versions = {"python": platform.python_version()}
+    versions = {
+        "python": platform.python_version(),
+        "platform": platform.platform(),
+        "arch": platform.machine(),
+    }
+    head_sha = _repo_head_sha()
+    if head_sha is not None:
+        versions["repo_git_sha"] = head_sha
     for name, attr, stub_tag in (
             ("signals", "compute_signals", "stubs.signals"),
             ("decision", "Decider", "stubs.decision"),
@@ -118,6 +202,27 @@ def impl_versions(config: Any = None) -> dict[str, str]:
         versions[name] = f"jadal.{name}" if real else stub_tag
     versions["certify"] = "jadal.certify"
     versions["receipts"] = "jadal.receipts"
+    versions["funnel"] = "jadal.funnel"
+    try:
+        from jadal import funnel as _funnel_mod
+        if getattr(_funnel_mod, "route", None) is None:
+            versions["funnel"] = "jadal.funnel(no-route)"
+    except ImportError:
+        versions["funnel"] = "missing"
+    for name in ("signals", "decision", "segmenter", "funnel",
+                 "certify", "receipts"):
+        sha = _git_file_sha(f"jadal/{name}.py")
+        if sha is not None:
+            versions[f"{name}_git_sha"] = sha
+    device, gpu_name = _device_info()
+    versions["device"] = device
+    if gpu_name is not None:
+        versions["gpu_name"] = gpu_name
+    versions["torch_version"] = _lib_version("torch") or "missing"
+    versions["opencv_version"] = _lib_version("cv2") or "missing"
+    versions["mediapipe_version"] = _lib_version("mediapipe") or "missing"
+    versions["transformers_version"] = _lib_version("transformers") or "missing"
+    versions["numpy_version"] = _lib_version("numpy") or "missing"
     try:
         from jadal import signals as _sig_mod
     except ImportError:
@@ -145,7 +250,75 @@ def impl_versions(config: Any = None) -> dict[str, str]:
             token = _weight_token(getattr(config, key, None))
             if token is not None:
                 versions[key] = token
+    try:
+        from jadal import decision as _dec_mod
+        from jadal.config import ROOT as _ROOT
+        eg2 = Path(getattr(_dec_mod, "EG2_DIR", "")) / "model.safetensors"
+        token = _weight_token(eg2) if str(eg2) else None
+        if token is not None:
+            versions["eg2_weights"] = token
+        for fname in (getattr(_dec_mod, "HANDS_HEAD", "decider_hands.npz"),
+                      getattr(_dec_mod, "WORK_HEAD", "decider_work.npz"),
+                      getattr(_dec_mod, "STEP_PROTO",
+                              "decider_step_prototypes.npz")):
+            token = _weight_token(Path(_ROOT) / "models" / str(fname))
+            if token is not None:
+                versions[f"decider_{Path(str(fname)).stem}"] = token
+    except Exception:
+        pass
     return versions
+
+
+def receipt_problems(receipt: dict) -> list[str]:
+    """Stub/silent-fallback problems in one receipt ([] = real, clean).
+
+    Fails a receipt when ``config.versions`` names a stub implementation for
+    any stage, when the L0 backend ran without mediapipe (OpenCV colour
+    proxy is a recorded fallback, not the real path this demo proves), when
+    the decider ran without its head files (0.5 silent defaults), or when
+    no frames decoded while L0 claims the segment is decodable. Used by
+    ``scripts/demo.sh`` (non-zero exit on any problem) and unit-tested with
+    crafted receipts (no models needed).
+    """
+    problems: list[str] = []
+    versions = (receipt.get("config") or {}).get("versions") or {}
+    if not isinstance(versions, dict):
+        return ["receipt has no config.versions block"]
+    for name in ("signals", "decision", "segmenter"):
+        value = versions.get(name)
+        if not isinstance(value, str) or value.startswith("stubs."):
+            problems.append(f"{name}={value!r} names a stub implementation")
+    if versions.get("funnel", "jadal.funnel") != "jadal.funnel":
+        problems.append(f"funnel={versions.get('funnel')!r} is not the real router")
+    backend_raw = versions.get("signals_backend", "")
+    try:
+        backend = json.loads(backend_raw) if isinstance(backend_raw, str) else {}
+    except ValueError:
+        backend = {}
+    # backend_versions() reports faces_backend/hands_backend while
+    # backend_info() reports faces/hands: accept either spelling.
+    faces = backend.get("faces", backend.get("faces_backend"))
+    hands = backend.get("hands", backend.get("hands_backend"))
+    if not isinstance(backend, dict) or faces != "mediapipe" \
+            or hands != "mediapipe":
+        problems.append(
+            "signals backend is not mediapipe "
+            f"(faces={faces!r}, hands={hands!r}); "
+            "provide models/blaze_face_short_range.tflite and "
+            "models/hand_landmarker.task, do not stub silently")
+    decisions = receipt.get("decisions") or {}
+    model_versions = decisions.get("model_versions") or {}
+    heads = model_versions.get("heads", "")
+    if "missing" in str(heads):
+        problems.append(
+            f"decider heads missing ({heads!r}): provide "
+            "models/decider_hands.npz and models/decider_work.npz, "
+            "do not fall back to 0.5 silently")
+    signals = receipt.get("signals") or {}
+    if signals.get("decodable") and str(
+            model_versions.get("frames_decoded", "1")) == "0":
+        problems.append("decider decoded 0 frames on a decodable segment")
+    return problems
 
 
 # sha256 of model weight files, cached per process (files are small).
@@ -577,11 +750,7 @@ def run_batch(segments: list[dict], config: Any) -> tuple[dict, list[dict]]:
                     "to review", exc)
         return _closed_mismatch_batch(segments, config, decimals, str(exc))
     compute_signals = _compute_signals_fn()
-    decider_cls = _decider_class()
-    try:
-        decider = decider_cls(config)
-    except TypeError:
-        decider = decider_cls()
+    decider = _get_decider(_decider_class(), config)
     phash_index: dict[str, str] = {}
     receipts: list[dict] = []
 
@@ -635,11 +804,7 @@ def _closed_mismatch_batch(segments: list[dict], config: Any, decimals: int,
         "versions": impl_versions(config),
     }
     compute_signals = _compute_signals_fn()
-    decider_cls = _decider_class()
-    try:
-        decider = decider_cls(config)
-    except TypeError:
-        decider = decider_cls()
+    decider = _get_decider(_decider_class(), config)
     phash_index: dict[str, str] = {}
     receipts: list[dict] = []
     for seg in segments:
@@ -712,11 +877,7 @@ def reverify_receipt(receipt: dict, segment: dict, config: Any) -> dict:
     # hash the bytes we actually re-read, per the SPEC "which bytes" rule
     segment["sha256"] = stubs.file_sha256(path)
     compute_signals = _compute_signals_fn()
-    decider_cls = _decider_class()
-    try:
-        decider = decider_cls(replay_config)
-    except TypeError:
-        decider = decider_cls()
+    decider = _get_decider(_decider_class(), replay_config)
     signals = _compute_signals_safe(compute_signals, segment["path"],
                                       replay_config, decimals)
     decisions = _round_floats(decider.decide(segment["path"], signals), decimals)
@@ -1085,6 +1246,6 @@ __all__ = [
     "REASON_ORDER", "HARD_REASONS", "BATCH_RULE_TEXT", "ThresholdsError",
     "impl_versions", "ensure_determinism", "pick_threshold", "thresholds_snapshot", "config_block",
     "stored_config", "process_clip", "make_verdict", "route_verdict", "run_batch",
-    "reverify_receipt", "compare_versions", "risk_coverage",
+    "reverify_receipt", "compare_versions", "receipt_problems", "risk_coverage",
     "risk_coverage_from_eval", "risk_coverage_report", "sop_gaps_from_verdicts",
 ]

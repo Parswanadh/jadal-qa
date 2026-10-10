@@ -3,7 +3,10 @@
 Label schemas accepted by load_labels_file():
   (a) OOD labelling app: {history, latest: {segment_id: {verdict good|bad, reason, ...}}}
   (b) gold manifest: {items: [{id, label}]}  (c) plain list of {id/segment_id, verdict/label}.
---labels2 merges a second label file (160-window round); labels2 wins on clash.
+--labels2 merges a second label file (160-window round); labels2 wins on clash, and
+requires --scores2 (refused otherwise: the merged labels would be scored against
+the first cache only). Labels with no cached score are dropped BEFORE the gate;
+the number dropped is printed.
 Confirmatory bar: >=10 labelled windows of each class, else REFUSE (exit 2)
 unless --exploratory is passed (numbers then flagged EXPLORATORY, CIs by
 window-bootstrap and optimistic since clip=factory/worker). Tunes nothing.
@@ -65,6 +68,24 @@ def load_labels_file(path):
     return out
 
 
+def check_args(args):
+    """Return an error message for invalid argument combinations, else None."""
+    if args.labels2 and not args.scores2:
+        return ("--labels2 requires --scores2: the second label round must be scored by its own "
+                "cache (refusing to gate on merged labels scored from the first cache alone)")
+    return None
+
+
+def intersect_labels(labels, scored):
+    """Keep only labelled ids that have a cached (error-free) score.
+
+    Returns (kept {id: 0/1}, dropped sorted list of ids). Applied before the gate.
+    """
+    kept = {i: v for i, v in labels.items() if i in scored}
+    dropped = sorted(i for i in labels if i not in scored)
+    return kept, dropped
+
+
 def evaluate(labels, scored, threshold, boot, tag):
     ids = [i for i in labels if i in scored]
     y = np.array([labels[i] for i in ids])
@@ -104,10 +125,13 @@ def main():
     ap.add_argument("--exploratory", action="store_true",
                     help="proceed even if a class has <10 labels; flags output EXPLORATORY")
     args = ap.parse_args()
-    from jadal.ensemble.scorer import load_config
+    err = check_args(args)
+    if err:
+        print(f"REFUSE: {err}")
+        sys.exit(2)
+    from jadal.ensemble.scorer import load_config, file_sha256
     cfg, used = load_config()
-    import hashlib
-    frozen_sha = hashlib.sha256(open(used, "rb").read()).hexdigest()
+    frozen_sha = file_sha256(used)
     print(f"frozen_sha {frozen_sha}")
     for path in [args.scores] + ([args.scores2] if args.scores2 else []):
         if not os.path.exists(path):
@@ -127,6 +151,9 @@ def main():
             sys.exit(1)
         labels.update(load_labels_file(args.labels2))
         tag = "merged160"
+    labels, dropped = intersect_labels(labels, scored)
+    print(f"dropped {len(dropped)} labelled ids with no cached score before the gate"
+          + (f": {', '.join(dropped[:10])}{' ...' if len(dropped) > 10 else ''}" if dropped else ""))
     n1 = sum(labels.values())
     n0 = len(labels) - n1
     if (n1 < 10 or n0 < 10) and not args.exploratory:
