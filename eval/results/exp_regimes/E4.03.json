@@ -11,7 +11,7 @@
  "device": "CPU (pod); no GPU used",
  "cost": "60 windows re-encoded with ffmpeg (libx264); CPU",
  "command": "python3 eval/exp_regimes/reencode_spec.py --out eval/results/exp_regimes/desc_ood_reenc.jsonl && python3 eval/exp_regimes/analyze_regimes.py --part gap",
- "git_sha": "4db730a9c542e2ce63f8cd138f7de3cc931afc02",
+ "git_sha": "e3ae6620656c636d059f68a71e042178ea916016",
  "frozen_ensemble_on_ood": {
   "n": 60,
   "n_bad": 9,
