@@ -1,0 +1,190 @@
+{
+ "config": {
+  "pipeline_version": "0.1.0",
+  "thresholds": {
+   "accept_conf": null,
+   "answer_threshold": 0.9,
+   "batch_reject_k": 1,
+   "batch_size": 5,
+   "blur_var_min": 60.0,
+   "brightness_min": 40.0,
+   "calibration": {
+    "note": "Auto-accept is OFF: accept_conf is null and route() gates on calibration.status (calibrated only; provisional needs allow_provisional_accept). Quality rejects are OFF: hard_reject_policy=integrity_only (only undecodable/too-short reject; everything else reviews). Hands rule is task-scoped via profiles (assembly requires hands). Pass allow_uncalibrated_accept=True for demo accepts only.",
+    "status": "placeholder"
+   },
+   "delta": 0.1,
+   "float_decimals": 4,
+   "funnel_thresholds_sha256": "9a707f41b65a5ff3f453e15ff2660585d1b4723b98631a946b934bb32dd0dc8a",
+   "hands_visible_frac_min": 0.5,
+   "hard_reject_policy": "integrity_only",
+   "min_accepted": 30,
+   "min_duration_s": 5.0,
+   "motion_max": 12.0,
+   "motion_min": 0.5,
+   "over_exposed_frac_max": 0.35,
+   "profiles": {
+    "assembly": {
+     "requires_hands": true
+    },
+    "default": {
+     "requires_hands": false
+    },
+    "logistics": {
+     "requires_hands": false
+    }
+   },
+   "seed": 1234,
+   "segment_seconds": 20.0,
+   "target_error": 0.05,
+   "under_exposed_frac_max": 0.35,
+   "version": "funnel-v1-placeholder"
+  },
+  "versions": {
+   "certify": "<version>",
+   "decision": "<version>",
+   "python": "<version>",
+   "receipts": "<version>",
+   "segmenter": "<version>",
+   "signals": "<version>"
+  }
+ },
+ "decisions": {
+  "active_work": {
+   "p_yes": 0.93
+  },
+  "hands_ok": {
+   "p_yes": 0.97
+  },
+  "model_versions": {
+   "stub": "0.1.0"
+  },
+  "step": {
+   "answer_conf": 0.93,
+   "choice": "wash",
+   "probs": {
+    "wash": 0.93
+   }
+  }
+ },
+ "receipt_id": "<receipt-id>",
+ "receipt_sha256": "<sha256>",
+ "segment_sha256": "3e6cc9ce2f5074ae29a6f1dc1f9ba1e60e9e28ae604fc5efd92923d131f63469",
+ "signals": {
+  "blur_var": 2.0,
+  "brightness_mean": 90.0,
+  "decodable": true,
+  "dup_of": null,
+  "faces_blurred": 0,
+  "faces_found": 0,
+  "hand_count_mode": 2,
+  "hands_visible_frac": 0.8,
+  "motion_mean": 2.0,
+  "over_exposed_frac": 0.02,
+  "phash": "ef68f35fb5f5a5a1",
+  "under_exposed_frac": 0.0
+ },
+ "verdict": {
+  "answer_conf": 0.93,
+  "evidence": [
+   {
+    "check": "decodable",
+    "code": "UNDECODABLE",
+    "op": "==",
+    "threshold": "true",
+    "value": "true"
+   },
+   {
+    "check": "missing:duration_s",
+    "code": "LOW_CONFIDENCE",
+    "op": "==",
+    "threshold": "valid-number",
+    "value": "missing"
+   },
+   {
+    "check": "blur_var",
+    "code": "BLUR",
+    "op": ">=",
+    "threshold": 60.0,
+    "value": 2.0
+   },
+   {
+    "check": "brightness_mean",
+    "code": "TOO_DARK",
+    "op": ">=",
+    "threshold": 40.0,
+    "value": 90.0
+   },
+   {
+    "check": "under_exposed_frac",
+    "code": "TOO_DARK",
+    "op": "<=",
+    "threshold": 0.35,
+    "value": 0.0
+   },
+   {
+    "check": "over_exposed_frac",
+    "code": "OVEREXPOSED",
+    "op": "<=",
+    "threshold": 0.35,
+    "value": 0.02
+   },
+   {
+    "check": "motion_mean",
+    "code": "SHAKY",
+    "op": "<=",
+    "threshold": 12.0,
+    "value": 2.0
+   },
+   {
+    "check": "motion_mean_static",
+    "code": "NO_ACTIVE_WORK",
+    "op": ">=",
+    "threshold": 0.5,
+    "value": 2.0
+   },
+   {
+    "check": "hands_visible_frac",
+    "code": "HANDS_NOT_VISIBLE",
+    "op": ">=",
+    "threshold": 0.5,
+    "value": 0.8
+   },
+   {
+    "check": "hands_ok.p_yes",
+    "code": "LOW_CONFIDENCE",
+    "op": ">=",
+    "threshold": 1.0,
+    "value": 0.97
+   },
+   {
+    "check": "active_work.p_yes",
+    "code": "NO_ACTIVE_WORK",
+    "op": ">=",
+    "threshold": 1.0,
+    "value": 0.93
+   },
+   {
+    "check": "step.choice",
+    "code": "WRONG_STEP",
+    "op": "==",
+    "threshold": "wash",
+    "value": "wash"
+   },
+   {
+    "check": "step.answer_conf",
+    "code": "LOW_CONFIDENCE",
+    "op": ">=",
+    "threshold": 1.0,
+    "value": 0.93
+   }
+  ],
+  "reasons": [
+   "BLUR",
+   "NO_ACTIVE_WORK",
+   "LOW_CONFIDENCE"
+  ],
+  "segment_id": "seg-3e6cc9ce2f50-0000",
+  "threshold": 0.9,
+  "verdict": "review"
+ }
+}

@@ -12,6 +12,7 @@ gated on importability and skipped otherwise.
 """
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import time
@@ -55,6 +56,11 @@ def _merge(base: dict, override: dict | None) -> dict:
 
 
 class IntegrationCase(unittest.TestCase):
+    # Subclasses run on injected stub callables (plus JADAL_USE_STUBS=1) so
+    # results never depend on which real modules are importable -- except
+    # trial classes that set force_stubs = False to exercise the real stack.
+    force_stubs = True
+
     def setUp(self) -> None:
         import tempfile
         self._old_flag = os.environ.get("JADAL_USE_STUBS")
@@ -71,8 +77,22 @@ class IntegrationCase(unittest.TestCase):
             voicebank_dir=tmp / "voicebank",
         )
         self.cfg.bucket_dir.mkdir(parents=True, exist_ok=True)
+        self._stage_patches = []
+        if self.force_stubs:
+            self._stage_patches = [
+                mock.patch.object(pipeline, "_compute_signals_fn",
+                                  new=lambda: stubs.stub_compute_signals),
+                mock.patch.object(pipeline, "_decider_class",
+                                  new=lambda: stubs.StubDecider),
+                mock.patch.object(pipeline, "_split_clip_fn",
+                                  new=lambda: stubs.stub_split_clip),
+            ]
+            for patcher in self._stage_patches:
+                patcher.start()
 
     def tearDown(self) -> None:
+        for patcher in reversed(getattr(self, "_stage_patches", [])):
+            patcher.stop()
         if self._old_flag is None:
             os.environ.pop("JADAL_USE_STUBS", None)
         else:
@@ -93,22 +113,43 @@ class IntegrationCase(unittest.TestCase):
 
 
 class TestVersionProvenance(IntegrationCase):
+    _STAGE_MODULES = ("signals", "decision", "segmenter")
+
     def test_impl_versions_names_stubs_until_real_modules_merge(self) -> None:
-        versions = pipeline.impl_versions(self.cfg)
+        # Force stub mode: block the real L0/L1/segmenter imports so the
+        # stub tags are reported whether or not the modules exist on disk.
+        blocked = tuple(f"jadal.{name}" for name in self._STAGE_MODULES)
+        with stubs.blocked_imports(*blocked):
+            versions = pipeline.impl_versions(self.cfg)
         self.assertEqual(versions["certify"], "jadal.certify")
         self.assertEqual(versions["receipts"], "jadal.receipts")
         self.assertIn("python", versions)
-        try:
-            __import__("jadal.signals", fromlist=["compute_signals"])
-            real_signals = True
-        except ImportError:
-            real_signals = False
-        if real_signals:
-            self.assertEqual(versions["signals"], "jadal.signals")
-        else:
-            self.assertEqual(versions["signals"], "stubs.signals")
-            self.assertEqual(versions["decision"], "stubs.decision")
-            self.assertEqual(versions["segmenter"], "stubs.segmenter")
+        self.assertEqual(versions["signals"], "stubs.signals")
+        self.assertEqual(versions["decision"], "stubs.decision")
+        self.assertEqual(versions["segmenter"], "stubs.segmenter")
+
+    def test_impl_versions_names_real_modules_when_importable(self) -> None:
+        # Real-module path: only meaningful once a stage module is importable
+        # (same test impl_versions itself uses: module + attr not None).
+        # Skipped per stage when absent, so it holds with or without merges.
+        expected = {"signals": ("compute_signals", "stubs.signals"),
+                    "decision": ("Decider", "stubs.decision"),
+                    "segmenter": ("split_clip", "stubs.segmenter")}
+        real = {}
+        for name, (attr, _stub) in expected.items():
+            try:
+                mod = __import__(f"jadal.{name}", fromlist=[attr])
+            except ImportError:
+                continue
+            if getattr(mod, attr, None) is not None:
+                real[name] = f"jadal.{name}"
+        if not real:
+            self.skipTest("no real jadal.signals/decision/segmenter importable")
+        versions = pipeline.impl_versions(self.cfg)
+        for name, want in real.items():
+            with self.subTest(stage=name):
+                self.assertEqual(versions[name], want)
+                self.assertFalse(versions[name].startswith("stubs."))
 
     def test_weight_token_hashes_real_files_and_skips_missing(self) -> None:
         self.assertIsNone(pipeline._weight_token(None))
@@ -301,12 +342,11 @@ class TestStatsFromRealData(IntegrationCase):
                                      watch_bucket=False, **kw))
 
     def test_risk_coverage_empty_without_measured_data(self) -> None:
-        with self._client() as c:
-            r = c.get("/stats/risk_coverage")
-            self.assertEqual(r.status_code, 200)
-            # no store rows and no eval/results/ in this worktree: honest empty
-            if not (ROOT / "eval" / "results" / "calibration.json").is_file():
-                self.assertEqual(r.json(), [])
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            entries = pipeline.risk_coverage_report(config=self.cfg,
+                                                    results_dir=tmp)
+            self.assertEqual(entries, [])
 
     def test_risk_coverage_from_eval_file(self) -> None:
         import tempfile
@@ -363,6 +403,75 @@ class TestStatsFromRealData(IntegrationCase):
             self.assertTrue(body["match"])
             self.assertTrue(body["version_match"])
             self.assertEqual(body["version_diff"], [])
+
+
+@unittest.skipUnless(importlib.util.find_spec("jadal.signals") is not None,
+                     "needs the real jadal.signals module (trial worktree)")
+class TestRealSignalsTrial(IntegrationCase):
+    """Exercises the REAL decoder: a valid mp4 and a garbage file.
+
+    No stub injection here (force_stubs = False); JADAL_USE_STUBS=1 stays set
+    so the still-missing L1 falls back to the stub decider. Proves (1)-(3):
+    a real tiny mp4 decodes and batches normally, while garbage bytes close
+    with an UNDECODABLE reject verdict and a normal batch event -- no hang.
+    """
+
+    force_stubs = False
+
+    def setUp(self) -> None:
+        super().setUp()
+        # Only the real decoder (signals) is under test here. The real L1
+        # Decider loads EG2 onto CUDA, which OOMs whenever other jobs hold the
+        # shared GPU, so the decider stage is stubbed (no GPU use by default).
+        patcher = mock.patch.object(pipeline, "_decider_class",
+                                    new=lambda: stubs.StubDecider)
+        patcher.start()
+        self._stage_patches.append(patcher)
+
+    def _write_mp4(self, name: str) -> str:
+        import cv2
+        import numpy as np
+        path = self.cfg.bucket_dir / name
+        writer = cv2.VideoWriter(str(path),
+                                 cv2.VideoWriter_fourcc(*"mp4v"),
+                                 10.0, (160, 120))
+        self.assertTrue(writer.isOpened(), "cv2.VideoWriter failed to open")
+        try:
+            for i in range(12):
+                frame = np.full((120, 160, 3), (40 + i * 10) % 200,
+                                dtype=np.uint8)
+                writer.write(frame)
+        finally:
+            writer.release()
+        self.assertTrue(path.is_file() and path.stat().st_size > 0)
+        return str(path)
+
+    def test_real_mp4_decodes_and_batches(self) -> None:
+        path = self._write_mp4("real_tiny.mp4")
+        segs = pipeline.process_clip(path, "w", "s", self.cfg)
+        self.assertGreaterEqual(len(segs), 1)
+        batch, receipts = pipeline.run_batch(segs, self.cfg)
+        self.assertEqual(batch["n"], len(segs))
+        versions = receipts[0]["config"]["versions"]
+        self.assertEqual(versions["signals"], "jadal.signals")
+
+    def test_garbage_file_yields_undecodable_reject(self) -> None:
+        import dataclasses
+        bad = self.cfg.bucket_dir / "garbage.mp4"
+        bad.write_bytes(b"this is not video\n" * 64)
+        cfg1 = dataclasses.replace(self.cfg, batch_size=1)
+        store_mod.init_db(cfg1.db_path)
+        app = create_app(cfg1, batch_max_age_s=30.0, watch_bucket=False)
+        with TestClient(app) as client:
+            response = client.post("/ingest/event", json={
+                "path": str(bad), "worker_id": "w", "site_id": "trial"})
+            self.assertEqual(response.status_code, 200, response.text)
+            batch = response.json()["batch"]
+        self.assertIsNotNone(batch, "undecodable clip must still close a batch")
+        self.assertEqual(len(batch["verdicts"]), 1)
+        verdict = batch["verdicts"][0]
+        self.assertEqual(verdict["verdict"], "reject")
+        self.assertIn("UNDECODABLE", verdict["reasons"])
 
 
 if __name__ == "__main__":

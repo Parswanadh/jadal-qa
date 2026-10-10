@@ -7,10 +7,12 @@ TestGoldRecordsBuild which uses tmp dirs (never eval/gold/).
 from __future__ import annotations
 
 import copy
+import contextlib
 import hashlib
 import json
 import math
 import random
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -30,6 +32,11 @@ THRESHOLDS = {
     "hands_visible_frac_min": 0.5,
     "min_duration_s": 5.0,
     "accept_conf": 0.9,
+    # Round 2: this fixture is an explicitly evidence-rejecting,
+    # legacy-hands quality gate (no 'profiles' map => hands enforced
+    # everywhere, as before). Default-policy/profile behaviour is pinned
+    # in tests/test_funnel_round2.py.
+    "hard_reject_policy": "evidence_reject",
 }
 # THRESHOLDS carries no calibration block => uncalibrated placeholder-like:
 # accept requires allow_uncalibrated_accept=True (the demo pattern).
@@ -58,6 +65,24 @@ GOOD_DECISIONS = {
 REQUIRED_L0 = ["decodable", "duration_s", "blur_var", "brightness_mean",
                "under_exposed_frac", "over_exposed_frac", "motion_mean",
                "hands_visible_frac"]
+
+_ABSENT = object()  # sys.modules sentinel for _block_signals_import
+
+
+@contextlib.contextmanager
+def _block_signals_import():
+    """Simulate ``jadal.signals`` being absent, whether or not it is real.
+
+    Delegates to ``stubs.blocked_imports``: it sets ``sys.modules`` entry to
+    ``None`` AND drops the cached ``jadal.signals`` attribute on the parent
+    package (``from jadal import signals`` consults that attribute before
+    ``sys.modules``, so ``None`` alone is not enough once the real module has
+    been imported somewhere in the process). Both are restored afterwards by
+    key diff; ``sys.modules`` itself is never cleared or replaced.
+    """
+    from jadal import stubs
+    with stubs.blocked_imports("jadal.signals"):
+        yield
 
 
 def sig(**over) -> dict:
@@ -125,11 +150,30 @@ class TestCalibrationGate(unittest.TestCase):
         self.assertNotIn("allow_uncalibrated_accept",
                          [e["check"] for e in out["evidence"]])
 
-    def test_provisional_status_accepts_without_flag(self):
+    def test_provisional_status_routes_to_review_without_flag(self):
+        # Round 2 (audit N1): provisional no longer auto-accepts. A clean,
+        # confident clip on provisional thresholds reviews unless the
+        # caller passes allow_provisional_accept=True.
         thresholds = dict(THRESHOLDS,
-                          calibration={"status": "provisional"})
+                          calibration={"status": "provisional",
+                                       "label_source": "synthetic"})
         out = route(sig(), dec(), thresholds)
+        self.assertEqual(out["verdict"], "review")
+        self.assertIn("accept_provisional",
+                      [e["check"] for e in out["evidence"]])
+
+    def test_provisional_flag_allows_accept_with_status_evidence(self):
+        thresholds = dict(THRESHOLDS,
+                          calibration={"status": "provisional",
+                                       "label_source": "synthetic"})
+        out = route(sig(), dec(), thresholds,
+                    allow_provisional_accept=True)
         self.assertEqual(out["verdict"], "accept")
+        status = [e for e in out["evidence"]
+                  if e["check"] == "accept_status"]
+        self.assertEqual(len(status), 1)
+        self.assertEqual(status[0]["value"], "provisional")
+        self.assertEqual(status[0]["label_source"], "synthetic")
 
 
 class TestHardReject(unittest.TestCase):
@@ -172,6 +216,23 @@ class TestHardReject(unittest.TestCase):
 
     def test_duplicate(self):
         self.check_reject(sig(dup_of="seg0001"), "DUPLICATE")
+
+
+class TestShippedDefaultPolicy(unittest.TestCase):
+    """Minor 7: the round-1 fixture above pins evidence_reject explicitly,
+    so pin the SHIPPED default (no hard_reject_policy key =>
+    integrity_only) here: quality failures review, integrity rejects."""
+
+    def test_default_is_integrity_only(self):
+        thresholds = {k: v for k, v in THRESHOLDS.items()
+                      if k != "hard_reject_policy"}
+        thresholds["calibration"] = {"status": "calibrated"}
+        out = route(sig(blur_var=10.0), dec(), thresholds)
+        self.assertEqual(out["verdict"], "review")
+        self.assertIn("BLUR", out["reasons"])
+        out = route(sig(decodable=False), dec(), thresholds)
+        self.assertEqual(out["verdict"], "reject")
+        self.assertIn("UNDECODABLE", out["reasons"])
 
 
 class TestL1CannotReject(unittest.TestCase):
@@ -288,8 +349,11 @@ class TestMissingFields(unittest.TestCase):
         self.assertIsNone(route(sig(), {}, THRESHOLDS)["answer_conf"])
 
     def test_each_missing_l0_field_reviews_with_missing_evidence(self):
-        # C1: every required L0 field, removed or corrupted, must give
-        # review (never accept/reject) with a missing:<field> entry.
+        # C1 (tightened fix round 1): every required numeric L0 field,
+        # removed or corrupted, must give review (never accept/reject)
+        # with a missing:<field> entry. decodable is STRICTLY boolean:
+        # removed/corrupted gives invalid:decodable instead (only a real
+        # True passes, only an explicit False rejects).
         for field in REQUIRED_L0:
             for garbage in ["__DELETE__", *self.GARBAGE]:
                 signals = sig()
@@ -302,7 +366,9 @@ class TestMissingFields(unittest.TestCase):
                                  (field, garbage))
                 self.assertIn("LOW_CONFIDENCE", out["reasons"])
                 checks = [e["check"] for e in out["evidence"]]
-                self.assertIn(f"missing:{field}", checks, (field, garbage))
+                expected = ("invalid:decodable" if field == "decodable"
+                            else f"missing:{field}")
+                self.assertIn(expected, checks, (field, garbage))
 
     def test_decodable_false_still_rejects(self):
         out = accept_route(sig(decodable=False), dec())
@@ -336,7 +402,8 @@ class TestMissingFields(unittest.TestCase):
                 for field in REQUIRED_L0:
                     value = signals.get(field)
                     if field == "decodable":
-                        self.assertIn(value, (True, 1))
+                        # Fix round 1: only a real bool True passes.
+                        self.assertIs(value, True)
                     else:
                         self.assertIsInstance(value, (int, float))
                         self.assertNotIsInstance(value, bool)
@@ -442,8 +509,11 @@ class TestCalibrateTwoSided(unittest.TestCase):
         records += [_mk_record(100.0 + 100.0 * i / 99, 0.99, "good",
                                group=f"good{i % 10}")
                     for i in range(100)]
+        # Mechanics test at full per-rule delta; the Bonferroni default
+        # (delta/8, support floor 86) is pinned in test_funnel_round2.py.
         result = funnel.calibrate_two_sided(
-            records, {"seed": 3, "min_accepted": 1000})
+            records, {"seed": 3, "min_accepted": 1000,
+                      "bonferroni": False})
         src = result["per_source"]["synthetic"]
         entry = src["reject_rules"]["blur_var_min"]
         self.assertFalse(entry["disabled"])
@@ -491,7 +561,10 @@ class TestCalibrateTwoSided(unittest.TestCase):
         records += [_mk_record(5.0 + 2 * i, 0.99,
                                "good" if i % 2 else "bad", group=noisy_group)
                     for i in range(120)]
-        result = funnel.calibrate_two_sided(records, {"seed": 3})
+        # Mechanics test at full per-rule delta (Bonferroni default pinned
+        # in test_funnel_round2.py).
+        result = funnel.calibrate_two_sided(
+            records, {"seed": 3, "bonferroni": False})
         entry = result["per_source"]["synthetic"]["reject_rules"][
             "blur_var_min"]
         self.assertTrue(entry["disabled"], entry)
@@ -543,7 +616,10 @@ class TestCalibrateTwoSided(unittest.TestCase):
                                "bad" if i % 2 else "good", source="gemini",
                                group=f"gem{i % 5}")
                     for i in range(100)]
-        result = funnel.calibrate_two_sided(records, {"seed": 3})
+        # Mechanics test at full per-rule delta (Bonferroni default pinned
+        # in test_funnel_round2.py).
+        result = funnel.calibrate_two_sided(
+            records, {"seed": 3, "bonferroni": False})
         self.assertEqual(result["meta"]["by_source"],
                          {"synthetic": 240, "gemini": 100})
         syn = result["per_source"]["synthetic"]["reject_rules"][
@@ -642,6 +718,11 @@ class TestGoldRecordsBuild(unittest.TestCase):
             self.assertEqual(len(calls), 2)
 
     def test_missing_signals_module_raises_clearly(self):
+        # Merge-gate: simulate the absence explicitly (None in sys.modules
+        # makes the import raise ImportError) so this passes both with
+        # and without the real jadal.signals importable. The blocker
+        # restores the previous entry by key diff, never clearing
+        # sys.modules.
         from eval.calibrate_funnel import build_gold_records
         with tempfile.TemporaryDirectory() as tmp:
             manifest = {"segments": [
@@ -650,10 +731,22 @@ class TestGoldRecordsBuild(unittest.TestCase):
             labels = {"history": [], "latest": {
                 "g000": {"segment_id": "g000", "verdict": "good",
                          "reason": None, "note": ""}}}
-            with self.assertRaises(RuntimeError) as ctx:
+            with _block_signals_import(), \
+                    self.assertRaises(RuntimeError) as ctx:
                 build_gold_records(manifest, labels, signals_fn=None,
                                    cuts_dir=Path(tmp) / "cuts")
             self.assertIn("jadal.signals", str(ctx.exception))
+
+    def test_signals_blocker_restores_sys_modules(self):
+        before_keys = set(sys.modules)
+        before_value = sys.modules.get("jadal.signals", _ABSENT)
+        with _block_signals_import():
+            self.assertIsNone(sys.modules.get("jadal.signals"))
+            with self.assertRaises(ImportError):
+                import jadal.signals  # noqa: F401
+        self.assertEqual(set(sys.modules), before_keys)
+        self.assertIs(sys.modules.get("jadal.signals", _ABSENT),
+                      before_value)
 
 
 if __name__ == "__main__":
