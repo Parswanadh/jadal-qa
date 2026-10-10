@@ -63,7 +63,42 @@ video can leak across folds — random vs frameid-hash protocols agree within
 0.01, so leakage inflates AUROC by at most ~that; out-of-domain check on
 ego4d/epic_kitchens PENDING (files not yet extracted — shared-box contention).
 
-## 3. Transfer test: 150 HUMAN windows, LOCO (PENDING — extraction running)
+## 3. Transfer test: 150 HUMAN windows, LOCO (subset heads, n=150)
+
+File: `eval/results/frames_spectral/window_results.json`. Frame heads (logreg,
+trained on the 1k AI-labelled subset) applied to EVERY decoded frame of each
+human window (15,000 frames, median 100/window), pooled per window (mean, max,
+q10/q50/q90, frac>0.5, temporal std, Hann-Welch band energies of head outputs,
+compensated motion, raw quality/skin means), human usable label predicted with
+leave-one-clip-out CV (7 clips; StandardScaler+C=1-balanced inside folds).
+
+- FULL pipeline LOCO: AUROC **0.713**, clip-bootstrap CI [0.586, 0.817],
+  balAcc 0.705 @0.5. CI spans 0.59-0.82: real signal, wide bounds (7 clips).
+- Per-reason recall (bad): DUPLICATE 0.83 (6), HANDS_NOT_VISIBLE 0.71 (14),
+  NO_ACTIVE_WORK 0.48 (23), TOO_DARK 0.50 (6), UNDECODABLE 1.00 (1).
+- Cleaning ablation (LOCO AUROC, full=0.713): no_median3 0.743, no_lum_norm
+  0.745, no_gm_comp 0.687, no_detrend 0.680, no_hann_welch 0.699, no_robust
+  0.708, gauss-denoise 0.689. Nested-CV votes (7 outer folds) KEEP gm_comp,
+  detrend, hann_welch, robust; DROP median3, lum_norm, gauss. All CIs overlap
+  — no step is a significant win; gm_comp/detrend removals hurt most.
+- KEY DIAGNOSIS (honest failure): pooled head-output means collapsed to ~0
+  for all windows (4e-16 vs 2e-16) — lum_norm residualisation + detrending
+  shift features off the manifold the heads were trained on (raw features),
+  so logreg saturates. That is WHY dropping lum_norm/median3 raises AUROC.
+  Correct fix (heads retrained on cleaned features) is out of scope for the
+  PoC; the nested selection already routes around it. Reason-tracking
+  correlations are therefore uninformative and reported as collapsed, not as
+  tracking. Per-reason recall above is the valid read-out.
+- Noise sigma per clip (window-mean immerkaer / MAD-HH1): clips ARE differently
+  noisy — ecu_late 0.0069/0.0033 and pallet2 0.0068/0.0040 highest, pallet
+  0.0040/0.0023 and desk 0.0047/0.0023 lowest (~1.7x spread).
+- EG2 comparison: NOT RUN — sibling arm (#53 frames10k) has embeddings but no
+  per-window scores yet (only shards); never waited, files untouched.
+- Label-noise audit: AI-label OOF audit + retrain-without-flagged PENDING
+  full-10k OOF run (subset OOF saved in `subset_oof_logreg.npz`); human audit:
+  15/150 windows strongly disagree with LOCO OOF (listed with reasons/probs in
+  `eval/results/frames_spectral/human_review_queue.json`, segments.json
+  schema — human labels NEVER edited).
 
 ## 4. Training algorithm (plain language)
 

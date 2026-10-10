@@ -74,7 +74,11 @@ CLEAN_DEFAULT = {"median3": True, "lum_norm": True, "gm_comp": True,
 # ----------------------------- head training -----------------------------
 
 def train_final_heads():
-    z = np.load(f"{IN}/egocentric_10k.npz", allow_pickle=True)
+    import os
+    if os.environ.get("FS_HEADS") == "subset":
+        z = np.load(f"{IN}/subset_1k.npz", allow_pickle=True)
+    else:
+        z = np.load(f"{IN}/egocentric_10k.npz", allow_pickle=True)
     X = z["X"].astype(np.float64)
     y_h = (z["hand"].astype(int) > 0).astype(int)
     y_w = z["work"].astype(int)
@@ -356,7 +360,7 @@ def main():
                  "n_windows": len(man["items"]), "snapshot_utc": man["snapshot_utc"]}
     # nested-CV step selection: inner LOCO on train clips
     M_full, names, ids, clips, labels = build_window_matrix(CLEAN_DEFAULT, "raw")
-    reasons = [reasons_all[i] for i in ids]
+    reasons = [reasons_all[i] or "" for i in ids]
     out["n_features"] = len(names)
     uclips = sorted(set(clips))
 
