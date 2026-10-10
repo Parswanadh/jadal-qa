@@ -1,0 +1,23 @@
+{
+ "verified_by": "lead-b (LB1) \u2014 independent of LB4",
+ "claim": "the pre-registered frozen ensemble (sha256 4da1068a78d5d150\u2026) is recoverable byte-exactly from git history",
+ "git_blob": "0ede3b83d93ce23dc5b68cd20fb7de0af703ad27",
+ "blob_type": "blob",
+ "sha256_of_blob": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+ "expected": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+ "match": true,
+ "commits_containing_blob": [
+  "1bf89ee B2: fail closed on the pre-registered frozen ensemble (sha256 4da1068a\u2026), verified provenance + C-insensitivity framing; fix unreachable fallback test",
+  "4421b12 wip snapshot 2026-10-10T16:15:25Z of b/poc-integrate",
+  "407a83f B: stage frozen pre-registered OOD run (one command, sha256-guarded, PENDING until labels land)",
+  "47a4269 wip snapshot 2026-10-10T16:04:02Z of b/triage",
+  "a890a1d wip snapshot 2026-10-10T16:03:54Z of b/ood-ready",
+  "b21e3af ensemble-views: freeze ensemble_v1 + numpy scorer + batch scorer + OOF probs + head tests"
+ ],
+ "committed_copies_byte_identical": {
+  "b/ood-ready configs/frozen/ensemble_v1.prereg.json": true,
+  "b/poc-integrate configs/frozen/ensemble_v1.prereg.json": true
+ },
+ "on_disk_bundle_copy_sha256": "cf7fd7d34df2c3ca654c730d518b5aa6c341f6476b41fb3e4d29326b3c18004b",
+ "resolution": "CONFIRMED: the frozen artifact is recoverable and now verifies. The bundle copy (cf7fd7d3\u2026) is the path-remapped file and must not be used for a pre-registered claim; the git blob is the authority. LB4's fix is correct and I verified it independently."
+}

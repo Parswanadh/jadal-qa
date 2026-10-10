@@ -30,9 +30,3 @@ tests/fixtures/poc/thumbs/
 
 # local scratch (screenshots, chrome profiles)
 .scratch/
-
-# pod
-artifacts/
-*.mp4
-*.npz
-*.npy
