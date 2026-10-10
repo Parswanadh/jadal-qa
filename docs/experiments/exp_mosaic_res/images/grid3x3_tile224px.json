@@ -1,0 +1,109 @@
+{
+ "builder_version": "mosaic-1.0.0",
+ "font": {
+  "file": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+  "size": 12
+ },
+ "fps_used": 0.9,
+ "grid": [
+  3,
+  3
+ ],
+ "mosaic_sha256": "",
+ "source": "indego",
+ "tile_px": 224,
+ "tiles": [
+  {
+   "h": 224,
+   "index": 0,
+   "src_frame_index": 6,
+   "t_s": 0.556,
+   "w": 224,
+   "x": 2,
+   "y": 2
+  },
+  {
+   "h": 224,
+   "index": 1,
+   "src_frame_index": 17,
+   "t_s": 1.667,
+   "w": 224,
+   "x": 228,
+   "y": 2
+  },
+  {
+   "h": 224,
+   "index": 2,
+   "src_frame_index": 28,
+   "t_s": 2.778,
+   "w": 224,
+   "x": 454,
+   "y": 2
+  },
+  {
+   "h": 224,
+   "index": 3,
+   "src_frame_index": 39,
+   "t_s": 3.889,
+   "w": 224,
+   "x": 2,
+   "y": 228
+  },
+  {
+   "h": 224,
+   "index": 4,
+   "src_frame_index": 50,
+   "t_s": 5.0,
+   "w": 224,
+   "x": 228,
+   "y": 228
+  },
+  {
+   "h": 224,
+   "index": 5,
+   "src_frame_index": 61,
+   "t_s": 6.111,
+   "w": 224,
+   "x": 454,
+   "y": 228
+  },
+  {
+   "h": 224,
+   "index": 6,
+   "src_frame_index": 72,
+   "t_s": 7.222,
+   "w": 224,
+   "x": 2,
+   "y": 454
+  },
+  {
+   "h": 224,
+   "index": 7,
+   "src_frame_index": 83,
+   "t_s": 8.333,
+   "w": 224,
+   "x": 228,
+   "y": 454
+  },
+  {
+   "h": 224,
+   "index": 8,
+   "src_frame_index": 94,
+   "t_s": 9.444,
+   "w": 224,
+   "x": 454,
+   "y": 454
+  }
+ ],
+ "view": {
+  "clip": "ecu_full",
+  "cols": 3,
+  "label": 1,
+  "rows": 3,
+  "sample_rule": "t_i=(i+0.5)*10/N; src_frame_index=round(t_i*native_fps)",
+  "tile_px": 224,
+  "timestamps": "top-right, FONT_SIZE=12px",
+  "window_id": "g001"
+ },
+ "window_id": "g001"
+}

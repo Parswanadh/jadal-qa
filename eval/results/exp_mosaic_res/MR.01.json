@@ -1,0 +1,149 @@
+{
+ "n": 150,
+ "label_source": "human (IndEgo gold manifest_gold.json, one labeller); 150 windows; clips ecu_full/desk/organise/pallet/logistics4/ecu_late/pallet2",
+ "protocol": "in-domain leave-one-clip-out over the 7 IndEgo clips (150 gold windows, 100 good / 50 bad), logistic C=0.01 on L2-normalised EG2 features, clip-bootstrap CI B=1000 seed0",
+ "device": "A40",
+ "git_sha": "f20013b",
+ "command": "bash tools/pod/gpu_run.sh python3 eval/exp_mosaic_res/run_res.py --no-artifacts",
+ "ms_per_win_note": "mosaic embed ms/window = batch mosaic-encode time attributed equally across configs; batch-shared, so use canvas_px as the deterministic cost proxy",
+ "cost_total": {
+  "decode_ms": 200285.0,
+  "frame_embed_ms": 531019.9,
+  "build_ms": 223423.5,
+  "mosaic_embed_ms": 99523.7,
+  "frames_decoded": 15000
+ },
+ "baselines": {
+  "eg2_window_embedding_loco": 0.848,
+  "feature26_loco": 0.81,
+  "source": "pod task brief / E2 cached reference (2fps EG2 window mean)"
+ },
+ "experiment": "MR.01",
+ "title": "tile-resolution ladder (grid 3x3, timestamps on)",
+ "variant": "mosaic embedding; tile px 224/160/112/96/64",
+ "results": {
+  "tile224": {
+   "tag": "m_3x3_t224",
+   "frames": 9,
+   "tile_px": 224,
+   "grid": [
+    3,
+    3
+   ],
+   "canvas_px": 462400,
+   "auroc": 0.785,
+   "ci95": [
+    0.6426,
+    0.8593
+   ],
+   "bal_acc": 0.7,
+   "mosaic_embed_ms_per_win": 55.3,
+   "vs_meanframes_N9": -0.0664
+  },
+  "tile160": {
+   "tag": "m_3x3_t160",
+   "frames": 9,
+   "tile_px": 160,
+   "grid": [
+    3,
+    3
+   ],
+   "canvas_px": 238144,
+   "auroc": 0.8038,
+   "ci95": [
+    0.6508,
+    0.8704
+   ],
+   "bal_acc": 0.74,
+   "mosaic_embed_ms_per_win": 55.3,
+   "vs_meanframes_N9": -0.0476
+  },
+  "tile112": {
+   "tag": "m_3x3_t112",
+   "frames": 9,
+   "tile_px": 112,
+   "grid": [
+    3,
+    3
+   ],
+   "canvas_px": 118336,
+   "auroc": 0.8034,
+   "ci95": [
+    0.6325,
+    0.8718
+   ],
+   "bal_acc": 0.72,
+   "mosaic_embed_ms_per_win": 55.3,
+   "vs_meanframes_N9": -0.048
+  },
+  "tile96": {
+   "tag": "m_3x3_t96",
+   "frames": 9,
+   "tile_px": 96,
+   "grid": [
+    3,
+    3
+   ],
+   "canvas_px": 87616,
+   "auroc": 0.7618,
+   "ci95": [
+    0.5709,
+    0.8393
+   ],
+   "bal_acc": 0.695,
+   "mosaic_embed_ms_per_win": 55.3,
+   "vs_meanframes_N9": -0.0896
+  },
+  "tile64": {
+   "tag": "m_3x3_t64",
+   "frames": 9,
+   "tile_px": 64,
+   "grid": [
+    3,
+    3
+   ],
+   "canvas_px": 40000,
+   "auroc": 0.7356,
+   "ci95": [
+    0.5255,
+    0.8586
+   ],
+   "bal_acc": 0.69,
+   "mosaic_embed_ms_per_win": 55.3,
+   "vs_meanframes_N9": -0.1158
+  }
+ },
+ "mean_N9": {
+  "n": 150,
+  "n_good": 100,
+  "n_bad": 50,
+  "auroc": 0.8514,
+  "ci95": [
+   0.7516,
+   0.9072
+  ],
+  "bal_acc": 0.78
+ },
+ "best_tile_px": 160,
+ "best_auroc": 0.8038,
+ "smallest_within_0.02_auroc": 112,
+ "verdict": "adopt small tiles",
+ "headline": {
+  "tag": "m_3x3_t160",
+  "frames": 9,
+  "tile_px": 160,
+  "grid": [
+   3,
+   3
+  ],
+  "canvas_px": 238144,
+  "auroc": 0.8038,
+  "ci95": [
+   0.6508,
+   0.8704
+  ],
+  "bal_acc": 0.74,
+  "mosaic_embed_ms_per_win": 55.3,
+  "vs_meanframes_N9": -0.0476
+ }
+}

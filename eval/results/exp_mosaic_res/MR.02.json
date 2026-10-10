@@ -1,0 +1,165 @@
+{
+ "n": 150,
+ "label_source": "human (IndEgo gold manifest_gold.json, one labeller); 150 windows; clips ecu_full/desk/organise/pallet/logistics4/ecu_late/pallet2",
+ "protocol": "in-domain leave-one-clip-out over the 7 IndEgo clips (150 gold windows, 100 good / 50 bad), logistic C=0.01 on L2-normalised EG2 features, clip-bootstrap CI B=1000 seed0",
+ "device": "A40",
+ "git_sha": "f20013b",
+ "command": "bash tools/pod/gpu_run.sh python3 eval/exp_mosaic_res/run_res.py --no-artifacts",
+ "ms_per_win_note": "mosaic embed ms/window = batch mosaic-encode time attributed equally across configs; batch-shared, so use canvas_px as the deterministic cost proxy",
+ "cost_total": {
+  "decode_ms": 200285.0,
+  "frame_embed_ms": 531019.9,
+  "build_ms": 223423.5,
+  "mosaic_embed_ms": 99523.7,
+  "frames_decoded": 15000
+ },
+ "baselines": {
+  "eg2_window_embedding_loco": 0.848,
+  "feature26_loco": 0.81,
+  "source": "pod task brief / E2 cached reference (2fps EG2 window mean)"
+ },
+ "experiment": "MR.02",
+ "title": "density ladder (tile 112, timestamps on) vs mean-of-frames",
+ "variant": "mosaic embedding; grids 2x2..6x6 at tile 112",
+ "results": {
+  "2x2": {
+   "tag": "m_2x2_t112",
+   "frames": 4,
+   "tile_px": 112,
+   "grid": [
+    2,
+    2
+   ],
+   "canvas_px": 52900,
+   "auroc": 0.7224,
+   "ci95": [
+    0.5401,
+    0.8046
+   ],
+   "bal_acc": 0.66,
+   "mosaic_embed_ms_per_win": 55.3,
+   "mean_frames_auroc": 0.8226,
+   "mean_frames_ci95": [
+    0.6979,
+    0.884
+   ],
+   "mosaic_minus_mean": -0.1002
+  },
+  "3x3": {
+   "tag": "m_3x3_t112",
+   "frames": 9,
+   "tile_px": 112,
+   "grid": [
+    3,
+    3
+   ],
+   "canvas_px": 118336,
+   "auroc": 0.8034,
+   "ci95": [
+    0.6325,
+    0.8718
+   ],
+   "bal_acc": 0.72,
+   "mosaic_embed_ms_per_win": 55.3,
+   "mean_frames_auroc": 0.8514,
+   "mean_frames_ci95": [
+    0.7516,
+    0.9072
+   ],
+   "mosaic_minus_mean": -0.048
+  },
+  "4x4": {
+   "tag": "m_4x4_t112",
+   "frames": 16,
+   "tile_px": 112,
+   "grid": [
+    4,
+    4
+   ],
+   "canvas_px": 209764,
+   "auroc": 0.7974,
+   "ci95": [
+    0.623,
+    0.8834
+   ],
+   "bal_acc": 0.73,
+   "mosaic_embed_ms_per_win": 55.3,
+   "mean_frames_auroc": 0.8608,
+   "mean_frames_ci95": [
+    0.7558,
+    0.9229
+   ],
+   "mosaic_minus_mean": -0.0634
+  },
+  "5x5": {
+   "tag": "m_5x5_t112",
+   "frames": 25,
+   "tile_px": 112,
+   "grid": [
+    5,
+    5
+   ],
+   "canvas_px": 327184,
+   "auroc": 0.7306,
+   "ci95": [
+    0.5152,
+    0.8458
+   ],
+   "bal_acc": 0.675,
+   "mosaic_embed_ms_per_win": 55.3,
+   "mean_frames_auroc": 0.8438,
+   "mean_frames_ci95": [
+    0.7328,
+    0.9028
+   ],
+   "mosaic_minus_mean": -0.1132
+  },
+  "6x6": {
+   "tag": "m_6x6_t112",
+   "frames": 36,
+   "tile_px": 112,
+   "grid": [
+    6,
+    6
+   ],
+   "canvas_px": 470596,
+   "auroc": 0.7604,
+   "ci95": [
+    0.597,
+    0.8484
+   ],
+   "bal_acc": 0.73,
+   "mosaic_embed_ms_per_win": 55.3,
+   "mean_frames_auroc": 0.8416,
+   "mean_frames_ci95": [
+    0.7335,
+    0.9007
+   ],
+   "mosaic_minus_mean": -0.0812
+  }
+ },
+ "verdict": "mosaic never beats mean-of-frames at equal frames (E2 gap not recovered by lower-res density)",
+ "headline": {
+  "tag": "m_3x3_t112",
+  "frames": 9,
+  "tile_px": 112,
+  "grid": [
+   3,
+   3
+  ],
+  "canvas_px": 118336,
+  "auroc": 0.8034,
+  "ci95": [
+   0.6325,
+   0.8718
+  ],
+  "bal_acc": 0.72,
+  "mosaic_embed_ms_per_win": 55.3,
+  "mean_frames_auroc": 0.8514,
+  "mean_frames_ci95": [
+   0.7516,
+   0.9072
+  ],
+  "mosaic_minus_mean": -0.048
+ }
+}
