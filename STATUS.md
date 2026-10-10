@@ -1,35 +1,46 @@
 # rhythm STATUS
 
-Branch `feat/custom-algo-rhythm` (worktree `/home/parshu/projects/jadal-qa-wt/custom-algo`).
+Branch `feat/custom-algo-rhythm` — pushed to origin. Worktree
+`/home/parshu/projects/jadal-qa-wt/custom-algo`.
 
 ## done
-- Worktree created off `origin/main` (b2f65de).
-- Baseline reproduced exactly: 26 GPU features + logistic, LOCO AUROC **0.810**
-  (handover says 0.81). Log: `custom_algo_data/logs/baseline_repro.log`.
-  Per-clip: ecu_full 0.95, logistics4 0.90, organise 0.91, desk 0.80, ecu_late 0.65,
-  pallet 0.50, pallet2 0.50 (chance). Within-clip z-scoring confirmed to hurt (0.601).
-- Representation extractor `jadal/rhythm/features.py` (160x90, 10 fps, 6 grid
-  channels + 8 global channels, phase-correlation translation ego-motion).
-- Vectorised ensemble `jadal/rhythm/model.py`: K members in one set of tensor ops
-  (grouped convs), 2,287 params/member, gradients verified, G in {1,4,6} all work.
-- `eval/rhythm/extract.py` sharded extractor.
-- `tests/test_rhythm_features.py` (22 tests, written by a sub-agent).
-- `docs/reports/rhythm.md` skeleton (sub-agent), all numbers PENDING.
-- Parallel research tracks launched (see `custom_algo_data/research/`).
+- Baseline reproduced exactly: 26 GPU per-pixel features + logistic, LOCO AUROC
+  **0.810** (handover: 0.81). Per-clip: ecu_full 0.95, logistics4 0.90,
+  organise 0.91, desk 0.80, ecu_late 0.65, **pallet 0.50, pallet2 0.50**.
+  Log `custom_algo_data/logs/baseline_repro.log`.
+- `jadal/rhythm/features.py` — representation R: 160x90, 10 fps, 6 grid channels
+  (res_mean, res_p90, skin_frac, tvar, flow_mag, flow_coh) + 8 global channels,
+  phase-correlation translation ego-motion compensation.
+- `jadal/rhythm/model.py` — K-member ensemble vectorised in grouped convs.
+  2,287 params/member. Gradients verified. G in {1,4,6} all work.
+- `eval/rhythm/extract.py` — sharded deterministic extractor (150 gold windows cached).
+- `eval/rhythm/train.py` — nested LOCO, per-member independent augmentation,
+  inner-LOCO member selection, `--folds` sharding.
+- `eval/rhythm/evaluate.py` — clip-bootstrap CI, per-clip, per-reason, coverage
+  curve, same-fold baselines.
+- `tests/test_rhythm_features.py` — 22 tests, all passing.
+- `docs/reports/rhythm.md` — skeleton, all numbers PENDING (to be filled).
+- Parallel tracks in `custom_algo_data/research/`: papers (24 verified sources),
+  ablations, rhythm_analysis, math_approaches.
 
 ## running
-- Cache re-extraction (the first extraction is INVALID - see blockers).
-- CPU ablation + rhythm-spectrum + alternative-maths sub-agents.
+- 4 parallel GPU fold shards (`eval/results/rhythm/loco_shard{0..3}.json`),
+  K=48, top-M=24, 25 epochs, batch 8. GPU at 100%, ~4.6 GiB.
 
 ## blockers / corrections
-- **BUG FOUND AND FIXED**: `cv2.phaseCorrelate` mutates its inputs in place on
-  OpenCV 5.0.0. The first cache (227 files) was computed with corrupted frames and
-  is being discarded. Fixed by copying inputs in `_phase_shift`. Any number from
-  the first extraction is void.
-- GPU training not yet run (needs the re-extracted cache).
+- **BUG FOUND AND FIXED (by the test sub-agent, verified):**
+  `cv2.phaseCorrelate` mutates its inputs in place on OpenCV 5.0.0. The first
+  cache was computed on corrupted frames and has been DISCARDED
+  (`cache/main_INVALID_phasecorrelate_bug/`). Any number from the first
+  extraction is void. The fix (copying inputs) is now a regression test.
+  Evidence the fix matters: g000 `luma_mean` 0.0944 -> 0.2995,
+  `lap_var` 321 -> 1140, `under_frac` 0.538 -> 0.106.
+- The 0.810 baseline is the 26 GPU per-pixel features, NOT this tensor; it is
+  not directly comparable to numbers computed from `cache/main`.
 
 ## next
-- train + LOCO eval of the ensemble vs the 4 required baselines, ablations, freeze.
+- Merge fold shards -> pooled LOCO AUROC + CI; run baselines + ablations; freeze.
 
 ## headline numbers
-- baseline LOCO AUROC 0.810 (reproduced). rhythm model: NOT YET MEASURED.
+- baseline LOCO AUROC **0.810** (reproduced, other representation).
+- rhythm ensemble LOCO AUROC: **pending** (training running).
