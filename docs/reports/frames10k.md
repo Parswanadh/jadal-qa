@@ -44,6 +44,14 @@ hands>=1 frac=0.960, work=yes frac=0.917 (skewed — balacc at 0.5 suffers).
 | hands_ok | 256 | 0.966 | 0.967 [0.952, 0.980] | 0.663 |
 | hands_ok | 128 | 0.952 | 0.954 [0.933, 0.971] | 0.577 |
 
+### (2b) Lean heads on 8,000 AI frames (C=1 fixed, dim 768)
+`eval/results/frames10k/partial_8k/frame_cv.lean_8k.json` (shards 0-7, all CPU
+PIL decode path).
+- active_labor: AUROC 0.9026 [0.8906, 0.9141], balacc 0.7394
+- hands_ok: AUROC 0.9587 [0.9481, 0.9684], balacc 0.7484
+(The C-grid 6k run died to system OOM; lean fixed-C rerun used float32 +
+thread caps and survived. Label skew persists: work=yes 0.917, hands>=1 0.964.)
+
 Matryoshka truncation 768->128 loses ~0.01-0.015 AUROC; balacc drops more
 (threshold not retuned — operating point, not ranking, degrades).
 Full-6k run in progress; 10k embedding 8/10 shards done (partial_8k staged
