@@ -1,0 +1,974 @@
+[
+ {
+  "id": "s000_a8a02e0f3a48",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_053/worker_038/factory053_worker038_00154.mp4",
+  "start_s": 170.0,
+  "end_s": 180.0,
+  "factory": "factory_053",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s001_becdea28eb49",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_039/worker_006/factory039_worker006_01018.mp4",
+  "start_s": 70.0,
+  "end_s": 80.0,
+  "factory": "factory_039",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s002_56768e36758c",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_029/worker_002/factory029_worker002_01846.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_029",
+  "verdict": "bad",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ {
+  "id": "s003_54355f723450",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_060/worker_008/factory060_worker008_00099.mp4",
+  "start_s": 80.0,
+  "end_s": 90.0,
+  "factory": "factory_060",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s004_6d01958869c4",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_026/worker_005/factory026_worker005_00111.mp4",
+  "start_s": 80.0,
+  "end_s": 90.0,
+  "factory": "factory_026",
+  "verdict": "bad",
+  "reason": "OVEREXPOSED"
+ },
+ {
+  "id": "s005_5b22416d123e",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+  "start_s": 520.0,
+  "end_s": 530.0,
+  "factory": "factory_001",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s006_e88c15d3bd6a",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_028/worker_001/factory028_worker001_00023.mp4",
+  "start_s": 160.0,
+  "end_s": 170.0,
+  "factory": "factory_028",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s007_3f3d955a8284",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_068/worker_014/factory068_worker014_00077.mp4",
+  "start_s": 140.0,
+  "end_s": 150.0,
+  "factory": "factory_068",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s008_1bf537e59b5c",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_056/worker_016/factory056_worker016_00154.mp4",
+  "start_s": 100.0,
+  "end_s": 110.0,
+  "factory": "factory_056",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s009_33f47437f38b",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_068/worker_014/factory068_worker014_00077.mp4",
+  "start_s": 100.0,
+  "end_s": 110.0,
+  "factory": "factory_068",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s010_221516f8b3da",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_056/worker_016/factory056_worker016_00154.mp4",
+  "start_s": 80.0,
+  "end_s": 90.0,
+  "factory": "factory_056",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s011_b060f15b1ea5",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_060/worker_008/factory060_worker008_00099.mp4",
+  "start_s": 110.0,
+  "end_s": 120.0,
+  "factory": "factory_060",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s012_994b3ab4988f",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_014/worker_041/factory014_worker041_00143.mp4",
+  "start_s": 110.0,
+  "end_s": 120.0,
+  "factory": "factory_014",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s013_8293c601ea85",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_054/worker_002/factory054_worker002_00045.mp4",
+  "start_s": 50.0,
+  "end_s": 60.0,
+  "factory": "factory_054",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s014_6267a768eb00",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_041/worker_042/factory041_worker042_00077.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_041",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s015_c0c26afa4748",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_026/worker_005/factory026_worker005_00111.mp4",
+  "start_s": 60.0,
+  "end_s": 70.0,
+  "factory": "factory_026",
+  "verdict": "bad",
+  "reason": "OVEREXPOSED"
+ },
+ {
+  "id": "s016_60312f325767",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_062/worker_014/factory062_worker014_00099.mp4",
+  "start_s": 130.0,
+  "end_s": 140.0,
+  "factory": "factory_062",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s017_fc1bdd8c0da7",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_019/worker_007/factory019_worker007_00033.mp4",
+  "start_s": 30.0,
+  "end_s": 40.0,
+  "factory": "factory_019",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s018_a252e14ec223",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_037/worker_018/factory037_worker018_00124.mp4",
+  "start_s": 70.0,
+  "end_s": 80.0,
+  "factory": "factory_037",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s019_721e4e7590d5",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_084/worker_008/factory084_worker008_00033.mp4",
+  "start_s": 120.0,
+  "end_s": 130.0,
+  "factory": "factory_084",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s020_1a9004c8b47e",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_069/worker_004/factory069_worker004_00077.mp4",
+  "start_s": 70.0,
+  "end_s": 80.0,
+  "factory": "factory_069",
+  "verdict": "bad",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ {
+  "id": "s021_8d0a93ad9d5a",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_070/worker_031/factory070_worker031_00066.mp4",
+  "start_s": 110.0,
+  "end_s": 120.0,
+  "factory": "factory_070",
+  "verdict": "bad",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ {
+  "id": "s022_db6d0304b483",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_060/worker_008/factory060_worker008_00099.mp4",
+  "start_s": 170.0,
+  "end_s": 180.0,
+  "factory": "factory_060",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s023_64df77468230",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_019/worker_007/factory019_worker007_00033.mp4",
+  "start_s": 10.0,
+  "end_s": 20.0,
+  "factory": "factory_019",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s024_53278414fd99",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_021/worker_012/factory021_worker012_00110.mp4",
+  "start_s": 40.0,
+  "end_s": 50.0,
+  "factory": "factory_021",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s025_58cad270ec50",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_062/worker_014/factory062_worker014_00099.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_062",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s026_4f5bce598274",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_036/worker_007/factory036_worker007_00011.mp4",
+  "start_s": 30.0,
+  "end_s": 40.0,
+  "factory": "factory_036",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s027_cef15015b289",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_062/worker_014/factory062_worker014_00099.mp4",
+  "start_s": 170.0,
+  "end_s": 180.0,
+  "factory": "factory_062",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s028_0cd0b4b9f3b9",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_029/worker_002/factory029_worker002_01846.mp4",
+  "start_s": 130.0,
+  "end_s": 140.0,
+  "factory": "factory_029",
+  "verdict": "bad",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ {
+  "id": "s029_fc5b95e1cd24",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_016/worker_002/factory016_worker002_00008.mp4",
+  "start_s": 230.0,
+  "end_s": 240.0,
+  "factory": "factory_016",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s030_a67e56f860bc",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_023/worker_003/factory023_worker003_00055.mp4",
+  "start_s": 0.0,
+  "end_s": 10.0,
+  "factory": "factory_023",
+  "verdict": "bad",
+  "reason": "HANDS_NOT_VISIBLE"
+ },
+ {
+  "id": "s031_be1b25a98587",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_062/worker_014/factory062_worker014_00099.mp4",
+  "start_s": 110.0,
+  "end_s": 120.0,
+  "factory": "factory_062",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s032_7beec244c75e",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_033/worker_009/factory033_worker009_00000.mp4",
+  "start_s": 170.0,
+  "end_s": 180.0,
+  "factory": "factory_033",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s033_bd67b3aad320",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_026/worker_005/factory026_worker005_00111.mp4",
+  "start_s": 50.0,
+  "end_s": 60.0,
+  "factory": "factory_026",
+  "verdict": "bad",
+  "reason": "OVEREXPOSED"
+ },
+ {
+  "id": "s034_adb31df08f9f",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_053/worker_038/factory053_worker038_00154.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_053",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s035_376abc2362e6",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_061/worker_007/factory061_worker007_00036.mp4",
+  "start_s": 680.0,
+  "end_s": 690.0,
+  "factory": "factory_061",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s036_ff5d0ebe53c8",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_009/worker_001/factory009_worker001_00007.mp4",
+  "start_s": 460.0,
+  "end_s": 470.0,
+  "factory": "factory_009",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s037_ef52606b8304",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_016/worker_002/factory016_worker002_00008.mp4",
+  "start_s": 200.0,
+  "end_s": 210.0,
+  "factory": "factory_016",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s038_4bad2d7af61a",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_028/worker_001/factory028_worker001_00023.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_028",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s039_231217807f1f",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_003/worker_004/factory003_worker004_00003.mp4",
+  "start_s": 620.0,
+  "end_s": 630.0,
+  "factory": "factory_003",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s040_b7ba410c492b",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_019/worker_007/factory019_worker007_00033.mp4",
+  "start_s": 100.0,
+  "end_s": 110.0,
+  "factory": "factory_019",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s041_10b1551f892e",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_003/worker_004/factory003_worker004_00003.mp4",
+  "start_s": 500.0,
+  "end_s": 510.0,
+  "factory": "factory_003",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s042_c43d3e81f58e",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_028/worker_001/factory028_worker001_00023.mp4",
+  "start_s": 40.0,
+  "end_s": 50.0,
+  "factory": "factory_028",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s043_782f4b02efc0",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_060/worker_008/factory060_worker008_00099.mp4",
+  "start_s": 20.0,
+  "end_s": 30.0,
+  "factory": "factory_060",
+  "verdict": "bad",
+  "reason": "HANDS_NOT_VISIBLE"
+ },
+ {
+  "id": "s044_475e807018f5",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_058/worker_003/factory058_worker003_00122.mp4",
+  "start_s": 20.0,
+  "end_s": 30.0,
+  "factory": "factory_058",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s045_da37fe978d34",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_079/worker_023/factory079_worker023_00000.mp4",
+  "start_s": 10.0,
+  "end_s": 20.0,
+  "factory": "factory_079",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s046_65c5670d7898",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_035/worker_014/factory035_worker014_00077.mp4",
+  "start_s": 80.0,
+  "end_s": 90.0,
+  "factory": "factory_035",
+  "verdict": "bad",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ {
+  "id": "s047_cc382c40ad79",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_010/worker_002/factory010_worker002_00056.mp4",
+  "start_s": 140.0,
+  "end_s": 150.0,
+  "factory": "factory_010",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s048_6465c3bb1e52",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_003/worker_004/factory003_worker004_00003.mp4",
+  "start_s": 1130.0,
+  "end_s": 1140.0,
+  "factory": "factory_003",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s049_bb0bff23a6e1",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_037/worker_018/factory037_worker018_00124.mp4",
+  "start_s": 100.0,
+  "end_s": 110.0,
+  "factory": "factory_037",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s050_cb963f9f9c5a",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_044/worker_014/factory044_worker014_00056.mp4",
+  "start_s": 20.0,
+  "end_s": 30.0,
+  "factory": "factory_044",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s051_dabed850127c",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_013/worker_008/factory013_worker008_00166.mp4",
+  "start_s": 70.0,
+  "end_s": 80.0,
+  "factory": "factory_013",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s052_77660029e821",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_040/worker_001/factory040_worker001_00026.mp4",
+  "start_s": 510.0,
+  "end_s": 520.0,
+  "factory": "factory_040",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s053_70a7139d6acf",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_020/worker_002/factory020_worker002_00159.mp4",
+  "start_s": 0.0,
+  "end_s": 10.0,
+  "factory": "factory_020",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s054_09463ead5a21",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_044/worker_014/factory044_worker014_00056.mp4",
+  "start_s": 80.0,
+  "end_s": 90.0,
+  "factory": "factory_044",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s055_f72efcbeadfb",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_069/worker_004/factory069_worker004_00077.mp4",
+  "start_s": 160.0,
+  "end_s": 170.0,
+  "factory": "factory_069",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s056_4621c4784d72",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_038/worker_029/factory038_worker029_00022.mp4",
+  "start_s": 40.0,
+  "end_s": 50.0,
+  "factory": "factory_038",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s057_37c558eb6d1d",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_016/worker_002/factory016_worker002_00008.mp4",
+  "start_s": 360.0,
+  "end_s": 370.0,
+  "factory": "factory_016",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s058_6f6758cd8e5c",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_014/worker_041/factory014_worker041_00143.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_014",
+  "verdict": "bad",
+  "reason": "OVEREXPOSED"
+ },
+ {
+  "id": "s059_0a14be8fc5ea",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_057/worker_021/factory057_worker021_00155.mp4",
+  "start_s": 50.0,
+  "end_s": 60.0,
+  "factory": "factory_057",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s060_20c5be8280f2",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_038/worker_029/factory038_worker029_00022.mp4",
+  "start_s": 60.0,
+  "end_s": 70.0,
+  "factory": "factory_038",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s061_e6502b0aba45",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+  "start_s": 1140.0,
+  "end_s": 1150.0,
+  "factory": "factory_001",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s062_401a277d1054",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_079/worker_023/factory079_worker023_00000.mp4",
+  "start_s": 110.0,
+  "end_s": 120.0,
+  "factory": "factory_079",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s063_2372763bd05c",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+  "start_s": 1150.0,
+  "end_s": 1160.0,
+  "factory": "factory_001",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s064_9cf7175e19f7",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_042/worker_010/factory042_worker010_00056.mp4",
+  "start_s": 30.0,
+  "end_s": 40.0,
+  "factory": "factory_042",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s065_24442a7574f4",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+  "start_s": 610.0,
+  "end_s": 620.0,
+  "factory": "factory_001",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s066_4d1225b561f7",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_019/worker_007/factory019_worker007_00033.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_019",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s067_0e554a3c7e2f",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_024/worker_005/factory024_worker005_00023.mp4",
+  "start_s": 70.0,
+  "end_s": 80.0,
+  "factory": "factory_024",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s068_d8ffe1132c0a",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+  "start_s": 140.0,
+  "end_s": 150.0,
+  "factory": "factory_051",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s400_e49707875a11",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_022/worker_008/factory022_worker008_00154.mp4",
+  "start_s": 160.0,
+  "end_s": 170.0,
+  "factory": "factory_022",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s401_0d6e2a48193d",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_023/worker_003/factory023_worker003_00055.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_023",
+  "verdict": "bad",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ {
+  "id": "s402_4c557d00ddb2",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00166.mp4",
+  "start_s": 80.0,
+  "end_s": 90.0,
+  "factory": "factory_051",
+  "verdict": "bad",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ {
+  "id": "s403_63e4de69835b",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_024/worker_005/factory024_worker005_00023.mp4",
+  "start_s": 30.0,
+  "end_s": 40.0,
+  "factory": "factory_024",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s404_21b220269d9a",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_044/worker_014/factory044_worker014_00056.mp4",
+  "start_s": 170.0,
+  "end_s": 180.0,
+  "factory": "factory_044",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s405_f0ce1dafbf23",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_068/worker_014/factory068_worker014_00077.mp4",
+  "start_s": 0.0,
+  "end_s": 10.0,
+  "factory": "factory_068",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s406_75bc6924d976",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_020/worker_002/factory020_worker002_00157.mp4",
+  "start_s": 70.0,
+  "end_s": 80.0,
+  "factory": "factory_020",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s407_9a51cf2d9434",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_009/worker_001/factory009_worker001_00007.mp4",
+  "start_s": 330.0,
+  "end_s": 340.0,
+  "factory": "factory_009",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s408_0b1c0e331f31",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_046/worker_008/factory046_worker008_00618.mp4",
+  "start_s": 0.0,
+  "end_s": 10.0,
+  "factory": "factory_046",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s409_00711ec43af1",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_056/worker_016/factory056_worker016_00154.mp4",
+  "start_s": 140.0,
+  "end_s": 150.0,
+  "factory": "factory_056",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s410_2d34a168ae7a",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_070/worker_031/factory070_worker031_00066.mp4",
+  "start_s": 160.0,
+  "end_s": 170.0,
+  "factory": "factory_070",
+  "verdict": "bad",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ {
+  "id": "s411_0e43b941c35a",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_077/worker_006/factory077_worker006_00057.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_077",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s412_01de9ae17605",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_029/worker_002/factory029_worker002_01846.mp4",
+  "start_s": 40.0,
+  "end_s": 50.0,
+  "factory": "factory_029",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s413_6f76b266cfa9",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_066/worker_015/factory066_worker015_00088.mp4",
+  "start_s": 80.0,
+  "end_s": 90.0,
+  "factory": "factory_066",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s414_21306126e439",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00166.mp4",
+  "start_s": 40.0,
+  "end_s": 50.0,
+  "factory": "factory_051",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s415_bac8949362e5",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_040/worker_001/factory040_worker001_00026.mp4",
+  "start_s": 260.0,
+  "end_s": 270.0,
+  "factory": "factory_040",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s416_f6187fb3f88a",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_028/worker_001/factory028_worker001_00022.mp4",
+  "start_s": 110.0,
+  "end_s": 120.0,
+  "factory": "factory_028",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s417_3dd136405b5f",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_061/worker_007/factory061_worker007_00036.mp4",
+  "start_s": 410.0,
+  "end_s": 420.0,
+  "factory": "factory_061",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s418_96dbeff6d386",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_079/worker_023/factory079_worker023_00000.mp4",
+  "start_s": 160.0,
+  "end_s": 170.0,
+  "factory": "factory_079",
+  "verdict": "bad",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ {
+  "id": "s419_8052714e5461",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00166.mp4",
+  "start_s": 0.0,
+  "end_s": 10.0,
+  "factory": "factory_051",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s420_8a05bdec3ddd",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_024/worker_005/factory024_worker005_00024.mp4",
+  "start_s": 0.0,
+  "end_s": 10.0,
+  "factory": "factory_024",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s421_572ec2987fc8",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_016/worker_002/factory016_worker002_00008.mp4",
+  "start_s": 480.0,
+  "end_s": 490.0,
+  "factory": "factory_016",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s422_710bba82da19",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_040/worker_001/factory040_worker001_00026.mp4",
+  "start_s": 1070.0,
+  "end_s": 1080.0,
+  "factory": "factory_040",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s423_cbd77545a66d",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_058/worker_003/factory058_worker003_00122.mp4",
+  "start_s": 160.0,
+  "end_s": 170.0,
+  "factory": "factory_058",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s424_05cdc501553d",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_061/worker_007/factory061_worker007_00036.mp4",
+  "start_s": 280.0,
+  "end_s": 290.0,
+  "factory": "factory_061",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s425_d9631299a22a",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_038/worker_029/factory038_worker029_00022.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_038",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s426_978a20ce437c",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_073/worker_014/factory073_worker014_00055.mp4",
+  "start_s": 100.0,
+  "end_s": 110.0,
+  "factory": "factory_073",
+  "verdict": "bad",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ {
+  "id": "s427_60fd04b398dd",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_016/worker_002/factory016_worker002_00008.mp4",
+  "start_s": 80.0,
+  "end_s": 90.0,
+  "factory": "factory_016",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s428_08539a3ce42e",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_024/worker_005/factory024_worker005_00023.mp4",
+  "start_s": 130.0,
+  "end_s": 140.0,
+  "factory": "factory_024",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s429_7d7ae7b38577",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_040/worker_001/factory040_worker001_00026.mp4",
+  "start_s": 760.0,
+  "end_s": 770.0,
+  "factory": "factory_040",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s430_5dd1a2dabdd5",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_084/worker_008/factory084_worker008_00033.mp4",
+  "start_s": 170.0,
+  "end_s": 180.0,
+  "factory": "factory_084",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s431_5583124d154c",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_058/worker_003/factory058_worker003_00121.mp4",
+  "start_s": 0.0,
+  "end_s": 10.0,
+  "factory": "factory_058",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s432_52c8acd13a8d",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_046/worker_008/factory046_worker008_00618.mp4",
+  "start_s": 150.0,
+  "end_s": 160.0,
+  "factory": "factory_046",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s433_bce5f626186e",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_020/worker_002/factory020_worker002_00159.mp4",
+  "start_s": 170.0,
+  "end_s": 180.0,
+  "factory": "factory_020",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s434_72bc7655ad7e",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_009/worker_001/factory009_worker001_00007.mp4",
+  "start_s": 30.0,
+  "end_s": 40.0,
+  "factory": "factory_009",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s435_acd25f869923",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+  "start_s": 960.0,
+  "end_s": 970.0,
+  "factory": "factory_001",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s436_2b9213c44b75",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_020/worker_002/factory020_worker002_00159.mp4",
+  "start_s": 130.0,
+  "end_s": 140.0,
+  "factory": "factory_020",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s437_080d17eb95d7",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_009/worker_001/factory009_worker001_00007.mp4",
+  "start_s": 1060.0,
+  "end_s": 1070.0,
+  "factory": "factory_009",
+  "verdict": "good",
+  "reason": ""
+ },
+ {
+  "id": "s438_30354365921f",
+  "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_035/worker_014/factory035_worker014_00077.mp4",
+  "start_s": 40.0,
+  "end_s": 50.0,
+  "factory": "factory_035",
+  "verdict": "good",
+  "reason": ""
+ }
+]

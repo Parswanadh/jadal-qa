@@ -1,0 +1,244 @@
+{
+ "experiment": "C1.01",
+ "title": "Confirmatory one-shot: frozen O4 recipe on the 108 round-3 hold-out",
+ "protocol": "PRE-REGISTERED CONFIRMATORY. Scored ONCE on the 108-window round-3 hold-out; no tuning, no feature re-selection, no threshold change, no re-fitting. Per-domain z-score uses the 108's own unsupervised mean/std; signs come from the 150 IndEgo gold windows only.",
+ "one_shot_statement": "scored once on the hold-out; no tuning",
+ "n": 108,
+ "n_good": 92,
+ "n_bad": 16,
+ "n_factories": 44,
+ "label_source": "human, single labeller; labels/round3/ood_labels3_108_with_factory.json (92 good / 16 bad, 44 factories)",
+ "features": {
+  "z3_transferable_6": [
+   "ct_fsize_std",
+   "mo_hand_motion_excess",
+   "inv_clip_frac",
+   "inv_laplacian_var",
+   "inv_hist_entropy",
+   "inv_dct_hf_lf"
+  ],
+  "e5_stable_8": [
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy",
+   "luma_p05",
+   "global_shift",
+   "illum_r",
+   "illum_b",
+   "zncc_self"
+  ],
+  "sharpness_3": [
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy"
+  ]
+ },
+ "threshold_rule": "fixed 0.0 for the z-score combos (score > 0 => good), 0.5 for the probability scorers; not tuned",
+ "bootstrap": "factory-grouped (honest), n_boot=2000, seed=0; window bootstrap shown too",
+ "device": "CPU (numpy/sklearn; ffmpeg/cv2 decode only, no GPU)",
+ "gain_vs_frozen_paired_factory_grouped_bootstrap": {
+  "(a) O4 Z3 transferable-6": {
+   "mean": -0.0105,
+   "ci95": [
+    -0.1887,
+    0.1734
+   ],
+   "frac_resamples_gt_0": 0.4615,
+   "n_boot": 2000
+  },
+  "(b) O4 E5 stable-8 + Z3 transferable-6": {
+   "mean": -0.0088,
+   "ci95": [
+    -0.1971,
+    0.1769
+   ],
+   "frac_resamples_gt_0": 0.4655,
+   "n_boot": 2000
+  },
+  "(c) sharpness-3 zero-shot head": {
+   "mean": 0.0302,
+   "ci95": [
+    -0.1634,
+    0.2184
+   ],
+   "frac_resamples_gt_0": 0.6155,
+   "n_boot": 2000
+  }
+ },
+ "blocks": [
+  {
+   "recipe": "(a) O4 Z3 transferable-6",
+   "method": "per-domain z-score, IndEgo-signed, equal-weight mean",
+   "n_features": 6,
+   "features": [
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_clip_frac",
+    "inv_laplacian_var",
+    "inv_hist_entropy",
+    "inv_dct_hf_lf"
+   ],
+   "threshold": 0.0,
+   "ood_auroc": 0.6746,
+   "ood_balacc": 0.534,
+   "ood_auroc_ci95_window_bootstrap_optimistic": [
+    0.5382,
+    0.8041
+   ],
+   "ood_auroc_ci95_factory_grouped_honest": [
+    0.523,
+    0.8224
+   ],
+   "ood_balacc_ci95_factory_grouped_honest": [
+    0.3869,
+    0.713
+   ],
+   "indego_auroc": 0.6842,
+   "indego_balacc": 0.665,
+   "indego_signs": {
+    "ct_fsize_std": 1,
+    "mo_hand_motion_excess": 1,
+    "inv_clip_frac": 1,
+    "inv_laplacian_var": 1,
+    "inv_hist_entropy": 1,
+    "inv_dct_hf_lf": -1
+   },
+   "confusion_thr0": {
+    "tp": 58,
+    "fn": 34,
+    "fp": 9,
+    "tn": 7,
+    "n_good": 92,
+    "n_bad": 16
+   }
+  },
+  {
+   "recipe": "(b) O4 E5 stable-8 + Z3 transferable-6",
+   "method": "per-domain z-score, IndEgo-signed, equal-weight mean",
+   "n_features": 14,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "luma_p05",
+    "global_shift",
+    "illum_r",
+    "illum_b",
+    "zncc_self",
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_clip_frac",
+    "inv_laplacian_var",
+    "inv_hist_entropy",
+    "inv_dct_hf_lf"
+   ],
+   "threshold": 0.0,
+   "ood_auroc": 0.676,
+   "ood_balacc": 0.6481,
+   "ood_auroc_ci95_window_bootstrap_optimistic": [
+    0.5372,
+    0.8052
+   ],
+   "ood_auroc_ci95_factory_grouped_honest": [
+    0.5251,
+    0.8265
+   ],
+   "ood_balacc_ci95_factory_grouped_honest": [
+    0.5326,
+    0.7679
+   ],
+   "indego_auroc": 0.7364,
+   "indego_balacc": 0.68,
+   "indego_signs": {
+    "radial_slope": 1,
+    "hf_ratio": 1,
+    "dct_energy": 1,
+    "luma_p05": -1,
+    "global_shift": -1,
+    "illum_r": -1,
+    "illum_b": 1,
+    "zncc_self": 1,
+    "ct_fsize_std": 1,
+    "mo_hand_motion_excess": 1,
+    "inv_clip_frac": 1,
+    "inv_laplacian_var": 1,
+    "inv_hist_entropy": 1,
+    "inv_dct_hf_lf": -1
+   },
+   "confusion_thr0": {
+    "tp": 56,
+    "fn": 36,
+    "fp": 5,
+    "tn": 11,
+    "n_good": 92,
+    "n_bad": 16
+   }
+  },
+  {
+   "recipe": "(c) sharpness-3 zero-shot head",
+   "method": "logistic on IndEgo (C by inner LOCO), zero-shot",
+   "n_features": 3,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy"
+   ],
+   "threshold": 0.5,
+   "ood_auroc": 0.7154,
+   "ood_balacc": 0.5516,
+   "ood_auroc_ci95_window_bootstrap_optimistic": [
+    0.6021,
+    0.8179
+   ],
+   "ood_auroc_ci95_factory_grouped_honest": [
+    0.5785,
+    0.8407
+   ],
+   "ood_balacc_ci95_factory_grouped_honest": [
+    0.4765,
+    0.681
+   ],
+   "indego_auroc": 0.5784,
+   "indego_balacc": 0.605,
+   "confusion_thr0.5": {
+    "tp": 90,
+    "fn": 2,
+    "fp": 14,
+    "tn": 2,
+    "n_good": 92,
+    "n_bad": 16
+   }
+  },
+  {
+   "recipe": "(d) frozen ensemble_v1 (two-view)",
+   "method": "frozen two-view usable_prob (no fitting)",
+   "n_features": null,
+   "features": null,
+   "threshold": 0.5,
+   "ood_auroc": 0.6895,
+   "ood_balacc": 0.6399,
+   "ood_auroc_ci95_window_bootstrap_optimistic": [
+    0.5414,
+    0.8203
+   ],
+   "ood_auroc_ci95_factory_grouped_honest": [
+    0.5341,
+    0.8227
+   ],
+   "ood_balacc_ci95_factory_grouped_honest": [
+    0.5372,
+    0.7396
+   ],
+   "config_sha256": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+   "missing_or_error_ids": [],
+   "confusion_thr0.5": {
+    "tp": 43,
+    "fn": 49,
+    "fp": 3,
+    "tn": 13,
+    "n_good": 92,
+    "n_bad": 16
+   }
+  }
+ ]
+}
