@@ -1,0 +1,8 @@
+# Setup on the pod (A40 48 GB)
+1. In the pod terminal set (never write them to files): `export HF_TOKEN=...` (pod-only, read-only; must include the gated dataset `builddotai/Egocentric-10K` and the private dataset `Havoc1904/jadal-pod-data`), `export GH_TOKEN=...` (fine-grained, this repo only: contents + pull requests write, expiry <= 24 h), `export AGENT_API_KEY=...` (model provider key for opencode; configure with `opencode auth`), `export JADAL_MODEL='<provider/model#variant>'` (see `opencode models`).
+2. Bootstrap: `bash tools/pod/bootstrap.sh` (the first time, download the script from the HF dataset repo: `hf download Havoc1904/jadal-pod-data --repo-type dataset --include 'opencode_kit/tools/pod/*' --local-dir /workspace/jadal_pod_bundle`). It installs packages, downloads the bundle, remaps paths, clones the repo, records the environment.
+3. Install the kit: `source /workspace/env.sh && bash /workspace/jadal_pod_bundle/opencode_kit/tools/pod/install_kit.sh` (copies agents/skills/config into the repo on branch `pod/kit`, verifies `opencode debug agents`, pushes).
+4. Pin opencode: `opencode --version` (tested on v2.0.26); `OPENCODE_DISABLE_AUTOUPDATE=1` and `"autoupdate": false`. Do not upgrade mid-run (an automatic v1 -> v2 switch killed workers once).
+5. Start autosave: `tmux new -d -s autosave 'bash /workspace/repo/tools/pod/autosave.sh'`.
+6. Start the lead: `cd /workspace/repo && opencode run --auto --standalone --agent lead --title lead "$(cat /workspace/jadal_pod_bundle/prompts/PROMPT_4_OPENCODE_POD.md)"` (or open the TUI with `opencode --auto`, switch to the `lead` agent and paste the prompt).
+Smoke tests: baselines print 0.810 (`scripts/baseline_logistic_loco.py`) and 0.848 (`scripts/ensemble_views_exploratory.py`).
