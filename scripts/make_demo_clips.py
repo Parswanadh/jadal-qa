@@ -7,8 +7,10 @@ emits a small LABELLED set of demo variants plus a manifest.
 
 Outputs go ONLY under ``data_runtime/demo_clips/`` (git-ignored; the default
 is anchored at the repo root so it works from any CWD). ``--out`` accepts
-another directory only with ``--allow-outside-data-runtime``.
-Source clips are never copied into the repo.
+another directory only with ``--allow-outside-data-runtime`` (debug-only;
+temp dirs are always refused per SPEC).
+Source clips are never copied into the repo. IndEgo inputs default to
+``/home/parshu/projects/awing/data/indego`` (override: ``JADAL_INDEGO_ROOT``).
 
 Variants per source window (9 files):
   good               - re-encoded copy of the window (no defect)
@@ -68,7 +70,8 @@ FOURCC = "mp4v"
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_RUNTIME = os.path.join(REPO_ROOT, "data_runtime")
 DEFAULT_OUT = os.path.join(DATA_RUNTIME, "demo_clips")
-INDEGO_ROOT = "/home/parshu/projects/awing/data/indego"
+# Overridable for tests via JADAL_INDEGO_ROOT (production default below).
+INDEGO_ROOT = os.environ.get("JADAL_INDEGO_ROOT", "/home/parshu/projects/awing/data/indego")
 
 # Hand-picked windows (from the IndEgo VIA annotations shipped with the data):
 #  - ECU clip: step 02_attach_ram_chip spans 42.7-140.8 s -> [60, 80) s.
@@ -107,6 +110,18 @@ VARIANTS: list[tuple[str, str, str, dict]] = [
 PIXEL_VARIANTS = ("good", "blurred", "too_dark", "overexposed", "frozen")
 DECODABLE_VARIANTS = PIXEL_VARIANTS + ("wrong_fps", "reupload_duplicate")
 UNDECODABLE_VARIANTS = ("truncated", "garbage")
+
+
+def _is_inside(path: str, root: str) -> bool:
+    return os.path.commonpath([os.path.abspath(path), os.path.abspath(root)]) == os.path.abspath(root)
+
+
+def _is_temp_dir(path: str) -> bool:
+    roots = ["/tmp"]
+    tmpdir = os.environ.get("TMPDIR")
+    if tmpdir:
+        roots.append(tmpdir)
+    return any(_is_inside(path, root) for root in roots)
 
 
 def sha256_file(path: str) -> str:
@@ -316,7 +331,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--allow-outside-data-runtime",
         action="store_true",
-        help="permit --out outside data_runtime/ (default: refuse)",
+        help="debug-only: permit --out outside data_runtime/ (never under /tmp)",
     )
     args = ap.parse_args(argv)
 
@@ -327,10 +342,18 @@ def main(argv: list[str] | None = None) -> int:
 
     out_abs = os.path.abspath(args.out)
     data_abs = os.path.abspath(DATA_RUNTIME)
-    if os.path.commonpath([out_abs, data_abs]) != data_abs and not args.allow_outside_data_runtime:
+    if _is_temp_dir(out_abs):
+        print(
+            f"make_demo_clips: refusing --out under a temp dir ({out_abs}); "
+            "SPEC forbids writing results to /tmp.",
+            file=sys.stderr,
+        )
+        return 3
+    if not _is_inside(out_abs, data_abs) and not args.allow_outside_data_runtime:
         print(
             f"make_demo_clips: refusing --out outside data_runtime/ ({out_abs}). "
-            "Pass --allow-outside-data-runtime to override.",
+            "Pass --allow-outside-data-runtime to override (debug-only; "
+            "never under /tmp).",
             file=sys.stderr,
         )
         return 3
@@ -341,7 +364,7 @@ def main(argv: list[str] | None = None) -> int:
     if missing:
         print(
             "make_demo_clips: IndEgo source clips not found (inputs are read-only and "
-            "expected under /home/parshu/projects/awing/data/indego):",
+            f"expected under {INDEGO_ROOT}; override with JADAL_INDEGO_ROOT):",
             file=sys.stderr,
         )
         for src in missing:

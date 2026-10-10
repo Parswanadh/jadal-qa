@@ -9,20 +9,28 @@ PR: https://github.com/Parswanadh/jadal-qa/pull/40 (open, NOT merged).
 - `scripts/make_demo_clips.py` — deterministic generator. Reads 2 IndEgo
   windows read-only (ECU assembly `User_15_410_0411_2_480.mp4` [60,80)s, inside
   the annotated `02_attach_ram_chip` step; logistics organise
-  `User_1_2110_Organisation_480.mp4` [30,50)s, inside `01_organize`), emits 8
-  variants each (good, blurred, too_dark, overexposed, frozen, truncated,
-  garbage, reupload_duplicate) = 16 clips + `manifest.json` under
-  `data_runtime/demo_clips/` (git-ignored). Every entry has defect,
-  parameters, source clip + window, sha256, `label: SYNTHETIC-DEFECT`.
-  Encoder: `cv2.VideoWriter`, fourcc `mp4v`, 10 fps, source frame size.
-  Flags: `--out`, `--seed` (default 42), `--list`. Missing sources: clear
-  stderr message, exit 2, nothing written.
-- `tests/test_make_demo_clips.py` — builds a tiny synthetic source in a temp
-  dir (never the real clips); asserts all 8 variants produced, manifest
-  sha256s match files, all 8 sha256s stable across two runs, duplicate
-  byte-identical to good, good-family decodes while garbage/truncated fail,
-  frozen frames all equal, dark dimmer / bright brighter than good; plus a
-  `--list` subprocess test (with timeout). Adds ~0.4 s to the suite.
+  `User_1_2110_Organisation_480.mp4` [30,50)s, inside `01_organize`), emits 9
+  variants each (good, blurred, too_dark, overexposed, frozen, wrong_fps at
+  15 fps, truncated, garbage, reupload_duplicate) = 18 clips + `manifest.json`
+  under `data_runtime/demo_clips/` (git-ignored; default is repo-anchored so
+  it works from any CWD). Every entry has defect, variant, parameters, fps,
+  `actual_duration_s` (20.0, 13.333 for wrong_fps), source clip + window,
+  sha256, label (`SYNTHETIC-GOOD` only for the clean copy, else
+  `SYNTHETIC-DEFECT`; duplicate carries defect `duplicate` + `copy_of` /
+  `good_sha256`). Encoder: `cv2.VideoWriter`, fourcc `mp4v`, 10 fps
+  (15 for wrong_fps), actual 480x480 recorded. Flags: `--out`, `--seed`
+  (default 42), `--list`, debug-only `--allow-outside-data-runtime` (temp
+  dirs always refused per SPEC). Inputs: `JADAL_INDEGO_ROOT` (default the
+  awing IndEgo dir). Missing sources: clear stderr message, exit 2, nothing
+  written; bad `--out`: exit 3, nothing written.
+- `tests/test_make_demo_clips.py` — 7 tests on tiny synthetic sources in temp
+  dirs (never the real clips): all 9 variants with defect codes/labels,
+  manifest sha match + sha-redacted determinism compare, byte-op sha
+  stability across runs vs pixel-closeness for re-encoded, duplicate
+  byte-identical to good, wrong_fps at ~15 fps, good-family decodes while
+  garbage/truncated fail, frozen closeness, dark/bright pixel direction,
+  5 fps resample, short-read error, `--out` guard (incl. /tmp-with-flag),
+  exit-2 path, `--list` (18 lines, subprocess with timeout). Adds ~0.9 s.
 - Labels are true by construction (we injected the defect) and MUST NOT be
   presented as human-labelled data (stated in script docstring + manifest).
 
@@ -34,35 +42,33 @@ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python scripts/make_demo_clips.py
 PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_make_demo_clips -v
 ```
 
-## REAL test output tails
+## REAL test output tails (current; older round sections below are history)
 
-New tests (2 tests, 0.356 s, OK):
 ```
-Ran 2 tests in 0.356s
+PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_make_demo_clips -v
+Ran 7 tests in 0.833s
+OK
+timeout 250 env PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 329 tests in 10.018s
 OK
 ```
 
-Full suite after the change:
-```
-Ran 306 tests in 15.598s
-OK
-```
+Real run on IndEgo sources (~4 s): 18 clips + manifest; all manifest sha256s
+recomputed OK; good/blurred/too_dark/overexposed/frozen/wrong_fps/duplicate
+decode, truncated/garbage fail (`moov atom not found`); rerun byte-identical
+(clips + manifest bytes); missing-sources path exits 2; `--out` outside
+data_runtime exits 3 (incl. under /tmp even with the override flag). Sizes
+e.g. `ecu_good.mp4` 2255914 B, `logistics_good.mp4` 2716271 B, garbage
+65536 B each.
 
-Real run on IndEgo sources (~7 s): 16 clips + manifest; all manifest sha256s
-recomputed OK; good/blurred/too_dark/overexposed/frozen/duplicate decode,
-truncated/garbage fail (`moov atom not found`); second run to a different
-`--out` byte-identical on all 16; missing-sources path exits 2. Sizes e.g.
-`ecu_good.mp4` 2255914 B, `logistics_good.mp4` 2716271 B, garbage 65536 B each.
-
-Determinism note: all 8 variants byte-identical across reruns on this
+Determinism note: byte-identical clips + manifest across reruns on this
 machine + OpenCV build (verified). Garbage/truncated/duplicate are pure byte
 ops (stable everywhere given same inputs + seed); re-encoded mp4s may differ
-across OpenCV builds — documented in the script.
+across OpenCV builds — documented in the script; tests therefore compare
+re-encoded variants by decoded pixels and manifests with hashes redacted.
 
 ## Gaps
 
-- No wrong-FPS variant (issue text mentions it; the worker spec's variant list
-  does not — implemented the worker spec list; easy to add as a 9th variant).
 - Windows are hand-picked from VIA annotations, not auto-detected for hands.
 - ECU window assumed hands-in-view from the step label; not verified by a detector.
 - No service/dashboard wiring; clips are standalone files for other workers.
@@ -139,3 +145,34 @@ OK
 
 Live manifest check: 18 files, no `created_utc`, good `actual_duration_s`
 20.0, wrong_fps 13.333, encoder 480x480 mp4v @ 10 fps.
+
+## Fix round 3 (review findings I1, M1-M3 — all in owned files)
+
+- I1 stale report counts: rewrote "What exists" (9 variants = 18 clips incl.
+  wrong_fps @ 15 fps, good = `SYNTHETIC-GOOD`, byte-stability scoped to
+  byte-ops), replaced the superseded top-level tails with current ones, and
+  dropped the done wrong-FPS gap. No false count remains.
+- M1 old tails: deleted the superseded "Ran 2 / Ran 306" block; only current
+  tails at top, per-round history kept in its own labeled section.
+- M2 /tmp escape via flag: temp dirs (`/tmp`, plus `$TMPDIR` when set) are
+  now refused with exit 3 even with `--allow-outside-data-runtime` (SPEC
+  "Never write results to /tmp"); flag documented debug-only. New
+  `test_tmp_refused_even_with_flag`.
+- M3 env override + exit-2 test: `INDEGO_ROOT` reads `JADAL_INDEGO_ROOT`
+  (default unchanged); error message prints the effective root. New
+  `test_missing_sources_exit_2` (subprocess, rc 2, "not found" in stderr,
+  nothing written). No finding disputed.
+
+REAL outputs (fix round 3):
+
+```
+PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_make_demo_clips
+Ran 7 tests in 0.833s
+OK
+timeout 250 env PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 329 tests in 10.018s
+OK
+```
+
+Real run: `wrote 18 clips + manifest.json to .../data_runtime/demo_clips`
+(~4.2 s, 19 files with manifest).

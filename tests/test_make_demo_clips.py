@@ -227,6 +227,31 @@ class TestMakeDemoClips(unittest.TestCase):
             self.assertEqual(proc.returncode, 3)
             self.assertFalse(os.path.exists(os.path.join(outside, "manifest.json")))
 
+    def test_tmp_refused_even_with_flag(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            outside = os.path.join(tmp, "elsewhere")
+            proc = subprocess.run(
+                [sys.executable, SCRIPT, "--out", outside, "--allow-outside-data-runtime"],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            self.assertEqual(proc.returncode, 3)
+            self.assertIn("/tmp", proc.stderr)
+            self.assertFalse(os.path.exists(outside))
+
+    def test_missing_sources_exit_2(self):
+        env = dict(os.environ, JADAL_INDEGO_ROOT="/nonexistent-indego-xyz")
+        proc = subprocess.run(
+            [sys.executable, SCRIPT],
+            capture_output=True,
+            text=True,
+            timeout=60,
+            env=env,
+        )
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("not found", proc.stderr)
+
     def test_list_flag(self):
         proc = subprocess.run(
             [sys.executable, SCRIPT, "--list"],
