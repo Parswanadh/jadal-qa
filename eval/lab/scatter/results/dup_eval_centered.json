@@ -1,0 +1,26 @@
+{
+ "variant": "per-window mean-centered 32-bin luma histogram, 1-D Wasserstein (brightness-invariant)",
+ "threshold": 5.907,
+ "train": {
+  "n": 64,
+  "p": 0.769,
+  "r": 1.0,
+  "f1": 0.87
+ },
+ "test": {
+  "n": 64,
+  "p": 0.633,
+  "r": 0.95,
+  "f1": 0.76
+ },
+ "kind_recall_test": {
+  "crop5": 1.0,
+  "speed11": 1.0,
+  "reencode": 1.0,
+  "bright": 0.75,
+  "offset1": 1.0,
+  "hard_negative_fp": 0.318,
+  "easy_negative_fp": 0.182
+ },
+ "note": "post-hoc variant computed from saved features, no re-decode; threshold protocol identical (even/odd split)"
+}

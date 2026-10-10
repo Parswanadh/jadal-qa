@@ -1,0 +1,11 @@
+{
+  "started_utc": "2026-10-10T11:47:25Z",
+  "git_sha": "e33cb7ee891f5c5fc762f3cf95520a8211f8e35d",
+  "git_branch": "feat/breakthrough-lab",
+  "python": "3.12.15",
+  "cv2": "5.0.0",
+  "numpy": "2.5.2",
+  "seed": 6,
+  "runtime_s": 194.4716293811798,
+  "note": "CPU-only. Deterministic given identical ffprobe/cv2 builds (ties in PE broken by position order; no RNG in features; bootstrap seed fixed)."
+}

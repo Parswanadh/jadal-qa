@@ -1,0 +1,31 @@
+{
+  "p_assumed_FR": 0.33,
+  "targets": [
+    {
+      "half_width": 0.05,
+      "n_good_windows_iid": 340,
+      "n_good_windows_clustered": 2973,
+      "extra_good_windows_vs_today": 2873,
+      "extra_clips_like_today": 202
+    },
+    {
+      "half_width": 0.03,
+      "n_good_windows_iid": 944,
+      "n_good_windows_clustered": 8257,
+      "extra_good_windows_vs_today": 8157,
+      "extra_clips_like_today": 571
+    },
+    {
+      "half_width": 0.02,
+      "n_good_windows_iid": 2124,
+      "n_good_windows_clustered": 18579,
+      "extra_good_windows_vs_today": 18479,
+      "extra_clips_like_today": 1294
+    }
+  ],
+  "zero_fail_cert": {
+    "n84_cp_ub": 0.03503503060494206,
+    "note": "zero-failure certification of FR<=5%@95% needs n>=59 good windows with 0 rejects; any observed reject forces larger n (see arithmetic grid)."
+  },
+  "deff_used": 8.74909552128777
+}

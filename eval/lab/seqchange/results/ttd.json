@@ -1,0 +1,896 @@
+{
+ "real_bad_ttd": [
+  {
+   "id": "g072",
+   "reason": "DUPLICATE",
+   "cusum_fire_s": 7.0,
+   "sprt_fire_s": 3.2,
+   "ebcs_fire_s": 4.6
+  },
+  {
+   "id": "g074",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g075",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g077",
+   "reason": "DUPLICATE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g078",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g079",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g080",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g082",
+   "reason": "UNDECODABLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g083",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g086",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g088",
+   "reason": "DUPLICATE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g089",
+   "reason": "DUPLICATE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g090",
+   "reason": "DUPLICATE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g000",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": 1.8,
+   "sprt_fire_s": 1.4,
+   "ebcs_fire_s": 1.6
+  },
+  {
+   "id": "g012",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": 6.4,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g036",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g045",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": 1.2,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g047",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": 6.6,
+   "sprt_fire_s": 6.8,
+   "ebcs_fire_s": 6.4
+  },
+  {
+   "id": "g051",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g052",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g057",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g061",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g142",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g143",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g149",
+   "reason": "DUPLICATE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g118",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g123",
+   "reason": "TOO_DARK",
+   "cusum_fire_s": 4.4,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": 9.6
+  },
+  {
+   "id": "g124",
+   "reason": "TOO_DARK",
+   "cusum_fire_s": 1.6,
+   "sprt_fire_s": 1.0,
+   "ebcs_fire_s": 1.4
+  },
+  {
+   "id": "g125",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g126",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": 1.6,
+   "sprt_fire_s": 1.0,
+   "ebcs_fire_s": 1.4
+  },
+  {
+   "id": "g127",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g129",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g130",
+   "reason": "TOO_DARK",
+   "cusum_fire_s": 2.8,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": 9.0
+  },
+  {
+   "id": "g131",
+   "reason": "TOO_DARK",
+   "cusum_fire_s": 1.4,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.4
+  },
+  {
+   "id": "g132",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g099",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g100",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g103",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g106",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g107",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": 1.8,
+   "sprt_fire_s": 1.0,
+   "ebcs_fire_s": 1.6
+  },
+  {
+   "id": "g108",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g109",
+   "reason": "TOO_DARK",
+   "cusum_fire_s": 2.6,
+   "sprt_fire_s": 1.6,
+   "ebcs_fire_s": 2.4
+  },
+  {
+   "id": "g110",
+   "reason": "TOO_DARK",
+   "cusum_fire_s": 2.0,
+   "sprt_fire_s": 1.2,
+   "ebcs_fire_s": 2.0
+  },
+  {
+   "id": "g111",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g112",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g113",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g093",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g094",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g095",
+   "reason": "NO_ACTIVE_WORK",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "g096",
+   "reason": "HANDS_NOT_VISIBLE",
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  }
+ ],
+ "synth_ttd": [
+  {
+   "id": "syn_g001_clean",
+   "degradation": "clean",
+   "label": 1,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g001_blur",
+   "degradation": "blur",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g001_darken",
+   "degradation": "darken",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.4,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g001_overexpose",
+   "degradation": "overexpose",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g001_frozen",
+   "degradation": "frozen",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g001_black",
+   "degradation": "black",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g001_shake",
+   "degradation": "shake",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g001_noise",
+   "degradation": "noise",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g001_lowbitrate",
+   "degradation": "lowbitrate",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g001_static",
+   "degradation": "static",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g048_clean",
+   "degradation": "clean",
+   "label": 1,
+   "n_frames": 49,
+   "cusum_fire_s": 9.6,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g048_blur",
+   "degradation": "blur",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 8.4,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g048_darken",
+   "degradation": "darken",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g048_overexpose",
+   "degradation": "overexpose",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 8.8,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g048_frozen",
+   "degradation": "frozen",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g048_black",
+   "degradation": "black",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g048_shake",
+   "degradation": "shake",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g048_noise",
+   "degradation": "noise",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g048_lowbitrate",
+   "degradation": "lowbitrate",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 9.6,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g048_static",
+   "degradation": "static",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g062_clean",
+   "degradation": "clean",
+   "label": 1,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g062_blur",
+   "degradation": "blur",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g062_darken",
+   "degradation": "darken",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.4,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g062_overexpose",
+   "degradation": "overexpose",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": 8.2
+  },
+  {
+   "id": "syn_g062_frozen",
+   "degradation": "frozen",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g062_black",
+   "degradation": "black",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g062_shake",
+   "degradation": "shake",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g062_noise",
+   "degradation": "noise",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g062_lowbitrate",
+   "degradation": "lowbitrate",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g062_static",
+   "degradation": "static",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g002_clean",
+   "degradation": "clean",
+   "label": 1,
+   "n_frames": 49,
+   "cusum_fire_s": 1.8,
+   "sprt_fire_s": 1.2,
+   "ebcs_fire_s": 1.6
+  },
+  {
+   "id": "syn_g002_blur",
+   "degradation": "blur",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.4,
+   "sprt_fire_s": 1.0,
+   "ebcs_fire_s": 1.4
+  },
+  {
+   "id": "syn_g002_darken",
+   "degradation": "darken",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g002_overexpose",
+   "degradation": "overexpose",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.6,
+   "sprt_fire_s": 1.0,
+   "ebcs_fire_s": 1.4
+  },
+  {
+   "id": "syn_g002_frozen",
+   "degradation": "frozen",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g002_black",
+   "degradation": "black",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g002_shake",
+   "degradation": "shake",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g002_noise",
+   "degradation": "noise",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 3.8,
+   "sprt_fire_s": 1.8,
+   "ebcs_fire_s": 3.4
+  },
+  {
+   "id": "syn_g002_lowbitrate",
+   "degradation": "lowbitrate",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.6,
+   "sprt_fire_s": 1.2,
+   "ebcs_fire_s": 1.6
+  },
+  {
+   "id": "syn_g002_static",
+   "degradation": "static",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g049_clean",
+   "degradation": "clean",
+   "label": 1,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g049_blur",
+   "degradation": "blur",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 8.8,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g049_darken",
+   "degradation": "darken",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.4,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g049_overexpose",
+   "degradation": "overexpose",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 9.0,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g049_frozen",
+   "degradation": "frozen",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g049_black",
+   "degradation": "black",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g049_shake",
+   "degradation": "shake",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g049_noise",
+   "degradation": "noise",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g049_lowbitrate",
+   "degradation": "lowbitrate",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g049_static",
+   "degradation": "static",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g063_clean",
+   "degradation": "clean",
+   "label": 1,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g063_blur",
+   "degradation": "blur",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g063_darken",
+   "degradation": "darken",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.4,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.4
+  },
+  {
+   "id": "syn_g063_overexpose",
+   "degradation": "overexpose",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 4.2,
+   "sprt_fire_s": 1.6,
+   "ebcs_fire_s": 3.8
+  },
+  {
+   "id": "syn_g063_frozen",
+   "degradation": "frozen",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g063_black",
+   "degradation": "black",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": 1.2,
+   "sprt_fire_s": 0.8,
+   "ebcs_fire_s": 1.2
+  },
+  {
+   "id": "syn_g063_shake",
+   "degradation": "shake",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g063_noise",
+   "degradation": "noise",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g063_lowbitrate",
+   "degradation": "lowbitrate",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  },
+  {
+   "id": "syn_g063_static",
+   "degradation": "static",
+   "label": 0,
+   "n_frames": 49,
+   "cusum_fire_s": null,
+   "sprt_fire_s": null,
+   "ebcs_fire_s": null
+  }
+ ]
+}

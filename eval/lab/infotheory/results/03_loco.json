@@ -1,0 +1,195 @@
+{
+  "cues": {
+    "p_mean_z": {
+      "family": "compressed",
+      "cols": [
+        "p_mean_z"
+      ],
+      "loco_auroc": 0.46859999999999996,
+      "clip_bootstrap_95": [
+        0.3453035155903837,
+        0.7077464788732394
+      ],
+      "n_boot": 2000
+    },
+    "i_mean_z": {
+      "family": "compressed",
+      "cols": [
+        "i_mean_z"
+      ],
+      "loco_auroc": 0.33319999999999994,
+      "clip_bootstrap_95": [
+        0.2858660110985003,
+        0.5933398685316822
+      ],
+      "n_boot": 2000
+    },
+    "p_byte_frac": {
+      "family": "compressed",
+      "cols": [
+        "p_byte_frac"
+      ],
+      "loco_auroc": 0.2694,
+      "clip_bootstrap_95": [
+        0.2274656164339899,
+        0.453517038406392
+      ],
+      "n_boot": 2000
+    },
+    "bytes_pf_z": {
+      "family": "compressed",
+      "cols": [
+        "bytes_pf_z"
+      ],
+      "loco_auroc": 0.262,
+      "clip_bootstrap_95": [
+        0.17961101683853287,
+        0.49154228555812757
+      ],
+      "n_boot": 2000
+    },
+    "pe_m3": {
+      "family": "pe",
+      "cols": [
+        "pe_m3"
+      ],
+      "loco_auroc": 0.5622,
+      "clip_bootstrap_95": [
+        0.5095677885643988,
+        0.682943143812709
+      ],
+      "n_boot": 2000
+    },
+    "pe_m4": {
+      "family": "pe",
+      "cols": [
+        "pe_m4"
+      ],
+      "loco_auroc": 0.6178,
+      "clip_bootstrap_95": [
+        0.5545653533458411,
+        0.7231602421153234
+      ],
+      "n_boot": 2000
+    },
+    "mad_mean": {
+      "family": "pixel",
+      "cols": [
+        "mad_mean"
+      ],
+      "loco_auroc": 0.573,
+      "clip_bootstrap_95": [
+        0.4371698113207547,
+        0.7386135637301169
+      ],
+      "n_boot": 2000
+    },
+    "sharp_mean": {
+      "family": "pixel",
+      "cols": [
+        "sharp_mean"
+      ],
+      "loco_auroc": 0.5452,
+      "clip_bootstrap_95": [
+        0.38535417872997496,
+        0.7348549789774982
+      ],
+      "n_boot": 2000
+    },
+    "compressed_all": {
+      "family": "compressed",
+      "cols": [
+        "p_mean_z",
+        "i_mean_z",
+        "p_byte_frac",
+        "bytes_pf_z"
+      ],
+      "loco_auroc": 0.38460000000000005,
+      "clip_bootstrap_95": [
+        0.2892494242947611,
+        0.6325368968336486
+      ],
+      "n_boot": 2000
+    },
+    "pixel_all": {
+      "family": "pixel",
+      "cols": [
+        "mad_mean",
+        "sharp_mean"
+      ],
+      "loco_auroc": 0.6678000000000001,
+      "clip_bootstrap_95": [
+        0.5017818959372773,
+        0.784186728583649
+      ],
+      "n_boot": 2000
+    },
+    "pe_all": {
+      "family": "pe",
+      "cols": [
+        "pe_m3",
+        "pe_m4"
+      ],
+      "loco_auroc": 0.6195999999999999,
+      "clip_bootstrap_95": [
+        0.5605095541401275,
+        0.7234978951396862
+      ],
+      "n_boot": 2000
+    },
+    "compressed+pixel": {
+      "family": "combined",
+      "cols": [
+        "p_mean_z",
+        "i_mean_z",
+        "p_byte_frac",
+        "bytes_pf_z",
+        "mad_mean",
+        "sharp_mean"
+      ],
+      "loco_auroc": 0.7273999999999999,
+      "clip_bootstrap_95": [
+        0.6029288850594854,
+        0.8199183302341292
+      ],
+      "n_boot": 2000
+    },
+    "all": {
+      "family": "combined",
+      "cols": [
+        "p_mean_z",
+        "i_mean_z",
+        "p_byte_frac",
+        "bytes_pf_z",
+        "mad_mean",
+        "sharp_mean",
+        "pe_m3",
+        "pe_m4"
+      ],
+      "loco_auroc": 0.7605999999999999,
+      "clip_bootstrap_95": [
+        0.6558419011544012,
+        0.8286666666666667
+      ],
+      "n_boot": 2000
+    }
+  },
+  "gaps": {
+    "all_minus_pixel_all": {
+      "mean": 0.09360233013102619,
+      "ci95": [
+        -0.017589356184462668,
+        0.21006944444444453
+      ]
+    },
+    "compressed_all_minus_pixel_all": {
+      "mean": -0.2311028158271214,
+      "ci95": [
+        -0.4451542806110321,
+        0.0712250736186783
+      ]
+    },
+    "n_boot": 2000
+  },
+  "model": "L2-logistic(C=1), LOCO cross-fitted, clip-bootstrap B=2000, seed=6"
+}

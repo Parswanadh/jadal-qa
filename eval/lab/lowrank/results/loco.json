@@ -1,0 +1,56 @@
+{
+ "pooled_loco_auroc": 0.31200000000000006,
+ "per_clip_auroc": {
+  "desk": 0.4855769230769231,
+  "ecu_full": 0.24651162790697675,
+  "ecu_late": 1.0,
+  "logistics4": 0.6666666666666666,
+  "organise": 0.4222222222222222,
+  "pallet": 0.46969696969696967,
+  "pallet2": 0.0
+ },
+ "ci95": [
+  0.23416946203687827,
+  0.48741553071836785
+ ],
+ "bootstrap": "clip-bootstrap over 7 clips, 1000 reps, 1000 valid",
+ "youden_cut": Infinity,
+ "per_reason": {
+  "": {
+   "n": 100,
+   "flagged_bad_frac": null,
+   "flagged_good_frac": 0.0
+  },
+  "DUPLICATE": {
+   "n": 6,
+   "flagged_bad_frac": 1.0,
+   "flagged_good_frac": null
+  },
+  "HANDS_NOT_VISIBLE": {
+   "n": 14,
+   "flagged_bad_frac": 1.0,
+   "flagged_good_frac": null
+  },
+  "NO_ACTIVE_WORK": {
+   "n": 23,
+   "flagged_bad_frac": 1.0,
+   "flagged_good_frac": null
+  },
+  "TOO_DARK": {
+   "n": 6,
+   "flagged_bad_frac": 1.0,
+   "flagged_good_frac": null
+  },
+  "UNDECODABLE": {
+   "n": 1,
+   "flagged_bad_frac": 1.0,
+   "flagged_good_frac": null
+  }
+ },
+ "features": [
+  "stable_rank",
+  "sparse_frac_k2",
+  "mp_rank"
+ ],
+ "model": "StandardScaler+LogisticRegression(C=1.0), train clips -> test clip"
+}

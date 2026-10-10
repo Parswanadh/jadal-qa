@@ -1,0 +1,49 @@
+{
+ "gold_dup": {
+  "n_dupdup_pairs": 15,
+  "n_pairs": 11175,
+  "median_dist_dupdup": 3.4625844459171278,
+  "median_dist_rest": 2.8036684073259597,
+  "auc_dupdup_vs_rest": 0.17729390681003587
+ },
+ "constructed_auc_dup_vs_allneg": 0.8448863636363637,
+ "constructed_by_kind": {
+  "bright": {
+   "n": 8,
+   "auc_vs_easyneg": 1.0,
+   "median_dist": 0.00036659635876179486
+  },
+  "crop5": {
+   "n": 8,
+   "auc_vs_easyneg": 1.0,
+   "median_dist": 0.001898045484340194
+  },
+  "easy_negative": {
+   "n": 44,
+   "auc_vs_easyneg": 0.5,
+   "median_dist": 2.353658877702234
+  },
+  "hard_negative": {
+   "n": 44,
+   "auc_vs_easyneg": 0.556301652892562,
+   "median_dist": 2.208211282703242
+  },
+  "offset1": {
+   "n": 8,
+   "auc_vs_easyneg": 0.5113636363636364,
+   "median_dist": 2.3073354769434844
+  },
+  "reencode": {
+   "n": 8,
+   "auc_vs_easyneg": 1.0,
+   "median_dist": 0.001028470775810364
+  },
+  "speed11": {
+   "n": 8,
+   "auc_vs_easyneg": 0.7784090909090908,
+   "median_dist": 1.8635114758633353
+  }
+ },
+ "K_SUB": 5,
+ "metric": "sum(sin^2 principal angles) between top-K right singular subspaces (lower=more similar)"
+}

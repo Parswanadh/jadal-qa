@@ -1,0 +1,12 @@
+{
+ "ms_decode_mean": 267.2694549933173,
+ "ms_svd_mean": 17.025672646583796,
+ "ms_total_mean": 284.2951276399011,
+ "n_windows": 150,
+ "n_frames": 50,
+ "res": [
+  64,
+  64
+ ],
+ "decode_failures": 0
+}

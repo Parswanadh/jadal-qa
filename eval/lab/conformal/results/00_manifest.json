@@ -1,0 +1,9 @@
+{
+  "started_utc": "2026-10-10T11:35:36Z",
+  "git_sha": "e33cb7ee891f5c5fc762f3cf95520a8211f8e35d",
+  "git_branch": "feat/breakthrough-lab",
+  "git_dirty": true,
+  "python": "3.12.15",
+  "seed": 0,
+  "note": "CPU-only, numpy/sklearn. Scores are LOCO cross-fitted baseline, NOT a product model."
+}
