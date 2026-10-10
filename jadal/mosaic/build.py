@@ -43,16 +43,16 @@ SPEC_GRIDS = {4: (2, 2), 6: (2, 3), 9: (3, 3), 12: (3, 4), 16: (4, 4)}
 
 
 def grid_for_n(n: int):
-    """Spec grid for the canonical N, else a near-square fallback (rows<=cols)."""
+    """Spec grid for the canonical N, else the exact factorisation closest to square."""
     if n in SPEC_GRIDS:
         return SPEC_GRIDS[n]
     if n < 1:
         raise ValueError("n must be >= 1")
-    cols = int(np.ceil(np.sqrt(n)))
-    rows = int(np.ceil(n / cols))
-    if rows > cols:
-        rows, cols = cols, rows
-    return rows, cols
+    best = (1, n)
+    for r in range(1, int(np.sqrt(n)) + 1):
+        if n % r == 0:
+            best = (r, n // r)
+    return best
 
 
 def tile_times(n: int, window_s: float = WINDOW_S):
