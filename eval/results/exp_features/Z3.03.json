@@ -1,0 +1,232 @@
+{
+ "experiment": "Z3.03",
+ "n": 210,
+ "n_indego": 150,
+ "n_good_indego": 100,
+ "n_ood": 60,
+ "n_good_ood": 51,
+ "label_source": "human (IndEgo manifest_gold n=150 + Egocentric-10K ood_labels n=60; single labeller; OOD n_bad=9 exploratory)",
+ "protocol": "signed AUROC per feature, label 1 = usable/good; IndEgo CI = clip-bootstrap (7 clips), OOD CI = window-bootstrap (optimistic); both decoded to ~10 fps effective for decode-based candidates",
+ "device": "CPU (numpy/ffmpeg/cv2)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_features/extract.py && python3 eval/exp_features/run_eval.py",
+ "cost": {
+  "candidates": 20,
+  "indego_windows": 150,
+  "ood_windows": 60
+ },
+ "classification_rule": "chance iff BOTH |AUROC-0.5| < 0.05; else stable if same side, flip if opposite (E5.03 rule)",
+ "stable8": [
+  "radial_slope",
+  "hf_ratio",
+  "dct_energy",
+  "luma_p05",
+  "global_shift",
+  "illum_r",
+  "illum_b",
+  "zncc_self"
+ ],
+ "transferable_subset": [
+  "ct_fsize_std",
+  "mo_hand_motion_excess",
+  "inv_dct_hf_lf",
+  "inv_clip_frac",
+  "inv_hist_entropy",
+  "inv_laplacian_var"
+ ],
+ "selection_rule": "candidate class==stable AND min(|AUROC-0.5|) >= 0.03 in both domains",
+ "combined": {
+  "stable8_only": {
+   "n_features": 8,
+   "indego_loco_auroc": 0.5724,
+   "indego_loco_ci95": [
+    0.4763,
+    0.6885
+   ],
+   "ood_zeroshot_auroc": 0.5272,
+   "ood_zeroshot_ci95": [
+    0.3099,
+    0.7277
+   ],
+   "ood_fewshot_groupcv_auroc": 0.7473,
+   "ood_fewshot_groupcv_ci95": [
+    0.5894,
+    0.8822
+   ],
+   "fold_min_n_bad_train": 7,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "luma_p05",
+    "global_shift",
+    "illum_r",
+    "illum_b",
+    "zncc_self"
+   ]
+  },
+  "transferable_only": {
+   "n_features": 6,
+   "indego_loco_auroc": 0.6078,
+   "indego_loco_ci95": [
+    0.4823,
+    0.6645
+   ],
+   "ood_zeroshot_auroc": 0.7102,
+   "ood_zeroshot_ci95": [
+    0.4545,
+    0.915
+   ],
+   "ood_fewshot_groupcv_auroc": 0.6471,
+   "ood_fewshot_groupcv_ci95": [
+    0.4161,
+    0.8464
+   ],
+   "fold_min_n_bad_train": 7,
+   "features": [
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_dct_hf_lf",
+    "inv_clip_frac",
+    "inv_hist_entropy",
+    "inv_laplacian_var"
+   ]
+  },
+  "stable8+transferable": {
+   "n_features": 14,
+   "indego_loco_auroc": 0.722,
+   "indego_loco_ci95": [
+    0.5954,
+    0.8078
+   ],
+   "ood_zeroshot_auroc": 0.4967,
+   "ood_zeroshot_ci95": [
+    0.2658,
+    0.7216
+   ],
+   "ood_fewshot_groupcv_auroc": 0.7756,
+   "ood_fewshot_groupcv_ci95": [
+    0.5659,
+    0.9375
+   ],
+   "fold_min_n_bad_train": 7,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "luma_p05",
+    "global_shift",
+    "illum_r",
+    "illum_b",
+    "zncc_self",
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_dct_hf_lf",
+    "inv_clip_frac",
+    "inv_hist_entropy",
+    "inv_laplacian_var"
+   ]
+  },
+  "in_domain26": {
+   "n_features": 26,
+   "indego_loco_auroc": 0.8082,
+   "indego_loco_ci95": [
+    0.6864,
+    0.8891
+   ],
+   "ood_zeroshot_auroc": 0.5033,
+   "ood_zeroshot_ci95": [
+    0.2945,
+    0.7105
+   ],
+   "ood_fewshot_groupcv_auroc": 0.6776,
+   "ood_fewshot_groupcv_ci95": [
+    0.4531,
+    0.8704
+   ],
+   "fold_min_n_bad_train": 7,
+   "features": [
+    "temp_b0",
+    "temp_b1",
+    "temp_b2",
+    "temp_b3",
+    "frozen_frac",
+    "flicker_idx",
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "pca_resid",
+    "pca_top1_share",
+    "luma_mean",
+    "luma_p05",
+    "luma_p50",
+    "luma_p95",
+    "dark_frac",
+    "bright_frac",
+    "motion_energy",
+    "global_shift",
+    "skin_frac",
+    "illum_r",
+    "illum_g",
+    "illum_b",
+    "rppg_pulse",
+    "dup_hash_mean",
+    "zncc_self"
+   ]
+  },
+  "zscore_transferable_only": {
+   "n_features": 6,
+   "features": [
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_dct_hf_lf",
+    "inv_clip_frac",
+    "inv_hist_entropy",
+    "inv_laplacian_var"
+   ],
+   "indego_auroc": 0.6842,
+   "indego_ci95": [
+    0.5065,
+    0.7805
+   ],
+   "ood_auroc": 0.8519,
+   "ood_ci95": [
+    0.732,
+    0.9495
+   ],
+   "method": "per-domain z-score, sign=IndEgo, equal-weight mean (unsupervised but for the per-feature sign)",
+   "note": "sign fitted on full IndEgo (mild optimism); per-domain z-score removes cross-domain scale shift"
+  },
+  "zscore_stable8+transferable": {
+   "n_features": 14,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "luma_p05",
+    "global_shift",
+    "illum_r",
+    "illum_b",
+    "zncc_self",
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_dct_hf_lf",
+    "inv_clip_frac",
+    "inv_hist_entropy",
+    "inv_laplacian_var"
+   ],
+   "indego_auroc": 0.7364,
+   "indego_ci95": [
+    0.5512,
+    0.8602
+   ],
+   "ood_auroc": 0.841,
+   "ood_ci95": [
+    0.7118,
+    0.942
+   ],
+   "method": "per-domain z-score, sign=IndEgo, equal-weight mean (unsupervised but for the per-feature sign)",
+   "note": "sign fitted on full IndEgo (mild optimism); per-domain z-score removes cross-domain scale shift"
+  }
+ }
+}
