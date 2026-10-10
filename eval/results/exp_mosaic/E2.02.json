@@ -1,0 +1,348 @@
+{
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold manifest, one labeller)",
+ "protocol": "in-domain LOCO over 7 IndEgo clips, logistic C=0.01 on L2-normalised features, clip-bootstrap CI B=1000 seed0; OOD = logistic frozen on all IndEgo, window bootstrap (optimistic, 1 window/factory), n_bad=9 exploratory",
+ "device": "A40",
+ "command": "bash tools/pod/gpu_run.sh python3 eval/exp_mosaic/run_variants.py",
+ "git_sha": "e8942b3",
+ "ood": {
+  "n": 60,
+  "n_good": 51,
+  "n_bad": 9,
+  "label_source": "human (Egocentric-10K, one labeller)",
+  "note": "OOD n_bad=9 -> exploratory, CI optimistic"
+ },
+ "cost": {
+  "decode_ms": 183312.5,
+  "build_ms": 341963.7,
+  "embed_ms": 1135857.4,
+  "frames_decoded": 33000,
+  "n_windows": 210
+ },
+ "vram_peak_mb": 3967.0,
+ "sample_rule": "t_i=(i+0.5)*10/N; src_frame_index=round(t_i*native_fps)",
+ "tile_px": 224,
+ "window_s": 10.0,
+ "cached_eg2_reference": {
+  "auroc": 0.848,
+  "ci95": [
+   0.7344,
+   0.9087
+  ],
+  "n": 150,
+  "note": "cached 0.5s-spacing EG2 window mean, 2fps recipe"
+ },
+ "experiment": "E2.02",
+ "variant": "mean-of-frames control",
+ "results": {
+  "N4": {
+   "tag": "meanframes_N4",
+   "indego": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "auroc": 0.8224,
+    "ci95": [
+     0.6979,
+     0.884
+    ],
+    "bal_acc": 0.755
+   },
+   "ood": {
+    "n": 60,
+    "n_good": 51,
+    "n_bad": 9,
+    "auroc": 0.4205,
+    "ci95": [
+     0.2191,
+     0.621
+    ]
+   },
+   "n_frames": 4,
+   "fps_used": 0.4,
+   "embed_passes": 4,
+   "frames_decoded": 4
+  },
+  "N6": {
+   "tag": "meanframes_N6",
+   "indego": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "auroc": 0.8242,
+    "ci95": [
+     0.6933,
+     0.8998
+    ],
+    "bal_acc": 0.755
+   },
+   "ood": {
+    "n": 60,
+    "n_good": 51,
+    "n_bad": 9,
+    "auroc": 0.5708,
+    "ci95": [
+     0.3303,
+     0.7891
+    ]
+   },
+   "n_frames": 6,
+   "fps_used": 0.6,
+   "embed_passes": 6,
+   "frames_decoded": 6
+  },
+  "N9": {
+   "tag": "meanframes_N9",
+   "indego": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "auroc": 0.8518,
+    "ci95": [
+     0.7516,
+     0.9076
+    ],
+    "bal_acc": 0.78
+   },
+   "ood": {
+    "n": 60,
+    "n_good": 51,
+    "n_bad": 9,
+    "auroc": 0.6275,
+    "ci95": [
+     0.3827,
+     0.854
+    ]
+   },
+   "n_frames": 9,
+   "fps_used": 0.9,
+   "embed_passes": 9,
+   "frames_decoded": 9
+  },
+  "N12": {
+   "tag": "meanframes_N12",
+   "indego": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "auroc": 0.8526,
+    "ci95": [
+     0.7562,
+     0.9071
+    ],
+    "bal_acc": 0.785
+   },
+   "ood": {
+    "n": 60,
+    "n_good": 51,
+    "n_bad": 9,
+    "auroc": 0.6231,
+    "ci95": [
+     0.358,
+     0.8475
+    ]
+   },
+   "n_frames": 12,
+   "fps_used": 1.2,
+   "embed_passes": 12,
+   "frames_decoded": 12
+  },
+  "N16": {
+   "tag": "meanframes_N16",
+   "indego": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "auroc": 0.8604,
+    "ci95": [
+     0.7558,
+     0.9229
+    ],
+    "bal_acc": 0.79
+   },
+   "ood": {
+    "n": 60,
+    "n_good": 51,
+    "n_bad": 9,
+    "auroc": 0.5795,
+    "ci95": [
+     0.3509,
+     0.8056
+    ]
+   },
+   "n_frames": 16,
+   "fps_used": 1.6,
+   "embed_passes": 16,
+   "frames_decoded": 16
+  },
+  "N10": {
+   "tag": "meanframes_N10",
+   "indego": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "auroc": 0.8296,
+    "ci95": [
+     0.7077,
+     0.897
+    ],
+    "bal_acc": 0.75
+   },
+   "ood": {
+    "n": 60,
+    "n_good": 51,
+    "n_bad": 9,
+    "auroc": 0.5621,
+    "ci95": [
+     0.3304,
+     0.8056
+    ]
+   },
+   "n_frames": 10,
+   "fps_used": 1.0,
+   "embed_passes": 10,
+   "frames_decoded": 10
+  },
+  "N20": {
+   "tag": "meanframes_N20",
+   "indego": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "auroc": 0.8508,
+    "ci95": [
+     0.7459,
+     0.9091
+    ],
+    "bal_acc": 0.765
+   },
+   "ood": {
+    "n": 60,
+    "n_good": 51,
+    "n_bad": 9,
+    "auroc": 0.5251,
+    "ci95": [
+     0.2945,
+     0.7531
+    ]
+   },
+   "n_frames": 20,
+   "fps_used": 2.0,
+   "embed_passes": 20,
+   "frames_decoded": 20
+  },
+  "N30": {
+   "tag": "meanframes_N30",
+   "indego": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "auroc": 0.8434,
+    "ci95": [
+     0.7378,
+     0.9043
+    ],
+    "bal_acc": 0.76
+   },
+   "ood": {
+    "n": 60,
+    "n_good": 51,
+    "n_bad": 9,
+    "auroc": 0.5534,
+    "ci95": [
+     0.3152,
+     0.7844
+    ]
+   },
+   "n_frames": 30,
+   "fps_used": 3.0,
+   "embed_passes": 30,
+   "frames_decoded": 30
+  },
+  "N50": {
+   "tag": "meanframes_N50",
+   "indego": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "auroc": 0.8468,
+    "ci95": [
+     0.7421,
+     0.9072
+    ],
+    "bal_acc": 0.78
+   },
+   "ood": {
+    "n": 60,
+    "n_good": 51,
+    "n_bad": 9,
+    "auroc": 0.61,
+    "ci95": [
+     0.3563,
+     0.841
+    ]
+   },
+   "n_frames": 50,
+   "fps_used": 5.0,
+   "embed_passes": 50,
+   "frames_decoded": 50
+  },
+  "N100": {
+   "tag": "meanframes_N100",
+   "indego": {
+    "n": 150,
+    "n_good": 100,
+    "n_bad": 50,
+    "auroc": 0.847,
+    "ci95": [
+     0.7421,
+     0.9035
+    ],
+    "bal_acc": 0.765
+   },
+   "ood": {
+    "n": 60,
+    "n_good": 51,
+    "n_bad": 9,
+    "auroc": 0.573,
+    "ci95": [
+     0.35,
+     0.7899
+    ]
+   },
+   "n_frames": 100,
+   "fps_used": 10.0,
+   "embed_passes": 100,
+   "frames_decoded": 100
+  }
+ },
+ "ci95": [
+  0.7516,
+  0.9076
+ ],
+ "headline": {
+  "indego": {
+   "n": 150,
+   "n_good": 100,
+   "n_bad": 50,
+   "auroc": 0.8518,
+   "ci95": [
+    0.7516,
+    0.9076
+   ],
+   "bal_acc": 0.78
+  },
+  "ood": {
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.6275,
+   "ci95": [
+    0.3827,
+    0.854
+   ]
+  }
+ }
+}
