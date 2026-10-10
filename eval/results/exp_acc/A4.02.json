@@ -1,0 +1,170 @@
+{
+ "deterministic_rule": {
+  "holdout108": {
+   "acc": 0.9310344827586207,
+   "ba": 0.96,
+   "coverage": 0.26851851851851855,
+   "form": {
+    "accept_top_k": 23,
+    "n": 108,
+    "reject_bottom_k": 6,
+    "review_middle": 79,
+    "type": "top_bottom_k"
+   },
+   "n_decided": 29,
+   "param": [
+    0.21,
+    0.06
+   ],
+   "rule": "asym",
+   "scorer": "adapted"
+  },
+  "in_domain": {
+   "acc": 0.9444444444444444,
+   "ba": 0.95,
+   "coverage": 0.12,
+   "form": {
+    "n": 150,
+    "param": 0.075,
+    "type": "within_group_quantile"
+   },
+   "n_decided": 18,
+   "param": 0.075,
+   "rule": "within_group_quantile",
+   "scorer": "frozen"
+  },
+  "ood160": {
+   "acc": 0.9166666666666666,
+   "ba": 0.9574468085106382,
+   "coverage": 0.3,
+   "form": {
+    "accept_top_k": 43,
+    "n": 160,
+    "reject_bottom_k": 5,
+    "review_middle": 112,
+    "type": "top_bottom_k"
+   },
+   "n_decided": 48,
+   "param": [
+    0.27,
+    0.03
+   ],
+   "rule": "asym",
+   "scorer": "adapted"
+  }
+ },
+ "device": "CPU (numpy; cached scores only, no GPU)",
+ "experiment": "A4.02",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "per_factory": {
+  "holdout108": {
+   "adapted": {
+    "global_at_matched_coverage": null,
+    "global_max_cov_ba95": {
+     "acc": 1.0,
+     "ba": 1.0,
+     "coverage": 0.037037037037037035,
+     "fn": 0,
+     "fp": 0,
+     "n_bad_dec": 2,
+     "n_decided": 4,
+     "n_good_dec": 2,
+     "param": 0.02,
+     "rule": "quantile",
+     "tn": 2,
+     "tp": 2
+    },
+    "within_factory_max_cov_ba95": null
+   },
+   "frozen": {
+    "global_at_matched_coverage": null,
+    "global_max_cov_ba95": null,
+    "within_factory_max_cov_ba95": null
+   }
+  },
+  "in_domain": {
+   "adapted": {
+    "global_at_matched_coverage": null,
+    "global_max_cov_ba95": {
+     "acc": 1.0,
+     "ba": 1.0,
+     "coverage": 0.013333333333333334,
+     "fn": 0,
+     "fp": 0,
+     "n_bad_dec": 1,
+     "n_decided": 2,
+     "n_good_dec": 1,
+     "param": 0.01,
+     "rule": "quantile",
+     "tn": 1,
+     "tp": 1
+    },
+    "within_factory_max_cov_ba95": null
+   },
+   "frozen": {
+    "global_at_matched_coverage": {
+     "acc": 0.8333333333333334,
+     "ba": 0.8375,
+     "coverage": 0.12,
+     "fn": 2,
+     "fp": 1,
+     "n_bad_dec": 8,
+     "n_decided": 18,
+     "n_good_dec": 10,
+     "param": 0.06,
+     "rule": "quantile",
+     "tn": 7,
+     "tp": 8
+    },
+    "global_max_cov_ba95": {
+     "acc": 1.0,
+     "ba": 1.0,
+     "coverage": 0.04,
+     "fn": 0,
+     "fp": 0,
+     "n_bad_dec": 3,
+     "n_decided": 6,
+     "n_good_dec": 3,
+     "param": 0.02,
+     "rule": "quantile",
+     "tn": 3,
+     "tp": 3
+    },
+    "within_factory_max_cov_ba95": {
+     "acc": 0.9444444444444444,
+     "ba": 0.95,
+     "coverage": 0.12,
+     "fn": 0,
+     "fp": 1,
+     "n_bad_dec": 10,
+     "n_decided": 18,
+     "n_good_dec": 8,
+     "param": 0.075,
+     "rule": "within_group_quantile",
+     "tn": 9,
+     "tp": 8
+    }
+   }
+  },
+  "ood160": {
+   "adapted": {
+    "global_at_matched_coverage": null,
+    "global_max_cov_ba95": null,
+    "within_factory_max_cov_ba95": null
+   },
+   "frozen": {
+    "global_at_matched_coverage": null,
+    "global_max_cov_ba95": null,
+    "within_factory_max_cov_ba95": null
+   }
+  }
+ },
+ "receipt": {
+  "byte_identical": true,
+  "receipt_id": "a65b070135e5596c",
+  "receipt_sha256": "a65b070135e5596c4fc240d80f1afcd2a270c23147bf8ca24ce93415a1874ead",
+  "recomputed_hash": "a65b070135e5596c4fc240d80f1afcd2a270c23147bf8ca24ce93415a1874ead",
+  "verify_match": true
+ },
+ "seed": 7
+}
