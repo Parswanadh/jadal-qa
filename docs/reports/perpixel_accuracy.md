@@ -183,8 +183,8 @@ Retrain with/without flagged evaluated on HUMAN windows only.
 
 ## M3 — frozen scorer + compare (`eval/perpixel/freeze_v2.py`)
 
-`configs/perpixel_v1.json` (sha256 `27b350ac…`, full hash in
-`configs/perpixel_v1.json.sha256`) + `configs/perpixel_conv.pt`.
+`configs/perpixel_v1.json` (sha256 `f2baaf99…`, full hash in
+`configs/perpixel_v1.json.sha256`) + `configs/perpixel_conv.json`.
 PRE-REGISTERED for one later scoring on a new human-labelled Egocentric-10K
 sample; do NOT tune after freezing.
 Scorer (`jadal/perpixel/scorer.py`): quality tripwires {lowent(hist_ent<6.486),
@@ -284,5 +284,41 @@ Real command outputs (abridged; full logs alongside the JSONs):
   volatile envelope — superseded, reason recorded here).
 - M4: scorer loads the net once (module cache), no per-call global torch
   mutation.
-- Full suite: `PYTHONNOUSERSITE=1 timeout 250 .../python -m unittest discover
-  -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'` → (see below).
+- Full suite (round 1): `PYTHONNOUSERSITE=1 timeout 250 .../python -m unittest
+  discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'` →
+  `Ran 616 tests in 39.176s` / `OK (skipped=8)`.
+
+## Fix round 2 (review `reviews/pr72-review.md`, round-2 findings)
+
+- I1 config-ignored-for-net: FIXED. `_load_net(cfg)` resolves weights from
+  the passed config (absolute or scorer-relative path), verifies that
+  config's sha BEFORE use; cache key is `(path, sha256)` (also fixes M4
+  staleness). Regression test `test_config_path_selects_net`: tampered copy
+  raises `ValueError` (old code silently scored with the default net), clean
+  alt-path copy scores with its own threshold.
+- I2 `dup_hash_mean` CPU/GPU mismatch: NOT OURS TO FIX (`jadal/gpu` is
+  read-only; column rename referred to the GPU worker). Owned-side fix:
+  contract documented in `jadal/perpixel/features.py` docstring (CPU hash vs
+  GPU parity-proxy); frozen digest/scorer use the CPU row only and claim no
+  parity. No live mis-score (GPU path unclaimed, tests skip without CUDA).
+- I3 duplicate scope: DECIDED. Loop-tripwire promoted into
+  `reasons["duplicate"].hit` (was hardcoded `False`); frozen scope is now
+  quality + activity + single-window duplicate, cross-window NN offline —
+  recorded in `perpixel_v1.json:dup` (`in_scorer: loop_tripwire`) and tested
+  (`duplicate.hit == loop_tripwire.hit`, `via` field).
+- M1 gpu docstring "27": NOT OURS (`jadal/gpu/features.py:217`, read-only) —
+  referred to GPU worker; probe agrees it should read 26.
+- M2: `freeze_v2.py` loads `gold.npz` with `allow_pickle=False` (verified).
+- M3: `TestScorerContract` paths anchored at repo root (`ROOT`); suite
+  passes from any cwd (verified below by running discover from `/`).
+- M4: cache key `(path, sha)`; hash mismatch clears cache and refuses.
+- M5: dead `idx` line removed; constructed-pair signature drops logged with
+  counts (`dropped_signatures`, 0 drops today).
+- Re-freeze: canonical hash now `f2baaf99…` (payload: +`loop_tripwire`,
+  +`dup.in_scorer`, JSON weights). SPEC item 5 still unmet-by-construction:
+  no human Ego10K sample exists; protocol + placeholder stand, report says so.
+- Full suite (round 2): `Ran 617 tests in 38.577s` / `OK (skipped=8)`.
+  M3 check: `test_perpixel` from `/tmp` (repo root on PYTHONPATH only):
+  `Ran 17 tests in 3.990s` / `OK` — config/clip paths cwd-independent.
+  (Full discover from `/` fails on `No module named 'jadal'` — pre-existing
+  harness path setup, unrelated; the specified command runs from worktree.)

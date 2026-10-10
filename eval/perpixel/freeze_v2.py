@@ -47,7 +47,7 @@ def main():
     theory = json.load(open(os.path.join(RES, "theory.json")))
     phys = json.load(open(os.path.join(RES, "physics.json")))
     audit = json.load(open(os.path.join(RES, "audit.json")))
-    z = np.load(os.path.join(RES, "gold.npz"), allow_pickle=True)
+    z = np.load(os.path.join(RES, "gold.npz"), allow_pickle=False)
     names = [str(n) for n in z["names"]]
     qrules = []
     for n in STAGE:
@@ -93,8 +93,11 @@ def main():
                      "gates capture failures; activity stays a score.")},
         "dup": {"threshold": float(
             m2["duplicates"]["constructed"]["threshold"]),
-            "note": "constructed-pairs threshold; over-flags real data "
-                    "(human precision 0.048); corpus check offline"},
+            "in_scorer": "loop_tripwire (single-window duplicate evidence)",
+            "note": "frozen scope = quality + activity + single-window "
+                    "duplicate; cross-window corpus-NN stays offline (M2); "
+                    "constructed threshold over-flags real data (human "
+                    "precision 0.048)"},
         "loop_tripwire": {
             "dhash_max": 4, "still_min": 0.5,
             "note": ("I2: single-window loop evidence in the frozen scorer; "

@@ -44,7 +44,7 @@ _Q = 4
 _QI = 10 ** _Q
 _MISSING = -99999999
 
-_NET = None  # cached (weights path, net, mu, sd, T)
+_NET = None  # cached ((weights_path, sha256), net, mu, sd, T)
 
 
 def _load_config(path=CONFIG):
@@ -52,18 +52,25 @@ def _load_config(path=CONFIG):
         return json.load(f)
 
 
-def _load_net():
-    """Load + hash-verify frozen conv weights once. No torch pickle."""
+def _load_net(cfg):
+    """Load + hash-verify frozen conv weights once (I1: from cfg, not default).
+
+    Cache key is (weights path, sha256) — a changed file at the same path
+    is reloaded, never served stale (M4).
+    """
     global _NET
-    if _NET is not None and _NET[0] == CONV:
-        return _NET[1:]
-    cfg = _load_config()
+    rel = cfg["activity"]["weights"]
+    wpath = rel if os.path.isabs(rel) else os.path.normpath(os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "..", rel))
     want = cfg["activity"]["weights_sha256"]
-    blob = open(CONV, "rb").read()
+    blob = open(wpath, "rb").read()
     got = hashlib.sha256(blob).hexdigest()
     if got != want:
+        _NET = None
         raise ValueError(f"conv weights hash mismatch: {got[:16]} != "
                          f"{want[:16]} (refusing to score)")
+    if _NET is not None and _NET[0] == (wpath, got):
+        return _NET[1:]
     ck = json.loads(blob)
     net = torch.nn.Sequential(
         torch.nn.Conv1d(8, 16, 5, padding=2), torch.nn.ReLU(),
@@ -75,12 +82,12 @@ def _load_net():
     net.eval()
     mu = np.asarray(ck["mu"], dtype=np.float64)
     sd = np.asarray(ck["sd"], dtype=np.float64)
-    _NET = (CONV, net, mu, sd, int(ck["T"]))
+    _NET = ((wpath, got), net, mu, sd, int(ck["T"]))
     return net, mu, sd, int(ck["T"])
 
 
-def _conv_score(Smat: np.ndarray) -> float:
-    net, mu, sd, Tall = _load_net()
+def _conv_score(Smat: np.ndarray, cfg) -> float:
+    net, mu, sd, Tall = _load_net(cfg)
     Xa = S.fit_length(Smat.astype(np.float64), Tall)
     Xt = torch.tensor((Xa - mu) / sd, dtype=torch.float32)
     with torch.no_grad():
@@ -101,7 +108,7 @@ def score(video_path, start_s, end_s, config_path=CONFIG):
     Smat64 = S.per_frame_series(frames90)
     th = T.extract_theory(frames90, fps90)
     ph = P.extract_physics(frames90, fps90, video_path, start_s, end_s)
-    p_act = _conv_score(Smat64)
+    p_act = _conv_score(Smat64, cfg)
     reasons = {}
     bad_hit = None
     for r in cfg["quality_stage"]["rules"]:
@@ -139,10 +146,15 @@ def score(video_path, start_s, end_s, config_path=CONFIG):
                                float(cfg["activity"]["threshold"]), _Q),
                            "model": "conv1d(seed0,json-weights)"}
     d = cfg["dup"]
+    # I3: the in-scorer duplicate reason IS the loop-tripwire (promoted from
+    # evidence-only to a live duplicate hit); cross-window corpus-NN stays
+    # offline. Frozen scope = quality + activity + single-window duplicate.
     reasons["duplicate"] = {
-        "hit": False, "op": ">=", "threshold": round(d["threshold"], _Q),
-        "note": ("single-window loop-tripwire above; cross-window corpus-NN "
-                 "stays offline (M2, same threshold)")}
+        "hit": bool(loop_hit), "via": "loop_tripwire",
+        "op": ">=", "threshold": round(d["threshold"], _Q),
+        "note": ("in-scorer duplicate evidence is single-window only "
+                 "(loop-tripwire); cross-window corpus-NN stays offline "
+                 "(M2, same threshold)")}
     keep = [i for i, n in enumerate(names)
             if n not in cfg.get("digest_exclude", [])]
     blob = (np.round(row[keep].astype(np.float64), _Q).tobytes()

@@ -117,6 +117,9 @@ class TestTheoryPhysics(unittest.TestCase):
 class TestScorerContract(unittest.TestCase):
     """I7: scorer decisions/digest/config on a tiny synthetic clip."""
 
+    # M3: anchor to repo root (not cwd).
+    ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
     @classmethod
     def setUpClass(cls):
         import subprocess
@@ -133,7 +136,8 @@ class TestScorerContract(unittest.TestCase):
 
     def test_config_thresholds_present(self):
         import json
-        cfg = json.load(open("configs/perpixel_v1.json"))
+        cfg = json.load(open(os.path.join(self.ROOT,
+                                          "configs/perpixel_v1.json")))
         self.assertEqual(
             sorted(r["name"] for r in cfg["quality_stage"]["rules"]),
             ["blur", "lowent", "ten"])
@@ -156,7 +160,8 @@ class TestScorerContract(unittest.TestCase):
 
     def test_mv_excluded_from_digest(self):
         import json
-        cfg = json.load(open("configs/perpixel_v1.json"))
+        cfg = json.load(open(os.path.join(self.ROOT,
+                                          "configs/perpixel_v1.json")))
         self.assertIn("B_mv_per_frame", cfg.get("digest_exclude", []))
 
     def test_duplicate_wired(self):
@@ -164,7 +169,53 @@ class TestScorerContract(unittest.TestCase):
         a = SC.score(self.clip, 0, 2.0)
         self.assertIn("loop_tripwire", a["reasons"])
         self.assertIn("hit", a["reasons"]["loop_tripwire"])
+        # I3: duplicate reason carries the loop-tripwire hit (not hardcoded).
+        self.assertEqual(a["reasons"]["duplicate"]["hit"],
+                         a["reasons"]["loop_tripwire"]["hit"])
+        self.assertEqual(a["reasons"]["duplicate"]["via"], "loop_tripwire")
         self.assertIn("threshold", a["reasons"]["duplicate"])
+
+    def test_config_path_selects_net(self):
+        # I1: score(config_path=alt) uses the ALT config's model+threshold.
+        # Tampered weights copy MUST raise (old code loaded the default net
+        # and would silently score with the wrong model).
+        import copy
+        import hashlib
+        import json
+        import shutil
+        import tempfile
+        from jadal.perpixel import scorer as SC
+        base = json.load(open(os.path.join(
+            self.ROOT, "configs/perpixel_v1.json")))
+        wsrc = os.path.join(self.ROOT, base["activity"]["weights"])
+        tmp = tempfile.mkdtemp(prefix="perpixel_cfg_")
+        try:
+            wtamper = os.path.join(tmp, "tampered.json")
+            shutil.copy(wsrc, wtamper)
+            tj = json.load(open(wtamper))
+            tj["threshold"] = 0.9999
+            json.dump(tj, open(wtamper, "w"))
+            alt = copy.deepcopy(base)
+            alt["activity"]["weights"] = wtamper
+            alt_path = os.path.join(tmp, "alt.json")
+            json.dump(alt, open(alt_path, "w"))
+            with self.assertRaises(ValueError):
+                SC.score(self.clip, 0, 2.0, config_path=alt_path)
+            # untampered copy at an alt path scores fine (same sha)
+            wok = os.path.join(tmp, "ok.json")
+            shutil.copy(wsrc, wok)
+            alt2 = copy.deepcopy(base)
+            alt2["activity"]["weights"] = wok
+            alt2["activity"]["threshold"] = 0.9999
+            alt2_path = os.path.join(tmp, "alt2.json")
+            json.dump(alt2, open(alt2_path, "w"))
+            b = SC.score(self.clip, 0, 2.0, config_path=alt2_path)
+            self.assertEqual(b["reasons"]["activity"]["threshold"], 0.9999)
+            self.assertTrue(
+                hashlib.sha256(open(wok, "rb").read()).hexdigest()
+                == base["activity"]["weights_sha256"])
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
 
 
 class TestDupSim(unittest.TestCase):

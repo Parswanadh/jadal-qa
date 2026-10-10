@@ -4,6 +4,14 @@ Total F=121. extract_row(video_path, start_s, end_s) -> (row float64, names, ser
 
 extract_row(video_path, start_s, end_s) -> (row float64, names, series float32, meta)
 All deterministic (fixed seeds n/a — no randomness; float64 reductions).
+
+NOTE (fix round 2 / I2): G_dup_hash_mean here is the CPU DCT-hash
+popcount-share. The GPU kernel column of the same name
+(jadal/gpu/features.py, read-only / GPU worker's file) is a parity-noise
+proxy, NOT the same quantity — any CPU/GPU parity claim for that column is
+false until the GPU worker implements the real hash or renames it (referred,
+not touched: read-only ownership). The frozen scorer/digest use the CPU row
+only; no parity is claimed.
 """
 
 from __future__ import annotations

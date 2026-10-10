@@ -126,8 +126,7 @@ def clip_bootstrap_ci(y, s, clips, n_boot=2000, seed=SEED):
     vals = []
     for _ in range(n_boot):
         samp = rng.choice(uclips, size=len(uclips), replace=True)
-        idx = [i for i, c in enumerate(clips) if c in samp]
-        # count multiplicity of clips
+        # multiplicity loop (M5: dead first assignment removed)
         idx = []
         for c in samp:
             idx += [i for i, cc in enumerate(clips) if cc == c]
@@ -253,14 +252,17 @@ def run_duplicates():
     with open(os.path.join(SPEC_DIR, "manifest_dups.json")) as f:
         md = json.load(f)
     files = md["files"]
-    dsigs = {}
+    dsigs, dropped = {}, []
     for name, rel in files.items():
         p = rel if os.path.isabs(rel) else os.path.join(SPEC_DIR, rel)
         from jadal.spectral import dup
         try:
             dsigs[name] = dup.signature(p)
-        except Exception:  # noqa: BLE001
-            pass
+        except Exception as e:  # noqa: BLE001 — M5: logged, counted
+            dropped.append({"file": name, "err": str(e)[:120]})
+    print(f"dup signatures: {len(dsigs)}/{len(files)} ok, "
+          f"{len(dropped)} dropped: {[d['file'] for d in dropped]}",
+          flush=True)
     pairs = md["pairs"]
     sims = []
     for pr in pairs:
@@ -322,6 +324,7 @@ def run_duplicates():
                             "precision": float(TP / max(TP + FP, 1)),
                             "recall": float(TP / max(TP + FN, 1)),
                             "auroc": auc},
+            "dropped_signatures": dropped,
             "human": {"dup_ids": dup_ids, "recall_at1": rec1, "recall_at3": rec3,
                       "precision_top": prec, "n_flagged": len(flagged)},
             "nn": nn}

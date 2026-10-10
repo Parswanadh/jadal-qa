@@ -1,7 +1,7 @@
 {
  "version": "perpixel_v1",
- "created_utc": "2026-10-10T12:28:02.133416+00:00",
- "git_sha": "7175533",
+ "created_utc": "2026-10-10T12:39:14.616396+00:00",
+ "git_sha": "0d0ba8a",
  "label_snapshot": {
   "manifest": "manifest_gold.json",
   "sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
@@ -195,7 +195,8 @@
  },
  "dup": {
   "threshold": 0.8410791366906474,
-  "note": "constructed-pairs threshold; over-flags real data (human precision 0.048); corpus check offline"
+  "in_scorer": "loop_tripwire (single-window duplicate evidence)",
+  "note": "frozen scope = quality + activity + single-window duplicate; cross-window corpus-NN stays offline (M2); constructed threshold over-flags real data (human precision 0.048)"
  },
  "loop_tripwire": {
   "dhash_max": 4,
