@@ -1,0 +1,46 @@
+{
+ "loco_auroc_full": 0.6373626373626374,
+ "ci": [
+  0.4666666666666667,
+  0.6925170068027212
+ ],
+ "leave_one_out": {
+  "spatial_fft": 0.6296703296703298,
+  "spatial_dct": 0.6395604395604396,
+  "wavelet": 0.6417582417582418,
+  "basic": 0.6901098901098901,
+  "temporal": 0.5626373626373626,
+  "chroma": 0.6857142857142858,
+  "skin": 0.589010989010989,
+  "compressed": 0.6153846153846154
+ },
+ "family_only": {
+  "spatial_fft": 0.32417582417582425,
+  "spatial_dct": 0.3505494505494505,
+  "wavelet": 0.4967032967032967,
+  "basic": 0.4032967032967033,
+  "temporal": 0.6813186813186813,
+  "chroma": 0.6142857142857143,
+  "skin": 0.7186813186813187,
+  "compressed": 0.4197802197802198
+ },
+ "rtf": {
+  "seg_seconds": 10.0,
+  "mean_latency_total_s": 0.30204601227482664,
+  "mean_latency_decode_s": 0.185195548624932,
+  "mean_latency_math_s": 0.0638622332222854,
+  "rtf_total": 33.10753856568438,
+  "rtf_no_decode": 156.5870702515676
+ },
+ "n": {
+  "items": 79,
+  "n_good": 65,
+  "n_bad": 14,
+  "clips": [
+   "desk",
+   "ecu_full",
+   "ecu_late"
+  ],
+  "protocol": "LOCO clip-level, bootstrap CI clip-resampled"
+ }
+}

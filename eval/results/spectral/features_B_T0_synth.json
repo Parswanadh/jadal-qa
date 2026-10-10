@@ -1,0 +1,94 @@
+{
+ "loco_auroc_full": 0.9320987654320988,
+ "ci": [
+  0.9320987654320987,
+  1.0
+ ],
+ "leave_one_out": {},
+ "family_only": {},
+ "transfer": {
+  "threshold_youden": 0.8354149411628573,
+  "threshold_far5": 1.462870348691944e-09,
+  "train_source": "manifest_gold.json",
+  "per_degradation": {
+   "black": {
+    "n": 6,
+    "detect_rate": 1.0,
+    "auroc_vs_clean": 1.0
+   },
+   "blur": {
+    "n": 6,
+    "detect_rate": 0.0,
+    "auroc_vs_clean": 0.0
+   },
+   "clean": {
+    "n": 6,
+    "detect_rate": 1.0
+   },
+   "darken": {
+    "n": 6,
+    "detect_rate": 1.0,
+    "auroc_vs_clean": 1.0
+   },
+   "frozen": {
+    "n": 6,
+    "detect_rate": 1.0,
+    "auroc_vs_clean": 1.0
+   },
+   "lowbitrate": {
+    "n": 6,
+    "detect_rate": 0.0,
+    "auroc_vs_clean": 0.0
+   },
+   "noise": {
+    "n": 6,
+    "detect_rate": 0.5,
+    "auroc_vs_clean": 0.02777777777777777
+   },
+   "overexpose": {
+    "n": 6,
+    "detect_rate": 0.6666666666666666,
+    "auroc_vs_clean": 0.4444444444444444
+   },
+   "shake": {
+    "n": 6,
+    "detect_rate": 1.0,
+    "auroc_vs_clean": 1.0
+   },
+   "static": {
+    "n": 6,
+    "detect_rate": 0.0,
+    "auroc_vs_clean": 0.0
+   }
+  },
+  "family_only_auroc": {
+   "spatial_fft": 0.558641975308642,
+   "spatial_dct": 0.8117283950617284,
+   "wavelet": 0.5123456790123457,
+   "basic": 0.5123456790123457,
+   "temporal": 0.7407407407407407,
+   "chroma": 0.7376543209876543,
+   "skin": 0.5154320987654321,
+   "compressed": 0.3641975308641975
+  }
+ },
+ "rtf": {
+  "seg_seconds": 10.0,
+  "mean_latency_total_s": 0.2715853929519653,
+  "mean_latency_decode_s": 0.14998935063680013,
+  "mean_latency_math_s": 0.06859134435653687,
+  "rtf_total": 36.82083153039338,
+  "rtf_no_decode": 145.79099001209448
+ },
+ "n": {
+  "items": 60,
+  "n_good": 6,
+  "n_bad": 54,
+  "clips": [
+   "desk",
+   "ecu_full",
+   "ecu_late"
+  ],
+  "protocol": "LOCO clip-level, bootstrap CI clip-resampled"
+ }
+}
