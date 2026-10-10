@@ -1,6 +1,6 @@
 # Architecture
 
-This page describes the Jadal QA pipeline as it is on `origin/main` (f58e0a1) on 2026-10-10, and the direction the build is moving in. The contract every merged module codes against is [`SPEC.md`](SPEC.md). `SPEC.md` predates the direction below and has not been updated in this change, so where the two differ, the direction below is the current plan.
+This page describes the Jadal QA pipeline as it is on `origin/main` (f58e0a1) on 2026-10-10, and the direction the build is moving in. The contract every merged module codes against is [`SPEC.md`](SPEC.md). `SPEC.md` predates the direction below and has not been updated in this change, so where this page and `SPEC.md` disagree, `SPEC.md` governs. The whole-video, streaming, no-frame-sampling direction below is planned, pending a `SPEC.md` amendment — it is not the current contract.
 
 Status labels used below:
 
@@ -62,7 +62,7 @@ Notes on the diagram:
 
 ### Stage 0 and stage 1 (direction; not yet on `main`)
 
-- **Stage 0** (first 1-2 s, tiny resolution): exact rules that reject dark, blocked, over-exposed or frozen footage immediately, with evidence. The CUSUM/SPRT collapse gate detects dark or frozen video in about 1.4 s, but it is blind to semantic failures (no active work, hands not visible).
+- **Stage 0** (first 1-2 s, tiny resolution): exact rules that reject dark, blocked, over-exposed or frozen footage immediately, with evidence. Planned direction, pending `SPEC.md` amendment; any collapse-gate timing is an unverified builder note with no backing file or command in this repo. The gate concept is blind to semantic failures (no active work, hands not visible).
 - **Stage 1** (whole video, every frame at reduced resolution, streaming accumulators): per-pixel spatial and temporal spectrum, noise model, motion after camera-motion removal. These feed the rule list and a score.
 - **Stage 2** (uncertain windows only, optional): heavier tools (MediaPipe hands, EmbeddingGemma 2).
 - Quality features are measured on RAW pixels. Activity features are measured on CLEANED video (denoised, normalised, motion-compensated). Each cleaning step has to earn its place in cross-validation.
@@ -92,9 +92,9 @@ Notes on the diagram:
 - `pick_threshold`: fixed-sequence testing from the strictest threshold downward, stopping at the first failure, with `min_accepted` (default 30).
 - `risk_coverage`, and `batch_rule(verdicts, k)`, which rejects a batch when `rejected_count > k`.
 
-**These bounds are machinery, not a delivered guarantee.** With 150 human labels from 7 clips, the multiple-testing correction needs about 86 clean windows (59 with fixed-sequence testing alone). Windows within a clip are correlated, so the effective sample size is about 20-43. No bound the current data can support is certified. Error rates are reported as observed, with n and label source.
+**These bounds are machinery, not a delivered guarantee.** With 150 human labels from 7 clips, the multiple-testing correction needs about 86 clean windows (see `reports/funnel.md`: support floor 86). Windows within a clip are correlated, so the usable independent sample is smaller than 150. No bound the current data can support is certified. Error rates are reported as observed, with n and label source.
 
-Until calibration data exists, the answer threshold is a recorded placeholder (`STUB_THRESHOLD = 0.9`). No threshold on `main` is certified.
+Until calibration data exists, the answer threshold is a recorded placeholder (`STUB_THRESHOLD = 0.9` in `jadal/stubs.py`). No threshold on `main` is certified.
 
 Per-segment verdicts are `accept`, `reject` or `review`. Hard reasons (`UNDECODABLE`, `HANDS_NOT_VISIBLE`, `BLUR`, `TOO_DARK`, `OVEREXPOSED`, `SHAKY`, `DUPLICATE`, `NO_ACTIVE_WORK`) reject. Soft reasons (`WRONG_STEP`, `LOW_CONFIDENCE`) send the segment to review.
 
@@ -120,7 +120,7 @@ Known gaps:
 These come from `SPEC.md` and apply to every merged module.
 
 1. Same input plus same pinned weights and config gives the same output. No sampling, no temperature, no randomness without a fixed seed.
-2. Each model call is per segment (batch size 1). `SPEC.md` specifies fixed frame sampling; under the whole-video direction above, frames are not sampled, so this rule is superseded for stage 1. A segment must give an identical `receipt_sha256` whether it is processed alone or inside a batch of five. For torch, `use_deterministic_algorithms(True, warn_only=True)`, `cudnn.benchmark = False` and fixed seeds are required.
+2. Each model call is per segment (batch size 1). `SPEC.md` specifies fixed frame sampling; the whole-video direction above would process frames without sampling, but that change is planned, pending a `SPEC.md` amendment — `SPEC.md` governs until then. A segment must give an identical `receipt_sha256` whether it is processed alone or inside a batch of five. For torch, `use_deterministic_algorithms(True, warn_only=True)`, `cudnn.benchmark = False` and fixed seeds are required.
 3. Probabilities and other floats are rounded to 4 decimals before they enter a receipt. Dict keys and lists with no meaningful order are sorted.
 4. Versions recorded: Python, torch, model names and weight SHA-256 (or size and name if hashing is too slow), and a pipeline config hash. Only the first two and the config hash are recorded today.
 5. `segment_sha256` is the hash of the file the pipeline read (the original).
@@ -141,15 +141,15 @@ What is measured: the CPU feature path gives an identical quantised digest over 
 | Permanently failing file | Watcher retries every two polls, logging each time, with no backoff | open (service deferred minor) |
 | Byte-identical clips from two workers or sites | Same `segment_id`; the second record's metadata is lost | open (signals deferred minor) |
 | Face blur misses faces | The blur is a skin-colour proxy, so it can miss faces | open (signals I3) |
-| GPU decode starves the GPU | CPU-side JPEG decode gave 24.7 fps per thread against 192 fps with GPU JPEG decode; a 3-slot lock now shares the GPU | lock in place in PoC work (not on `main`) |
+| GPU decode starves the GPU | PoC-work note (unverified here, not on `main`): CPU-side JPEG decode was noted slower than GPU JPEG decode; a 3-slot lock now shares the GPU | lock in place in PoC work (not on `main`) |
 | Pico port permissions after reflashing MicroPython | Device node is recreated with a restricted group, so the port must be re-granted | operational (ledger) |
 | Voicebank tests in an environment with the `sarvamai` SDK installed | Two tests assume the SDK is absent and fail; one also makes a real network call with an empty key | network-free test fix merged (PR #22) |
 
 ## What we deliberately do not claim
 
 - **No certified error bounds.** The machinery exists; it does not produce a usable guarantee at n = 150 from 7 clips.
-- **No accuracy claim beyond the measured table** in the README. Every number carries its n and label source.
-- **Egocentric-10K results are descriptive.** The 1,546 windows have no human labels. The domain shift from the 480p/10 fps calibration data is untested.
+- **No accuracy claim beyond the preliminary, unverified builder notes** in the README. Every row is labelled with its (unverified) n and label source; intervals are withheld until backing files land.
+- **Egocentric-10K notes are descriptive.** Those windows have no human labels. The domain shift from the 480p/10 fps calibration data is untested.
 - **Labels for Egocentric-10K-Evaluation are AI-generated** (gemini-2.5-flash per ATTRIBUTIONS) and not human-checked.
 - **Thresholds are placeholders** (0.9) until calibrated on our own clips. No threshold on `main` is certified.
 - **The batch rule is a fixed rule with no statistical guarantee** at n = 5 to 10.
