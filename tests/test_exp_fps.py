@@ -18,7 +18,9 @@ _EXP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..",
                     "eval", "exp_fps")
 sys.path.insert(0, _EXP)
 
-from fps_lib import FPS_STEPS, NATIVE_FPS, SPATIAL_FEATURES, subsample_idx  # noqa: E402
+from fps_lib import (FPS_STEPS, NATIVE_FPS, SPATIAL_FEATURES,  # noqa: E402
+                      SPAN_DEPENDENT_FEATURES, clip_bootstrap_ci, loco_proba,
+                      subsample_idx)
 import run_fps  # noqa: E402
 
 
@@ -112,6 +114,58 @@ class MotionRandomSelectTests(unittest.TestCase):
         self.assertEqual(len(set(a.tolist())), 20)
         self.assertTrue(np.all(np.diff(a) > 0))
         self.assertTrue(a.min() >= 0 and a.max() < 100)
+
+
+
+class LocoAndBootstrapTests(unittest.TestCase):
+    """Synthetic inputs only (no files). loco_proba / clip_bootstrap_ci."""
+
+    def test_span_dependent_are_spatial_subset(self):
+        self.assertEqual(sorted(SPAN_DEPENDENT_FEATURES),
+                         ["dup_hash_mean", "global_shift", "zncc_self"])
+        self.assertTrue(set(SPAN_DEPENDENT_FEATURES) <= set(SPATIAL_FEATURES))
+
+    def test_loco_separable_four_clips_auroc_above_0_9(self):
+        from sklearn.metrics import roc_auc_score
+        rng = np.random.default_rng(0)
+        clips = np.repeat(np.array(["c0", "c1", "c2", "c3"]), 30)
+        y = np.tile(np.r_[np.ones(15), np.zeros(15)], 4).astype(int)
+        X = y[:, None] * 4.0 + rng.normal(0, 0.5, size=(120, 2))
+        p = loco_proba(X, y, clips, C=0.3)
+        self.assertEqual(p.shape, (120,))
+        self.assertTrue(np.all((p >= 0) & (p <= 1)))
+        self.assertGreater(roc_auc_score(y, p), 0.9)
+
+    def test_loco_random_labels_ci_contains_half(self):
+        rng = np.random.default_rng(1)
+        clips = np.repeat(np.array([f"c{i}" for i in range(12)]), 20)
+        y = rng.integers(0, 2, size=240)
+        X = rng.normal(size=(240, 3))
+        p = loco_proba(X, y, clips, C=0.3)
+        lo, hi = clip_bootstrap_ci(y, p, clips, B=300, seed=0)
+        self.assertLessEqual(lo, 0.5)
+        self.assertGreaterEqual(hi, 0.5)
+        self.assertLess(lo, hi)
+
+    def test_ci_deterministic_for_fixed_seed(self):
+        rng = np.random.default_rng(2)
+        clips = np.repeat(np.array([f"c{i}" for i in range(6)]), 15)
+        y = rng.integers(0, 2, size=90)
+        p = rng.random(90)
+        a = clip_bootstrap_ci(y, p, clips, B=200, seed=7)
+        b = clip_bootstrap_ci(y, p, clips, B=200, seed=7)
+        c = clip_bootstrap_ci(y, p, clips, B=200, seed=8)
+        self.assertEqual(a, b)
+        self.assertNotEqual(a, c)
+
+    def test_single_class_resamples_are_skipped(self):
+        # clip "a" is all-positive; any resample without "a" has one class and
+        # must be dropped, not raise. Perfect scores make every kept draw AUROC 1.
+        clips = np.repeat(np.array(["a", "b", "c", "d"]), 10)
+        y = np.r_[np.ones(10), np.tile(np.r_[np.ones(5), np.zeros(5)], 3)].astype(int)
+        p = y.astype(float)
+        lo, hi = clip_bootstrap_ci(y, p, clips, B=200, seed=0)
+        self.assertEqual((lo, hi), (1.0, 1.0))
 
 
 if __name__ == "__main__":

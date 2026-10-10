@@ -149,7 +149,7 @@ def main():
             kf_iframes.append(n_if)
             kf_fallback.append(bool(fb))
             if fb:
-                row, kms = [float("nan")] * NAN_ROW_LEN, 0.0
+                row, kms = [None] * NAN_ROW_LEN, 0.0
             else:
                 d, kms = compute_for_window(gf, rgb, luma, keep, 2.0)
                 row = [d[n] for n in names]
@@ -166,7 +166,7 @@ def main():
         print(f"keyframe_fallback windows: {n_fb}/{len(ids)}", flush=True)
     os.makedirs(OUT, exist_ok=True)
     p = os.path.join(OUT, f"shard_{a.mode}_{si}of{sn}.json")
-    json.dump(out, open(p, "w"))
+    json.dump(out, open(p, "w"), allow_nan=False)  # strict JSON; fallback rows are null
     print(f"wrote {p} n={len(ids)}")
 
 

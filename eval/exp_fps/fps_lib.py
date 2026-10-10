@@ -30,6 +30,11 @@ SPATIAL_FEATURES = [
     "skin_frac", "dup_hash_mean",
 ]
 
+# Subset of SPATIAL_FEATURES that are dt-independent but SPAN-dependent: they
+# compare endpoints or read the middle frame, so arms that select different
+# frames (motion20, random20 vs uniform20) are confounded for these three.
+SPAN_DEPENDENT_FEATURES = ["global_shift", "zncc_self", "dup_hash_mean"]
+
 
 def load_manifest():
     m = json.load(open(MANIFEST))
