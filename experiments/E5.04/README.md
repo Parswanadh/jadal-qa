@@ -22,3 +22,11 @@ Results file: eval/results/exp_domain/E5.04.json
 Decision: Watcher eval/exp_domain/watch_e5_04.sh re-scores and runs the confirmatory window-bootstrap eval automatically when ood_labels2.json appears.
 
 Cost: 0 new GPU scoring (frozen scores cached); descriptive only
+
+**Verdict (2026-10-10 16:20): inconclusive.** ood_labels2.json NOT delivered: the 160 scored windows have NO labels; result JSON records labels_missing=true, n=0, ci95=n/a (no accuracy computed). Descriptive only: 160 windows scored with frozen ensemble_v1, usable_prob mean 0.560 (median 0.460), accept 71 / review 35 / reject 54; batch1(60) mean 0.496, batch2(100) mean 0.598. Config: frozen sha 4da1068a recorded by the scorer; local raw sha d62a95a differs only by pod path remap; canonical sha f43654d7 matches and is asserted (observed shas stored in E5.04.json).
+
+Results file: eval/results/exp_domain/E5.04.json
+
+Decision: Watcher eval/exp_domain/watch_e5_04.sh re-scores and runs the confirmatory window-bootstrap eval automatically when ood_labels2.json appears.
+
+Cost: 0 new GPU scoring (frozen scores cached); descriptive only
