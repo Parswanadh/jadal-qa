@@ -1,0 +1,1102 @@
+{
+ "id": "LB1-ood-archaeology",
+ "generated_by": "b/verify-ood (independent verifier)",
+ "generated_utc": "2026-10-10T16:16:48Z",
+ "question": "Where does the published OOD AUROC 0.529 (0.32-0.74), 21/51 good rejected, 5/9 bad rejected, balanced accuracy 0.51 come from?",
+ "estimator": "Mann-Whitney AUROC with average ranks for ties; stratified window bootstrap n=2000 seed=0 percentile CI; mirrors eval/poc/ood_check.py",
+ "labels": {
+  "path": "jadal_pod_bundle/labels/ood_labels.json",
+  "latest_n": 60,
+  "latest_good": 51,
+  "latest_bad": 9,
+  "history_entries": 61,
+  "history_unique_segments": 60,
+  "history_vs_latest_verdict_differences": [],
+  "reasons": {
+   "q002_s_009623b09fa7": "NO_ACTIVE_WORK",
+   "q005_s_1f058ff76496": "NO_ACTIVE_WORK",
+   "q011_s_048cec11a8fd": "NO_ACTIVE_WORK",
+   "q023_s_43c511da5f99": "SHAKY",
+   "q038_s_aeed2a166e35": "NO_ACTIVE_WORK",
+   "q040_s_932a44d77f37": "NO_ACTIVE_WORK",
+   "q041_s_67113a8ebd04": "NO_ACTIVE_WORK",
+   "q044_s_2749e2d1c769": "NO_ACTIVE_WORK",
+   "q058_s_6f5c3773acf9": "NO_ACTIVE_WORK"
+  }
+ },
+ "headline": {
+  "answer": "0.529 REPRODUCED from FILE origin/main:eval/results/poc/ood_check_60.json with PROTOCOL 'PoC cascade score vs human labels, 60 windows' -- but that file is a DIFFERENT scorer than the frozen ensemble shipped in the bundle. The shipped caches/ensemble/ood_scores.json gives 0.415 [0.207, 0.630] with 26/51 good windows rejected.",
+  "poc_artifact_recomputed_auroc": 0.529,
+  "poc_artifact_published_auroc": 0.529,
+  "bundle_frozen_ensemble_recomputed_auroc": 0.415,
+  "bundle_frozen_ensemble_ci95": [
+   0.211,
+   0.632
+  ],
+  "bundle_frozen_ensemble_reject_counts": {
+   "good": {
+    "accept": 14,
+    "review": 11,
+    "reject": 26,
+    "reject_or_review": 37
+   },
+   "bad": {
+    "accept": 3,
+    "review": 3,
+    "reject": 3,
+    "reject_or_review": 6
+   }
+  },
+  "bundle_frozen_ensemble_balanced_accuracy": 0.304,
+  "any_frozen_ensemble_column_or_combo_hits_0.529": false,
+  "hits_0.529": [
+   "P1 poc_score vs labels embedded in the same artifact",
+   "P2 poc_score vs labels/latest",
+   "P2 poc_score vs labels/history_last_write_wins"
+  ]
+ },
+ "published_values_in_artifacts": {
+  "poc_ood_check_60.json:poc_score_auroc": 0.529,
+  "poc_ood_check_60.json:ci": [
+   0.316,
+   0.728
+  ],
+  "poc_ood_check_60.json:verdicts": {
+   "good": {
+    "accept": 24,
+    "reject": 21,
+    "review": 6
+   },
+   "bad": {
+    "accept": 4,
+    "reject": 5,
+    "review": 0
+   }
+  },
+  "poc_ood_check_60.json:balanced_accuracy": 0.51,
+  "poc_ood_check_60.json:frozen_ensemble_v1_reported": {
+   "value": 0.415,
+   "source": {
+    "text": "ensemble_v1 OOD AUROC 0.415  95% CI by window (optimistic) [0.205 0.645]",
+    "source": "handover/ood_eval_ensemble_v1_exploratory.txt:2"
+   },
+   "note": "reported, not recomputed here (ensemble scorer lives on another branch)"
+  },
+  "ood_heads.json:usable_prob": 0.415,
+  "ood_heads.json:ci": [
+   0.21,
+   0.647
+  ]
+ },
+ "label_snapshot_findings": {
+  "history_vs_latest": "identical verdicts for all 60 segments (history has 61 rows for 60 unique segments, one duplicated row, no conflicts) -> no label-snapshot explanation",
+  "drop_shaky": "n=59 (51 good / 8 bad), AUROC unchanged to 3 dp",
+  "reason_weighted": "SHAKY at weight 0.5 or dropped does not move AUROC to 0.529"
+ },
+ "bundle_drift_linkage": {
+  "bundle_ood_scores_sha256": "300c1eda6e8c0b709b36da433b8b91c464e83b89b58af5b3613cc71b02d15e5b",
+  "git_blob_ood_scores_sha256_origin_main": "422184673d8f91196b47fab5a6340cafa1dac819",
+  "bundle_file_identical_to_origin_main_blob": false,
+  "sha256sums_recorded": "300c1eda6e8c0b709b36da433b8b91c464e83b89b58af5b3613cc71b02d15e5b",
+  "recorded_matches_observed": true,
+  "ood_heads_json_auroc_usable_prob": 0.415,
+  "conclusion": "the shipped OOD score artifact is byte-identical to the blob on origin/main (and to the .lb5-main-check copy); it did NOT drift, so the 0.529-vs-0.415 gap is NOT an instance of the 14/316 checksum drift -- it is a different scorer's artifact."
+ },
+ "claim_fingerprint": {
+  "published_claim_text": "the PoC cascade as shipped (IndEgo-calibrated) is at chance: score AUROC 0.529 (0.32-0.74 by window, optimistic); it REJECTED 21 of 51 good windows (41%) and rejected 5 of 9 bad ones; balanced accuracy 0.51",
+  "published_claim_sources": [
+   "jadal_pod_bundle/docs/FACTS.md:66 (and b/submission-docs/docs/FACTS.md:66)",
+   "origin/main:docs/POC_STATUS.md:4,77,108",
+   "origin/main:docs/reports/poc_run.md:76",
+   "b/ood-ready:docs/reports/ood_preregistration.md:127"
+  ],
+  "sub_numbers": {
+   "auroc_0.529": {
+    "poc_artifact": 0.529,
+    "poc_artifact_matches": true,
+    "frozen_ensemble_artifact": 0.415,
+    "frozen_ensemble_artifact_matches": false
+   },
+   "ci_0.32_0.74": {
+    "poc_artifact": [
+     0.316,
+     0.728
+    ],
+    "poc_artifact_matches": true,
+    "frozen_ensemble_artifact": [
+     0.211,
+     0.632
+    ],
+    "frozen_ensemble_artifact_matches": false
+   },
+   "good_rejected_21_of_51": {
+    "poc_artifact": 21,
+    "poc_artifact_matches": true,
+    "frozen_ensemble_artifact": 26,
+    "frozen_ensemble_artifact_matches": false
+   },
+   "bad_rejected_5_of_9": {
+    "poc_artifact": 5,
+    "poc_artifact_matches": true,
+    "frozen_ensemble_artifact": 3,
+    "frozen_ensemble_artifact_matches": false
+   },
+   "balanced_accuracy_0.51": {
+    "poc_artifact_accept_only": 0.513,
+    "poc_artifact_matches": true,
+    "frozen_ensemble_accept_only": 0.304,
+    "frozen_ensemble_review_counts_as_pass": 0.412,
+    "frozen_ensemble_artifact_matches": false
+   }
+  },
+  "verdict": "All five published sub-numbers land on the PoC cascade artifact (0.529 / [0.316,0.728] / 21 / 5 / 0.513); none of them lands on the frozen ensemble_v1 shipped in the bundle (0.415 / [0.211,0.632] / 26 / 3 / 0.304 or 0.412 depending on whether REVIEW counts as pass for good). The published claim is internally consistent and correctly attributed to the PoC cascade in FACTS.md:66 and POC_STATUS.md.",
+  "lead_b_balanced_accuracy_0.412_definition": "LEAD B's 0.412 = review-tolerant convention: good_ok = (14 accept + 11 review)/51 = 0.490, bad_ok = 3/9 = 0.333 -> 0.412. The PoC script's own convention (accept only) gives 0.304 for the frozen ensemble."
+ },
+ "attempts": [
+  {
+   "name": "P1 poc_score vs labels embedded in the same artifact",
+   "source_file": "origin/main:eval/results/poc/ood_check_60.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.529,
+   "auroc_raw": 0.5294117647058824,
+   "ci95_window_bootstrap": [
+    0.316,
+    0.728
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 24,
+     "review": 6,
+     "reject": 21,
+     "reject_or_review": 27
+    },
+    "bad": {
+     "accept": 4,
+     "review": 0,
+     "reject": 5,
+     "reject_or_review": 5
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.513,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.513,
+    "review_counts_as_pass_for_good": 0.572
+   },
+   "matches_0.529": true,
+   "notes": "self-contained: the artifact carries both score and human label per window"
+  },
+  {
+   "name": "P2 poc_score vs labels/latest",
+   "source_file": "origin/main:eval/results/poc/ood_check_60.json + jadal_pod_bundle/labels/ood_labels.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.529,
+   "auroc_raw": 0.5294117647058824,
+   "ci95_window_bootstrap": [
+    0.316,
+    0.728
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 24,
+     "review": 6,
+     "reject": 21,
+     "reject_or_review": 27
+    },
+    "bad": {
+     "accept": 4,
+     "review": 0,
+     "reject": 5,
+     "reject_or_review": 5
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.513,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.513,
+    "review_counts_as_pass_for_good": 0.572
+   },
+   "matches_0.529": true,
+   "notes": "label snapshot/protocol variant: latest"
+  },
+  {
+   "name": "P2 poc_score vs labels/history_last_write_wins",
+   "source_file": "origin/main:eval/results/poc/ood_check_60.json + jadal_pod_bundle/labels/ood_labels.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.529,
+   "auroc_raw": 0.5294117647058824,
+   "ci95_window_bootstrap": [
+    0.316,
+    0.728
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 24,
+     "review": 6,
+     "reject": 21,
+     "reject_or_review": 27
+    },
+    "bad": {
+     "accept": 4,
+     "review": 0,
+     "reject": 5,
+     "reject_or_review": 5
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.513,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.513,
+    "review_counts_as_pass_for_good": 0.572
+   },
+   "matches_0.529": true,
+   "notes": "label snapshot/protocol variant: history_last_write_wins"
+  },
+  {
+   "name": "P2 poc_score vs labels/drop_shaky",
+   "source_file": "origin/main:eval/results/poc/ood_check_60.json + jadal_pod_bundle/labels/ood_labels.json",
+   "n": 59,
+   "n_good": 51,
+   "n_bad": 8,
+   "auroc": 0.556,
+   "auroc_raw": 0.5563725490196079,
+   "ci95_window_bootstrap": [
+    0.333,
+    0.765
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 24,
+     "review": 6,
+     "reject": 21,
+     "reject_or_review": 27
+    },
+    "bad": {
+     "accept": 3,
+     "review": 0,
+     "reject": 5,
+     "reject_or_review": 5
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.548,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.548,
+    "review_counts_as_pass_for_good": 0.607
+   },
+   "matches_0.529": false,
+   "notes": "label snapshot/protocol variant: drop_shaky"
+  },
+  {
+   "name": "P2 poc_score vs labels/no_active_work_only_as_bad",
+   "source_file": "origin/main:eval/results/poc/ood_check_60.json + jadal_pod_bundle/labels/ood_labels.json",
+   "n": 59,
+   "n_good": 51,
+   "n_bad": 8,
+   "auroc": 0.556,
+   "auroc_raw": 0.5563725490196079,
+   "ci95_window_bootstrap": [
+    0.333,
+    0.765
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 24,
+     "review": 6,
+     "reject": 21,
+     "reject_or_review": 27
+    },
+    "bad": {
+     "accept": 3,
+     "review": 0,
+     "reject": 5,
+     "reject_or_review": 5
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.548,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.548,
+    "review_counts_as_pass_for_good": 0.607
+   },
+   "matches_0.529": false,
+   "notes": "label snapshot/protocol variant: no_active_work_only_as_bad"
+  },
+  {
+   "name": "F-usable_prob frozen ensemble_v1 (bundle) vs labels/latest",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json (sha256 300c1eda...)",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.415,
+   "auroc_raw": 0.4150326797385621,
+   "ci95_window_bootstrap": [
+    0.211,
+    0.632
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "the artifact LEAD B scored; higher = predicted good"
+  },
+  {
+   "name": "F-usable_prob sign-flipped vs labels/latest",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.585,
+   "auroc_raw": 0.5849673202614379,
+   "ci95_window_bootstrap": [
+    0.368,
+    0.788
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "sign flip (low score = good)"
+  },
+  {
+   "name": "F-p_eg2 frozen ensemble_v1 (bundle) vs labels/latest",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json (sha256 300c1eda...)",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.586,
+   "auroc_raw": 0.5860566448801743,
+   "ci95_window_bootstrap": [
+    0.357,
+    0.806
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "the artifact LEAD B scored; higher = predicted good"
+  },
+  {
+   "name": "F-p_eg2 sign-flipped vs labels/latest",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.414,
+   "auroc_raw": 0.4139433551198257,
+   "ci95_window_bootstrap": [
+    0.192,
+    0.643
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "sign flip (low score = good)"
+  },
+  {
+   "name": "F-p_eg2 frozen ensemble_v1 vs labels/history_last_write_wins",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.586,
+   "auroc_raw": 0.5860566448801743,
+   "ci95_window_bootstrap": [
+    0.357,
+    0.806
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "different label snapshot"
+  },
+  {
+   "name": "F-p_pixel frozen ensemble_v1 (bundle) vs labels/latest",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json (sha256 300c1eda...)",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.342,
+   "auroc_raw": 0.3420479302832244,
+   "ci95_window_bootstrap": [
+    0.176,
+    0.516
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "the artifact LEAD B scored; higher = predicted good"
+  },
+  {
+   "name": "F-p_pixel sign-flipped vs labels/latest",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.658,
+   "auroc_raw": 0.6579520697167756,
+   "ci95_window_bootstrap": [
+    0.478,
+    0.824
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "sign flip (low score = good)"
+  },
+  {
+   "name": "F-p_pixel frozen ensemble_v1 vs labels/history_last_write_wins",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.342,
+   "auroc_raw": 0.3420479302832244,
+   "ci95_window_bootstrap": [
+    0.176,
+    0.516
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "different label snapshot"
+  },
+  {
+   "name": "F-margin frozen ensemble_v1 (bundle) vs labels/latest",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json (sha256 300c1eda...)",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.415,
+   "auroc_raw": 0.4150326797385621,
+   "ci95_window_bootstrap": [
+    0.211,
+    0.632
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "the artifact LEAD B scored; higher = predicted good"
+  },
+  {
+   "name": "F-margin sign-flipped vs labels/latest",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.585,
+   "auroc_raw": 0.5849673202614379,
+   "ci95_window_bootstrap": [
+    0.368,
+    0.788
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "sign flip (low score = good)"
+  },
+  {
+   "name": "F-margin frozen ensemble_v1 vs labels/history_last_write_wins",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.415,
+   "auroc_raw": 0.4150326797385621,
+   "ci95_window_bootstrap": [
+    0.211,
+    0.632
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "different label snapshot"
+  },
+  {
+   "name": "F-usable_prob reason-weighted (shaky_weighted_0.5)",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": null,
+   "n_bad": null,
+   "auroc": 0.427,
+   "auroc_raw": 0.42675893886966554,
+   "ci95_window_bootstrap": [
+    null,
+    null
+   ],
+   "reject_counts": null,
+   "balanced_accuracy_at_shipped_verdicts": null,
+   "balanced_accuracy_variants": null,
+   "matches_0.529": false,
+   "notes": "reason-weighted labels (SHAKY down-weighted/removed)"
+  },
+  {
+   "name": "F-usable_prob reason-weighted (shaky_dropped)",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 59,
+   "n_good": null,
+   "n_bad": null,
+   "auroc": 0.44,
+   "auroc_raw": 0.43995098039215685,
+   "ci95_window_bootstrap": [
+    null,
+    null
+   ],
+   "reject_counts": null,
+   "balanced_accuracy_at_shipped_verdicts": null,
+   "balanced_accuracy_variants": null,
+   "matches_0.529": false,
+   "notes": "reason-weighted labels (SHAKY down-weighted/removed)"
+  },
+  {
+   "name": "F-combo mean(p_eg2,p_pixel)",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.414,
+   "auroc_raw": 0.4139433551198257,
+   "ci95_window_bootstrap": [
+    0.209,
+    0.632
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "head-combination sweep (negative control)"
+  },
+  {
+   "name": "F-combo min(p_eg2,p_pixel)",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.33,
+   "auroc_raw": 0.3300653594771242,
+   "ci95_window_bootstrap": [
+    0.16,
+    0.512
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "head-combination sweep (negative control)"
+  },
+  {
+   "name": "F-combo max(p_eg2,p_pixel)",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.535,
+   "auroc_raw": 0.5348583877995643,
+   "ci95_window_bootstrap": [
+    0.303,
+    0.763
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "head-combination sweep (negative control)"
+  },
+  {
+   "name": "F-combo p_eg2*p_pixel",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.331,
+   "auroc_raw": 0.3311546840958606,
+   "ci95_window_bootstrap": [
+    0.161,
+    0.512
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "head-combination sweep (negative control)"
+  },
+  {
+   "name": "F-combo mean(3 heads)",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.414,
+   "auroc_raw": 0.4139433551198257,
+   "ci95_window_bootstrap": [
+    0.209,
+    0.632
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "head-combination sweep (negative control)"
+  },
+  {
+   "name": "F-combo 2*p_eg2+usable_prob",
+   "source_file": "jadal_pod_bundle/caches/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.527,
+   "auroc_raw": 0.5272331154684096,
+   "ci95_window_bootstrap": [
+    0.298,
+    0.749
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "head-combination sweep (negative control)"
+  },
+  {
+   "name": "C1 eval/results/ensemble/ood_scores.json @origin/main (blob compare)",
+   "source_file": "origin/main:eval/results/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.415,
+   "auroc_raw": 0.4150326797385621,
+   "ci95_window_bootstrap": [
+    0.211,
+    0.632
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "same 60 q-windows; blob-compared to the bundle"
+  },
+  {
+   "name": "C2 eval/results/ensemble/ood_scores.json @origin/wip/b/triage (.lb5-main-check)",
+   "source_file": "origin/wip/b/triage:.lb5-main-check/eval/results/ensemble/ood_scores.json",
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.415,
+   "auroc_raw": 0.4150326797385621,
+   "ci95_window_bootstrap": [
+    0.211,
+    0.632
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 14,
+     "review": 11,
+     "reject": 26,
+     "reject_or_review": 37
+    },
+    "bad": {
+     "accept": 3,
+     "review": 3,
+     "reject": 3,
+     "reject_or_review": 6
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": 0.304,
+   "balanced_accuracy_variants": {
+    "accept_only": 0.304,
+    "review_counts_as_pass_for_good": 0.412
+   },
+   "matches_0.529": false,
+   "notes": "same 60 q-windows; blob-compared to the bundle"
+  },
+  {
+   "name": "C3 ood_scores2.json (75 r-windows, main variant)",
+   "source_file": "origin/main:eval/results/ensemble/ood_scores2.json",
+   "n": 0,
+   "n_good": 0,
+   "n_bad": 0,
+   "auroc": null,
+   "auroc_raw": null,
+   "ci95_window_bootstrap": [
+    null,
+    null
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 0,
+     "review": 0,
+     "reject": 0,
+     "reject_or_review": 0
+    },
+    "bad": {
+     "accept": 0,
+     "review": 0,
+     "reject": 0,
+     "reject_or_review": 0
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": null,
+   "balanced_accuracy_variants": {
+    "accept_only": null,
+    "review_counts_as_pass_for_good": null
+   },
+   "matches_0.529": false,
+   "notes": "100 windows, 0 overlapping the 60-window label set; labels2 (100-window batch) not delivered -> NOT COMPUTABLE"
+  },
+  {
+   "name": "C4 ood_scores2.json (75 r-windows, e5cache/exp-domain variant)",
+   "source_file": "origin/feat/exp-domain-adapt:eval/results/exp_domain/inputs/ood_scores2.json",
+   "n": 0,
+   "n_good": 0,
+   "n_bad": 0,
+   "auroc": null,
+   "auroc_raw": null,
+   "ci95_window_bootstrap": [
+    null,
+    null
+   ],
+   "reject_counts": {
+    "good": {
+     "accept": 0,
+     "review": 0,
+     "reject": 0,
+     "reject_or_review": 0
+    },
+    "bad": {
+     "accept": 0,
+     "review": 0,
+     "reject": 0,
+     "reject_or_review": 0
+    }
+   },
+   "balanced_accuracy_at_shipped_verdicts": null,
+   "balanced_accuracy_variants": {
+    "accept_only": null,
+    "review_counts_as_pass_for_good": null
+   },
+   "matches_0.529": false,
+   "notes": "100 windows, 0 overlapping the 60-window label set; labels2 (100-window batch) not delivered -> NOT COMPUTABLE"
+  },
+  {
+   "name": "C5 eval/results/ood_frozen/ood_run.json @b/ood-ready (staged run)",
+   "source_file": "b/ood-ready:eval/results/ood_frozen/ood_run.json",
+   "n": null,
+   "n_good": null,
+   "n_bad": null,
+   "auroc": null,
+   "auroc_raw": null,
+   "ci95_window_bootstrap": [
+    null,
+    null
+   ],
+   "reject_counts": null,
+   "balanced_accuracy_at_shipped_verdicts": null,
+   "balanced_accuracy_variants": null,
+   "matches_0.529": false,
+   "notes": "status=PENDING guard=labels_absent -> no scores in the artifact, nothing to recompute"
+  }
+ ],
+ "conclusion": "The published 0.529 is the PoC cascade's own score AUROC (origin/main:eval/results/poc/ood_check_60.json), whose verdicts (good 24 accept / 21 reject / 6 review; bad 4 accept / 5 reject / 0 review) reproduce balanced accuracy 0.51 exactly. It is NOT the frozen ensemble_v1 shipped in the pod bundle: no column, sign flip or head combination of caches/ensemble/ood_scores.json reaches 0.529 (range 0.342-0.658), and the artifact itself records the frozen-ensemble number as 0.415 (reported, not recomputed). The two numbers are different scorers, both at chance; the qualitative OOD finding holds for both. The shipped OOD score file did not drift (byte-identical to origin/main), so this is a provenance/attribution distinction, not an instance of the 14/316 SHA256SUMS drift.",
+ "published_numbers_unchanged": true,
+ "estimator_self_check": {
+  "unweighted": 0.415033,
+  "weighted_unit_weights": 0.415033,
+  "equal": true
+ }
+}
