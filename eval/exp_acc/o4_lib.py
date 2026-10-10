@@ -38,12 +38,12 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, REPO)
 sys.path.insert(0, HERE)
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 OUT = os.path.join(REPO, "eval", "results", "exp_adapt160")
 INPUTS = os.path.join(OUT, "inputs")
 PIXEL160 = os.environ.get(
     "JADAL_PIXEL160",
-    "/workspace/wt/m-fewshot160/eval/results/exp_fewshot/inputs/ood160_pixel.npz")
+    os.path.join(os.environ.get("JADAL_WT", "wt"), 'm-fewshot160/eval/results/exp_fewshot/inputs/ood160_pixel.npz'))
 N_BOOT = 2000
 SEED = 0
 DEV = "CPU (numpy/sklearn; ffmpeg/cv2 decode only, no GPU)"

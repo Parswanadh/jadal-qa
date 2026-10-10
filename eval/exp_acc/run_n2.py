@@ -37,11 +37,10 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 import o4_lib as R  # noqa: E402
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 # O4 inputs live on the O4 branch (read-only); override with N2_Z3_INPUTS.
-R.INPUTS = os.environ.get("N2_Z3_INPUTS",
-                          "/workspace/wt/m-adapt160/eval/results/exp_adapt160/inputs")
-E8_JSONL = os.environ.get("JADAL_E8_JSONL", "/workspace/artifacts/windows_rescored.jsonl")
+R.INPUTS = os.environ.get("N2_Z3_INPUTS", "wt/m-adapt160/eval/results/exp_adapt160/inputs")
+E8_JSONL = os.environ.get("JADAL_E8_JSONL", "artifacts/windows_rescored.jsonl")
 OUT = os.path.join(REPO, "eval", "results", "exp_acc")
 NB = 2000
 SEED = 7

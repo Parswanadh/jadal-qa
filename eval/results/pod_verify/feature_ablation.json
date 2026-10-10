@@ -1,0 +1,45 @@
+{
+ "experiment": "LB1-feature-ablation",
+ "verified_by": "lead-b",
+ "n": 150,
+ "n_clips": 7,
+ "n_bad": 50,
+ "label_source": "human gold IndEgo (labels/manifest_gold.json, READ-ONLY)",
+ "protocol": "LOCO logistic C=0.3 class_weight=balanced on the 26 cached features (caches/gpu/features.json) and on named subsets; pooled AUROC",
+ "results": {
+  "all_26": {
+   "auroc": 0.81,
+   "claimed": 0.81,
+   "verdict": "REPRODUCED exact"
+  },
+  "temporal_bands_only_temp_b0_b3": {
+   "auroc": 0.741,
+   "claimed": 0.71,
+   "verdict": "DISCREPANCY +0.031",
+   "note": "the claimed 0.71 may use a different 'temporal-only' definition (e.g. also including frozen_frac/flicker_idx) or a different protocol; with the 4 band means alone I get 0.741. Not smoothed over."
+  },
+  "without_pca_resid_25": {
+   "auroc": 0.811,
+   "claimed": 0.794,
+   "verdict": "number differs",
+   "note": "the published 0.793/0.794 pair is a 27-feature GPU set with a colour-residual variant; this 26-feature cache does not reproduce those exact endpoints (mine are 0.810 vs 0.811)."
+  },
+  "with_pca_resid_26": {
+   "auroc": 0.81,
+   "claimed": 0.793,
+   "verdict": "number differs"
+  },
+  "pca_resid_adds_nothing": {
+   "verdict": "QUALITATIVE CLAIM CONFIRMED",
+   "evidence": "0.810 with vs 0.811 without the inverse-PCA colour residual: no gain, difference within noise."
+  },
+  "skin_rppg_illum_only_5": {
+   "auroc": 0.344,
+   "claimed": "<0.5",
+   "verdict": "REPRODUCED (qualitative)",
+   "note": "skin_frac, rppg_pulse, illum_r/g/b alone are well below chance on held-out clips."
+  }
+ },
+ "conclusion": "The load-bearing conclusions hold: the inverse-PCA colour residual adds nothing, and the skin/rPPG/illumination features do not transfer across clips (<0.5). Two exact numbers in FACTS.md (temporal-only 0.71 and the 0.793/0.794 PCA pair) do NOT reproduce from this 26-feature cache - flagged as discrepancies rather than quietly re-quoted; they most likely belong to a different feature-set version/protocol, which should be stated wherever they are cited.",
+ "files": "eval/results/pod_verify/feature_ablation.json"
+}
