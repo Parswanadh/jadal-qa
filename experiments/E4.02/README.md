@@ -15,7 +15,7 @@
 ## Results
 (pending — `exp.py finish` fills the registry; put figures/JSON in this folder)
 
-**Verdict (2026-10-10 15:30): drop.** No regime split adopted. Under identical LOCO folds regime-only logistic never beat global by >0.03 with a CI supporting it: best feat26 cell lighting_lo +0.125 [-0.10,0.35]; EG2 regime models were worse (delta -0.01..-0.18). Global AUROC feat26 0.712 [0.634,0.811], EG2 0.848 [0.719,0.912] (n=150, 7 clips, 2000x clip bootstrap). Motion terciles are thin (motion_lo n_bad=4).
+**Verdict (2026-10-10 15:30, numbers regenerated after the tercile-selection fix): drop.** No regime split adopted. Under identical LOCO folds regime-only logistic never beat global by >0.03 with a CI supporting it: best feat26 cell lighting_lo +0.125 [-0.10,0.35]; EG2 regime models were worse (delta -0.02..-0.32). Global AUROC feat26 0.712 [0.634,0.811], EG2 0.848 [0.719,0.912] (n=150, 7 clips, 2000x clip bootstrap). Each tercile n=50; n_bad sharpness 28/10/12, lighting 18/10/22, motion 4/16/30 (lo/mid/hi); motion_lo is exploratory (n_bad=4).
 
 Results file: eval/results/exp_regimes/E4.02.json
 

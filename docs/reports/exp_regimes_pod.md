@@ -63,9 +63,22 @@ Global AUROC: **feat26 0.712 [0.634, 0.811]**, **EG2 0.848 [0.719, 0.912]**.
 No split is adopted. No regime-only model beat global by >0.03 with a CI
 supporting it **under the same folds** (feat26 best cell `lighting_lo` +0.125
 [−0.10, 0.35]; `sharpness_hi` +0.094 [−0.17, 0.28]). All EG2 regime models were
-*worse* than global (δ from −0.01 to −0.18). Several terciles are thin:
+*worse* than global (δ from −0.02 to −0.32). Several terciles are thin:
 `motion_lo` has only n_bad = 4; clips rarely hold both classes in a motion
 tercile. Decision: **one global model per view, no per-regime model.**
+
+Each tercile has n = 50 windows; the three splitters give n_bad
+sharpness 28 / 10 / 12, lighting 18 / 10 / 22, motion 4 / 16 / 30 (lo / mid /
+hi). Per the pre-declared rule (n_bad < 10 is exploratory), `motion_lo` and the
+two mid cells with n_bad = 10 are labelled exploratory.
+
+**Correction (2026-10-10):** the mid-tercile selection was
+`vals <= t2` (lo + mid) instead of `(vals > t1) & (vals <= t2)` (mid only), so
+the earlier JSON reported every `*_mid` cell with n = 100. The selection is
+fixed and `regime_vs_global.json` / `E4.02.json` were regenerated: all cells now
+have n = 50, and the EG2 δ range moved from −0.01…−0.18 to −0.02…−0.32
+(the `lighting_mid` EG2 cell is the new worst at δ = −0.32). The adopt/drop
+decision is unchanged — still **drop**.
 
 ## E4.03 — domain-gap control (re-encode to the IndEgo spec) — drop
 

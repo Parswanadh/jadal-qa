@@ -47,7 +47,7 @@ _results in `gap_control.json`._
 `profiles/schema.json` + 5 profiles (`clear_stationary`, `blurry_lowlight`,
 `walking_logistics`, `factory_1080p30`, `default`); deterministic router
 `jadal/regimes/router.py::choose_profile` (rule-based, margin reported,
-`default` + `UNSEEN_REGIME` fallback); 9 unit tests, all pass, < 1 s.
+`default` + `UNSEEN_REGIME` fallback); 13 unit tests, all pass, < 1 s.
 Router thresholds initial (v0.1.0); calibrated against E4.01 ranges on close.
 
 ## Verdicts

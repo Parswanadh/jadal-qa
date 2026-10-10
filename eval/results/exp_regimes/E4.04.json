@@ -12,7 +12,7 @@
  "cost": "13 unit tests < 0.5 s, no video, no network",
  "command": "python3 eval/exp_regimes/make_results.py",
  "test_command": "python3 -m pytest tests/test_exp_regimes_router.py -q",
- "git_sha": "e3ae6620656c636d059f68a71e042178ea916016",
+ "git_sha": "458e679889528bc2c2a672bd1c81b31d6ed399a6",
  "tests_run_line": "Ran 13 tests ... OK",
  "tests_passed": 13,
  "tests_total": 13,

@@ -12,7 +12,14 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES = os.path.join(HERE, "..", "results", "exp_regimes")
-WT = "/home/parshu/projects/jadal-qa-wt"
+BUNDLE = os.environ.get("JADAL_BUNDLE", "")
+
+
+def bpath(*parts):
+    """Resolve a path inside the JADAL bundle root (JADAL_BUNDLE env var)."""
+    if not BUNDLE:
+        raise RuntimeError("JADAL_BUNDLE is not set; point it at the jadal bundle root")
+    return os.path.join(BUNDLE, *parts)
 
 KEYS = ["width", "height", "fps", "bitrate_kbps", "bytes_per_frame",
         "sharp_lapvar", "sharp_norm", "noise_sigma", "edge_density",
@@ -98,14 +105,14 @@ def diagnosis(recs):
 def eg2_clusters():
     """KMeans (k=6, seed 0) on IndEgo EG2 window means; assign OOD-60."""
     from sklearn.cluster import KMeans
-    di = np.load(f"/workspace/jadal_pod_bundle/caches/frames10k/segments.npz",
+    di = np.load(bpath("caches", "frames10k", "segments.npz"),
                  allow_pickle=True)
     F = np.nan_to_num(di["F"].astype(np.float64), nan=0.0)
     Mi = F.mean(axis=1)
     nrm = Mi / (np.linalg.norm(Mi, axis=1, keepdims=True) + 1e-12)
     km = KMeans(n_clusters=6, random_state=0, n_init=10).fit(nrm)
     do = None
-    ood_npz = "/workspace/jadal_pod_bundle/caches/ensemble/ood_frames.npz"
+    ood_npz = bpath("caches", "ensemble", "ood_frames.npz")
     if not os.path.exists(ood_npz):
         out = {"k": 6, "status": "input_missing",
                "reason": "caches/ensemble/ood_frames.npz absent from the trimmed bundle; "
@@ -145,8 +152,8 @@ FEAT26 = ["temp_b0", "temp_b1", "temp_b2", "temp_b3", "frozen_frac", "flicker_id
 
 
 def load_feat_matrices():
-    feat = json.load(open(f"/workspace/jadal_pod_bundle/caches/gpu/features.json"))["windows"]
-    di = np.load(f"/workspace/jadal_pod_bundle/caches/frames10k/segments.npz",
+    feat = json.load(open(bpath("caches", "gpu", "features.json")))["windows"]
+    di = np.load(bpath("caches", "frames10k", "segments.npz"),
                  allow_pickle=True)
     ids = [str(x) for x in di["ids"]]
     F = np.nan_to_num(di["F"].astype(np.float64), nan=0.0)
@@ -220,11 +227,11 @@ def regime_vs_global(recs):
     feat, ids, Eg, _, _ = load_feat_matrices()
     dmap = {r["window_id"]: r["desc"] for r in grp(recs, "indego")}
     # align: gold ids g000.. map to EG2 ids order (both length 150, same order assumed; verify by label match)
-    m = json.load(open(f"/workspace/jadal_pod_bundle/labels/manifest_gold.json"))
+    m = json.load(open(bpath("labels", "manifest_gold.json")))
     items = m["items"]
     assert len(items) == 150 and len(ids) == 150
     y = np.array([it["label"] for it in items])
-    di = np.load(f"/workspace/jadal_pod_bundle/caches/frames10k/segments.npz",
+    di = np.load(bpath("caches", "frames10k", "segments.npz"),
                  allow_pickle=True)
     assert (np.array(di["labels"]).astype(int) == y).all(), "EG2/gold order mismatch"
     X26 = np.array([[feat[it["id"]]["full"][k] for k in FEAT26] for it in items])
@@ -242,7 +249,12 @@ def regime_vs_global(recs):
             results[view]["tercile_cuts"] = {**results[view].get("tercile_cuts", {}),
                                              rname: [round(float(t1), 4), round(float(t2), 4)]}
             for ri, name in enumerate(["lo", "mid", "hi"]):
-                sel = (vals <= t1) if ri == 0 else ((vals <= t2) if ri == 1 else (vals > t2))
+                if ri == 0:
+                    sel = vals <= t1
+                elif ri == 1:
+                    sel = (vals > t1) & (vals <= t2)
+                else:
+                    sel = vals > t2
                 yy = y[sel]
                 gg = np.array(groups)[sel]
                 # per-clip class presence in this regime
@@ -302,8 +314,8 @@ def gap_control(recs):
                     "source_median": round(float(np.median(b)), 4),
                     "median_ratio_src_over_tc": round(float(np.median(b) / (np.median(a) + 1e-12)), 3)})
     # frozen ensemble baseline score distribution vs labels
-    ens = json.load(open(f"/workspace/jadal_pod_bundle/caches/ensemble/ood_scores.json"))
-    lab = json.load(open(f"/workspace/jadal_pod_bundle/labels/ood_labels.json"))["latest"]
+    ens = json.load(open(bpath("caches", "ensemble", "ood_scores.json")))
+    lab = json.load(open(bpath("labels", "ood_labels.json")))["latest"]
     ys, ps = [], []
     for sc in ens["scores"]:
         v = lab.get(sc["id"], {}).get("verdict")

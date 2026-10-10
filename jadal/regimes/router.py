@@ -21,7 +21,7 @@ from __future__ import annotations
 #  shift_mean: medians 15-19 everywhere at 1.25 s sampling; walking tail at
 #             IndEgo p66=27.5 -> hi=28; temp_energy>=0.26 (OOD p90) as co-trigger
 THRESHOLDS = {
-    # rule boundaries (E4.01-calibrated v0.2.0)
+    # rule boundaries (E4.01-calibrated v0.1.0)
     "hi_res_width": 1280,      # >= -> factory_1080p30
     "hi_fps": 25.0,            # >= -> factory_1080p30
     "motion_shift_hi": 28.0,   # shift_mean >= -> walking_logistics

@@ -9,7 +9,6 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES = os.path.join(HERE, "..", "results", "exp_regimes")
-BUNDLE = "/workspace/jadal_pod_bundle"
 DEVICE = "CPU (pod); no GPU used"
 
 

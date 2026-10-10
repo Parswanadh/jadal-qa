@@ -18,11 +18,18 @@ from multiprocessing import Pool
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from descriptors import describe_window
 
-WT = "/home/parshu/projects/jadal-qa-wt"
+BUNDLE = os.environ.get("JADAL_BUNDLE", "")
+
+
+def bpath(*parts):
+    """Resolve a path inside the JADAL bundle root (JADAL_BUNDLE env var)."""
+    if not BUNDLE:
+        raise RuntimeError("JADAL_BUNDLE is not set; point it at the jadal bundle root")
+    return os.path.join(BUNDLE, *parts)
 
 
 def load_indego():
-    m = json.load(open(f"/workspace/jadal_pod_bundle/labels/manifest_gold.json"))
+    m = json.load(open(bpath("labels", "manifest_gold.json")))
     out = []
     for it in m["items"]:
         out.append({"window_id": it["id"], "set": "indego", "clip": it["clip"],
@@ -32,13 +39,13 @@ def load_indego():
 
 
 def load_queue(name):
-    q = json.load(open(f"/workspace/jadal_pod_bundle/queues/{name}.json"))
+    q = json.load(open(bpath("queues", f"{name}.json")))
     return q["segments"]
 
 
 def load_ood1():
     segs = load_queue("label_queue_random")
-    lab = json.load(open(f"/workspace/jadal_pod_bundle/labels/ood_labels.json"))["latest"]
+    lab = json.load(open(bpath("labels", "ood_labels.json")))["latest"]
     out = []
     for s in segs:
         sid = s["segment_id"]
@@ -64,7 +71,7 @@ def load_ood2():
 
 def load_ego10k(n=300, seed=7):
     import random
-    rows = [json.loads(l) for l in open(f"/workspace/jadal_pod_bundle/poc_data/windows.jsonl")]
+    rows = [json.loads(l) for l in open(bpath("poc_data", "windows.jsonl"))]
     byf = {}
     for r in rows:
         byf.setdefault(r["factory"], []).append(r)

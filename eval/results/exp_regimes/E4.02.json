@@ -10,7 +10,7 @@
  "device": "CPU (pod); no GPU used",
  "cost": "150 windows; logistic on 26 feats / EG2 768-d; CPU",
  "command": "python3 eval/exp_regimes/analyze_regimes.py --part regimes",
- "git_sha": "e3ae6620656c636d059f68a71e042178ea916016",
+ "git_sha": "458e679889528bc2c2a672bd1c81b31d6ed399a6",
  "results": {
   "feat26": {
    "global_loco_auroc": 0.712,
@@ -48,31 +48,30 @@
      "adopt_split": false
     },
     "sharpness_mid": {
-     "n": 100,
-     "n_bad": 38,
+     "n": 50,
+     "n_bad": 10,
      "n_clips": 6,
      "clips_with_both_classes": [
       "desk",
       "ecu_full",
       "ecu_late",
-      "logistics4",
       "organise",
       "pallet"
      ],
-     "regime_model_loco_auroc": 0.6749,
+     "regime_model_loco_auroc": 0.5425,
      "regime_model_ci95": [
-      0.521,
-      0.9261
+      0.1778,
+      0.7342
      ],
-     "global_model_on_regime_auroc": 0.7165,
+     "global_model_on_regime_auroc": 0.605,
      "global_on_regime_ci95": [
-      0.598,
-      0.8803
+      0.4286,
+      0.9182
      ],
-     "delta": -0.0416,
+     "delta": -0.0625,
      "delta_ci95": [
-      -0.1937,
-      0.1502
+      -0.4444,
+      0.0693
      ],
      "adopt_split": false
     },
@@ -132,31 +131,29 @@
      "adopt_split": false
     },
     "lighting_mid": {
-     "n": 100,
-     "n_bad": 28,
-     "n_clips": 7,
+     "n": 50,
+     "n_bad": 10,
+     "n_clips": 6,
      "clips_with_both_classes": [
       "desk",
       "ecu_full",
-      "ecu_late",
       "logistics4",
-      "organise",
-      "pallet"
+      "organise"
      ],
-     "regime_model_loco_auroc": 0.7946,
+     "regime_model_loco_auroc": 0.755,
      "regime_model_ci95": [
-      0.6099,
-      0.8988
+      0.5833,
+      0.9152
      ],
-     "global_model_on_regime_auroc": 0.744,
+     "global_model_on_regime_auroc": 0.8925,
      "global_on_regime_ci95": [
-      0.5492,
-      0.9301
+      0.6562,
+      0.941
      ],
-     "delta": 0.0506,
+     "delta": -0.1375,
      "delta_ci95": [
-      -0.173,
-      0.2056
+      -0.2585,
+      0.0136
      ],
      "adopt_split": false
     },
@@ -216,8 +213,8 @@
      "adopt_split": false
     },
     "motion_mid": {
-     "n": 100,
-     "n_bad": 20,
+     "n": 50,
+     "n_bad": 16,
      "n_clips": 7,
      "clips_with_both_classes": [
       "desk",
@@ -225,23 +222,22 @@
       "ecu_late",
       "logistics4",
       "organise",
-      "pallet",
-      "pallet2"
+      "pallet"
      ],
-     "regime_model_loco_auroc": 0.6056,
+     "regime_model_loco_auroc": 0.5588,
      "regime_model_ci95": [
-      0.4003,
-      0.7696
+      0.4074,
+      0.7046
      ],
-     "global_model_on_regime_auroc": 0.6669,
+     "global_model_on_regime_auroc": 0.6728,
      "global_on_regime_ci95": [
-      0.5082,
-      0.836
+      0.4802,
+      0.8112
      ],
-     "delta": -0.0612,
+     "delta": -0.114,
      "delta_ci95": [
-      -0.2273,
-      0.045
+      -0.2753,
+      0.0513
      ],
      "adopt_split": false
     },
@@ -326,31 +322,30 @@
      "adopt_split": false
     },
     "sharpness_mid": {
-     "n": 100,
-     "n_bad": 38,
+     "n": 50,
+     "n_bad": 10,
      "n_clips": 6,
      "clips_with_both_classes": [
       "desk",
       "ecu_full",
       "ecu_late",
-      "logistics4",
       "organise",
       "pallet"
      ],
-     "regime_model_loco_auroc": 0.8294,
+     "regime_model_loco_auroc": 0.695,
      "regime_model_ci95": [
-      0.7521,
-      0.9025
+      0.3819,
+      0.7632
      ],
-     "global_model_on_regime_auroc": 0.837,
+     "global_model_on_regime_auroc": 0.7575,
      "global_on_regime_ci95": [
-      0.7392,
-      0.9192
+      0.4667,
+      0.8456
      ],
-     "delta": -0.0076,
+     "delta": -0.0625,
      "delta_ci95": [
-      -0.0511,
-      0.0244
+      -0.2063,
+      -0.0069
      ],
      "adopt_split": false
     },
@@ -410,31 +405,29 @@
      "adopt_split": false
     },
     "lighting_mid": {
-     "n": 100,
-     "n_bad": 28,
-     "n_clips": 7,
+     "n": 50,
+     "n_bad": 10,
+     "n_clips": 6,
      "clips_with_both_classes": [
       "desk",
       "ecu_full",
-      "ecu_late",
       "logistics4",
-      "organise",
-      "pallet"
+      "organise"
      ],
-     "regime_model_loco_auroc": 0.8581,
+     "regime_model_loco_auroc": 0.5775,
      "regime_model_ci95": [
-      0.6987,
-      0.8921
+      0.4104,
+      0.8969
      ],
-     "global_model_on_regime_auroc": 0.8849,
+     "global_model_on_regime_auroc": 0.8975,
      "global_on_regime_ci95": [
-      0.7143,
-      0.9346
+      0.5498,
+      0.9596
      ],
-     "delta": -0.0268,
+     "delta": -0.32,
      "delta_ci95": [
-      -0.111,
-      0.0498
+      -0.4732,
+      0.1905
      ],
      "adopt_split": false
     },
@@ -494,8 +487,8 @@
      "adopt_split": false
     },
     "motion_mid": {
-     "n": 100,
-     "n_bad": 20,
+     "n": 50,
+     "n_bad": 16,
      "n_clips": 7,
      "clips_with_both_classes": [
       "desk",
@@ -503,23 +496,22 @@
       "ecu_late",
       "logistics4",
       "organise",
-      "pallet",
-      "pallet2"
+      "pallet"
      ],
-     "regime_model_loco_auroc": 0.7119,
+     "regime_model_loco_auroc": 0.7702,
      "regime_model_ci95": [
-      0.5692,
-      0.8235
+      0.6444,
+      0.8954
      ],
-     "global_model_on_regime_auroc": 0.79,
+     "global_model_on_regime_auroc": 0.7868,
      "global_on_regime_ci95": [
-      0.607,
-      0.8843
+      0.6798,
+      0.8814
      ],
-     "delta": -0.0781,
+     "delta": -0.0165,
      "delta_ci95": [
-      -0.1331,
-      0.0074
+      -0.1133,
+      0.0507
      ],
      "adopt_split": false
     },

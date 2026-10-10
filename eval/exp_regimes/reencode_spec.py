@@ -17,8 +17,9 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from descriptors import describe_window
 
-Q = "/workspace/jadal_pod_bundle/queues/label_queue_random.json"
-LAB = "/workspace/jadal_pod_bundle/labels/ood_labels.json"
+BUNDLE = os.environ.get("JADAL_BUNDLE", "")
+Q = os.path.join(BUNDLE, "queues", "label_queue_random.json")
+LAB = os.path.join(BUNDLE, "labels", "ood_labels.json")
 SPEC = "scale=480:480:force_original_aspect_ratio=decrease,pad=480:480:(ow-iw)/2:(oh-ih)/2,fps=10"
 
 
