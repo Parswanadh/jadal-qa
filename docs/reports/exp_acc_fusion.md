@@ -1,6 +1,6 @@
 # N3 — Fusion + routing: deterministic rules × adapted model × frozen ensemble
 
-**Pod:** jadal-qa · **Branch:** `m/acc-fusion` · **PR:** #TBD (base `pod/base`)
+**Pod:** jadal-qa · **Branch:** `m/acc-fusion` · **PR:** #159 (base `pod/base`)
 
 **Question.** Fuse and route the available scorers so accuracy goes up and review goes down — the quality-vs-semantic split.
 

@@ -21,7 +21,7 @@ def f(v):
 
 L = []
 L.append("# N3 — Fusion + routing: deterministic rules × adapted model × frozen ensemble\n")
-L.append("**Pod:** jadal-qa · **Branch:** `m/acc-fusion` · **PR:** #TBD (base `pod/base`)\n")
+L.append("**Pod:** jadal-qa · **Branch:** `m/acc-fusion` · **PR:** #159 (base `pod/base`)\n")
 L.append("**Question.** Fuse and route the available scorers so accuracy goes up and review goes down — "
          "the quality-vs-semantic split.\n")
 L.append("**Device:** CPU (numpy/sklearn; cached features only, no GPU). "
