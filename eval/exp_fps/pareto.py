@@ -23,8 +23,12 @@ Two cost sources are reported:
 Feature cost is also fitted (feat_ms = intercept + slope * n_frames) so the
 per-frame figure is not a single noisy division.
 
+`clean_vs_shard_ratio` records how much slower the shard-run means in
+E1.01/E1.03/E1.04.json were than these clean minima (a ratio per regime/stage,
+computed from those JSONs here so no multiplier has to be typed by hand).
+
 -> eval/results/exp_fps/pareto.json
-Regen: python3 eval/exp_fps/pareto.py --reps 3
+Regen: python3 eval/exp_fps/pareto.py --reps 3 --benches 3
 """
 import argparse
 import json
@@ -186,18 +190,51 @@ def main():
         for i, r in enumerate(sub):
             r["pareto_front"] = i in idx
 
+    # how much slower the shard runs were than these clean minima
+    def ratio(run_ms, clean_ms):
+        return round(float(run_ms) / float(clean_ms), 2) if clean_ms else None
+
+    cvr = {}
+    if e101 and ci:
+        cvr["indego_decode"] = ratio(e101["rows"][0]["decode_ms_mean"],
+                                     ci[10]["decode_ms"])
+        cvr["indego_feat_10fps"] = ratio(e101["rows"][0]["feat_ms_mean"],
+                                         ci[10]["feat_ms"])
+        cvr["indego_feat_1fps"] = ratio(e101["rows"][-1]["feat_ms_mean"],
+                                        ci[1]["feat_ms"])
+    if e103 and co:
+        cvr["ood_decode"] = ratio(e103["decode_ms_mean_300f"], co[30]["decode_ms"])
+        cvr["ood_feat_30fps"] = ratio(e103["frozen_rows"][0]["feat_ms_mean"],
+                                      co[30]["feat_ms"])
+        cvr["ood_feat_1fps"] = ratio(e103["frozen_rows"][-1]["feat_ms_mean"],
+                                     co[1]["feat_ms"])
+    if e104 and ci:
+        arm = e104["cost"]["feat_ms_per_window_by_arm"]
+        cvr["e104_decode"] = ratio(e104["decode_ms_mean"], ci[2]["decode_ms"])
+        cvr["e104_feat_uniform20"] = ratio(arm["uniform20"], ci[2]["feat_ms"])
+        cvr["e104_feat_keyframe"] = ratio(arm["keyframe"], ci[2]["feat_ms"])
+    if cvr:
+        vals = sorted(v for v in cvr.values() if v is not None)
+        cvr["range"] = [vals[0], vals[-1]]
+        cvr["note"] = ("shard-run mean / clean min, per regime and stage "
+                       "(decode or feature); the shard runs shared the pod")
+
     res = {"experiment": "E1.cost", "n_rows": len(rows),
            "device": "A40 (pod host); decode=CPU cv2 160x90 (cv2 threads=1), "
                      "features=CPU float64 reference, OMP_NUM_THREADS=1",
            "cost_note": "clean_ms = min over %d reps x %d bench runs of one "
                         "representative window (OMP_NUM_THREADS=1, cv2 threads=1); "
-                        "the shard-run means in E1.01/E1.03/E1.04.json are 2-4x "
-                        "slower because the pod is shared. Host load average at "
+                        "the shard-run means in E1.01/E1.03/E1.04.json were "
+                        "measured while the pod was shared, so they are slower "
+                        "than these clean minima by a regime/stage-dependent "
+                        "factor: see clean_vs_shard_ratio. Host load average at "
                         "bench: %.1f" % (a.reps, max(a.benches, 1), load_avg),
            "bench_spread": spread,
+           "clean_vs_shard_ratio": cvr,
            "feat_fit": {"indego": fit_feat(ci), "ood": fit_feat(co)},
            "git_sha": git_sha(),
-           "command": "python3 eval/exp_fps/pareto.py --reps %d" % a.reps,
+           "command": "python3 eval/exp_fps/pareto.py --reps %d --benches %d"
+                      % (a.reps, max(a.benches, 1)),
            "regimes": {
                "indego_480p_10fps_in_domain": {
                    "n": (e101 or {}).get("n"),

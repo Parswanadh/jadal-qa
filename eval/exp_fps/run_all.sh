@@ -29,5 +29,5 @@ echo "== E1.02 EG2 (cached embeddings, no decode)"
 python3 eval/exp_fps/run_eg2.py
 
 echo "== cost / Pareto"
-python3 eval/exp_fps/pareto.py --reps 3
+python3 eval/exp_fps/pareto.py --reps 3 --benches 3
 echo "done -> eval/results/exp_fps/{E1.03,E1.04,E1.01,e1_02,pareto}.json"
