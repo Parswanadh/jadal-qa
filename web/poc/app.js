@@ -227,6 +227,20 @@ async function loadGallery() {
   $("page-info").textContent = `page ${d.page} of ${pages}`;
   $("prev-page").disabled = d.page <= 1;
   $("next-page").disabled = d.page >= pages;
+  // Deep links (?verdict=reject, ?wid=<id>): preset filter once, open drawer.
+  const q = new URLSearchParams(location.search);
+  if (!state.deepLinked) {
+    state.deepLinked = true;
+    const v = q.get("verdict");
+    if (v && [...$("f-verdict").options].some((o) => o.value === v)) {
+      $("f-verdict").value = v;
+      state.page = 1;
+      await loadGallery();
+      return;
+    }
+  }
+  const wid = q.get("wid");
+  if (wid && !$("drawer")?.open && $("drawer").hidden) openDrawer(wid);
 }
 
 /* pitch mode: 12 accepted + 12 rejected per reason */
@@ -313,6 +327,17 @@ async function reverify(wid) {
 }
 
 /* ── live ────────────────────────────────────────────────────────────── */
+function reasonText(r) {
+  if (r == null || r === "") return "";
+  if (typeof r === "string") return r;
+  try {
+    const s = r.s0 || r;
+    if (s && typeof s === "object" && (s.rule || s.feature))
+      return `${s.rule || ""}${s.feature ? ": " + s.feature : ""}` +
+        (s.value != null ? ` ${s.value} ${s.op || ""} ${s.threshold ?? ""}` : "");
+    return JSON.stringify(r);
+  } catch (e) { return String(r); }
+}
 function sparkline(events) {
   const W = 560, H = 90, pad = 8;
   const n = events.length;
@@ -323,7 +348,7 @@ function sparkline(events) {
   let dots = "";
   events.forEach((e, i) => {
     if (e.decision === "early_reject")
-      dots += `<circle class="rej" cx="${xs(i)}" cy="${ys(e.running_score)}" r="5"><title>early reject at t=${e.t}s${e.reason ? " · " + e.reason : ""}</title></circle>`;
+      dots += `<circle class="rej" cx="${xs(i)}" cy="${ys(e.running_score)}" r="5"><title>early reject at t=${e.t}s${e.reason ? " · " + esc(reasonText(e.reason)) : ""}</title></circle>`;
     else if (e.decision === "accept")
       dots += `<circle class="acc" cx="${xs(i)}" cy="${ys(e.running_score)}" r="4"><title>accept at t=${e.t}s</title></circle>`;
   });
@@ -351,7 +376,7 @@ async function loadLive() {
   $("live-body").innerHTML = Object.entries(byWin).map(([wid, ev]) => {
     const last = ev[ev.length - 1];
     const badge = last.decision === "early_reject"
-      ? `<span class="chip chip-reject">early reject @ t=${esc(last.t)}s${last.reason ? " · " + esc(last.reason) : ""}</span>`
+      ? `<span class="chip chip-reject">early reject @ t=${esc(last.t)}s${last.reason ? " · " + esc(reasonText(last.reason)) : ""}</span>`
       : last.decision === "accept" ? `<span class="chip chip-accept">accept</span>`
       : `<span class="chip chip-review">in progress · chunk ${esc(last.chunk)}</span>`;
     return `<div class="stream"><h3 class="mono">${esc(wid)}</h3><p>${badge}</p>${sparkline(ev)}</div>`;
