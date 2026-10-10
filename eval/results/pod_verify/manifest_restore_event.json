@@ -1,0 +1,34 @@
+{
+ "verified_by": "lead-b (LB1)",
+ "event": "labels/manifest_gold.json was rewritten at 2026-10-10T17:19Z while this session was running",
+ "observed": {
+  "new_sha256": "44c7217b839accf0b44133e141a9f1e5bbfb7e02950b0ff7cd1443a34a19a301",
+  "recorded_in_SHA256SUMS": "44c7217b839accf0b441...",
+  "matches_recorded": true,
+  "mtime": "2026-10-10T17:19Z",
+  "paths_resolving_on_pod": "0/150",
+  "example_path": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4"
+ },
+ "labels_unchanged": {
+  "n": 150,
+  "n_good": 100,
+  "n_bad": 50,
+  "n_clips": 7,
+  "reasons": {
+   "NO_ACTIVE_WORK": 23,
+   "HANDS_NOT_VISIBLE": 14,
+   "DUPLICATE": 6,
+   "TOO_DARK": 6,
+   "UNDECODABLE": 1
+  },
+  "same_as_before": true
+ },
+ "consequence": "GOOD: this file's checksum drift (reported in bundle_checksum_audit.json) is RESOLVED - the pristine recorded bytes are back, so the gold labels now verify against SHA256SUMS.txt. BAD: the pristine copy carries SOURCE-MACHINE paths, so 0/150 window paths resolve on the pod and any consumer that decodes from manifest['path'] now fails. Verified: with an in-memory remap (/home/parshu/projects/awing/data/ -> /workspace/jadal_pod_bundle/data/) the feature cache still reproduces to 7.1e-15 over 8 windows, i.e. the labels did not change.",
+ "reproduced_after_restore": {
+  "n": 8,
+  "max_abs_diff": 7.105427357601002e-15,
+  "file": "eval/results/pod_verify/feature_reproduction_after_manifest_restore.json"
+ },
+ "recommendation": "Keep the pristine bytes as the hashed authority AND expose a pod-path view (e.g. a resolver in jadal that remaps on read, or a separate manifest_pod.json generated from it). Do not edit the hashed file - that would re-break the very checksum we just restored. Also pin the manifest hash you read in every result JSON.",
+ "action_taken": "none on the file (READ-ONLY). Three running GPU/verification agents were warned and given the remap."
+}
