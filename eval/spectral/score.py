@@ -773,7 +773,7 @@ def main() -> None:
 
     # hyperspectral + VLM verdicts (other workers)
     summary["hyperspectral_verdict"] = find_verdict(
-        ["hyperspectral", "arm C", "ICVL"], "C")
+        ["## Arm C", "ICVL cache", "hyperspectral sensor"], "C")
     summary["vlm_verdict"] = find_verdict(["VLM", "arm D", "SmolVLM", "Qwen"], "D")
     summary["perpixel_reported"] = perpixel_reported
 

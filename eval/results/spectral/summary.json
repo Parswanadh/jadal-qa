@@ -1,5 +1,5 @@
 {
- "created_utc": "2026-10-10T11:35:39Z",
+ "created_utc": "2026-10-10T11:37:48Z",
  "label_source": "human gold (IndEgo workers; NOT Awign footage)",
  "gold_snapshot": {
   "snapshot_utc": "2026-10-10T10:53:24.018553+00:00",
@@ -3849,7 +3849,7 @@
  "hyperspectral_verdict": {
   "status": "FOUND",
   "path": "/home/parshu/projects/jadal-qa-wt/spectral-features/docs/reports/spectral_features.md",
-  "excerpt": "# Arm B \u2014 spectral features (RGB whole-video) + Arm C (hyperspectral check)\n\nWorker: spectral-features branch (`feat/spectral-features`).\nMethod code: `jadal/spectral/{features,stream,dup}.py`. Runners:\n`eval/spectral_features/{run_arm,run_dups,icvl_check}.py`.\nReproduce: `PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python\neval/spectral_features/run_arm.py --tiers T0,T1` (gold),\n`--manifest manifest_synth.json --train-manifest manifest_gold.json` (synth),\n`eval/spectral_features/run_dups.py` (dups).\n\n## Method (arm B)\n\n- **Whole-video, single pass.** One ffmpeg subprocess per segment (fast input\n  seek + accurate output trim), scaled in C to the tier resolution, rgb24 pipe.\n  **Every decoded frame** updates streaming accumulators (running spectra,\n  Welford-style sums, per-frame scalars). No frame sampling.\n- **T0** = 64\u00d764 working resolution (cheapest). **T1** = 160\u00d7160.\n  (Contract suggested 64\u00d736/160\u00d790 for 16:9; source here is square 480\u00d7480, so\n  same pixel budgets in square form.)\n- 40 scalar features in 8 families: `spatial_fft` (radial power slope, HF\n  ratio), `spatial_dct` (whole-frame DCT HF energy), `wavelet` (db1 band\n  ratios), `basic` (Laplacian/Sobel/brightness/contrast/under/over),\n  `temporal` (per-pixel rFFT over time in 0.15\u20131/1\u20133/3\u20138 Hz bands, frozen\n  fraction, flicker, global periodicity, frame-diff motion e"
+  "excerpt": "IP between tiers (e.g. black 1.00\u21920.00, static 0.00\u21921.00): with n=6 these\ncells are noise-dominated \u2014 the robust read is the pooled AUROC (0.93/0.96)\nplus the family-only table, not any single cell.\n\n## Arm C \u2014 bounded hyperspectral feasibility (ICVL)\n\n`eval/spectral_features/icvl_check.py`. The local ICVL cache contains **only\nthe dataset README (16 KB) \u2014 zero hyperspectral cubes**, so no downloads were\nattempted and the check ran on synthetic Gaussian-response math (stated in the\nscript output): ridge RGB\u2192spectrum R\u00b2 = 0.991 visible / 0.707 red-edge /\n0.685 NIR; RGB carries 99.2% of its response mass in visible, 0% in NIR;\nk-means AMI(full, RGB) = 0.857.\n**Verdict:** RGB cannot recover what it never measures (NIR/red-edge); ridge\n\"reconstruction\" beyond visible is prior interpolation, not measurement \u2014 it\nadds no usable information. Nothing here is evidence on Awign footage; a real\nhyperspectral sensor study would be needed, which is out of scope. Never call\narm B hyperspectral \u2014 it is RGB-only.\n\n## What arm B cannot do (explicit)\n\n1. Cannot reach 100\u00d7/core on 1 CPU core with full H.264 decode (floor ~30\u00d7);\n   needs ~200+ cores for the 2-h/10k-h target, or triage tiering.\n2. Numeric per-block motion-vector *magnitudes* are unobtainable from the\n   ffmpeg 6.1 CLI (only per-frame counts); magnitude comes from pixels.\n3. The activity head does not detect blur/low-bitrate/static degradations \u2014\n   needs a separate quality operating point (features exist: dct_hf 0.81).\n4. Gold ev"
  },
  "vlm_verdict": {
   "status": "STOPPED by human decision (too probabilistic)",
@@ -3967,5 +3967,5 @@
    0.8598277471908303
   ]
  },
- "scorer_wall_s": 63.2
+ "scorer_wall_s": 79.8
 }
