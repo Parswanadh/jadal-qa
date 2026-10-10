@@ -22,11 +22,12 @@ sys.path.insert(0, os.path.join(REPO, "eval", "exp_rescore"))
 
 from contract import HONESTY_NOTE, verify_line  # noqa: E402
 
-ART = "/workspace/artifacts"
-CONTRACT = os.path.join(ART, "windows_rescored.jsonl")
-SUMMARY = os.path.join(ART, "exp_rescore", "run_summary.json")
-CONTROL = os.path.join(ART, "exp_rescore", "control_frozen_path.json")
-OUTDIR = os.path.join(REPO, "eval", "results", "exp_rescore")
+ART = os.environ.get("E8_ART", "/workspace/artifacts")
+CONTRACT = os.environ.get("E8_CONTRACT", os.path.join(ART, "windows_rescored.jsonl"))
+SUMMARY = os.environ.get("E8_SUMMARY", os.path.join(ART, "exp_rescore", "run_summary.json"))
+CONTROL = os.environ.get("E8_CONTROL", os.path.join(ART, "exp_rescore", "control_frozen_path.json"))
+OUTDIR = os.environ.get("E8_OUTDIR", os.path.join(REPO, "eval", "results", "exp_rescore"))
+REPORT = os.environ.get("E8_REPORT", os.path.join(REPO, "docs", "reports", "exp_rescore.md"))
 OUT = os.path.join(OUTDIR, "E8.01.json")
 SAMPLE = os.path.join(OUTDIR, "windows_rescored_sample.jsonl")
 
@@ -69,6 +70,121 @@ def clip_bootstrap_share(rows, flag="accept", n_rep=2000, seed=11):
 def git_sha():
     return subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True,
                           cwd=REPO).stdout.strip()
+
+
+def write_report(res, out_path):
+    v = res["verdict_distribution"]
+    sh = res["verdict_share"]
+    ci = res["ci95"]
+    c = res["cost"]
+    ctl = res["decode_path_control"]
+    ctl_txt = ("not run" if ctl.get("status") == "not run" else
+               f"n={ctl['n']} windows, |Δ p_pixel| max {ctl['p_pixel_abs_delta_max']}, "
+               f"mean {ctl['p_pixel_abs_delta_mean']} (exploratory)")
+    md = f"""# E8 re-score of 1,546 Egocentric-10K windows — report (track E8, B2)
+
+**Registry id:** E8.01 · **Owner:** experimenter-e8-rescore · **Device:** {res['device']} ·
+**Branch:** `feat/exp-rescore` · **git_sha:** `{res['git_sha']}`
+
+## What this is (and is not)
+
+The PoC contract file `/workspace/artifacts/windows_rescored.jsonl` scores
+**{res['n']} of {res['n_requested']} windows** of `queues/manifest_scale.json`
+(58 clips, 4.404 h, 1920x1080 HEVC @30 fps; {res['n_failed']} decode failures)
+with the frozen in-domain recipe **ensemble_v1** and the deterministic profile router.
+
+> **{res['honesty_note']}**
+
+`label_source` is `"none"` on every line. The verdict split below is **descriptive**.
+The in-domain reference number for the recipe is AUROC **0.8534** (full-OOF, 150 IndEgo
+windows / 7 clips, human gold, **one labeller**; `configs/ensemble_v1.json`); it does **not**
+carry over here — IndEgo-trained models scored **0.4-0.53 AUROC** on the 60 human-labelled
+Egocentric-10K windows (**n_bad = 9, exploratory**). "Receipt" means SHA-256 of the canonical
+JSON: **content-hashed, not signed**.
+
+## Recipe and router
+
+- Score = equal-weight average of two frozen logistic heads on frozen features:
+  **EG2** (EmbeddingGemma-2 mean embedding, 0.5 s grid, 20 frames/window, C=0.003) and
+  **pixel26** (160x90 rgb24, all frames, 26 per-pixel features, C=0.3).
+- **Router:** `profiles/*.json` + `jadal/regimes/router.py::choose_profile` exist and were
+  used; the router branch **has landed**, so no fallback recipe was needed and none was invented.
+- **Profile distribution:** {res['profile_distribution']} — every window is 1920x1080/30, so the
+  hires rule fires before the quality/motion rules; margins
+  min/p50 as in `run_summary` (`unseen_regime` windows: {res['router']['unseen_regime_windows']}).
+- **Verdict rule** = the selected profile's operating point
+  (`factory_1080p30`: score ≥0.75 accept, ≤0.25 reject, else review). The frozen band
+  (score >0.5 accept / <0.4 reject) is reported as a secondary distribution
+  {res['secondary_verdict_distribution_frozen_band']} — it is **not** the one used.
+
+## Verdict distribution (n={res['n']}, descriptive)
+
+| verdict | n | share | 95% CI (window, Wilson) | 95% CI (clip bootstrap, {ci['n_clips']} clips) |
+|---|---|---|---|---|
+| accept | {v['accept']} | {sh['accept']} | {ci['window_level_wilson']['accept']} | {ci['clip_bootstrap_accept_share']} |
+| reject | {v['reject']} | {sh['reject']} | {ci['window_level_wilson']['reject']} | {ci['clip_bootstrap_reject_share']} |
+| review | {v['review']} | {sh['review']} | {ci['window_level_wilson']['review']} | — |
+
+Window-level CIs are anti-conservative (windows inside one clip are correlated); the clip
+bootstrap is the honest one. Score stats: mean {res['score_stats']['mean']},
+p05/p50/p95 {res['score_stats']['p05']}/{res['score_stats']['p50']}/{res['score_stats']['p95']},
+share inside the frozen abstain band {res['score_stats']['frac_in_frozen_abstain_band']}.
+**This split is not a quality measure: it measures an untransferred model plus a router.**
+
+## Cost (measured, {c['workers']} workers, shared A40)
+
+- **{c['windows_per_s']} windows/s** overall; **{c['ms_per_window_mean']} ms/window mean**,
+  p50 {c['ms_per_window_p50']} ms, p95 {c['ms_per_window_p95']} ms; **wall {c['wall_s']} s**
+  for {res['n']} windows on one shared pod (load average ~15 from parallel tracks).
+- Per stage (mean): decode {c['stage_ms_mean']['decode']} ms · pixel features
+  {c['stage_ms_mean']['pixel_features']} ms · regime descriptors {c['stage_ms_mean']['descriptors']} ms ·
+  EG2 embed {c['stage_ms_mean']['eg2_embed']} ms · score {c['stage_ms_mean']['score']} ms.
+- Per window: **one** ffmpeg/NVDEC pass with three branches (300 x 160x90 pixel frames,
+  20 x 512x288 EG2 frames, 8 native frames for descriptors), one EG2 forward, no sampling at
+  inference, fixed seed.
+- **E3.04 policy (every-2nd window + 4 s early exit) was NOT applied**: the contract needs one
+  verdict per window, and the frozen heads were fit on full-window features, so a 4 s window
+  would change the feature distribution. `profiles/factory_1080p30.json` asks for
+  `fps=5` / `probe_every_k_windows=2`; the pixel view was run at the frozen recipe's full frame
+  rate instead (documented deviation, not silently dropped). E3.04's x4.9 saving remains an
+  unapplied, decode-bound estimate from the E3 track.
+
+## Verification
+
+- All {res['contract']['receipts_reverified']}/{res['n']} receipts and `features_digest` values
+  **re-verify** from the line content (`eval/exp_rescore/contract.py::verify_line`).
+- `receipt_sha256` = sha256(canonical JSON of the line); `features_digest` = sha256(canonical
+  `features{{}}`); the 768-d EG2 mean vector is stored by content hash, with the full matrix at
+  `{res['contract']['sidecars']['eg2_mean_l2']['path']}`
+  (sha256 `{res['contract']['sidecars']['eg2_mean_l2']['sha256']}`); per-window router inputs at
+  `{res['contract']['sidecars']['descriptors']['path']}`
+  (sha256 `{res['contract']['sidecars']['descriptors']['sha256']}`).
+- **Decode-path control** (frozen `ffmpeg_cpu`+swscale vs the fast NVDEC+scale_cuda path, pixel
+  view only): {ctl_txt}. The fast path is **not bit-identical** to the frozen path; features and
+  `p_pixel` differ slightly, so re-running the frozen path would give slightly different
+  receipts. Not claimed identical.
+- **Config note:** `configs/ensemble_v1.json`'s raw `.sha256` sidecar is stale (written before the
+  pod path remap); the head numbers were verified equal to the frozen
+  `$JADAL_BUNDLE/caches/ensemble/ensemble_v1.json`, and both digests are recorded per line in
+  `versions{{}}`.
+
+## Files
+
+- runner `eval/exp_rescore/run_e8.py`, helper `eval/exp_rescore/contract.py`,
+  result writer `eval/exp_rescore/write_results.py`, tests `tests/test_exp_rescore.py` (11 pass, 23 s)
+- results `eval/results/exp_rescore/E8.01.json`, sample
+  `eval/results/exp_rescore/windows_rescored_sample.jsonl` (20 lines = header + 19 windows)
+- contract (not committed, `artifacts/` is ignored): `/workspace/artifacts/windows_rescored.jsonl`,
+  body sha256 `{res['contract']['body_sha256']}`
+- regenerate: `{res['command']}`
+
+## Not done / open
+
+{chr(10).join('- ' + x for x in res['not_done'])}
+"""
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    open(out_path, "w").write(md)
+    return out_path
 
 
 def main():
@@ -217,14 +333,16 @@ def main():
     for r in body:
         by_clip.setdefault(r["clip"], []).append(r)
     clips = sorted(by_clip)
-    picks = [by_clip[clips[i]][0] for i in rng.choice(len(clips), size=19, replace=False)]
+    k = min(19, len(clips))
+    picks = [by_clip[clips[i]][0] for i in rng.choice(len(clips), size=k, replace=False)]
     picks.sort(key=lambda r: (r["clip"], r["start_s"]))
     with open(SAMPLE, "w") as f:
         f.write(json.dumps(hdr, sort_keys=True) + "\n")
         for r in picks:
             f.write(json.dumps(r, sort_keys=True) + "\n")
-    print(f"wrote {OUT} and {SAMPLE} ({len(picks)+1} lines, "
-          f"{'all digests re-verified' if ok_verify == n else 'VERIFY FAILURES'})")
+    rep = write_report(res, REPORT)
+    print(f"wrote {OUT}, {SAMPLE} ({len(picks)+1} lines) and {rep} "
+          f"({'all digests re-verified' if ok_verify == n else 'VERIFY FAILURES'})")
     print(json.dumps({"n": n, "verdicts": res["verdict_distribution"],
                       "share": res["verdict_share"], "ci95_clip": ci_clip,
                       "windows_per_s": res["cost"]["windows_per_s"],
