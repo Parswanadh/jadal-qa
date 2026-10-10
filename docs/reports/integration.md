@@ -110,3 +110,46 @@ L1 stays on the stub fallback by design.
 - `sop/` module absent: `/sop/search` returns `{"results": []}`.
 - No GPU used; no secrets in code; no network at import.
 - Proposals for other owners: none (no config/SPEC changes needed).
+
+## Fix round 1 (review of PR #19)
+
+Both Important items fixed in owned files; minors left untouched.
+
+1. **`flush_site` save inside the requeue guard** (`jadal/service.py`):
+   `store.save_batch` moved into the same try/except as `run_batch`, so a
+   SQLite write failure requeues the segments at the front of the site buffer
+   instead of dropping the batch (the save is INSERT OR REPLACE over one
+   transaction, so the retry converges). `_emit_batch` stays outside the
+   guard — a WS push failure must not requeue already-saved segments. New
+   test `test_failed_save_requeues_segments_for_retry` injects a once-failing
+   save and asserts: 500 on the closing ingest, 5 segments still pending, no
+   batch stored, then a retry closes the batch with the ORIGINAL five clips
+   in ingest order and the receipt re-verifies MATCH.
+2. **`reverify_receipt` seeds determinism** (`jadal/pipeline.py`):
+   `ensure_determinism(config)` at the top (exactly like `run_batch`) plus
+   `ensure_determinism(replay_config)` once the stored config is rebuilt, so
+   a torch-backed L0/L1 replays with the seed that produced the receipt. New
+   test `test_reverify_calls_ensure_determinism` patches
+   `pipeline.ensure_determinism`, runs a reverify, and asserts it was called
+   (and the receipt still matches).
+
+Also merged `origin/main` first (only `.env.example` + `.gitignore` changed).
+
+Commands and REAL output tails:
+
+```sh
+PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_integration tests.test_service
+# Ran 52 tests in 4.092s
+# OK
+
+PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests
+# ERROR: test_run_without_client_and_without_sdk_returns_2 (test_voicebank.RunEndToEndTests.test_run_without_client_and_without_sdk_returns_2)
+# FAIL: test_no_sarvamai_imported (test_voicebank.SynthesisTests.test_no_sarvamai_imported)
+# Ran 227 tests in 8.069s
+# FAILED (failures=1, errors=1)
+```
+
+The 1 failure + 1 error are both in `tests/test_voicebank.py`, which this
+branch does not touch; they are pre-existing on `origin/main` (confirmed in
+the review) and are being fixed separately by another worker. Owned suites:
+52/52 OK (38 service + 14 integration).

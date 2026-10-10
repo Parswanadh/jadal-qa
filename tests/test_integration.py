@@ -205,6 +205,57 @@ class TestFailureSafety(IntegrationCase):
             batches = c.get("/batches").json()["batches"]
             self.assertEqual(len(batches), 1)
 
+    def test_failed_save_requeues_segments_for_retry(self) -> None:
+        """A SQLite write failure must not drop the batch (review Important #1)."""
+        paths = [self.fake_clip(f"save_{i}.mp4") for i in range(5)]
+        real_save = store_mod.Store.save_batch
+        calls = {"n": 0}
+
+        def flaky_save(self, batch, receipts, segments):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise RuntimeError("disk full")
+            return real_save(self, batch, receipts, segments)
+
+        store_mod.init_db(self.cfg.db_path)
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        with mock.patch.object(store_mod.Store, "save_batch", flaky_save):
+            with TestClient(app) as c:
+                for i, p in enumerate(paths):
+                    r = c.post("/ingest/event", json={
+                        "path": p, "worker_id": "w", "site_id": "save"})
+                    if i < 4:
+                        self.assertEqual(r.status_code, 200, r.text)
+                        self.assertIsNone(r.json()["batch"])
+                    else:
+                        # 5th ingest runs the batch but the SAVE fails -> 500,
+                        # and the segments must stay queued instead of lost.
+                        self.assertEqual(r.status_code, 500, r.text)
+                self.assertEqual(c.get("/health").json()["pending_segments"], 5)
+                self.assertEqual(c.get("/batches").json()["batches"], [])
+                # one more ingest retriggers the flush; the save now succeeds
+                # and the ORIGINAL five segments close the batch, in order.
+                extra = self.fake_clip("save_extra.mp4")
+                r = c.post("/ingest/event", json={
+                    "path": extra, "worker_id": "w", "site_id": "save"})
+                self.assertEqual(r.status_code, 200, r.text)
+                batch = r.json()["batch"]
+                self.assertIsNotNone(batch)
+                self.assertEqual(batch["n"], 5)
+                # the ORIGINAL five clips close the batch, in ingest order
+                # (stub segment_id = seg-<file sha[:12]>-0000).
+                expected_ids = [f"seg-{stubs.file_sha256(p)[:12]}-0000"
+                                for p in paths]
+                self.assertEqual(batch["segment_ids"], expected_ids)
+                batches = c.get("/batches").json()["batches"]
+                self.assertEqual(len(batches), 1)
+                receipts = store_mod.Store(self.cfg.db_path
+                                           ).get_receipts_for_batch(batch["batch_id"])
+                self.assertEqual(len(receipts), 5)
+                rv = c.post(f"/receipts/{receipts[0]['receipt_id']}/reverify")
+                self.assertEqual(rv.status_code, 200)
+                self.assertTrue(rv.json()["match"])
+
     def test_watcher_backoff_and_ingest_errors_exposed(self) -> None:
         from jadal import service as service_mod
         bad = self.cfg.bucket_dir / "poison.mp4"
@@ -287,6 +338,17 @@ class TestStatsFromRealData(IntegrationCase):
             for g in gaps:
                 self.assertIn("count", g)
                 self.assertIn("share", g)
+
+    def test_reverify_calls_ensure_determinism(self) -> None:
+        """reverify must seed exactly like run_batch (review Important #2)."""
+        segs = pipeline.process_clip(self.fake_clip("detcall.mp4"), "w", "s",
+                                     self.cfg)
+        _, receipts = pipeline.run_batch(segs, self.cfg)
+        with mock.patch.object(pipeline, "ensure_determinism") as det:
+            result = pipeline.reverify_receipt(receipts[0], dict(segs[0]),
+                                               self.cfg)
+        self.assertTrue(result["match"])
+        self.assertGreaterEqual(det.call_count, 1)
 
     def test_reverify_reports_version_comparison(self) -> None:
         with self._client() as c:

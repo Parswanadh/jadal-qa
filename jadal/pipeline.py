@@ -399,6 +399,7 @@ def reverify_receipt(receipt: dict, segment: dict, config: Any) -> dict:
     live object), the verdict threshold comes from the stored verdict, and the
     config block passed to make_receipt is the stored block verbatim.
     """
+    ensure_determinism(config)
     block = receipt.get("config")
     if not isinstance(block, dict):
         block = config_block(config)
@@ -408,6 +409,9 @@ def reverify_receipt(receipt: dict, segment: dict, config: Any) -> dict:
     replay_config = stored_config(block if isinstance(block, dict) else None) or config
     if not isinstance(replay_config, Config):
         replay_config = config
+    # the replayed seed governs from here on, so a torch-backed L0/L1 replays
+    # with the same RNG state that produced the receipt (no spurious MISMATCH)
+    ensure_determinism(replay_config)
     answer_threshold = (receipt.get("verdict") or {}).get("threshold")
     if answer_threshold is None:
         answer_threshold = thresholds.get("answer_threshold",

@@ -173,6 +173,9 @@ class _Service:
         A failing batch never drops its segments: they are requeued at the
         FRONT of the site buffer (original order) and the error propagates so
         the caller sees the 500 while the segments stay pending for retry.
+        Both the pipeline run AND the SQLite save are inside the guard: a
+        save failure requeues exactly like a pipeline failure (the save is
+        INSERT OR REPLACE, so the retry converges instead of duplicating).
         """
         n = int(self.cfg.batch_size if limit is None else limit)
         with self._lock:
@@ -184,6 +187,9 @@ class _Service:
             self._pending[site_id] = rest
         try:
             batch, receipts = pipeline.run_batch(segments, self.cfg)
+            rows = [dict(seg, created_utc=batch["created_utc"])
+                    for seg in segments]
+            self.store.save_batch(batch, receipts, rows)
         except Exception:
             with self._lock:
                 buf = self._pending.get(site_id) or []
@@ -191,8 +197,6 @@ class _Service:
                     [{"segment": s, "ts": time.monotonic()} for s in segments]
                     + buf)
             raise
-        rows = [dict(seg, created_utc=batch["created_utc"]) for seg in segments]
-        self.store.save_batch(batch, receipts, rows)
         self._emit_batch(batch, receipts)
         # a clip that yielded many segments may leave a full batch behind
         with self._lock:
