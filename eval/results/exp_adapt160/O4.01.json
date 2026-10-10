@@ -1,0 +1,501 @@
+{
+ "experiment": "O4.01",
+ "title": "Confirm Z3 transferable-feature adaptation on the 160 OOD labels",
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "n_factories": 47,
+ "n_q1": 60,
+ "n_q2": 100,
+ "label_source": "human (labels/ood160_labels.json; merge of ood_labels.json q1=60 and ood_labels2.json q2=100, single labeller; 138 good / 22 bad, 47 factories)",
+ "protocol": "evaluation only. Per-domain z-score = the target domain's own feature mean/std, computed ONCE on the pooled 160 and sliced by batch (q1/q2 are slices of the pooled score, NOT per-batch z-scores). It is unsupervised (no labels) but TRANSDUCTIVE: a new window cannot be scored without the rest of its batch. Sign from the 150 IndEgo gold windows only. Factory-grouped bootstrap CI (n_boot=2000, seed=0) is the honest CI; window bootstrap is optimistic (correlated within factory).",
+ "threshold_rule": "balanced accuracy at a fixed natural threshold: 0 for the z-score combos (the POOLED signed-mean centre), 0.5 for probability heads / frozen ensemble. No OOD threshold tuning. Because 0 is the pooled mean, the z-score BA is NOT deployable without a batch-normalisation rule; treat it as descriptive.",
+ "selection_provenance": "q1 (the first 60) informed feature selection and the Z3.03 recipe, so the pooled-160 headline is q1-contaminated; q2 (100 windows, 13 bad) is the only clean hold-out and is NOT separable from chance on its own. O2.03 (m/fewshot160) re-ran the sign table on all 160 labels and changed global_shift (stable -> flip) and frozen_frac (flip -> stable); O4 kept the pre-O2.03 set, and (b2) reports recipe (b) with global_shift dropped.",
+ "bootstrap_resamples": {
+  "group_boot": {
+   "used": 47988,
+   "skipped_single_class": 12
+  },
+  "window_boot": {
+   "used": 12000,
+   "skipped_single_class": 0
+  },
+  "paired_group_boot": {
+   "used": 10000,
+   "skipped_single_class": 0
+  }
+ },
+ "frozen_recipe": {
+  "path": "eval/exp_adapt160/o4_recipe.json",
+  "sha256": "449c27e0fdd8c2bde7461e63a62dc67e080bfb4413c19cc876b3569dec3b416c"
+ },
+ "device": "CPU (numpy/sklearn; ffmpeg/cv2 decode only, no GPU)",
+ "git_sha": "90e4c5c0655551f141c6d6823e9934f8eb0a4c63",
+ "command": "export JADAL_BUNDLE=/path/on/pod JADAL_PIXEL160=/path/ood160_pixel.npz && OMP_NUM_THREADS=2 python3 eval/exp_adapt160/extract160.py && OMP_NUM_THREADS=2 python3 eval/exp_adapt160/run_adapt160.py",
+ "gain_vs_frozen_paired_factory_grouped_bootstrap": {
+  "(a) Z3 transferable-6": {
+   "mean": 0.1929,
+   "ci95": [
+    0.0444,
+    0.3428
+   ],
+   "frac_resamples_gt_0": 0.9945,
+   "n_boot": 2000
+  },
+  "(b) E5 stable-8 + Z3 transferable-6": {
+   "mean": 0.2131,
+   "ci95": [
+    0.0604,
+    0.3674
+   ],
+   "frac_resamples_gt_0": 0.995,
+   "n_boot": 2000
+  },
+  "(b2) E5 stable-8 minus global_shift + Z3-6": {
+   "mean": 0.22,
+   "ci95": [
+    0.0763,
+    0.3696
+   ],
+   "frac_resamples_gt_0": 0.997,
+   "n_boot": 2000
+  },
+  "(c) Z1 sharpness-3 head": {
+   "mean": 0.1251,
+   "ci95": [
+    -0.0138,
+    0.2713
+   ],
+   "frac_resamples_gt_0": 0.957,
+   "n_boot": 2000
+  },
+  "(c2) sharpness-3 z-score": {
+   "mean": 0.1161,
+   "ci95": [
+    -0.0687,
+    0.3046
+   ],
+   "frac_resamples_gt_0": 0.878,
+   "n_boot": 2000
+  }
+ },
+ "blocks": [
+  {
+   "recipe": "(a) Z3 transferable-6",
+   "method": "per-domain z-score, IndEgo-signed, equal-weight mean",
+   "n_features": 6,
+   "features": [
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_clip_frac",
+    "inv_laplacian_var",
+    "inv_hist_entropy",
+    "inv_dct_hf_lf"
+   ],
+   "threshold": 0.0,
+   "ood_auroc": 0.7592,
+   "ood_balacc": 0.7088,
+   "ood_auroc_ci95_window_bootstrap_optimistic": [
+    0.6468,
+    0.8588
+   ],
+   "ood_auroc_ci95_factory_grouped_honest": [
+    0.5971,
+    0.8855
+   ],
+   "ood_balacc_ci95_factory_grouped_honest": [
+    0.5752,
+    0.8327
+   ],
+   "indego_auroc": 0.6842,
+   "indego_balacc": 0.665,
+   "indego_feature_auroc": {
+    "ct_fsize_std": 0.6202,
+    "mo_hand_motion_excess": 0.6492,
+    "inv_clip_frac": 0.6564,
+    "inv_laplacian_var": 0.6412,
+    "inv_hist_entropy": 0.5342,
+    "inv_dct_hf_lf": 0.31
+   },
+   "indego_signs": {
+    "ct_fsize_std": 1,
+    "mo_hand_motion_excess": 1,
+    "inv_clip_frac": 1,
+    "inv_laplacian_var": 1,
+    "inv_hist_entropy": 1,
+    "inv_dct_hf_lf": -1
+   },
+   "ood_batch_split": {
+    "q1": {
+     "n": 60,
+     "n_good": 51,
+     "n_bad": 9,
+     "auroc": 0.8606,
+     "balacc": 0.7876,
+     "auroc_ci95_factory_grouped_honest": [
+      0.7453,
+      0.9608
+     ]
+    },
+    "q2": {
+     "n": 100,
+     "n_good": 87,
+     "n_bad": 13,
+     "auroc": 0.6967,
+     "balacc": 0.6565,
+     "auroc_ci95_factory_grouped_honest": [
+      0.4642,
+      0.8702
+     ]
+    }
+   }
+  },
+  {
+   "recipe": "(b) E5 stable-8 + Z3 transferable-6",
+   "method": "per-domain z-score, IndEgo-signed, equal-weight mean",
+   "n_features": 14,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "luma_p05",
+    "global_shift",
+    "illum_r",
+    "illum_b",
+    "zncc_self",
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_clip_frac",
+    "inv_laplacian_var",
+    "inv_hist_entropy",
+    "inv_dct_hf_lf"
+   ],
+   "threshold": 0.0,
+   "ood_auroc": 0.781,
+   "ood_balacc": 0.7325,
+   "ood_auroc_ci95_window_bootstrap_optimistic": [
+    0.6824,
+    0.8676
+   ],
+   "ood_auroc_ci95_factory_grouped_honest": [
+    0.6344,
+    0.8952
+   ],
+   "ood_balacc_ci95_factory_grouped_honest": [
+    0.6285,
+    0.8302
+   ],
+   "indego_auroc": 0.7364,
+   "indego_balacc": 0.68,
+   "indego_feature_auroc": {
+    "radial_slope": 0.6334,
+    "hf_ratio": 0.6182,
+    "dct_energy": 0.6306,
+    "luma_p05": 0.3924,
+    "global_shift": 0.3761,
+    "illum_r": 0.4898,
+    "illum_b": 0.5278,
+    "zncc_self": 0.5738,
+    "ct_fsize_std": 0.6202,
+    "mo_hand_motion_excess": 0.6492,
+    "inv_clip_frac": 0.6564,
+    "inv_laplacian_var": 0.6412,
+    "inv_hist_entropy": 0.5342,
+    "inv_dct_hf_lf": 0.31
+   },
+   "indego_signs": {
+    "radial_slope": 1,
+    "hf_ratio": 1,
+    "dct_energy": 1,
+    "luma_p05": -1,
+    "global_shift": -1,
+    "illum_r": -1,
+    "illum_b": 1,
+    "zncc_self": 1,
+    "ct_fsize_std": 1,
+    "mo_hand_motion_excess": 1,
+    "inv_clip_frac": 1,
+    "inv_laplacian_var": 1,
+    "inv_hist_entropy": 1,
+    "inv_dct_hf_lf": -1
+   },
+   "ood_batch_split": {
+    "q1": {
+     "n": 60,
+     "n_good": 51,
+     "n_bad": 9,
+     "auroc": 0.8431,
+     "balacc": 0.7876,
+     "auroc_ci95_factory_grouped_honest": [
+      0.7204,
+      0.9514
+     ]
+    },
+    "q2": {
+     "n": 100,
+     "n_good": 87,
+     "n_bad": 13,
+     "auroc": 0.7339,
+     "balacc": 0.6989,
+     "auroc_ci95_factory_grouped_honest": [
+      0.5395,
+      0.8912
+     ]
+    }
+   }
+  },
+  {
+   "recipe": "(b2) E5 stable-8 minus global_shift + Z3-6",
+   "method": "per-domain z-score, IndEgo-signed, equal-weight mean",
+   "n_features": 13,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "luma_p05",
+    "illum_r",
+    "illum_b",
+    "zncc_self",
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_clip_frac",
+    "inv_laplacian_var",
+    "inv_hist_entropy",
+    "inv_dct_hf_lf"
+   ],
+   "threshold": 0.0,
+   "ood_auroc": 0.7875,
+   "ood_balacc": 0.7289,
+   "ood_auroc_ci95_window_bootstrap_optimistic": [
+    0.6917,
+    0.8709
+   ],
+   "ood_auroc_ci95_factory_grouped_honest": [
+    0.6476,
+    0.8983
+   ],
+   "ood_balacc_ci95_factory_grouped_honest": [
+    0.6236,
+    0.832
+   ],
+   "indego_auroc": 0.727,
+   "indego_balacc": 0.665,
+   "indego_feature_auroc": {
+    "radial_slope": 0.6334,
+    "hf_ratio": 0.6182,
+    "dct_energy": 0.6306,
+    "luma_p05": 0.3924,
+    "illum_r": 0.4898,
+    "illum_b": 0.5278,
+    "zncc_self": 0.5738,
+    "ct_fsize_std": 0.6202,
+    "mo_hand_motion_excess": 0.6492,
+    "inv_clip_frac": 0.6564,
+    "inv_laplacian_var": 0.6412,
+    "inv_hist_entropy": 0.5342,
+    "inv_dct_hf_lf": 0.31
+   },
+   "indego_signs": {
+    "radial_slope": 1,
+    "hf_ratio": 1,
+    "dct_energy": 1,
+    "luma_p05": -1,
+    "illum_r": -1,
+    "illum_b": 1,
+    "zncc_self": 1,
+    "ct_fsize_std": 1,
+    "mo_hand_motion_excess": 1,
+    "inv_clip_frac": 1,
+    "inv_laplacian_var": 1,
+    "inv_hist_entropy": 1,
+    "inv_dct_hf_lf": -1
+   },
+   "dropped_vs_b": [
+    "global_shift"
+   ],
+   "ood_batch_split": {
+    "q1": {
+     "n": 60,
+     "n_good": 51,
+     "n_bad": 9,
+     "auroc": 0.854,
+     "balacc": 0.7582,
+     "auroc_ci95_factory_grouped_honest": [
+      0.7423,
+      0.9476
+     ]
+    },
+    "q2": {
+     "n": 100,
+     "n_good": 87,
+     "n_bad": 13,
+     "auroc": 0.7347,
+     "balacc": 0.7104,
+     "auroc_ci95_factory_grouped_honest": [
+      0.5373,
+      0.8909
+     ]
+    }
+   }
+  },
+  {
+   "recipe": "(c) Z1 sharpness-3 head",
+   "method": "logistic on IndEgo (C by inner LOCO), zero-shot to OOD",
+   "n_features": 3,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy"
+   ],
+   "threshold": 0.5,
+   "ood_auroc": 0.6917,
+   "ood_balacc": 0.4928,
+   "ood_auroc_ci95_window_bootstrap_optimistic": [
+    0.5883,
+    0.7919
+   ],
+   "ood_auroc_ci95_factory_grouped_honest": [
+    0.5414,
+    0.8279
+   ],
+   "ood_balacc_ci95_factory_grouped_honest": [
+    0.481,
+    0.5
+   ],
+   "indego_auroc": 0.5784,
+   "indego_balacc": 0.605,
+   "ood_batch_split": {
+    "q1": {
+     "n": 60,
+     "n_good": 51,
+     "n_bad": 9,
+     "auroc": 0.7124,
+     "balacc": 0.4902,
+     "auroc_ci95_factory_grouped_honest": [
+      0.5399,
+      0.863
+     ]
+    },
+    "q2": {
+     "n": 100,
+     "n_good": 87,
+     "n_bad": 13,
+     "auroc": 0.6826,
+     "balacc": 0.4943,
+     "auroc_ci95_factory_grouped_honest": [
+      0.483,
+      0.8523
+     ]
+    }
+   }
+  },
+  {
+   "recipe": "(c2) sharpness-3 z-score",
+   "method": "per-domain z-score, IndEgo-signed, equal-weight mean",
+   "n_features": 3,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy"
+   ],
+   "threshold": 0.0,
+   "ood_auroc": 0.6841,
+   "ood_balacc": 0.641,
+   "ood_auroc_ci95_window_bootstrap_optimistic": [
+    0.5551,
+    0.7977
+   ],
+   "ood_auroc_ci95_factory_grouped_honest": [
+    0.5345,
+    0.8267
+   ],
+   "ood_balacc_ci95_factory_grouped_honest": [
+    0.5333,
+    0.7469
+   ],
+   "indego_auroc": 0.6344,
+   "indego_balacc": 0.615,
+   "indego_feature_auroc": {
+    "radial_slope": 0.6334,
+    "hf_ratio": 0.6182,
+    "dct_energy": 0.6306
+   },
+   "indego_signs": {
+    "radial_slope": 1,
+    "hf_ratio": 1,
+    "dct_energy": 1
+   },
+   "ood_batch_split": {
+    "q1": {
+     "n": 60,
+     "n_good": 51,
+     "n_bad": 9,
+     "auroc": 0.6819,
+     "balacc": 0.634,
+     "auroc_ci95_factory_grouped_honest": [
+      0.4599,
+      0.9034
+     ]
+    },
+    "q2": {
+     "n": 100,
+     "n_good": 87,
+     "n_bad": 13,
+     "auroc": 0.679,
+     "balacc": 0.6472,
+     "auroc_ci95_factory_grouped_honest": [
+      0.4666,
+      0.8626
+     ]
+    }
+   }
+  },
+  {
+   "recipe": "(d) frozen ensemble_v1",
+   "method": "frozen two-view usable_prob (no fitting)",
+   "n_features": null,
+   "features": null,
+   "threshold": 0.5,
+   "ood_auroc": 0.566,
+   "ood_balacc": 0.5464,
+   "ood_auroc_ci95_window_bootstrap_optimistic": [
+    0.4374,
+    0.694
+   ],
+   "ood_auroc_ci95_factory_grouped_honest": [
+    0.4238,
+    0.6999
+   ],
+   "ood_balacc_ci95_factory_grouped_honest": [
+    0.444,
+    0.6607
+   ],
+   "frozen_config_sha256": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+   "missing_scores": [],
+   "ood_batch_split": {
+    "q1": {
+     "n": 60,
+     "n_good": 51,
+     "n_bad": 9,
+     "auroc": 0.415,
+     "balacc": 0.4706,
+     "auroc_ci95_factory_grouped_honest": [
+      0.1853,
+      0.634
+     ]
+    },
+    "q2": {
+     "n": 100,
+     "n_good": 87,
+     "n_bad": 13,
+     "auroc": 0.6569,
+     "balacc": 0.5893,
+     "auroc_ci95_factory_grouped_honest": [
+      0.4724,
+      0.8071
+     ]
+    }
+   }
+  }
+ ]
+}
