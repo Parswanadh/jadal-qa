@@ -73,7 +73,9 @@ OOD failure confirmed for both. Do not merge the two figures.</sub>
 | EmbeddingGemma-2 window view | 0.848 | [0.73, 0.91] |
 | probability average | 0.853 | [0.73, 0.92] |
 
-Selective accuracy: 0.74 deciding all 150 → 0.84 on the 80% most confident.
+Selective accuracy — **pixel26 view, fixed C=0.3, exploratory (not nested)**: 0.74 deciding all 150 →
+0.84 on the 80% most confident (nested pixel26 curve: 0.76 / 0.81 / 0.80). The **probability-average
+view** gives 0.79 @0.5 and 0.89 at 60% coverage (7 of 63 good wrongly rejected); EG2 gives 0.77 / 0.87.
 **~0.8 AUROC is the honest ceiling so far; accuracy is not yet high.**
 
 <sub>Source: FACTS “UPDATE 18:25 IST”; REG `E1.01`, `E1.02`.</sub>
@@ -183,6 +185,10 @@ step must earn its place in cross-validation.
   false-reject → 46% (effective n ≈ 11).
 - **Frame selection dropped** (uniform wins at equal budget, REG E1.04);
   **re-encoding to the IndEgo spec does not fix transfer** (REG E4.03).
+
+- **Duplicate detection on real labels (tested):** recall@1 = recall@3 = 0.5 on the 6 real DUPLICATE
+  windows (precision_top 0.0476, 63/150 flagged) — constructed-pair F1s (0.947/0.909/0.865) are a
+  different, easier setting and their 64-pair manifest is not on this pod.
 
 <sub>Sources: FACTS “UPDATE 18:40”, “UPDATE 18:25”, “Direction”, “UPDATE 17:50”; REG `E1.04`, `E4.03`.</sub>
 

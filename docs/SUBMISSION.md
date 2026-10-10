@@ -57,7 +57,9 @@ two figures into one.** No artifact drift: the shipped OOD score file is byte-id
 | EG2 window view, LOCO n=150 | AUROC 0.848 [0.73, 0.91] | FACTS §18:25; registry `E1.02` |
 | Probability average of the two views | AUROC 0.853 [0.73, 0.92] | FACTS §18:25 |
 | Nested validation (inner-LOCO C) | EG2 0.846, pixel 0.792, prob-avg 0.834, rank-avg 0.844 — **gates ≥0.85 / CI-low ≥0.72 NOT met** | FACTS §18:40 |
-| Selective accuracy | 0.74 at full coverage → 0.84 on the 80% most confident | FACTS §17:40 |
+| Selective accuracy, pixel26 view, fixed C=0.3, **exploratory (not nested)** | 0.74 at full coverage → 0.84 on the 80% most confident (nested pixel26 curve 0.76 / 0.81 / 0.80) | FACTS §17:40; PR #123 |
+| Selective accuracy, **probability-average view** | 0.79 at threshold 0.5 → 0.89 at 60% coverage (7 of 63 good wrongly rejected); EG2 0.77 / 0.87, pixel26 0.74 / 0.83 | PR #123 |
+| Duplicate detection on real labels | **tested:** recall@1 = recall@3 = 0.5 on the 6 real DUPLICATE windows (precision_top 0.0476, 63/150 flagged); constructed-pair F1s (0.947/0.909/0.865) are a different, easier setting and the 64-pair manifest is not on this pod (unverifiable here) | `eval/results/perpixel/m2.json` (PR #124) |
 | Sampling policy adopted (IndEgo) | every 2nd window + 4 s exit ≈ 0.20 footage (×5) | registry `E3.01`–`E3.05` |
 | Early exit | saturates at 4–6 s: 2 s 0.804, 4 s 0.860, 6 s 0.869, 8 s 0.857, full 0.848 | registry `E3.03` |
 | fps sweep (pixel view) | 10 fps 0.809; 3.33 fps within 0.02 using 34 vs 100 frames | registry `E1.01` |
@@ -79,7 +81,7 @@ Raspberry Pi measurement · Egocentric-10K accuracy (no human labels) · hypersp
 (cameras are RGB; we use RGB temporal-spectral analysis) · freshness nonce-LED · voice ·
 end-to-end GPU number · certified error bounds (needs ~86 clean fires; split has 84) ·
 end-to-end determinism proof (10 receipt hashes) · spectral arm B re-run (stale 79-label
-snapshot) · duplicates on the 6 real human DUPLICATE labels · `ood_labels2.json`
+snapshot) · `ood_labels2.json`
 (not delivered → OOD stays n=60 / n_bad=9). Registry status (union registry, 36 ids): **28 done / 7 running / 1 pending**; verdicts
 **10 adopt, 9 drop, 8 maybe, 2 inconclusive, 7 none**.
 

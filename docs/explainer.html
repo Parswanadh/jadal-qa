@@ -140,9 +140,13 @@ window-level accuracy so far”. Registry cross-check: <code>E1.01</code> (10 fp
 
 <h3>Selective accuracy (also in-domain)</h3>
 <ul>
-  <li>Deciding all 150 windows: balanced accuracy <strong>0.74</strong> (26 of 100 good windows wrongly rejected).</li>
-  <li>Keeping the 80% most confident: <strong>0.84</strong> (15 of 80 good wrongly rejected; 88% of bad rejected).</li>
-  <li>50% most confident: <strong>0.81</strong>. The curve is not monotone (small n).</li>
+  <li><em>pixel26 view, fixed C=0.3, exploratory (not nested):</em> balanced accuracy <strong>0.74</strong>
+  deciding all 150 windows (26 of 100 good wrongly rejected); <strong>0.84</strong> keeping the 80% most
+  confident (15 of 80 good wrongly rejected; 88% of bad rejected); <strong>0.81</strong> at 50%. The
+  <strong>nested</strong> pixel26 curve is <strong>0.76 / 0.81 / 0.80</strong>.</li>
+  <li><em>probability-average view:</em> <strong>0.79</strong> at threshold 0.5 and <strong>0.89</strong>
+  deciding only the 60% most confident (7 of 63 good wrongly rejected). (EG2 gives 0.77 @0.5 and 0.87 @60%;
+  pixel26 gives 0.74 and 0.83 — only the prob-average view matches the FACTS sentence.)</li>
   <li><strong>~0.8 AUROC is the honest ceiling so far</strong> — accuracy is <em>not</em> yet high.</li>
 </ul>
 <p class="src">Source: <code>docs/FACTS.md</code>, “UPDATE 2026-10-10 17:40 IST”, bullet “Selective accuracy”.</p>
@@ -160,7 +164,6 @@ window-level accuracy so far”. Registry cross-check: <code>E1.01</code> (10 fp
   <tr><td>Certified error bounds</td><td><span class="tag pend">in progress</span></td><td>not achievable at n=150: multiple-testing correction needs ~86 clean fires (certification split has 84); windows within a clip are correlated</td></tr>
   <tr><td>End-to-end determinism proof (10 identical receipt hashes)</td><td><span class="tag pend">in progress</span></td><td>CPU feature path gives an identical quantised digest over 10 runs; GPU numerics are not claimed identical across devices</td></tr>
   <tr><td>Spectral arm B re-run</td><td><span class="tag pend">in progress</span></td><td>scored only on a stale 79-label snapshot (0.64–0.68, CI spans 0.5)</td></tr>
-  <tr><td>Duplicate detection on the 6 real human DUPLICATE labels</td><td><span class="tag pend">in progress</span></td><td>only 64 constructed pairs are measured</td></tr>
 </table>
 <p class="src">Sources: <code>docs/FACTS.md</code>, “Direction”, “Data and ground truth”, “Measured results so
 far”, and both UPDATE sections; <code>experiments/registry.jsonl</code> entry <code>E5.04</code> for
@@ -177,6 +180,7 @@ far”, and both UPDATE sections; <code>experiments/registry.jsonl</code> entry 
   <tr><td>Frame selection (motion-adaptive / keyframe / random)</td><td><strong>DROPPED.</strong> At an equal 20-frame budget, uniform 0.787 [0.650, 0.866] beats motion-adaptive 0.762, keyframe 0.780, random 0.739; all CIs overlap, no arm reduces decode cost.</td><td>registry <code>E1.04</code></td></tr>
   <tr><td>Skip-the-start rule</td><td><strong>NOT SUPPORTED</strong> (IndEgo error 0.088 → 0.418; no OOD position effect, Mann-Whitney p=0.42, n_bad=9 thin).</td><td>FACTS 20:00; registry <code>E3.02</code></td></tr>
   <tr><td>Re-encoding to the IndEgo spec fixes transfer</td><td><strong>NO.</strong> Container match does not fix the content gap; frozen-ensemble OOD AUROC 0.415 (n=60, n_bad=9, exploratory) not improved.</td><td>registry <code>E4.03</code></td></tr>
+  <tr><td>Duplicate detection on the 6 real human DUPLICATE windows</td><td><strong>tested:</strong> recall@1 = recall@3 = 0.5 on the 6 real DUPLICATE windows (precision_top 0.0476, 63/150 flagged). The constructed-pair F1s (0.947 / 0.909 / 0.865) are a different, easier setting, and the 64-pair manifest is not present on this pod (unverifiable here).</td><td><code>eval/results/perpixel/m2.json</code> (PR #124)</td></tr>
 </table>
 
 <h2>5 · Evidence, cost and hardware (measured)</h2>
