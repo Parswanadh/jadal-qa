@@ -1093,7 +1093,10 @@ class TestFunnelSeam(BucketCase):
 # receipt ``versions`` keys that only exist when model files are present on
 # disk (see pipeline.impl_versions). Dropped from BOTH sides of the api-example
 # drift comparison so the result is the same with and without models/.
-ENV_DEPENDENT_VERSION_KEYS = frozenset({"face_detector_task", "hand_landmarker_task"})
+ENV_DEPENDENT_VERSION_KEYS = frozenset({
+    "face_detector_task", "hand_landmarker_task",  # weight-file tokens
+    "signals_backend",  # only present when the real signals module imports
+})
 
 
 def _env_free(obj):
@@ -1270,7 +1273,15 @@ class TestRiskCoverageHeads(BucketCase):
         assert spec is not None and spec.loader is not None
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
-        live = mod.build_examples()
+        # The receipt body (and so receipt_id, and which receipt the batch
+        # lists first) hashes config.versions, which carries the sha256 of
+        # any model weight files on disk. Pin the weight tokens to None for
+        # the live build so the receipt matches the committed example with
+        # or without models/. The comparison below still normalises the
+        # environment-dependent version keys on both sides.
+        with mock.patch.object(pipeline, "_weight_token",
+                               new=lambda _path: None):
+            live = mod.build_examples()
         examples = ROOT / "docs" / "api_examples"
         self.assertEqual(sorted(live), sorted(
             p.stem for p in examples.glob("*.json")

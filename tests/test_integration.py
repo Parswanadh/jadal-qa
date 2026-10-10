@@ -113,22 +113,43 @@ class IntegrationCase(unittest.TestCase):
 
 
 class TestVersionProvenance(IntegrationCase):
+    _STAGE_MODULES = ("signals", "decision", "segmenter")
+
     def test_impl_versions_names_stubs_until_real_modules_merge(self) -> None:
-        versions = pipeline.impl_versions(self.cfg)
+        # Force stub mode: block the real L0/L1/segmenter imports so the
+        # stub tags are reported whether or not the modules exist on disk.
+        blocked = tuple(f"jadal.{name}" for name in self._STAGE_MODULES)
+        with stubs.blocked_imports(*blocked):
+            versions = pipeline.impl_versions(self.cfg)
         self.assertEqual(versions["certify"], "jadal.certify")
         self.assertEqual(versions["receipts"], "jadal.receipts")
         self.assertIn("python", versions)
-        try:
-            __import__("jadal.signals", fromlist=["compute_signals"])
-            real_signals = True
-        except ImportError:
-            real_signals = False
-        if real_signals:
-            self.assertEqual(versions["signals"], "jadal.signals")
-        else:
-            self.assertEqual(versions["signals"], "stubs.signals")
-            self.assertEqual(versions["decision"], "stubs.decision")
-            self.assertEqual(versions["segmenter"], "stubs.segmenter")
+        self.assertEqual(versions["signals"], "stubs.signals")
+        self.assertEqual(versions["decision"], "stubs.decision")
+        self.assertEqual(versions["segmenter"], "stubs.segmenter")
+
+    def test_impl_versions_names_real_modules_when_importable(self) -> None:
+        # Real-module path: only meaningful once a stage module is importable
+        # (same test impl_versions itself uses: module + attr not None).
+        # Skipped per stage when absent, so it holds with or without merges.
+        expected = {"signals": ("compute_signals", "stubs.signals"),
+                    "decision": ("Decider", "stubs.decision"),
+                    "segmenter": ("split_clip", "stubs.segmenter")}
+        real = {}
+        for name, (attr, _stub) in expected.items():
+            try:
+                mod = __import__(f"jadal.{name}", fromlist=[attr])
+            except ImportError:
+                continue
+            if getattr(mod, attr, None) is not None:
+                real[name] = f"jadal.{name}"
+        if not real:
+            self.skipTest("no real jadal.signals/decision/segmenter importable")
+        versions = pipeline.impl_versions(self.cfg)
+        for name, want in real.items():
+            with self.subTest(stage=name):
+                self.assertEqual(versions[name], want)
+                self.assertFalse(versions[name].startswith("stubs."))
 
     def test_weight_token_hashes_real_files_and_skips_missing(self) -> None:
         self.assertIsNone(pipeline._weight_token(None))

@@ -71,23 +71,18 @@ _ABSENT = object()  # sys.modules sentinel for _block_signals_import
 
 @contextlib.contextmanager
 def _block_signals_import():
-    """Simulate ``jadal.signals`` being absent.
+    """Simulate ``jadal.signals`` being absent, whether or not it is real.
 
-    ``None`` in ``sys.modules`` makes ``from jadal import signals`` raise
-    ``ImportError`` whether or not the real module is importable. The
-    previous entry (or absence) is restored by key diff — ``sys.modules``
-    itself is never cleared or replaced.
+    Delegates to ``stubs.blocked_imports``: it sets ``sys.modules`` entry to
+    ``None`` AND drops the cached ``jadal.signals`` attribute on the parent
+    package (``from jadal import signals`` consults that attribute before
+    ``sys.modules``, so ``None`` alone is not enough once the real module has
+    been imported somewhere in the process). Both are restored afterwards by
+    key diff; ``sys.modules`` itself is never cleared or replaced.
     """
-    key = "jadal.signals"
-    previous = sys.modules.get(key, _ABSENT)
-    sys.modules[key] = None
-    try:
+    from jadal import stubs
+    with stubs.blocked_imports("jadal.signals"):
         yield
-    finally:
-        if previous is _ABSENT:
-            sys.modules.pop(key, None)
-        else:
-            sys.modules[key] = previous
 
 
 def sig(**over) -> dict:
