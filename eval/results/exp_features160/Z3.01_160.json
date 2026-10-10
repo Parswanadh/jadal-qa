@@ -1,0 +1,433 @@
+{
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "n_factories": 47,
+ "n_indego": 150,
+ "n_good_indego": 100,
+ "n_bad_indego": 50,
+ "label_source": "human (IndEgo manifest_gold n=150 + Egocentric-10K ood160_labels.json n=160: 138 good / 22 bad, 47 factories; merge of q1=60 + q2=100, single labeller)",
+ "protocol": "signed AUROC per feature, label 1 = usable/good; IndEgo CI = clip-bootstrap (7 clips); OOD-160 CI = FACTORY-GROUPED bootstrap (honest, n_boot=2000, seed=0), window-bootstrap kept as the optimistic comparison. E5.03 class rule.",
+ "supersedes": {
+  "branch": "m/new-features",
+  "pr": 127,
+  "n_ood": 60
+ },
+ "device": "CPU (numpy/sklearn; decode done by the O/Z agents, no GPU here)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_features160/run_z3_160.py",
+ "experiment": "Z3.01_160",
+ "title": "Z3 candidate transfer table on OOD-160",
+ "counts_160": {
+  "flip": 10,
+  "chance": 1,
+  "stable": 9
+ },
+ "table": [
+  {
+   "feature": "ct_bitrate",
+   "indego_auroc": 0.3762,
+   "indego_ci95": [
+    0.1894,
+    0.6081
+   ],
+   "ood160_auroc": 0.609,
+   "ood160_ci95_factory_grouped": [
+    0.4847,
+    0.7257
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.4936,
+    0.7182
+   ],
+   "class_160": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "ct_fsize_mean",
+   "indego_auroc": 0.3762,
+   "indego_ci95": [
+    0.1894,
+    0.6081
+   ],
+   "ood160_auroc": 0.6482,
+   "ood160_ci95_factory_grouped": [
+    0.5263,
+    0.7674
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.5121,
+    0.7669
+   ],
+   "class_160": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "ct_fsize_cv",
+   "indego_auroc": 0.7318,
+   "indego_ci95": [
+    0.5404,
+    0.8203
+   ],
+   "ood160_auroc": 0.4802,
+   "ood160_ci95_factory_grouped": [
+    0.33,
+    0.6245
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.3497,
+    0.6102
+   ],
+   "class_160": "flip",
+   "indego_sign": "high-usable",
+   "ood_sign": "low-usable"
+  },
+  {
+   "feature": "ct_iframe_ratio",
+   "indego_auroc": 0.4794,
+   "indego_ci95": [
+    0.4123,
+    0.5298
+   ],
+   "ood160_auroc": 0.5366,
+   "ood160_ci95_factory_grouped": [
+    0.3888,
+    0.6769
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.4072,
+    0.6636
+   ],
+   "class_160": "chance",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "ct_fsize_entropy",
+   "indego_auroc": 0.2638,
+   "indego_ci95": [
+    0.1885,
+    0.4451
+   ],
+   "ood160_auroc": 0.4888,
+   "ood160_ci95_factory_grouped": [
+    0.3729,
+    0.6166
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.3539,
+    0.624
+   ],
+   "class_160": "stable",
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable"
+  },
+  {
+   "feature": "ct_iframe_frac",
+   "indego_auroc": 0.3505,
+   "indego_ci95": [
+    0.3129,
+    0.4315
+   ],
+   "ood160_auroc": 0.4727,
+   "ood160_ci95_factory_grouped": [
+    0.3317,
+    0.6136
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.3319,
+    0.6084
+   ],
+   "class_160": "stable",
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable"
+  },
+  {
+   "feature": "ct_fsize_std",
+   "indego_auroc": 0.6202,
+   "indego_ci95": [
+    0.4134,
+    0.7537
+   ],
+   "ood160_auroc": 0.6495,
+   "ood160_ci95_factory_grouped": [
+    0.4619,
+    0.8183
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.5093,
+    0.7729
+   ],
+   "class_160": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_trans_resid",
+   "indego_auroc": 0.3012,
+   "indego_ci95": [
+    0.1589,
+    0.5234
+   ],
+   "ood160_auroc": 0.666,
+   "ood160_ci95_factory_grouped": [
+    0.5422,
+    0.7909
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.5486,
+    0.7801
+   ],
+   "class_160": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_affine_resid",
+   "indego_auroc": 0.3222,
+   "indego_ci95": [
+    0.167,
+    0.5483
+   ],
+   "ood160_auroc": 0.7269,
+   "ood160_ci95_factory_grouped": [
+    0.6138,
+    0.8328
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.5998,
+    0.841
+   ],
+   "class_160": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_affine_gain",
+   "indego_auroc": 0.3042,
+   "indego_ci95": [
+    0.1882,
+    0.4628
+   ],
+   "ood160_auroc": 0.4931,
+   "ood160_ci95_factory_grouped": [
+    0.37,
+    0.6497
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.3623,
+    0.624
+   ],
+   "class_160": "stable",
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable"
+  },
+  {
+   "feature": "mo_hand_trans_resid",
+   "indego_auroc": 0.453,
+   "indego_ci95": [
+    0.3311,
+    0.5974
+   ],
+   "ood160_auroc": 0.695,
+   "ood160_ci95_factory_grouped": [
+    0.5818,
+    0.817
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.5763,
+    0.8048
+   ],
+   "class_160": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_hand_affine_resid",
+   "indego_auroc": 0.4798,
+   "indego_ci95": [
+    0.3605,
+    0.6284
+   ],
+   "ood160_auroc": 0.7437,
+   "ood160_ci95_factory_grouped": [
+    0.6572,
+    0.8315
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.639,
+    0.8431
+   ],
+   "class_160": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_hand_motion_excess",
+   "indego_auroc": 0.6492,
+   "indego_ci95": [
+    0.5809,
+    0.7197
+   ],
+   "ood160_auroc": 0.6077,
+   "ood160_ci95_factory_grouped": [
+    0.481,
+    0.7456
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.4953,
+    0.713
+   ],
+   "class_160": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_motion_frac",
+   "indego_auroc": 0.3082,
+   "indego_ci95": [
+    0.1632,
+    0.5221
+   ],
+   "ood160_auroc": 0.6462,
+   "ood160_ci95_factory_grouped": [
+    0.5243,
+    0.7783
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.5252,
+    0.7591
+   ],
+   "class_160": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "inv_dct_hf_lf",
+   "indego_auroc": 0.31,
+   "indego_ci95": [
+    0.2308,
+    0.4564
+   ],
+   "ood160_auroc": 0.2437,
+   "ood160_ci95_factory_grouped": [
+    0.1174,
+    0.3886
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.1461,
+    0.3505
+   ],
+   "class_160": "stable",
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable"
+  },
+  {
+   "feature": "inv_noise_snr",
+   "indego_auroc": 0.5054,
+   "indego_ci95": [
+    0.3955,
+    0.6646
+   ],
+   "ood160_auroc": 0.3416,
+   "ood160_ci95_factory_grouped": [
+    0.1709,
+    0.5461
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.2085,
+    0.4965
+   ],
+   "class_160": "flip",
+   "indego_sign": "high-usable",
+   "ood_sign": "low-usable"
+  },
+  {
+   "feature": "inv_clip_frac",
+   "indego_auroc": 0.6564,
+   "indego_ci95": [
+    0.4636,
+    0.7518
+   ],
+   "ood160_auroc": 0.6614,
+   "ood160_ci95_factory_grouped": [
+    0.4508,
+    0.8594
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.5104,
+    0.7955
+   ],
+   "class_160": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "inv_hist_entropy",
+   "indego_auroc": 0.5342,
+   "indego_ci95": [
+    0.3445,
+    0.7133
+   ],
+   "ood160_auroc": 0.7141,
+   "ood160_ci95_factory_grouped": [
+    0.5581,
+    0.8456
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.5913,
+    0.8231
+   ],
+   "class_160": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "inv_dhash_dist",
+   "indego_auroc": 0.2023,
+   "indego_ci95": [
+    0.1251,
+    0.368
+   ],
+   "ood160_auroc": 0.5262,
+   "ood160_ci95_factory_grouped": [
+    0.3749,
+    0.6888
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.3961,
+    0.6596
+   ],
+   "class_160": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "inv_laplacian_var",
+   "indego_auroc": 0.6412,
+   "indego_ci95": [
+    0.4365,
+    0.7626
+   ],
+   "ood160_auroc": 0.7177,
+   "ood160_ci95_factory_grouped": [
+    0.5655,
+    0.8519
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.6017,
+    0.8277
+   ],
+   "class_160": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  }
+ ],
+ "counts_60_old": {
+  "stable": 9,
+  "flip": 11,
+  "chance": 0
+ }
+}
