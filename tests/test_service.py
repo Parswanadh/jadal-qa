@@ -35,6 +35,35 @@ from jadal.pipeline import thresholds_snapshot  # noqa: E402
 from jadal import store as store_mod  # noqa: E402
 from jadal.service import create_app  # noqa: E402
 
+
+def pin_hard_reject_policy(testcase, policy: str) -> None:
+    """Select a hard_reject_policy the way production does: via thresholds JSON.
+
+    The policy is read from the ``hard_reject_policy`` key of the funnel
+    thresholds file (``funnel.DEFAULT_THRESHOLDS_PATH``). The shipped default
+    is ``integrity_only``, under which quality (evidence) rejects demote to
+    review. The suites below predate that default and assert hard
+    ``reject`` verdicts from stub signals, so they pin ``evidence_reject``
+    explicitly. The copy is re-hashed so the fail-closed hash check passes;
+    the shipped file is never modified.
+    """
+    from jadal import funnel as funnel_mod
+    shipped = Path(funnel_mod.DEFAULT_THRESHOLDS_PATH)
+    data = json.loads(shipped.read_text(encoding="utf-8"))
+    data.pop("sha256", None)
+    data["hard_reject_policy"] = policy
+    # The shipped default profile does not require visible hands (only
+    # 'assembly' does), so a hands miss would demote to review. These suites
+    # assert hard hands rejects for every clip, so enforce hands on the
+    # default profile too (the same profiles map production reads).
+    data["profiles"] = {"default": {"requires_hands": True}}
+    data["sha256"] = funnel_mod.thresholds_hash(data)
+    path = Path(testcase._tmp.name) / f"thresholds_{policy}.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    old = funnel_mod.DEFAULT_THRESHOLDS_PATH
+    funnel_mod.DEFAULT_THRESHOLDS_PATH = path
+    testcase.addCleanup(setattr, funnel_mod, "DEFAULT_THRESHOLDS_PATH", old)
+
 PASS_SIGNALS = {
     "decodable": True, "blur_var": 120.0, "brightness_mean": 90.0,
     "under_exposed_frac": 0.0, "over_exposed_frac": 0.02, "motion_mean": 2.0,
@@ -266,6 +295,12 @@ class TestStubsAndStore(BucketCase):
 class TestPipeline(BucketCase):
     """Pipeline behaviour: verdict reasons, batch rule wiring, determinism."""
 
+    def setUp(self) -> None:
+        super().setUp()
+        # Reject-code and batch-rule tests need hard evidence rejects; the
+        # shipped default (integrity_only) demotes them to review.
+        pin_hard_reject_policy(self, "evidence_reject")
+
     def segments_for(self, *paths: str):
         return [pipeline.process_clip(p, "w", "s", self.cfg) for p in paths]
 
@@ -409,6 +444,9 @@ class TestServiceAcceptance(BucketCase):
 
     def setUp(self) -> None:
         super().setUp()
+        # Batch-rule (k) acceptance counts hard evidence rejects: select
+        # evidence_reject explicitly (see pin_hard_reject_policy).
+        pin_hard_reject_policy(self, "evidence_reject")
         store_mod.init_db(self.cfg.db_path)
         # large max-age: batches here fire on N only (no timeout races)
         self.app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
@@ -685,6 +723,26 @@ class TestServiceAcceptance(BucketCase):
                     r = c.get("/stats/risk_coverage")
                     self.assertEqual(r.status_code, 200)
                     self.assertEqual(r.json(), [])
+
+
+class TestDefaultHardRejectPolicy(BucketCase):
+    """No policy pinned: the shipped default (integrity_only) must hold."""
+
+    def test_shipped_default_is_integrity_only(self) -> None:
+        from jadal import funnel as funnel_mod
+        shipped = json.loads(Path(funnel_mod.DEFAULT_THRESHOLDS_PATH)
+                             .read_text(encoding="utf-8"))
+        self.assertEqual(shipped.get("hard_reject_policy"), "integrity_only")
+
+    def test_default_demotes_quality_reject_to_review(self) -> None:
+        path = self.fake_clip("blurry_default.mp4", signals={"blur_var": 5.0})
+        segs = [s for group in [pipeline.process_clip(path, "w", "s", self.cfg)]
+                for s in group]
+        batch, _receipts = pipeline.run_batch(segs, self.cfg)
+        verdict = batch["verdicts"][0]
+        self.assertEqual(verdict["verdict"], "review")
+        self.assertIn("BLUR", verdict["reasons"])
+        self.assertIn("BLUR", [e["code"] for e in verdict["evidence"]])
 
 
 class TestWatcher(BucketCase):
@@ -1032,6 +1090,27 @@ class TestFunnelSeam(BucketCase):
             pipeline.run_batch(segs, self.cfg)
 
 
+# receipt ``versions`` keys that only exist when model files are present on
+# disk (see pipeline.impl_versions). Dropped from BOTH sides of the api-example
+# drift comparison so the result is the same with and without models/.
+ENV_DEPENDENT_VERSION_KEYS = frozenset({"face_detector_task", "hand_landmarker_task"})
+
+
+def _env_free(obj):
+    """Copy of ``obj`` with environment-dependent version keys removed."""
+    if isinstance(obj, dict):
+        out = {}
+        for k, v in obj.items():
+            if k == "versions" and isinstance(v, dict):
+                v = {vk: vv for vk, vv in v.items()
+                     if vk not in ENV_DEPENDENT_VERSION_KEYS}
+            out[k] = _env_free(v)
+        return out
+    if isinstance(obj, list):
+        return [_env_free(v) for v in obj]
+    return obj
+
+
 class TestRiskCoverageHeads(BucketCase):
     """Per-head /stats/risk_coverage entries from real measurement files."""
 
@@ -1208,7 +1287,7 @@ class TestRiskCoverageHeads(BucketCase):
                     continue
                 expected = json.loads(
                     (examples / f"{name}.json").read_text(encoding="utf-8"))
-                self.assertEqual(payload, expected)
+                self.assertEqual(_env_free(payload), _env_free(expected))
 
 
 class TestHubMount(BucketCase):
