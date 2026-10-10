@@ -225,34 +225,58 @@ def main() -> int:
     if args.folds:
         d = json.load(open(args.folds))
         folds = d["folds"]
-        y = np.concatenate([f["y"] for f in folds])
-        p = np.concatenate([f["pred"] for f in folds])
-        clip = np.concatenate([[f["held_out_clip"]] * len(f["y"]) for f in folds])
-        reason = np.concatenate([f["reason"] for f in folds])
-        res = {
-            "auroc": auroc(y, p), "ci": cluster_bootstrap_ci(y, p, clip), "n": int(len(y)),
-            "n_good": int((y == 1).sum()), "n_bad": int((y == 0).sum()),
-            "per_clip": {c: {"auroc": auroc(y[clip == c], p[clip == c]),
-                             "n": int((clip == c).sum()),
-                             "n_bad": int((y[clip == c] == 0).sum())} for c in sorted(set(clip))},
-            "risk_coverage": risk_coverage(y, p),
-            "config": d.get("config"), "G": d.get("G"), "top_m": d.get("top_m"),
-            "params": d.get("params"),
+        # Report the headline number on the 150 REAL human-labelled windows only.
+        # Synthetic negatives are true-by-construction and are training material;
+        # including them in the test set would inflate the score, so they are
+        # excluded here and reported separately.
+        def is_synth(f):
+            return np.array([r == "SYNTHETIC" for r in f["reason"]])
+        real_mask = np.concatenate([~is_synth(f) for f in folds])
+        y_all = np.concatenate([f["y"] for f in folds])
+        p_all = np.concatenate([f["pred"] for f in folds])
+        clip_all = np.concatenate([[f["held_out_clip"]] * len(f["y"]) for f in folds])
+        reason_all = np.concatenate([f["reason"] for f in folds])
+
+        def block(y, p, clip, reason, label):
+            r = {
+                "auroc": auroc(y, p), "ci": cluster_bootstrap_ci(y, p, clip), "n": int(len(y)),
+                "n_good": int((y == 1).sum()), "n_bad": int((y == 0).sum()),
+                "per_clip": {c: {"auroc": auroc(y[clip == c], p[clip == c]),
+                                 "n": int((clip == c).sum()),
+                                 "n_bad": int((y[clip == c] == 0).sum())} for c in sorted(set(clip))},
+                "risk_coverage": risk_coverage(y, p),
+                "balanced_accuracy_at_0.5": balanced_accuracy(y, (p >= 0.5).astype(int)),
+                "label_source": label,
+            }
+            rec = {}
+            reason = np.array([("" if r is None else str(r)) for r in reason])
+            for rr in sorted(set(reason)):
+                m = (reason == rr) | (y == 1)
+                if rr and (reason == rr).sum() >= 3:
+                    rec[rr] = {"n": int((reason == rr).sum()),
+                               "auroc_good_vs_this": auroc(y[m], p[m]),
+                               "recall_at_0.5": float((p[reason == rr] < 0.5).mean())}
+            r["per_reason"] = rec
+            return r
+
+        res = block(y_all[real_mask], p_all[real_mask], clip_all[real_mask],
+                    reason_all[real_mask], "human gold, 150 windows, 7 clips, one labeller")
+        res["config"] = d.get("configs", [d.get("config")])[0]
+        res["G"] = d.get("G")
+        res["top_m"] = d.get("top_m")
+        res["params"] = d.get("params")
+        res["synthetic_note"] = ("Synthetic-by-construction negatives are EXCLUDED from this "
+                                 "headline number and reported under with_synthetic.")
+        res["with_synthetic"] = {
+            "auroc": auroc(y_all, p_all),
+            "ci": cluster_bootstrap_ci(y_all, p_all, clip_all),
+            "n": int(len(y_all)),
+            "note": "inflated by construction; not an accuracy estimate",
         }
-        # threshold chosen on a held-out-fold basis is NOT possible here (the fold
-        # model already saw no test data), so the operating point is reported at a
-        # fixed 0.5 and as a coverage curve instead of a tuned threshold.
-        res["balanced_accuracy_at_0.5"] = balanced_accuracy(y, (p >= 0.5).astype(int))
-        rec = {}
-        for r in sorted(set(reason)):
-            m = (reason == r) | (y == 1)
-            if r and (reason == r).sum() >= 3:
-                rec[r] = {"n": int((reason == r).sum()),
-                          "auroc_good_vs_this": auroc(y[m], p[m]),
-                          "recall_at_0.5": float((p[reason == r] < 0.5).mean())}
-        res["per_reason"] = rec
         out["results"]["rhythm_ensemble"] = res
-        print("rhythm_ensemble", round(res["auroc"], 3), res["ci"], flush=True)
+        print("rhythm_ensemble (150 real) AUROC", round(res["auroc"], 3), res["ci"], flush=True)
+        print("  per-clip:", {k: round(v["auroc"], 3) for k, v in res["per_clip"].items()}, flush=True)
+        print("  with synthetic:", round(res["with_synthetic"]["auroc"], 3), flush=True)
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     json.dump(out, open(args.out, "w"), indent=1)
