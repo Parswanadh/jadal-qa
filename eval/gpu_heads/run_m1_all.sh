@@ -3,6 +3,7 @@
 # Logs to eval/results/gpu_heads/m1_all.log
 cd /home/parshu/projects/jadal-qa-wt/gpu-heads || exit 1
 export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 CUBLAS_WORKSPACE_CONFIG=:4096:8
+export PYTHONPATH=/home/parshu/projects/jadal-qa-wt/gpu-heads
 PY=/home/parshu/envs/jadal/bin/python
 LOCK=/home/parshu/projects/jadal-qa-wt/tools/gpu.lock
 LOG=eval/results/gpu_heads/m1_all.log
