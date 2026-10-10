@@ -8,7 +8,9 @@ no dependencies) if anything is broken.
 
 0:00 — "Real factory head-camera video (Egocentric-10K, 1080p HEVC) goes
 through the quality funnel LIVE, in 2-second chunks, as if a worker were
-recording right now."
+recording right now." (Say it plainly: the clip is real, but the blackout
+below is scripted, not from the footage. The Live panel says so on screen:
+"scripted blackout injected at t=12 s (not from the footage)".)
 Point at the terminal: each `chunk` line = one 2 s slice judged in isolation:
 `t, running_score, decision`.
 
@@ -16,7 +18,8 @@ Point at the terminal: each `chunk` line = one 2 s slice judged in isolation:
 (watching) then `accept` when the 10 s window completes above the operating
 point." (Amber Pico LED = watching, green = accept.)
 
-1:10 — "Now I cut the feed — a lens-covered blackout at t=12 s."
+1:10 — "Now I cut the feed — a lens-covered blackout at t=12 s." Say it is
+scripted: the blackout is injected at t=12 s (not from the footage).
 Watch: the very next chunk flips to `early_reject`, evidence on screen:
 `S0 rule black p95=0.0 < 0.03`. Time-to-reject: **0.0 s of video** (same
 2 s chunk; freeze degradation also 0.0 s via `frozen temp_e < 5e-4`).

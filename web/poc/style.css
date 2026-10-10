@@ -187,3 +187,7 @@ table.claims th { color: var(--ink-2); }
 .foot { border-top: 1px solid var(--rule); padding: var(--s4) 0 var(--s6);
   color: var(--ink-2); font-size: 0.8125rem; }
 .foot-note { margin-top: var(--s1); }
+
+/* scripted-event label on the Live panel: visibly not footage */
+.note { margin: 0 0 var(--s3); padding: var(--s2) var(--s3); border-left: 3px solid var(--ink-2);
+  background: var(--surface); color: var(--ink-2); font-size: 0.875rem; }

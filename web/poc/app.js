@@ -252,7 +252,7 @@ async function loadGallery() {
   if (wid && !$("drawer")?.open && $("drawer").hidden) openDrawer(wid);
 }
 
-/* pitch mode: 12 accepted + 12 rejected per reason */
+/* pitch mode: a SELECTION of 12 accepted + 12 rejected per reason, not a sample */
 async function pitchMode() {
   state.pitch = true;
   $("gallery").innerHTML = `<div class="empty">Collecting pitch examples…</div>`;
@@ -260,7 +260,7 @@ async function pitchMode() {
     const acc = await getJSON("/api/windows?verdict=accept&per_page=12&sort=score&order=desc");
     const reasons = (state.summary && state.summary.by_reason)
       ? Object.keys(state.summary.by_reason) : [];
-    let html = `<h2 class="view-title" style="font-size:1.1rem">Accepted (top 12 by score)</h2>`;
+    let html = `<h2 class="view-title" style="font-size:1.1rem">Accepted (top 12 by score; a selection, not a sample)</h2>`;
     html += `<div class="grid" style="margin:var(--s3) 0 var(--s5)">` + acc.windows.map(cardHTML).join("") + `</div>`;
     for (const r of reasons) {
       const d = await getJSON(`/api/windows?verdict=reject&reason=${encodeURIComponent(r)}&per_page=12`);
@@ -268,7 +268,7 @@ async function pitchMode() {
       html += `<div class="grid" style="margin:var(--s3) 0 var(--s5)">` + d.windows.map(cardHTML).join("") + `</div>`;
     }
     $("gallery").innerHTML = html;
-    $("gallery-meta").textContent = "Pitch set: 12 accepted + 12 rejected per reason. Change any filter to exit.";
+    $("gallery-meta").textContent = "Pitch examples: a selection, not a sample (12 accepted + 12 rejected per reason). Change any filter to exit.";
     wireCards();
   } catch (e) {
     $("gallery").innerHTML = `<div class="empty">Could not build pitch set (${esc(e.message)}).</div>`;

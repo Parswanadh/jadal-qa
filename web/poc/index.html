@@ -136,6 +136,7 @@
       </div>
       <div class="view-actions"><button class="btn" id="live-refresh" type="button">Refresh</button></div>
     </div>
+    <p class="note" id="live-note">Replay: a real clip, with a scripted blackout injected at t=12 s (not from the footage).</p>
     <div id="live-body" aria-live="polite"></div>
   </section>
 
@@ -182,6 +183,9 @@
             <tr><td>Signed receipts</td><td><span class="chip chip-reject">not claimed (hashed, not signed)</span></td></tr>
           </tbody>
         </table>
+        <p class="micro">Evidence files: <span class="mono">eval/results/poc/run_summary.json</span> (batch counts),
+          <span class="mono">eval/results/poc/ood_check_60.json</span> (out-of-domain check; two other scorers are reported, not recomputed),
+          <span class="mono">eval/results/gpu/cascade.json</span> (IndEgo LOCO, shipped S1 head). Narrative: <span class="mono">docs/POC_STATUS.md</span>.</p>
       </div>
     </div>
   </section>
