@@ -472,3 +472,4 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Decision:** 
 - **Cost:** 
 - **Results:** docs/reports/branch_triage.md
+| Q5.01 | Q5 | Deterministic physics rules: full-corpus run + atomic latency | done | `eval/results/exp_phys_full/Q5.01.json` |
