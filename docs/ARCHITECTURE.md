@@ -9,6 +9,10 @@ Status labels used below:
 - **open PR #N**: implemented on a branch, not yet merged.
 - **in progress #N** / **planned**: no merged code yet.
 
+## Environment
+
+The pipeline runs in a Python 3.12 conda env with torch+cu130 (CUDA user-space wheels inside the env; the NVIDIA driver is not changed). Set the path to that env locally; it is not stored in this repo. Use `PYTHONNOUSERSITE=1` so user-site packages do not shadow the env.
+
 ## Data flow
 
 ```
@@ -22,7 +26,7 @@ Status labels used below:
  |                                        (stub on main)                       |
  |  L0 signals     compute_signals()      signals.py      open PR #12          |
  |                                        (stub on main)                       |
- |  L1 decisions   Decider.decide()       decision.py     in progress #7       |
+ |  L1 decisions   Decider.decide()       decision.py     open PR #20          |
  |                                        (stub on main)                       |
  |  L2 certify     pick_threshold()       certify.py      real (merged #14)    |
  |  per-segment    make_verdict()         pipeline.py     real (merged #14)    |
@@ -60,7 +64,7 @@ Input: the original segment file. Output: the 12 fields in `SPEC.md` (`decodable
 
 Baseline: EmbeddingGemma 2 embeddings with small heads for `hands_ok`, `active_work` and the SOP step choice. Output: `p_yes` probabilities, step probabilities and `answer_conf`, plus `model_versions`.
 
-- Status: in progress (issue #7). No decider code is on `main`. The Laya fusion (issue #9) is a stretch goal and is planned only.
+- Status: open PR #20 (issue #7). `jadal/decision.py` and `tests/test_decision.py` are on `origin/feat/decider`, in a fix round. No decider code is on `main`. The Laya fusion (issue #9) is a stretch goal and is planned only.
 - L1 determinism has not been measured, because no real decider is merged.
 
 ### L2: certify (calibration and batch rule)
@@ -119,7 +123,7 @@ What the tests show: the batch-independence tests on `main` call pure functions 
 | Byte-identical clips from two workers or sites | Same `segment_id`; the second record's metadata is lost | open (signals deferred minor) |
 | Face blur misses faces | The blur is a skin-colour proxy, so it can miss faces | open PR #12 (signals I3) |
 | Pico port permissions after reflashing MicroPython | Device node is recreated with a restricted group, so the port must be re-granted | operational (ledger) |
-| Voicebank tests in an environment with the `sarvamai` SDK installed | Two tests assume the SDK is absent and fail; one also makes a real network call with an empty key | open on `main`; a network-free test fix is dispatched (see README test status) |
+| Voicebank tests in an environment with the `sarvamai` SDK installed | Two tests assume the SDK is absent and fail; one also makes a real network call with an empty key | open on `main`; a network-free test fix is open as PR #22 (see README test status) |
 
 ## What we deliberately do not claim
 

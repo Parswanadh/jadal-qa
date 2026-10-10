@@ -6,7 +6,7 @@ The build contract (data schemas, module interfaces, determinism rules) is in [`
 
 ## Data flow
 
-Stage status is as of `main`. Stages marked "stub" run on deterministic stand-ins when `JADAL_USE_STUBS=1` is set.
+Status below is as of today 12:30 IST (2026-10-10), from `main` and the open PRs. Stages marked "stub" run on deterministic stand-ins when `JADAL_USE_STUBS=1` is set.
 
 ```
  head camera -> auto-sync -> ingestion bucket          (outside this repo)
@@ -15,7 +15,7 @@ Stage status is as of `main`. Stages marked "stub" run on deterministic stand-in
                                   v
   segment (split_clip)               open PR #12   | stub on main
   L0 signals (compute_signals)       open PR #12   | stub on main
-  L1 decisions (Decider.decide)      in progress #7| stub on main
+  L1 decisions (Decider.decide)      open PR #20   | stub on main
   L2 certify (pick_threshold)        merged PR #14
   verdict per segment                merged PR #14
   receipt (make_receipt)             merged PR #14
@@ -34,13 +34,15 @@ Stage status is as of `main`. Stages marked "stub" run on deterministic stand-in
 | Certify and receipts | `jadal/certify.py`, `jadal/receipts.py`, `tests/test_certify.py`, `tests/test_receipts.py` | #1 | merged, PR #14 |
 | Pico firmware and host link | `pico/main.py`, `jadal/pico_link.py`, `tests/test_pico_link.py`, `tests/test_pico_protocol.py` | #2 | merged, PR #10. Hardware validation pending. |
 | Service, SQLite, batches, dock sim | `jadal/service.py`, `jadal/store.py`, `jadal/pipeline.py`, `jadal/stubs.py`, `sim/dock_sim.py`, `tests/test_service.py` | #3 | merged, PR #13 |
-| Voice bank and SOP index | `voicebank/`, `sop/`, `tests/test_voicebank.py`, `tests/test_sop_index.py` | #5 | merged, PR #11 |
+| Voice bank and SOP index | `voicebank/`, `sop/`, `tests/test_voicebank.py`, `tests/test_sop_index.py` | #5 | merged, PR #11. Network-free test fix: open, PR #22 |
 | Dashboard v1 | `web/` (`index.html`, `app.js`, `style.css`, `mock/`, `test_dashboard.py`) | #4 | merged, PR #15 |
 | Signals and segmenter (L0) | `jadal/signals.py`, `jadal/segmenter.py` | #6 | open, PR #12. Review fixes are on the branch. |
-| Decider (L1) | `jadal/decision.py` (not yet on any branch) | #7 | in progress |
+| Decider (L1) | `jadal/decision.py`, `tests/test_decision.py` | #7 | open, PR #20 (on `origin/feat/decider`, fix round in progress). Not on `main`. |
 | Eval harness | `eval/` (PR #16) | #8 | open, PR #16. Fix round in progress. |
 | Integration: real pipeline, API docs, demo | `docs/API.md`, `Makefile`, `scripts/demo.sh` (PR #19) | #17 | open, PR #19 |
-| Dashboard v2 | `web/` | #18 | in progress |
+| Dashboard v2 | `web/` (dropdown filters, receipt tree, step timeline) | #18 | open, PR #21 |
+| Freshness (nonce-LED liveness check) | `jadal/freshness.py`, `tests/test_freshness.py`, `scripts/freshness_demo.py` | #24 | open, PR #25. Live trials not yet run. |
+| Repo docs: README, docs/ | `README.md`, `docs/` | n/a | open, PR #23 (this branch) |
 | Laya Design 1 fusion | (none) | #9 | planned. Stretch goal. |
 
 ## Repo layout
@@ -74,11 +76,11 @@ Matches `main`.
 
 ## Quick start
 
-The project uses a conda environment (Python 3.12) at `/home/parshu/envs/jadal`. Do not `pip install` into it without checking first.
+The project uses a Python 3.12 conda env with torch+cu130, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Do not `pip install` into it without checking first.
 
 ```
 export PYTHONNOUSERSITE=1
-PY=/home/parshu/envs/jadal/bin/python
+PY=<env>/bin/python    # the Python 3.12 conda env described above
 
 $PY -m unittest discover -s tests     # module tests
 $PY -m unittest discover -s web       # dashboard tests
@@ -88,7 +90,7 @@ make demo                             # coming with the integration PR (#19 / is
 
 Secrets are read from environment variables (`SARVAM_API_KEY`, `CF_API_TOKEN`, `CF_ACCOUNT_ID`). Put them in a local `.env`, which is git-ignored. Never commit a key.
 
-Test status on `main`: 213 tests run. 211 pass. 2 fail in `tests/test_voicebank.py` in this environment. The `sarvamai` SDK is installed in the env, and two tests assume it is absent. One of them also makes a real network call with an empty key. A fix that makes the voicebank tests network-free has been dispatched, per the decision log. This is reported, not hidden. The dashboard suite (`web/`) passes: 13 tests.
+Test status on `main`: 213 tests run. 211 pass. 2 fail in `tests/test_voicebank.py` in this environment. The `sarvamai` SDK is installed in the env, and two tests assume it is absent. One of them also makes a real network call with an empty key. A fix that makes the voicebank tests network-free is open as PR #22. This is reported, not hidden. The dashboard suite (`web/`) passes: 13 tests.
 
 ## Honest claims
 

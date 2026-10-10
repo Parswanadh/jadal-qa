@@ -27,8 +27,8 @@ Five real bugs, from the round-0 reviews. Each is cited by review file and findi
 
 ## Open at the time of writing
 
-- **Integration (PR #19, issue #17).** Round-0 review: SPEC PASS, QUALITY CHANGES NEEDED, with two Important findings (save outside the requeue guard; reverify without `ensure_determinism`). Fix round 1 was dispatched. See [`reviews/integration-review.md`](reviews/integration-review.md).
-- **Voicebank tests (`main`).** Installing the `sarvamai` SDK broke two tests that assumed it was absent. One of them made a real API call with an empty key. A fix to make the tests network-free was dispatched.
+- **Integration (PR #19, issue #17).** Round-0 review: SPEC PASS, QUALITY CHANGES NEEDED, with two Important findings (save outside the requeue guard; reverify without `ensure_determinism`). Fix round 1 was run, and PR #19 is open. See [`reviews/integration-review.md`](reviews/integration-review.md).
+- **Voicebank tests (`main`).** Installing the `sarvamai` SDK broke two tests that assumed it was absent. One of them made a real API call with an empty key. A network-free fix is open as PR #22.
 - **Eval harness (PR #16), signals (PR #12).** See the table above.
 
 ## Lessons recorded in the ledger
