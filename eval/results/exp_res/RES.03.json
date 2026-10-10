@@ -1,0 +1,51 @@
+{
+ "id": "RES.03",
+ "combo": "cross_cells",
+ "status": "done",
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold, 100 good/50 bad, one labeller)",
+ "protocol": "libx264 veryfast re-encode of each gold window -> decode 160x90 -> 26 cpu per-pixel features -> LOCO logistic C=0.3 class_weight=balanced StandardScaler, leave-one-clip-out; CI=clip-bootstrap B=1000 seed0",
+ "combos": [
+  {
+   "config": "r360_crf23",
+   "resolution_px": 360,
+   "crf": 23,
+   "auroc": 0.8028,
+   "ci95": [
+    0.6873,
+    0.8783
+   ],
+   "bytes_per_window": 437669,
+   "total_ms_per_window": 6846.3
+  },
+  {
+   "config": "r360_crf28",
+   "resolution_px": 360,
+   "crf": 28,
+   "auroc": 0.8036,
+   "ci95": [
+    0.6959,
+    0.8789
+   ],
+   "bytes_per_window": 263495,
+   "total_ms_per_window": 2982.8
+  },
+  {
+   "config": "r240_crf28",
+   "resolution_px": 240,
+   "crf": 28,
+   "auroc": 0.7934,
+   "ci95": [
+    0.6828,
+    0.8551
+   ],
+   "bytes_per_window": 172975,
+   "total_ms_per_window": 2722.0
+  }
+ ],
+ "verdict": "adopt",
+ "summary": "360p@CRF28=0.8036 at 257 KiB matches 480p@CRF23 accuracy at 40% of its bytes (best bytes/accuracy point); 240p@CRF28=0.7934 at 169 KiB still inside budget.",
+ "baseline_native_auroc": 0.81
+}

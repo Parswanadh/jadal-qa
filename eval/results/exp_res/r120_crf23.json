@@ -1,0 +1,24 @@
+{
+ "experiment": "RES.01..03",
+ "combo": "r120_crf23",
+ "resolution_px": 120,
+ "crf": 23,
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold, 100 good/50 bad)",
+ "protocol": "re-encode each gold window (libx264 veryfast) -> decode 160x90 -> 26 cpu per-pixel features -> LOCO logistic C=0.3 class_weight=balanced + StandardScaler; CI=clip-bootstrap B=1000 seed0",
+ "split": "leave-one-clip-out over the 7 gold clips (identical to cached baseline)",
+ "auroc": 0.8022,
+ "ci95": [
+  0.6825,
+  0.8889
+ ],
+ "bytes_per_window": 140265,
+ "enc_ms_per_window": 787.5,
+ "dec_ms_per_window": 267.5,
+ "feat_ms_per_window": 715.9,
+ "total_ms_per_window": 1770.9,
+ "wall_s": 45.8,
+ "command": "eval/exp_res/run_res.py r120_crf23"
+}

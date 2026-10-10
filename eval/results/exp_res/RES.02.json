@@ -1,0 +1,63 @@
+{
+ "id": "RES.02",
+ "combo": "compression_ladder_h264_480p",
+ "status": "done",
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold, 100 good/50 bad, one labeller)",
+ "protocol": "libx264 veryfast re-encode of each gold window -> decode 160x90 -> 26 cpu per-pixel features -> LOCO logistic C=0.3 class_weight=balanced StandardScaler, leave-one-clip-out; CI=clip-bootstrap B=1000 seed0",
+ "combos": [
+  {
+   "config": "r480_crf18",
+   "resolution_px": 480,
+   "crf": 18,
+   "auroc": 0.803,
+   "ci95": [
+    0.687,
+    0.8813
+   ],
+   "bytes_per_window": 1139783,
+   "total_ms_per_window": 4407.0
+  },
+  {
+   "config": "r480_crf23",
+   "resolution_px": 480,
+   "crf": 23,
+   "auroc": 0.8006,
+   "ci95": [
+    0.6763,
+    0.8831
+   ],
+   "bytes_per_window": 651317,
+   "total_ms_per_window": 2335.2
+  },
+  {
+   "config": "r480_crf28",
+   "resolution_px": 480,
+   "crf": 28,
+   "auroc": 0.796,
+   "ci95": [
+    0.6806,
+    0.8772
+   ],
+   "bytes_per_window": 373423,
+   "total_ms_per_window": 3906.0
+  },
+  {
+   "config": "r480_crf33",
+   "resolution_px": 480,
+   "crf": 33,
+   "auroc": 0.7946,
+   "ci95": [
+    0.6941,
+    0.8632
+   ],
+   "bytes_per_window": 235516,
+   "total_ms_per_window": 3742.5
+  }
+ ],
+ "verdict": "adopt",
+ "summary": "Target met: CRF28=0.7960 (dAUROC -0.014) at 57% of CRF23 bytes; CRF33=0.7946 (-0.015) at 36%. No CRF broke the 0.02 budget.",
+ "baseline_native_auroc": 0.81
+}

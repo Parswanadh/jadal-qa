@@ -1,0 +1,76 @@
+{
+ "id": "RES.01",
+ "combo": "resolution_ladder_pixel26",
+ "status": "done",
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold, 100 good/50 bad, one labeller)",
+ "protocol": "libx264 veryfast re-encode of each gold window -> decode 160x90 -> 26 cpu per-pixel features -> LOCO logistic C=0.3 class_weight=balanced StandardScaler, leave-one-clip-out; CI=clip-bootstrap B=1000 seed0",
+ "combos": [
+  {
+   "config": "r480_crf23",
+   "resolution_px": 480,
+   "crf": 23,
+   "auroc": 0.8006,
+   "ci95": [
+    0.6763,
+    0.8831
+   ],
+   "bytes_per_window": 651317,
+   "total_ms_per_window": 2335.2
+  },
+  {
+   "config": "r360_crf23",
+   "resolution_px": 360,
+   "crf": 23,
+   "auroc": 0.8028,
+   "ci95": [
+    0.6873,
+    0.8783
+   ],
+   "bytes_per_window": 437669,
+   "total_ms_per_window": 6846.3
+  },
+  {
+   "config": "r240_crf23",
+   "resolution_px": 240,
+   "crf": 23,
+   "auroc": 0.808,
+   "ci95": [
+    0.7039,
+    0.8817
+   ],
+   "bytes_per_window": 264330,
+   "total_ms_per_window": 2669.4
+  },
+  {
+   "config": "r180_crf23",
+   "resolution_px": 180,
+   "crf": 23,
+   "auroc": 0.8428,
+   "ci95": [
+    0.7472,
+    0.9027
+   ],
+   "bytes_per_window": 202492,
+   "total_ms_per_window": 5490.7
+  },
+  {
+   "config": "r120_crf23",
+   "resolution_px": 120,
+   "crf": 23,
+   "auroc": 0.8022,
+   "ci95": [
+    0.6825,
+    0.8889
+   ],
+   "bytes_per_window": 140265,
+   "total_ms_per_window": 1770.9
+  }
+ ],
+ "verdict": "adopt",
+ "summary": "Encoded resolution can drop to 180p (0.8428, 198 KiB) and even 120p (0.8022, 137 KiB) with no AUROC loss vs the 0.810 native 480p cache; no knee down to 120p. All rungs within 0.02 of 480p (all within one CI).",
+ "baseline_native_auroc": 0.81,
+ "lowest_within_0.02": "120p (lowest tested); safe pick 180p at 31% bytes"
+}
