@@ -18,6 +18,7 @@ import hashlib
 import os
 import tempfile
 import unittest
+from pathlib import Path
 from unittest import mock
 
 import numpy as np
@@ -224,6 +225,56 @@ class TestDeciderDeterminism(unittest.TestCase):
                         embed_fn=fake_embed_pil, frame_source=synthetic_frame_source)
             out = d.decide("/tmp/fullheads.mp4", {})
             self.assertIn("full_splits", out["model_versions"]["heads_provenance"])
+
+
+class TestRenderDeciderReport(unittest.TestCase):
+    """The report tables are generated from the JSON (fix round 3)."""
+
+    def test_renderer_contains_every_head_metric_and_bound(self):
+        from eval.render_decider_report import (
+            render_baseline_tables, render_bench_line, render_codec_shift_line)
+
+        baseline = {
+            "provenance": "full_splits:fixture",
+            "heads": {
+                "hands_ok": {
+                    "calibration": {"n": 10, "accuracy": 0.9, "ece": 0.05, "temperature": 0.7},
+                    "test": {"n": 11, "accuracy": 0.8182, "ece": 0.0601, "temperature": 0.7},
+                    "held_out_bound_at_cal_threshold": {
+                        "threshold": 0.8, "accepted": 5, "errors": 1, "upper_bound": 0.63},
+                },
+                "active_work": {
+                    "calibration": {"n": 12, "accuracy": 0.75, "ece": 0.11, "temperature": 1.2},
+                    "test": {"n": 13, "accuracy": 0.6923, "ece": 0.2, "temperature": 1.2},
+                    "held_out_bound_at_cal_threshold": {
+                        "threshold": None, "accepted": 0, "errors": 0, "upper_bound": None},
+                },
+            },
+            "codec_shift": {"n": 4, "mean": 0.99, "min": 0.97, "p5": 0.975, "p50": 0.991},
+        }
+        tables = render_baseline_tables(baseline)
+        for head in ("hands_ok", "active_work"):
+            for split in ("calibration", "test"):
+                m = baseline["heads"][head][split]
+                for value in (m["accuracy"], m["ece"], m["temperature"]):
+                    self.assertIn(f"{value:.4f}", tables)
+            b = baseline["heads"][head]["held_out_bound_at_cal_threshold"]
+            for value in (b["accepted"], b["errors"]):
+                self.assertIn(f"| {value} |", tables)
+            self.assertIn(str(b["upper_bound"]), tables)
+        self.assertIn("0.9900", render_codec_shift_line(baseline))
+        self.assertIn("not present", render_bench_line(None))
+
+    def test_renderer_on_real_baseline_json(self):
+        from eval.render_decider_report import render_baseline_tables
+
+        real = Path(__file__).resolve().parent.parent / "eval" / "results" / "decider_baseline.json"
+        if not real.exists():
+            self.skipTest("decider_baseline.json not present")
+        import json
+        tables = render_baseline_tables(json.loads(real.read_text()))
+        for head in ("hands_ok", "active_work"):
+            self.assertIn(head, tables)
 
 
 @unittest.skipUnless(os.environ.get("JADAL_TEST_GPU") == "1", "needs JADAL_TEST_GPU=1")

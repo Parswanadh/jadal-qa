@@ -173,7 +173,11 @@ temperature + threshold on CALIBRATION only (`jadal.certify`);
 metrics + exact-binomial bound on TEST only.
 
 Tables below were GENERATED from `eval/results/decider_baseline.json`
-(no hand-copied numbers):
+(no hand-copied numbers) by `eval/render_decider_report.py` (stdlib only):
+
+```bash
+PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/render_decider_report.py
+```
 
 | head | split | n | acc | ECE | T |
 |---|---|---|---|---|---|
@@ -223,6 +227,20 @@ small on this probe — but it is one probe, not a guarantee.
 CPU:  Ran 11 tests — OK (skipped=1)
 GPU (JADAL_TEST_GPU=1, under flock): Ran 11 tests — OK
 ```
+
+Note: the spec-shape test checks a key SUPERSET (`model_versions` gained
+`granularity`) plus an explicit granularity assertion — the loosening is
+intentional and covered.
+
+## Fix round 3 (report generator)
+
+- Added `eval/render_decider_report.py` (stdlib only): reads
+  `eval/results/decider_baseline.json` (+ bench JSON if present) and prints
+  the exact markdown tables in this report. The Fix-round-2 tables above
+  match its output verbatim (verified by re-running it; no GPU re-run).
+- Added `TestRenderDeciderReport` (fixture JSON + real JSON): asserts the
+  renderer output contains every head's accuracy/ECE/temperature and
+  accepted/errors/bound.
 
 ### Gaps / NOT DONE
 
