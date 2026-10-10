@@ -401,6 +401,8 @@ async function loadBatches(soft) {
       return String(b.created_utc || '').localeCompare(String(a.created_utc || ''));
     });
     state.batchesError = null;
+    // mock LED follows the newest batch; refresh it once the list lands
+    if (MOCK) loadPico();
   } catch (e) {
     if (!soft) { state.batches = null; }
     state.batchesError = e;

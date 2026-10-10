@@ -73,12 +73,16 @@ async function shot(page, name, url, viewport, colorScheme) {
   const srv = await serve();
   const browser = await chromium.launch();
   try {
-    // newest batch id + a reject segment receipt id, read from the fixtures
-    const batches = JSON.parse(fs.readFileSync(path.join(WEB, 'mock', 'batches.json'), 'utf8'));
+    // newest batch + a reject segment, resolved to its receipt exactly like
+    // the UI does (batch detail receipt_ids are ordered by receipt_id)
+    const doc = JSON.parse(fs.readFileSync(path.join(WEB, 'mock', 'batches.json'), 'utf8'));
+    const batches = doc.batches || doc;
     const newest = batches[batches.length - 1];
-    const rejectRow = newest.segments.find((s) =>
-      (newest.verdicts.find((v) => v.segment_id === s.segment_id) || {}).verdict === 'reject');
-    const segId = (rejectRow || newest.segments[0]).receipt_id;
+    const receipts = JSON.parse(fs.readFileSync(path.join(WEB, 'mock', 'receipts.json'), 'utf8'));
+    const rids = Object.keys(receipts).filter((k) => k[0] !== '_').sort();
+    const rejectSeg = (newest.verdicts.find((v) => v.verdict === 'reject') || newest.verdicts[0]).segment_id;
+    const segId = rids.find((rid) => receipts[rid].verdict.segment_id === rejectSeg);
+    if (!segId) throw new Error('fixture has no receipt for segment ' + rejectSeg);
 
     const page = await browser.newPage();
     await shot(page, 'batches-1280.png', BASE + '#/batches', { width: 1280, height: 900 });
@@ -91,6 +95,15 @@ async function shot(page, name, url, viewport, colorScheme) {
     const banner = await page.textContent('#rv-out');
     console.log('  banner text: ' + banner.replace(/\s+/g, ' ').slice(0, 120));
     if (!/MATCH/.test(banner)) throw new Error('re-verify banner missing MATCH');
+    // force-mismatch path: the ✕ state must be just as prominent
+    await page.click('#mock-mismatch');
+    await page.click('#rv-run');
+    await page.waitForTimeout(1600);
+    await page.screenshot({ path: path.join(OUT, 'reverify-mismatch-1280.png'), fullPage: true });
+    console.log('reverify-mismatch-1280.png: after forcing a mismatch');
+    const banner2 = await page.textContent('#rv-out');
+    console.log('  banner text: ' + banner2.replace(/\s+/g, ' ').slice(0, 140));
+    if (!/MISMATCH/.test(banner2)) throw new Error('re-verify banner missing MISMATCH');
     await shot(page, 'insights-1280.png', BASE + '#/insights', { width: 1280, height: 900 });
     await shot(page, 'batches-390.png', BASE + '#/batches', { width: 390, height: 844 });
     await shot(page, 'segment-390.png', BASE + '#/segment/' + segId, { width: 390, height: 844 });
