@@ -65,9 +65,9 @@
     </div>
 
     <div class="filters" id="batches-filters" role="group" aria-label="Filter batches">
-      <button class="chip is-on" type="button" data-filter="all">All</button>
-      <button class="chip" type="button" data-filter="reject">Rejected</button>
-      <button class="chip" type="button" data-filter="accept">Accepted</button>
+      <button class="chip is-on" type="button" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" type="button" data-filter="reject" aria-pressed="false">Rejected</button>
+      <button class="chip" type="button" data-filter="accept" aria-pressed="false">Accepted</button>
     </div>
 
     <p class="micro meta-line" id="batches-meta" hidden></p>
@@ -107,7 +107,7 @@
 
   <footer class="foot">
     <p id="foot-source">Loading data source…</p>
-    <p class="foot-note">Green, amber and red are reserved for verdicts. Receipt hashes follow <code>docs/SPEC.md</code>.</p>
+    <p class="foot-note">Green, amber and red appear only on verdict chips and the Pico status light. Receipt hashes follow <code>docs/SPEC.md</code>.</p>
   </footer>
 </main>
 

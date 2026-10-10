@@ -79,11 +79,31 @@ class StaticAssets(unittest.TestCase):
             px = val * 16 if unit == "rem" else val
             self.assertLessEqual(px, 0.1, f"fixed min-width {m.group(0)} risks sideways scroll")
 
+    def test_colour_rule_and_no_overflow_mask(self):
+        """Green/amber/red only on verdict chips + Pico LED; no body
+        overflow-x mask (real overflow must be fixed, not hidden)."""
+        css = (WEB / "style.css").read_text(encoding="utf-8")
+        self.assertNotRegex(css, r"overflow-x:\s*(hidden|clip|scroll)",
+                            "page-level overflow must be fixed, not masked")
+        self.assertIn("overflow-wrap: anywhere", css,
+                      "long hashes must wrap at phone width")
+        for var in ["--accept", "--review", "--reject"]:
+            uses = [l.strip() for l in css.splitlines()
+                    if var in l and not re.match(r"\s*--[\w-]+:", l)]
+            for line in uses:
+                self.assertRegex(
+                    line, r"verdict|status-led",
+                    f"verdict colour used outside verdicts/Pico LED: {line}")
+
     def test_js_touches_every_endpoint(self):
         js = (WEB / "app.js").read_text(encoding="utf-8")
         for ep in ["/ws", "/batches", "/receipts/", "/reverify",
                    "/voice/", "/stats/risk_coverage", "/stats/sop_gaps", "/pico/status"]:
             self.assertIn(ep, js, f"app.js never calls {ep}")
+        # exact live field names (upper_bound is certify's name, not error_bound)
+        for field in ["receipt_ids", "upper_bound", "last_hb_led", "last_hb_age_s",
+                      "blurred_sha256", "resolveReceiptId", "rvSeq"]:
+            self.assertIn(field, js, f"app.js never reads {field}")
         for lang in LANGS:
             self.assertIn(lang, js, f"language {lang} missing from app.js")
         self.assertIn("mock=1", js + (WEB / "index.html").read_text(encoding="utf-8"),
@@ -99,11 +119,26 @@ class StaticAssets(unittest.TestCase):
 
 
 class MockContract(unittest.TestCase):
+    """web/mock/*.json mirrors the ACTUAL service (origin/feat/service):
+    batches.json == GET /batches, risk_coverage.json == GET /stats/risk_coverage
+    (bare list), sop_gaps.json == GET /stats/sop_gaps (bare list),
+    pico_status.json == GET /pico/status (PicoLink.status shape)."""
+
+    BATCH_KEYS = {"batch_id", "site_id", "segment_ids", "verdicts",
+                  "batch_decision", "rule", "k", "n", "created_utc"}
+
+    def batches(self):
+        doc = load("batches.json")
+        self.assertEqual(set(doc), {"batches"}, "GET /batches returns {batches: [...]}")
+        return doc["batches"]
+
     def test_batch_shapes_and_rule(self):
-        batches = load("batches.json")
+        batches = self.batches()
         self.assertIsInstance(batches, list)
         self.assertGreaterEqual(len(batches), 1)
         for b in batches:
+            self.assertEqual(set(b), self.BATCH_KEYS,
+                             f"{b.get('batch_id')}: keys drifted from the store shape")
             self.assertIn(b["batch_decision"], {"accept", "reject"})
             self.assertEqual(b["rule"], "reject if rejected_count > k")
             rejected = sum(1 for v in b["verdicts"] if v["verdict"] == "reject")
@@ -111,24 +146,33 @@ class MockContract(unittest.TestCase):
             self.assertEqual(b["batch_decision"], expect,
                              f"{b['batch_id']}: rule gives {expect}")
             self.assertEqual(b["n"], len(b["segment_ids"]))
+            self.assertRegex(b["batch_id"], r"^b[0-9a-f]{16}$")
             for v in b["verdicts"]:
                 self.assertIn(v["verdict"], VERDICTS)
                 self.assertTrue(set(v["reasons"]) <= REASON_CODES,
                                 f"unknown reason code in {v}")
                 self.assertIn(v["segment_id"], b["segment_ids"])
-            seg_ids = [s["segment_id"] for s in b.get("segments", [])]
-            self.assertEqual(sorted(seg_ids), sorted(b["segment_ids"]),
-                             f"{b['batch_id']}: segments[] does not cover segment_ids[]")
-            for s in b.get("segments", []):
-                self.assertIn("receipt_id", s)
-                self.assertIn("worker_id", s)
-                self.assertIn("latency_ms", s)
+
+    def test_every_segment_resolves_to_a_receipt(self):
+        """The UI links segment -> receipt via verdict.segment_id, so every
+        segment_id must appear in exactly one receipt verdict."""
+        batches = self.batches()
+        receipts = {k: v for k, v in load("receipts.json").items() if not k.startswith("_")}
+        by_seg: dict[str, list[str]] = {}
+        for rid, r in receipts.items():
+            by_seg.setdefault(r["verdict"]["segment_id"], []).append(rid)
+        for b in batches:
+            # live orders GET /batches/{id}.receipt_ids by receipt_id
+            rids = sorted(rid for rid, r in receipts.items()
+                          if r["verdict"]["segment_id"] in b["segment_ids"])
+            self.assertEqual(len(rids), len(b["segment_ids"]),
+                             f"{b['batch_id']}: segments without receipts")
+            for sid in b["segment_ids"]:
+                self.assertEqual(len(by_seg.get(sid, [])), 1,
+                                 f"segment {sid} resolves to {by_seg.get(sid)}")
 
     def test_receipt_hashes_follow_spec(self):
         receipts = {k: v for k, v in load("receipts.json").items() if not k.startswith("_")}
-        batches = load("batches.json")
-        linked = {s["receipt_id"] for b in batches for s in b.get("segments", [])}
-        self.assertTrue(linked <= set(receipts), "segments link to unknown receipts")
         for rid, r in receipts.items():
             body = {k: v for k, v in r.items() if k not in ("receipt_sha256", "receipt_id", "created_utc")}
             h = hashlib.sha256(canonical(body)).hexdigest()
@@ -157,24 +201,28 @@ class MockContract(unittest.TestCase):
 
     def test_risk_and_gaps_shapes(self):
         risk = load("risk_coverage.json")
-        self.assertGreaterEqual(len(risk["points"]), 2)
-        for p in risk["points"]:
+        self.assertIsInstance(risk, list, "GET /stats/risk_coverage returns a bare list")
+        self.assertGreaterEqual(len(risk), 2)
+        for p in risk:
             self.assertEqual(set(p), {"threshold", "coverage", "error"})
             self.assertTrue(0.0 <= p["coverage"] <= 1.0)
-        for key in ["error_bound", "n", "errors", "target_error", "delta"]:
-            self.assertIn(key, risk)
+        cov = [p["coverage"] for p in risk]
+        self.assertEqual(cov, sorted(cov), "certify orders strictest-first (coverage ascending)")
         gaps = load("sop_gaps.json")
-        self.assertGreaterEqual(len(gaps["gaps"]), 1)
-        total = sum(g["count"] for g in gaps["gaps"])
+        self.assertIsInstance(gaps, list, "GET /stats/sop_gaps returns a bare list")
+        self.assertGreaterEqual(len(gaps), 1)
+        total = sum(g["count"] for g in gaps)
         self.assertGreater(total, 0)
-        for g in gaps["gaps"]:
+        for g in gaps:
             self.assertIn(g["reason_code"], REASON_CODES)
+            self.assertIn("count", g)
 
     def test_pico_status_shape(self):
         pico = load("pico_status.json")
-        self.assertIn(pico.get("led"), {"G", "A", "R", "OFF"})
-        self.assertIn("connected", pico)
-        self.assertIn("last_heartbeat_utc", pico)
+        self.assertEqual(set(pico), {"connected", "port", "last_hb_age_s",
+                                     "last_hb_ticks_ms", "last_hb_led"},
+                         "must match PicoLink.status() keys")
+        self.assertIn(pico["last_hb_led"], {"G", "A", "R", "OFF"})
 
 
 if __name__ == "__main__":

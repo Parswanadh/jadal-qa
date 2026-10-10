@@ -49,16 +49,19 @@ var state = {
   batchesError: null,
   receipt: null,
   receiptError: null,
-  receiptId: null,
+  receiptId: null,        // the receipt actually displayed
+  requestedId: null,      // the id the route asked for (differs on fallback)
+  segBatch: null,         // batch detail the displayed receipt was opened from
   rv: { status: 'idle', result: null, error: null }, // re-verify
+  rvSeq: 0,               // invalidates stale re-verify responses
   risk: null, riskError: null,
   gaps: null, gapsError: null,
   lang: 'hi-IN',
-  voiceNote: null, voiceError: null,
   pico: null,
   live: false, lastEvent: null,
   mockMismatch: false,
-  known: {},              // receipt_id/segment_id -> { batch_id }
+  batchDetailCache: {},   // batch_id -> GET /batches/{id} payload
+  receiptCache: {},       // receipt_id -> receipt body
 };
 
 function wsURL() {
@@ -76,12 +79,6 @@ function num(v, d) {
   if (v === null || v === undefined || isNaN(v)) return '—';
   var s = Number(v).toFixed(d === undefined ? 4 : d);
   return s;
-}
-
-function fmtLatency(ms) {
-  if (ms === null || ms === undefined || isNaN(ms)) return '—';
-  if (ms >= 1000) return (ms / 1000).toFixed(1) + ' s';
-  return Math.round(ms) + ' ms';
 }
 
 function fmtTime(iso) {
@@ -135,55 +132,31 @@ function first(obj, keys) {
 }
 
 function normSegments(raw) {
-  // Returns merged segment rows from a batch's {segment_ids, segments, verdicts}.
-  var out = [];
+  // Rows from the REAL batch shape: {segment_ids, verdicts}. The service
+  // exposes no worker, latency or receipt links per segment (see "API needs"
+  // in docs/reports/dashboard.md); those render as "—" and the receipt id is
+  // resolved on demand via GET /batches/{id} + GET /receipts/{id}.
   var verdicts = first(raw, ['verdicts']) || [];
   var vById = {};
   verdicts.forEach(function (v) {
     if (v && (v.segment_id || v.segmentId)) vById[v.segment_id || v.segmentId] = v;
   });
-  var segs = first(raw, ['segments']);
-  var knownIds = {};
-  (segs || []).forEach(function (s) {
-    var id = s.segment_id || s.segmentId || s.id;
-    if (!id) return;
-    knownIds[id] = true;
-    var v = vById[id] || {};
-    var lat = first(s, ['latency_ms', 'latencyMs', 'processing_ms', 'proc_ms', 'duration_ms']);
-    var lats = first(s, ['latency_s', 'latencyS']);
-    if (lat === undefined && lats !== undefined) lat = lats * 1000;
-    out.push({
-      segment_id: id,
-      receipt_id: first(s, ['receipt_id', 'receiptId']) || id,
-      worker_id: first(s, ['worker_id', 'workerId', 'worker']) || first(v, ['worker_id']) || '—',
-      site_id: first(s, ['site_id', 'siteId', 'site']) || first(raw, ['site_id', 'siteId']) || '—',
-      verdict: first(v, ['verdict']) || '—',
-      reasons: first(v, ['reasons']) || [],
-      conf: first(v, ['answer_conf', 'conf']),
-      latency_ms: lat === undefined ? null : lat,
-      start_s: first(s, ['start_s', 'startS']),
-      end_s: first(s, ['end_s', 'endS']),
-      source_clip: first(s, ['source_clip', 'clip']),
-    });
-  });
-  // segments known only via segment_ids / verdicts
   var ids = first(raw, ['segment_ids', 'segmentIds']) || [];
-  ids.concat(Object.keys(vById)).forEach(function (id) {
-    if (knownIds[id]) return;
-    knownIds[id] = true;
+  Object.keys(vById).forEach(function (id) {
+    if (ids.indexOf(id) === -1) ids.push(id);
+  });
+  var site = first(raw, ['site_id', 'siteId']) || '—';
+  return ids.map(function (id) {
     var v = vById[id] || {};
-    out.push({
+    return {
       segment_id: id,
-      receipt_id: id,
-      worker_id: '—',
-      site_id: first(raw, ['site_id', 'siteId']) || '—',
+      site_id: site,
       verdict: first(v, ['verdict']) || '—',
       reasons: first(v, ['reasons']) || [],
       conf: first(v, ['answer_conf', 'conf']),
-      latency_ms: null, start_s: null, end_s: null, source_clip: null,
-    });
+      threshold: first(v, ['threshold']),
+    };
   });
-  return out;
 }
 
 function normBatch(raw) {
@@ -196,9 +169,8 @@ function normBatch(raw) {
     decision: decision,
     rule: first(raw, ['rule']) || null,
     k: first(raw, ['k']),
-    n: first(raw, ['n']) || rows.length,
-    rejected_count: first(raw, ['rejected_count', 'rejectedCount']) !== undefined
-      ? first(raw, ['rejected_count', 'rejectedCount']) : rejected,
+    n: first(raw, ['n']) !== undefined ? first(raw, ['n']) : rows.length,
+    rejected_count: rejected,
     created_utc: first(raw, ['created_utc', 'createdUtc', 'created']) || null,
     rows: rows,
   };
@@ -211,8 +183,11 @@ function normBatchList(raw) {
 }
 
 function normRisk(raw) {
-  var pts = first(raw, ['points', 'curve', 'data']);
-  if (Array.isArray(raw)) pts = raw;
+  // Live: a bare list [{threshold, coverage, error}] from certify.
+  // Bound/threshold metadata is NOT returned by the service yet; read it
+  // opportunistically (upper_bound wins: that is certify's name) and render
+  // "no certified threshold yet" when it is absent.
+  var pts = Array.isArray(raw) ? raw : (first(raw, ['points', 'curve', 'data']) || []);
   pts = (pts || []).map(function (p) {
     return {
       threshold: Number(first(p, ['threshold', 't'])),
@@ -220,22 +195,26 @@ function normRisk(raw) {
       error: Number(first(p, ['error', 'err', 'e'])),
     };
   }).filter(function (p) { return isFinite(p.coverage) && isFinite(p.error); });
+  var bound = Array.isArray(raw) ? undefined : first(raw, ['upper_bound', 'upperBound', 'error_bound', 'errorBound', 'bound']);
   return {
     points: pts,
-    error_bound: first(raw, ['error_bound', 'errorBound', 'bound']),
-    chosen_threshold: first(raw, ['chosen_threshold', 'threshold', 'operating_threshold']),
-    n: first(raw, ['n', 'n_val', 'samples']),
-    errors: first(raw, ['errors']),
-    target_error: first(raw, ['target_error', 'targetError', 'target']),
-    delta: first(raw, ['delta']) !== undefined ? first(raw, ['delta']) : 0.1,
-    min_accepted: first(raw, ['min_accepted', 'minAccepted']),
+    error_bound: bound,
+    chosen_threshold: Array.isArray(raw) ? undefined : first(raw, ['chosen_threshold', 'chosenThreshold', 'operating_threshold']),
+    n: Array.isArray(raw) ? undefined : first(raw, ['n', 'n_val', 'samples']),
+    errors: Array.isArray(raw) ? undefined : first(raw, ['errors']),
+    target_error: Array.isArray(raw) ? undefined : first(raw, ['target_error', 'targetError', 'target']),
+    delta: Array.isArray(raw) ? undefined : first(raw, ['delta']),
+    min_accepted: Array.isArray(raw) ? undefined : first(raw, ['min_accepted', 'minAccepted']),
   };
 }
 
 function normGaps(raw) {
+  // Live: a bare list (currently [] until sop/ merges). reason_code + count
+  // are the contract; section/share are optional extras.
   var arr = Array.isArray(raw) ? raw : (first(raw, ['gaps', 'bars', 'items', 'data']) || []);
   return {
     gaps: (arr || []).map(function (g) {
+      if (typeof g !== 'object' || g === null) return { code: String(g), count: 0, section: '', share: null };
       return {
         code: first(g, ['reason_code', 'reasonCode', 'code', 'reason']) || '—',
         count: Number(first(g, ['count', 'n', 'value'])) || 0,
@@ -243,34 +222,29 @@ function normGaps(raw) {
         share: first(g, ['share', 'fraction', 'frac']),
       };
     }),
-    total: first(raw, ['total_segments', 'total', 'n']),
-    window: first(raw, ['window_utc', 'window']),
+    total: Array.isArray(raw) ? undefined : first(raw, ['total_segments', 'total', 'n']),
+    window: Array.isArray(raw) ? undefined : first(raw, ['window_utc', 'window']),
   };
 }
 
 function normPico(raw) {
+  // Live shape is PicoLink.status(): {connected, port, last_hb_age_s,
+  // last_hb_ticks_ms, last_hb_led}; offline is {connected: false, reason}.
   raw = raw || {};
-  var led = String(first(raw, ['led']) || 'OFF').toUpperCase();
+  var led = String(first(raw, ['last_hb_led', 'lastHbLed', 'led']) || 'OFF').toUpperCase();
   if (['G', 'A', 'R', 'OFF'].indexOf(led) === -1) {
     var m = { GREEN: 'G', AMBER: 'A', RED: 'R', GRAY: 'OFF', OFF: 'OFF', ON: 'G' };
     led = m[led] || 'OFF';
   }
-  var hb = first(raw, ['last_heartbeat_utc', 'lastHeartbeatUtc', 'last_heartbeat', 'heartbeat']);
-  var ageMs = null;
-  if (hb) {
-    var t = new Date(hb).getTime();
-    if (!isNaN(t)) ageMs = Date.now() - t;
-  } else if (raw.heartbeat_age_s !== undefined || raw.heartbeatAgeS !== undefined) {
-    ageMs = Number(first(raw, ['heartbeat_age_s', 'heartbeatAgeS'])) * 1000;
-  }
+  var ageS = first(raw, ['last_hb_age_s', 'lastHbAgeS', 'heartbeat_age_s', 'heartbeatAgeS']);
+  var ageMs = (ageS === undefined || ageS === null) ? null : Number(ageS) * 1000;
   return {
     connected: first(raw, ['connected']) !== undefined ? !!first(raw, ['connected']) : (led !== 'OFF'),
     led: led,
-    label: first(raw, ['led_meaning', 'label', 'meaning']) || null,
+    port: first(raw, ['port']) || null,
     ageMs: ageMs,
-    ticks: first(raw, ['ticks_ms', 'ticks']),
-    firmware: first(raw, ['firmware']),
-    note: first(raw, ['_note']) || null,
+    ticks: first(raw, ['last_hb_ticks_ms', 'lastHbTicksMs', 'ticks_ms', 'ticks']),
+    offlineReason: first(raw, ['reason']) || null,
   };
 }
 
@@ -318,14 +292,27 @@ async function mockFile(name) {
 }
 
 var mockApi = {
-  async batches() { return mockFile('batches'); },
-  async batch(id) {
+  // Every method returns exactly what the live endpoint returns; the fixture
+  // files underneath are transport-internal and never reach the UI directly.
+  async batches() { return mockFile('batches'); }, // {"batches": [...]}
+  async batchDetail(id) {
     var all = await mockFile('batches');
-    var b = all.filter(function (x) {
+    var list = all.batches || all;
+    var b = list.filter(function (x) {
       return (x.batch_id || x.batchId || x.id) === id;
     })[0];
     if (!b) throw new Error('mock: batch ' + id + ' not in fixture');
-    return b;
+    var receipts = await mockFile('receipts');
+    var ids = Object.keys(receipts).filter(function (k) { return k.charAt(0) !== '_'; });
+    var mine = ids.filter(function (rid) {
+      var seg = receipts[rid].verdict && receipts[rid].verdict.segment_id;
+      return (b.segment_ids || []).indexOf(seg) !== -1;
+    });
+    mine.sort(); // live orders receipt_ids by receipt_id
+    var out = {};
+    Object.keys(b).forEach(function (k) { out[k] = b[k]; });
+    out.receipt_ids = mine;
+    return out;
   },
   async receipt(id) {
     await new Promise(function (r) { setTimeout(r, MOCK_DELAY); });
@@ -338,40 +325,68 @@ var mockApi = {
   async reverify(id, expected) {
     await new Promise(function (r) { setTimeout(r, 900); }); // re-verify is slow: it re-runs the pipeline
     if (state.mockMismatch) {
-      return { match: false, expected: expected, actual: 'm' + expected.slice(1), diff: ['decisions.step.answer_conf', '_mock.forced_mismatch'] };
+      return { match: false, expected: expected, actual: 'm' + String(expected || '').slice(1), diff: ['decisions.step.answer_conf', '_mock.forced_mismatch'] };
     }
     return { match: true, expected: expected, actual: expected, diff: [] };
   },
-  async risk() { return mockFile('risk_coverage'); },
-  async gaps() { return mockFile('sop_gaps'); },
+  async risk() { return mockFile('risk_coverage'); }, // bare list
+  async gaps() { return mockFile('sop_gaps'); },      // bare list
   async pico() {
     var p = await mockFile('pico_status');
     var out = Object.assign({}, p);
-    // a live heartbeat: last beat ~1s before each poll
-    out.last_heartbeat_utc = new Date(Date.now() - 900).toISOString();
+    out.last_hb_age_s = 0.9; // a live heartbeat: last beat ~1s before each poll
+    out.last_hb_ticks_ms = (p.last_hb_ticks_ms || 0) + 900;
     // reflect the newest loaded batch so every LED state is reachable
     if (state.batches && state.batches.length) {
       var d = state.batches[0].decision;
-      out.led = d === 'accept' ? 'G' : (d === 'reject' ? 'R' : 'A');
-      out.led_meaning = d === 'accept' ? 'batch accepted' : (d === 'reject' ? 'batch rejected' : 'review pending');
+      out.last_hb_led = d === 'accept' ? 'G' : (d === 'reject' ? 'R' : 'A');
     }
     return out;
   },
 };
 
+async function getBatchDetail(id) {
+  if (state.batchDetailCache[id]) return state.batchDetailCache[id];
+  var detail = MOCK ? await mockApi.batchDetail(id) : await api.get('/batches/' + encodeURIComponent(id));
+  state.batchDetailCache[id] = detail;
+  return detail;
+}
+
+async function getReceiptCached(id) {
+  if (state.receiptCache[id]) return state.receiptCache[id];
+  var body = MOCK ? (await mockApi.receipt(id)).receipt : await api.get('/receipts/' + encodeURIComponent(id));
+  state.receiptCache[id] = body;
+  return body;
+}
+
+// Segment rows link by RECEIPT id only. Resolve segment -> receipt through
+// GET /batches/{id}.receipt_ids + each receipt's verdict.segment_id,
+// exactly as the live API requires (no invented fields).
+async function resolveReceiptId(batchId, segmentId) {
+  var detail = await getBatchDetail(batchId);
+  var ids = detail.receipt_ids || detail.receiptIds || [];
+  for (var i = 0; i < ids.length; i++) {
+    var body = await getReceiptCached(ids[i]);
+    var vseg = body.verdict && (body.verdict.segment_id || body.verdict.segmentId);
+    if (vseg === segmentId) return { receiptId: ids[i], batch: detail };
+  }
+  throw new Error('no receipt found for segment ' + segmentId + ' in batch ' + batchId);
+}
+
+async function openReceipt(batchId, segmentId, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = 'Opening…'; }
+  try {
+    var found = await resolveReceiptId(batchId, segmentId);
+    state.segBatch = found.batch;
+    location.hash = '#/segment/' + encodeURIComponent(found.receiptId);
+  } catch (e) {
+    if (btn) { btn.disabled = true; btn.textContent = 'Unavailable'; btn.title = String((e && e.message) || e); }
+  }
+}
+
 var api = MOCK ? null : { get: liveGet, post: livePost };
 
 /* ============================ data loading ============================ */
-
-function indexKnown(batches) {
-  state.known = {};
-  batches.forEach(function (b) {
-    b.rows.forEach(function (r) {
-      state.known[r.receipt_id] = { batch_id: b.batch_id, segment_id: r.segment_id };
-      state.known[r.segment_id] = { batch_id: b.batch_id, segment_id: r.segment_id };
-    });
-  });
-}
 
 async function loadBatches(soft) {
   if (!soft) {
@@ -383,10 +398,9 @@ async function loadBatches(soft) {
     var raw = MOCK ? await mockApi.batches() : await api.get('/batches');
     state.batches = normBatchList(raw);
     state.batches.sort(function (a, b) {
-      return String(b.created_utc || '') < String(a.created_utc || '') ? -1 : 1;
+      return String(b.created_utc || '').localeCompare(String(a.created_utc || ''));
     });
     state.batchesError = null;
-    indexKnown(state.batches);
   } catch (e) {
     if (!soft) { state.batches = null; }
     state.batchesError = e;
@@ -397,20 +411,30 @@ async function loadBatches(soft) {
 async function loadReceipt(id) {
   state.receipt = null;
   state.receiptError = null;
-  state.receiptId = id;
+  state.receiptId = null; // set once the body (or error) lands
+  state.requestedId = id;
+  state.segBatch = null;
+  state.rvSeq++; // invalidate any in-flight re-verify
   state.rv = { status: 'idle', result: null, error: null };
   renderSegment();
   try {
     if (MOCK) {
       var m = await mockApi.receipt(id);
+      if (state.requestedId !== id) return; // user moved on
       state.receipt = m.receipt;
       state.receiptId = m.id;
       state.receiptFallback = m.fallback || null;
+      state.receiptCache[m.id] = m.receipt;
     } else {
-      state.receipt = await api.get('/receipts/' + encodeURIComponent(id));
+      var body = await api.get('/receipts/' + encodeURIComponent(id));
+      if (state.requestedId !== id) return;
+      state.receipt = body;
+      state.receiptId = id;
       state.receiptFallback = null;
+      state.receiptCache[id] = body;
     }
   } catch (e) {
+    if (state.requestedId !== id) return;
     state.receipt = null;
     state.receiptError = e;
   }
@@ -419,16 +443,19 @@ async function loadReceipt(id) {
 
 async function runReverify() {
   if (!state.receipt) return;
+  var my = ++state.rvSeq; // tag this request; stale responses are ignored
+  var id = state.receiptId;
   state.rv = { status: 'busy', result: null, error: null };
   renderSegment(); // shows the "re-running" line; keeps receipt visible
-  var id = state.receiptId;
   try {
     var expected = state.receipt.receipt_sha256 || state.receipt.receiptSha256;
     var res = MOCK
       ? await mockApi.reverify(id, expected)
       : await api.post('/receipts/' + encodeURIComponent(id) + '/reverify', {});
+    if (my !== state.rvSeq || id !== state.receiptId) return; // stale: user moved on
     state.rv = { status: 'done', result: res, error: null };
   } catch (e) {
+    if (my !== state.rvSeq || id !== state.receiptId) return;
     state.rv = { status: 'done', result: null, error: e };
   }
   renderSegment();
@@ -460,7 +487,7 @@ async function loadPico() {
     var raw = MOCK ? await mockApi.pico() : await api.get('/pico/status');
     state.pico = normPico(raw);
   } catch (e) {
-    state.pico = { connected: false, led: 'OFF', label: null, ageMs: null, error: e };
+    state.pico = { connected: false, led: 'OFF', ageMs: null, offlineReason: String((e && e.message) || e || 'unreachable') };
   }
   renderPico();
 }
@@ -558,24 +585,28 @@ function batchCard(b) {
   if (!shown.length) {
     list.appendChild(el('<p class="state-note" style="padding: var(--s3) var(--s4);">This batch has no segments.</p>'));
   }
-  shown.forEach(function (r) {
+    shown.forEach(function (r) {
     var reasons = (r.reasons && r.reasons.length)
       ? r.reasons.map(function (c) { return '<span class="reason">' + esc(c) + '</span>'; }).join('')
       : '<span class="reason-none">no flags</span>';
-    list.appendChild(el(
+    var row = el(
       '<div class="seg-row">' +
         '<div class="seg-main">' +
-          '<a class="seg-link" href="#/segment/' + encodeURIComponent(r.receipt_id) + '"' +
-            ' title="Open receipt ' + esc(r.receipt_id) + '">' + esc(r.segment_id) + '</a>' +
+          '<span class="seg-id">' + esc(r.segment_id) + '</span>' +
           verdictChip(r.verdict) +
         '</div>' +
         '<div class="seg-reasons">' + reasons + '</div>' +
         '<div class="seg-meta">' +
-          '<span>' + esc(r.worker_id) + '</span>' +
-          '<span>' + esc(r.site_id) + '</span>' +
-          '<span title="per-segment pipeline latency">' + esc(fmtLatency(r.latency_ms)) + '</span>' +
+          '<span title="site">' + esc(r.site_id) + '</span>' +
+          '<span title="per-segment worker: not exposed by the API">worker —</span>' +
+          '<span title="per-segment latency: not exposed by the API">latency —</span>' +
+          '<button class="btn btn-open" type="button">Open receipt</button>' +
         '</div>' +
-      '</div>'));
+      '</div>');
+    var btn = $('.btn-open', row);
+    btn.setAttribute('data-batch', b.batch_id);
+    btn.setAttribute('data-segment', r.segment_id);
+    list.appendChild(row);
   });
   card.appendChild(list);
 
@@ -657,12 +688,15 @@ function renderSegmentReady(body) {
   var dec = r.decisions || {};
   var reasons = v.reasons || [];
 
-  var known = state.known[state.receiptId] || {};
-  var segLabel = v.segment_id || known.segment_id || state.receiptId;
+  var segLabel = v.segment_id || state.requestedId || state.receiptId;
+  var batchId = (state.segBatch && state.segBatch.batch_id) || null;
+  // site comes from the batch the receipt was opened from; worker, clip path
+  // and latency are not exposed by the API (see "API needs").
+  var siteId = (state.segBatch && state.segBatch.site_id) || '—';
 
   $('#segment-title').textContent = 'Segment';
   $('#segment-sub').textContent = 'Receipt for ' + segLabel +
-    (known.batch_id ? ' · from batch ' + known.batch_id : '');
+    (batchId ? ' · from batch ' + batchId : '');
 
   // ---- head ----
   var head = el(
@@ -699,14 +733,16 @@ function renderSegmentReady(body) {
       '<span class="card-note">' + esc(fullTime(r.created_utc)) + '</span></div>' +
       '<div class="card-body"><div class="kv">' +
         segHeadRow('snapshot', 'answer_conf ' + (isFinite(conf) ? num(conf) : '—') + ' · threshold ' + esc(first(v, ['threshold']) !== undefined ? first(v, ['threshold']) : '—')) +
-        segHeadRow('source clip', first(sig, ['source_clip']) || first(r, ['source_clip']) || '—') +
-        segHeadRow('site · worker', (function () {
-          var w = known.segment_id && state.batches ? workerFor(known.segment_id) : null;
-          return w ? w : 'see batch list';
-        })()) +
-      '</div></div>' +
+        segHeadRow('site', siteId) +
+        segHeadRow('worker', '—') +
+        segHeadRow('source clip', '—') +
+        segHeadRow('latency', '—') +
+      '</div>' +
+      '<p class="state-note" style="margin-top:var(--s3);">Worker, clip path and latency are not exposed by the API yet — see “API needs” in docs/reports/dashboard.md.</p>' +
+      '</div>' +
     '</section>');
 
+  var hasHash = !!(r.receipt_sha256 || r.receiptSha256);
   var rvCard = el(
     '<section class="card" aria-label="Re-verify receipt">' +
       '<div class="card-head"><h2 class="card-title">Re-verify</h2>' +
@@ -714,7 +750,8 @@ function renderSegmentReady(body) {
       '<div class="card-body">' +
         '<div class="rv-head">' +
           '<button class="btn btn-primary" type="button" id="rv-run"' +
-            (state.rv.status === 'busy' ? ' disabled' : '') + '>Re-verify this receipt</button>' +
+            ((state.rv.status === 'busy' || !hasHash) ? ' disabled' : '') +
+            (!hasHash ? ' title="receipt has no receipt_sha256 to compare"' : '') + '>Re-verify this receipt</button>' +
           (MOCK
             ? '<label class="card-note" style="display:flex;gap:var(--s1);align-items:center;">' +
               '<input type="checkbox" id="mock-mismatch"' + (state.mockMismatch ? ' checked' : '') + '> mock: force mismatch</label>'
@@ -747,7 +784,7 @@ function renderSegmentReady(body) {
           '<button class="btn" type="button" id="voice-play"' + (reasons.length ? '' : ' disabled') + '>▶ Play</button>' +
         '</div>' +
         '<p class="audio-note" id="voice-note" role="status">' +
-          (reasons.length ? 'Reads the supervisor message for ' + esc(reasons[0]) + '.' : 'No reason codes on this segment, so there is no voice message.') +
+          (reasons.length ? 'Reads the supervisor message for the first reason code (' + esc(reasons[0]) + ').' : 'No reason codes on this segment, so there is no voice message.') +
         '</p>' +
       '</div>' +
     '</section>');
@@ -761,7 +798,7 @@ function renderSegmentReady(body) {
   });
   $('#voice-play').addEventListener('click', function () { playVoice(reasons[0]); });
 
-  // ---- hashes ----
+  // ---- hashes (blurred_sha256 lives on the receipt top level per SPEC) ----
   var hashCard = el(
     '<section class="card" aria-label="Hashes">' +
       '<div class="card-head"><h2 class="card-title">Hashes</h2>' +
@@ -770,8 +807,8 @@ function renderSegmentReady(body) {
         '<div class="hash-row"><span class="hash-key">receipt id</span><span class="hash-val">' + esc(r.receipt_id || '—') + '</span></div>' +
         '<div class="hash-row"><span class="hash-key">receipt sha256</span><span class="hash-val">' + esc(r.receipt_sha256 || '—') + '</span></div>' +
         '<div class="hash-row"><span class="hash-key">segment sha256</span><span class="hash-val">' + esc(r.segment_sha256 || '—') + '</span></div>' +
-        (sig.blurred_sha256
-          ? '<div class="hash-row"><span class="hash-key">blurred file sha256</span><span class="hash-val">' + esc(sig.blurred_sha256) + '</span></div>'
+        (r.blurred_sha256
+          ? '<div class="hash-row"><span class="hash-key">blurred file sha256</span><span class="hash-val">' + esc(r.blurred_sha256) + '</span></div>'
           : '') +
       '</div>' +
     '</section>');
@@ -797,17 +834,6 @@ function renderSegmentReady(body) {
   });
 }
 
-function workerFor(segmentId) {
-  if (!state.batches) return null;
-  for (var i = 0; i < state.batches.length; i++) {
-    var rows = state.batches[i].rows;
-    for (var j = 0; j < rows.length; j++) {
-      if (rows[j].segment_id === segmentId) return rows[j].worker_id + ' · ' + rows[j].site_id;
-    }
-  }
-  return null;
-}
-
 function renderReverify(out) {
   out.innerHTML = '';
   if (state.rv.status === 'busy') {
@@ -825,12 +851,14 @@ function renderReverify(out) {
   var res = state.rv.result;
   if (!res) return;
   var match = !!res.match;
+  // Neutral banner: state is carried by the ✓/✕ glyph and the words, never
+  // by green/red (reserved for verdicts and the Pico LED).
   var banner = el(
     '<div class="rv-banner ' + (match ? 'is-match' : 'is-mismatch') + '" role="status">' +
-      '<p class="rv-verdict ' + (match ? 'is-match' : 'is-mismatch') + '">' +
-        (match ? 'MATCH — receipt reproduces' : 'MISMATCH — receipt does not reproduce') + '</p>' +
-      '<p class="rv-detail">expected <span class="mono">' + esc(res.expected || '—') + '</span><br>' +
-        'actual&nbsp;&nbsp;&nbsp; <span class="mono">' + esc(res.actual || '—') + '</span></p>' +
+      '<p class="rv-verdict">' +
+        (match ? '✓ MATCH — receipt reproduces' : '✕ MISMATCH — receipt does not reproduce') + '</p>' +
+      '<p class="rv-detail">expected <span class="mono">' + esc(res.expected === null || res.expected === undefined ? '—' : res.expected) + '</span><br>' +
+        'actual&nbsp;&nbsp;&nbsp; <span class="mono">' + esc(res.actual === null || res.actual === undefined ? '—' : res.actual) + '</span></p>' +
       (((res.diff || []).length)
         ? '<ul class="rv-diff">' + res.diff.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ul>'
         : '<p class="rv-detail">no differing fields</p>') +
@@ -1019,7 +1047,7 @@ function renderInsights() {
     var chart = el('<div class="chart" role="img"></div>');
     chart.appendChild(riskChart(state.risk));
     rOut.appendChild(chart);
-    rOut.appendChild(riskLegend());
+    rOut.appendChild(riskLegend(state.risk));
   }
 
   // ---- SOP gaps ----
@@ -1050,22 +1078,29 @@ function riskStatsRow(d) {
       (note ? '<div class="stat-note">' + esc(note) + '</div>' : '') + '</div>';
   }
   var row = el('<div class="statgrid" style="margin-bottom:var(--s4);"></div>');
+  var certified = d.chosen_threshold !== undefined && d.chosen_threshold !== null;
   row.innerHTML =
-    stat('error bound', d.error_bound === undefined ? '—' : num(d.error_bound), 'exact binomial, δ = ' + (d.delta !== undefined ? d.delta : 0.1)) +
+    stat('error bound', d.error_bound === undefined ? '—' : num(d.error_bound),
+      d.delta !== undefined ? 'exact binomial, δ = ' + d.delta : 'exact binomial upper bound') +
     stat('target error', d.target_error === undefined ? '—' : num(d.target_error)) +
     stat('errors / n', (d.errors !== undefined && d.n !== undefined) ? d.errors + ' / ' + d.n : '—') +
-    stat('chosen threshold', d.chosen_threshold === undefined ? '—' : num(d.chosen_threshold),
-      d.min_accepted !== undefined ? '≥ ' + d.min_accepted + ' accepted' : '');
+    stat('chosen threshold', certified ? num(d.chosen_threshold) : 'not certified',
+      certified
+        ? (d.min_accepted !== undefined ? '≥ ' + d.min_accepted + ' accepted' : '')
+        : 'no certified threshold yet');
   return row;
 }
 
-function riskLegend() {
-  return el(
-    '<div class="legend">' +
-      '<span class="legend-item"><span class="legend-swatch"></span> error vs coverage</span>' +
-      '<span class="legend-item"><span class="legend-swatch reject dashed"></span> error bound (exact binomial)</span>' +
-      '<span class="legend-item"><span class="legend-swatch dashed"></span> target error</span>' +
-    '</div>');
+function riskLegend(d) {
+  var html = '<div class="legend">' +
+    '<span class="legend-item"><span class="legend-swatch"></span> error vs coverage</span>';
+  if (d.error_bound !== undefined && isFinite(d.error_bound)) {
+    html += '<span class="legend-item"><span class="legend-swatch accent dashed"></span> error bound (exact binomial)</span>';
+  }
+  if (d.target_error !== undefined && isFinite(d.target_error)) {
+    html += '<span class="legend-item"><span class="legend-swatch dashed"></span> target error</span>';
+  }
+  return el(html + '</div>');
 }
 
 function riskChart(d) {
@@ -1073,12 +1108,15 @@ function riskChart(d) {
   var pts = (d.points || []).slice().sort(function (a, b) { return a.coverage - b.coverage; });
   if (!pts.length) return el('<p class="state-note">No risk/coverage points were returned.</p>');
 
-  var W = 720, H = 300, L = 46, R = 16, T = 20, B = 34;
+  var W = 720, H = 308, L = 46, R = 16, T = 20, B = 52;
   var iw = W - L - R, ih = H - T - B;
   var maxErr = 0;
   pts.forEach(function (p) { maxErr = Math.max(maxErr, p.error); });
-  if (d.error_bound !== undefined) maxErr = Math.max(maxErr, d.error_bound);
-  if (d.target_error !== undefined) maxErr = Math.max(maxErr, d.target_error);
+  var hasBound = d.error_bound !== undefined && isFinite(d.error_bound);
+  var hasTarget = d.target_error !== undefined && isFinite(d.target_error);
+  var hasChosen = d.chosen_threshold !== undefined && d.chosen_threshold !== null && isFinite(d.chosen_threshold);
+  if (hasBound) maxErr = Math.max(maxErr, d.error_bound);
+  if (hasTarget) maxErr = Math.max(maxErr, d.target_error);
   var yMax = Math.max(maxErr * 1.18, 0.01);
 
   function x(c) { return L + iw * clamp(c, 0, 1); }
@@ -1108,7 +1146,7 @@ function riskChart(d) {
   }
   node('line', { x1: L, y1: T, x2: L, y2: T + ih, 'class': 'axis-line' });
   node('line', { x1: L, y1: T + ih, x2: L + iw, y2: T + ih, 'class': 'axis-line' });
-  node('text', { x: L + iw / 2, y: T + ih + 18, 'text-anchor': 'middle', 'class': 'label-t' }, 'coverage');
+  node('text', { x: L + iw / 2, y: T + ih + 40, 'text-anchor': 'middle', 'class': 'label-t' }, 'coverage');
   node('text', { x: L, y: T - 7, 'class': 'label-t' }, 'error');
 
   // area + curve
@@ -1116,27 +1154,28 @@ function riskChart(d) {
   node('path', { d: dAttr + ' L' + x(pts[pts.length - 1].coverage).toFixed(1) + ' ' + (T + ih) + ' L' + x(pts[0].coverage).toFixed(1) + ' ' + (T + ih) + ' Z', 'class': 'curve-area' });
   node('path', { d: dAttr, 'class': 'curve' });
 
-  // bound + target lines
-  if (d.error_bound !== undefined && isFinite(d.error_bound)) {
+  // bound + target lines (only when the payload carries them)
+  if (hasBound) {
     var yb = y(d.error_bound);
     node('line', { x1: L, y1: yb, x2: L + iw, y2: yb, 'class': 'bound' });
     node('text', { x: L + iw - 4, y: yb - 6, 'text-anchor': 'end', 'class': 'label-t' },
       'bound ' + num(d.error_bound));
   }
-  if (d.target_error !== undefined && isFinite(d.target_error)) {
+  if (hasTarget) {
     var yt = y(d.target_error);
     node('line', { x1: L, y1: yt, x2: L + iw, y2: yt, 'class': 'target' });
     node('text', { x: L + 4, y: yt - 6, 'class': 'label-t' }, 'target ' + num(d.target_error));
   }
 
-  // operating point: highest coverage whose error stays within both lines
-  var budget = Math.min(
-    d.target_error === undefined ? Infinity : d.target_error,
-    d.error_bound === undefined ? Infinity : d.error_bound);
+  // operating point: the curve point nearest the certified threshold.
+  // One consistent state: no certified threshold -> no dot, no label.
   var pick = null;
-  pts.forEach(function (p) {
-    if (p.error <= budget && (!pick || p.coverage > pick.coverage)) pick = p;
-  });
+  if (hasChosen) {
+    pts.forEach(function (p) {
+      if (!isFinite(p.threshold)) return;
+      if (!pick || Math.abs(p.threshold - d.chosen_threshold) < Math.abs(pick.threshold - d.chosen_threshold)) pick = p;
+    });
+  }
   pts.forEach(function (p) {
     node('circle', { cx: x(p.coverage), cy: y(p.error), r: p === pick ? 5 : 2.5, 'class': 'dot' + (p === pick ? ' is-pick' : '') });
   });
@@ -1147,8 +1186,8 @@ function riskChart(d) {
 
   // accessible description
   var desc = 'Risk/coverage curve with ' + pts.length + ' points. ' +
-    (d.error_bound !== undefined ? 'Error bound ' + num(d.error_bound) + '. ' : '') +
-    (d.target_error !== undefined ? 'Target error ' + num(d.target_error) + '.' : '');
+    (hasBound ? 'Error bound ' + num(d.error_bound) + '. ' : 'No certified error bound yet. ') +
+    (hasTarget ? 'Target error ' + num(d.target_error) + '.' : '');
   svg.setAttribute('aria-label', desc);
   return svg;
 }
@@ -1193,12 +1232,12 @@ function renderPico() {
   }
   led.setAttribute('data-led', p.led || 'off');
   if (!p.connected) {
-    line.textContent = 'offline' + (p.error ? ' — ' + (p.error.message || 'unreachable') : ' — no serial device');
+    line.textContent = 'offline' + (p.offlineReason ? ' — ' + p.offlineReason : ' — no status light') + (MOCK ? ' · mock' : '');
     return;
   }
   var word = { G: 'green', A: 'amber', R: 'red', OFF: 'off' }[p.led] || 'off';
   var bits = ['pico ' + word];
-  if (p.label) bits.push(p.label);
+  if (p.port) bits.push(p.port);
   bits.push(p.ageMs === null || p.ageMs === undefined ? 'heartbeat age unknown' : 'beat ' + fmtBeatAge(p.ageMs));
   line.textContent = bits.join(' · ') + (MOCK ? ' · mock' : '');
 }
@@ -1218,6 +1257,8 @@ function onPushEvent(data) {
   live.textContent = 'live · event ' + ageText(state.lastEvent);
   // tolerate any shape: full batch → merge, anything else → soft refresh
   try {
+    var type = data && data.type;
+    if (type === 'hello' || type === 'pong') return; // housekeeping, not data
     if (data && (data.batch_id || data.batchId || data.id) && (data.verdicts || data.rows || data.segments)) {
       var nb = normBatch(data);
       var found = false;
@@ -1227,9 +1268,8 @@ function onPushEvent(data) {
       });
       if (!found) state.batches.unshift(nb);
       state.batches.sort(function (a, b) {
-        return String(b.created_utc || '') < String(a.created_utc || '') ? -1 : 1;
+        return String(b.created_utc || '').localeCompare(String(a.created_utc || ''));
       });
-      indexKnown(state.batches);
       if (state.route === 'batches') renderBatches();
     } else if (state.route === 'batches') {
       loadBatches(true);
@@ -1308,7 +1348,7 @@ function setRoute(name, id) {
   if (name === 'batches' && (state.batches === null || state.batchesError)) loadBatches(false);
   if (name === 'segment') {
     if (!id) renderSegment(); // "no segment selected" state
-    else if (id !== state.receiptId || (!state.receipt && !state.receiptError)) loadReceipt(id);
+    else if (id !== state.requestedId || (!state.receipt && !state.receiptError)) loadReceipt(id);
     else renderSegment();
   }
   if (name === 'insights' && (state.risk === null || state.gaps === null)) loadInsights();
@@ -1349,8 +1389,12 @@ function bindStatic() {
 
   $$('#batches-filters .chip').forEach(function (chip) {
     chip.addEventListener('click', function () {
-      $$('#batches-filters .chip').forEach(function (c) { c.classList.remove('is-on'); });
+      $$('#batches-filters .chip').forEach(function (c) {
+        c.classList.remove('is-on');
+        c.setAttribute('aria-pressed', 'false');
+      });
       chip.classList.add('is-on');
+      chip.setAttribute('aria-pressed', 'true');
       state.filter = chip.getAttribute('data-filter');
       if (state.batches) renderBatches();
     });
@@ -1385,6 +1429,10 @@ function bindStatic() {
           b.classList.toggle('is-on', on);
           b.setAttribute('aria-pressed', on ? 'true' : 'false');
         });
+        return;
+      }
+      if (t.classList && t.classList.contains('btn-open')) {
+        openReceipt(t.getAttribute('data-batch'), t.getAttribute('data-segment'), t);
         return;
       }
     }
