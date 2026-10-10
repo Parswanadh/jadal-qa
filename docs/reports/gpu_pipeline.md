@@ -16,7 +16,8 @@ Hardware (measured): NVIDIA GeForce RTX 4070 Laptop GPU, 8 GiB
 |---|---|---|---|
 | R0 CPU baseline | ffmpeg CPU decode 160×90 + `cpu_window_features`, 1 proc | **22.2** (`throughput.json:R0_cpu`) | starting point |
 | R1/R2 GPU kernels | same features as batched torch kernels, fp16 in | **1792–1998** (`throughput.json:kernels_only`, B1/B8/B32) | kernels-only ceiling; batching ≈ flat (already launch-bound, not compute-bound) |
-| R3 NVDEC pipeline | NVDEC + `scale_cuda` at source + batched kernels, 4 decoders, sustained ≥5 min | PENDING (`nvdec_probe` found the first filter chain broken; diagnosis in `nvdec_probe.json`) | decode + compute overlap |
+| R3 NVDEC pipeline | NVDEC + `scale_cuda` at source + batched kernels, 4 decoders, sustained ≥5 min | RUNNING (`holdB.log`) | decode + compute overlap |
+| R3b CPU-fed rival | CPU ffmpeg decode + H2D + batched kernels | QUEUED (`--holdB2`) | NVDEC per-session overhead avoided at tiny frames |
 | R4 +fp16 +S0 skip | early-reject exits skip S1/S2 work | PENDING | effective rate = R3 / (1 − saved) |
 
 Regenerate: `/home/parshu/envs/jadal/bin/python eval/gpu/throughput.py --r0`
@@ -29,8 +30,8 @@ Regenerate: `/home/parshu/envs/jadal/bin/python eval/gpu/throughput.py --r0`
 | GDDR6 D2D copy | **74–108 GB/s** (`throughput.json:memcpy`, `microbench.json`) | 29–42% of 256 GB/s theory | never yet: kernels move <0.5 GB/s at 200 win/s |
 | PCIe H2D pinned | **7.6–8.6 GB/s** | 47–54% of ~16 GB/s (PCIe4 x8) | never yet: 160×90×100×3 fp16 window = 8.6 MB; even 200 win/s = 1.7 GB/s |
 | SM compute (kernels) | **~200 windows/s** (5 ms/window incl. PCA/phase-corr) | — | not binding: R0→kernels is 81× headroom |
-| NVDEC | PENDING (chain `scale_cuda,hwdownload` fails rc=234 in this ffmpeg build; `microbench.json` NVDEC rows are marked failed, 0 bytes) | — | expected binding resource at R3; 1 NVDEC engine on AD106 |
-| CPU decode (fallback, works) | **989 fps ×1 / 1512 fps ×4** @160×90 gray (`microbench.json`) | — | ×4 CPU already RTF≈150 for decode alone |
+| NVDEC | **~440 small-frames/s plateau @320×180 (RTF≈44); @160×90 RTF 9–40** (`microbench.json`, chain B: `scale_cuda=..:format=nv12,hwdownload`). 1 engine (dec-util 83% at ×4). First chain (`scale_cuda,hwdownload,format=gray`) fails rc=234 — diagnosis in `nvdec_probe.json`; working chains B (NV12) and D (CPU scale). | — | binding at R3a if NVDEC-fed; R3b sidesteps it |
+| CPU decode (works) | **710 fps ×1 / 1076 fps ×4** @160×90 gray = RTF 71–108 (`microbench.json`); **BEATS NVDEC at tiny frames** — NVDEC per-session + `scale_cuda` + `hwdownload` fixed costs dominate below ~320×180 | — | R3b uses it |
 | VRAM | peak **4.3 GiB** at B32 random-tensor bench (`throughput.json`) vs 7 GiB budget | 61% | fits; B32 full windows ≈ 0.4 GiB tensors + context |
 | Disk | page-cached IndEgo clips; negligible | — | — |
 
@@ -102,7 +103,8 @@ motion energy carries the bulk of the signal (0.714 alone).
 ## 6. Determinism (`determinism.json`)
 
 CPU: 10/10 repeats of g001 bit-identical quantised digest
-(`af2c1375…`). GPU 10× pending (next lock hold). GPU numerics are NOT claimed
+(`af2c1375…`). GPU: **10/10 bit-identical** (`a448f106…`, peak 128 MiB).
+GPU digest ≠ CPU digest — expected (fp16/fp32 vs float64). GPU numerics are NOT claimed
 identical across devices or vs CPU float64; the Pi path keeps the CPU
 reference.
 

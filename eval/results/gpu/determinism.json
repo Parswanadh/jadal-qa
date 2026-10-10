@@ -4,5 +4,8 @@
  "quantisation": "round(4) of each feature; fp_hash exact",
  "cpu_10x_identical": true,
  "cpu_digest": "af2c1375ae7a13c7f6cb8a43011a05c95c6794aea0c23a4309215d7207a53a3a",
+ "gpu_10x_identical": true,
+ "gpu_digest": "a448f106cf1d54c10b80a7bbaefb6d42d1874e872f7f7c3eb58cd8b08a5eab96",
+ "gpu_peak_vram_mib": 128.0,
  "note": "GPU numerics are NOT claimed identical across devices or vs CPU (fp16/fp32 vs float64; tolerances in tests/). The edge (Pi) path keeps the CPU reference implementation. Only the quantised digest is claimed bit-identical across repeats."
 }
