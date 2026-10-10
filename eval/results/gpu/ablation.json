@@ -1,0 +1,73 @@
+{
+ "device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
+ "regenerate": "/home/parshu/envs/jadal/bin/python eval/gpu/ablate.py",
+ "n": 150,
+ "protocol": "leave-one-clip-out, clip-bootstrap CI (200)",
+ "verdict": "inverse-PCA residual and illumination rows are ablated honestly; no hyperspectral claim (metamerism limit, see rgb_to_spectral.md).",
+ "rows": {
+  "full_26": {
+   "auc": 0.7928,
+   "ci95": [
+    0.6893803391205096,
+    0.8705819478908189
+   ],
+   "n_feats": 26
+  },
+  "no_pca_resid": {
+   "auc": 0.794,
+   "ci95": [
+    0.6774291294642857,
+    0.8727157544378699
+   ],
+   "n_feats": 25
+  },
+  "pca_only": {
+   "auc": 0.19839999999999997,
+   "ci95": [
+    0.14242813078850092,
+    0.3489383814560702
+   ],
+   "n_feats": 2
+  },
+  "illum_only": {
+   "auc": 0.2308,
+   "ci95": [
+    0.13670312846703114,
+    0.3760779320197781
+   ],
+   "n_feats": 3
+  },
+  "rppg_only": {
+   "auc": 0.2876,
+   "ci95": [
+    0.23663255331458097,
+    0.4555027425120179
+   ],
+   "n_feats": 1
+  },
+  "skin_only": {
+   "auc": 0.3838,
+   "ci95": [
+    0.2948476431022027,
+    0.6558594138102335
+   ],
+   "n_feats": 1
+  },
+  "temporal_only": {
+   "auc": 0.7144,
+   "ci95": [
+    0.6190684573871601,
+    0.7639786383688824
+   ],
+   "n_feats": 8
+  },
+  "no_illum_no_rppg": {
+   "auc": 0.8042000000000001,
+   "ci95": [
+    0.6903995418206765,
+    0.8840055128492875
+   ],
+   "n_feats": 22
+  }
+ }
+}

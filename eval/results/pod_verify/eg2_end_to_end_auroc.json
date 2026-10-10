@@ -1,0 +1,57 @@
+{
+ "experiment": "LB1-eg2-repro end-to-end",
+ "protocol": "identical to eval/exp_fps/run_eg2.py: LOCO, L2-normalised mean embedding + StandardScaler + logistic C=0.01; CI=clip-bootstrap B=1000 seed0; two-view = mean of EG2 and pixel-view LOCO probs (26 features, C=0.3)",
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "eg2_only": {
+  "cache": {
+   "auroc": 0.848,
+   "ci95": [
+    0.7344,
+    0.9087
+   ],
+   "bal_acc": 0.77
+  },
+  "regenerated": {
+   "auroc": 0.8468,
+   "ci95": [
+    0.7347,
+    0.9085
+   ],
+   "bal_acc": 0.765
+  }
+ },
+ "two_view": {
+  "cache": {
+   "auroc": 0.8524,
+   "ci95": [
+    0.724,
+    0.9312
+   ],
+   "bal_acc": 0.79
+  },
+  "regenerated": {
+   "auroc": 0.8524,
+   "ci95": [
+    0.7243,
+    0.9318
+   ],
+   "bal_acc": 0.785
+  }
+ },
+ "baseline_e1_02": {
+  "eg2_only_2fps": 0.848,
+  "two_view_2fps": 0.8524
+ },
+ "deltas": {
+  "eg2_only_regenerated_minus_published": -0.0012,
+  "two_view_regenerated_minus_published": 0.0,
+  "feature_cosine_cache_vs_regenerated": {
+   "min": 0.9990482926368713,
+   "median": 0.9996157884597778,
+   "max": 0.9997854828834534
+  },
+  "probability_max_abs_diff_eg2": 0.07333338260650635
+ }
+}

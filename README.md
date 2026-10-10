@@ -1,148 +1,282 @@
 # Jadal QA
 
-Jadal QA is a quality-assurance add-on for crowd-captured head-camera (egocentric) video. For each clip window it decides whether the footage is usable (dark, blocked, frozen, duplicate, hands not visible, no active work), and it writes each decision with its evidence into a content-hashed receipt. Built for the Awign Hackathon: Physical AI (10-11 October 2026).
+**QA for head-camera factory video that shows its evidence — including when it fails.**
 
-This page states what is built, what is measured, and what is not yet shown. It is current as of 2026-10-10 and describes `origin/main` at `55b0654`. This branch contains no measured accuracy, speed or throughput numbers. Measured results will be cited from files in the repo once they are merged.
+<!-- BRAG_VIDEO_URL: paste the GitHub user-attachments URL of brag.mp4 here -->
 
-The build contract is [`docs/SPEC.md`](docs/SPEC.md), which is binding. The architecture and the status of each stage is described in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), which is descriptive only. The docs index is [`docs/README.md`](docs/README.md).
+![Launch video: QA that shows its work, including where it fails](docs/assets/brag_preview.gif)
 
-## Direction (2026-10-10)
+*Launch video (35 s).* Poster: [`docs/assets/brag_poster.jpg`](docs/assets/brag_poster.jpg).
 
-Planned direction, pending a `docs/SPEC.md` amendment. Where this direction and `docs/SPEC.md` disagree, `SPEC.md` governs.
+[![Jadal QA results explorer: funnel, scoreboard and experiment log](docs/assets/ui_hero.png)](site/)
 
-- **Edge-first.** The target is analysis on the capture device, with no mandatory human in the loop. Running on a Raspberry Pi is **not yet measured**. Any speed figures so far are from x86 laptop cores, as a proxy. A real Pi run is pending.
-- **Whole-video, per-pixel analysis of every frame.** No sampled frames. Streaming analysis in chunks while the worker records is planned; the chunk size is not measured or backed by a file on this branch. Early rejection of dark, blocked or frozen footage is planned; its timing is not measured.
-- **Deterministic, mathematics-first decisions.** The inputs are measured signals: noise level, sharpness, exposure, frame difference against the noise floor, residual motion after camera-motion removal, and rhythm tests. The intended decision is a transparent rule list with exact thresholds, and every reject carries its evidence (value, comparison, threshold). Logistic regression and boosted trees are comparison baselines only. The first threshold rule list rejected nearly everything and was dropped (unverified builder note, no backing file in this repo), so the rule-list form is not yet working.
-- **Not in the pipeline.** A generic vision-language model was tried and stopped as too probabilistic. Laya (text-only) and Clef (hosted) are not in the pipeline.
-- **EmbeddingGemma 2 is an optional helper**, used for hub search, de-duplication and frame heads. It is not the core.
-- **RGB, not hyperspectral.** The cameras record 3 bands (RGB). We do per-pixel frequency and temporal-spectral analysis of RGB frames. This is **not** hyperspectral imaging. Recovering a spectrum from RGB is under-determined, and a hyperspectral sensor would be needed for real spectral data.
+*Explorer: a static TypeScript app in [`site/`](site/); run it with [Run the explorer locally](#run-the-explorer-locally). Live site: once the repository is public and GitHub Pages is enabled (not enabled yet).*
 
-## Status
+![Explorer tour: funnel stages, scoreboard, experiment log](docs/assets/ui_tour.gif)
 
-- **Merged to `main`, with its own report:** the spectral-features arm (PR #52). Its measured results are in [`docs/reports/spectral_features.md`](docs/reports/spectral_features.md). Cite that file for numbers.
-- **Not merged, no results cited here:** the per-pixel scorer, GPU pipeline and related work are in open PRs #57, #61 and #67-#73. Their measured results are not on this branch; measured results are in those PRs (not yet merged), see `docs/reports/` after they merge.
-- **Not measured:** Raspberry Pi runs, end-to-end GPU throughput as one number, and accuracy on Egocentric-10K (which has no human labels).
-- **Pending:** a custom hand-region residual-motion rhythm network (result pending; a negative result is acceptable), cross-device determinism of the GPU path, and a batch-independence proof through the real modules.
-- **Not run:** freshness nonce-LED live trials.
-- **Not done:** hyperspectral imaging (see above).
+### Run the explorer locally
 
-## What this means
-
-- **Accuracy is not yet shown.** No accuracy number is claimed on this branch.
-- **The human set is small.** 150 windows: 100 usable, 50 bad (NO_ACTIVE_WORK 23, HANDS_NOT_VISIBLE 14, DUPLICATE 6, TOO_DARK 6, UNDECODABLE 1) (see `docs/reports/funnel.md:421-422`; `eval/results/gold_labels_snapshot.json`). It comes from 7 IndEgo videos (Fraunhofer IPK), 480p at about 10 fps (see `docs/reports/edge.md:69`). The file names in `eval/gold/segments.json` suggest only a few wearers. It is not Awign footage.
-- **Egocentric-10K has no human labels.** Its frame labels come from an AI model. A proof-of-concept run of the pipeline on that footage is descriptive only: its verdicts are not accuracy results. No measurement on this branch shows how the scorer transfers to that footage, so the domain shift is untested.
-- **Speed is not measured as one number.** Decode is the expected bottleneck, and no end-to-end throughput figure is cited on this branch.
-
-## What is and is not claimed
-
-- **No certified bounds.** The certification machinery exists in `jadal/certify.py`: `exact_binomial_upper` (Clopper-Pearson), `pick_threshold` (fixed-sequence testing) and `batch_rule`. It does not give a usable guarantee on the current data. With 150 labels from 7 clips, a multiple-testing correction needs about 86 clean windows (see `docs/reports/funnel.md`: support floor 86). Windows within a clip are correlated, so the usable independent sample is smaller than 150. Error rates are therefore reported as observed, with n and label source, and not as certified bounds. A certified bound needs more labelled, independent clips than we have.
-- **Receipts are content-hashed, not signed.** A receipt is the SHA-256 of its canonical JSON. Re-verifying means re-running the pinned pipeline on the original clip and comparing hashes. A tampered receipt fails. An optional HMAC sidecar exists (see [`docs/reports/verify.md`](docs/reports/verify.md)), but no receipt is signed.
-- **Determinism is narrow.** The CPU feature path's canonical-JSON digest was identical across repeated runs and across 1-core vs 4-core runs (see `docs/reports/edge.md:81-83`). A repeated-run determinism check exists in `scripts/demo.sh`, and the batch-independence proof through the real modules is pending. GPU numerics are not claimed identical across devices, and cross-architecture determinism is not claimed.
-- **Raspberry Pi.** A Raspberry Pi Pico (RP2040) drives verdict LEDs, and the Pico firmware is verified on that hardware (MicroPython 1.29.0, `docs/reports/pico_hardware.md`). This is a status light, not the compute device. RP2350 is not tested. Running the analysis on a Pi is not measured.
-- **Labels.** Egocentric-10K-Evaluation labels are AI-generated (gemini-2.5-flash, per [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md)) and not human-checked. The 150 human gold labels come from one labeller.
-- **Thresholds.** The answer threshold on `main` is a placeholder (`STUB_THRESHOLD = 0.9` in `jadal/stubs.py`). No threshold on `main` is certified.
-- **Batch rule.** The batch rule is a fixed rule (reject if the rejected count is greater than k). It has no statistical guarantee at small batch sizes.
-- **Face blur** is a colour-based proxy. It is not a privacy guarantee.
-- **SOP and voice.** The SOP is a labelled sample. Voice messages are pre-recorded machine-draft translations.
-- **Not yet run on Awign footage, cameras or criteria.**
-
-## Data flow (status on `origin/main`, 55b0654)
-
-```
- head camera -> auto-sync -> ingestion bucket          (outside this repo)
-                                  |
-                                  | upload event (POST /ingest/event, or bucket watcher)
-                                  v
-  segment (split_clip)               merged PR #12
-  L0 signals (compute_signals)       merged PR #12
-  L1 decisions (Decider.decide)      merged PR #20 (optional EmbeddingGemma 2 heads)
-  L2 certify (pick_threshold)        merged PR #14
-  verdict per segment                merged PR #14
-  receipt (make_receipt)             merged PR #14 (content hash, not signed)
-  batch rule (reject if rejected_count > k)  merged PR #14
-                                  |
-                 +----------------+----------------+
-                 v                v                v
-          dashboard (web/)   voice (voicebank/)   Pico status (pico/)
-          merged PR #15      merged PR #11        merged PR #10
+```bash
+cd site
+npm ci --ignore-scripts
+npm run dev
 ```
 
-The whole-video, streaming direction above is not yet on `main`. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+Then open http://127.0.0.1:8874/. Tests: `npm test`; regenerate its baked data with `npm run data`.
 
-## Modules
+Crowd-captured head-camera video is the raw material for robot learning. Much of it is
+unusable: dark, blocked, frozen, duplicated, hands out of view, nothing happening.
+Jadal QA is a deterministic funnel that marks each 10-second window
+**accept / reject / review**, with a content-hashed receipt. S0 rejects carry
+per-rule `{feature, value, op, threshold}`; S1 rejects carry the head score
+`s1_score` against the S1 decision bands (reject at <= 0.25, accept at >= 0.75,
+review between) (all 702 PoC rejects are `S1_UNUSABLE`).
 
-| Module | File(s) | Owner issue | Status |
+| At a glance | Scope |
+|---|---|
+| Ensemble AUROC **0.834 [0.715, 0.914]** — pre-registered gates NOT met (AUROC >= 0.85, CI-low >= 0.72) | IndEgo, n=150 windows, 7 clips, nested leave-one-clip-out |
+| Factory AUROC **0.600 [0.474, 0.724]**, rejects 53/138 good (38%) | Egocentric-10K, n=160 windows, 47 factories — close to chance; source: sync doc, results file pending merge |
+| PoC run: **1,587 windows, 4.404 h, 702 rejected (44.2%)** | 47 factories, descriptive only (unlabelled) |
+| **750 tests, OK** | merge gate on `main` at e320c58 (2026-10-10 21:49 IST); not re-run for this PR |
+
+Sources: `eval/results/ensemble/nested_loco.json`,
+`docs/pod/SYNC_UPDATE_2026-10-10_2145.md:22` (the 160-window OOD numbers),
+`eval/results/poc/run_summary.json`. The OOD evaluation outputs
+'ood_eval_*_160.txt' live in the pod data bundle (Hugging Face dataset repo
+private pod data bundle) and are not yet merged — OOD rows below are
+marked 'source: sync doc; results file pending merge'. CIs bootstrap windows and ignore
+clip/factory correlation, so they are optimistic.
+
+![Jadal QA funnel: S0 exact rules, S1 spectral features with logistic head, S2 review of uncertain windows, each reject with reason, evidence and content-hashed receipt](docs/assets/funnel.svg)
+
+![Honest scoreboard: in-domain AUROC about 0.8 on IndEgo versus out-of-domain AUROC about 0.6 on factory footage, with confidence intervals](docs/assets/scoreboard.svg)
+
+## Why it exists
+
+- Robot-learning pipelines eat factory video. Bad clips waste labelling, training, and trust.
+- Hand-checking every 10-second window does not scale across dozens of factories.
+- Jadal rejects with checkable evidence: S0 rejects carry `{feature, value, op,
+  threshold}` per firing rule; S1 rejects carry the head score `s1_score`
+  against the S1 decision bands (reject at <= 0.25, accept at >= 0.75).
+- When the scorer fails out of domain, the table says so. That honesty is the point.
+
+## How the funnel decides
+
+- **S0 exact rules** on the opening probe: BLACK `p95 < 0.03`, TOO_DARK `mean < 0.05`,
+  LENS_BLOCKED `spatial_var < 1e-5`, OVEREXPOSED `p5 > 0.70`, FROZEN `temp_e < 5e-4`.
+  Each firing carries `{feature, value, op, threshold}`. On the PoC footage S0
+  fired 0 times — all decisions fell to S1/S2 (`eval/results/poc/run_summary.json`).
+- **S1 whole-window head**: 26 per-pixel spectral + temporal features, small
+  logistic head retrained deterministically in-process from a recorded recipe
+  on the 150 IndEgo windows (no frozen-coefficient file in the repo; the head
+  sha256 is stored in each receipt), review margin 0.25: decision bands are
+  reject at <= 0.25, accept at >= 0.75, review (S2) between. S1 rejects carry
+  `{feature: s1_score, value, op, threshold}` only; the `threshold` field is a
+  legacy constant that never decides a verdict.
+  No generic VLM in
+  the core; EmbeddingGemma 2 is an optional helper for hub search and frame heads.
+- **S2 review queue**: `|p − 0.5| < 0.25` goes to review (176 windows in the PoC run,
+  handed on; heavy tier not run in the PoC).
+- Per-reason recall in-domain (reject at 0.5): TOO_DARK 1.00, HANDS_NOT_VISIBLE 0.86,
+  NO_ACTIVE_WORK 0.70, DUPLICATE 0.67 (`eval/results/ensemble/nested_loco.json`).
+
+## What a rejection looks like
+
+An excerpt of a real record from the 1,587-window PoC run (`poc_data/windows.jsonl`, produced by
+`scripts/poc_run.py`; the file is local and not in this repo). In that run S0 fired 0 times,
+so all 702 rejects are stage-S1 `S1_UNUSABLE`, whose evidence is the `s1_score`
+(not a per-feature explanation):
+
+```json
+{
+  "window_id": "f069_w004_c00077_t0000",
+  "verdict": "reject",
+  "stage": "S1",
+  "reasons": [
+    {"code": "S1_UNUSABLE", "evidence": {"feature": "s1_score", "value": 0.0013, "op": "<", "threshold": 0.6}}
+  ],
+  "score": 0.0013,
+  "features_digest": "4af5b2a6…",
+  "receipt_sha256": "ca3ae717…"
+}
+```
+
+The receipt's evidence field lists the legacy threshold 0.6; the effective rule is: score <= 0.25 reject, >= 0.75 accept, between those review (S2).
+
+`receipt_sha256` is the SHA-256 of the canonical JSON. Re-verify by re-running the
+recorded pipeline version on the original clip and comparing hashes. Receipts are
+content-hashed, **not signed**; same-machine determinism only.
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/reports/verify.md`](docs/reports/verify.md).
+
+## The honest scoreboard
+
+Out-of-domain result leads, not trails: the funnel scores above chance in-domain
+on 7 clips (exploratory; weakest clip 0.606).
+Factory transfer is the open problem, and the repo is organised to attack it.
+
+| Result | n, source | AUROC [95% CI] | Status |
 |---|---|---|---|
-| Certify and receipts | `jadal/certify.py`, `jadal/receipts.py`, `tests/test_certify.py`, `tests/test_receipts.py` | #1 | merged, PR #14 |
-| Pico firmware and host link | `pico/main.py`, `jadal/pico_link.py`, `tests/test_pico_link.py`, `tests/test_pico_protocol.py` | #2 | merged, PR #10. Verified on a Raspberry Pi Pico (RP2040), MicroPython 1.29.0. |
-| Service, SQLite, batches, dock sim | `jadal/service.py`, `jadal/store.py`, `jadal/pipeline.py`, `jadal/stubs.py`, `sim/dock_sim.py`, `tests/test_service.py` | #3 | merged, PR #13 |
-| Voice bank and SOP index | `voicebank/`, `sop/`, `tests/test_voicebank.py`, `tests/test_sop_index.py` | #5 | merged, PR #11; network-free test fix merged, PR #22 |
-| Dashboard v1 | `web/` (`index.html`, `app.js`, `style.css`, `mock/`, `test_dashboard.py`) | #4 | merged, PR #15 |
-| Signals and segmenter (L0) | `jadal/signals.py`, `jadal/segmenter.py` | #6 | merged, PR #12 |
-| Decider (L1) | `jadal/decision.py`, `tests/test_decision.py` | #7 | merged, PR #20 |
-| Eval harness | `eval/` | #8 | merged, PR #16 |
-| Integration: real pipeline, API docs, demo | `docs/API.md`, `Makefile`, `scripts/demo.sh` | #17 | merged, PR #19 |
-| Dashboard v2 | `web/` (dropdown filters, receipt tree, step timeline) | #18 | merged, PR #21 |
-| Funnel (accept/reject/review router) | (see PR) | n/a | merged, PR #29 |
-| Repo docs: README, docs/ | `README.md`, `docs/` | n/a | merged, PR #23 |
-| PoC demo (one-command launch, stream replay, Pico hook) | `scripts/poc_demo.sh`, `scripts/poc_stream_replay.py`, `jadal/poc_stream/`, `tests/test_poc_demo.py` | n/a | merged, PR #66 |
-| Freshness (nonce-LED liveness check) | `jadal/freshness.py`, `tests/test_freshness.py`, `scripts/freshness_demo.py` | #24 | open, PR #25. Live trials not run. |
-| Video hub (EmbeddingGemma 2 search and clusters) | (see PR) | n/a | open, PR #28 |
-| Baseline scoreboard (B1-B8) | (see PR) | n/a | open, PR #30 |
-| Spectral features arm | `jadal/spectral/`, `eval/spectral_features/`, `docs/reports/spectral_features.md`, `tests/test_spectral_*.py` | n/a | merged, PR #52 |
-| Per-pixel scorer (rest), GPU pipeline, dashboard | (see PRs) | n/a | open, PRs #57, #61, #67-#73 |
-| Laya fusion | (none) | #9 | not in the pipeline. Stretch idea only. |
+| Frozen ensemble, factory footage | 160 windows (138 good / 22 bad), 47 factories, one labeller | **0.566 (0.433–0.693)** | measured, near chance; source: sync doc, results file pending merge |
+| PoC cascade, factory footage | same 160 | **0.600 (0.474–0.724)**, rejects 53/138 good (38%) | measured, near chance; source: sync doc, results file pending merge |
+| 60-window precursor (ensemble / PoC) | 60 windows (51 good / 9 bad) | 0.415 [0.210, 0.647] / 0.529 [0.316, 0.728] | exploratory (`n_bad=9 < 10`), superseded by the 160-window rows |
+| Ensemble prob-average, IndEgo | 150 windows, 7 clips, nested LOCO | **0.834 [0.715, 0.914]** | measured, exploratory (one labeller); pre-registered gates NOT met (AUROC >= 0.85, CI-low >= 0.72) |
+| EG2 view / pixel view, IndEgo | same 150 | 0.846 [0.728, 0.913] / 0.792 [0.666, 0.882] | measured |
+| S1 head (retrained in-process, recipe-recorded), IndEgo | same 150 | 0.802 [0.710, 0.870], decision bands 0.25 / 0.75 | measured |
+| Per-pixel conv1d / HGB / physics-LR | same 150 | 0.782 / 0.758 / 0.715 | measured |
+| PoC run reject share | 1,587 windows, 4.404 h, unlabelled | 702 rejected (44.2%) | descriptive, not accuracy |
+| 3.33 fps vs 10 fps (26 feats) | IndEgo 150 | 0.807 vs 0.809 | descriptive, CIs ~±0.1 |
+| Spatial-only 18 feats | IndEgo 150 | 0.678 vs 0.690 | descriptive, fairer comparison |
+| Every-2nd-window sampling | IndEgo 150 | 51% of compute, error 0.049 | measured (tolerance post-hoc) |
+| Early exit at 4 s | IndEgo 150 | 0.860 vs 0.848 at 10.5 s | measured in-window only |
+| Combined x4.9 saving | — | arithmetic | **estimate, not measured** |
 
-## Repo layout
+Files: `docs/pod/SYNC_UPDATE_2026-10-10_2145.md`,
+`eval/results/ensemble/nested_loco.json`, `docs/reports/ensemble_views.md`,
+`eval/results/gpu/cascade.json`, `eval/results/perpixel/compare.json`,
+`eval/results/poc/run_summary.json`, `eval/results/poc/ood_check_60.json`,
+`docs/reports/exp_fps.md`, `docs/reports/exp_temporal.md`,
+`docs/reports/poc_run.md`, `docs/reports/perpixel_accuracy.md`.
 
-Layout as of `origin/main` (55b0654).
+Read it plainly: per-clip ensemble AUROC ranges 0.606 (pallet) to 0.981 (ecu_full);
+pallet-type logistics motion does not transfer even in-domain
+(`eval/results/ensemble/nested_loco.json:239-303`). Coverage from full to 60%
+most-confident moves balanced accuracy 0.795 to 0.852, with overlapping CIs
+(same file). On the 160 labelled windows, 53 of 66 rejects were good windows;
+the other rejects of the 702 are unlabelled (`docs/reports/poc_run.md:86-87`). The
+per-pixel pipeline processes 2.14 video-seconds per CPU-core-second (n=6 windows)
+— 769 windows/hour/core, so 5000x real-time (a target, not reached) would need
+~2340 cores (`eval/results/perpixel/cost.json`): a
+verification-grade scorer, not the streaming tier.
 
-```
-.
-├── README.md
-├── .env.example          template; the real .env is git-ignored
-├── docs/
-│   ├── SPEC.md           build contract (binding; predates the direction above, not yet updated)
-│   ├── ARCHITECTURE.md   descriptive architecture and status
-│   ├── ATTRIBUTIONS.md
-│   ├── README.md         docs index
-│   ├── laya_design1_plan.md
-│   ├── sarvam_reference.md
-│   ├── reports/          certify, verify, edge, funnel, dashboard, pico, service, voicebank, spectral_features, and more
-│   ├── screens/          dashboard screenshots
-│   └── process/          how the repo was built: workflow, reviews, decision log
-├── jadal/                core package (incl. spectral/ arm, PR #52, and poc_stream/, PR #66)
-├── eval/                 harness, spectral_features arm (PR #52), gold labels
-├── models/               README only; model weights are git-ignored
-├── pico/                 Raspberry Pi Pico MicroPython firmware (main.py; RP2040 tested)
-├── sim/dock_sim.py       copies clips into the bucket and posts ingest events
-├── sop/                  sample SOP (labelled SAMPLE) and deterministic index
-├── scripts/              demo and PoC scripts
-├── tests/                unit and integration tests
-├── voicebank/            messages.json, gen_voicebank.py; generated wavs git-ignored
-└── web/                  static dashboard, mock data, dashboard tests
-```
+## Try it in 60 seconds
 
-## Quick start
+Needs Python 3.12 (see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the env).
+Clips and model weights are **not** in git (see [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md)).
+These run without data:
 
-The project uses a Python 3.12 conda env with torch+cu130 (see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)). Do not `pip install` into it without checking first.
-
-```
+```bash
+git clone <repo-url> && cd <repo>
 export PYTHONNOUSERSITE=1
-PY=<env>/bin/python    # the Python 3.12 conda env described above
+PY=python3  # or your Python 3.12 env python
 
-$PY -m unittest discover -s tests     # module tests
-$PY -m unittest discover -s web       # dashboard tests
-JADAL_USE_STUBS=1 $PY -m uvicorn jadal.service:app   # service on stubs
+# full suite (Makefile: `make test`)
+$PY -m unittest discover -s tests
+
+# PoC self-check (no footage needed)
+$PY scripts/poc_run.py --selfcheck 2
+
+# receipt tool
+$PY scripts/verify_receipt.py --help
+$PY scripts/poc_run.py --help
 ```
 
-Secrets are read from environment variables (`SARVAM_API_KEY`, `CF_API_TOKEN`, `CF_ACCOUNT_ID`). Put them in a local `.env`, which is git-ignored. Never commit a key.
+With footage (IndEgo clips stay out of git; Egocentric-10K access is gated):
 
-## Run the demo
+```bash
+make demo        # service -> batches -> verdicts -> re-verify, IndEgo clips
+bash scripts/poc_demo.sh   # one-command PoC launch, stream replay, Pico hook
+```
 
-- **On `main`:** `make demo` runs `scripts/demo.sh` on the IndEgo clips. It goes through the service, the batches, the verdict table, re-verification of every receipt, and a repeated-run determinism check.
-- **The proof-of-concept demo** (one-command launch, status page, live stream replay and Pico hook) is merged to `main` via PR #66: see `scripts/poc_demo.sh`.
+Environment notes: the build uses a Python 3.12 env (see
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)); set `PYTHONNOUSERSITE=1` so
+user-site packages do not shadow it. `Makefile` pins one local interpreter path —
+override `PY=` for your machine. Secrets come from a git-ignored `.env`.
 
-## Licences
+## How it is built
 
-Licences and attributions are in [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md).
+**Determinism.** Same input plus same config and the recorded S1-head recipe gives the same
+output: no sampling, fixed seeds, batch-size-1 model calls, floats rounded to
+4 decimals before receipts. The S1 head is retrained deterministically in-process
+from a recorded recipe on the 150 IndEgo windows; the head sha256 is stored in
+each receipt (`docs/reports/poc_run.md:28-33`). The CPU feature-path digest was identical across
+repeats and across 1-core vs 4-core runs (`docs/reports/edge.md:81-83`).
+GPU numerics across devices are not claimed identical. See
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+**Receipts.** `jadal/receipts.py` writes segment hash, signals, decisions, verdict,
+and config; `receipt_sha256` is the SHA-256 of the canonical JSON. An optional
+HMAC sidecar exists (`jadal/receipt_mac.py`, `scripts/verify_receipt.py`).
+A hash check proves self-consistency, not who wrote it. See
+[`docs/reports/verify.md`](docs/reports/verify.md).
+
+**Review + merge gate.** Every change goes through an agent review, then a
+deterministic merge gate that runs the full suite on the merged tree
+(750 tests at the merge gate on `main`, 2026-10-10; `Makefile`, `docs/process/`). Protected files
+(`jadal/config.py`, `jadal/__init__.py`, `docs/SPEC.md`, `docs/BASELINE.md`)
+are untouched by docs work.
+
+**Experiment log.** The registry on `main` (`experiments/registry.jsonl`) has 75 experiments, latest line per id. An earlier snapshot in the pod bundle lists 138 experiment/component ids (E/L/B series); the two numbers are different sources and are not mixed. See `docs/pod/SYNC_UPDATE_2026-10-10_2145.md:50` and `docs/process/decision-log.md`.
+
+**Edge tier.** The edge path pulls numpy, cv2, scipy, pillow + ImageHash — and no
+torch, transformers, sklearn, fastapi, or CUDA (`docs/reports/edge.md`,
+`requirements-edge.txt`). Pi ARM64 with mediapipe stays unverified; the proxy
+fallback is the supported edge configuration until a real Pi run says otherwise.
+
+## What we tried and dropped
+
+- Spatial localisation **withdrawn**: pooled control 0.790 beats spatial grid 0.753
+  (`docs/pod/SYNC_UPDATE_2026-10-10_2145.md:30`).
+- Motion cue is "wearer not walking", not hand work: residual-flow magnitude is
+  inverted (`docs/reports/ensemble_views.md:204-226`).
+- Synthetic negatives harmful, not used (`docs/reports/ensemble_views.md:119`).
+- Generic VLM stopped as too probabilistic and too expensive; not in the pipeline
+  (`docs/ARCHITECTURE.md:25`). EmbeddingGemma 2 is an optional helper only.
+- Guaranteed error bounds not achievable at n=150: support floor 86 exceeds the
+  CERTIFY split; effective n ~11–43 with clip correlation
+  (`docs/reports/funnel.md:460-469`).
+- Purpose-built rhythm/conv network 0.782 vs simple HGB 0.758: kept frozen, not
+  a win worth the complexity (`eval/results/perpixel/compare.json`,
+  `docs/reports/perpixel_accuracy.md:54-56`).
+- Deterministic 7-rule list ranks 0.589 and keeps 0.0 GOOD: rejected as decider,
+  kept as evidence (`eval/results/perpixel/compare.json:58-62`).
+- RGB only (3 bands). Not hyperspectral (`docs/ARCHITECTURE.md:26`).
+- Pi compute run not measured; Pico is a status light only
+  (`docs/reports/pico_hardware.md`).
+
+## Repo map
+
+```text
+README.md               this file
+docs/                   SPEC (binding), ARCHITECTURE, ATTRIBUTIONS, reports/, screens/, process/, pod/
+docs/assets/            hand-drawn funnel + scoreboard SVGs
+jadal/                  core package: signals, decision, funnel, certify, receipts, ensemble, perpixel, gpu, spectral, service
+eval/                   harness, gold labels, results JSON (poc/, ensemble/, perpixel/, gpu/, exp_fps/, exp_temporal/)
+configs/                frozen configs (ensemble_v1, perpixel_v1, funnel thresholds)
+scripts/                demo, PoC run/replay/server, receipt verify, edge check
+tests/                  34 files, 750 tests (fixtures/ has schema examples, no dataset frames)
+web/                    static dashboard + PoC replay (mock/, poc/)
+models/                 README only; weights git-ignored
+pico/                   Pico MicroPython firmware (RP2040 status light)
+sim/                    dock simulator (copies clips, posts ingest events)
+sop/                    sample SOP (labelled SAMPLE) + index
+voicebank/              messages + generator (wavs git-ignored)
+tools/                  gold-label server only on this branch
+```
+
+## Roadmap (all planned, not done)
+
+- Factory transfer via in-domain adaptation with grouped cross-validation by factory.
+- Regime profiles + router, adopted only if they beat the global model under grouped CV.
+- Mosaic evidence artefact (grid variants with timestamps + JSON sidecar).
+- Cost model on a GPU pod (decode-bound ladder, continuous decode).
+- Pi measurement: real compute run on Raspberry Pi hardware (never measured).
+
+## Contributing / contact / licence
+
+Licence: to be announced (not yet open-sourced). No `CONTRIBUTING` file on this
+branch; open an issue or PR against `main` (never push to `main` directly).
+Secrets live in env vars (`SARVAM_API_KEY`, `CF_API_TOKEN`, `CF_ACCOUNT_ID`)
+via a git-ignored `.env` — never commit a key.
+
+Credits: IndEgo (Fraunhofer IPK, CC BY 4.0, per the project brief, unverified;
+see [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md)) and Egocentric-10K-Evaluation
+(Build AI, Apache-2.0 brief, per the project brief, unverified; AI labels from
+gemini-2.5-flash, not human-checked)
+are third-party datasets — see [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md)
+and each dataset's own licence. Dataset frames in this repo: `docs/screens/poc_*`
+dashboard screenshots contain real Egocentric-10K thumbnails (checked: `file` on
+all `docs/screens/*.png`, viewed `poc_gallery_rejects.png` and `poc_overview.png`;
+see `docs/screens/README.md`); no raw dataset clips are in git
+(`docs/screens/poc_demo_backup.mp4` is a synthetic card render, and
+`eval/results/ensemble/ood_frames.npz` holds float16 768-d embeddings, not images).
+A drop-videos portal is in progress (not in this repo).

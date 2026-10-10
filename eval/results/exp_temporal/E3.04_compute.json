@@ -1,0 +1,146 @@
+{
+ "corpus_hours": 4.404,
+ "corpus_windows": 1546,
+ "window_s": 10.0,
+ "label_source": "unlabelled Egocentric-10K manifest (arithmetic on E3.01/E3.03 fractions)",
+ "protocol": "processed_hours = corpus_hours x window_frac x (seconds/10); assumes per-window cost scales with windows probed and, for early exit, with seconds observed (decode-bound regime; feature cost sublinear \u2014 upper bound)",
+ "per_policy": [
+  {
+   "policy": "every-2",
+   "window_frac": 0.5146,
+   "proc_hours": 2.266,
+   "speedup": 1.94
+  },
+  {
+   "policy": "every-3",
+   "window_frac": 0.349,
+   "proc_hours": 1.537,
+   "speedup": 2.87
+  },
+  {
+   "policy": "every-4",
+   "window_frac": 0.2852,
+   "proc_hours": 1.256,
+   "speedup": 3.51
+  },
+  {
+   "policy": "every-6",
+   "window_frac": 0.1834,
+   "proc_hours": 0.808,
+   "speedup": 5.45
+  },
+  {
+   "policy": "every-8",
+   "window_frac": 0.1548,
+   "proc_hours": 0.682,
+   "speedup": 6.46
+  },
+  {
+   "policy": "skip-first-30s",
+   "window_frac": 0.8428,
+   "proc_hours": 3.712,
+   "speedup": 1.19
+  },
+  {
+   "policy": "skip-first-60s",
+   "window_frac": 0.7103,
+   "proc_hours": 3.128,
+   "speedup": 1.41
+  },
+  {
+   "policy": "skip-first-120s",
+   "window_frac": 0.5168,
+   "proc_hours": 2.276,
+   "speedup": 1.94
+  },
+  {
+   "policy": "skip-first-240s",
+   "window_frac": 0.2248,
+   "proc_hours": 0.99,
+   "speedup": 4.45
+  },
+  {
+   "policy": "random-1/2-s7",
+   "window_frac": 0.4929,
+   "proc_hours": 2.171,
+   "speedup": 2.03
+  },
+  {
+   "policy": "random-1/4-s7",
+   "window_frac": 0.2635,
+   "proc_hours": 1.16,
+   "speedup": 3.8
+  },
+  {
+   "policy": "cusum-default",
+   "window_frac": 0.2852,
+   "proc_hours": 1.256,
+   "speedup": 3.51
+  },
+  {
+   "policy": "full",
+   "window_frac": 1.0,
+   "proc_hours": 4.404,
+   "speedup": 1.0
+  }
+ ],
+ "with_early_exit": [
+  {
+   "policy": "every-2",
+   "seconds": 4.0,
+   "total_frac": 0.2059,
+   "proc_hours": 0.907,
+   "speedup": 4.86
+  },
+  {
+   "policy": "every-2",
+   "seconds": 6.0,
+   "total_frac": 0.3088,
+   "proc_hours": 1.36,
+   "speedup": 3.24
+  },
+  {
+   "policy": "every-3",
+   "seconds": 4.0,
+   "total_frac": 0.1396,
+   "proc_hours": 0.615,
+   "speedup": 7.16
+  },
+  {
+   "policy": "every-3",
+   "seconds": 6.0,
+   "total_frac": 0.2094,
+   "proc_hours": 0.922,
+   "speedup": 4.78
+  },
+  {
+   "policy": "every-4",
+   "seconds": 4.0,
+   "total_frac": 0.1141,
+   "proc_hours": 0.502,
+   "speedup": 8.77
+  },
+  {
+   "policy": "every-4",
+   "seconds": 6.0,
+   "total_frac": 0.1711,
+   "proc_hours": 0.754,
+   "speedup": 5.84
+  },
+  {
+   "policy": "cusum-default",
+   "seconds": 4.0,
+   "total_frac": 0.1141,
+   "proc_hours": 0.502,
+   "speedup": 8.77
+  },
+  {
+   "policy": "cusum-default",
+   "seconds": 6.0,
+   "total_frac": 0.1711,
+   "proc_hours": 0.754,
+   "speedup": 5.84
+  }
+ ],
+ "command": "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_temporal/run_e3.py --out eval/results/exp_temporal"
+}
