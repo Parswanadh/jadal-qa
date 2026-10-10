@@ -1,6 +1,6 @@
 # Spectral study — harness-scored comparison
 
-_Generated 2026-10-10T10:11:29Z by eval/spectral/score.py. Every number below comes from eval/results/spectral/summary.json._
+_Generated 2026-10-10T10:11:53Z by eval/spectral/score.py. Every number below comes from eval/results/spectral/summary.json._
 
 ## Question
 
@@ -24,7 +24,7 @@ Does per-pixel frequency/temporal-spectral analysis of RGB video (arm B), a boun
 | B | — | — | — | — | NOT RUN |
 | D | — | — | — | — | NOT RUN |
 | B-T0 | 0.43 (0.359–0.683) | 0.448 | 0.67 | — | RUN |
-| B-T1 | 0.481 (0.41–0.667) | 0.448 | — | — | RUN |
+| B-T1 | 0.481 (0.41–0.667) | 0.448 | 1.0 | — | RUN |
 
 ### Gold detail (per arm, LOCO folds)
 
@@ -48,7 +48,7 @@ Does per-pixel frequency/temporal-spectral analysis of RGB video (arm B), a boun
 
 **B-T0** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.6347, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 0.833}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 0.333, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.667, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}}}`
 
-**B-T1** `{"status": "NOT RUN"}`
+**B-T1** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.6616, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 0.833}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 0.833, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.167, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}}}`
 
 **C** `{"status": "NOT RUN"}`
 

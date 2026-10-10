@@ -1,5 +1,5 @@
 {
- "created_utc": "2026-10-10T10:11:29Z",
+ "created_utc": "2026-10-10T10:11:53Z",
  "label_source": "human gold (IndEgo workers; NOT Awign footage)",
  "gold_snapshot": {
   "snapshot_utc": "2026-10-10T09:53:36.001340+00:00",
@@ -499,7 +499,8 @@
    "provisional": true,
    "note": "non-contract filenames scored as-is; final numbers wait for arms/B/gold.json etc.",
    "variant_files": [
-    "gold_T1"
+    "gold_T1",
+    "synth_T1_synth"
    ],
    "gold": {
     "n": 79,
@@ -1023,7 +1024,61 @@
    }
   },
   "B-T1": {
-   "status": "NOT RUN"
+   "status": "RUN",
+   "threshold_5pct_FAR_on_gold_good": 0.6616,
+   "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
+   "per_degradation": {
+    "black": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "blur": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "clean": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": null,
+     "control_FAR": 0.833
+    },
+    "darken": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "frozen": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "lowbitrate": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "noise": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.833,
+     "control_FAR": null
+    },
+    "overexpose": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.167,
+     "control_FAR": null
+    },
+    "shake": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "static": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    }
+   }
   },
   "C": {
    "status": "NOT RUN"
@@ -1522,5 +1577,5 @@
  "vlm_verdict": {
   "status": "NOT RUN"
  },
- "scorer_wall_s": 12.3
+ "scorer_wall_s": 10.9
 }
