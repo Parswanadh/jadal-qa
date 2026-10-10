@@ -17,7 +17,8 @@ Hardware (measured): NVIDIA GeForce RTX 4070 Laptop GPU, 8 GiB
 | R0 CPU baseline | ffmpeg CPU decode 160×90 + `cpu_window_features`, 1 proc | **22.2** (`throughput.json:R0_cpu`) | starting point |
 | R1/R2 GPU kernels | same features as batched torch kernels, fp16 in | **1792–1998** (`throughput.json:kernels_only`, B1/B8/B32) | kernels-only ceiling; batching ≈ flat (already launch-bound, not compute-bound) |
 | R3a NVDEC pipeline (4 decoders, B8, 360 s sustain, 104 windows) | **2.9** (`throughput.json:R3_pipeline`) | FEEDER STARVATION: per-frame NV12→RGB float64 conversion in reader threads (+hot CPUs) delivered 0.29 win/s; GPU idle 76% (util 24%, 9.9 W, SM 524 MHz — see telemetry). NVDEC was never the ceiling; the pipe around it was |
-| R3b CPU-fed rival | CPU ffmpeg decode + H2D + batched kernels | RUNNING (`--holdB2`, then full `e2e.py` ≥120 windows with S0/S1) | NVDEC per-session overhead avoided at tiny frames |
+| R3b CPU-fed rival | CPU ffmpeg decode + H2D + batched kernels | RESULT (`--holdB2`, in `throughput.json:R3b_cpufeed`) — see §2b | NVDEC per-session overhead avoided at tiny frames |
+| R3c GPU-side convert | NVDEC chain-B raw NV12 → BT.601 on GPU (fp16) → kernels | QUEUED (`holdc.py`, 48 windows) | orchestrator feeder fix: conversion off hot CPUs |
 | R4 +fp16 +S0 skip | early-reject exits skip S1/S2 work | PENDING | effective rate = R3 / (1 − saved) |
 
 Regenerate: `/home/parshu/envs/jadal/bin/python eval/gpu/throughput.py --r0`
