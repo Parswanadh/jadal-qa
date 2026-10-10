@@ -1,0 +1,345 @@
+{
+ "experiment": "Z3.01",
+ "n": 210,
+ "n_indego": 150,
+ "n_good_indego": 100,
+ "n_ood": 60,
+ "n_good_ood": 51,
+ "label_source": "human (IndEgo manifest_gold n=150 + Egocentric-10K ood_labels n=60; single labeller; OOD n_bad=9 exploratory)",
+ "protocol": "signed AUROC per feature, label 1 = usable/good; IndEgo CI = clip-bootstrap (7 clips), OOD CI = window-bootstrap (optimistic); both decoded to ~10 fps effective for decode-based candidates",
+ "device": "CPU (numpy/ffmpeg/cv2)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_features/extract.py && python3 eval/exp_features/run_eval.py",
+ "cost": {
+  "candidates": 20,
+  "indego_windows": 150,
+  "ood_windows": 60
+ },
+ "classification_rule": "chance iff BOTH |AUROC-0.5| < 0.05; else stable if same side, flip if opposite (E5.03 rule)",
+ "counts": {
+  "flip": 11,
+  "stable": 9
+ },
+ "table": [
+  {
+   "feature": "ct_bitrate",
+   "indego_auroc": 0.3762,
+   "indego_ci95": [
+    0.1836,
+    0.6081
+   ],
+   "ood_auroc": 0.8017,
+   "ood_ci95": [
+    0.678,
+    0.9126
+   ],
+   "class": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "ct_fsize_mean",
+   "indego_auroc": 0.3762,
+   "indego_ci95": [
+    0.1836,
+    0.6081
+   ],
+   "ood_auroc": 0.8017,
+   "ood_ci95": [
+    0.678,
+    0.9126
+   ],
+   "class": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "ct_fsize_cv",
+   "indego_auroc": 0.7318,
+   "indego_ci95": [
+    0.5423,
+    0.8182
+   ],
+   "ood_auroc": 0.5294,
+   "ood_ci95": [
+    0.256,
+    0.7628
+   ],
+   "class": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "ct_iframe_ratio",
+   "indego_auroc": 0.4794,
+   "indego_ci95": [
+    0.4153,
+    0.5318
+   ],
+   "ood_auroc": 0.5948,
+   "ood_ci95": [
+    0.3477,
+    0.804
+   ],
+   "class": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "ct_fsize_entropy",
+   "indego_auroc": 0.2638,
+   "indego_ci95": [
+    0.1878,
+    0.4429
+   ],
+   "ood_auroc": 0.4815,
+   "ood_ci95": [
+    0.2378,
+    0.7624
+   ],
+   "class": "stable",
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable"
+  },
+  {
+   "feature": "ct_iframe_frac",
+   "indego_auroc": 0.3505,
+   "indego_ci95": [
+    0.3124,
+    0.4265
+   ],
+   "ood_auroc": 0.488,
+   "ood_ci95": [
+    0.3376,
+    0.58
+   ],
+   "class": "stable",
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable"
+  },
+  {
+   "feature": "ct_fsize_std",
+   "indego_auroc": 0.6202,
+   "indego_ci95": [
+    0.4134,
+    0.7529
+   ],
+   "ood_auroc": 0.7473,
+   "ood_ci95": [
+    0.5555,
+    0.9073
+   ],
+   "class": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_trans_resid",
+   "indego_auroc": 0.3012,
+   "indego_ci95": [
+    0.1568,
+    0.5073
+   ],
+   "ood_auroc": 0.7037,
+   "ood_ci95": [
+    0.516,
+    0.863
+   ],
+   "class": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_affine_resid",
+   "indego_auroc": 0.3222,
+   "indego_ci95": [
+    0.1665,
+    0.5475
+   ],
+   "ood_auroc": 0.7277,
+   "ood_ci95": [
+    0.5047,
+    0.9041
+   ],
+   "class": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_affine_gain",
+   "indego_auroc": 0.3042,
+   "indego_ci95": [
+    0.1882,
+    0.4525
+   ],
+   "ood_auroc": 0.573,
+   "ood_ci95": [
+    0.395,
+    0.738
+   ],
+   "class": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_hand_trans_resid",
+   "indego_auroc": 0.453,
+   "indego_ci95": [
+    0.326,
+    0.5967
+   ],
+   "ood_auroc": 0.8017,
+   "ood_ci95": [
+    0.6642,
+    0.9138
+   ],
+   "class": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_hand_affine_resid",
+   "indego_auroc": 0.4798,
+   "indego_ci95": [
+    0.3584,
+    0.6284
+   ],
+   "ood_auroc": 0.8235,
+   "ood_ci95": [
+    0.6765,
+    0.9351
+   ],
+   "class": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_hand_motion_excess",
+   "indego_auroc": 0.6492,
+   "indego_ci95": [
+    0.5757,
+    0.7203
+   ],
+   "ood_auroc": 0.7712,
+   "ood_ci95": [
+    0.6317,
+    0.8909
+   ],
+   "class": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "mo_motion_frac",
+   "indego_auroc": 0.3082,
+   "indego_ci95": [
+    0.1614,
+    0.5179
+   ],
+   "ood_auroc": 0.7211,
+   "ood_ci95": [
+    0.5454,
+    0.8598
+   ],
+   "class": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "inv_dct_hf_lf",
+   "indego_auroc": 0.31,
+   "indego_ci95": [
+    0.2317,
+    0.4564
+   ],
+   "ood_auroc": 0.1743,
+   "ood_ci95": [
+    0.056,
+    0.3369
+   ],
+   "class": "stable",
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable"
+  },
+  {
+   "feature": "inv_noise_snr",
+   "indego_auroc": 0.5054,
+   "indego_ci95": [
+    0.4081,
+    0.666
+   ],
+   "ood_auroc": 0.2527,
+   "ood_ci95": [
+    0.0351,
+    0.4911
+   ],
+   "class": "flip",
+   "indego_sign": "high-usable",
+   "ood_sign": "low-usable"
+  },
+  {
+   "feature": "inv_clip_frac",
+   "indego_auroc": 0.6564,
+   "indego_ci95": [
+    0.4667,
+    0.7518
+   ],
+   "ood_auroc": 0.6623,
+   "ood_ci95": [
+    0.3881,
+    0.8858
+   ],
+   "class": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "inv_hist_entropy",
+   "indego_auroc": 0.5342,
+   "indego_ci95": [
+    0.3297,
+    0.7091
+   ],
+   "ood_auroc": 0.7495,
+   "ood_ci95": [
+    0.5673,
+    0.9123
+   ],
+   "class": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "inv_dhash_dist",
+   "indego_auroc": 0.2023,
+   "indego_ci95": [
+    0.1251,
+    0.3612
+   ],
+   "ood_auroc": 0.549,
+   "ood_ci95": [
+    0.3333,
+    0.7597
+   ],
+   "class": "flip",
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable"
+  },
+  {
+   "feature": "inv_laplacian_var",
+   "indego_auroc": 0.6412,
+   "indego_ci95": [
+    0.4216,
+    0.764
+   ],
+   "ood_auroc": 0.719,
+   "ood_ci95": [
+    0.5163,
+    0.8919
+   ],
+   "class": "stable",
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable"
+  }
+ ]
+}

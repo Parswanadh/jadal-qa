@@ -1,0 +1,71 @@
+{
+ "experiment": "Z3.02",
+ "n": 210,
+ "n_indego": 150,
+ "n_good_indego": 100,
+ "n_ood": 60,
+ "n_good_ood": 51,
+ "label_source": "human (IndEgo manifest_gold n=150 + Egocentric-10K ood_labels n=60; single labeller; OOD n_bad=9 exploratory)",
+ "protocol": "signed AUROC per feature, label 1 = usable/good; IndEgo CI = clip-bootstrap (7 clips), OOD CI = window-bootstrap (optimistic); both decoded to ~10 fps effective for decode-based candidates",
+ "device": "CPU (numpy/ffmpeg/cv2)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_features/extract.py && python3 eval/exp_features/run_eval.py",
+ "cost": {
+  "candidates": 20,
+  "indego_windows": 150,
+  "ood_windows": 60
+ },
+ "classification_rule": "chance iff BOTH |AUROC-0.5| < 0.05; else stable if same side, flip if opposite (E5.03 rule)",
+ "families": {
+  "compression_telemetry": {
+   "n": 7,
+   "counts": {
+    "flip": 3,
+    "stable": 4
+   },
+   "stable_features": [
+    "ct_fsize_cv",
+    "ct_fsize_entropy",
+    "ct_iframe_frac",
+    "ct_fsize_std"
+   ],
+   "best_transfer": "ct_bitrate",
+   "best_transfer_indego_auroc": 0.3762,
+   "best_transfer_ood_auroc": 0.8017
+  },
+  "affine_ego_motion": {
+   "n": 7,
+   "counts": {
+    "flip": 6,
+    "stable": 1
+   },
+   "stable_features": [
+    "mo_hand_motion_excess"
+   ],
+   "best_transfer": "mo_trans_resid",
+   "best_transfer_indego_auroc": 0.3012,
+   "best_transfer_ood_auroc": 0.7037
+  },
+  "invariants": {
+   "n": 6,
+   "counts": {
+    "flip": 2,
+    "stable": 4
+   },
+   "stable_features": [
+    "inv_dct_hf_lf",
+    "inv_clip_frac",
+    "inv_hist_entropy",
+    "inv_laplacian_var"
+   ],
+   "best_transfer": "inv_dct_hf_lf",
+   "best_transfer_indego_auroc": 0.31,
+   "best_transfer_ood_auroc": 0.1743
+  }
+ },
+ "verdicts": {
+  "compression": "compression telemetry is a weak, partly stable cue (see table)",
+  "affine": "full-affine residual vs translation-only; compare mo_affine_* with mo_trans_*",
+  "invariants": "DCT/noise/entropy/dHash invariants"
+ }
+}
