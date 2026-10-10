@@ -88,7 +88,7 @@
   {
    "id": "r057_63507fe6bfb0",
    "usable_prob": 0.5497,
-   "verdict": "accept",
+   "verdict": "review",
    "p_eg2": 0.79,
    "p_pixel": 0.3093,
    "margin": 0.0497,
@@ -148,7 +148,7 @@
   {
    "id": "r062_46bd9c2db0af",
    "usable_prob": 0.5144,
-   "verdict": "accept",
+   "verdict": "review",
    "p_eg2": 0.7726,
    "p_pixel": 0.2563,
    "margin": 0.0144,
@@ -160,7 +160,7 @@
   {
    "id": "r063_95837794bfcc",
    "usable_prob": 0.5453,
-   "verdict": "accept",
+   "verdict": "review",
    "p_eg2": 0.472,
    "p_pixel": 0.6186,
    "margin": 0.0453,
@@ -532,7 +532,7 @@
   {
    "id": "r094_c4353547155f",
    "usable_prob": 0.564,
-   "verdict": "accept",
+   "verdict": "review",
    "p_eg2": 0.7874,
    "p_pixel": 0.3406,
    "margin": 0.064,

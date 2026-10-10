@@ -7,9 +7,13 @@ import unittest
 
 import numpy as np
 
-from jadal.ensemble.scorer import (ensemble_prob, features_digest, head_prob, load_config)
+from jadal.ensemble.scorer import (ensemble_prob, features_digest, head_prob, load_config,
+                                   verdict_for)
 
-CFG = os.path.join(os.path.dirname(__file__), "..", "configs", "ensemble_v1.json")
+ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
+CFG = os.path.join(ROOT, "configs", "ensemble_v1.json")
+SCORE_CACHES = [os.path.join(ROOT, "eval", "results", "ensemble", n) for n in
+                ("ood_scores.json", "ood_scores2.json", "ood_scores2a.json", "ood_scores2b.json")]
 
 
 class TestEnsembleHeads(unittest.TestCase):
@@ -69,6 +73,61 @@ class TestEnsembleHeads(unittest.TestCase):
         self.assertEqual(self.cfg["threshold"], 0.5)
         lo, hi = self.cfg["abstain_band"]
         self.assertTrue(lo < 0.5 < hi or hi == 0.6)
+
+
+class TestVerdictBand(unittest.TestCase):
+    """Regression: the abstain band must be tested before the accept threshold.
+
+    lo/hi/thr come from the frozen config (0.4 / 0.6 / 0.5). The pre-fix ordering
+    returned accept for (0.5, 0.6]; these tests fail on that ordering.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.cfg, _ = load_config(CFG)
+        cls.lo, cls.hi = cls.cfg["abstain_band"]
+        cls.thr = cls.cfg["threshold"]
+
+    def v(self, p):
+        return verdict_for(p, self.lo, self.hi, self.thr)
+
+    def test_upper_half_of_band_is_review(self):
+        self.assertEqual(self.v(0.55), "review")
+        self.assertEqual(self.v(0.6), "review")  # inclusive upper edge
+
+    def test_lower_half_of_band_is_review(self):
+        self.assertEqual(self.v(0.45), "review")
+        self.assertEqual(self.v(0.4), "review")  # inclusive lower edge
+        self.assertEqual(self.v(0.5), "review")
+
+    def test_outside_band(self):
+        self.assertEqual(self.v(0.35), "reject")
+        self.assertEqual(self.v(0.65), "accept")
+        self.assertEqual(self.v(0.0), "reject")
+        self.assertEqual(self.v(1.0), "accept")
+
+    def test_spec_points(self):
+        self.assertEqual([self.v(p) for p in (0.35, 0.45, 0.55, 0.65)],
+                         ["reject", "review", "review", "accept"])
+
+    def test_cached_scores_match_rule(self):
+        """Committed score caches carry verdicts from the fixed rule."""
+        for path in SCORE_CACHES:
+            if not os.path.exists(path):
+                self.skipTest(f"{path} absent")
+            with open(path) as f:
+                rows = [r for r in json.load(f)["scores"] if "usable_prob" in r]
+            bad = [r["id"] for r in rows if r["verdict"] != self.v(r["usable_prob"])]
+            self.assertEqual(bad, [], os.path.basename(path))
+
+    def test_no_cached_score_in_upper_band_half(self):
+        """Documents why the fix leaves the OOD verdict split unchanged (0 of 60)."""
+        path = SCORE_CACHES[0]
+        if not os.path.exists(path):
+            self.skipTest("ood_scores.json absent")
+        with open(path) as f:
+            probs = [r["usable_prob"] for r in json.load(f)["scores"] if "usable_prob" in r]
+        self.assertEqual(sum(1 for p in probs if 0.5 < p <= 0.6), 0)
 
 
 if __name__ == "__main__":

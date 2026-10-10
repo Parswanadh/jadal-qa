@@ -232,7 +232,7 @@
   {
    "id": "r019_53c94542d028",
    "usable_prob": 0.5787,
-   "verdict": "accept",
+   "verdict": "review",
    "p_eg2": 0.8643,
    "p_pixel": 0.293,
    "margin": 0.0787,
@@ -340,7 +340,7 @@
   {
    "id": "r028_35d5b1c8f28d",
    "usable_prob": 0.5872,
-   "verdict": "accept",
+   "verdict": "review",
    "p_eg2": 0.829,
    "p_pixel": 0.3454,
    "margin": 0.0872,
@@ -484,7 +484,7 @@
   {
    "id": "r040_32c42216af3d",
    "usable_prob": 0.5371,
-   "verdict": "accept",
+   "verdict": "review",
    "p_eg2": 0.8071,
    "p_pixel": 0.2671,
    "margin": 0.0371,

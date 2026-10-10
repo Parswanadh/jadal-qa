@@ -27,10 +27,10 @@ def main():
     args = ap.parse_args()
 
     from jadal.ensemble.scorer import (load_config, ensemble_prob, pixel_features_for_window,
-                                       eg2_mean_for_window, features_digest)
+                                       eg2_mean_for_window, features_digest, file_sha256,
+                                       verdict_for)
     cfg, used = load_config()
-    import hashlib
-    cfg_sha = hashlib.sha256(open(used, "rb").read()).hexdigest()
+    cfg_sha = file_sha256(used)
     items = json.load(open(args.windows))
     out = {"config_sha256": cfg_sha, "scores": []}
     for it in items:
@@ -50,7 +50,7 @@ def main():
                 p, p_e, p_g = ensemble_prob(eg2m, feats, cfg)
             prob = round(p, 4)
             lo, hi, thr = cfg["abstain_band"][0], cfg["abstain_band"][1], cfg["threshold"]
-            verdict = "accept" if prob > thr else ("reject" if prob < lo else "review")
+            verdict = verdict_for(prob, lo, hi, thr)
             meta = {"n_frames_pixel": pmeta["n_frames"], "n_frames_eg2": emeta["n_frames"]}
             out["scores"].append({"id": it.get("id"), "usable_prob": prob, "verdict": verdict,
                                   "p_eg2": None if p_e is None else round(p_e, 4),
