@@ -24,7 +24,7 @@ Reports on `main`, one per module:
 - [`reports/voicebank.md`](reports/voicebank.md): voice bank message catalogue and generator.
 - [`reports/dashboard.md`](reports/dashboard.md): judge-facing dashboard.
 
-Reports still on open branches (not on `main` yet): `signals` (PR #12), `evalharness` (PR #16), `integration` (PR #19).
+Reports still on open branches (not on `main` yet): `signals` (PR #12), `evalharness` (PR #16), `integration` (PR #19), `decode_verification` (NVDEC vs CPU decode on the pod A40, LB1-decode).
 
 Screenshots of the dashboard are in [`screens/`](screens/).
 
