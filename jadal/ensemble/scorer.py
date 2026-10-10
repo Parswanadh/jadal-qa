@@ -10,7 +10,8 @@ Views (frozen, numpy-only heads):
   pixel: ffmpeg CPU decode 160x90 rgb24, luma=0.299R+0.587G+0.114B float64,
        jadal.gpu.features:cpu_window_features -> StandardScaler + logistic.
 Fusion: equal-weight probability average. usable_prob = round4(prob-average).
-Verdict: p>0.5 accept; p<0.4 reject; in [0.4,0.6] review (frozen abstain band).
+Verdict (verdict_for): the abstain band is tested FIRST: lo <= p <= hi -> review;
+else p > threshold -> accept; else reject. Frozen lo/hi/threshold = 0.4/0.6/0.5.
 Determinism: same machine+device -> identical digests (EG2 GPU numerics are
 NOT claimed identical across devices).
 """
@@ -32,11 +33,31 @@ _MODEL = None  # cached (model_dir, SentenceTransformer)
 
 
 def _git_sha():
+    """Provenance only (never a score or verdict input)."""
     try:
         return subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
                               text=True, cwd=os.path.dirname(HERE)).stdout.strip()
-    except Exception:
+    except (OSError, subprocess.SubprocessError):
         return "unknown"
+
+
+def file_sha256(path):
+    """sha256 of the raw file bytes (the convention used everywhere: matches sha256sum)."""
+    with open(path, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+
+def verdict_for(prob, lo, hi, thr):
+    """Single verdict rule shared by score() and eval/ensemble_score_windows.py.
+
+    The abstain band is tested first, so every prob in [lo, hi] is review, including
+    the upper half (thr, hi]. Outside the band: prob > thr accept, else reject.
+    """
+    if lo <= prob <= hi:
+        return "review"
+    if prob > thr:
+        return "accept"
+    return "reject"
 
 
 def load_config(path=None):
@@ -46,8 +67,7 @@ def load_config(path=None):
     sha_file = path + ".sha256"
     if os.path.exists(sha_file):
         expect = open(sha_file).read().split()[0]
-        blob = json.dumps(cfg, indent=1).encode()
-        actual = hashlib.sha256(blob).hexdigest()
+        actual = file_sha256(path)
         if actual != expect:
             raise ValueError(f"config sha256 mismatch: {actual} != {expect}")
     return cfg, path
@@ -164,20 +184,14 @@ def features_digest(pixel_feats, eg2_mean, meta):
 
 def score(video_path, start_s, end_s, config_path=None):
     cfg, used = load_config(config_path)
-    with open(used, "rb") as f:
-        cfg_sha = hashlib.sha256(f.read()).hexdigest()
+    cfg_sha = file_sha256(used)
     feats, pmeta = pixel_features_for_window(video_path, start_s, end_s, cfg)
     eg2m, emeta = eg2_mean_for_window(video_path, start_s, end_s, cfg)
     p, p_e, p_g = ensemble_prob(eg2m, feats, cfg)
     prob = round(p, _Q)
     lo, hi = cfg["abstain_band"]
     thr = cfg["threshold"]
-    if prob > thr:
-        verdict = "accept"
-    elif prob < lo:
-        verdict = "reject"
-    else:
-        verdict = "review"
+    verdict = verdict_for(prob, lo, hi, thr)
     reasons = []
     if verdict == "review":
         reasons.append({"code": "LOW_MARGIN",

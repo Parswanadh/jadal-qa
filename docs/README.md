@@ -24,7 +24,7 @@ Reports on `main`, one per module:
 - [`reports/voicebank.md`](reports/voicebank.md): voice bank message catalogue and generator.
 - [`reports/dashboard.md`](reports/dashboard.md): judge-facing dashboard.
 
-Reports still on open branches (not on `main` yet): `signals` (PR #12), `evalharness` (PR #16), `integration` (PR #19).
+Reports still on open branches (not on `main` yet): `signals` (PR #12), `evalharness` (PR #16), `integration` (PR #19), `decode_verification` (NVDEC vs CPU decode on the pod A40, LB1-decode).
 
 Screenshots of the dashboard are in [`screens/`](screens/).
 
@@ -33,3 +33,7 @@ Screenshots of the dashboard are in [`screens/`](screens/).
 - [`process/README.md`](process/README.md): how the repo was built. Workflow, the reviews, and the five bugs they caught.
 - [`process/decision-log.md`](process/decision-log.md): the ledger of rulings, scope cuts and incidents. Redacted for paths and session IDs.
 - [`process/reviews/`](process/reviews/): every review and scoped re-review, round 0 through round 2, plus the round-0 review of the integration PR (15 files).
+
+## Experiments
+
+- Authoritative E3.0x JSON: `eval/results/exp_temporal/` (on `main`). `eval/results/pod_verify/exp_temporal/` is the pod's independent re-run, kept for comparison; it is not the source of record.
