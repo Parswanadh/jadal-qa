@@ -97,10 +97,94 @@ the branch runner): same LOCO recipe, own LOCO/bootstrap code, own frame-subsamp
    is saturated by another swarm and measuring throughput here would produce a number that says more
    about contention than about the pipeline. Not reproduced, not contradicted.
 
-## 5. Bottom line
+## 5. Artifact integrity — the frozen pre-registration does not verify on this pod
 
-Every quantitative claim in the LB1 scope reproduced **exactly** (20/20 rows), including the two baselines,
-the full E1.01/E1.02 frame-rate sweeps, and the whole E3.01–E3.05 temporal-policy chain. The adopted stack
-(every-2nd window, 4 s exit, EG2 2 fps view, 26-feature logistic) rests on numbers I could re-derive
-independently. The GPU half of the pipeline and the out-of-domain half are **unverified here** for
-environmental reasons that are stated above, not hidden.
+While checking the OOD claim I audited every entry of `/workspace/jadal_pod_bundle/SHA256SUMS.txt`
+against the bytes on disk (`eval/results/pod_verify/bundle_checksum_audit.json`):
+
+| result | count |
+|---|---|
+| raw-file hash matches the recorded hash | **302** |
+| mismatch | **14** |
+| missing file | 4 |
+
+The mismatches are not random. They include the artifacts the whole evidence chain rests on:
+
+| file | recorded | computed now |
+|---|---|---|
+| `caches/ensemble/ensemble_v1.json` (the **frozen** scorer) | `4da1068a78d5d150…` | `cf7fd7d34df2c3ca…` |
+| `labels/manifest_gold.json` (the gold labels) | `44c7217b839accf0…` | `b1524455f61a4962…` |
+| `docs/registry_snapshot.jsonl` | `d8be0322535d1e00…` | `daab7df0ba11bc66…` |
+| `queues/{label_queue_random,label_queue_random2,manifest_scale}.json` | — | — |
+| `local_work/exp-regimes/…/desc_{indego,ood}.jsonl` | — | — |
+| `scripts/{baseline_logistic_loco,ensemble_views_exploratory,dl_small}.py` | — | — |
+| `opencode_kit/tools/pod/bootstrap.sh`, `SHA256SUMS.txt` (self-hash, expected) | — | — |
+
+**Cause is established, and it is not tampering: path remapping after the manifest was written.**
+`ensemble_v1.json` as shipped contains the string `/workspace/jadal_pod_bundle/data/eg2` — a pod path —
+while the bundle was checksummed on the source machine. The files carry mtimes of `14:38:36`, i.e. after
+`SHA256SUMS.txt` itself (`14:38:24`), consistent with a remap pass rewriting JSON re-serialisations.
+I also tried the canonical-JSON variants that a content-hash scheme would use (sorted-compact,
+sorted-default, compact-unsorted) against the recorded hash: **none match**.
+
+**Consequence.** The published pre-registration hash `4da1068a78d5d150…` cannot be confirmed from any
+artifact present on this pod. This is exactly the check the LB4 guard is supposed to make, and it now
+genuinely fails: the frozen scorer on disk is **not** the file that was frozen. LB4 resolved this the
+honest way — it recovered the byte-exact frozen file from git
+(blob `0ede3b83d93ce23dc5b68cd20fb7de0af703ad27`), verified `sha256 == 4da1068a…`, and committed it as
+`configs/frozen/ensemble_v1.prereg.json` (PR #97). No hash was substituted or invented.
+Any OOD claim made before that recovery would have been scored with a different artifact than the one
+pre-registered — so B4's guard was not ceremonial.
+
+## 6. The published out-of-domain number does NOT reproduce
+
+`FACTS.md` states: 60 real Egocentric-10K windows (human labels, 51 good / 9 bad), shipped
+IndEgo-calibrated cascade at chance — score AUROC **0.529** (0.32-0.74 by window, optimistic), rejected
+**21/51** good windows (41%), **5/9** bad, balanced accuracy **0.51**.
+
+Recomputing from the artifacts shipped in this bundle
+(`caches/ensemble/ood_scores.json` joined to `labels/ood_labels.json` "latest" — the label set is the same
+51 good / 9 bad, 8 `NO_ACTIVE_WORK` + 1 `SHAKY`, and no window's verdict ever changed in `history`):
+
+| score column | AUROC |
+|---|---|
+| `usable_prob` (the shipped decision score) | **0.415** [0.207, 0.630] |
+| `margin` | 0.415 |
+| `p_eg2` | 0.586 |
+| `p_pixel` | 0.342 |
+
+Per-window verdicts: **reject 29 / review 14 / accept 17**; **26 of 51 good windows rejected (51.0%)**;
+**3 of 9 bad rejected**; balanced accuracy at the shipped rule **0.412**.
+
+**So the published 0.529 does not reproduce from any column of the shipped score file, and neither do the
+reject counts (26/51 and 3/9 vs the published 21/51 and 5/9).** The same artifact drift documented in §5
+is the most likely cause — the score file and the labels were both rewritten after the numbers were
+computed — but I cannot reconstruct the file that produced 0.529 from anything present here, and I will
+not reverse-engineer a number to match a claim.
+
+**What this does and does not change.** The *qualitative* finding that the whole submission is organised
+around — the IndEgo-calibrated cascade is at chance on real Egocentric-10K and rejects roughly half the
+good windows — is **confirmed independently, and is in fact worse than published** (0.415 vs 0.529;
+51% vs 41% of good windows rejected). The exact published figure should not be quoted as reproduced; it
+should either be re-derived from a recovered artifact or restated from this recomputation with its own
+provenance.
+
+## 7. Bottom line
+
+Every quantitative claim in the **LB1 core scope** reproduced **exactly** (20/20 rows), including the two
+baselines, the full E1.01/E1.02 frame-rate sweeps, and the whole E3.01–E3.05 temporal-policy chain. The
+adopted stack (every-2nd window, 4 s exit, EG2 2 fps view, 26-feature logistic) rests on numbers I could
+re-derive independently, and E1.02 survives a from-scratch re-implementation.
+
+**Two things did NOT survive verification, and they matter more than the 20 that did:**
+
+1. **The frozen pre-registration hash cannot be confirmed on this pod** (§5). 14 of 316 checksums fail,
+   including the frozen scorer, because the bundle was path-remapped after it was checksummed. LB4 has
+   since recovered the byte-exact frozen file from git and anchored it at
+   `configs/frozen/ensemble_v1.prereg.json` (PR #97).
+2. **The headline out-of-domain number does not reproduce** (§6): the shipped artifacts give AUROC
+   **0.415** [0.207, 0.630] with **26/51** good windows rejected, not 0.529 with 21/51. The direction of the
+   finding is confirmed and is worse than published; the published figure must be re-derived, not quoted.
+
+The GPU half of the pipeline and the delivered-labels half of the out-of-domain work remain **unverified
+here** for environmental reasons that are stated above, not hidden.

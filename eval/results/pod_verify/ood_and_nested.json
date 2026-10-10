@@ -1,0 +1,74 @@
+{
+ "verified_by": "lead-b (LB1)",
+ "ood": {
+  "n": 60,
+  "n_good": 51,
+  "n_bad": 9,
+  "label_source": "human-labelled Egocentric-10K windows (labels/ood_labels.json, 'latest')",
+  "protocol": "frozen IndEgo-calibrated cascade scores from caches/ensemble/ood_scores.json; AUROC of usable_prob vs human good/bad; window-bootstrap 95% CI (optimistic, windows within a clip are correlated)",
+  "auroc": 0.415,
+  "ci95_window_bootstrap": [
+   0.2069,
+   0.6295
+  ],
+  "rejected_good": 26,
+  "rejected_good_of": 51,
+  "rejected_good_share": 0.5098,
+  "rejected_bad": 3,
+  "rejected_bad_of": 9,
+  "balanced_accuracy_at_shipped_rule": 0.4118,
+  "claimed_reference": {
+   "auroc": 0.529,
+   "ci": [
+    0.32,
+    0.74
+   ],
+   "rejected_good": 21,
+   "rejected_bad": 5,
+   "balanced_accuracy": 0.51
+  }
+ },
+ "nested": {
+  "n": 150,
+  "protocol": "outer LOCO (7 clips); inner LOCO on 6 train clips picks C; Platt/isotonic + thresholds fit on inner-OOF train probs only; equal-weight probability average, no learned stacking",
+  "label_source": "human gold (single labeller)",
+  "keys": [
+   "C_grid",
+   "chosen_C",
+   "clips",
+   "coverage_curve",
+   "gates",
+   "label_source",
+   "labels_sha256",
+   "n",
+   "per_clip",
+   "per_reason",
+   "protocol",
+   "views"
+  ]
+ },
+ "artifact_integrity": {
+  "audited": "SHA256SUMS.txt vs on-disk bytes",
+  "n_ok": 302,
+  "n_mismatch": 14,
+  "n_missing": 4,
+  "frozen_ensemble": {
+   "recorded": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+   "computed_on_disk": "cf7fd7d34df2c3ca654c730d518b5aa6c341f6476b41fb3e4d29326b3c18004b",
+   "canonical_json_variants_tried": [
+    "sorted-compact",
+    "sorted-default",
+    "compact-unsorted"
+   ],
+   "matched": false,
+   "explanation": "ensemble_v1.json contains the path string /workspace/jadal_pod_bundle/data/eg2, i.e. the pod bootstrap rewrote absolute paths inside the JSON after the checksum was recorded; LB4 recovered the byte-exact frozen file from git blob 0ede3b83d93ce23dc5b68cd20fb7de0af703ad27 and verified sha == recorded."
+  },
+  "labels_manifest": {
+   "recorded": "44c7217b839accf0b441...",
+   "computed": "b1524455f61a49625e93...",
+   "matched": false
+  },
+  "verdict": "The published OOD AUROC 0.529 cannot be reproduced from the artifacts shipped in this bundle; artifact drift is established independently by the checksum audit (14/316 files)."
+ },
+ "conclusion_ood": "NOT REPRODUCED: shipped score artifact gives AUROC 0.415 [0.207,0.630], 26/51 good windows rejected, 3/9 bad rejected, balanced accuracy 0.412, versus the published 0.529 / 21-51 / 5-9 / 0.51. The qualitative finding (at chance, heavy false rejects) is CONFIRMED and is worse than published."
+}
