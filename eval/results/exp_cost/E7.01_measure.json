@@ -1,0 +1,313 @@
+{
+ "experiment": "E7.01",
+ "stage": "measure",
+ "device": "A40",
+ "git_sha": "fd0bd6d",
+ "created_utc": "2026-10-10T15:50:43Z",
+ "nproc": 96,
+ "omp_num_threads": "1",
+ "work_res": [
+  160,
+  90
+ ],
+ "decode": {
+  "indego_480p10_h264__cpu": {
+   "source": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+   "native_fps": 10.0,
+   "by_duration_s": {
+    "4.0": {
+     "n_windows": 3,
+     "frames_mean": 40.0,
+     "wall_s_mean": 0.2481322557044526,
+     "wall_s_ci95": [
+      0.13814620207995176,
+      0.3655372989596799
+     ],
+     "fps": 161.20435405078302,
+     "ms_per_window": 248.13225570445263
+    },
+    "10.0": {
+     "n_windows": 3,
+     "frames_mean": 100.0,
+     "wall_s_mean": 0.4131160656688735,
+     "wall_s_ci95": [
+      0.334305431926623,
+      0.4690790150780231
+     ],
+     "fps": 242.06272355467624,
+     "ms_per_window": 413.11606566887343
+    }
+   }
+  },
+  "indego_480p10_h264__nvdec": {
+   "source": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+   "native_fps": 10.0,
+   "by_duration_s": {
+    "4.0": {
+     "n_windows": 3,
+     "frames_mean": 40.0,
+     "wall_s_mean": 1.9315531213069335,
+     "wall_s_ci95": [
+      1.8480209629051387,
+      2.0977392880013213
+     ],
+     "fps": 20.70872375124484,
+     "ms_per_window": 1931.5531213069335
+    },
+    "10.0": {
+     "n_windows": 3,
+     "frames_mean": 100.0,
+     "wall_s_mean": 1.830952294015636,
+     "wall_s_ci95": [
+      0.9533916759537533,
+      2.9000810040161014
+     ],
+     "fps": 54.61638750875397,
+     "ms_per_window": 1830.9522940156362
+    }
+   }
+  },
+  "ego10k_1080p30_hevc__cpu": {
+   "source": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+   "native_fps": 30.0,
+   "by_duration_s": {
+    "4.0": {
+     "n_windows": 3,
+     "frames_mean": 120.0,
+     "wall_s_mean": 4.619983938677858,
+     "wall_s_ci95": [
+      3.007368922000751,
+      7.366553878993727
+     ],
+     "fps": 25.97411627243481,
+     "ms_per_window": 4619.983938677858
+    },
+    "10.0": {
+     "n_windows": 3,
+     "frames_mean": 300.0,
+     "wall_s_mean": 9.540153400041163,
+     "wall_s_ci95": [
+      5.8104906110093,
+      12.895630504004657
+     ],
+     "fps": 31.44603523866876,
+     "ms_per_window": 9540.153400041165
+    }
+   }
+  },
+  "ego10k_1080p30_hevc__nvdec": {
+   "source": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+   "native_fps": 30.0,
+   "by_duration_s": {
+    "4.0": {
+     "n_windows": 3,
+     "frames_mean": 120.0,
+     "wall_s_mean": 2.004007321976436,
+     "wall_s_ci95": [
+      1.7307022248860449,
+      2.193592958035879
+     ],
+     "fps": 59.880020738472645,
+     "ms_per_window": 2004.0073219764358
+    },
+    "10.0": {
+     "n_windows": 3,
+     "frames_mean": 300.0,
+     "wall_s_mean": 3.331490296016758,
+     "wall_s_ci95": [
+      2.485582416993566,
+      4.00930817599874
+     ],
+     "fps": 90.0497895367398,
+     "ms_per_window": 3331.4902960167574
+    }
+   }
+  }
+ },
+ "features_pixel26": {
+  "n_windows": 12,
+  "decode_160x90_ms_per_window": 250.3818234836217,
+  "decode_160x90_ms_ci95": [
+   195.54054917146763,
+   312.5638905493057
+  ],
+  "features_ms_per_window": {
+   "10@10": {
+    "mean": 401.84496925212443,
+    "ci95": [
+     342.46378285703634,
+     462.93664698120364
+    ],
+    "n": 12
+   },
+   "10@6": {
+    "mean": 223.69163201074116,
+    "ci95": [
+     185.2864659532012,
+     260.5186223103374
+    ],
+    "n": 12
+   },
+   "10@4": {
+    "mean": 128.2165277613482,
+    "ci95": [
+     110.39617118925283,
+     149.11039042975366
+    ],
+    "n": 12
+   },
+   "5@10": {
+    "mean": 165.05007405066863,
+    "ci95": [
+     143.01837441380485,
+     188.52607085549
+    ],
+    "n": 12
+   },
+   "5@6": {
+    "mean": 91.06202592374757,
+    "ci95": [
+     83.34639310075241,
+     100.09867242891535
+    ],
+    "n": 12
+   },
+   "5@4": {
+    "mean": 58.395297169530146,
+    "ci95": [
+     52.808972382141896,
+     66.49222280708878
+    ],
+    "n": 12
+   },
+   "2@10": {
+    "mean": 60.25890301680192,
+    "ci95": [
+     54.091216893963676,
+     67.16443080222234
+    ],
+    "n": 12
+   },
+   "2@6": {
+    "mean": 43.50531350549621,
+    "ci95": [
+     36.57224693912819,
+     52.185651752612706
+    ],
+    "n": 12
+   },
+   "2@4": {
+    "mean": 36.18855832610279,
+    "ci95": [
+     29.375352351295685,
+     45.582065308311336
+    ],
+    "n": 12
+   }
+  },
+  "note": "key = fps@observed_span_s; 4 s = early-exit prefix (first 40 native frames)"
+ },
+ "embedding_eg2": {
+  "device": "A40",
+  "batch_size": 1,
+  "dtype": "torch.bfloat16",
+  "max_soft_tokens": 140,
+  "peak_vram_mb": 1499.82421875,
+  "mosaic_artifacts": "/workspace/artifacts/mosaics",
+  "inputs": {
+   "tile_224x224": {
+    "n_timed": 8,
+    "size": [
+     224,
+     224
+    ],
+    "ms_per_image_mean": 183.31001362821553,
+    "ms_per_image_ci95": [
+     146.0404364981514,
+     223.1568516745028
+    ],
+    "images_per_s": 5.455239352216585
+   },
+   "mosaic_2x2_454x454": {
+    "n_timed": 8,
+    "size": [
+     454,
+     454
+    ],
+    "ms_per_image_mean": 222.35484050179366,
+    "ms_per_image_ci95": [
+     185.40574860599008,
+     257.2594194287376
+    ],
+    "images_per_s": 4.497316081553589
+   },
+   "mosaic_3x3_680x680_real": {
+    "n_timed": 8,
+    "size": [
+     680,
+     680
+    ],
+    "ms_per_image_mean": 107.15924686519429,
+    "ms_per_image_ci95": [
+     91.18420697159308,
+     128.4012393087323
+    ],
+    "images_per_s": 9.331905824776785
+   },
+   "mosaic_4x4_906x906": {
+    "n_timed": 8,
+    "size": [
+     906,
+     906
+    ],
+    "ms_per_image_mean": 139.34727436571848,
+    "ms_per_image_ci95": [
+     113.83048763673287,
+     164.9103719577397
+    ],
+    "images_per_s": 7.176315464739474
+   }
+  },
+  "batched_alt": {
+   "tile_224x224": {
+    "batch": 8,
+    "n_timed_batches": 4,
+    "ms_per_batch_mean": 633.4088742441963,
+    "ms_per_image_batched": 79.17610928052454,
+    "note": "feature path only; the hashed receipt stays batch 1"
+   },
+   "mosaic_3x3_680x680_real": {
+    "batch": 8,
+    "n_timed_batches": 4,
+    "ms_per_batch_mean": 1030.6412852660287,
+    "ms_per_image_batched": 128.8301606582536,
+    "note": "feature path only; the hashed receipt stays batch 1"
+   }
+  }
+ },
+ "mosaic_build": {
+  "status": "measured",
+  "builder_path": "/workspace/wt/exp-mosaic/jadal/mosaic/build.py",
+  "builder_git_sha": "e8942b3",
+  "n_windows": 6,
+  "n_tiles": 9,
+  "tile_px": 224,
+  "layout_ms_mean": 49.788801659209035,
+  "layout_ms_ci95": [
+   35.66259518265724,
+   65.62678031526349
+  ],
+  "png_encode_ms_mean": 261.8586629978381,
+  "png_encode_ms_ci95": [
+   228.16304918766642,
+   308.4050786565058
+  ],
+  "note": "layout = grid + letterbox + timestamps + sidecar; encode = PNG bytes (compress_level=6). Decoded frames come from cv2 at native 480x480, not charged here"
+ },
+ "head_logistic": {
+  "n_predicts": 1000,
+  "ms_per_predict": 0.13814088993240148
+ },
+ "embedding_remeasured_utc": "2026-10-10T15:55:28Z",
+ "features_remeasured_utc": "2026-10-10T15:56:01Z"
+}
