@@ -39,7 +39,7 @@ def load(name: str):
 
 class StaticAssets(unittest.TestCase):
     def test_files_exist(self):
-        for name in ["index.html", "app.js", "style.css",
+        for name in ["index.html", "api.js", "app.js", "style.css",
                      "mock/batches.json", "mock/receipts.json",
                      "mock/risk_coverage.json", "mock/sop_gaps.json", "mock/pico_status.json"]:
             p = WEB / name
@@ -50,7 +50,8 @@ class StaticAssets(unittest.TestCase):
         """No CDN, no remote assets: src/href/@import/url() must be local."""
         html = (WEB / "index.html").read_text(encoding="utf-8")
         css = (WEB / "style.css").read_text(encoding="utf-8")
-        js = (WEB / "app.js").read_text(encoding="utf-8")
+        js = ((WEB / "api.js").read_text(encoding="utf-8")
+              + (WEB / "app.js").read_text(encoding="utf-8"))
         for attr in re.findall(r'(?:src|href)\s*=\s*"([^"]+)"', html):
             self.assertFalse(attr.startswith(("http://", "https://", "//")),
                              f"external asset in index.html: {attr}")
@@ -63,10 +64,18 @@ class StaticAssets(unittest.TestCase):
         html = (WEB / "index.html").read_text(encoding="utf-8")
         self.assertIn('name="viewport"', html)
         self.assertIn('href="style.css"', html)
+        self.assertIn('src="api.js"', html)
         self.assertIn('src="app.js"', html)
         for view in ["view-batches", "view-segment", "view-insights"]:
             self.assertIn(f'id="{view}"', html)
-        self.assertIn('id="pico-status"', html)
+        # v2: system drawer + global filter bar of real <select>s + search
+        self.assertIn('id="sys-drawer"', html)
+        self.assertIn('id="pico-led"', html)
+        self.assertIn('id="filterbar"', html)
+        for sel in ["f-site", "f-worker", "f-batch", "f-verdict", "f-reason", "f-lang", "f-q"]:
+            self.assertIn(f'id="{sel}"', html)
+        for tag in ["<select", "<details"]:
+            self.assertIn(tag, html)
 
     def test_css_has_dark_mode(self):
         css = (WEB / "style.css").read_text(encoding="utf-8")
@@ -96,26 +105,48 @@ class StaticAssets(unittest.TestCase):
                     f"verdict colour used outside verdicts/Pico LED: {line}")
 
     def test_js_touches_every_endpoint(self):
-        js = (WEB / "app.js").read_text(encoding="utf-8")
+        api = (WEB / "api.js").read_text(encoding="utf-8")
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        # all transport lives in the adapter; app.js only goes through it
         for ep in ["/ws", "/batches", "/receipts/", "/reverify",
                    "/voice/", "/stats/risk_coverage", "/stats/sop_gaps", "/pico/status"]:
-            self.assertIn(ep, js, f"app.js never calls {ep}")
+            self.assertIn(ep, api, f"api.js never calls {ep}")
         # exact live field names (upper_bound is certify's name, not error_bound)
         for field in ["receipt_ids", "upper_bound", "last_hb_led", "last_hb_age_s",
-                      "blurred_sha256", "resolveReceiptId", "rvSeq"]:
-            self.assertIn(field, js, f"app.js never reads {field}")
+                      "blurred_sha256", "findReceiptForSegment", "parseHash", "buildHash",
+                      "filterOptions", "applyFilters", "normReceipt", "createClient"]:
+            self.assertIn(field, api, f"api.js never defines {field}")
+        self.assertIn("JadalApi", app, "app.js must go through the web/api.js adapter")
+        self.assertIn("createClient", app)
+        # app.js reaches every operation through the client (never its own fetch):
+        for call in ["client.batches(", "client.batchDetail(", "client.receipt(",
+                     "client.reverify(", "client.risk(", "client.gaps(",
+                     "client.pico(", "client.voiceUrl("]:
+            self.assertIn(call, app, f"app.js never calls {call}")
+        for helper in ["A.normBatch", "A.normReceipt", "A.normRisk", "A.normGaps",
+                       "A.normPico", "A.applyFilters", "A.filterOptions",
+                       "A.parseHash", "A.buildHash", "A.shortHash",
+                       "A.findReceiptForSegment", "A.wsUrl"]:
+            self.assertIn(helper, app, f"app.js never uses adapter {helper}")
+        # ... and builds no transport URLs of its own
+        self.assertNotIn("fetch(API", app, "app.js bypasses the adapter transport")
+        self.assertNotIn("fetch('mock", app, "app.js fetches mock files directly")
+        # v2 components: expandable rows, receipt tree, timeline, voice select
+        for token in ["segdetails", "receipt-tree", "timeline", "voice-lang", "sys-body", "f-head"]:
+            self.assertIn(token, app, f"app.js never builds {token}")
         for lang in LANGS:
-            self.assertIn(lang, js, f"language {lang} missing from app.js")
-        self.assertIn("mock=1", js + (WEB / "index.html").read_text(encoding="utf-8"),
+            self.assertIn(lang, api, f"language {lang} missing from api.js")
+        self.assertIn("mock=1", app + (WEB / "index.html").read_text(encoding="utf-8"),
                       "?mock=1 switch not advertised")
 
     def test_js_syntax_with_node(self):
         node = shutil.which("node")
         if node is None:
             self.skipTest("node not on PATH")
-        r = subprocess.run([node, "--check", str(WEB / "app.js")],
-                           capture_output=True, text=True, timeout=60)
-        self.assertEqual(r.returncode, 0, f"node --check failed: {r.stderr}")
+        for name in ["api.js", "app.js"]:
+            r = subprocess.run([node, "--check", str(WEB / name)],
+                               capture_output=True, text=True, timeout=60)
+            self.assertEqual(r.returncode, 0, f"node --check {name} failed: {r.stderr}")
 
 
 class MockContract(unittest.TestCase):
@@ -223,6 +254,186 @@ class MockContract(unittest.TestCase):
                                      "last_hb_ticks_ms", "last_hb_led"},
                          "must match PicoLink.status() keys")
         self.assertIn(pico["last_hb_led"], {"G", "A", "R", "OFF"})
+
+
+NODE_ADAPTER_CASES = r"""
+const A = require(API_PATH);
+const batches = A.normBatchList(require(BATCHES));
+const receipts = require(RECEIPTS);
+const assert = require('node:assert');
+
+// normalizers
+assert.strictEqual(batches.length, 3);
+assert.ok(batches.every(b => b.batch_id && b.site_id && Array.isArray(b.rows)));
+const total = batches.reduce((n, b) => n + b.rows.length, 0);
+assert.strictEqual(total, 20);
+
+// filter options come from data
+const opts = A.filterOptions(batches);
+assert.deepStrictEqual(opts.sites, ['site_ludhiana_07', 'site_surat_01', 'site_tirupur_02']);
+assert.deepStrictEqual(opts.verdicts, ['accept', 'reject', 'review']);
+assert.ok(opts.reasons.includes('BLUR') && opts.reasons.includes('WRONG_STEP'));
+assert.deepStrictEqual(opts.langs, ['hi-IN', 'kn-IN', 'ta-IN', 'te-IN', 'en-IN']);
+assert.strictEqual(opts.batches.length, 3);
+
+// verdict filter keeps only matching rows
+let f = A.applyFilters(batches, { verdict: 'reject' });
+assert.ok(f.length >= 1);
+assert.ok(f.every(x => x.rows.length > 0 && x.rows.every(r => r.verdict === 'reject')));
+assert.ok(f.length < batches.length || f[0].rows.length < batches[0].rows.length);
+
+// site + reason filters compose
+f = A.applyFilters(batches, { site: 'site_tirupur_02', reason: 'LOW_CONFIDENCE' });
+assert.ok(f.length >= 1);
+assert.ok(f.every(x => x.batch.site_id === 'site_tirupur_02'));
+assert.ok(f.every(x => x.rows.every(r => r.reasons.includes('LOW_CONFIDENCE'))));
+
+// search matches segment ids case-insensitively
+const someSeg = batches[0].rows[0].segment_id;
+f = A.applyFilters(batches, { q: someSeg.slice(-4).toUpperCase() });
+assert.ok(f.some(x => x.rows.some(r => r.segment_id === someSeg)));
+// empty filters return everything
+f = A.applyFilters(batches, {});
+assert.strictEqual(f.reduce((n, x) => n + x.rows.length, 0), total);
+// impossible filter returns nothing
+assert.deepStrictEqual(A.applyFilters(batches, { site: 'no-such-site' }), []);
+
+// hash router round-trips
+const h = A.buildHash('batches', null, { site: 'a', verdict: 'reject', q: 'x y' }, null);
+const p = A.parseHash(h);
+assert.strictEqual(p.route, 'batches');
+assert.strictEqual(p.filters.site, 'a');
+assert.strictEqual(p.filters.verdict, 'reject');
+assert.strictEqual(p.filters.q, 'x y');
+const bad = A.parseHash('#/batches?verdict=bogus&reason=BOGUS');
+assert.strictEqual(bad.filters.verdict, '');
+assert.strictEqual(bad.filters.reason, '');
+assert.strictEqual(A.parseHash('#/garbage').route, 'batches');
+const seg = A.parseHash('#/segment/abc123?lang=ta-IN');
+assert.strictEqual(seg.route, 'segment');
+assert.strictEqual(seg.id, 'abc123');
+assert.strictEqual(seg.lang, 'ta-IN');
+
+// receipt normalizer + hash helpers
+const rid = Object.keys(receipts).filter(k => k[0] !== '_')[0];
+const r = A.normReceipt(receipts[rid]);
+assert.strictEqual(r.receipt_id, rid);
+assert.ok(r.step_names.length > 0 && r.step_names.includes(r.step_choice));
+assert.strictEqual(typeof r.pipeline_version, 'string');
+assert.strictEqual(A.shortHash('abcdef1234567890'), 'abcdef123456…');
+assert.strictEqual(A.shortHash('—'), '—');
+
+// segment -> receipt resolution is pure over fetched bodies
+const detail = { receipt_ids: [rid] };
+assert.strictEqual(A.findReceiptForSegment(detail, { [rid]: receipts[rid] }, r.segment_id), rid);
+assert.strictEqual(A.findReceiptForSegment(detail, { [rid]: receipts[rid] }, 'nope'), null);
+console.log('ADAPTER-OK total=' + total);
+"""
+
+
+class AdapterLogic(unittest.TestCase):
+    """web/api.js pure functions (normalizers, filters, hash router,
+    receipt resolution) exercised in node against the real fixtures."""
+
+    def test_adapter_in_node(self):
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("node not on PATH")
+        script = (NODE_ADAPTER_CASES
+                  .replace("API_PATH", repr(str(WEB / "api.js")))
+                  .replace("BATCHES", repr(str(MOCK / "batches.json")))
+                  .replace("RECEIPTS", repr(str(MOCK / "receipts.json"))))
+        r = subprocess.run([node, "-e", script],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0,
+                         f"adapter node cases failed:\n{r.stdout}\n{r.stderr}")
+        self.assertIn("ADAPTER-OK", r.stdout)
+
+
+class FixRound1(unittest.TestCase):
+    """PR #21 fix round 1: no stray re-verify GET, hash-proof routing,
+    absent-vs-null threshold, bound caption, adapter-only reads."""
+
+    def test_no_stray_unused_get(self):
+        api = (WEB / "api.js").read_text(encoding="utf-8")
+        self.assertNotIn("__unused__", api,
+                         "live re-verify must not fire a stray GET")
+
+    def test_route_param_validation(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        # a hash like head=a"b must never be interpolated into a selector
+        self.assertNotIn("querySelector('option[value=\"'", app,
+                         "route param interpolated into querySelector (throws)")
+        self.assertIn("sel.options", app,
+                      "head option must be matched via dataset/options lookup")
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("node not on PATH")
+        script = (
+            "const A = require(" + repr(str(WEB / "api.js")) + ");\n"
+            "const assert = require('node:assert');\n"
+            "const p = A.parseHash('#/insights?head=a\"b');\n"
+            "assert.strictEqual(p.route, 'insights');\n"
+            "assert.strictEqual(p.head, 'a\"b');\n"
+            "const q = A.parseHash('#/segment/abc%22def?lang=xx&verdict=bogus');\n"
+            "assert.strictEqual(q.id, 'abc\"def');\n"
+            "assert.strictEqual(q.lang, 'hi-IN');\n"
+            "assert.strictEqual(q.filters.verdict, '');\n"
+            "console.log('ROUTE-OK');\n"
+        )
+        r = subprocess.run([node, "-e", script],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0,
+                         f"route-param node cases failed:\n{r.stdout}\n{r.stderr}")
+        self.assertIn("ROUTE-OK", r.stdout)
+
+    def test_threshold_absent_vs_null(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("no certified threshold reported", app,
+                      "absent chosen_threshold needs a neutral 'not reported'")
+        self.assertIn("bound not reported", app,
+                      "absent error bound needs a 'bound not reported' caption")
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("node not on PATH")
+        script = (
+            "const A = require(" + repr(str(WEB / "api.js")) + ");\n"
+            "const assert = require('node:assert');\n"
+            "// bare list (live risk shape): metadata absent -> undefined\n"
+            "let d = A.normRisk([{threshold: 0.5, coverage: 0.8, error: 0.05}]);\n"
+            "assert.strictEqual(d.chosen_threshold, undefined);\n"
+            "assert.strictEqual(d.error_bound, undefined);\n"
+            "// object without the keys: still absent -> undefined\n"
+            "d = A.normRisk({points: [{threshold: 0.5, coverage: 0.8, error: 0.05}]});\n"
+            "assert.strictEqual(d.chosen_threshold, undefined);\n"
+            "// explicit null survives (means 'not certified', not 'unreported')\n"
+            "d = A.normRisk({points: [], chosen_threshold: null, upper_bound: 0.07});\n"
+            "assert.strictEqual(d.chosen_threshold, null);\n"
+            "assert.strictEqual(d.error_bound, 0.07);\n"
+            "// a real number survives too\n"
+            "d = A.normRisk({points: [], chosen_threshold: 0.62});\n"
+            "assert.strictEqual(d.chosen_threshold, 0.62);\n"
+            "console.log('THRESHOLD-OK');\n"
+        )
+        r = subprocess.run([node, "-e", script],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0,
+                         f"threshold node cases failed:\n{r.stdout}\n{r.stderr}")
+        self.assertIn("THRESHOLD-OK", r.stdout)
+
+    def test_named_reads_go_through_adapter(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("raw.signals", app, "signals must come from normReceipt")
+        self.assertNotIn("raw.decisions", app, "decisions must come from normReceipt")
+        self.assertIn("r.hands_p_yes", app)
+        self.assertIn("r.active_work_p_yes", app)
+        self.assertIn("A.first(state.segBatch", app)
+
+    def test_copy_feedback_is_inline(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("copy-toast", app, "copy feedback must render next to the button")
+        css = (WEB / "style.css").read_text(encoding="utf-8")
+        self.assertIn(".copy-toast", css)
 
 
 if __name__ == "__main__":
