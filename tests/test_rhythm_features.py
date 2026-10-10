@@ -10,6 +10,9 @@ Run from the worktree root so that ``jadal`` is importable::
     python -m unittest discover -s tests
     python -m unittest tests.test_rhythm_features -v
 
+Three tests are explicit regression guards for a bug this suite found: the
+``cv2.phaseCorrelate`` in-place mutation described in their docstrings.
+
 ``@unittest.expectedFailure`` marks behaviour that is currently wrong in
 ``features.py`` (all of it traces back to one root cause: ``cv2.phaseCorrelate``
 mutates its inputs in place, so ``grid_channels`` destroys the frames it is
@@ -200,30 +203,28 @@ class GridChannelsTests(unittest.TestCase):
         self.assertEqual(first.tobytes(), second.tobytes())
         np.testing.assert_array_equal(first_shifts, second_shifts)
 
-    @unittest.expectedFailure  # BUG in features.py: see the docstring below.
     def test_grid_channels_deterministic_on_the_same_array(self) -> None:
         """Calling it twice on the same input must give byte-identical output.
 
-        FAILS: ``_phase_shift`` hands the caller's frames straight to
-        ``cv2.phaseCorrelate``, which overwrites both inputs in place (OpenCV
-        5.0.0).  The second call therefore runs on an already-corrupted stack
-        and returns a different tensor, breaking the module's documented
-        "same input file -> same tensor bytes" / receipt-digest contract.
+        REGRESSION GUARD. ``cv2.phaseCorrelate`` overwrites both of its inputs
+        in place on OpenCV 5.0.0, so if ``_phase_shift`` ever stops copying, the
+        second call runs on an already-corrupted stack and returns a different
+        tensor -- breaking the documented "same input file -> same tensor bytes"
+        / receipt-digest contract. This test caught that bug for real.
         """
         gray, color = _synthetic_stack(seed=3)
         first, _ = F.grid_channels(gray, color, 4, ego_compensate=True, use_flow=False)
         second, _ = F.grid_channels(gray, color, 4, ego_compensate=True, use_flow=False)
         self.assertEqual(first.tobytes(), second.tobytes())
 
-    @unittest.expectedFailure  # BUG in features.py: see the docstring below.
     def test_grid_channels_does_not_mutate_its_inputs(self) -> None:
         """A read-only feature extractor must not modify the arrays it is given.
 
-        FAILS: ``cv2.phaseCorrelate`` writes into both source frames, so
-        ``grid_channels`` silently destroys the caller's gray stack (and its
-        own frames, which it then reuses for the residual, the Farneback flow
-        and -- via ``extract_window`` -- the global channels).  Fix by passing
-        copies (or ``.copy()``) into ``_phase_shift``.
+        REGRESSION GUARD. ``cv2.phaseCorrelate`` writes into both source frames,
+        so without the copies in ``_phase_shift`` this function silently destroys
+        the caller's gray stack -- and its own frames, which it reuses for the
+        residual, the Farneback flow and, via ``extract_window``, the global
+        channels.
         """
         gray, color = _synthetic_stack(seed=4)
         gray_before = gray.copy()
@@ -236,14 +237,13 @@ class GridChannelsTests(unittest.TestCase):
         self.assertTrue(np.array_equal(color, color_before),
                         "grid_channels modified the caller's BGR stack in place")
 
-    @unittest.expectedFailure  # BUG in features.py: see the docstring below.
     def test_res_mean_channel_matches_its_documented_definition(self) -> None:
         """Channel 0 is documented as mean |I_t - warp(I_{t-1})| / 255.
 
-        FAILS: by the time the residual is formed, ``_phase_shift`` has already
-        overwritten ``gray[t-1]`` and ``gray[t]``, so the emitted res_mean is
-        computed from corrupted frames and is roughly half the documented value
-        (0.126 vs 0.287 on this fixture).
+        REGRESSION GUARD. If ``_phase_shift`` ever stops copying, the residual
+        is formed from frames it has already overwritten and res_mean comes out
+        at roughly half the documented value (measured 0.126 vs 0.287 before the
+        fix).
         """
         gray, color = _synthetic_stack(seed=5)
         X, _ = F.grid_channels(gray.copy(), color.copy(), 6,
