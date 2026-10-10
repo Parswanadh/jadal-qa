@@ -43,8 +43,8 @@ when signals is absent.
    deterministic selection, 1 warm-up discarded, 3 repeats, pinned via
    taskset to 1 core (`-c 0`) and 4 cores (`-c 0-3`)):
    ```
-   worker cores=0: repeat0 median/seg = 0.626s
-   determinism: repeats=True cores=True
+   worker cores=0: repeat0 median/seg = 0.626s   # repeat-0 only; the table
+   determinism: repeats=True cores=True          # below uses the POOLED median over all 90 runs
    ```
    Result JSON: `eval/results/edge_bench_x86-laptop-proxy.json`.
 4. `PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_edge_check`
@@ -52,10 +52,19 @@ when signals is absent.
 
 ## Results (proxy hardware: Intel Core Ultra 7 155H x86 laptop)
 
-| pinned cores | median/seg | p95/seg | segments/hour | video-hours/day | peak RSS |
+Measured with the CURRENT (fix-round-2) scripts in a throwaway signals
+worktree (see Fix round 2); supersedes the round-1 table (old-scheme cache,
+pre-fix code — round-1 values retained in Fix round 2 for audit).
+
+| pinned cores | pooled median/seg (90 = 30 segs x 3 repeats) | p95/seg | segments/hour | video-hours/day | peak RSS |
 |---|---|---|---|---|---|
-| 1 (`-c 0`) | 0.8646 s | 1.4366 s | 4164.0 | 277.6 | 170.9 MB |
-| 4 (`-c 0-3`) | 0.6110 s | 1.1885 s | 5892.0 | 392.8 | 179.4 MB |
+| 1 (`-c 0`, requested 1, effective 1) | 1.0317 s | 1.9799 s | 3489.3 | 232.62 | 171.6 MB |
+| 4 (`-c 0-3`, requested 4, effective 4) | 1.0797 s | 2.1175 s | 3334.3 | 222.29 | 180.2 MB |
+
+This round the 4-core pooled median is slightly SLOWER than 1-core (shared
+box under load at the time); reported as measured, no scaling factor
+invented. Determinism (identical outputs) still holds across cores —
+throughput varies with machine load, outputs do not.
 
 Conditions: 30 segments x 10 s (480x480, 10 fps IndEgo, read-only),
 `compute_signals` + `funnel.route` with PLACEHOLDER thresholds (throughput
@@ -168,4 +177,54 @@ forbidden_found: none
 runtime_forbidden_found: none
 SKIPPED: jadal.signals/jadal.segmenter absent (branch origin/feat/signals, PR #12, not yet on main): ...
 default-exit=2   # refuses to clobber the measured JSON (Minor 5)
+```
+
+## Fix round 2 (review of PR #48, round 2)
+
+- I1 (committed JSONs predated the fixed code): RESOLVED by re-measurement,
+  not just relabelling. New throwaway worktree (`tmp-sigtest2`,
+  `origin/feat/signals@a731265` + this branch, removed afterwards) with the
+  CURRENT fixed scripts produced both committed JSONs fresh: new-scheme
+  segment ids (`User_1_User_15_411_2910_2_1_480-25653bf9-0000.000-10s`),
+  `git_branch` + `runtime_forbidden_found` present, `segment` stored relative
+  (`data_runtime/edge_tmp/edge_check_seg.mp4`, M2 — no dead absolute path).
+  JSON `git_sha` is `1a60b45` (the throwaway merge commit) and `git_branch`
+  reads `HEAD` (detached checkout) — provenance disclosed here, not hidden.
+  The results table above now shows these fixed-code numbers; the round-1
+  table (1-core 4164.0 seg/h, 277.6 video-h/day, RSS 170.9 MB; 4-core 5892.0
+  seg/h, 392.8 video-h/day, RSS 179.4 MB; medians 0.8646/0.6110 s, p95
+  1.4366/1.1885 s) is SUPERSEDED and kept only for audit. `feat/signals`
+  (PR #12) is still unmerged, so a main-branch re-run remains future work.
+- M1 (mixed medians): table header now reads "pooled median/seg (90 = 30
+  segs x 3 repeats)"; round-1 log annotated repeat-0 vs pooled. This round:
+  1-core repeat-0 median 1.011 s vs pooled 1.0317 s.
+- M3 (near-miss requirements names): `test_no_torch_family` now matches
+  normalised stems (catches `pytorch`, `torchvision`, `fastapi-users`,
+  `onnxruntime`, `scikit_learn`, `transformers[torch]`), pinned by
+  `test_banned_stems_catch_near_misses` including legit-name negatives.
+- M4 (silent core clamp): results now carry `n_cores_requested` +
+  `n_cores_effective` (this round: 1/1 and 4/4 — no clamp occurred).
+
+Real verification outputs (this round, x86 laptop proxy hardware):
+
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python scripts/edge_check.py   # throwaway, WITH signals
+imported: ['jadal.segmenter', 'jadal.signals', 'jadal.funnel', 'jadal.certify', 'jadal.receipts', 'jadal.config']
+missing: []
+heavy_present: {'numpy': True, 'cv2': True, 'scipy': True, 'mediapipe': False, 'PIL': True, 'imagehash': True}
+forbidden_found: none
+runtime_forbidden_found: none        # Important-1 gate verified LIVE on real compute_signals
+probe: compute_signals_s=1.253 peak_rss_MB=134.5 backend={'faces': 'proxy', 'hands': 'proxy', ...}
+mediapipe-blocked: fallback_works=True
+PASS: no forbidden import on the edge path.
+exit=0
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/edge_bench.py --segments 30   # throwaway
+segments: 30 x 10.0s (deterministic selection, ...)
+worker cores=0: repeat0 median/seg = 1.011s
+determinism: repeats=True cores=True
+1-core: pooled median 1.0317s, p95 1.9799s, 3489.3 seg/h, 232.62 video-h/day, RSS 171.6 MB
+4-core: pooled median 1.0797s, p95 2.1175s, 3334.3 seg/h, 222.29 video-h/day, RSS 180.2 MB
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_edge_check
+Ran 29 tests in 0.005s
+OK
 ```

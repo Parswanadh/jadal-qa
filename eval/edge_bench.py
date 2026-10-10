@@ -350,13 +350,15 @@ def main(argv: list[str] | None = None) -> int:
     core_cfgs = [c.strip() for c in args.cores.split(",") if c.strip()]
     ncpu = os.cpu_count() or 1
     worker_results: dict[str, dict] = {}
+    requested_cores: dict[str, int] = {}
     for cfg in core_cfgs:
         try:
-            n_cores = len(parse_core_list(cfg))
+            requested = len(parse_core_list(cfg))
         except ValueError as e:
             print(f"bad --cores spec {cfg!r}: {e}", file=sys.stderr)
             return 2
-        n_cores = max(1, min(n_cores, ncpu))
+        n_cores = max(1, min(requested, ncpu))
+        requested_cores[cfg] = requested
         env = dict(os.environ)
         env["OMP_NUM_THREADS"] = env["OPENBLAS_NUM_THREADS"] = \
             env["MKL_NUM_THREADS"] = str(n_cores)
@@ -393,6 +395,8 @@ def main(argv: list[str] | None = None) -> int:
         vhd = sph * args.seg_seconds * 24.0 / 3600.0
         results[cfg] = {
             "n_cores_label": cfg,
+            "n_cores_requested": requested_cores[cfg],
+            "n_cores_effective": max(1, min(requested_cores[cfg], ncpu)),
             "per_segment_wall_s": {
                 "median": round(med, 4),
                 "p95": round(float(p95), 4),

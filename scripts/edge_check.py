@@ -178,12 +178,13 @@ print(json.dumps({{"imported": imported, "missing": missing,
 """
 
 _PROCESS_CHILD = r"""
-import json, sys, resource, time
+import json, os, sys, resource, time
 {BLOCK}
 import cv2
 from pathlib import Path
 SEG = {seg!r}
 OUT = Path({out!r})
+ROOT = Path({root!r})
 OUT.parent.mkdir(parents=True, exist_ok=True)
 cap = cv2.VideoCapture(SEG)
 fps = float(cap.get(cv2.CAP_PROP_FPS)) or 10.0
@@ -202,7 +203,8 @@ from jadal import signals as S
 sig = S.compute_signals(str(OUT))
 dt = time.time() - t0
 peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
-print(json.dumps({{"segment": str(OUT), "frames_written": n, "fps": fps,
+print(json.dumps({{"segment": os.path.relpath(str(OUT), str(ROOT)),
+                   "frames_written": n, "fps": fps,
                    "compute_signals_s": round(dt, 3), "peak_rss_MB": round(peak, 1),
                    "signals": sig, "backend_info": S.backend_info(),
                    "modules": sorted(sys.modules.keys())}}))
@@ -308,7 +310,7 @@ def main(argv: list[str] | None = None) -> int:
             seg_path = (ROOT / "data_runtime" / "edge_tmp" / "edge_check_seg.mp4")
             probe = _run_child(_PROCESS_CHILD.format(
                 BLOCK="", seg=str(clip), out=str(seg_path),
-                seconds=args.seg_seconds))
+                root=str(ROOT), seconds=args.seg_seconds))
             result["process_probe"] = probe
             # Important 1 fix: the forbidden gate also covers modules pulled
             # in LAZILY at call time (compute_signals runs in this child).
@@ -318,7 +320,7 @@ def main(argv: list[str] | None = None) -> int:
                 blocked = _run_child(_PROCESS_CHILD.format(
                     BLOCK="sys.modules['mediapipe'] = None",
                     seg=str(clip), out=str(seg_path),
-                    seconds=args.seg_seconds))
+                    root=str(ROOT), seconds=args.seg_seconds))
                 result["mediapipe_blocked_probe"] = {
                     **blocked, "mediapipe_blocked": True,
                     "fallback_works": (

@@ -79,13 +79,41 @@ class RequirementsTest(unittest.TestCase):
                 self.assertRegex(entry, self.NAME_RE)
                 self.assertNotRegex(entry, r"[<>=!~]")
 
+    # Forbidden stems: an entry fails if its normalised name equals or
+    # starts with one of these (catches near-misses like `pytorch`,
+    # `torchvision`, `fastapi-users` that whole-line equality would miss).
+    FORBIDDEN_STEMS = ("torch", "pytorch", "transform", "sklearn",
+                       "scikit-learn", "pandas", "matplotlib", "fastapi",
+                       "uvicorn", "onnx", "tensorflow", "jax", "triton")
+
+    @staticmethod
+    def _norm(entry: str) -> str:
+        name = re.split(r"[\s\[]", entry.strip().lower(), maxsplit=1)[0]
+        return name.replace("_", "-")
+
+    @classmethod
+    def _banned(cls, normed: str) -> str | None:
+        """Return the matching forbidden stem, or None. Pure."""
+        for stem in cls.FORBIDDEN_STEMS:
+            if normed == stem or normed.startswith(stem):
+                return stem
+        return None
+
     def test_no_torch_family(self):
-        text = self.REQ.read_text().lower()
-        for pkg in ["torch", "sentence-transformers", "transformers",
-                    "scikit-learn", "sklearn", "pandas", "matplotlib",
-                    "fastapi", "uvicorn"]:
-            self.assertNotIn(pkg, [ln.strip().lower() for ln in text.splitlines()
-                                   if ln.strip() and not ln.strip().startswith("#")])
+        for entry in self._entries():
+            with self.subTest(entry=entry):
+                self.assertIsNone(self._banned(self._norm(entry)),
+                                  f"forbidden family entry: {entry}")
+
+    def test_banned_stems_catch_near_misses(self):
+        for near in ["pytorch", "torchvision", "fastapi-users", "onnxruntime",
+                     "Torch", "scikit_learn", "transformers[torch]"]:
+            with self.subTest(near=near):
+                self.assertIsNotNone(self._banned(self._norm(near)))
+        for legit in ["opencv-python-headless", "numpy", "scipy", "pillow",
+                      "imagehash", "mediapipe"]:
+            with self.subTest(legit=legit):
+                self.assertIsNone(self._banned(self._norm(legit)))
 
     def test_mediapipe_optional_comment(self):
         text = self.REQ.read_text()
