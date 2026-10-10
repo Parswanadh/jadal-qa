@@ -1291,10 +1291,19 @@ class TestRiskCoverageHeads(BucketCase):
                 if name == "pico_status":
                     # Live hardware answers heartbeats on /dev/ttyACM0, so
                     # values vary run to run: pin the shape, not the values.
-                    self.assertEqual(set(payload),
-                                     {"connected", "port", "last_hb_age_s",
-                                      "last_hb_ticks_ms", "last_hb_led"})
+                    # Two valid shapes depending on the machine: with a Pico
+                    # attached the heartbeat fields are present; with none
+                    # (no /dev/ttyACM*) the endpoint answers connected=false
+                    # plus a reason. Both are correct behaviour.
+                    full = {"connected", "port", "last_hb_age_s",
+                            "last_hb_ticks_ms", "last_hb_led"}
                     self.assertIsInstance(payload["connected"], bool)
+                    if payload["connected"]:
+                        self.assertEqual(set(payload), full)
+                    else:
+                        self.assertIn(set(payload),
+                                      (full, full | {"reason"},
+                                       {"connected", "reason"}))
                     continue
                 expected = json.loads(
                     (examples / f"{name}.json").read_text(encoding="utf-8"))
