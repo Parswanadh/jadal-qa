@@ -6,15 +6,15 @@ vs batch-of-5 output equality (max abs diff + bit-equality).
 
 Usage (from repo root, GPU idle, nothing else on the GPU)::
 
-    PYTHONNOUSERSITE=1 PYTHONPATH=. /home/parshu/envs/jadal/bin/python eval/bench_eg2.py \
+    PYTHONNOUSERSITE=1 PYTHONPATH=. python3 eval/bench_eg2.py \
         --out eval/results/bench_eg2.json
 
-Inputs are REAL frames from ``/home/parshu/projects/awing/data/ego10k_eval/*.parquet``
+Inputs are REAL frames from ``/workspace/jadal_pod_bundle/data/ego10k_eval/*.parquet``
 (first 2 frame_ids per file after sorting, preprocessing byte-identical to
 serving via ``jadal.decision.preprocess_pil``). Frame ids are recorded in the
 output JSON. No labels are used, so the gemini-labelling caveat does not
 apply to this file (it applies to decider_baseline*.json).
-Model weights come from ``/home/parshu/projects/awing/data/eg2`` (local
+Model weights come from ``/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b`` (local
 only, no network). Inference is bfloat16 (NEVER fp16 — EG2 activations
 overflow fp16 range), eval mode, deterministic algorithms on,
 cudnn.benchmark off, fixed seeds.
@@ -43,7 +43,7 @@ from PIL import Image
 from jadal import decision as decision_mod
 
 EG2_DIR = decision_mod.EG2_DIR
-DATA_DIR = "/home/parshu/projects/awing/data/ego10k_eval"
+DATA_DIR = "/workspace/jadal_pod_bundle/data/ego10k_eval"
 PARQUET_FILES = ("ego4d.parquet", "egocentric_10k.parquet", "epic_kitchens.parquet")
 FRAMES_PER_FILE = 2
 BUDGETS = (70, 140, 280)

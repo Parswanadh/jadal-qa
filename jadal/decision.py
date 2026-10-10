@@ -6,7 +6,7 @@
      "step": {"choice": str|null, "probs": {str: float}, "answer_conf": float},
      "model_versions": {str: str}}
 
-Backbone: EmbeddingGemma 2 from ``/home/parshu/projects/awing/data/eg2``
+Backbone: EmbeddingGemma 2 from ``/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b``
 via sentence-transformers, bfloat16 (NEVER fp16), eval mode,
 ``torch.use_deterministic_algorithms(True, warn_only=True)``,
 ``cudnn.benchmark=False``, fixed seeds. FIXED frame sampling (4 frames at
@@ -60,7 +60,7 @@ from typing import Any, Callable
 
 import numpy as np
 
-EG2_DIR = "/home/parshu/projects/awing/data/eg2"
+EG2_DIR = "/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b"
 SEED = 1234
 N_FRAMES = 4
 FRAME_FRACTIONS = (0.125, 0.375, 0.625, 0.875)

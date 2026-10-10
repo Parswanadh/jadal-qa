@@ -2,7 +2,7 @@
 
 Run from the repo root:
 
-    /home/parshu/envs/jadal/bin/python -m unittest discover -s tests -v
+    python3 -m unittest discover -s tests -v
 
 No network, no GPU, no model download: the default path is BM25 and the
 embedding path is exercised with stub embedders written here. Test scratch
