@@ -67,6 +67,18 @@ class PatternBitsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             pattern_for("maybe")
 
+    def test_helpers_reject_off_spec_widths(self):
+        import scripts.pico_show as psmod_inner
+
+        with self.assertRaises(ValueError):
+            hex_to_bits("ABC")  # short: must not silently pad
+        with self.assertRaises(ValueError):
+            hex_to_bits("1FFFFFFFF")  # long: exceeds 32-bit FLASH width
+        with self.assertRaises(ValueError):
+            psmod_inner._bits_to_hex("1" * 33)  # must not silently truncate
+        with self.assertRaises(ValueError):
+            psmod_inner._bits_to_hex("10102")  # non-bit chars
+
 
 class FakeCliTest(unittest.TestCase):
     def test_verdict_accept_flashes_solid_and_cleans_up(self):
@@ -153,9 +165,20 @@ class FakeCliTest(unittest.TestCase):
             main(["--fake", "--port", "/dev/ttyNOPE0", "status"])
         self.assertEqual(ctx.exception.code, 2)
 
+    def test_main_pattern_valid_fake(self):
+        # Same gap class as the round-1 verdict hole: a bug that flashes
+        # fixed bits for every valid pattern input must fail the suite.
+        for given, expected in (("F0F0F0F0", "f0f0f0f0"), ("0xabcdef01", "abcdef01")):
+            with self.subTest(given=given):
+                rc, ser = _run_main_with_fake(["--fake", "pattern", given])
+                self.assertEqual(rc, 0)
+                self.assertEqual(ser.pico.flashed, [expected])
+                self.assertIn("LED OFF", ser.pico.led_commands)
+
     def test_main_pattern_bad_hex_exits_nonzero(self):
-        rc = main(["--fake", "pattern", "XYZ"])
-        self.assertNotEqual(rc, 0)
+        rc, ser = _run_main_with_fake(["--fake", "pattern", "XYZ"])
+        self.assertEqual(rc, 2)
+        self.assertIn("LED OFF", ser.pico.led_commands)
 
     def test_main_status_fake(self):
         rc = main(["--fake", "status"])

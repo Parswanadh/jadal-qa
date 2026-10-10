@@ -31,7 +31,7 @@ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python scripts/pico_show.py --por
 PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_pico_show -v
 ```
 
-## REAL test output tails (what was actually run)
+## REAL test output tails (round 0, before any fix — historical; current figures are in the Fix round sections below)
 `python -m unittest tests.test_pico_show -v` (fake only):
 ```
 Ran 11 tests in 0.148s
@@ -94,3 +94,29 @@ OK
 ```
 (338 = 315 pre-existing incl. main-merge additions + 16 pico_show + rest of
 suite growth from other workers' merged work; pico_show adds ~0.66 s.)
+
+## Fix round 2 (round-2 review -> SPEC: FAIL; no Critical findings)
+Fixed in owned files only (`scripts/pico_show.py`, `tests/test_pico_show.py`,
+this report):
+- Important #1 (valid-`pattern` path had no positive flash assertion): new
+  `test_main_pattern_valid_fake` drives `main()` through the `_make_link`
+  seam for `F0F0F0F0` and `0xabcdef01`, asserting `flashed == [expected]` +
+  LED OFF. Proved it catches the reviewer's probe4 bug (validation kept but
+  always flashing `00000000`): the new test fails 2/2 subtests under the
+  patch, suite green without it.
+- Minor #1/#2 (helper widths): `hex_to_bits` raises `ValueError` unless the
+  input is exactly 8 hex digits; `_bits_to_hex` raises on >32 bits or non-bit
+  chars. Covered by `test_helpers_reject_off_spec_widths`.
+- Minor #3: bad-hex test tightened to `assertEqual(rc, 2)` + LED OFF sent.
+- Minor #4: the round-0 output block above is now labelled historical.
+
+REAL command outputs (this round):
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_pico_show
+Ran 18 tests in 0.784s
+OK
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 340 tests in 10.335s
+OK
+```
+(340 = 338 after round 1 + 2 new pattern/width tests; pico_show adds ~0.8 s.)

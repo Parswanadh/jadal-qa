@@ -74,7 +74,13 @@ _VERDICT_HEX = {
 
 
 def _bits_to_hex(bits: str) -> str:
-    """Pack a bit string (MSB first) into 8 hex digits, zero-padded to 32 bits."""
+    """Pack a bit string (MSB first) into 8 hex digits, zero-padded to 32 bits.
+
+    Raises :class:`ValueError` if the string is longer than 32 bits or holds
+    anything but ``0``/``1`` (silent truncation would flash the wrong pattern).
+    """
+    if len(bits) > 32 or any(c not in "01" for c in bits):
+        raise ValueError(f"bit pattern must be at most 32 0/1 chars, got {bits!r}")
     bits = (bits + "0" * 32)[:32]
     return "%08X" % int(bits, 2)
 
@@ -82,8 +88,11 @@ def _bits_to_hex(bits: str) -> str:
 def hex_to_bits(hex8: str) -> str:
     """Expand 8 hex digits to the 32-bit MSB-first bit string the firmware plays.
 
-    Raises :class:`ValueError` on anything that is not valid hex.
+    Raises :class:`ValueError` on anything that is not exactly 8 hex digits
+    (padding a short string or overflowing 32 bits would misdescribe FLASH).
     """
+    if len(hex8) != 8:
+        raise ValueError(f"expected exactly 8 hex digits, got {hex8!r}")
     return format(int(hex8, 16), "032b")
 
 
