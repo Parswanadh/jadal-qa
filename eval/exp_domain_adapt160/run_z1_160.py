@@ -33,7 +33,7 @@ OUT = os.path.join(REPO, "eval", "results", "exp_domain_adapt160")
 BUNDLE = A.BUNDLE
 PIXEL160 = os.environ.get(
     "JADAL_PIXEL160",
-    "/workspace/wt/m-fewshot160/eval/results/exp_fewshot/inputs/ood160_pixel.npz")
+    os.path.join(os.environ.get("JADAL_WT", "wt"), 'm-fewshot160/eval/results/exp_fewshot/inputs/ood160_pixel.npz'))
 N_BOOT = 2000
 SEED = 0
 DEV = "CPU (numpy/sklearn); GPU not used"

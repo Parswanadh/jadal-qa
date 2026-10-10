@@ -20,7 +20,7 @@ Writes:
 
 Usage:
     JADAL_MODELS_DIR=/home/parshu/projects/jadal-qa/models \\
-    PYTHONNOUSERSITE=1 python3 \\
+    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python \\
         eval/compute_gold_l0.py --jobs 6
 """
 from __future__ import annotations

@@ -13,13 +13,13 @@ import os
 
 import numpy as np
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 # E5-derived OOD inputs (ood_pixel_selfdec.npz, ood_eg2_means.npz); the *.npz are
 # git-ignored in E5. Regenerate with eval/exp_domain/prep_inputs.py (see E5 report).
 E5_INPUTS = os.environ.get(
     "JADAL_E5_INPUTS",
-    "/workspace/wt/exp-domain-adapt/eval/results/exp_domain/inputs")
-E8_JSONL = os.environ.get("JADAL_E8_JSONL", "/workspace/artifacts/windows_rescored.jsonl")
+    os.path.join(os.environ.get("JADAL_WT", "wt"), 'exp-domain-adapt/eval/results/exp_domain/inputs'))
+E8_JSONL = os.environ.get("JADAL_E8_JSONL", "artifacts/windows_rescored.jsonl")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
