@@ -1,0 +1,127 @@
+{
+  "n_segments": 150,
+  "frames_per_segment": 10,
+  "gpu_note": "GPU utilisation [17.0]% \u2014 another worker is on it",
+  "l1_note": "jadal.decision is NOT importable in this worktree: L1 embedding stage skipped",
+  "l0_note": "PROXY stage (jadal.signals not on main): fixed-frame OpenCV stats; decode + route numbers are real",
+  "scale_model": "segments processed one at a time; scale-out by more processes, never by batching",
+  "runs": [
+    {
+      "workers": 1,
+      "n_segments": 150,
+      "wall_s": 41.663,
+      "segments_per_hour": 12961.0,
+      "per_stage": {
+        "decode_s": {
+          "mean_ms": 273.663,
+          "p50_ms": 247.338,
+          "max_ms": 971.243
+        },
+        "l0_proxy_s": {
+          "mean_ms": 3.332,
+          "p50_ms": 2.794,
+          "max_ms": 8.925
+        },
+        "route_s": {
+          "mean_ms": 0.074,
+          "p50_ms": 0.065,
+          "max_ms": 0.176
+        }
+      },
+      "distinct_output_hashes": 150,
+      "verdicts": {
+        "accept": 0,
+        "reject": 146,
+        "review": 4
+      }
+    },
+    {
+      "workers": 2,
+      "n_segments": 150,
+      "wall_s": 29.704,
+      "segments_per_hour": 18179.5,
+      "per_stage": {
+        "decode_s": {
+          "mean_ms": 391.156,
+          "p50_ms": 359.697,
+          "max_ms": 858.45
+        },
+        "l0_proxy_s": {
+          "mean_ms": 4.04,
+          "p50_ms": 3.993,
+          "max_ms": 7.459
+        },
+        "route_s": {
+          "mean_ms": 0.091,
+          "p50_ms": 0.092,
+          "max_ms": 0.27
+        }
+      },
+      "distinct_output_hashes": 150,
+      "verdicts": {
+        "accept": 0,
+        "reject": 146,
+        "review": 4
+      }
+    },
+    {
+      "workers": 4,
+      "n_segments": 150,
+      "wall_s": 23.297,
+      "segments_per_hour": 23179.1,
+      "per_stage": {
+        "decode_s": {
+          "mean_ms": 612.987,
+          "p50_ms": 551.371,
+          "max_ms": 1236.711
+        },
+        "l0_proxy_s": {
+          "mean_ms": 5.147,
+          "p50_ms": 5.099,
+          "max_ms": 9.728
+        },
+        "route_s": {
+          "mean_ms": 0.112,
+          "p50_ms": 0.109,
+          "max_ms": 0.396
+        }
+      },
+      "distinct_output_hashes": 150,
+      "verdicts": {
+        "accept": 0,
+        "reject": 146,
+        "review": 4
+      }
+    },
+    {
+      "workers": 8,
+      "n_segments": 150,
+      "wall_s": 21.686,
+      "segments_per_hour": 24901.1,
+      "per_stage": {
+        "decode_s": {
+          "mean_ms": 1135.069,
+          "p50_ms": 1021.561,
+          "max_ms": 2766.244
+        },
+        "l0_proxy_s": {
+          "mean_ms": 6.321,
+          "p50_ms": 5.758,
+          "max_ms": 16.238
+        },
+        "route_s": {
+          "mean_ms": 0.162,
+          "p50_ms": 0.115,
+          "max_ms": 2.232
+        }
+      },
+      "distinct_output_hashes": 150,
+      "verdicts": {
+        "accept": 0,
+        "reject": 146,
+        "review": 4
+      }
+    }
+  ],
+  "cross_process_determinism": true
+}

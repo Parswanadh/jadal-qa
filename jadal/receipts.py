@@ -1,4 +1,4 @@
-"""Signed, re-verifiable receipts for per-segment QA verdicts.
+"""Content-hashed, re-verifiable receipts for per-segment QA verdicts.
 
 A receipt pins the segment hash, L0 signals, L1 decisions, the L2 verdict and
 the pipeline config, then records the SHA-256 of its canonical JSON
