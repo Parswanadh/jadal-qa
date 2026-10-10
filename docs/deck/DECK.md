@@ -211,8 +211,8 @@ signing, voice, Egocentric-10K accuracy.
 
 - `docs/FACTS.md` — verbatim snapshot of the pod fact sheet
   (sha256 `77c7331b5e9ca8e8…`); source of every headline number.
-- `experiments/registry.jsonl` — merged append-only registry, 34 entries
-  (“latest line per id wins”; 24 done / 10 running); rendered to `docs/EXPERIMENTS.md`.
+- `experiments/registry.jsonl` — union append-only registry, 36 entries
+  (“latest line per id wins”; 28 done / 7 running / 1 pending); rendered to `docs/EXPERIMENTS.md`.
 - Independent verification: LEAD B claim `LB1` (branch `b/verify`,
   `docs/reports/pod_verification.md`) — **20/20 published quantitative claims reproduced
   exactly** on an A40 pod, CPU-only.
