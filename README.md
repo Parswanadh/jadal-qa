@@ -14,13 +14,13 @@ per-rule `{feature, value, op, threshold}`; S1 rejects carry the head score
 | Ensemble AUROC **0.834 [0.715, 0.914]** — pre-registered gates NOT met (AUROC >= 0.85, CI-low >= 0.72) | IndEgo, n=150 windows, 7 clips, nested leave-one-clip-out |
 | Factory AUROC **0.600 [0.474, 0.724]**, rejects 53/138 good (38%) | Egocentric-10K, n=160 windows, 47 factories — close to chance; source: sync doc, results file pending merge |
 | PoC run: **1,587 windows, 4.404 h, 702 rejected (44.2%)** | 47 factories, descriptive only (unlabelled) |
-| **750 tests, OK** | `make test` on this branch |
+| **750 tests, OK** | merge gate on `main` at e320c58 (2026-10-10 21:49 IST); not re-run for this PR |
 
 Sources: `eval/results/ensemble/nested_loco.json`,
 `docs/pod/SYNC_UPDATE_2026-10-10_2145.md:22` (the 160-window OOD numbers),
 `eval/results/poc/run_summary.json`. The OOD evaluation outputs
 'ood_eval_*_160.txt' live in the pod data bundle (Hugging Face dataset repo
-Havoc1904/jadal-pod-data, private) and are not yet merged — OOD rows below are
+private pod data bundle) and are not yet merged — OOD rows below are
 marked 'source: sync doc; results file pending merge'. CIs bootstrap windows and ignore
 clip/factory correlation, so they are optimistic.
 
@@ -57,26 +57,27 @@ clip/factory correlation, so they are optimistic.
 
 ## What a rejection looks like
 
-Illustrative test fixture, not a PoC output (from `tests/fixtures/poc/windows.jsonl`,
-shortened paths; note the PoC run itself had S0 fire 0 times, so all 702 real
-PoC rejects are stage-S1 `S1_UNUSABLE` with `s1_score` vs the 0.6 threshold):
+A real record from the 1,587-window PoC run (`poc_data/windows.jsonl`, produced by
+`scripts/poc_run.py`; the file is local and not in this repo). In that run S0 fired 0 times,
+so all 702 rejects are stage-S1 `S1_UNUSABLE`, whose evidence is the `s1_score` against
+the 0.6 threshold (not a per-feature explanation):
 
 ```json
 {
-  "window_id": "f017_w003_c036_t0020",
+  "window_id": "f069_w004_c00077_t0000",
   "verdict": "reject",
-  "stage": "S0",
+  "stage": "S1",
   "reasons": [
-    {"code": "TOO_DARK", "evidence": {"feature": "mean", "value": 0.0312, "op": "<", "threshold": 0.05}}
+    {"code": "S1_UNUSABLE", "evidence": {"feature": "s1_score", "value": 0.0013, "op": "<", "threshold": 0.6}}
   ],
-  "score": 0.2448,
-  "features_digest": "dd200988…",
-  "receipt_sha256": "36edf68c…"
+  "score": 0.0013,
+  "features_digest": "4af5b2a6…",
+  "receipt_sha256": "ca3ae717…"
 }
 ```
 
 `receipt_sha256` is the SHA-256 of the canonical JSON. Re-verify by re-running the
-pinned pipeline on the original clip and comparing hashes. Receipts are
+recorded pipeline version on the original clip and comparing hashes. Receipts are
 content-hashed, **not signed**; same-machine determinism only.
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/reports/verify.md`](docs/reports/verify.md).
 
@@ -173,7 +174,7 @@ A hash check proves self-consistency, not who wrote it. See
 
 **Review + merge gate.** Every change goes through an agent review, then a
 deterministic merge gate that runs the full suite on the merged tree
-(750 tests here; `Makefile`, `docs/process/`). Protected files
+(750 tests at the merge gate on `main`, 2026-10-10; `Makefile`, `docs/process/`). Protected files
 (`jadal/config.py`, `jadal/__init__.py`, `docs/SPEC.md`, `docs/BASELINE.md`)
 are untouched by docs work.
 
