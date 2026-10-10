@@ -1,0 +1,20 @@
+{
+ "combined_digest": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8",
+ "det_projection": "contract line minus latency_ms/receipt_sha256; row minus latency_ms/stage_wall/t_wall0/t_wall1/gpu/decode_compare",
+ "n_shards": 1,
+ "n_windows": 102,
+ "per_shard_digest": {
+  "0": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8"
+ },
+ "per_shard_integrity_ok": {
+  "0": true
+ },
+ "protocol": "combined = sha256 over sorted (window_id, sha256(canonical(det_projection(row)))); partition-independent",
+ "result_jsonl": "eval/results/exp_shard/shards/K1/combined_K1.jsonl",
+ "subset": "smallest6",
+ "verdict_distribution": {
+  "accept": 61,
+  "reject": 1,
+  "review": 40
+ }
+}

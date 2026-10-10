@@ -1,0 +1,168 @@
+{
+ "cgroup_cpu_quota_cores": 7.65,
+ "committed_split_K": 7,
+ "device": "NVIDIA A40 (1x NVDEC engine)",
+ "footage_h": 0.283,
+ "id": "S1.01",
+ "ks": [
+  1,
+  2,
+  4,
+  7
+ ],
+ "n_clips": 6,
+ "n_windows": 102,
+ "nproc": 96,
+ "optimizations": {
+  "early_exit_s": 4,
+  "eg2_fps": 1,
+  "native_fps": 0.8,
+  "omp_num_threads": 1,
+  "pixel_fps": 3.33,
+  "skip_mosaic": true
+ },
+ "run_utc": "2026-10-10T19:25:06Z",
+ "scaling": [
+  {
+   "K": 1,
+   "cpu_cores_used": 1.372,
+   "cpu_quota": 7.65,
+   "cpu_s": 251.78,
+   "footage_h_per_wall_h": 5.559,
+   "gpu_dec_pct_max": 77.0,
+   "gpu_dec_pct_mean": 5.37,
+   "gpu_sm_pct_max": 100.0,
+   "gpu_sm_pct_mean": 8.72,
+   "n_errors": 0,
+   "n_samples": 622,
+   "n_windows": 102,
+   "per_shard_cpu_cores_mean": 1.193,
+   "per_shard_integrity_ok": {
+    "0": true
+   },
+   "per_shard_rss_mb_max": 2660.4,
+   "plan_loads_windows": [
+    102
+   ],
+   "shard_digest": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8",
+   "vram_used_mib_max": 5409.0,
+   "vram_used_mib_mean": 3353.05,
+   "wall_s": 183.49,
+   "windows_per_s": 0.5559
+  },
+  {
+   "K": 2,
+   "cpu_cores_used": 2.357,
+   "cpu_quota": 7.65,
+   "cpu_s": 264.09,
+   "footage_h_per_wall_h": 9.105,
+   "gpu_dec_pct_max": 88.0,
+   "gpu_dec_pct_mean": 8.72,
+   "gpu_sm_pct_max": 100.0,
+   "gpu_sm_pct_mean": 17.45,
+   "n_errors": 0,
+   "n_samples": 361,
+   "n_windows": 102,
+   "per_shard_cpu_cores_mean": 1.111,
+   "per_shard_integrity_ok": {
+    "0": true,
+    "1": true
+   },
+   "per_shard_rss_mb_max": 2658.6,
+   "plan_loads_windows": [
+    51,
+    51
+   ],
+   "shard_digest": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8",
+   "vram_used_mib_max": 7880.0,
+   "vram_used_mib_mean": 5753.23,
+   "wall_s": 112.03,
+   "windows_per_s": 0.9105
+  },
+  {
+   "K": 4,
+   "cpu_cores_used": 3.239,
+   "cpu_quota": 7.65,
+   "cpu_s": 306.12,
+   "footage_h_per_wall_h": 10.792,
+   "gpu_dec_pct_max": 94.0,
+   "gpu_dec_pct_mean": 10.11,
+   "gpu_sm_pct_max": 100.0,
+   "gpu_sm_pct_mean": 23.95,
+   "n_errors": 0,
+   "n_samples": 272,
+   "n_windows": 102,
+   "per_shard_cpu_cores_mean": 0.922,
+   "per_shard_integrity_ok": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "per_shard_rss_mb_max": 2658.6,
+   "plan_loads_windows": [
+    34,
+    34,
+    17,
+    17
+   ],
+   "shard_digest": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8",
+   "vram_used_mib_max": 12600.0,
+   "vram_used_mib_mean": 8337.83,
+   "wall_s": 94.52,
+   "windows_per_s": 1.0792
+  },
+  {
+   "K": 7,
+   "cpu_cores_used": 4.06,
+   "cpu_quota": 7.65,
+   "cpu_s": 374.92,
+   "footage_h_per_wall_h": 11.045,
+   "gpu_dec_pct_max": 80.0,
+   "gpu_dec_pct_mean": 9.63,
+   "gpu_sm_pct_max": 100.0,
+   "gpu_sm_pct_mean": 19.47,
+   "n_errors": 0,
+   "n_samples": 172,
+   "n_windows": 102,
+   "per_shard_cpu_cores_mean": 0.659,
+   "per_shard_integrity_ok": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "per_shard_rss_mb_max": 2659.0,
+   "plan_loads_windows": [
+    17,
+    17,
+    17,
+    17,
+    17,
+    17,
+    0
+   ],
+   "shard_digest": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8",
+   "vram_used_mib_max": 17347.0,
+   "vram_used_mib_mean": 11808.1,
+   "wall_s": 92.35,
+   "windows_per_s": 1.1045
+  }
+ ],
+ "shard_invariance": {
+  "all_equal": true,
+  "per_K_combined_digest": {
+   "1": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8",
+   "2": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8",
+   "4": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8",
+   "7": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8"
+  },
+  "reference_digest": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8"
+ },
+ "subset": "smallest6",
+ "title": "Sharded isolated workers: parallel scaling ceiling + RAM/VRAM config",
+ "vram": null
+}
