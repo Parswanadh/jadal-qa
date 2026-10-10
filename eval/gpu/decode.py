@@ -18,6 +18,21 @@ def clip_duration(path):
 clip_duration._cache = {}
 
 
+def fit_frames(arr, T):
+    """Trim or edge-pad a (T',...) window to exactly T frames.
+
+    Returns (arr, npad). Padding repeats the last frame; npad is reported
+    (windows with npad>0 are counted, not hidden).
+    """
+    n = arr.shape[0]
+    if n == T:
+        return arr, 0
+    if n > T:
+        return arr[:T], 0
+    pad = np.repeat(arr[-1:], T - n, axis=0)
+    return np.concatenate([arr, pad], axis=0), T - n
+
+
 def safe_offset(path, i, dur_s, step=37):
     dur = clip_duration(path)
     span = max(dur - dur_s - 1, 1)

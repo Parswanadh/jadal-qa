@@ -25,7 +25,7 @@ THR, MARGIN = 0.6, 0.25
 def main(nwin=120, B=8):
     import numpy as np
     import torch
-    from eval.gpu.decode import decode_window, safe_offset
+    from eval.gpu.decode import decode_window, safe_offset, fit_frames
     from eval.gpu.stream import S0_RULES
     from eval.gpu.telemetry import now_str
     from jadal.gpu.features import gpu_window_features_batch, FEATURE_NAMES
@@ -55,11 +55,14 @@ def main(nwin=120, B=8):
     exits = {"S0": 0, "S1_accept": 0, "S1_reject": 0, "S2": 0}
     s0_evidence = []
     batch, done = [], 0
+    padded = 0
     for i in range(nwin):
         it = clips[i % len(clips)]
         t1 = time.perf_counter()
         rgb, fps = decode_window(it["path"], safe_offset(it["path"], i, 10.0),
                                  10.0, W, H, "rgb24")
+        rgb, npad = fit_frames(rgb, 100)
+        padded += 1 if npad else 0
         dec_s += time.perf_counter() - t1
         # S0 probe on first 2 s
         g2 = (0.299 * rgb[:20, ..., 0] + 0.587 * rgb[:20, ..., 1]
@@ -126,6 +129,7 @@ def main(nwin=120, B=8):
         "regenerate": ("flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock "
                        "/home/parshu/envs/jadal/bin/python eval/gpu/e2e.py"),
         "nwin": done, "video_min": round(done * 10 / 60, 1),
+        "padded_windows": padded,
         "corpus": "round-robin 10-s windows over 7 IndEgo clips (content repeats; decode cost realistic)",
         "batch": B, "threshold": THR, "margin": MARGIN,
         "wall_s": round(wall, 1), "decode_s": round(dec_s, 1),
