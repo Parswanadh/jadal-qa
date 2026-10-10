@@ -1,14 +1,104 @@
 # Jadal QA
 
-A deterministic QA add-on for crowd-captured head-camera (egocentric) video.
-Built for the Awign Hackathon: Physical AI (Oct 10-11, 2026). Work in this repo started at the event.
+Jadal QA is a deterministic quality-assurance add-on for crowd-captured head-camera (egocentric) video. Each uploaded clip is split into segments, scored by exact signals and typed decision models, and checked against a calibrated threshold with an exact-binomial error bound. Each segment gets a verdict, each batch gets a decision, and every decision is written into a signed receipt that anyone can re-verify. Results appear on a dashboard, in pre-recorded voice messages, and on a Raspberry Pi Pico status light. Built for the Awign Hackathon: Physical AI (10-11 October 2026).
 
-Head-camera upload event -> segment -> exact signals (OpenCV, mediapipe) -> typed decision models
-(Laya, EmbeddingGemma 2 embeddings) -> calibrated threshold with an exact-binomial error bound ->
-per-segment verdict -> batch decision -> signed, re-verifiable receipt -> dashboard, pre-recorded voice
-messages and a Raspberry Pi Pico status light.
+The build contract (data schemas, module interfaces, determinism rules) is in [`docs/SPEC.md`](docs/SPEC.md). The full architecture, with the status of every stage, is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The docs index is [`docs/README.md`](docs/README.md).
 
-The build contract (data schemas, module interfaces, determinism rules) is in [`docs/SPEC.md`](docs/SPEC.md).
-Python: 3.12. Secrets come from environment variables, never from the repo.
+## Data flow
 
-Status: early build. Nothing here is a measured result until a file under `eval/results/` says so.
+Stage status is as of `main`. Stages marked "stub" run on deterministic stand-ins when `JADAL_USE_STUBS=1` is set.
+
+```
+ head camera -> auto-sync -> ingestion bucket          (outside this repo)
+                                  |
+                                  | upload event (POST /ingest/event, or bucket watcher)
+                                  v
+  segment (split_clip)               open PR #12   | stub on main
+  L0 signals (compute_signals)       open PR #12   | stub on main
+  L1 decisions (Decider.decide)      in progress #7| stub on main
+  L2 certify (pick_threshold)        merged PR #14
+  verdict per segment                merged PR #14
+  receipt (make_receipt)             merged PR #14
+  batch rule (reject if rejected_count > k)  merged PR #14
+                                  |
+                 +----------------+----------------+
+                 v                v                v
+          dashboard (web/)   voice (voicebank/)   Pico status (pico/)
+          merged PR #15      merged PR #11        merged PR #10
+```
+
+## Modules
+
+| Module | File(s) | Owner issue | Status |
+|---|---|---|---|
+| Certify and receipts | `jadal/certify.py`, `jadal/receipts.py`, `tests/test_certify.py`, `tests/test_receipts.py` | #1 | merged, PR #14 |
+| Pico firmware and host link | `pico/main.py`, `jadal/pico_link.py`, `tests/test_pico_link.py`, `tests/test_pico_protocol.py` | #2 | merged, PR #10. Hardware validation pending. |
+| Service, SQLite, batches, dock sim | `jadal/service.py`, `jadal/store.py`, `jadal/pipeline.py`, `jadal/stubs.py`, `sim/dock_sim.py`, `tests/test_service.py` | #3 | merged, PR #13 |
+| Voice bank and SOP index | `voicebank/`, `sop/`, `tests/test_voicebank.py`, `tests/test_sop_index.py` | #5 | merged, PR #11 |
+| Dashboard v1 | `web/` (`index.html`, `app.js`, `style.css`, `mock/`, `test_dashboard.py`) | #4 | merged, PR #15 |
+| Signals and segmenter (L0) | `jadal/signals.py`, `jadal/segmenter.py` | #6 | open, PR #12. Review fixes are on the branch. |
+| Decider (L1) | `jadal/decision.py` (not yet on any branch) | #7 | in progress |
+| Eval harness | `eval/` (PR #16) | #8 | open, PR #16. Fix round in progress. |
+| Integration: real pipeline, API docs, demo | `docs/API.md`, `Makefile`, `scripts/demo.sh` (PR #19) | #17 | open, PR #19 |
+| Dashboard v2 | `web/` | #18 | in progress |
+| Laya Design 1 fusion | (none) | #9 | planned. Stretch goal. |
+
+## Repo layout
+
+Matches `main`.
+
+```
+.
+├── README.md
+├── .env.example          template; the real .env is git-ignored
+├── docs/
+│   ├── SPEC.md           build contract
+│   ├── ARCHITECTURE.md
+│   ├── ATTRIBUTIONS.md
+│   ├── README.md         docs index
+│   ├── laya_design1_plan.md
+│   ├── sarvam_reference.md
+│   ├── reports/          certify, dashboard, pico, service, voicebank
+│   ├── screens/          dashboard screenshots
+│   └── process/          how the repo was built: workflow, reviews, decision log
+├── jadal/                core package: certify, config, pico_link, pipeline,
+│                         receipts, service, store, stubs
+├── models/               README only; model weights are git-ignored
+├── pico/                 Pico 2 MicroPython firmware (main.py)
+├── sim/dock_sim.py       copies clips into the bucket and posts ingest events
+├── sop/                  sample SOP (labelled SAMPLE) and deterministic index
+├── tests/                unittest files (7)
+├── voicebank/            messages.json, gen_voicebank.py; generated wavs git-ignored
+└── web/                  static dashboard, mock data, dashboard tests
+```
+
+## Quick start
+
+The project uses a conda environment (Python 3.12) at `/home/parshu/envs/jadal`. Do not `pip install` into it without checking first.
+
+```
+export PYTHONNOUSERSITE=1
+PY=/home/parshu/envs/jadal/bin/python
+
+$PY -m unittest discover -s tests     # module tests
+$PY -m unittest discover -s web       # dashboard tests
+JADAL_USE_STUBS=1 $PY -m uvicorn jadal.service:app   # service on stubs
+make demo                             # coming with the integration PR (#19 / issue #17)
+```
+
+Secrets are read from environment variables (`SARVAM_API_KEY`, `CF_API_TOKEN`, `CF_ACCOUNT_ID`). Put them in a local `.env`, which is git-ignored. Never commit a key.
+
+Test status on `main`: 213 tests run. 211 pass. 2 fail in `tests/test_voicebank.py` in this environment, because the `sarvamai` SDK is installed and two tests assume it is absent. This is reported, not hidden. The dashboard suite (`web/`) passes: 13 tests.
+
+## Honest claims
+
+- **Measured vs not.** Nothing here is a measured result until a file under `eval/results/` says so. On `main` there is no such file.
+- **Determinism.** Determinism means: the same input with the same pinned weights and config gives the same output. Current unit tests cover this for pure functions only. The check that a segment gives the same receipt alone and in a batch of five needs the real pipeline, so it awaits integration.
+- **Labels.** The labels for Egocentric-10K-Evaluation come from gemini-2.5-flash. They are not human-checked.
+- **Thresholds.** The answer threshold is a placeholder (0.9) until it is calibrated on our own clips. No threshold on `main` is certified.
+- **Batch rule.** The batch rule is a fixed rule (reject if rejected count is greater than k). It has no statistical guarantee at n = 5 to 10.
+- **Face blur.** The blur is a colour-based proxy. It is not a privacy guarantee.
+- **SOP and voice.** The SOP is a labelled sample. Voice translations are machine drafts.
+- **Pico.** Firmware is not yet verified on the device.
+
+Licences and attributions are in [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md).
