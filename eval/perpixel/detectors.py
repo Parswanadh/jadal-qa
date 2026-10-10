@@ -139,7 +139,7 @@ def run_quality(gold):
             v = X[pool, j]
             vv = -v if direction == ">" else v
             thr, J = youden_thr(vv, yt)
-            if best is None or J > best[1]:
+            if best is None or J > best[4]:
                 best = (rname, feat, direction, thr, J)
         rname, feat, direction, thr, J = best
         j = names.index(feat)
