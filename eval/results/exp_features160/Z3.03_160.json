@@ -1,0 +1,323 @@
+{
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "n_factories": 47,
+ "n_indego": 150,
+ "n_good_indego": 100,
+ "n_bad_indego": 50,
+ "label_source": "human (IndEgo manifest_gold n=150 + Egocentric-10K ood160_labels.json n=160: 138 good / 22 bad, 47 factories; merge of q1=60 + q2=100, single labeller)",
+ "protocol": "signed AUROC per feature, label 1 = usable/good; IndEgo CI = clip-bootstrap (7 clips); OOD-160 CI = FACTORY-GROUPED bootstrap (honest, n_boot=2000, seed=0), window-bootstrap kept as the optimistic comparison. E5.03 class rule.",
+ "supersedes": {
+  "branch": "m/new-features",
+  "pr": 127,
+  "n_ood": 60
+ },
+ "device": "CPU (numpy/sklearn; decode done by the O/Z agents, no GPU here)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_features160/run_z3_160.py",
+ "experiment": "Z3.03_160",
+ "title": "Z3 combined transferable sets on OOD-160",
+ "stable8": [
+  "radial_slope",
+  "hf_ratio",
+  "dct_energy",
+  "luma_p05",
+  "global_shift",
+  "illum_r",
+  "illum_b",
+  "zncc_self"
+ ],
+ "transferable_subset_160": [
+  "ct_fsize_std",
+  "mo_hand_motion_excess",
+  "inv_dct_hf_lf",
+  "inv_clip_frac",
+  "inv_hist_entropy",
+  "inv_laplacian_var"
+ ],
+ "selection_rule": "candidate class==stable AND min(|AUROC-0.5|) >= 0.03 in both domains",
+ "combined": {
+  "in_domain26": {
+   "n_features": 26,
+   "features": [
+    "temp_b0",
+    "temp_b1",
+    "temp_b2",
+    "temp_b3",
+    "frozen_frac",
+    "flicker_idx",
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "pca_resid",
+    "pca_top1_share",
+    "luma_mean",
+    "luma_p05",
+    "luma_p50",
+    "luma_p95",
+    "dark_frac",
+    "bright_frac",
+    "motion_energy",
+    "global_shift",
+    "skin_frac",
+    "illum_r",
+    "illum_g",
+    "illum_b",
+    "rppg_pulse",
+    "dup_hash_mean",
+    "zncc_self"
+   ],
+   "indego_loco_auroc": 0.7744,
+   "indego_loco_ci95": [
+    0.6562,
+    0.8716
+   ],
+   "ood160_zeroshot_auroc": 0.5797,
+   "ood160_zeroshot_ci95_factory_grouped": [
+    0.4444,
+    0.7177
+   ],
+   "ood160_fewshot_groupcv_auroc": 0.6891,
+   "ood160_fewshot_groupcv_ci95_factory_grouped": [
+    0.5102,
+    0.8465
+   ],
+   "fold_min_n_bad_train": 17
+  },
+  "stable8_only": {
+   "n_features": 8,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "luma_p05",
+    "global_shift",
+    "illum_r",
+    "illum_b",
+    "zncc_self"
+   ],
+   "indego_loco_auroc": 0.5188,
+   "indego_loco_ci95": [
+    0.4594,
+    0.6469
+   ],
+   "ood160_zeroshot_auroc": 0.5787,
+   "ood160_zeroshot_ci95_factory_grouped": [
+    0.4328,
+    0.7307
+   ],
+   "ood160_fewshot_groupcv_auroc": 0.7223,
+   "ood160_fewshot_groupcv_ci95_factory_grouped": [
+    0.5956,
+    0.8409
+   ],
+   "fold_min_n_bad_train": 17
+  },
+  "transferable_only": {
+   "n_features": 6,
+   "features": [
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_dct_hf_lf",
+    "inv_clip_frac",
+    "inv_hist_entropy",
+    "inv_laplacian_var"
+   ],
+   "indego_loco_auroc": 0.6062,
+   "indego_loco_ci95": [
+    0.4639,
+    0.6879
+   ],
+   "ood160_zeroshot_auroc": 0.664,
+   "ood160_zeroshot_ci95_factory_grouped": [
+    0.4553,
+    0.8577
+   ],
+   "ood160_fewshot_groupcv_auroc": 0.7243,
+   "ood160_fewshot_groupcv_ci95_factory_grouped": [
+    0.5467,
+    0.8646
+   ],
+   "fold_min_n_bad_train": 17
+  },
+  "stable8+transferable": {
+   "n_features": 14,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "luma_p05",
+    "global_shift",
+    "illum_r",
+    "illum_b",
+    "zncc_self",
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_dct_hf_lf",
+    "inv_clip_frac",
+    "inv_hist_entropy",
+    "inv_laplacian_var"
+   ],
+   "indego_loco_auroc": 0.6556,
+   "indego_loco_ci95": [
+    0.5202,
+    0.7586
+   ],
+   "ood160_zeroshot_auroc": 0.5455,
+   "ood160_zeroshot_ci95_factory_grouped": [
+    0.3924,
+    0.7147
+   ],
+   "ood160_fewshot_groupcv_auroc": 0.7111,
+   "ood160_fewshot_groupcv_ci95_factory_grouped": [
+    0.5593,
+    0.8435
+   ],
+   "fold_min_n_bad_train": 17
+  },
+  "zscore_transferable_only": {
+   "n_features": 6,
+   "features": [
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_dct_hf_lf",
+    "inv_clip_frac",
+    "inv_hist_entropy",
+    "inv_laplacian_var"
+   ],
+   "indego_auroc": 0.6842,
+   "indego_ci95": [
+    0.5157,
+    0.7778
+   ],
+   "ood160_auroc": 0.7592,
+   "ood160_ci95_factory_grouped": [
+    0.5971,
+    0.8855
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.6468,
+    0.8588
+   ],
+   "method": "per-domain z-score, sign=IndEgo, equal-weight mean (unsupervised but for the per-feature sign)",
+   "indego_feature_auroc": {
+    "ct_fsize_std": 0.6202,
+    "mo_hand_motion_excess": 0.6492,
+    "inv_dct_hf_lf": 0.31,
+    "inv_clip_frac": 0.6564,
+    "inv_hist_entropy": 0.5342,
+    "inv_laplacian_var": 0.6412
+   },
+   "indego_signs": {
+    "ct_fsize_std": 1,
+    "mo_hand_motion_excess": 1,
+    "inv_dct_hf_lf": -1,
+    "inv_clip_frac": 1,
+    "inv_hist_entropy": 1,
+    "inv_laplacian_var": 1
+   }
+  },
+  "zscore_stable8+transferable": {
+   "n_features": 14,
+   "features": [
+    "radial_slope",
+    "hf_ratio",
+    "dct_energy",
+    "luma_p05",
+    "global_shift",
+    "illum_r",
+    "illum_b",
+    "zncc_self",
+    "ct_fsize_std",
+    "mo_hand_motion_excess",
+    "inv_dct_hf_lf",
+    "inv_clip_frac",
+    "inv_hist_entropy",
+    "inv_laplacian_var"
+   ],
+   "indego_auroc": 0.7364,
+   "indego_ci95": [
+    0.5723,
+    0.8593
+   ],
+   "ood160_auroc": 0.781,
+   "ood160_ci95_factory_grouped": [
+    0.6344,
+    0.8952
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.6824,
+    0.8676
+   ],
+   "method": "per-domain z-score, sign=IndEgo, equal-weight mean (unsupervised but for the per-feature sign)",
+   "indego_feature_auroc": {
+    "radial_slope": 0.6334,
+    "hf_ratio": 0.6182,
+    "dct_energy": 0.6306,
+    "luma_p05": 0.3924,
+    "global_shift": 0.3761,
+    "illum_r": 0.4898,
+    "illum_b": 0.5278,
+    "zncc_self": 0.5738,
+    "ct_fsize_std": 0.6202,
+    "mo_hand_motion_excess": 0.6492,
+    "inv_dct_hf_lf": 0.31,
+    "inv_clip_frac": 0.6564,
+    "inv_hist_entropy": 0.5342,
+    "inv_laplacian_var": 0.6412
+   },
+   "indego_signs": {
+    "radial_slope": 1,
+    "hf_ratio": 1,
+    "dct_energy": 1,
+    "luma_p05": -1,
+    "global_shift": -1,
+    "illum_r": -1,
+    "illum_b": 1,
+    "zncc_self": 1,
+    "ct_fsize_std": 1,
+    "mo_hand_motion_excess": 1,
+    "inv_dct_hf_lf": -1,
+    "inv_clip_frac": 1,
+    "inv_hist_entropy": 1,
+    "inv_laplacian_var": 1
+   }
+  },
+  "frozen_ensemble_v1": {
+   "n_features": null,
+   "features": null,
+   "ood160_auroc": 0.566,
+   "ood160_ci95_factory_grouped": [
+    0.4238,
+    0.6999
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.4374,
+    0.694
+   ],
+   "missing_scores": [],
+   "note": "frozen two-view usable_prob (no fitting)"
+  }
+ },
+ "paired_factory_grouped_gain_vs_frozen": {
+  "zscore_transferable_only": {
+   "mean": 0.1929,
+   "ci95": [
+    0.0444,
+    0.3428
+   ],
+   "frac_resamples_gt_0": 0.9945,
+   "n_boot": 2000
+  },
+  "zscore_stable8+transferable": {
+   "mean": 0.2131,
+   "ci95": [
+    0.0604,
+    0.3674
+   ],
+   "frac_resamples_gt_0": 0.995,
+   "n_boot": 2000
+  }
+ }
+}
