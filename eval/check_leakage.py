@@ -2,7 +2,7 @@
 
 Usage (from the repo root):
 
-    python3 -m eval.check_leakage \
+    /home/parshu/envs/jadal/bin/python -m eval.check_leakage \
         --splits eval/results/splits.json --cache eval/results/phash_cache.json
 
 Prints the number of cross-split pairs at Hamming <= threshold (must be 0)
