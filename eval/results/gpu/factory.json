@@ -1,0 +1,64 @@
+{
+ "device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
+ "regenerate": "flock ... /home/parshu/envs/jadal/bin/python eval/gpu/factory.py --sweep",
+ "corpus": {
+  "n_complete": 5,
+  "files": [
+   "factory001_worker006_00008.mp4",
+   "factory003_worker004_00003.mp4",
+   "factory009_worker001_00007.mp4",
+   "factory040_worker001_00026.mp4",
+   "factory061_worker007_00036.mp4"
+  ]
+ },
+ "cpu_1core": {
+  "rc": 0,
+  "frames": 1800,
+  "frames_per_s": 54.8,
+  "video_s_per_wall_s": 1.83,
+  "video_s": 60
+ },
+ "nvdec_sessions": {
+  "x1": {
+   "frames_per_s": 620.0,
+   "video_s_per_wall_s": 20.67,
+   "exact_bytes": true,
+   "wall_s": 2.9
+  },
+  "x2": {
+   "frames_per_s": 729.4,
+   "video_s_per_wall_s": 24.31,
+   "exact_bytes": true,
+   "wall_s": 4.9
+  },
+  "x4": {
+   "frames_per_s": 680.9,
+   "video_s_per_wall_s": 22.7,
+   "exact_bytes": true,
+   "wall_s": 10.6
+  }
+ },
+ "kernel_sweep_T300": {
+  "B4": {
+   "windows_s": 48.2,
+   "hours_per_hour": 482.0,
+   "vram_mib": 1222.0,
+   "over_budget": false
+  },
+  "B8": {
+   "windows_s": 49.0,
+   "hours_per_hour": 490.0,
+   "vram_mib": 2326.0,
+   "over_budget": false
+  },
+  "B16": {
+   "windows_s": 70.2,
+   "hours_per_hour": 701.9,
+   "vram_mib": 4576.0,
+   "over_budget": false
+  },
+  "B32": {
+   "error": "CUDA out of memory. Tried to allocate 1.55 GiB. GPU 0 has a total capacity of 7.60 GiB of which 665.06 MiB is free. Proc"
+  }
+ }
+}
