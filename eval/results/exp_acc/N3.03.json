@@ -1,0 +1,269 @@
+{
+ "device": "CPU (numpy/sklearn; cached features only, no GPU)",
+ "domains": {
+  "indego_loco": {
+   "combos": {
+    "adapted": {
+     "accept_share": 0.64,
+     "auroc": 0.6842,
+     "auroc_ci95_grouped": [
+      0.5157,
+      0.7778
+     ],
+     "balacc_band_as_accept": 0.685,
+     "balacc_band_as_reject": 0.555,
+     "balacc_decided_only": 0.7042,
+     "err_decided_only": 0.2766,
+     "n_review": 56,
+     "review_share": 0.3733,
+     "review_share_band_25_75": 0.9
+    },
+    "frozen": {
+     "accept_share": 0.6333,
+     "auroc": 0.8336,
+     "auroc_ci95_grouped": [
+      0.7185,
+      0.9133
+     ],
+     "balacc_band_as_accept": 0.755,
+     "balacc_band_as_reject": 0.78,
+     "balacc_decided_only": 0.8493,
+     "err_decided_only": 0.1466,
+     "n_review": 34,
+     "review_share": 0.2267,
+     "review_share_band_25_75": 0.8267
+    },
+    "rank_adapted+frozen": {
+     "accept_share": 0.6067,
+     "auroc": 0.7835,
+     "auroc_ci95_grouped": [
+      0.6545,
+      0.8605
+     ],
+     "balacc_band_as_accept": 0.72,
+     "balacc_band_as_reject": 0.67,
+     "balacc_decided_only": 0.7755,
+     "err_decided_only": 0.2212,
+     "gain_vs_adapted_paired": {
+      "ci95": [
+       0.0199,
+       0.2096
+      ],
+      "frac_gt0": 0.9895,
+      "mean": 0.103
+     },
+     "gain_vs_frozen_paired": {
+      "ci95": [
+       -0.1196,
+       0.0053
+      ],
+      "frac_gt0": 0.0435,
+      "mean": -0.0553
+     },
+     "n_review": 46,
+     "review_share": 0.3067,
+     "review_share_band_25_75": 0.9067
+    },
+    "rank_adapted+frozen+rules": {
+     "accept_share": 0.6,
+     "auroc": 0.8194,
+     "auroc_ci95_grouped": [
+      0.699,
+      0.8784
+     ],
+     "balacc_band_as_accept": 0.715,
+     "balacc_band_as_reject": 0.72,
+     "balacc_decided_only": 0.784,
+     "err_decided_only": 0.2,
+     "n_review": 35,
+     "review_share": 0.2333,
+     "review_share_band_25_75": 0.86
+    },
+    "rules": {
+     "accept_share": 0.58,
+     "auroc": 0.8222,
+     "auroc_ci95_grouped": [
+      0.7126,
+      0.855
+     ],
+     "balacc_band_as_accept": 0.745,
+     "balacc_band_as_reject": 0.725,
+     "balacc_decided_only": 0.7738,
+     "err_decided_only": 0.2188,
+     "n_review": 22,
+     "review_share": 0.1467,
+     "review_share_band_25_75": 0.36
+    }
+   },
+   "n": 150,
+   "n_bad": 50,
+   "n_good": 100
+  },
+  "ood160": {
+   "combos": {
+    "adapted": {
+     "accept_share": 0.675,
+     "auroc": 0.7592,
+     "auroc_ci95_grouped": [
+      0.5971,
+      0.8855
+     ],
+     "balacc_band_as_accept": 0.6966,
+     "balacc_band_as_reject": 0.6798,
+     "balacc_decided_only": 0.75,
+     "err_decided_only": 0.2185,
+     "n_review": 41,
+     "review_share": 0.2562,
+     "review_share_band_25_75": 0.7312
+    },
+    "frozen": {
+     "accept_share": 0.4313,
+     "auroc": 0.566,
+     "auroc_ci95_grouped": [
+      0.4238,
+      0.6999
+     ],
+     "balacc_band_as_accept": 0.5,
+     "balacc_band_as_reject": 0.5,
+     "balacc_decided_only": null,
+     "err_decided_only": null,
+     "n_review": 160,
+     "review_share": 1.0,
+     "review_share_band_25_75": 1.0
+    },
+    "rank_adapted+frozen": {
+     "accept_share": 0.5312,
+     "auroc": 0.6859,
+     "auroc_ci95_grouped": [
+      0.528,
+      0.817
+     ],
+     "balacc_band_as_accept": 0.5748,
+     "balacc_band_as_reject": 0.5866,
+     "balacc_decided_only": 0.6712,
+     "err_decided_only": 0.2763,
+     "gain_vs_adapted_paired": {
+      "ci95": [
+       -0.1606,
+       0.0027
+      ],
+      "frac_gt0": 0.0305,
+      "mean": -0.073
+     },
+     "gain_vs_frozen_paired": {
+      "ci95": [
+       0.0376,
+       0.2045
+      ],
+      "frac_gt0": 0.999,
+      "mean": 0.1199
+     },
+     "n_review": 84,
+     "review_share": 0.525,
+     "review_share_band_25_75": 1.0
+    },
+    "rank_adapted+frozen+rules": {
+     "accept_share": 0.5875,
+     "auroc": 0.6164,
+     "auroc_ci95_grouped": [
+      0.4561,
+      0.7541
+     ],
+     "balacc_band_as_accept": 0.5128,
+     "balacc_band_as_reject": 0.5135,
+     "balacc_decided_only": 0.5965,
+     "err_decided_only": 0.4545,
+     "n_review": 138,
+     "review_share": 0.8625,
+     "review_share_band_25_75": 1.0
+    },
+    "rules": {
+     "accept_share": 0.4375,
+     "auroc": 0.4272,
+     "auroc_ci95_grouped": [
+      0.2687,
+      0.562
+     ],
+     "balacc_band_as_accept": 0.5,
+     "balacc_band_as_reject": 0.4354,
+     "balacc_decided_only": 0.5,
+     "err_decided_only": 0.75,
+     "n_review": 156,
+     "review_share": 0.975,
+     "review_share_band_25_75": 1.0
+    }
+   },
+   "n": 160,
+   "n_bad": 22,
+   "n_good": 138
+  }
+ },
+ "experiment": "N3.03",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "joint_point_ood": {
+  "adapted_only": {
+   "accept_share": 0.675,
+   "balacc_band_as_accept": 0.6966,
+   "balacc_band_as_reject": 0.6798,
+   "balacc_decided_only": 0.75,
+   "err_decided_only": 0.2185,
+   "n_review": 41,
+   "ood_auroc": 0.7592,
+   "ood_auroc_ci95_grouped": [
+    0.5971,
+    0.8855
+   ],
+   "review_share": 0.2562,
+   "route_share": {
+    "adapted": 1.0
+   },
+   "system": "adapted_only"
+  },
+  "aspect_wide_fused_else_rules": {
+   "accept_share": 0.5312,
+   "balacc_band_as_accept": 0.5748,
+   "balacc_band_as_reject": 0.5866,
+   "balacc_decided_only": 0.6712,
+   "err_decided_only": 0.2763,
+   "n_review": 84,
+   "ood_auroc": 0.6859,
+   "ood_auroc_ci95_grouped": [
+    0.528,
+    0.817
+   ],
+   "review_share": 0.525,
+   "route_share": {
+    "fused": 1.0
+   },
+   "system": "aspect>=1.3 -> fused else rules"
+  },
+  "quality_gate_rules_else_fused": {
+   "accept_share": 0.5687,
+   "balacc_band_as_accept": 0.5883,
+   "balacc_band_as_reject": 0.615,
+   "balacc_decided_only": 0.8389,
+   "err_decided_only": 0.1569,
+   "n_review": 109,
+   "ood_auroc": 0.6346,
+   "ood_auroc_ci95_grouped": [
+    0.4831,
+    0.7608
+   ],
+   "review_share": 0.6813,
+   "route_share": {
+    "fused": 0.7188,
+    "rules": 0.2812
+   },
+   "system": "quality-desc -> rules else rank_adapted+frozen"
+  }
+ },
+ "method": "rank-average of per-domain rank01 good-scores (Y3 recipe)",
+ "summary_mean_domain_auroc": {
+  "adapted": 0.7217,
+  "frozen": 0.6998,
+  "rank_adapted+frozen": 0.7347,
+  "rank_adapted+frozen+rules": 0.7179,
+  "rules": 0.6247
+ },
+ "title": "Rank-average fusion: adapted x frozen (x rules) and review proxy"
+}
