@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jadal QA — PoC dashboard</title>
+<meta name="description" content="Proof of concept: real factory video through the per-pixel quality funnel. Descriptive rates on unlabelled video.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101216" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap topbar-row">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <span class="brand-name">Jadal QA · PoC</span>
+        <span class="brand-sub">factory video → funnel → verdicts</span>
+      </span>
+    </div>
+    <div class="runstate" aria-live="polite">
+      <span class="pill pill-partial" id="partial-pill" hidden>partial run</span>
+      <span class="pill pill-demo" id="demo-pill" hidden>demo fixture</span>
+      <span class="micro" id="run-meta"></span>
+    </div>
+  </div>
+
+  <nav class="tabs" aria-label="PoC screens">
+    <div class="wrap tabs-row" role="tablist">
+      <button class="tab" role="tab" id="tab-overview" aria-controls="view-overview" data-route="overview" aria-selected="true">
+        <span class="tab-name">Overview</span><span class="tab-hint">rates &amp; tiles</span>
+      </button>
+      <button class="tab" role="tab" id="tab-gallery" aria-controls="view-gallery" data-route="gallery" aria-selected="false" tabindex="-1">
+        <span class="tab-name">Gallery</span><span class="tab-hint">windows</span>
+      </button>
+      <button class="tab" role="tab" id="tab-live" aria-controls="view-live" data-route="live" aria-selected="false" tabindex="-1">
+        <span class="tab-name">Live</span><span class="tab-hint">replay</span>
+      </button>
+      <button class="tab" role="tab" id="tab-about" aria-controls="view-about" data-route="about" aria-selected="false" tabindex="-1">
+        <span class="tab-name">About</span><span class="tab-hint">pipeline &amp; claims</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main" class="wrap">
+
+  <p class="honesty" role="note">
+    <strong>How to read this page.</strong> Descriptive rates on <strong>unlabelled</strong> video —
+    not accuracy. Accuracy comes only from the 150 human-labelled IndEgo windows
+    (leave-one-clip-out AUROC ~0.7–0.8, not yet high). Thresholds are not certified.
+    Not measured on a Raspberry Pi. Receipts are content-hashed, not signed.
+  </p>
+
+  <!-- ── Screen 1: overview ─────────────────────────────────────────── -->
+  <section class="view" id="view-overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0">
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Overview</h1>
+        <p class="view-sub" id="overview-sub">Run rates as windows stream in.</p>
+      </div>
+      <div class="view-actions"><button class="btn" id="overview-refresh" type="button">Refresh</button></div>
+    </div>
+    <div class="tiles" id="tiles" aria-live="polite"></div>
+    <div class="cards">
+      <div class="card">
+        <h2>Verdicts by reason</h2>
+        <p class="micro">Reject windows per reason code (evidence: value op threshold).</p>
+        <div id="chart-reason"></div>
+      </div>
+      <div class="card">
+        <h2>Per factory</h2>
+        <p class="micro">Stacked accept / review / reject shares.</p>
+        <div id="chart-factory"></div>
+      </div>
+      <div class="card">
+        <h2>Time to verdict</h2>
+        <p class="micro">Stage split: S0 early rules (first 1–2 s) · S1 full-window · S2 uncertain, handed on.</p>
+        <div id="chart-stage"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Screen 2: gallery ──────────────────────────────────────────── -->
+  <section class="view" id="view-gallery" role="tabpanel" aria-labelledby="tab-gallery" tabindex="0" hidden>
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Window gallery</h1>
+        <p class="view-sub" id="gallery-sub">Contact sheets with evidence on every chip.</p>
+      </div>
+      <div class="view-actions">
+        <button class="btn" id="pitch-btn" type="button">Show me examples</button>
+        <button class="btn" id="gallery-refresh" type="button">Refresh</button>
+      </div>
+    </div>
+    <form class="filterbar" id="filterbar" role="search" aria-label="Filter windows">
+      <div class="field"><label class="field-label" for="f-verdict">Verdict</label>
+        <select id="f-verdict"><option value="">All</option><option value="accept">accept</option><option value="reject">reject</option><option value="review">review</option></select></div>
+      <div class="field"><label class="field-label" for="f-reason">Reason</label>
+        <select id="f-reason"><option value="">All</option></select></div>
+      <div class="field"><label class="field-label" for="f-factory">Factory</label>
+        <select id="f-factory"><option value="">All</option></select></div>
+      <div class="field"><label class="field-label" for="f-worker">Worker</label>
+        <select id="f-worker"><option value="">All</option></select></div>
+      <div class="field"><label class="field-label" for="f-stage">Stage</label>
+        <select id="f-stage"><option value="">All</option><option value="S0">S0</option><option value="S1">S1</option><option value="S2">S2</option></select></div>
+      <div class="field"><label class="field-label" for="f-sort">Sort</label>
+        <select id="f-sort"><option value="time-desc">newest</option><option value="time-asc">oldest</option><option value="score-desc">score ↓</option><option value="score-asc">score ↑</option></select></div>
+      <div class="field field-search"><label class="field-label" for="f-q">Search</label>
+        <input id="f-q" type="search" placeholder="window id…" autocomplete="off"></div>
+    </form>
+    <p class="micro meta-line" id="gallery-meta"></p>
+    <div class="grid" id="gallery" aria-live="polite"></div>
+    <div class="pager">
+      <button class="btn" id="prev-page" type="button">← Prev</button>
+      <span class="micro" id="page-info"></span>
+      <button class="btn" id="next-page" type="button">Next →</button>
+    </div>
+  </section>
+
+  <!-- ── Screen 4: live ─────────────────────────────────────────────── -->
+  <section class="view" id="view-live" role="tabpanel" aria-labelledby="tab-live" tabindex="0" hidden>
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Live replay</h1>
+        <p class="view-sub" id="live-sub">A worker recording judged in 2-second chunks.</p>
+      </div>
+      <div class="view-actions"><button class="btn" id="live-refresh" type="button">Refresh</button></div>
+    </div>
+    <div id="live-body" aria-live="polite"></div>
+  </section>
+
+  <!-- ── Screen 5: about ────────────────────────────────────────────── -->
+  <section class="view" id="view-about" role="tabpanel" aria-labelledby="tab-about" tabindex="0" hidden>
+    <div class="view-head"><div>
+      <h1 class="view-title">About this PoC</h1>
+      <p class="view-sub">Pipeline, claims, and what is deliberately not claimed.</p>
+    </div></div>
+    <div class="cards">
+      <div class="card">
+        <h2>Pipeline stages</h2>
+        <svg id="pipe-svg" viewBox="0 0 640 150" role="img" aria-label="Pipeline: video to stage 0 rules, stage 1 features, stage 2 handoff, verdict with receipt">
+          <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arr-head"/></marker></defs>
+          <g font-size="12" text-anchor="middle">
+            <rect x="8" y="45" width="110" height="60" rx="8" class="pipe-box"/><text x="63" y="70" class="pipe-t">10-s window</text><text x="63" y="88" class="pipe-s">3 thumbs</text>
+            <rect x="140" y="45" width="110" height="60" rx="8" class="pipe-box"/><text x="195" y="70" class="pipe-t">S0 · rules</text><text x="195" y="88" class="pipe-s">first 1–2 s</text>
+            <rect x="272" y="45" width="130" height="60" rx="8" class="pipe-box"/><text x="337" y="70" class="pipe-t">S1 · features</text><text x="337" y="88" class="pipe-s">per-pixel + score</text>
+            <rect x="424" y="45" width="90" height="60" rx="8" class="pipe-box pipe-dim"/><text x="469" y="70" class="pipe-t">S2</text><text x="469" y="88" class="pipe-s">handed on</text>
+            <rect x="536" y="45" width="96" height="60" rx="8" class="pipe-box"/><text x="584" y="70" class="pipe-t">verdict</text><text x="584" y="88" class="pipe-s">+ receipt</text>
+          </g>
+          <g class="arr-line">
+            <line x1="118" y1="75" x2="138" y2="75" marker-end="url(#arr)"/>
+            <line x1="250" y1="75" x2="270" y2="75" marker-end="url(#arr)"/>
+            <line x1="402" y1="75" x2="422" y2="75" marker-end="url(#arr)"/>
+            <line x1="514" y1="75" x2="534" y2="75" marker-end="url(#arr)"/>
+          </g>
+        </svg>
+        <p class="micro">S0 exact rules reject fast; S1 scores the whole window; S2 (uncertain) is handed on, not run in the PoC. Every verdict carries evidence (value, op, threshold) and a content-hashed receipt.</p>
+      </div>
+      <div class="card">
+        <h2>Claims table</h2>
+        <table class="claims">
+          <thead><tr><th scope="col">Claim</th><th scope="col">Status</th></tr></thead>
+          <tbody>
+            <tr><td>Verdict rates on Egocentric-10K factory video</td><td><span class="chip chip-accept">measured (descriptive)</span></td></tr>
+            <tr><td>Evidence + content-hashed receipt per window</td><td><span class="chip chip-accept">measured</span></td></tr>
+            <tr><td>Throughput (hours of video per wall-hour)</td><td><span class="chip chip-accept">measured</span></td></tr>
+            <tr><td>Accuracy of thresholds</td><td><span class="chip chip-review">AUROC ~0.7–0.8 on 150 human windows — not yet high</span></td></tr>
+            <tr><td>Certified thresholds</td><td><span class="chip chip-reject">not claimed (n=150 too small)</span></td></tr>
+            <tr><td>Runs on a Raspberry Pi</td><td><span class="chip chip-reject">not measured</span></td></tr>
+            <tr><td>Hyperspectral sensing</td><td><span class="chip chip-reject">not claimed (RGB, 3 bands)</span></td></tr>
+            <tr><td>Signed receipts</td><td><span class="chip chip-reject">not claimed (hashed, not signed)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p id="foot-source">Loading data source…</p>
+    <p class="foot-note">Plain HTML/CSS/JS, no CDN, works offline. Colour appears only on verdict chips. Receipt hashes follow <code>docs/SPEC.md</code>.</p>
+  </footer>
+</main>
+
+<!-- ── Screen 3: window detail drawer ─────────────────────────────── -->
+<div class="drawer-veil" id="drawer-veil" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+  <div class="drawer-head">
+    <div><h2 id="drawer-title">Window</h2><p class="micro mono" id="drawer-sub"></p></div>
+    <button class="btn" id="drawer-close" type="button">Close ✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<script src="app.js" defer></script>
+</body>
+</html>
