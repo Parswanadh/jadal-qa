@@ -1,0 +1,975 @@
+{
+ "device": "CPU (RunPod A40 host; nvidia-smi unavailable)",
+ "experiment": "LEAD_v2",
+ "false_reject_budget": 0.05,
+ "label_sources": {
+  "indego": "human (manifest_gold.json, 100 good / 50 bad)",
+  "ood160": "human (ood160_labels.json, 138 good / 22 bad)"
+ },
+ "n": {
+  "indego": 150,
+  "ood160": 160
+ },
+ "part_A_validation": {
+  "frozen_v1_table_indego_full_auroc_in_sample": 0.823,
+  "note": "in-sample score uses thresholds fitted on all 7 clips, so it must be >= the LOCO number; a value far below 0.822 falsifies the rebuild",
+  "q1_reported_loco_auroc": 0.822,
+  "q1_reported_loco_ci95": [
+   0.715,
+   0.861
+  ],
+  "verdict": "faithful rebuild (in-sample >= LOCO, gap consistent with thresholds frozen on all clips)"
+ },
+ "part_B_aggregation": {
+  "derivation_GRID": "argmax over {0..3}^16 of training balanced accuracy subject to false-reject <= 5% on training-good, evaluated with nested leave-one-clip-out inside the training clips",
+  "derivation_LR": "w_j = clip(round(ln( (n_bad_fire+0.5)/(n_bad+1) / ((n_good_fire+0.5)/(n_good+1)) )), 0, 4) on training rows only; the integer optimum of the Neyman-Pearson statistic",
+  "results": {
+   "grid": {
+    "balanced_accuracy": 0.56,
+    "false_reject_good": 0.02,
+    "loco_auroc": 0.7145,
+    "loco_auroc_ci95_clip_bootstrap": [
+     0.5469,
+     0.8205
+    ],
+    "per_fold": {
+     "desk": {
+      "n_test": 29,
+      "weights": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       1
+      ]
+     },
+     "ecu_full": {
+      "n_test": 48,
+      "weights": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       1
+      ]
+     },
+     "ecu_late": {
+      "n_test": 14,
+      "weights": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       1
+      ]
+     },
+     "logistics4": {
+      "n_test": 17,
+      "weights": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       1
+      ]
+     },
+     "organise": {
+      "n_test": 19,
+      "weights": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       1
+      ]
+     },
+     "pallet": {
+      "n_test": 17,
+      "weights": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       1
+      ]
+     },
+     "pallet2": {
+      "n_test": 6,
+      "weights": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       1
+      ]
+     }
+    },
+    "reject_rate_bad": 0.14,
+    "score_max": 8,
+    "score_min": 0,
+    "weights_per_fold": {
+     "desk": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "ecu_full": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "ecu_late": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "logistics4": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "organise": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "pallet": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "pallet2": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+     ]
+    }
+   },
+   "lr": {
+    "balanced_accuracy": 0.66,
+    "false_reject_good": 0.04,
+    "loco_auroc": 0.7965,
+    "loco_auroc_ci95_clip_bootstrap": [
+     0.6716,
+     0.8383
+    ],
+    "per_fold": {
+     "desk": {
+      "n_test": 29,
+      "weights": [
+       1,
+       1,
+       0,
+       1,
+       1,
+       1,
+       0,
+       1,
+       1,
+       1,
+       1,
+       0,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "ecu_full": {
+      "n_test": 48,
+      "weights": [
+       1,
+       1,
+       0,
+       0,
+       1,
+       1,
+       0,
+       1,
+       1,
+       1,
+       1,
+       0,
+       1,
+       0,
+       1,
+       0
+      ]
+     },
+     "ecu_late": {
+      "n_test": 14,
+      "weights": [
+       0,
+       0,
+       0,
+       1,
+       1,
+       1,
+       0,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "logistics4": {
+      "n_test": 17,
+      "weights": [
+       1,
+       0,
+       0,
+       1,
+       1,
+       1,
+       0,
+       1,
+       1,
+       1,
+       1,
+       0,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "organise": {
+      "n_test": 19,
+      "weights": [
+       0,
+       0,
+       1,
+       1,
+       1,
+       0,
+       0,
+       1,
+       1,
+       1,
+       1,
+       0,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "pallet": {
+      "n_test": 17,
+      "weights": [
+       0,
+       0,
+       0,
+       1,
+       1,
+       0,
+       0,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "pallet2": {
+      "n_test": 6,
+      "weights": [
+       1,
+       1,
+       0,
+       1,
+       1,
+       1,
+       0,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     }
+    },
+    "reject_rate_bad": 0.36,
+    "score_max": 24,
+    "score_min": 0,
+    "weights_per_fold": {
+     "desk": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1
+     ],
+     "ecu_full": [
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0
+     ],
+     "ecu_late": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "logistics4": [
+      1,
+      0,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1
+     ],
+     "organise": [
+      0,
+      0,
+      1,
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1
+     ],
+     "pallet": [
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "pallet2": [
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    }
+   },
+   "v1": {
+    "balanced_accuracy": 0.715,
+    "false_reject_good": 0.05,
+    "loco_auroc": 0.8222,
+    "loco_auroc_ci95_clip_bootstrap": [
+     0.7146,
+     0.8598
+    ],
+    "per_fold": {
+     "desk": {
+      "n_test": 29,
+      "weights": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "ecu_full": {
+      "n_test": 48,
+      "weights": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "ecu_late": {
+      "n_test": 14,
+      "weights": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "logistics4": {
+      "n_test": 17,
+      "weights": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "organise": {
+      "n_test": 19,
+      "weights": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "pallet": {
+      "n_test": 17,
+      "weights": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     },
+     "pallet2": {
+      "n_test": 6,
+      "weights": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1
+      ]
+     }
+    },
+    "reject_rate_bad": 0.48,
+    "score_max": 29,
+    "score_min": 0,
+    "weights_per_fold": {
+     "desk": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "ecu_full": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "ecu_late": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "logistics4": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "organise": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "pallet": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ],
+     "pallet2": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+     ]
+    }
+   }
+  },
+  "rule_names": [
+   "TOO_DARK",
+   "TOO_DARK",
+   "OVEREXPOSED",
+   "BLUR",
+   "BLUR",
+   "FROZEN_STATIC",
+   "FROZEN_STATIC",
+   "NO_ACTIVE_WORK",
+   "NO_ACTIVE_WORK",
+   "NO_ACTIVE_WORK",
+   "HANDS_NOT_VISIBLE",
+   "DUPLICATE",
+   "DUPLICATE",
+   "CODING_NOISE",
+   "CODING_NOISE",
+   "CODING_NOISE"
+  ],
+  "rule_order": [
+   "TOO_DARK:full.luma_mean",
+   "TOO_DARK:full.dark_frac",
+   "OVEREXPOSED:full.bright_frac",
+   "BLUR:full.hf_ratio",
+   "BLUR:full.dct_energy",
+   "FROZEN_STATIC:full.temp_b0",
+   "FROZEN_STATIC:full.frozen_frac",
+   "NO_ACTIVE_WORK:phys.flow_act",
+   "NO_ACTIVE_WORK:phys.flow_med",
+   "NO_ACTIVE_WORK:full.motion_energy",
+   "HANDS_NOT_VISIBLE:full.skin_frac",
+   "DUPLICATE:phys.dhash_loop_min",
+   "DUPLICATE:phys.mad_mean",
+   "CODING_NOISE:phys.frm_bytes_med",
+   "CODING_NOISE:phys.p_size_med",
+   "CODING_NOISE:phys.snr_db"
+  ]
+ },
+ "part_C_transfer": {
+  "argument": "thresholds expressed as order statistics of the target's own unlabelled values make each rule invariant to any strictly monotone per-feature reparametrisation of the target domain; the rule list, directions, quantile levels and integer weights are all fixed from IndEgo",
+  "integer_weights_from_indego_LR": [
+   0,
+   0,
+   0,
+   1,
+   1,
+   0,
+   0,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1
+  ],
+  "limits": "invariance is per-feature and monotone only: it does not fix feature-vs-feature scale changes, and the target's class mix shifts what a given rank means (a target with a different bad-rate moves the order statistics). The 160-window OOD set has only 22 bad windows, so the CI is wide; OOD labels were used to REPORT this number only, never to fit, select or threshold anything.",
+  "results": {
+   "per_domain_requantile": {
+    "auroc": 0.5685,
+    "auroc_ci95_window_bootstrap": [
+     0.449,
+     0.6782
+    ],
+    "balanced_accuracy": 0.5056,
+    "false_reject_good": 0.0797,
+    "reject_rate_all": 0.0813,
+    "reject_rate_bad": 0.0909,
+    "t_reject_from_indego_training": 13,
+    "thresholds_q_used": {
+     "BLUR|full.dct_energy": [
+      100,
+      500,
+      1000,
+      2500
+     ],
+     "BLUR|full.hf_ratio": [
+      100,
+      500,
+      1000,
+      2500
+     ],
+     "CODING_NOISE|phys.frm_bytes_med": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "CODING_NOISE|phys.p_size_med": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "CODING_NOISE|phys.snr_db": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "DUPLICATE|phys.dhash_loop_min": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "DUPLICATE|phys.mad_mean": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "FROZEN_STATIC|full.frozen_frac": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "FROZEN_STATIC|full.temp_b0": [
+      100,
+      500,
+      1000,
+      2500
+     ],
+     "HANDS_NOT_VISIBLE|full.skin_frac": [
+      100,
+      500,
+      1000,
+      2500
+     ],
+     "NO_ACTIVE_WORK|full.motion_energy": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "NO_ACTIVE_WORK|phys.flow_act": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "NO_ACTIVE_WORK|phys.flow_med": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "OVEREXPOSED|full.bright_frac": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "TOO_DARK|full.dark_frac": [
+      9900,
+      9500,
+      9000,
+      7500
+     ],
+     "TOO_DARK|full.luma_mean": [
+      100,
+      500,
+      1000,
+      2500
+     ]
+    }
+   },
+   "raw_indego_thresholds": {
+    "auroc": 0.4715,
+    "auroc_ci95_window_bootstrap": [
+     0.3361,
+     0.614
+    ],
+    "balanced_accuracy": 0.4898,
+    "false_reject_good": 0.3841,
+    "reject_rate_all": 0.3812,
+    "reject_rate_bad": 0.3636,
+    "t_reject_from_indego_training": 13
+   }
+  }
+ },
+ "protocol": "in-domain = leave-one-clip-out over IndEgo clips; OOD = 160 human-labelled Egocentric-10K windows, window-bootstrap CI (optimistic)",
+ "quantile_levels": [
+  0.01,
+  0.05,
+  0.1,
+  0.25
+ ],
+ "quantisation": 4,
+ "runtime_s": 87.4
+}

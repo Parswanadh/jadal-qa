@@ -1,0 +1,177 @@
+{
+ "apriori_scale_subset": [
+  "BLUR",
+  "CODING_NOISE",
+  "DUPLICATE"
+ ],
+ "device": "CPU (RunPod A40 host; nvidia-smi unavailable)",
+ "experiment": "LEAD_subset_ood",
+ "label_sources": {
+  "indego": "human 100 good/50 bad",
+  "ood160": "human 138 good/22 bad"
+ },
+ "protocol": "OOD = 160 human-labelled Egocentric-10K windows, window-bootstrap 95% CI (optimistic); in-domain = IndEgo 150 LOCO over 7 clips",
+ "quantile_levels": [
+  0.01,
+  0.05,
+  0.1,
+  0.25
+ ],
+ "quantisation": 4,
+ "results": {
+  "all_rules": {
+   "delta_auroc_requantile_minus_raw": 0.1184,
+   "indego_auroc_ci95_clip_bootstrap": [
+    0.7326,
+    0.8568
+   ],
+   "indego_auroc_in_sample": 0.823,
+   "indego_reject_threshold": 13,
+   "n_rule_specs": 16,
+   "ood_raw": {
+    "auroc": 0.4272,
+    "auroc_ci95_window_bootstrap": [
+     0.281,
+     0.5767
+    ],
+    "balanced_accuracy": 0.4681,
+    "false_reject_good": 0.4275,
+    "reject_rate_all": 0.4188,
+    "reject_rate_bad": 0.3636
+   },
+   "ood_requantile": {
+    "auroc": 0.5456,
+    "auroc_ci95_window_bootstrap": [
+     0.4217,
+     0.6637
+    ],
+    "balanced_accuracy": 0.4921,
+    "false_reject_good": 0.1522,
+    "reject_rate_all": 0.15,
+    "reject_rate_bad": 0.1364
+   },
+   "rules": [
+    "BLUR",
+    "CODING_NOISE",
+    "DUPLICATE",
+    "FROZEN_STATIC",
+    "HANDS_NOT_VISIBLE",
+    "NO_ACTIVE_WORK",
+    "OVEREXPOSED",
+    "TOO_DARK"
+   ]
+  },
+  "apriori_scale_subset": {
+   "delta_auroc_requantile_minus_raw": 0.134,
+   "indego_auroc_ci95_clip_bootstrap": [
+    0.6623,
+    0.8446
+   ],
+   "indego_auroc_in_sample": 0.7887,
+   "indego_reject_threshold": 8,
+   "n_rule_specs": 7,
+   "ood_raw": {
+    "auroc": 0.504,
+    "auroc_ci95_window_bootstrap": [
+     0.3626,
+     0.6483
+    ],
+    "balanced_accuracy": 0.4608,
+    "false_reject_good": 0.442,
+    "reject_rate_all": 0.4313,
+    "reject_rate_bad": 0.3636
+   },
+   "ood_requantile": {
+    "auroc": 0.638,
+    "auroc_ci95_window_bootstrap": [
+     0.5203,
+     0.7437
+    ],
+    "balanced_accuracy": 0.4829,
+    "false_reject_good": 0.0797,
+    "reject_rate_all": 0.075,
+    "reject_rate_bad": 0.0455
+   },
+   "rules": [
+    "BLUR",
+    "CODING_NOISE",
+    "DUPLICATE"
+   ]
+  },
+  "motion_only": {
+   "delta_auroc_requantile_minus_raw": 0.0792,
+   "indego_auroc_ci95_clip_bootstrap": [
+    0.609,
+    0.7672
+   ],
+   "indego_auroc_in_sample": 0.7112,
+   "indego_reject_threshold": 6,
+   "n_rule_specs": 3,
+   "ood_raw": {
+    "auroc": 0.4042,
+    "auroc_ci95_window_bootstrap": [
+     0.2933,
+     0.5252
+    ],
+    "balanced_accuracy": 0.4575,
+    "false_reject_good": 0.1304,
+    "reject_rate_all": 0.1187,
+    "reject_rate_bad": 0.0455
+   },
+   "ood_requantile": {
+    "auroc": 0.4834,
+    "auroc_ci95_window_bootstrap": [
+     0.3898,
+     0.5852
+    ],
+    "balanced_accuracy": 0.4865,
+    "false_reject_good": 0.0725,
+    "reject_rate_all": 0.0688,
+    "reject_rate_bad": 0.0455
+   },
+   "rules": [
+    "NO_ACTIVE_WORK"
+   ]
+  },
+  "quality_only": {
+   "delta_auroc_requantile_minus_raw": 0.2151,
+   "indego_auroc_ci95_clip_bootstrap": [
+    0.4932,
+    0.7455
+   ],
+   "indego_auroc_in_sample": 0.6586,
+   "indego_reject_threshold": 7,
+   "n_rule_specs": 7,
+   "ood_raw": {
+    "auroc": 0.3124,
+    "auroc_ci95_window_bootstrap": [
+     0.2005,
+     0.4293
+    ],
+    "balanced_accuracy": 0.4928,
+    "false_reject_good": 0.0145,
+    "reject_rate_all": 0.0125,
+    "reject_rate_bad": 0.0
+   },
+   "ood_requantile": {
+    "auroc": 0.5275,
+    "auroc_ci95_window_bootstrap": [
+     0.3779,
+     0.6737
+    ],
+    "balanced_accuracy": 0.4984,
+    "false_reject_good": 0.0942,
+    "reject_rate_all": 0.0938,
+    "reject_rate_bad": 0.0909
+   },
+   "rules": [
+    "BLUR",
+    "FROZEN_STATIC",
+    "OVEREXPOSED",
+    "TOO_DARK"
+   ]
+  }
+ },
+ "runtime_s": 172.3,
+ "subset_choice_note": "the scale subset is chosen from feature physics (sharpness / bitrate / hash), a priori, NOT from OOD labels; OOD labels only report the outcome"
+}
