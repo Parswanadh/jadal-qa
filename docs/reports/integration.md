@@ -153,3 +153,104 @@ The 1 failure + 1 error are both in `tests/test_voicebank.py`, which this
 branch does not touch; they are pre-existing on `origin/main` (confirmed in
 the review) and are being fixed separately by another worker. Owned suites:
 52/52 OK (38 service + 14 integration).
+
+## Integration round 2 (issue #17 follow-up, branch `feat/integration2`)
+
+Hazard (found by a trial merge of the real `jadal.signals`): with the real
+decoder importable, `test_websocket_pushes_batch_event` hung forever -- fake
+mp4 bytes hit the real decoder (`moov atom not found`), no batch was emitted
+and no wait timed out. Fixed (1)-(7) in owned files only (`jadal/service.py`, `jadal/pipeline.py`,
+`Makefile`, `docs/API.md`, both test files, this report; `jadal/store.py`,
+`jadal/stubs.py`, `sim/dock_sim.py`, `scripts/**` needed no changes; NOT
+touched: `jadal/config.py`, `jadal/__init__.py`, `docs/SPEC.md`).
+
+1. **Forced stubs in tests** -- `BucketCase`/`IntegrationCase` now inject
+   stub callables (the three pipeline resolvers are mock-patched to
+   `stubs.*`) on top of `JADAL_USE_STUBS=1`, so results never depend on which
+   modules are importable. New `TestStubIndependence` installs a fake
+   `jadal.signals`/`decision`/`segmenter` stack whose entry points RAISE on
+   any call and asserts batch verdicts are byte-identical to the no-fake run
+   with zero fake calls.
+2. **Bounded waits** -- every wait has a timeout: `/ws` server receives use
+   `asyncio.wait_for(..., JADAL_WS_RECV_TIMEOUT_S=60 s)` (idle clients wait
+   again, never block); tests read through `recv_json_with_timeout` (thread
+   + join, raises `TimeoutError` with a clear message -- starlette 1.7's
+   TestClient offers no timeout knob); `TestWsTimeout` proves the fast
+   failure. No queue/thread waits exist besides the worker `_stop.wait(poll)`.
+3. **UNDECODABLE, never a silent loop** -- `process_clip` returns a
+   deterministic whole-clip placeholder when the segmenter fails on the
+   bytes (or yields zero segments); only `OSError` propagates as transient.
+   `run_batch`/`reverify_receipt` decode via `_compute_signals_safe`: capped
+   retries (`_SIGNAL_IO_RETRIES=3`) for `OSError`, then raise (existing
+   requeue + `/ingest/errors` path); any other decoder failure synthesises
+   `decodable=False` signals so the segment closes with a reject verdict
+   with reason UNDECODABLE and a normal batch event. The watcher still backs
+   off, but parks a poison file after `WATCH_MAX_ATTEMPTS=5` with a terminal
+   "gave up after N attempts" error (`TestWatcherCap`).
+4. **Per-head `/stats/risk_coverage`** -- `pipeline.risk_coverage_report`
+   returns `[{head, points, chosen_threshold, upper_bound, target_err, delta,
+   n_calibration, n_test, label_source}]` from
+   `eval/results/decider_baseline.json` (per L1 head) and
+   `eval/results/funnel_calibration.json` (`accept` + `reject:<rule>`),
+   then SQLite rows (head `"answer"`), then legacy `calibration.json`; `[]`
+   when nothing was measured. `chosen_threshold: null` = measured but
+   explicitly NOT certified; the key is absent only when nothing about a
+   threshold was measured. `label_source` is `gemini|human_gold|synthetic`
+   (an explicit labeller mention wins: "labels by gemini-2.5-flash, not
+   human-checked" -> `gemini`) and is omitted when provenance is unstated.
+   `docs/API.md` shows the real service output.
+5. **Funnel seam** -- `pipeline.route_verdict` resolves `jadal.funnel.route`
+   at runtime on every call (never cached) with the SPEC signature
+   `route(signals, decisions, thresholds)`; absent -> inline `make_verdict`
+   (unchanged). The funnel path carries optional `verdict.evidence`, which
+   the receipt hash includes only when present (proven by hash comparison in
+   `TestFunnelSeam`); funnel logic itself is NOT implemented here.
+6. **Hub mount** -- `create_app` includes `jadal.hub_api.router` under `/hub`
+   when importable, guarded (absent -> zero `/hub` routes, verified on the
+   running service); `TestHubMount` covers both sides with a fake router.
+7. **Suite under 120 s** -- `make test` runs both suites with `timeout 120`.
+
+Commands and REAL output tails (this branch, stubs):
+
+```sh
+$ make test
+# Ran 271 tests in 14.675s -- OK (skipped=2: the real-signals trial tests)
+# Ran 19 tests in 0.227s -- OK   (web suite via `discover -s web`;
+#   the `-t .` form in web/test_dashboard.py's docstring fails with
+#   "Start directory is not importable" -- dashboard worker's doc issue)
+
+$ timeout 300 make demo   # IndEgo clips, stubs
+# all receipts reverify MATCH (7/7, versions_match=True)
+# determinism: same clip 10x -> identical a333ed9af8f9142f...
+# determinism: alone vs batch-of-5 -> IDENTICAL receipt_sha256
+# batch latency: dock-to-batches wall time = 10.2s
+# demo OK
+```
+
+Trial merge proof (throwaway worktree `/tmp/jadal_trial_signals`, removed
+after; `git merge origin/feat/signals` into round-2 HEAD, real decoder live):
+
+```sh
+$ python -m unittest tests.test_integration.TestRealSignalsTrial -v
+# test_garbage_file_yields_undecodable_reject ... ok
+# test_real_mp4_decodes_and_batches ... ok   (tiny mp4 via cv2.VideoWriter)
+# Ran 2 tests in 2.061s -- OK
+
+$ python -m unittest tests.test_service tests.test_integration
+# Ran 69 tests in 5.598s -- OK (skipped=1: test_stubs_require_flag,
+#   correctly skipped with real modules present)
+
+$ python -m unittest discover -s tests   # x4 consecutive runs
+# Ran 295 tests in 26-40s -- OK (skipped=1) each time
+```
+
+Honesty note: one earlier trial `discover -s tests` run reported
+`FAILED (errors=20)`; the next four consecutive runs were fully green and it
+did not reproduce (suspected transient mediapipe/resource flake in the
+signals worker's own 24 slow tests, which this branch does not own). The
+owned 69/69 pass deterministically in both trees.
+
+NOT DONE / gaps: funnel thresholds/logic belong to the funnel worker (seam
+only here); `jadal.decision.Decider` still absent so L1 stays on stubs;
+`points` curves stay `[]` until a measurement file carries per-sample
+conf/correct arrays; web `-t .` docstring untouched (not owned).
