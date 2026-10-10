@@ -1,0 +1,161 @@
+{
+ "experiment": "Z1.01",
+ "title": "Stable-feature selection for zero-shot OOD transfer",
+ "n_indego": 150,
+ "n_ood": 60,
+ "n_bad_ood": 9,
+ "label_source": {
+  "indego": "human (labels/manifest_gold.json, single labeller, n=150: 100 good / 50 bad)",
+  "ood": "human (labels/ood_labels.json, single labeller, n=60: 51 good / 9 bad, n_bad=9 exploratory)"
+ },
+ "protocol": {
+  "indego": "leave-one-clip-out (LOCO) over 7 IndEgo clips; clip-bootstrap CI (2000)",
+  "ood": "head fit on IndEgo (all 7 clips); OOD-60 = 60 human-labelled Egocentric-10K windows (51 good / 9 bad), ~1 window/factory; window-bootstrap CI (optimistic, exploratory)"
+ },
+ "features": {
+  "all26": [
+   "temp_b0",
+   "temp_b1",
+   "temp_b2",
+   "temp_b3",
+   "frozen_frac",
+   "flicker_idx",
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy",
+   "pca_resid",
+   "pca_top1_share",
+   "luma_mean",
+   "luma_p05",
+   "luma_p50",
+   "luma_p95",
+   "dark_frac",
+   "bright_frac",
+   "motion_energy",
+   "global_shift",
+   "skin_frac",
+   "illum_r",
+   "illum_g",
+   "illum_b",
+   "rppg_pulse",
+   "dup_hash_mean",
+   "zncc_self"
+  ],
+  "stable8": [
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy",
+   "luma_p05",
+   "global_shift",
+   "illum_r",
+   "illum_b",
+   "zncc_self"
+  ],
+  "sharpness3": [
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy"
+  ]
+ },
+ "frozen_poc_auroc": 0.4150326797385621,
+ "caveat": "OOD n_bad=9, ~1 window/factory -> exploratory; window-bootstrap CI optimistic. Sign-stable here means IndEgo sign == OOD-10fps sign (E5.03), not a quality measure.",
+ "device": "CPU (numpy/sklearn); GPU not used",
+ "rows": [
+  {
+   "method": "FROZEN ensemble_v1 (PoC prior)",
+   "indego_auroc": 0.85,
+   "ood_auroc": 0.4150326797385621,
+   "ood_ci95": [
+    0.200570987654321,
+    0.656064705882353
+   ],
+   "note": "no fitting; IndEgo in-domain ensemble baseline ~0.85 (nested LOCO)"
+  },
+  {
+   "method": "raw \u00b7 all-26 \u00b7 OOD=10fps",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood_auroc": 0.5337690631808278,
+   "ood_balacc": 0.46405228758169936,
+   "note": "head trained on IndEgo (C by inner LOCO); zero-shot transfer",
+   "ood_ci95": [
+    0.3153227014076071,
+    0.7427982811714431
+   ]
+  },
+  {
+   "method": "raw \u00b7 all-26 \u00b7 OOD=native",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood_auroc": 0.3790849673202615,
+   "ood_balacc": 0.4673202614379085,
+   "note": "head trained on IndEgo (C by inner LOCO); zero-shot transfer",
+   "ood_ci95": [
+    0.18518518518518517,
+    0.5983958700497616
+   ]
+  },
+  {
+   "method": "raw \u00b7 stable-8 (sharpness/light) \u00b7 OOD=10fps",
+   "indego_auroc": 0.5188,
+   "indego_balacc": 0.45,
+   "ood_auroc": 0.55119825708061,
+   "ood_balacc": 0.5032679738562091,
+   "note": "head trained on IndEgo (C by inner LOCO); zero-shot transfer",
+   "ood_ci95": [
+    0.3399629629629629,
+    0.7451051093514329
+   ]
+  },
+  {
+   "method": "raw \u00b7 stable-8 (sharpness/light) \u00b7 OOD=native",
+   "indego_auroc": 0.5188,
+   "indego_balacc": 0.45,
+   "ood_auroc": 0.5446623093681917,
+   "ood_balacc": 0.5032679738562091,
+   "note": "head trained on IndEgo (C by inner LOCO); zero-shot transfer",
+   "ood_ci95": [
+    0.3341346153846154,
+    0.7407407407407407
+   ]
+  },
+  {
+   "method": "raw \u00b7 sharpness-3 \u00b7 OOD=10fps",
+   "indego_auroc": 0.5784,
+   "indego_balacc": 0.605,
+   "ood_auroc": 0.7058823529411764,
+   "ood_balacc": 0.49019607843137253,
+   "note": "head trained on IndEgo (C by inner LOCO); zero-shot transfer",
+   "ood_ci95": [
+    0.518,
+    0.8673376543209877
+   ]
+  },
+  {
+   "method": "raw \u00b7 sharpness-3 \u00b7 OOD=native",
+   "indego_auroc": 0.5784,
+   "indego_balacc": 0.605,
+   "ood_auroc": 0.7058823529411764,
+   "ood_balacc": 0.49019607843137253,
+   "note": "head trained on IndEgo (C by inner LOCO); zero-shot transfer",
+   "ood_ci95": [
+    0.518,
+    0.8673376543209877
+   ]
+  },
+  {
+   "method": "raw \u00b7 EG2-768 window means \u00b7 OOD=native",
+   "indego_auroc": 0.44930000000000003,
+   "indego_balacc": 0.55,
+   "ood_auroc": 0.4803921568627451,
+   "ood_balacc": 0.4803921568627451,
+   "note": "EG2 embedding transfer; EG2 fps-independent but domain-shifted",
+   "ood_ci95": [
+    0.45098039215686275,
+    0.5
+   ]
+  }
+ ],
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_adapt/run_adapt.py",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+}
