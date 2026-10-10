@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sys
 import time
@@ -69,7 +70,11 @@ def main(argv: list[str] | None = None) -> int:
     while True:
         for clip in clips:
             dest = bucket / clip.name
-            shutil.copy2(clip, dest)
+            # atomic publish: copy to a hidden .part name, then os.replace (I2),
+            # so the bucket watcher never reads a half-written file
+            staging = bucket / f".{clip.name}.part"
+            shutil.copy2(clip, staging)
+            os.replace(staging, dest)
             print(f"copied {clip.name} -> {dest}")
             try:
                 result = post_event(args.url, dest, args.worker, args.site)

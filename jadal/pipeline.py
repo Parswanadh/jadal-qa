@@ -5,28 +5,32 @@ Order per docs/SPEC.md: segmenter -> L0 signals -> L1 decisions -> L2 verdict
 segment (batch size 1), so a segment hashes identically alone or inside a batch
 of five.
 
-The real modules live on other branches. ``_resolve()`` prefers
-``jadal.signals`` / ``jadal.decision`` / ``jadal.segmenter`` / ``jadal.certify`` /
-``jadal.receipts`` whenever they exist and falls back to the deterministic stubs in
-``jadal/stubs.py``, so this module keeps working (and keeps matching its tests)
-before and after those merges.
+Module resolution: the real ``jadal.signals`` / ``jadal.decision`` /
+``jadal.segmenter`` are preferred whenever importable. The deterministic stubs
+in ``jadal/stubs.py`` are used ONLY when ``JADAL_USE_STUBS=1`` is set (tests);
+otherwise a clear ``RuntimeError`` is raised. ``jadal.certify`` and
+``jadal.receipts`` are always the real modules.
 
 NOT DONE:
-- L0/L1/segmenter are stubs (hash-derived fakes, whole clip = one segment) until
-  the real modules merge.
-- ``pick_threshold`` has no calibration data, so the answer threshold is a
-  placeholder (see stubs.STUB_THRESHOLD) recorded as ``answer_threshold``.
+- L0/L1/segmenter are stubs (hash-derived fakes, whole clip = one segment)
+  until the real modules merge; set JADAL_USE_STUBS=1 to run on stubs.
+- ``pick_threshold`` has no calibration data, so the answer threshold falls back
+  to a recorded placeholder (0.9) until eval data exists.
 - Verdict reason rules live here (L2 certify API is thresholding + batch rule).
 """
 from __future__ import annotations
 
 import hashlib
 import platform
+from dataclasses import fields as dataclass_fields
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from jadal import certify as certify_mod
+from jadal import receipts as receipts_mod
 from jadal import stubs
+from jadal.config import Config
 
 # Reason codes, in the canonical order they are reported (docs/SPEC.md).
 REASON_ORDER = [
@@ -41,44 +45,61 @@ HARD_REASONS = {
 
 BATCH_RULE_TEXT = "reject if rejected_count > k"
 
-_MODULES: dict[str, Any] | None = None
+# Config dataclass fields that are plain scalars (safe to restore from a receipt).
+_SCALAR_CONFIG_FIELDS = frozenset(
+    f.name for f in dataclass_fields(Config)
+    if f.name not in ("bucket_dir", "segments_dir", "blurred_dir", "db_path",
+                      "voicebank_dir", "sop_dir", "web_dir", "pico_port")
+)
 
 
-def _resolve() -> dict[str, Any]:
-    """Load real module functions if importable, else None (stub fallback)."""
-    global _MODULES
-    if _MODULES is None:
-        import importlib
+def _load_stage(module_name: str, attr: str, stub: Any, kind: str) -> Any:
+    """Prefer the real module; fall back to the stub only under the flag."""
+    try:
+        mod = __import__(f"jadal.{module_name}", fromlist=[attr])
+    except ImportError:
+        mod = None
+    fn = getattr(mod, attr, None) if mod is not None else None
+    if fn is not None:
+        return fn
+    if stubs.stubs_enabled():
+        return stub
+    raise RuntimeError(
+        f"no {kind} implementation: jadal.{module_name}.{attr} is not importable "
+        f"and JADAL_USE_STUBS is not '1'"
+    )
 
-        def load(name: str, attrs: list[str]) -> dict[str, Any]:
-            try:
-                mod = importlib.import_module(f"jadal.{name}")
-            except Exception:  # module not on this branch yet
-                return {a: None for a in attrs}
-            return {a: getattr(mod, a, None) for a in attrs}
 
-        _MODULES = {
-            "signals": load("signals", ["compute_signals"]),
-            "segmenter": load("segmenter", ["split_clip"]),
-            "decision": load("decision", ["Decider"]),
-            "certify": load("certify", ["pick_threshold", "batch_rule", "risk_coverage"]),
-            "receipts": load("receipts", ["make_receipt", "receipt_hash",
-                                          "verify_receipt", "canonical_json"]),
-        }
-    return _MODULES
+def _compute_signals_fn():
+    return _load_stage("signals", "compute_signals",
+                       stubs.stub_compute_signals, "L0 signals")
+
+
+def _decider_class():
+    return _load_stage("decision", "Decider", stubs.StubDecider, "L1 decision")
+
+
+def _split_clip_fn():
+    return _load_stage("segmenter", "split_clip",
+                       stubs.stub_split_clip, "segmenter")
 
 
 def impl_versions() -> dict[str, str]:
     """Which implementation each stage is running (goes into every receipt)."""
-    m = _resolve()
-    return {
-        "python": platform.python_version(),
-        "signals": "jadal.signals" if m["signals"]["compute_signals"] else "stubs.signals",
-        "decision": "jadal.decision" if m["decision"]["Decider"] else "stubs.decision",
-        "certify": "jadal.certify" if m["certify"]["batch_rule"] else "stubs.certify",
-        "receipts": "jadal.receipts" if m["receipts"]["make_receipt"] else "stubs.receipts",
-        "segmenter": "jadal.segmenter" if m["segmenter"]["split_clip"] else "stubs.segmenter",
-    }
+    versions = {"python": platform.python_version()}
+    for name, attr, stub_tag in (
+            ("signals", "compute_signals", "stubs.signals"),
+            ("decision", "Decider", "stubs.decision"),
+            ("segmenter", "split_clip", "stubs.segmenter")):
+        try:
+            mod = __import__(f"jadal.{name}", fromlist=[attr])
+            real = getattr(mod, attr, None) is not None
+        except ImportError:
+            real = False
+        versions[name] = f"jadal.{name}" if real else stub_tag
+    versions["certify"] = "jadal.certify"
+    versions["receipts"] = "jadal.receipts"
+    return versions
 
 
 def _round_floats(obj: Any, decimals: int) -> Any:
@@ -92,93 +113,42 @@ def _round_floats(obj: Any, decimals: int) -> Any:
 
 
 # --------------------------------------------------------------------------
-# stage wrappers (real module if present, stub otherwise)
-# --------------------------------------------------------------------------
-def split_clip(path: str, seg_seconds: float, out_dir: str | Path) -> list[dict]:
-    fn = _resolve()["segmenter"]["split_clip"] or stubs.stub_split_clip
-    return fn(path, seg_seconds, out_dir)
-
-
-def compute_signals(path: str, config: Any) -> dict:
-    fn = _resolve()["signals"]["compute_signals"] or stubs.stub_compute_signals
-    return fn(path, config)
-
-
-def decide(path: str, signals: dict, config: Any) -> dict:
-    cls = _resolve()["decision"]["Decider"] or stubs.StubDecider
-    try:
-        decider = cls(config)
-    except TypeError:
-        decider = cls()
-    return decider.decide(path, signals)
-
-
-def pick_threshold(config: Any) -> dict:
-    """Certify-side threshold selection; placeholder when calibrating is impossible."""
-    fn = _resolve()["certify"]["pick_threshold"] or stubs.stub_pick_threshold
-    try:
-        result = fn(
-            conf=[],
-            correct=[],
-            target_err=float(getattr(config, "target_error", 0.05)),
-            delta=float(getattr(config, "delta", 0.1)),
-            min_accepted=int(getattr(config, "min_accepted", 30)),
-        )
-    except TypeError:
-        result = stubs.stub_pick_threshold()
-    return result if isinstance(result, dict) else {}
-
-
-def batch_rule(verdicts: list[dict], k: int) -> str:
-    fn = _resolve()["certify"]["batch_rule"] or stubs.stub_batch_rule
-    return fn(verdicts, k)
-
-
-def make_receipt(segment: dict, signals: dict, decisions: dict, verdict: dict,
-                 config: dict) -> dict:
-    fn = _resolve()["receipts"]["make_receipt"] or stubs.stub_make_receipt
-    return fn(segment, signals, decisions, verdict, config)
-
-
-def verify_receipt(receipt: dict, recompute_fn) -> dict:
-    fn = _resolve()["receipts"]["verify_receipt"] or stubs.stub_verify_receipt
-    return fn(receipt, recompute_fn)
-
-
-def risk_coverage(points: list[dict]) -> list[dict]:
-    """(conf, correct) pairs -> risk/coverage points for /stats/risk_coverage."""
-    fn = _resolve()["certify"]["risk_coverage"]
-    confs = [p["conf"] for p in points]
-    corrects = [int(p["correct"]) for p in points]
-    if fn is not None:
-        try:
-            return fn(confs, corrects)
-        except TypeError:
-            return fn(points)
-    return []
-
-
-# --------------------------------------------------------------------------
 # pipeline stages
 # --------------------------------------------------------------------------
+def pick_threshold(config: Any) -> dict:
+    """Certify-side threshold selection over (empty) calibration data."""
+    return certify_mod.pick_threshold(
+        conf=[],
+        correct=[],
+        target_err=float(getattr(config, "target_error", 0.05)),
+        delta=float(getattr(config, "delta", 0.1)),
+        min_accepted=int(getattr(config, "min_accepted", 30)),
+    )
+
+
 def thresholds_snapshot(config: Any) -> dict:
     """The thresholds a receipt records (also the ones re-verify replays with)."""
     picked = pick_threshold(config)
     answer_threshold = picked.get("threshold")
     if answer_threshold is None:
         answer_threshold = stubs.STUB_THRESHOLD  # nobody calibrated yet
-    return {
+    snapshot = {
+        "batch_size": int(config.batch_size),
+        "batch_reject_k": int(config.batch_reject_k),
+        "segment_seconds": float(config.segment_seconds),
+        "seed": int(config.seed),
+        "float_decimals": int(config.float_decimals),
         "blur_var_min": float(config.blur_var_min),
         "brightness_min": float(config.brightness_min),
         "over_exposed_frac_max": float(config.over_exposed_frac_max),
         "motion_max": float(config.motion_max),
         "hands_visible_frac_min": float(config.hands_visible_frac_min),
-        "answer_threshold": float(answer_threshold),
         "target_error": float(config.target_error),
         "delta": float(config.delta),
         "min_accepted": int(config.min_accepted),
-        "float_decimals": int(config.float_decimals),
+        "answer_threshold": float(answer_threshold),
     }
+    return snapshot
 
 
 def config_block(config: Any) -> dict:
@@ -189,12 +159,27 @@ def config_block(config: Any) -> dict:
     }
 
 
+def stored_config(block: Any) -> Any:
+    """Rebuild a Config from the scalar fields of a receipt's stored block."""
+    if not isinstance(block, dict):
+        return block
+    thresholds = block.get("thresholds") or {}
+    if not isinstance(thresholds, dict):
+        return block
+    values = {k: v for k, v in thresholds.items() if k in _SCALAR_CONFIG_FIELDS}
+    try:
+        import dataclasses
+        return dataclasses.replace(Config(), **values)
+    except (TypeError, ValueError):
+        return block
+
+
 def process_clip(path: str | Path, worker_id: str, site_id: str,
                  config: Any) -> list[dict]:
     """Turn one uploaded clip into Segment dicts (stub: a single segment)."""
     out_dir = Path(config.segments_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    segments = split_clip(str(path), float(config.segment_seconds), out_dir)
+    segments = _split_clip_fn()(str(path), float(config.segment_seconds), out_dir)
     for seg in segments:
         seg.setdefault("source_clip", str(path))
         seg["worker_id"] = worker_id
@@ -259,20 +244,26 @@ def run_batch(segments: list[dict], config: Any) -> tuple[dict, list[dict]]:
         raise ValueError("run_batch needs at least one segment")
     decimals = int(config.float_decimals)
     block = config_block(config)
+    compute_signals = _compute_signals_fn()
+    decider_cls = _decider_class()
+    try:
+        decider = decider_cls(config)
+    except TypeError:
+        decider = decider_cls()
     phash_index: dict[str, str] = {}
     receipts: list[dict] = []
 
     for seg in segments:
-        signals = compute_signals(seg["path"], config)
-        signals = _round_floats(signals, decimals)
+        signals = _round_floats(compute_signals(seg["path"], config), decimals)
         phash = str(signals.get("phash") or "")
         if phash and phash in phash_index:
             signals["dup_of"] = phash_index[phash]  # first occurrence wins
         elif phash:
             phash_index[phash] = seg["segment_id"]
-        decisions = _round_floats(decide(seg["path"], signals, config), decimals)
+        decisions = _round_floats(decider.decide(seg["path"], signals), decimals)
         verdict = make_verdict(seg, signals, decisions, block["thresholds"], decimals)
-        receipts.append(make_receipt(seg, signals, decisions, verdict, block))
+        receipts.append(receipts_mod.make_receipt(
+            seg, signals, decisions, verdict, block))
 
     verdicts = [r["verdict"] for r in receipts]
     segment_ids = [s["segment_id"] for s in segments]
@@ -285,7 +276,7 @@ def run_batch(segments: list[dict], config: Any) -> tuple[dict, list[dict]]:
         "site_id": site_id,
         "segment_ids": segment_ids,
         "verdicts": verdicts,
-        "batch_decision": batch_rule(verdicts, int(config.batch_reject_k)),
+        "batch_decision": certify_mod.batch_rule(verdicts, int(config.batch_reject_k)),
         "rule": BATCH_RULE_TEXT,
         "k": int(config.batch_reject_k),
         "n": len(verdicts),
@@ -295,19 +286,60 @@ def run_batch(segments: list[dict], config: Any) -> tuple[dict, list[dict]]:
 
 
 def reverify_receipt(receipt: dict, segment: dict, config: Any) -> dict:
-    """Re-run one stored segment with the receipt's stored config; compare hashes."""
-    block = receipt.get("config") or config_block(config)
-    thresholds = block.get("thresholds") or thresholds_snapshot(config)
-    decimals = int(thresholds.get("float_decimals", config.float_decimals))
+    """Re-run one stored segment with the receipt's STORED config; compare hashes.
+
+    The L0/L1 stages get a Config rebuilt from the stored thresholds (never the
+    live object), the verdict threshold comes from the stored verdict, and the
+    config block passed to make_receipt is the stored block verbatim.
+    """
+    block = receipt.get("config")
+    if not isinstance(block, dict):
+        block = config_block(config)
+    thresholds = block.get("thresholds") if isinstance(block, dict) else None
+    if not isinstance(thresholds, dict):
+        thresholds = thresholds_snapshot(config)
+    replay_config = stored_config(block if isinstance(block, dict) else None) or config
+    if not isinstance(replay_config, Config):
+        replay_config = config
+    answer_threshold = (receipt.get("verdict") or {}).get("threshold")
+    if answer_threshold is None:
+        answer_threshold = thresholds.get("answer_threshold",
+                                          stubs.STUB_THRESHOLD)
+    replay_thresholds = dict(thresholds)
+    replay_thresholds["answer_threshold"] = float(answer_threshold)
+    decimals = int(replay_thresholds.get("float_decimals",
+                                         getattr(config, "float_decimals", 4)))
+
     segment = dict(segment)
     path = Path(segment["path"])
     if not path.is_file():
         return {"match": False, "expected": receipt.get("receipt_sha256"),
                 "actual": None, "diff": ["<segment file missing>"]}
-    # hash the bytes we actually re-read, per the SPEC "which bytes are hashed" rule
+    # hash the bytes we actually re-read, per the SPEC "which bytes" rule
     segment["sha256"] = stubs.file_sha256(path)
-    signals = _round_floats(compute_signals(segment["path"], config), decimals)
-    decisions = _round_floats(decide(segment["path"], signals, config), decimals)
-    verdict = make_verdict(segment, signals, decisions, thresholds, decimals)
-    actual = make_receipt(segment, signals, decisions, verdict, block)
-    return verify_receipt(receipt, lambda _stored: actual)
+    compute_signals = _compute_signals_fn()
+    decider_cls = _decider_class()
+    try:
+        decider = decider_cls(replay_config)
+    except TypeError:
+        decider = decider_cls()
+    signals = _round_floats(compute_signals(segment["path"], replay_config), decimals)
+    decisions = _round_floats(decider.decide(segment["path"], signals), decimals)
+    verdict = make_verdict(segment, signals, decisions, replay_thresholds, decimals)
+    actual = receipts_mod.make_receipt(segment, signals, decisions, verdict, block)
+    return receipts_mod.verify_receipt(receipt, lambda _stored: actual)
+
+
+def risk_coverage(points: list[dict]) -> list[dict]:
+    """(conf, correct) pairs -> risk/coverage points for /stats/risk_coverage."""
+    confs = [p["conf"] for p in points]
+    corrects = [int(p["correct"]) for p in points]
+    return certify_mod.risk_coverage(confs, corrects)
+
+
+__all__ = [
+    "REASON_ORDER", "HARD_REASONS", "BATCH_RULE_TEXT",
+    "impl_versions", "pick_threshold", "thresholds_snapshot", "config_block",
+    "stored_config", "process_clip", "make_verdict", "run_batch",
+    "reverify_receipt", "risk_coverage",
+]

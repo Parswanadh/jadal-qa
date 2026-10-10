@@ -12,10 +12,11 @@ byte-for-byte.
 """
 from __future__ import annotations
 
+import contextlib
 import json
 import sqlite3
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS segments (
@@ -72,10 +73,15 @@ class Store:
         init_db(self.db_path)
 
     # -- internals ---------------------------------------------------------
-    def _connect(self) -> sqlite3.Connection:
+    @contextlib.contextmanager
+    def _conn(self) -> Iterator[sqlite3.Connection]:
         conn = sqlite3.connect(str(self.db_path))
         conn.row_factory = sqlite3.Row
-        return conn
+        try:
+            yield conn
+            conn.commit()
+        finally:
+            conn.close()
 
     @staticmethod
     def _dumps(obj: Any) -> str:
@@ -85,7 +91,7 @@ class Store:
     def save_batch(self, batch: dict, receipts: list[dict],
                    segments: list[dict]) -> None:
         """Persist a closed batch, its verdicts, its receipts and its segments."""
-        with self._connect() as conn:
+        with self._conn() as conn:
             for seg in segments:
                 conn.execute(
                     """INSERT OR REPLACE INTO segments
@@ -118,7 +124,7 @@ class Store:
                 )
 
     def add_calibration(self, points: list[tuple[float, int]]) -> None:
-        with self._connect() as conn:
+        with self._conn() as conn:
             conn.executemany(
                 "INSERT INTO calibration (conf, correct) VALUES (?, ?)", points)
 
@@ -137,7 +143,7 @@ class Store:
         }
 
     def get_batch(self, batch_id: str) -> dict | None:
-        with self._connect() as conn:
+        with self._conn() as conn:
             row = conn.execute("SELECT * FROM batches WHERE batch_id = ?",
                                (batch_id,)).fetchone()
         return self._row_to_batch(row) if row else None
@@ -149,25 +155,25 @@ class Store:
             sql += " WHERE site_id = ?"
             params = (site_id,)
         sql += " ORDER BY created_utc ASC, batch_id ASC"
-        with self._connect() as conn:
+        with self._conn() as conn:
             rows = conn.execute(sql, params).fetchall()
         return [self._row_to_batch(r) for r in rows]
 
     def get_receipt(self, receipt_id: str) -> dict | None:
-        with self._connect() as conn:
+        with self._conn() as conn:
             row = conn.execute("SELECT receipt FROM receipts WHERE receipt_id = ?",
                                (receipt_id,)).fetchone()
         return json.loads(row["receipt"]) if row else None
 
     def get_receipts_for_batch(self, batch_id: str) -> list[dict]:
-        with self._connect() as conn:
+        with self._conn() as conn:
             rows = conn.execute(
                 "SELECT receipt FROM receipts WHERE batch_id = ? ORDER BY receipt_id",
                 (batch_id,)).fetchall()
         return [json.loads(r["receipt"]) for r in rows]
 
     def get_segment(self, segment_id: str) -> dict | None:
-        with self._connect() as conn:
+        with self._conn() as conn:
             row = conn.execute("SELECT * FROM segments WHERE segment_id = ?",
                                (segment_id,)).fetchone()
         if not row:
@@ -185,7 +191,7 @@ class Store:
         }
 
     def calibration_points(self) -> list[dict]:
-        with self._connect() as conn:
+        with self._conn() as conn:
             rows = conn.execute(
                 "SELECT conf, correct FROM calibration ORDER BY id").fetchall()
         return [{"conf": r["conf"], "correct": r["correct"]} for r in rows]
