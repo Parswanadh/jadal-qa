@@ -98,7 +98,7 @@ def audit_human():
     m2 = json.load(open(os.path.join(RES, "m2.json")))
     gm = json.load(open(os.path.join(SPEC_DIR, "manifest_gold.json")))
     items = {it["id"]: it for it in gm["items"]}
-    q = np.load(os.path.join(RES, "m2_quality_scores.npz"), allow_pickle=True)
+    q = np.load(os.path.join(RES, "m2_quality_scores.npz"), allow_pickle=False)
     qids = [str(i) for i in q["ids"]]
     qscore = {i: float(s) for i, s in zip(qids, q["scores"])}
     act = m2["activity"]
@@ -151,7 +151,7 @@ def retrain_variants(flagged_ids):
     Compact protocol (same skeleton as detectors.run_activity, LR only).
     Evaluated on HUMAN windows only.
     """
-    z = np.load(os.path.join(RES, "gold.npz"), allow_pickle=True)
+    z = np.load(os.path.join(RES, "gold.npz"), allow_pickle=False)
     X = z["X"].astype(np.float64)
     names = [str(n) for n in z["names"]]
     ids = [str(i) for i in z["ids"]]

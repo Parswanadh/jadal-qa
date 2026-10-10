@@ -94,14 +94,27 @@ def frame_bytes(path: str, start_s: float, end_s: float, fps_hint: float = 10.0)
     """Spec 2: decode-free per-frame packet sizes in [start,end).
 
     Uses -read_intervals (input -ss returns no packets on this build).
+    Fail-LOUD (fix round 1/I1): missing file, ffprobe error, or zero
+    in-window packets all raise — never silent NaN/zero features.
+    (jadal/spectral compressed_stats swallows the same failures into zeros,
+    but that file is read-only / another worker's.)
     """
+    import os
+    if not isinstance(path, str) or not os.path.exists(path):
+        raise FileNotFoundError(f"video not found: {path}")
     n_exp = max(1, int(round((end_s - start_s) * fps_hint)) + 60)
     p = subprocess.run(
         ["ffprobe", "-v", "error", "-show_packets", "-select_streams", "v:0",
          "-read_intervals", f"{start_s}%+{n_exp}",
          "-show_entries", "packet=size,pts_time,flags", "-of", "json", path],
         capture_output=True, timeout=120)
-    pkts = json.loads(p.stdout or b"{}").get("packets", [])
+    if p.returncode != 0:
+        raise RuntimeError(f"ffprobe failed rc={p.returncode}: "
+                           f"{p.stderr[:200]!r}")
+    try:
+        pkts = json.loads(p.stdout or b"{}").get("packets", [])
+    except (ValueError, AttributeError) as e:
+        raise RuntimeError(f"ffprobe output unparseable: {e}") from e
     sizes, keys = [], []
     for q in pkts:
         try:
@@ -118,8 +131,9 @@ def frame_bytes(path: str, start_s: float, end_s: float, fps_hint: float = 10.0)
         keys.append("K" in str(q.get("flags", "")))
     sizes = np.asarray(sizes, dtype=np.float64)
     if len(sizes) < 3:
-        return {"frm_bytes_med": float("nan"), "frm_frozen_frac": 0.0,
-                "i_size": 0.0, "p_size_med": 0.0}
+        raise RuntimeError(
+            f"ffprobe returned only {len(sizes)} in-window packets for "
+            f"[{start_s},{end_s}) of {path} (need >= 3)")
     med = float(np.median(sizes))
     nonkey = sizes[np.array(keys) == False]  # noqa: E712
     frozen = float((nonkey < 0.05 * med).mean()) if len(nonkey) else 0.0

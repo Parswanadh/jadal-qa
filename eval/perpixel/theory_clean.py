@@ -142,9 +142,12 @@ def phase1():
         perclip[it["clip"]]["immer"].append(th["sigma_immer"])
         perclip[it["clip"]]["wavelet"].append(th["sigma_wavelet"])
         perclip[it["clip"]]["block"].append(th["blockiness"])
+    # int64 fixed-point matrix (loads with allow_pickle=False; C1)
+    Fmat = np.array([[feats[i][k] for k in T.THEORY_FEATURES]
+                     for i in sorted(feats)], dtype=np.float64)
     np.savez_compressed(os.path.join(RES, "theory_feats.npz"),
                         ids=np.array(sorted(feats)),
-                        F=np.array([T.quantise(feats[i]) for i in sorted(feats)]),
+                        F=(Fmat * 10 ** T.Q).round().astype(np.int64),
                         meta=np.array([json.dumps({
                             "id": i, "float": feats[i],
                             "ladder": ladders[i]}) for i in sorted(feats)]))

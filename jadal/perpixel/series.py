@@ -200,3 +200,17 @@ def describe_series(S: np.ndarray, fps: float) -> dict:
 DESCRIPTOR_NAMES = sorted(describe_series(
     np.arange(32, dtype=np.float64).reshape(16, 2)
     @ np.ones((2, 8), dtype=np.float64), 10.0).keys())
+
+
+def fit_length(a: np.ndarray, T: int) -> np.ndarray:
+    """Truncate long series, ZERO-PAD short ones to (T, C).
+
+    np.resize would tile rows and inject fake periodicity (fix round 1/I4).
+    All 150 gold windows are T=100, so padding never fires on gold.
+    """
+    a = np.asarray(a, dtype=np.float64)
+    if a.shape[0] >= T:
+        return a[:T]
+    z = np.zeros((T, a.shape[1]))
+    z[:a.shape[0]] = a
+    return z

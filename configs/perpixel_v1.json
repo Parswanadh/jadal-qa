@@ -1,7 +1,7 @@
 {
  "version": "perpixel_v1",
- "created_utc": "2026-10-10T11:46:08.432323+00:00",
- "git_sha": "c24d05f",
+ "created_utc": "2026-10-10T12:28:02.133416+00:00",
+ "git_sha": "7175533",
  "label_snapshot": {
   "manifest": "manifest_gold.json",
   "sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
@@ -197,10 +197,16 @@
   "threshold": 0.8410791366906474,
   "note": "constructed-pairs threshold; over-flags real data (human precision 0.048); corpus check offline"
  },
+ "loop_tripwire": {
+  "dhash_max": 4,
+  "still_min": 0.5,
+  "note": "I2: single-window loop evidence in the frozen scorer; cross-window corpus-NN stays offline (M2)."
+ },
  "activity": {
   "model": "conv1d-8x16-k5x2-pool-fc",
-  "weights": "configs/perpixel_conv.pt",
-  "weights_sha256": "e2cf80c9b2914917355db63683f7b41cd69073ba6c941cdd81642ee579a77417",
+  "weights": "configs/perpixel_conv.json",
+  "weights_sha256": "0ba9ea342d2c3a354b5bf9ea8472c95f0ba8a3a674c0dfd48e71e175269ee823",
+  "weights_note": "JSON floats (no pickle; C1). Scorer verifies this hash BEFORE use and refuses on mismatch.",
   "seed": 0,
   "epochs": 40,
   "T": 100,
@@ -218,5 +224,9 @@
   "why_not_lr": "LR-all 0.702/HGB 0.758 skipped as frozen head: conv has the best LOCO point estimate with proven repeat determinism (maxdiff 0.0); CIs overlap \u2014 stated, not hidden."
  },
  "certifiability": "n=150: no rule Bonferroni-certifiable (CERTIFY-by-clip n~84 < ~86 needed); per-rule Clopper-Pearson uppers in theory.json are descriptive.",
- "frozen_note": "PRE-REGISTERED for one later scoring on a new human-labelled Egocentric-10K sample. Do NOT tune after freezing."
+ "frozen_note": "PRE-REGISTERED for one later scoring on a new human-labelled Egocentric-10K sample. Do NOT tune after freezing.",
+ "_hash_exclude": [
+  "created_utc",
+  "git_sha"
+ ]
 }

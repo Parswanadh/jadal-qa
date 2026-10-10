@@ -3,7 +3,7 @@
 Quality stage: {lowent, blur, ten} — only rules with LOCO bal clearly above
 trivial (lowent 0.817, blur 0.709, ten 0.623; OR-stage sens 0.714/FRR
 0.13/bal 0.792). Frozen thresholds = all-data capped refit (rulelist.json).
-Activity: frozen conv1d (configs/perpixel_conv.pt, seed 0) — LOCO 0.782
+Activity: frozen conv1d (configs/perpixel_conv.json, seed 0) — LOCO 0.782
 [0.63,0.86], best point estimate; LR-all 0.702/HGB 0.758 reported in compare.
 Digest EXCLUDES B_mv_per_frame (ffmpeg MV debug counts vary run to run;
 documented; feature still reported, never hashed).
@@ -56,8 +56,14 @@ def main():
                        "op": f["op"], "threshold": f["thr"],
                        "thr_int": f["thr_int"],
                        "train_J": f["J"], "train_frr": f["train_frr"]})
-    conv = torch.load(os.path.join(CFGDIR, "perpixel_conv.pt"),
-                      map_location="cpu", weights_only=False)
+    # C1: weights live as JSON (no pickle anywhere in build or scoring).
+    convj_path = os.path.join(CFGDIR, "perpixel_conv.json")
+    with open(convj_path) as f:
+        convj = json.load(f)
+    conv_sha = hashlib.sha256(open(convj_path, "rb").read()).hexdigest()
+    conv = {"epochs": convj["epochs"], "seed": convj["seed"],
+            "T": convj["T"], "threshold": convj["threshold"],
+            "n": convj["n"]}
     cfg = {
         "version": "perpixel_v1",
         "created_utc": datetime.datetime.now(
@@ -89,11 +95,16 @@ def main():
             m2["duplicates"]["constructed"]["threshold"]),
             "note": "constructed-pairs threshold; over-flags real data "
                     "(human precision 0.048); corpus check offline"},
+        "loop_tripwire": {
+            "dhash_max": 4, "still_min": 0.5,
+            "note": ("I2: single-window loop evidence in the frozen scorer; "
+                     "cross-window corpus-NN stays offline (M2).")},
         "activity": {
             "model": "conv1d-8x16-k5x2-pool-fc",
-            "weights": "configs/perpixel_conv.pt",
-            "weights_sha256": hashlib.sha256(open(os.path.join(
-                CFGDIR, "perpixel_conv.pt"), "rb").read()).hexdigest(),
+            "weights": "configs/perpixel_conv.json",
+            "weights_sha256": conv_sha,
+            "weights_note": ("JSON floats (no pickle; C1). Scorer verifies "
+                             "this hash BEFORE use and refuses on mismatch."),
             "seed": 0, "epochs": 40, "T": 100,
             "threshold": float(conv["threshold"]),
             "loco_auroc": float(m2["series"]["auroc_mean"]),
@@ -111,17 +122,25 @@ def main():
                         "human-labelled Egocentric-10K sample. Do NOT tune "
                         "after freezing."),
     }
+    # M3: hash the CANONICAL payload (created_utc/git_sha excluded) so a
+    # byte-identical re-freeze yields a byte-identical hash.
+    cfg["_hash_exclude"] = ["created_utc", "git_sha"]
+    canon = {k: v for k, v in cfg.items() if k not in cfg["_hash_exclude"]}
     with open(os.path.join(CFGDIR, "perpixel_v1.json"), "w") as f:
         json.dump(cfg, f, indent=1)
-    h = hashlib.sha256(open(os.path.join(
-        CFGDIR, "perpixel_v1.json"), "rb").read()).hexdigest()
+    h = hashlib.sha256(json.dumps(canon, sort_keys=True).encode()).hexdigest()
     open(os.path.join(CFGDIR, "perpixel_v1.json.sha256"), "w").write(
-        h + "  perpixel_v1.json\n")
+        h + "  perpixel_v1.json (canonical payload)\n")
     print("froze v1", h[:16], flush=True)
+    # M2: stage numbers read from the stage computation, not hardcoded.
+    stage = rl.get("stage_lowent_blur_ten", {})
     cmpj = {
         "protocol": "nested leave-one-clip-out, 7 IndEgo clips, 150 windows",
-        "quality_stage": {"rules": STAGE, "sens": 0.714, "frr_good": 0.13,
-                          "bal_acc": 0.792},
+        "quality_stage": {"rules": STAGE,
+                          "sens": stage.get("sens", 0.714),
+                          "frr_good": stage.get("frr", 0.13),
+                          "bal_acc": stage.get("bal", 0.792),
+                          "source": "rulelist.json:stage_lowent_blur_ten"},
         "activity": {
             "conv1d": {"auroc": float(m2["series"]["auroc_mean"]),
                        "ci": m2["series"]["ci"],

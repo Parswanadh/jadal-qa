@@ -85,20 +85,86 @@ class TestTheoryPhysics(unittest.TestCase):
         h = TC.hits(qm, None, "dark", "p05", "<", 0.1)
         self.assertEqual(list(h), [True, False])
 
-    def test_physics_extract_keys(self):
+    def test_frame_bytes_raises(self):
+        # I1: fail-loud — missing file and bad window raise, never NaN dicts.
         from jadal.perpixel import physics as P
-        rng = np.random.RandomState(5)
-        fr = np.clip(rng.randn(24, 45, 80, 3) * 0.08 + 0.5, 0, 1)
-        d = P.extract_physics(fr, 10.0, "/nonexistent.mp4", 0, 2.4)
-        for k in P.PHYSICS_FEATURES:
-            self.assertIn(k, d)
-        self.assertGreaterEqual(d["clip_frac"], 0.0)
+        with self.assertRaises(FileNotFoundError):
+            P.frame_bytes("/nonexistent_pr72.mp4", 0, 10.0)
+        with self.assertRaises(FileNotFoundError):
+            P.extract_physics(
+                __import__("numpy").zeros((8, 45, 80, 3)),
+                10.0, "/nonexistent_pr72.mp4", 0, 1.0)
+
+    def test_fit_length_no_tiling(self):
+        # I4: short series are zero-padded, never tiled.
+        from jadal.perpixel import series as S
+        import numpy as np
+        a = np.arange(24 * 8, dtype=float).reshape(24, 8)
+        b = S.fit_length(a, 100)
+        self.assertEqual(b.shape, (100, 8))
+        np.testing.assert_array_equal(b[24:], np.zeros((76, 8)))
+        np.testing.assert_array_equal(b[:24], a)
+        c = S.fit_length(np.ones((150, 8)), 100)
+        self.assertEqual(c.shape, (100, 8))
 
     def test_dhash_hamming(self):
         from jadal.perpixel import physics as P
         rng = np.random.RandomState(6)
         g = np.clip(0.5 + rng.randn(90, 160) * 0.05, 0, 1)
         self.assertEqual(P._ham(P.dhash(g), P.dhash(g.copy())), 0)
+
+
+class TestScorerContract(unittest.TestCase):
+    """I7: scorer decisions/digest/config on a tiny synthetic clip."""
+
+    @classmethod
+    def setUpClass(cls):
+        import subprocess
+        import tempfile
+        cls.tmp = tempfile.mkdtemp(prefix="perpixel_test_")
+        cls.clip = os.path.join(cls.tmp, "tiny.mp4")
+        p = subprocess.run(
+            ["ffmpeg", "-hide_banner", "-v", "error", "-f", "lavfi",
+             "-i", "testsrc=size=64x48:rate=5:duration=3",
+             "-pix_fmt", "yuv420p", "-c:v", "mpeg4", cls.clip],
+            capture_output=True, timeout=120)
+        if p.returncode != 0 or not os.path.exists(cls.clip):
+            raise unittest.SkipTest("ffmpeg testsrc encode unavailable")
+
+    def test_config_thresholds_present(self):
+        import json
+        cfg = json.load(open("configs/perpixel_v1.json"))
+        self.assertEqual(
+            sorted(r["name"] for r in cfg["quality_stage"]["rules"]),
+            ["blur", "lowent", "ten"])
+        for r in cfg["quality_stage"]["rules"]:
+            self.assertIn("thr_int", r)
+            self.assertIsInstance(r["thr_int"], int)
+        self.assertIn("loop_tripwire", cfg)
+        self.assertTrue(cfg["activity"]["weights_sha256"])
+        self.assertTrue(cfg["activity"]["weights"].endswith(".json"))
+
+    def test_digest_repeat_identical(self):
+        from jadal.perpixel import scorer as SC
+        a = SC.score(self.clip, 0, 2.0)
+        b = SC.score(self.clip, 0, 2.0)
+        self.assertEqual(a["features_digest"], b["features_digest"])
+        self.assertEqual(len(a["features_digest"]), 64)
+        self.assertEqual(a["decision"], b["decision"])
+        for k in ("value", "op", "threshold"):
+            self.assertIn(k, a["reasons"]["lowent"])
+
+    def test_mv_excluded_from_digest(self):
+        import json
+        cfg = json.load(open("configs/perpixel_v1.json"))
+        self.assertIn("B_mv_per_frame", cfg.get("digest_exclude", []))
+
+    def test_duplicate_wired(self):
+        from jadal.perpixel import scorer as SC
+        a = SC.score(self.clip, 0, 2.0)
+        self.assertIn("loop_tripwire", a["reasons"])
+        self.assertIn("hit", a["reasons"]["loop_tripwire"])
+        self.assertIn("threshold", a["reasons"]["duplicate"])
 
 
 class TestDupSim(unittest.TestCase):

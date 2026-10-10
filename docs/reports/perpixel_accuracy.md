@@ -47,7 +47,8 @@ Regenerate: `PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/perpixel
 - Activity (good 100 vs NO_ACTIVE_WORK 23 + HANDS_NOT_VISIBLE 14), nested LOCO:
   L2-logistic **0.673 [0.55, 0.82]**, HistGradientBoosting **0.758
   [0.57, 0.87]**. Per-reason recall at 5% FRR (LR): GOOD kept 0.95,
-  HANDS_NOT_VISIBLE 0.286, NO_ACTIVE_WORK 0.217. Per-clip LR AUROC: desk 0.929,
+  HANDS_NOT_VISIBLE 0.286, NO_ACTIVE_WORK 0.217 (descriptive: pooled-OOF
+  threshold evaluated on the same scores — fix round 1/I5). Per-clip LR AUROC: desk 0.929,
   ecu_full 0.870, ecu_late **0.425**, logistics4 0.857, organise 0.907,
   pallet **0.407**, pallet2 0.500 — learned direction flips on 2–3 clips
   (AUROC < 0.5 = no transfer, not an inverse feature).
@@ -192,7 +193,8 @@ frozen conv1d activity score (seed 0, threshold 0.362 at refit-all 5% FRR).
 Digest excludes `B_mv_per_frame` (ffmpeg MV debug counts vary run to run —
 measured 1597.8 vs 1593.4; feature kept, never hashed). Receipts
 (`freeze_receipts.json`): 3× repeats identical digests + decisions on 2
-windows (GOOD/GOOD, probs 0.6715/0.8799); theory 10× + threads-1v8 identical.
+windows (g001 GOOD 0.6715; g000 BAD:loop 0.0 — loop-tripwire fires on the
+still, self-similar window); theory 10× + threads-1v8 identical.
 Compare table: `eval/results/perpixel/compare.json` (conv 0.782 vs HGB 0.758
 vs physics-LR 0.715 vs m1-LR 0.673; 7-rule list rejected as decider).
 
@@ -214,3 +216,73 @@ pipeline: it is a verification-grade scorer, not the streaming tier.
   most of the gap (expected).
 - Duplicate threshold from constructed pairs over-flags real windows.
 - Nothing generalises beyond IndEgo until the frozen Egocentric-10K scoring.
+
+## Rebuild manifest (fix round 1/M5)
+
+Absolute input dir: `/home/parshu/projects/jadal-qa-wt/spectral_data`
+(manifests + videos, read-only, outside git). Committed binaries rebuild by:
+`eval/perpixel/make_table.py` → gold/synth/series/dup_sigs/meta;
+`eval/perpixel/detectors.py` → m2.json; `theory_clean.py` → theory.json +
+theory_feats.npz; `physics_run.py` → physics.json + physics_feats.npz;
+`rules_fix.py` → rulelist.json; `audit.py` → audit.json + review_queue.json;
+`train_conv_frozen.py` → configs/perpixel_conv.{pt,json};
+`freeze_v2.py` → configs/perpixel_v1.json (+ canonical sha) + compare.json;
+`receipts.py` → freeze_receipts.json; `cost.py` → cost.json;
+`ego10k_score.py` → ego10k.json (placeholder until the human sample lands).
+
+## Fix round 1 (review `reviews/pr72-review.md`)
+
+Real command outputs (abridged; full logs alongside the JSONs):
+- C1 unsafe deserialisation: FIXED. Conv weights now `configs/perpixel_conv.json`
+  (plain floats, no pickle); scorer hash-verifies `weights_sha256` BEFORE use
+  and refuses on mismatch; model cached (no per-call `torch.load`, no global
+  seed/thread mutation). `np.load` switched to `allow_pickle=False` everywhere
+  except ragged `series_gold.npz`, which is validated element-wise on load
+  (`detectors.load_series`); `theory_feats.npz:F` converted from object-dicts
+  to an int64 fixed-point matrix (verified reload with `allow_pickle=False`).
+- C2 series selection leak: FIXED. `(kind,epochs)` max-selection deleted;
+  `(conv,40)` pre-specified as a fixed capacity prior, docstring says so, and
+  `m2.json:series` re-ran under it (series_rerun.log). 0.782 is now the LOCO
+  estimate of a fixed procedure (unbiased); freezing conv over HGB is stated
+  as a judgment call (point estimate + determinism receipts, overlapping CIs).
+- I1 silent fallbacks: FIXED. `frame_bytes` raises `FileNotFoundError` /
+  `RuntimeError` on missing file, ffprobe rc, unparseable output, or <3
+  in-window packets. Test `test_frame_bytes_raises` asserts the raise; the
+  old succeed-on-`/nonexistent.mp4` test is gone. (`jadal/spectral`
+  `compressed_stats` swallowing is read-only / another worker's — noted, not
+  touched.)
+- I2 duplicate in frozen scorer: WIRED as single-window loop-tripwire
+  (`dhash_loop_min <= 4 AND still_run > 0.5`, frozen ints, evidence attached);
+  cross-window corpus-NN stays offline (M2, same threshold). Config + report
+  downgrade the frozen claim to quality + activity + loop-tripwire.
+- I3 determinism receipts: PARTLY REBUTTED, partly fixed. The `6438cfc1…`
+  claim IS backed — `theory.json:rule_list.determinism`
+  (`repeats_identical: true`, `threads_1_vs_8_identical: true`; reviewer
+  checked top-level keys only). Real gaps fixed: `eval/perpixel/receipts.py`
+  is now the in-repo writer of `freeze_receipts.json` with full 64-hex
+  digests (re-ran; receipts2.log).
+- I4 `np.resize` tiling: FIXED. `jadal/perpixel/series.fit_length`
+  (truncate + zero-pad) used by scorer, detectors, and frozen training. All
+  150 gold windows are T=100 (verified counter), so frozen weights are
+  unaffected; padding path covered by `test_fit_length_no_tiling`.
+- I5 pooled thresholds: LABELLED. Activity per-reason recalls now carry the
+  same descriptive caveat as the quality sens@5%FAR (this section, M2).
+- I6 Ego10K holdout: protocol script `eval/perpixel/ego10k_score.py` +
+  placeholder `eval/results/perpixel/ego10k.json`. Record: the audit probe
+  read Ego10K *embeddings + AI labels* for noise diagnosis only; frozen
+  weights/thresholds/decisions never saw Ego10K; no Ego10K human label exists
+  yet. No re-freeze (nothing trained on Ego10K).
+- I7 tests: ADDED `TestScorerContract` (synthetic ffmpeg clip: digest-repeat
+  identical + 64-hex, config thresholds + int evidence, MV-exclusion,
+  duplicate wiring) plus raise/pad unit tests. `tests/test_perpixel.py`: 16
+  tests OK. Full suite re-run below.
+- M1: `meta.json` "27 GPU" → 26 (code has 26).
+- M2: `freeze_v2.py` reads stage numbers from `rulelist.json`
+  (`rules_fix.py` now stores `stage_lowent_blur_ten`).
+- M3: `.sha256` now covers the canonical payload excluding `created_utc` /
+  `git_sha`; re-freeze hash `edb61f7c…` (previous `27b350ac…` covered the
+  volatile envelope — superseded, reason recorded here).
+- M4: scorer loads the net once (module cache), no per-call global torch
+  mutation.
+- Full suite: `PYTHONNOUSERSITE=1 timeout 250 .../python -m unittest discover
+  -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'` → (see below).

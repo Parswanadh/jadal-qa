@@ -11,9 +11,14 @@ Protocols (all nested leave-one-clip-out; NOTHING chosen on the test clip):
       Synth eval = transfer: rule refit on ALL gold, applied to synth (labelled).
  (ii) DUPLICATE: threshold chosen on held-out half of constructed pairs,
       checked on human labels (flag rate of the 6 DUPLICATE + NN table).
- (iii) ACTIVITY: good vs {NO_ACTIVE_WORK, HANDS_NOT_VISIBLE}; L2-logistic /
-      HGB / tiny 1D-conv|GRU; feature subset + hparams + Platt calibration all
-      chosen INSIDE train clips (inner LOCO). Clip-bootstrap CIs.
+  (iii) ACTIVITY: good vs {NO_ACTIVE_WORK, HANDS_NOT_VISIBLE}; L2-logistic /
+       HGB with feature subset + hparams + Platt calibration chosen INSIDE
+       train clips (inner LOCO); tiny 1D-conv with PRE-SPECIFIED arch/epochs
+       (conv, 40 — fixed capacity prior, no selection; its LOCO number is
+       unbiased for that fixed procedure). Clip-bootstrap CIs.
+       (Fix round 1 / C2: an earlier draft selected (kind, epochs) by max
+       outer-LOCO AUROC — a leak, since every test clip voted on the
+       selection. Removed; (conv,40) is now fixed up-front.)
 """
 from __future__ import annotations
 
@@ -30,6 +35,8 @@ from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
 from sklearn.linear_model import LogisticRegression  # noqa: E402
 from sklearn.metrics import roc_auc_score  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
+
+from jadal.perpixel import series as S  # noqa: E402
 
 SPEC_DIR = "/home/parshu/projects/jadal-qa-wt/spectral_data"
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -55,8 +62,25 @@ QUALITY_CANDS = [
 
 
 def load_npz(name):
-    z = np.load(os.path.join(RES, name), allow_pickle=True)
+    # C1: pickle-free loads (gold/synth arrays are plain numeric/unicode).
+    z = np.load(os.path.join(RES, name), allow_pickle=False)
     return {k: z[k] for k in z.files}
+
+
+def load_series():
+    """series_gold.npz is ragged (variable T) -> object array of ndarrays.
+
+    Keep allow_pickle=True (unavoidable for ragged storage) but validate:
+    every element must be a 2-D float ndarray with 8 columns. Plain ndarrays
+    carry no executable payload; anything else raises instead of loading on.
+    """
+    z = np.load(os.path.join(RES, "series_gold.npz"), allow_pickle=True)
+    S = z["S"]
+    assert len(S) == len(z["ids"]), "series/ids length mismatch"
+    for s in S:
+        assert isinstance(s, np.ndarray) and s.ndim == 2 and s.shape[1] == 8, \
+            f"unexpected series element {type(s)}"
+    return z
 
 
 def youden_thr(v, y):
@@ -441,7 +465,7 @@ def run_series_model(gold):
     torch.manual_seed(SEED)
     torch.use_deterministic_algorithms(True)
     torch.set_num_threads(1)
-    z = np.load(os.path.join(RES, "series_gold.npz"), allow_pickle=True)
+    z = load_series()
     s_ids = [str(i) for i in z["ids"]]
     Slist = z["S"]
     ids = [str(i) for i in gold["ids"]]
@@ -453,7 +477,7 @@ def run_series_model(gold):
     keep = [i for i, m in zip(ids, mask) if m]
     smap = {i: np.asarray(s, dtype=np.float64) for i, s in zip(s_ids, Slist)}
     T = 100
-    Xa = np.stack([np.resize(smap[i], (T, 8)) for i in keep])
+    Xa = np.stack([S.fit_length(smap[i], T) for i in keep])
     # standardise per channel on train only inside folds (store global mu/sd per fold)
     ya = np.array([y for y, m in zip(y_all, mask) if m])
     cla = [c for c, m in zip(clips, mask) if m]
@@ -505,13 +529,12 @@ def run_series_model(gold):
                 ps[~tr] = torch.sigmoid(o).numpy()
         return ps
 
-    # inner selection of (kind, epochs) on seed 0, then multi-seed report
-    inner = {}
-    for kind in ("conv", "gru"):
-        for ep in (20, 40):
-            ps = run_fold(kind, ep, SEED)
-            inner[(kind, ep)] = auroc(ya, ps)
-    best = max(inner, key=lambda k: (np.nan_to_num(inner[k], nan=-1)))
+    # C2: (kind, epochs) = PRE-SPECIFIED ("conv", 40). Selecting by max over
+    # outer-LOCO scores leaks every test clip into the choice, so there is no
+    # selection here at all; the LOCO AUROC below is unbiased for this fixed
+    # procedure. (An earlier draft did max-select; removed in fix round 1.)
+    best = ("conv", 40)
+    inner = {"preselected": list(best)}
     P = {}
     for seed in (0, 1, 2):
         P[seed] = run_fold(best[0], best[1], seed)

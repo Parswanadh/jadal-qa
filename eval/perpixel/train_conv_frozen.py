@@ -1,4 +1,7 @@
-"""Train final conv head on ALL activity windows (seed 0), save weights."""
+"""Train final conv head on ALL activity windows (seed 0), save weights.
+
+Writes configs/perpixel_conv.pt (local, gitignored) AND
+configs/perpixel_conv.json (committed; the scorer's artefact)."""
 import json
 import os
 import sys
@@ -8,6 +11,8 @@ import torch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__)))))
+
+from jadal.perpixel import series as S  # noqa: E402)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RES = os.path.join(os.path.dirname(HERE), "results", "perpixel")
@@ -20,6 +25,8 @@ def main():
     torch.use_deterministic_algorithms(True)
     torch.set_num_threads(1)
     z = np.load(os.path.join(RES, "series_gold.npz"), allow_pickle=True)
+    for s in z["S"]:  # C1: ragged storage needs pickle; validate contents
+        assert isinstance(s, np.ndarray) and s.ndim == 2 and s.shape[1] == 8
     smap = {str(i): np.asarray(s, dtype=np.float64)
             for i, s in zip(z["ids"], z["S"])}
     gm = json.load(open(
@@ -29,7 +36,7 @@ def main():
             if items[i]["label"] == 1
             or items[i]["reason"] in ("NO_ACTIVE_WORK", "HANDS_NOT_VISIBLE")]
     T = 100
-    Xa = np.stack([np.resize(smap[i], (T, 8)) for i in keep])
+    Xa = np.stack([S.fit_length(smap[i], T) for i in keep])
     ya = np.array([items[i]["label"] for i in keep])
     mu, sd = Xa.mean((0, 1)), Xa.std((0, 1)) + 1e-9
     Xtr = torch.tensor((Xa - mu) / sd, dtype=torch.float32).transpose(1, 2)
@@ -56,6 +63,14 @@ def main():
     torch.save({"state": net.state_dict(), "mu": mu, "sd": sd,
                 "arch": "conv1d-8x16-k5x2-pool-fc", "epochs": 40, "seed": 0,
                 "T": T, "threshold": thr, "n": len(keep)}, CFG)
+    # C1: ship JSON (no pickle in scoring); .pt kept locally only (gitignored).
+    j = {"arch": "conv1d-8x16-k5x2-pool-fc", "epochs": 40, "seed": 0, "T": T,
+         "threshold": float(thr), "n": int(len(keep)),
+         "mu": [float(v) for v in np.asarray(mu)],
+         "sd": [float(v) for v in np.asarray(sd)],
+         "state": {k: v.cpu().numpy().tolist()
+                   for k, v in net.state_dict().items()}}
+    json.dump(j, open(str(CFG).replace(".pt", ".json"), "w"))
     print("saved thr5:", round(thr, 4),
           "train_auroc:", round(float(roc_auc_score(ya, ptr)), 3), flush=True)
 

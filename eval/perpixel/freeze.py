@@ -53,22 +53,22 @@ def main():
     m2 = json.load(open(os.path.join(RES, "m2.json")))
     theory = json.load(open(os.path.join(RES, "theory.json")))
     phys = json.load(open(os.path.join(RES, "physics.json")))
-    z = np.load(os.path.join(RES, "gold.npz"), allow_pickle=True)
+    z = np.load(os.path.join(RES, "gold.npz"), allow_pickle=False)
     X = z["X"].astype(np.float64)
     names = [str(n) for n in z["names"]]
     ids = [str(i) for i in z["ids"]]
     clips = [str(c) for c in z["clips"]]
     y = z["y"].astype(int)
     rea = [str(r) for r in z["reasons"]]
-    zt = np.load(os.path.join(RES, "theory_feats.npz"), allow_pickle=True)
+    zt = np.load(os.path.join(RES, "theory_feats.npz"), allow_pickle=False)
     tids = [str(i) for i in zt["ids"]]
     def _trow(j):
         r = zt["F"][j]
-        if isinstance(r, dict):
+        if isinstance(r, dict):  # legacy object form
             return np.array([r[k] for k in T.THEORY_FEATURES]) / 1e4
-        return np.asarray(r, dtype=np.float64)
+        return np.asarray(zt["F"][j], dtype=np.float64) / 1e4
     tmap = {i: _trow(j) for j, i in enumerate(tids)}
-    zp = np.load(os.path.join(RES, "physics_feats.npz"), allow_pickle=True)
+    zp = np.load(os.path.join(RES, "physics_feats.npz"), allow_pickle=False)
     pids = [str(i) for i in zp["ids"]]
     pmap = {i: np.asarray(zp["X"][j], dtype=np.float64)
             for j, i in enumerate(pids)}

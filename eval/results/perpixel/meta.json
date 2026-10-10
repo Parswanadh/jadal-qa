@@ -8,7 +8,7 @@
  },
  "feature_groups": {
   "B_*": "40 arm-B T1 scalars (8 families); units per docs/reports/spectral_features.md",
-  "G_*": "27 GPU CPU-reference scalars (jadal/gpu/features.py FEATURE_NAMES); luma fractions in [0,1], energies raw, shift in px, illum normalised",
+  "G_*": "26 GPU CPU-reference scalars (jadal/gpu/features.py FEATURE_NAMES); luma fractions in [0,1], energies raw, shift in px, illum normalised",
   "P_*": "jadal/perpixel/series.py descriptors: band fractions of non-DC energy, entropy nats/ln(nbins), ac peak/lag(frames), burstiness=std/|mean|, motion floor=median+MAD of diff_e, still_run_frac, shift px@160x90, saturation fractions, dct_hf log1p-mean"
  },
  "series_channels": [

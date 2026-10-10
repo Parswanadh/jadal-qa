@@ -27,6 +27,11 @@
   },
   "beats_trivial": true
  },
+ "stage_lowent_blur_ten": {
+  "sens": 0.7142857142857143,
+  "frr": 0.13,
+  "bal": 0.7921428571428573
+ },
  "fold_thresholds": {
   "desk": {
    "dark": 0.0087,

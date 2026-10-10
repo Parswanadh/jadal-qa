@@ -148,17 +148,17 @@ def main():
     out["activity"] = {"physics_only": {"auroc": aa, "ci": ca_}}
     # --- combined: M1 121 + theory 18 + physics 16 (needs theory_feats.npz)
     try:
-        z = np.load(os.path.join(RES, "gold.npz"), allow_pickle=True)
+        z = np.load(os.path.join(RES, "gold.npz"), allow_pickle=False)
         zids = [str(i) for i in z["ids"]]
         zmap = {i: z["X"][j].astype(np.float64) for j, i in enumerate(zids)}
-        zt = np.load(os.path.join(RES, "theory_feats.npz"), allow_pickle=True)
+        zt = np.load(os.path.join(RES, "theory_feats.npz"), allow_pickle=False)
         tids = [str(i) for i in zt["ids"]]
         from jadal.perpixel import theory as _T
         def _trow(j):
             r = zt["F"][j]
-            if isinstance(r, dict):
+            if isinstance(r, dict):  # legacy object form
                 return np.array([r[k] for k in _T.THEORY_FEATURES]) / 1e4
-            return np.asarray(r, dtype=np.float64)
+            return np.asarray(zt["F"][j], dtype=np.float64) / 1e4
         tmap = {i: _trow(j) for j, i in enumerate(tids)}
         Xc = np.array([np.concatenate([zmap[i], tmap[i], PX[j]])
                        for j, i in enumerate(order)])
