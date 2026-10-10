@@ -169,7 +169,36 @@ good windows — is **confirmed independently, and is in fact worse than publish
 should either be re-derived from a recovered artifact or restated from this recomputation with its own
 provenance.
 
-## 7. Bottom line
+## 7. A live config hazard found while verifying (merge-blocking)
+
+While checking that the PoC integration can actually load its model, I found a real, currently-broken
+code path on `pod/base` and on every branch I tested (`b-verify`, `b-poc-integrate`, `b-ood-ready`):
+
+```
+$ cd /workspace/wt/b-verify && python -c "from jadal.ensemble.scorer import load_config; load_config()"
+ValueError: config sha256 mismatch:
+  d62a95a473a31085444371f83003b4b0bd020bb0f2f5c13a379d20d9bded8533
+  != 4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31
+```
+
+This is the §5 drift biting the runtime: `jadal/ensemble/scorer.py` hashes the config and compares it to
+`configs/ensemble_v1.json.sha256`, which still records the *frozen* hash, while the shipped config is the
+path-remapped file. So **`load_config()` raises on the default path today** — any caller that omits an
+explicit config path is broken, including PoC/re-score paths.
+
+Worse in the other direction: the LB2 integration's own loader
+(`jadal/poc_stream/policy.py: load_frozen_ensemble()`) checks the model *name, threshold, fusion kind,
+weights and required fields*, but **does not check the sha256 at all** — so it loads the remapped artifact
+happily. That is exactly backwards from what a pre-registered artifact needs: the strict loader fails on a
+recoverable situation, the lenient loader silently succeeds on the artifact that is *not* the one that was
+frozen.
+
+**Recommendation (not applied by me — it is another claim's branch):** point the default config path at
+the recovered, hash-verified pre-registration `configs/frozen/ensemble_v1.prereg.json` (LB4, PR #97,
+verified `sha256 == 4da1068a…`), and make the PoC loader fail closed on that hash. Until then, no number
+produced through the default config path should be treated as coming from the frozen scorer.
+
+## 8. Bottom line
 
 Every quantitative claim in the **LB1 core scope** reproduced **exactly** (20/20 rows), including the two
 baselines, the full E1.01/E1.02 frame-rate sweeps, and the whole E3.01–E3.05 temporal-policy chain. The
