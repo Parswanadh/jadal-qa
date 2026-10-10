@@ -1,0 +1,57 @@
+{
+ "experiment": "N5.02",
+ "label_source": "human (160 Egocentric-10K windows; third-party, not published)",
+ "protocol": "frozen vs sparse-refit heads on the 160 OOD windows; factory-grouped bootstrap B=2000 seed0",
+ "device": "A40",
+ "frozen_scores_available": 160,
+ "frozen_features": {
+  "tag": "frozen heads / frozen features",
+  "n": 160,
+  "n_good": 138,
+  "n_bad": 22,
+  "n_groups": 47,
+  "auroc": 0.566,
+  "group_ci95": [
+   0.4139,
+   0.6974
+  ],
+  "balacc@0.5": 0.5464,
+  "mean_good": 0.5673,
+  "mean_bad": 0.5134
+ },
+ "sparse_frozen_heads": {
+  "tag": "frozen heads / sparse features",
+  "n": 160,
+  "n_good": 138,
+  "n_bad": 22,
+  "n_groups": 47,
+  "auroc": 0.6347,
+  "group_ci95": [
+   0.4596,
+   0.7839
+  ],
+  "balacc@0.5": 0.5596,
+  "mean_good": 0.7026,
+  "mean_bad": 0.6034
+ },
+ "sparse_refit": {
+  "tag": "sparse-refit heads / sparse features",
+  "n": 160,
+  "n_good": 138,
+  "n_bad": 22,
+  "n_groups": 47,
+  "auroc": 0.5231,
+  "group_ci95": [
+   0.3726,
+   0.6929
+  ],
+  "balacc@0.5": 0.5303,
+  "mean_good": 0.4633,
+  "mean_bad": 0.4601
+ },
+ "deltas": {
+  "sparse_frozen_heads_minus_frozen": 0.0687,
+  "sparse_refit_minus_frozen": -0.0429,
+  "interpretation": "frozen heads on sparse features reproduce the L3 shift out-of-domain; the sparse-refit head must keep OOD AUROC within the grouped CI of the frozen head"
+ }
+}
