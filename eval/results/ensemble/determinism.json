@@ -1,0 +1,42 @@
+{
+ "g000": {
+  "clip": "ecu_full",
+  "identical": true,
+  "n_digests": 1,
+  "usable_prob": 0.3809,
+  "verdict": "reject",
+  "digest": "bd0b56e99e03c3980b05916f6ffb5f8e81496c5aa735ca906fd9d6c609c4923f"
+ },
+ "g029": {
+  "clip": "ecu_full",
+  "identical": true,
+  "n_digests": 1,
+  "usable_prob": 0.9455,
+  "verdict": "accept",
+  "digest": "01922521c39a56ccb517cf9b5f1ffa3c819463b3f9249c3c9e4fa1268aa41de1"
+ },
+ "g100": {
+  "clip": "pallet",
+  "identical": true,
+  "n_digests": 1,
+  "usable_prob": 0.1676,
+  "verdict": "reject",
+  "digest": "edc5b7124dc2d4248f1bee692d675457b0c17abdf63a8d3e96e954d42e588b0f"
+ },
+ "g120": {
+  "clip": "organise",
+  "identical": true,
+  "n_digests": 1,
+  "usable_prob": 0.929,
+  "verdict": "accept",
+  "digest": "0b4c6f4168dc15ae01818c1c93c32f92f374adbda4fc85756954014d01327501"
+ },
+ "g140": {
+  "clip": "logistics4",
+  "identical": true,
+  "n_digests": 1,
+  "usable_prob": 0.4946,
+  "verdict": "review",
+  "digest": "8670196d004f81893870e85734252e0c721c89e093588cc6000896f73105b12d"
+ }
+}
