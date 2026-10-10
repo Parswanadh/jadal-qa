@@ -19,6 +19,8 @@ class ExpRegistryTest(unittest.TestCase):
 
     def test_new_finish_render_in_temp_dir(self):
         t0 = time.monotonic()
+        repo_reg = REPO / "experiments" / "registry.jsonl"
+        repo_before = repo_reg.read_bytes()
         with tempfile.TemporaryDirectory() as tmp:
             env = dict(os.environ, JADAL_EXP_DIR=tmp)
             r = self.run_exp(env, "new", "--id", "T0.01", "--track", "T0", "--title", "unit test",
@@ -41,6 +43,8 @@ class ExpRegistryTest(unittest.TestCase):
             self.assertEqual(second["verdict"], "inconclusive")
             self.assertTrue(Path(tmp, "T0.01", "README.md").exists())
             self.assertTrue(Path(tmp, "EXPERIMENTS.md").exists())
+        # The committed registry must be untouched by a test run.
+        self.assertEqual(repo_reg.read_bytes(), repo_before)
         self.assertLess(time.monotonic() - t0, 5.0)
 
     def test_unknown_id_is_refused(self):
@@ -48,10 +52,6 @@ class ExpRegistryTest(unittest.TestCase):
             env = dict(os.environ, JADAL_EXP_DIR=tmp)
             r = self.run_exp(env, "finish", "--id", "X9.99", "--verdict", "drop", "--summary", "s")
             self.assertNotEqual(r.returncode, 0)
-
-    def test_repo_registry_is_untouched(self):
-        # The committed registry must stay empty: tests never write to it.
-        self.assertEqual((REPO / "experiments" / "registry.jsonl").stat().st_size, 0)
 
 
 if __name__ == "__main__":

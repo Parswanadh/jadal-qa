@@ -43,11 +43,11 @@ This page is the protocol for every experiment in Jadal QA. It applies to a new 
 
 **Question.** Could the first part of an IndEgo clip be skipped, because it is usually setup and not work? The idea would save decode time.
 
-**Why it was run.** The first minutes of a clip were suspected to be setup, with more bad windows than the rest. If so, a skip rule would be cheap and remove mostly bad windows.
+**Why it was run.** (Owner to confirm.) The first minutes of a clip were suspected to be setup, with more bad windows than the rest. If so, a skip rule would remove mostly bad windows.
 
-**Hypothesis and criterion (written before the run).** The first 120 s has a clearly higher bad-window rate than the rest of the clip. Skipping is supported only if that holds. Neighbouring windows must also agree more than chance, so the labels are not noise.
+**Hypothesis and criterion.** (Owner to confirm that these were written before the run.) The first 120 s has a clearly higher bad-window rate than the rest of the clip. Skipping is supported only if that holds. Neighbouring windows must also agree more than chance, so the labels are not noise.
 
-**Data and labels.** IndEgo clips (CC BY 4.0 per `docs/ATTRIBUTIONS.md`), with the human gold labels. Regime: IndEgo ECU-assembly footage. It is not Awign footage.
+**Data and labels.** IndEgo clips (CC BY 4.0 per `docs/ATTRIBUTIONS.md`). Label source: owner to confirm which labels were used (the repo's 150 human gold labels are one candidate; this is not confirmed on this branch). Regime: IndEgo ECU-assembly footage. It is not Awign footage.
 
 **Results (owner-supplied figures; the results JSON is not on this branch yet).**
 
@@ -56,7 +56,7 @@ This page is the protocol for every experiment in Jadal QA. It applies to a new 
 
 **Verdict: `drop`.** The criterion was not met. On IndEgo the first 120 s is not the bad part of the clip; it is cleaner than the rest. Skipping it would discard the cleaner windows and keep the bad ones. Skipping the start is not supported on IndEgo. The negative result stays in the log.
 
-**What it does not show.** It is one dataset, from a few wearers, with labels from one labeller. It does not show that the start is clean on other footage, and it does not measure the decode time a skip would save. Before this is cited, the results JSON with `n`, the per-window labels and the CI must be committed, and the registry line must point to it. Until then the figures above are not backed by a file on this branch.
+**What it does not show.** It is one dataset, and the label source and wearer count are as the owner confirms. It does not show that the start is clean on other footage, and it does not measure the decode time a skip would save. Before this is cited, the results JSON with `n`, the per-window labels and the CI must be committed, and the registry line must point to it. Until then the figures above are not backed by a file on this branch.
 
 **Registry line (the shape, after `finish`).**
 
