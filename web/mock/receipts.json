@@ -1272,7 +1272,7 @@
     "created_utc": "2026-10-10T09:51:17Z",
     "receipt_sha256": "735ac0499bbc93aabfab04078a112b2e05b1ff16d2e438467e556418702ea71d"
   },
-  "fd59bfc186a5f846": {
+  "5362ccbe42202a63": {
     "segment_sha256": "6f7b5f964bca54e92adb7893161a267311f4cd631282fb4fea28108d4c1552e9",
     "signals": {
       "decodable": true,
@@ -1314,9 +1314,10 @@
     },
     "verdict": {
       "segment_id": "seg_20261010_0950_204",
-      "verdict": "reject",
+      "verdict": "review",
       "reasons": [
-        "OVEREXPOSED"
+        "OVEREXPOSED",
+        "LOW_CONFIDENCE"
       ],
       "answer_conf": 0.27,
       "threshold": 0.5
@@ -1344,9 +1345,9 @@
         }
       }
     },
-    "receipt_id": "fd59bfc186a5f846",
+    "receipt_id": "5362ccbe42202a63",
     "created_utc": "2026-10-10T09:51:38Z",
-    "receipt_sha256": "fd59bfc186a5f84629612ec8a352670b89ebd21ca34a87043b33e4aba5c97f23"
+    "receipt_sha256": "5362ccbe42202a63aa81d73dd2991e111fc0de1c8f29dd52fc18f1feea6ebc33"
   },
   "887185f4945b2ef0": {
     "segment_sha256": "875b1599225f0b60b4cfa8b55469c8ad8c2d59e77b08f53eea92ce907f9e162d",

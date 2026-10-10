@@ -181,7 +181,7 @@ def build() -> None:
                 ("accept", [], "align_hem", 0.79),
                 ("accept", [], "inspect_label", 0.92),
                 ("reject", ["TOO_DARK"], None, 0.19),
-                ("reject", ["OVEREXPOSED"], None, 0.27),
+                ("review", ["OVEREXPOSED", "LOW_CONFIDENCE"], None, 0.27),
                 ("review", ["NO_ACTIVE_WORK", "LOW_CONFIDENCE"], None, 0.41),
                 ("accept", [], "pack", 0.86),
             ],
@@ -257,6 +257,8 @@ def build() -> None:
 
         rejected = sum(1 for v in verdicts if v["verdict"] == "reject")
         k = 1
+        derived = "reject" if rejected > k else "accept"
+        assert derived == decision, f"{batch_id}: rule gives {derived}, plan said {decision}"
         batches.append(
             {
                 "batch_id": batch_id,

@@ -333,7 +333,7 @@
       },
       {
         "segment_id": "seg_20261010_0950_204",
-        "receipt_id": "fd59bfc186a5f846",
+        "receipt_id": "5362ccbe42202a63",
         "worker_id": "w_deepa",
         "site_id": "site_surat_01",
         "source_clip": "clip_site_surat_01_headcam_03.mp4",
@@ -395,9 +395,10 @@
       },
       {
         "segment_id": "seg_20261010_0950_204",
-        "verdict": "reject",
+        "verdict": "review",
         "reasons": [
-          "OVEREXPOSED"
+          "OVEREXPOSED",
+          "LOW_CONFIDENCE"
         ],
         "answer_conf": 0.27,
         "threshold": 0.5
@@ -424,7 +425,7 @@
     "rule": "reject if rejected_count > k",
     "k": 1,
     "n": 7,
-    "rejected_count": 2,
+    "rejected_count": 1,
     "created_utc": "2026-10-10T09:50:14Z"
   }
 ]
