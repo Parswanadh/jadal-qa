@@ -1,0 +1,36 @@
+{
+ "device": "RTX 4070 Laptop",
+ "chains": {
+  "A_scale_cuda_hwdownload_gray": {
+   "rc": 234,
+   "bytes": 0,
+   "stderr": "or hwframe download.\n[Parsed_hwdownload_1 @ 0x59205cb9e800] Failed to configure output pad on Parsed_hwdownload_1\n[vf#0:0 @ 0x59205cacf540] Error reinitializing filters!\nFailed to inject frame into filter network: Invalid argument\nError while filtering: Invalid argument\n[out#0/rawvideo @ 0x59205cb14f00] Nothing was written into output file, because at least one of its streams received no packets.\n"
+  },
+  "B_scale_cuda_nv12": {
+   "rc": 0,
+   "bytes": 1080000,
+   "stderr": ""
+  },
+  "C_cuvid_hwdownload_cpu_scale": {
+   "rc": 218,
+   "bytes": 0,
+   "stderr": "the formats supported by the filter 'graph 0 input from stream 0:0' and the filter 'auto_scale_0'\n[vf#0:0 @ 0x6302b4285540] Error reinitializing filters!\nFailed to inject frame into filter network: Function not implemented\nError while filtering: Function not implemented\n[out#0/rawvideo @ 0x6302b42caf40] Nothing was written into output file, because at least one of its streams received no packets.\n"
+  },
+  "D_hwaccel_only": {
+   "rc": 0,
+   "bytes": 720000,
+   "stderr": ""
+  },
+  "E_hwdownload_fullres": {
+   "rc": 234,
+   "bytes": 0,
+   "stderr": "or hwframe download.\n[Parsed_hwdownload_0 @ 0x648eb4e1eac0] Failed to configure output pad on Parsed_hwdownload_0\n[vf#0:0 @ 0x648eb4dde540] Error reinitializing filters!\nFailed to inject frame into filter network: Invalid argument\nError while filtering: Invalid argument\n[out#0/rawvideo @ 0x648eb4e23f00] Nothing was written into output file, because at least one of its streams received no packets.\n"
+  },
+  "F_scale_cuda_rgb24": {
+   "rc": 218,
+   "bytes": 0,
+   "stderr": "gb24\n[Parsed_scale_cuda_0 @ 0x63adfc27e840] Failed to configure output pad on Parsed_scale_cuda_0\n[vf#0:0 @ 0x63adfc086540] Error reinitializing filters!\nFailed to inject frame into filter network: Function not implemented\nError while filtering: Function not implemented\n[out#0/rawvideo @ 0x63adfc0cbf00] Nothing was written into output file, because at least one of its streams received no packets.\n"
+  }
+ },
+ "regenerate": "flock ... /home/parshu/envs/jadal/bin/python eval/gpu/nvdec_probe.py"
+}
