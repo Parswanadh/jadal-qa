@@ -29,7 +29,7 @@ to pick, per data regime.
 ## Regenerate
 
 ```bash
-export JADAL_BUNDLE=/workspace/jadal_pod_bundle OMP_NUM_THREADS=1
+export JADAL_BUNDLE=/path/to/jadal_bundle OMP_NUM_THREADS=1
 bash eval/exp_fps/run_all.sh          # ~20 min on the A40 pod, 6 procs; ends with
                                       # pareto.py --reps 3 --benches 3 (the command in pareto.json)
 ```
