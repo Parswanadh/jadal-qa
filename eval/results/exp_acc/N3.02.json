@@ -1,0 +1,329 @@
+{
+ "device": "CPU (numpy/sklearn; cached features only, no GPU)",
+ "domains": {
+  "indego_loco": {
+   "n": 150,
+   "n_bad": 50,
+   "n_good": 100,
+   "scorers": {
+    "adapted": {
+     "accept_share": 0.64,
+     "auroc": 0.6842,
+     "auroc_ci95_grouped": [
+      0.5157,
+      0.7778
+     ],
+     "balacc_band_as_accept": 0.685,
+     "balacc_band_as_reject": 0.555,
+     "balacc_decided_only": 0.7042,
+     "err_decided_only": 0.2766,
+     "n_review": 56,
+     "review_share": 0.3733
+    },
+    "frozen": {
+     "accept_share": 0.6333,
+     "auroc": 0.8336,
+     "auroc_ci95_grouped": [
+      0.7185,
+      0.9133
+     ],
+     "balacc_band_as_accept": 0.755,
+     "balacc_band_as_reject": 0.78,
+     "balacc_decided_only": 0.8493,
+     "err_decided_only": 0.1466,
+     "n_review": 34,
+     "review_share": 0.2267
+    },
+    "route_aspect_or_quality": {
+     "accept_share": 0.64,
+     "auroc": 0.6707,
+     "auroc_ci95_grouped": [
+      0.5101,
+      0.7507
+     ],
+     "balacc_band_as_accept": 0.68,
+     "balacc_band_as_reject": 0.55,
+     "balacc_decided_only": 0.6949,
+     "err_decided_only": 0.2872,
+     "n_review": 56,
+     "review_share": 0.3733,
+     "route_share": {
+      "adapted": 0.86,
+      "rules": 0.14
+     }
+    },
+    "route_aspect_wide": {
+     "accept_share": 0.58,
+     "auroc": 0.8222,
+     "auroc_ci95_grouped": [
+      0.7126,
+      0.855
+     ],
+     "balacc_band_as_accept": 0.745,
+     "balacc_band_as_reject": 0.725,
+     "balacc_decided_only": 0.7738,
+     "err_decided_only": 0.2188,
+     "n_review": 22,
+     "review_share": 0.1467,
+     "route_share": {
+      "rules": 1.0
+     }
+    },
+    "route_fps_ge25": {
+     "accept_share": 0.58,
+     "auroc": 0.8222,
+     "auroc_ci95_grouped": [
+      0.7126,
+      0.855
+     ],
+     "balacc_band_as_accept": 0.745,
+     "balacc_band_as_reject": 0.725,
+     "balacc_decided_only": 0.7738,
+     "err_decided_only": 0.2188,
+     "n_review": 22,
+     "review_share": 0.1467,
+     "route_share": {
+      "rules": 1.0
+     }
+    },
+    "route_profile_factory": {
+     "accept_share": 0.58,
+     "auroc": 0.8222,
+     "auroc_ci95_grouped": [
+      0.7126,
+      0.855
+     ],
+     "balacc_band_as_accept": 0.745,
+     "balacc_band_as_reject": 0.725,
+     "balacc_decided_only": 0.7738,
+     "err_decided_only": 0.2188,
+     "n_review": 22,
+     "review_share": 0.1467,
+     "route_share": {
+      "rules": 1.0
+     }
+    },
+    "route_quality_desc": {
+     "accept_share": 0.64,
+     "auroc": 0.6707,
+     "auroc_ci95_grouped": [
+      0.5101,
+      0.7507
+     ],
+     "balacc_band_as_accept": 0.68,
+     "balacc_band_as_reject": 0.55,
+     "balacc_decided_only": 0.6949,
+     "err_decided_only": 0.2872,
+     "n_review": 56,
+     "review_share": 0.3733,
+     "route_share": {
+      "adapted": 0.86,
+      "rules": 0.14
+     }
+    },
+    "route_rules_review_to_adapted": {
+     "accept_share": 0.5667,
+     "auroc": 0.7989,
+     "auroc_ci95_grouped": [
+      0.6277,
+      0.857
+     ],
+     "balacc_band_as_accept": 0.75,
+     "balacc_band_as_reject": 0.66,
+     "balacc_decided_only": 0.7749,
+     "err_decided_only": 0.2222,
+     "n_review": 42,
+     "review_share": 0.28,
+     "route_share": {
+      "adapted": 0.6,
+      "rules": 0.4
+     }
+    },
+    "rules": {
+     "accept_share": 0.58,
+     "auroc": 0.8222,
+     "auroc_ci95_grouped": [
+      0.7126,
+      0.855
+     ],
+     "balacc_band_as_accept": 0.745,
+     "balacc_band_as_reject": 0.725,
+     "balacc_decided_only": 0.7738,
+     "err_decided_only": 0.2188,
+     "n_review": 22,
+     "review_share": 0.1467
+    }
+   }
+  },
+  "ood160": {
+   "n": 160,
+   "n_bad": 22,
+   "n_good": 138,
+   "scorers": {
+    "adapted": {
+     "accept_share": 0.675,
+     "auroc": 0.7592,
+     "auroc_ci95_grouped": [
+      0.5971,
+      0.8855
+     ],
+     "balacc_band_as_accept": 0.6966,
+     "balacc_band_as_reject": 0.6798,
+     "balacc_decided_only": 0.75,
+     "err_decided_only": 0.2185,
+     "n_review": 41,
+     "review_share": 0.2562
+    },
+    "frozen": {
+     "accept_share": 0.4313,
+     "auroc": 0.566,
+     "auroc_ci95_grouped": [
+      0.4238,
+      0.6999
+     ],
+     "balacc_band_as_accept": 0.5,
+     "balacc_band_as_reject": 0.5,
+     "balacc_decided_only": null,
+     "err_decided_only": null,
+     "n_review": 160,
+     "review_share": 1.0
+    },
+    "route_aspect_or_quality": {
+     "accept_share": 0.675,
+     "auroc": 0.7592,
+     "auroc_ci95_grouped": [
+      0.5971,
+      0.8855
+     ],
+     "balacc_band_as_accept": 0.6966,
+     "balacc_band_as_reject": 0.6798,
+     "balacc_decided_only": 0.75,
+     "err_decided_only": 0.2185,
+     "n_review": 41,
+     "review_share": 0.2562,
+     "route_share": {
+      "adapted": 1.0
+     }
+    },
+    "route_aspect_wide": {
+     "accept_share": 0.675,
+     "auroc": 0.7592,
+     "auroc_ci95_grouped": [
+      0.5971,
+      0.8855
+     ],
+     "balacc_band_as_accept": 0.6966,
+     "balacc_band_as_reject": 0.6798,
+     "balacc_decided_only": 0.75,
+     "err_decided_only": 0.2185,
+     "n_review": 41,
+     "review_share": 0.2562,
+     "route_share": {
+      "adapted": 1.0
+     }
+    },
+    "route_fps_ge25": {
+     "accept_share": 0.6687,
+     "auroc": 0.6207,
+     "auroc_ci95_grouped": [
+      0.4678,
+      0.7499
+     ],
+     "balacc_band_as_accept": 0.5919,
+     "balacc_band_as_reject": 0.5359,
+     "balacc_decided_only": 0.7046,
+     "err_decided_only": 0.2,
+     "n_review": 110,
+     "review_share": 0.6875,
+     "route_share": {
+      "adapted": 0.375,
+      "rules": 0.625
+     }
+    },
+    "route_profile_factory": {
+     "accept_share": 0.6687,
+     "auroc": 0.6207,
+     "auroc_ci95_grouped": [
+      0.4678,
+      0.7499
+     ],
+     "balacc_band_as_accept": 0.5919,
+     "balacc_band_as_reject": 0.5359,
+     "balacc_decided_only": 0.7046,
+     "err_decided_only": 0.2,
+     "n_review": 110,
+     "review_share": 0.6875,
+     "route_share": {
+      "adapted": 0.375,
+      "rules": 0.625
+     }
+    },
+    "route_quality_desc": {
+     "accept_share": 0.6625,
+     "auroc": 0.6795,
+     "auroc_ci95_grouped": [
+      0.5068,
+      0.824
+     ],
+     "balacc_band_as_accept": 0.6719,
+     "balacc_band_as_reject": 0.6637,
+     "balacc_decided_only": 0.8134,
+     "err_decided_only": 0.1412,
+     "n_review": 75,
+     "review_share": 0.4688,
+     "route_share": {
+      "adapted": 0.7188,
+      "rules": 0.2812
+     }
+    },
+    "route_rules_review_to_adapted": {
+     "accept_share": 0.5813,
+     "auroc": 0.6597,
+     "auroc_ci95_grouped": [
+      0.5163,
+      0.8095
+     ],
+     "balacc_band_as_accept": 0.6347,
+     "balacc_band_as_reject": 0.4516,
+     "balacc_decided_only": 0.598,
+     "err_decided_only": 0.4091,
+     "n_review": 116,
+     "review_share": 0.725,
+     "route_share": {
+      "adapted": 0.3563,
+      "rules": 0.6438
+     }
+    },
+    "rules": {
+     "accept_share": 0.4375,
+     "auroc": 0.4272,
+     "auroc_ci95_grouped": [
+      0.2687,
+      0.562
+     ],
+     "balacc_band_as_accept": 0.5,
+     "balacc_band_as_reject": 0.4354,
+     "balacc_decided_only": 0.5,
+     "err_decided_only": 0.75,
+     "n_review": 156,
+     "review_share": 0.975
+    }
+   }
+  }
+ },
+ "experiment": "N3.02",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "review_proxy": "Platt-calibrated P(good) (grouped CV: LOCO gold / leave-one-factory-out OOD); REVIEW iff P in [0.4,0.6]. AUROC is computed on the raw (monotonic) rank score; calibration is only an operating-point measurement proxy.",
+ "summary_mean_domain_auroc": {
+  "adapted": 0.7217,
+  "frozen": 0.6998,
+  "route_aspect_or_quality": 0.7149,
+  "route_aspect_wide": 0.7907,
+  "route_fps_ge25": 0.7215,
+  "route_profile_factory": 0.7215,
+  "route_quality_desc": 0.6751,
+  "route_rules_review_to_adapted": 0.7293,
+  "rules": 0.6247
+ },
+ "title": "Deterministic regime router: routed system vs single scorers"
+}
