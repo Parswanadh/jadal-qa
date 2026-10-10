@@ -23,6 +23,14 @@
    "rung": "R3_nvdec_pipeline",
    "hours_per_hour": 2.9,
    "why": "NVDEC decode + scale_cuda at source + pinned H2D + batched kernels: decode and compute overlap"
+  },
+  {
+   "rung": "R3b_cpu_decode_gpu_kernels",
+   "hours_per_hour": {
+    "B8": 21.4,
+    "B32": 25.0
+   },
+   "why": "CPU ffmpeg decode (RTF~100) + H2D + batched kernels: NVDEC per-session overhead avoided at tiny frames"
   }
  ]
 }

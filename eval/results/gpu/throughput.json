@@ -58,5 +58,16 @@
   "gpus_for_10kh_in_2h": 1732.2,
   "gpus_for_10kh_in_3h": 1154.7,
   "note": "LAPTOP GPU ceiling; linear scaling only to the NVDEC/PCIe/CPU bottleneck stated in limits; NOT a datacenter claim."
- }
+ },
+ "R3b_cpufeed": {
+  "B8": {
+   "windows_s": 2.14,
+   "hours_per_hour": 21.4
+  },
+  "B32": {
+   "windows_s": 2.5,
+   "hours_per_hour": 25.0
+  }
+ },
+ "gpu_peak_vram_mib_holdB2": 3718.0
 }
