@@ -29,7 +29,10 @@ not a human-review rate.
 - A40, `--workers 7` × `OMP_NUM_THREADS=1` (the pod's cgroup CPU quota is **7.65 cores**), `JADAL_GPU_SLOTS=6`.
 - Decode: NVDEC (`-hwaccel cuda -c:v hevc_cuvid`) three-branch pass + `scale_cuda`.
 - Adopted optimizations applied: **pixel view 3.33 fps** (E1.01), **EG2 view 1 fps** (E1.02),
-  native 0.8 fps for descriptors, **every-2nd window + 4 s early exit** (E3), **mosaic off** (E2: dropped as a model input).
+  native 0.8 fps for descriptors, **4 s early exit** (E3.03), **mosaic off** (E2: dropped as a model input).
+- **All windows processed** (`--window-stride 1`, `n_selected = n_manifest = 1,546`). The E3.01
+  "every-2nd window" sampling policy was **not** applied to this run — the 19.8 h/h already covers
+  the whole corpus; every-2nd would halve the window count and is a separate operating point.
 
 ## Atomic latency (per window, p50 / p95, share)
 
@@ -80,10 +83,59 @@ CPU feature pass. The fps/mosaic optimizations removed the feature cost; decode 
 - **Deterministic physics model (Q1–Q5):** complete rule-list model + receipt determinism (Q3: **180/180
   identical receipts across 10 runs**) + full-corpus run.
 
+## Corpus, labels and how to reproduce
+
+**Corpus label.** Egocentric-10K (builddotai), 1080p/30 fps HEVC, **58 clips**,
+**1,546 windows** (all windows; each window is one 10-s segment). Manifest
+duration **4.404 h** (includes inter-window gaps); the 1,546 × 10 s of processed
+footage is **4.294 h**. Windows are **unlabelled** — this is a throughput run,
+not an accuracy run.
+
+**Config label.** A40; `--workers 7` × `OMP_NUM_THREADS=1` (7.65-core cgroup
+quota); `JADAL_GPU_SLOTS=6`; NVDEC 3-branch + `scale_cuda`;
+`--pixel-fps 3.33 --eg2-fps 1 --early-exit-s 4 --window-stride 1 --skip-mosaic
+--no-compare`. `run_meta.json.optimizations` records these exactly.
+
+**Derivation (reproducible from the committed artifacts).**
+
+```
+footage_h_per_wall_h           = manifest.total_hours / (wall_s / 3600)
+                               = 4.404 / (801.28 / 3600)      = 19.786
+processed_footage_h_per_wall_h = (n_windows*10/3600) / (wall_s/3600)
+                               = 4.294 / 0.2226               = 19.294
+windows_per_s                  = n_windows / wall_s = 1546/801.28 = 1.929
+```
+
+All three match `run_meta.json` and `summary.json` exactly.
+
+**How to reproduce the run.** The harness lives on branch `m/latency-fast`
+(`eval/exp_latency_fast/`); it imports the repo E8.01 pipeline and only wraps
+each stage with `time.perf_counter`:
+
+```bash
+source "${JADAL_ENV:-env.sh}"
+export OMP_NUM_THREADS=1 JADAL_GPU_SLOTS=6
+bash tools/pod/gpu_run.sh python3 eval/exp_latency_fast/run_fast.py \
+      --workers 7 --pixel-fps 3.33 --eg2-fps 1 --early-exit-s 4 \
+      --window-stride 1 --skip-mosaic --no-compare --resume
+python3 eval/exp_latency_fast/analyze_fast.py
+```
+
+The per-stage breakdown (decode/descriptors/EG2/pixel/mosaic/decision) needs the
+raw per-window JSONL (`m/latency-fast:eval/results/exp_latency_fast/windows.jsonl`,
+1,546 rows), which is **not** committed here; the headline rates are fully
+reproducible from the committed `run_meta.json` + `summary.json`.
+
+**Provenance note.** `run_meta.json` records the pod-specific EG2 model path
+(`pod_eg2_dir = /workspace/.cache/huggingface/...`) and the run commit
+(`git_sha = ae2df45`, not this PR's head). Both are recorded evidence; exclude
+them from any public snapshot.
+
 ## Artifacts
 
 - `eval/results/exp_benchmark/summary.json` — this report's numbers (machine-readable)
 - `eval/results/exp_benchmark/run_meta.json` — the runner's own metadata
+- `eval/results/exp_benchmark/per_clip.csv` — per-clip window counts and timings
 - raw per-window JSONL with atomic stage timings: branch `m/latency-fast`,
   `eval/results/exp_latency_fast/windows.jsonl.partial` (1,546 rows)
 - baseline partial: branch `m/latency-full`, `eval/results/exp_latency_full/` (190 windows, PR #139)
