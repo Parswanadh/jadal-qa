@@ -1,0 +1,990 @@
+{
+ "id": "Z2.01",
+ "title": "Split-conformal decision-level review/error frontier (IndEgo LOCO)",
+ "label_source": "human gold (single labeller)",
+ "protocol": "clip-grouped leave-one-clip-out split conformal on p_ens=P(good); review share = non-singleton set rate (here dominated by EMPTY sets since q>0.5); coverage=P(true label in C); clip-bootstrap (7 clips, B=2000) CI",
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "n_clips": 7,
+ "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+ "data_sha256": "d80b95e23cc39f9d",
+ "exchangeability_note": "windows within a clip are correlated: ICC(p_ens)=0.460, design-effect n_eff=14.4 (mbar=21.4); ICC(true-label conformity)=0.023. Window-level exchangeability is therefore approximate.",
+ "conformal_set_note": "q = alpha-quantile of the true-label score (alpha=1-coverage). For coverage target <~0.70, q>0.5 and the abstain set is the EMPTY set (neither label reaches q); for coverage target >~0.70, q<=0.5 and the abstain set is {ACCEPT,REJECT}. Both count as review (non-singleton).",
+ "operating_points_from_loco": {
+  "min_review_for_selective_FAR_le_5pct": null,
+  "min_review_for_marginal_FAR_le_5pct": 0.85,
+  "min_review_for_error_among_decided_le_5pct": null
+ },
+ "frontier": [
+  {
+   "n": 150,
+   "q": 0.7467160371197689,
+   "review_share": 0.6666666666666666,
+   "decided_share": 0.3333333333333333,
+   "coverage": 0.26666666666666666,
+   "false_decision_rate_marginal": 0.06666666666666667,
+   "error_among_decided": 0.2,
+   "false_accept_rate_marginal": 0.02,
+   "false_accept_rate_selective": 0.125,
+   "false_reject_rate_marginal": 0.04666666666666667,
+   "n_accept": 24,
+   "n_reject": 26,
+   "n_review": 100,
+   "n_empty": 100,
+   "coverage_target": 0.3,
+   "alpha": 0.7,
+   "q_per_clip": {
+    "desk": 0.7463,
+    "ecu_full": 0.7686,
+    "ecu_late": 0.7445,
+    "logistics4": 0.7445,
+    "organise": 0.7396,
+    "pallet": 0.7396,
+    "pallet2": 0.7438
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.2413793103448276,
+     "review_share": 0.6896551724137931
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 0.14583333333333334,
+     "review_share": 0.8541666666666666
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 0.21428571428571427,
+     "review_share": 0.7142857142857143
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.23529411764705882,
+     "review_share": 0.7058823529411765
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 0.47368421052631576,
+     "review_share": 0.5263157894736842
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.47058823529411764,
+     "review_share": 0.23529411764705882
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.3333333333333333,
+     "review_share": 0.5
+    }
+   },
+   "review_share_ci95": [
+    0.4667,
+    0.7843
+   ],
+   "error_among_decided_ci95": [
+    0.0667,
+    0.3235
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.7141822446544739,
+   "review_share": 0.5,
+   "decided_share": 0.5,
+   "coverage": 0.42,
+   "false_decision_rate_marginal": 0.08,
+   "error_among_decided": 0.16,
+   "false_accept_rate_marginal": 0.02666666666666667,
+   "false_accept_rate_selective": 0.08695652173913043,
+   "false_reject_rate_marginal": 0.05333333333333334,
+   "n_accept": 46,
+   "n_reject": 29,
+   "n_review": 75,
+   "n_empty": 75,
+   "coverage_target": 0.4,
+   "alpha": 0.6,
+   "q_per_clip": {
+    "desk": 0.7214,
+    "ecu_full": 0.7097,
+    "ecu_late": 0.714,
+    "logistics4": 0.7169,
+    "organise": 0.7119,
+    "pallet": 0.7127,
+    "pallet2": 0.7127
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.27586206896551724,
+     "review_share": 0.6551724137931034
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 0.5,
+     "review_share": 0.5
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 0.35714285714285715,
+     "review_share": 0.5714285714285714
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.23529411764705882,
+     "review_share": 0.7058823529411765
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 0.5789473684210527,
+     "review_share": 0.3684210526315789
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.47058823529411764,
+     "review_share": 0.23529411764705882
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.5,
+     "review_share": 0.16666666666666666
+    }
+   },
+   "review_share_ci95": [
+    0.3679,
+    0.6098
+   ],
+   "error_among_decided_ci95": [
+    0.0562,
+    0.3115
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.6888554850897984,
+   "review_share": 0.36666666666666664,
+   "decided_share": 0.6333333333333333,
+   "coverage": 0.5466666666666666,
+   "false_decision_rate_marginal": 0.08666666666666667,
+   "error_among_decided": 0.1368421052631579,
+   "false_accept_rate_marginal": 0.03333333333333333,
+   "false_accept_rate_selective": 0.07936507936507936,
+   "false_reject_rate_marginal": 0.05333333333333334,
+   "n_accept": 63,
+   "n_reject": 32,
+   "n_review": 55,
+   "n_empty": 55,
+   "coverage_target": 0.5,
+   "alpha": 0.5,
+   "q_per_clip": {
+    "desk": 0.7,
+    "ecu_full": 0.6486,
+    "ecu_late": 0.6962,
+    "logistics4": 0.6989,
+    "organise": 0.6917,
+    "pallet": 0.6928,
+    "pallet2": 0.6937
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.3103448275862069,
+     "review_share": 0.6206896551724138
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 0.8333333333333334,
+     "review_share": 0.16666666666666666
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 0.35714285714285715,
+     "review_share": 0.5
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.23529411764705882,
+     "review_share": 0.7058823529411765
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 0.631578947368421,
+     "review_share": 0.3157894736842105
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.5294117647058824,
+     "review_share": 0.17647058823529413
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.5,
+     "review_share": 0.16666666666666666
+    }
+   },
+   "review_share_ci95": [
+    0.2154,
+    0.568
+   ],
+   "error_among_decided_ci95": [
+    0.0435,
+    0.3077
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.6488187378560674,
+   "review_share": 0.30666666666666664,
+   "decided_share": 0.6933333333333334,
+   "coverage": 0.5933333333333334,
+   "false_decision_rate_marginal": 0.1,
+   "error_among_decided": 0.14423076923076922,
+   "false_accept_rate_marginal": 0.04,
+   "false_accept_rate_selective": 0.08823529411764706,
+   "false_reject_rate_marginal": 0.06,
+   "n_accept": 68,
+   "n_reject": 36,
+   "n_review": 46,
+   "n_empty": 46,
+   "coverage_target": 0.6,
+   "alpha": 0.4,
+   "q_per_clip": {
+    "desk": 0.6764,
+    "ecu_full": 0.5927,
+    "ecu_late": 0.6569,
+    "logistics4": 0.6617,
+    "organise": 0.6486,
+    "pallet": 0.6569,
+    "pallet2": 0.6486
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.3448275862068966,
+     "review_share": 0.5517241379310345
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 0.8541666666666666,
+     "review_share": 0.14583333333333334
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 0.5,
+     "review_share": 0.35714285714285715
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.35294117647058826,
+     "review_share": 0.5882352941176471
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 0.631578947368421,
+     "review_share": 0.3157894736842105
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.5294117647058824,
+     "review_share": 0.11764705882352941
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.6666666666666666,
+     "review_share": 0.0
+    }
+   },
+   "review_share_ci95": [
+    0.1714,
+    0.4809
+   ],
+   "error_among_decided_ci95": [
+    0.0458,
+    0.3077
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.5774094009933262,
+   "review_share": 0.15333333333333332,
+   "decided_share": 0.8466666666666667,
+   "coverage": 0.7066666666666667,
+   "false_decision_rate_marginal": 0.14,
+   "error_among_decided": 0.16535433070866143,
+   "false_accept_rate_marginal": 0.05333333333333334,
+   "false_accept_rate_selective": 0.09876543209876543,
+   "false_reject_rate_marginal": 0.08666666666666667,
+   "n_accept": 81,
+   "n_reject": 46,
+   "n_review": 23,
+   "n_empty": 23,
+   "coverage_target": 0.7,
+   "alpha": 0.30000000000000004,
+   "q_per_clip": {
+    "desk": 0.5843,
+    "ecu_full": 0.525,
+    "ecu_late": 0.5816,
+    "logistics4": 0.5986,
+    "organise": 0.5796,
+    "pallet": 0.5927,
+    "pallet2": 0.58
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.6206896551724138,
+     "review_share": 0.27586206896551724
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 0.9166666666666666,
+     "review_share": 0.041666666666666664
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 0.6428571428571429,
+     "review_share": 0.14285714285714285
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.47058823529411764,
+     "review_share": 0.35294117647058826
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 0.7368421052631579,
+     "review_share": 0.15789473684210525
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.5294117647058824,
+     "review_share": 0.11764705882352941
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.6666666666666666,
+     "review_share": 0.0
+    }
+   },
+   "review_share_ci95": [
+    0.0702,
+    0.2542
+   ],
+   "error_among_decided_ci95": [
+    0.0874,
+    0.299
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.5541308172170376,
+   "review_share": 0.10666666666666667,
+   "decided_share": 0.8933333333333333,
+   "coverage": 0.7533333333333333,
+   "false_decision_rate_marginal": 0.14666666666666667,
+   "error_among_decided": 0.16417910447761194,
+   "false_accept_rate_marginal": 0.06,
+   "false_accept_rate_selective": 0.10465116279069768,
+   "false_reject_rate_marginal": 0.08666666666666667,
+   "n_accept": 86,
+   "n_reject": 48,
+   "n_review": 16,
+   "n_empty": 15,
+   "coverage_target": 0.75,
+   "alpha": 0.25,
+   "q_per_clip": {
+    "desk": 0.5695,
+    "ecu_full": 0.496,
+    "ecu_late": 0.5649,
+    "logistics4": 0.5695,
+    "organise": 0.5446,
+    "pallet": 0.5695,
+    "pallet2": 0.5649
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.6551724137931034,
+     "review_share": 0.2413793103448276
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 0.9375,
+     "review_share": 0.020833333333333332
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 0.7142857142857143,
+     "review_share": 0.07142857142857142
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.5882352941176471,
+     "review_share": 0.23529411764705882
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 0.7894736842105263,
+     "review_share": 0.10526315789473684
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.5882352941176471,
+     "review_share": 0.058823529411764705
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.6666666666666666,
+     "review_share": 0.0
+    }
+   },
+   "review_share_ci95": [
+    0.0387,
+    0.1923
+   ],
+   "error_among_decided_ci95": [
+    0.1025,
+    0.2843
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.5000421801656697,
+   "review_share": 0.03333333333333333,
+   "decided_share": 0.9666666666666667,
+   "coverage": 0.8,
+   "false_decision_rate_marginal": 0.18,
+   "error_among_decided": 0.18620689655172415,
+   "false_accept_rate_marginal": 0.06,
+   "false_accept_rate_selective": 0.1,
+   "false_reject_rate_marginal": 0.12,
+   "n_accept": 90,
+   "n_reject": 55,
+   "n_review": 5,
+   "n_empty": 3,
+   "coverage_target": 0.8,
+   "alpha": 0.19999999999999996,
+   "q_per_clip": {
+    "desk": 0.5142,
+    "ecu_full": 0.4452,
+    "ecu_late": 0.5039,
+    "logistics4": 0.5124,
+    "organise": 0.4989,
+    "pallet": 0.5217,
+    "pallet2": 0.5039
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.7241379310344828,
+     "review_share": 0.06896551724137931
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 0.9583333333333334,
+     "review_share": 0.041666666666666664
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 0.7857142857142857,
+     "review_share": 0.0
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.7058823529411765,
+     "review_share": 0.0
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 0.8421052631578947,
+     "review_share": 0.0
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.5882352941176471,
+     "review_share": 0.058823529411764705
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.6666666666666666,
+     "review_share": 0.0
+    }
+   },
+   "review_share_ci95": [
+    0.0089,
+    0.052
+   ],
+   "error_among_decided_ci95": [
+    0.1045,
+    0.3
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.4438242797257087,
+   "review_share": 0.12,
+   "decided_share": 0.88,
+   "coverage": 0.8533333333333334,
+   "false_decision_rate_marginal": 0.14666666666666667,
+   "error_among_decided": 0.16666666666666666,
+   "false_accept_rate_marginal": 0.04,
+   "false_accept_rate_selective": 0.07317073170731707,
+   "false_reject_rate_marginal": 0.10666666666666667,
+   "n_accept": 82,
+   "n_reject": 50,
+   "n_review": 18,
+   "n_empty": 0,
+   "coverage_target": 0.85,
+   "alpha": 0.15000000000000002,
+   "q_per_clip": {
+    "desk": 0.4452,
+    "ecu_full": 0.3466,
+    "ecu_late": 0.4553,
+    "logistics4": 0.4842,
+    "organise": 0.4353,
+    "pallet": 0.4848,
+    "pallet2": 0.4553
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.8620689655172413,
+     "review_share": 0.20689655172413793
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 1.0,
+     "review_share": 0.16666666666666666
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 0.7857142857142857,
+     "review_share": 0.07142857142857142
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.7058823529411765,
+     "review_share": 0.0
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 0.8947368421052632,
+     "review_share": 0.10526315789473684
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.6470588235294118,
+     "review_share": 0.058823529411764705
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.6666666666666666,
+     "review_share": 0.0
+    }
+   },
+   "review_share_ci95": [
+    0.0426,
+    0.1631
+   ],
+   "error_among_decided_ci95": [
+    0.071,
+    0.2877
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.3503087340235875,
+   "review_share": 0.47333333333333333,
+   "decided_share": 0.5266666666666666,
+   "coverage": 0.8933333333333333,
+   "false_decision_rate_marginal": 0.10666666666666667,
+   "error_among_decided": 0.20253164556962025,
+   "false_accept_rate_marginal": 0.04,
+   "false_accept_rate_selective": 0.14634146341463414,
+   "false_reject_rate_marginal": 0.06666666666666667,
+   "n_accept": 41,
+   "n_reject": 38,
+   "n_review": 71,
+   "n_empty": 0,
+   "coverage_target": 0.9,
+   "alpha": 0.09999999999999998,
+   "q_per_clip": {
+    "desk": 0.3466,
+    "ecu_full": 0.262,
+    "ecu_late": 0.3738,
+    "logistics4": 0.3398,
+    "organise": 0.3398,
+    "pallet": 0.4164,
+    "pallet2": 0.3738
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.896551724137931,
+     "review_share": 0.5172413793103449
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 1.0,
+     "review_share": 0.7083333333333334
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 0.7857142857142857,
+     "review_share": 0.2857142857142857
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.9411764705882353,
+     "review_share": 0.5882352941176471
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 0.9473684210526315,
+     "review_share": 0.3157894736842105
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.6470588235294118,
+     "review_share": 0.11764705882352941
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.6666666666666666,
+     "review_share": 0.0
+    }
+   },
+   "review_share_ci95": [
+    0.243,
+    0.6096
+   ],
+   "error_among_decided_ci95": [
+    0.0889,
+    0.3119
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.2825909899206039,
+   "review_share": 0.64,
+   "decided_share": 0.36,
+   "coverage": 0.92,
+   "false_decision_rate_marginal": 0.08,
+   "error_among_decided": 0.2222222222222222,
+   "false_accept_rate_marginal": 0.03333333333333333,
+   "false_accept_rate_selective": 0.18518518518518517,
+   "false_reject_rate_marginal": 0.04666666666666667,
+   "n_accept": 27,
+   "n_reject": 27,
+   "n_review": 96,
+   "n_empty": 0,
+   "coverage_target": 0.925,
+   "alpha": 0.07499999999999996,
+   "q_per_clip": {
+    "desk": 0.287,
+    "ecu_full": 0.2162,
+    "ecu_late": 0.287,
+    "logistics4": 0.287,
+    "organise": 0.2253,
+    "pallet": 0.3738,
+    "pallet2": 0.302
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.9310344827586207,
+     "review_share": 0.6551724137931034
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 1.0,
+     "review_share": 0.875
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 0.9285714285714286,
+     "review_share": 0.5714285714285714
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.9411764705882353,
+     "review_share": 0.7058823529411765
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 1.0,
+     "review_share": 0.631578947368421
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.6470588235294118,
+     "review_share": 0.11764705882352941
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.6666666666666666,
+     "review_share": 0.16666666666666666
+    }
+   },
+   "review_share_ci95": [
+    0.3928,
+    0.7871
+   ],
+   "error_among_decided_ci95": [
+    0.0888,
+    0.3333
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.20701236266250378,
+   "review_share": 0.76,
+   "decided_share": 0.24,
+   "coverage": 0.94,
+   "false_decision_rate_marginal": 0.06,
+   "error_among_decided": 0.25,
+   "false_accept_rate_marginal": 0.013333333333333334,
+   "false_accept_rate_selective": 0.16666666666666666,
+   "false_reject_rate_marginal": 0.04666666666666667,
+   "n_accept": 12,
+   "n_reject": 24,
+   "n_review": 114,
+   "n_empty": 0,
+   "coverage_target": 0.95,
+   "alpha": 0.050000000000000044,
+   "q_per_clip": {
+    "desk": 0.2236,
+    "ecu_full": 0.1405,
+    "ecu_late": 0.1791,
+    "logistics4": 0.2162,
+    "organise": 0.1791,
+    "pallet": 0.287,
+    "pallet2": 0.2236
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 0.9310344827586207,
+     "review_share": 0.7586206896551724
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 1.0,
+     "review_share": 1.0
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 1.0,
+     "review_share": 0.7857142857142857
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 0.9411764705882353,
+     "review_share": 0.8235294117647058
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 1.0,
+     "review_share": 0.631578947368421
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.7058823529411765,
+     "review_share": 0.23529411764705882
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 0.8333333333333334,
+     "review_share": 0.5
+    }
+   },
+   "review_share_ci95": [
+    0.5227,
+    0.9103
+   ],
+   "error_among_decided_ci95": [
+    0.0882,
+    0.3571
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.1157023641625452,
+   "review_share": 0.9066666666666666,
+   "decided_share": 0.09333333333333334,
+   "coverage": 0.9733333333333334,
+   "false_decision_rate_marginal": 0.02666666666666667,
+   "error_among_decided": 0.2857142857142857,
+   "false_accept_rate_marginal": 0.0,
+   "false_accept_rate_selective": null,
+   "false_reject_rate_marginal": 0.02666666666666667,
+   "n_accept": 0,
+   "n_reject": 14,
+   "n_review": 136,
+   "n_empty": 0,
+   "coverage_target": 0.975,
+   "alpha": 0.025000000000000022,
+   "q_per_clip": {
+    "desk": 0.1008,
+    "ecu_full": 0.0899,
+    "ecu_late": 0.1008,
+    "logistics4": 0.1008,
+    "organise": 0.1008,
+    "pallet": 0.2162,
+    "pallet2": 0.1008
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 1.0,
+     "review_share": 1.0
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 1.0,
+     "review_share": 1.0
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 1.0,
+     "review_share": 1.0
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 1.0,
+     "review_share": 0.9411764705882353
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 1.0,
+     "review_share": 0.8947368421052632
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.7647058823529411,
+     "review_share": 0.35294117647058826
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 1.0,
+     "review_share": 1.0
+    }
+   },
+   "review_share_ci95": [
+    0.7094,
+    0.9955
+   ],
+   "error_among_decided_ci95": [
+    0.0,
+    0.3636
+   ]
+  },
+  {
+   "n": 150,
+   "q": 0.06845565375491312,
+   "review_share": 0.92,
+   "decided_share": 0.08,
+   "coverage": 0.9733333333333334,
+   "false_decision_rate_marginal": 0.02666666666666667,
+   "error_among_decided": 0.3333333333333333,
+   "false_accept_rate_marginal": 0.0,
+   "false_accept_rate_selective": null,
+   "false_reject_rate_marginal": 0.02666666666666667,
+   "n_accept": 0,
+   "n_reject": 12,
+   "n_review": 138,
+   "n_empty": 0,
+   "coverage_target": 0.99,
+   "alpha": 0.010000000000000009,
+   "q_per_clip": {
+    "desk": 0.0564,
+    "ecu_full": 0.0564,
+    "ecu_late": 0.0564,
+    "logistics4": 0.0564,
+    "organise": 0.0564,
+    "pallet": 0.1405,
+    "pallet2": 0.0564
+   },
+   "per_clip_coverage": {
+    "desk": {
+     "n": 29,
+     "coverage": 1.0,
+     "review_share": 1.0
+    },
+    "ecu_full": {
+     "n": 48,
+     "coverage": 1.0,
+     "review_share": 1.0
+    },
+    "ecu_late": {
+     "n": 14,
+     "coverage": 1.0,
+     "review_share": 1.0
+    },
+    "logistics4": {
+     "n": 17,
+     "coverage": 1.0,
+     "review_share": 0.9411764705882353
+    },
+    "organise": {
+     "n": 19,
+     "coverage": 1.0,
+     "review_share": 1.0
+    },
+    "pallet": {
+     "n": 17,
+     "coverage": 0.7647058823529411,
+     "review_share": 0.35294117647058826
+    },
+    "pallet2": {
+     "n": 6,
+     "coverage": 1.0,
+     "review_share": 1.0
+    }
+   },
+   "review_share_ci95": [
+    0.7227,
+    1.0
+   ],
+   "error_among_decided_ci95": [
+    0.0,
+    0.3636
+   ]
+  }
+ ],
+ "e8_application_descriptive": {
+  "label_source": "none",
+  "n": 1546,
+  "note": "unlabelled pipeline output; reports only the review share the fitted rule WOULD produce, not accuracy",
+  "operating_points": {
+   "0.700": {
+    "q": 0.5800218067373594,
+    "n": 1546,
+    "review_share": 0.19922380336351875,
+    "accept_share": 0.25291073738680464,
+    "reject_share": 0.5478654592496766,
+    "empty_share": 0.19922380336351875
+   },
+   "0.800": {
+    "q": 0.5039196426429408,
+    "n": 1546,
+    "review_share": 0.005821474773609315,
+    "accept_share": 0.2897800776196636,
+    "reject_share": 0.704398447606727,
+    "empty_share": 0.005821474773609315
+   },
+   "0.900": {
+    "q": 0.34663558828357016,
+    "n": 1546,
+    "review_share": 0.5058214747736093,
+    "accept_share": 0.23285899094437257,
+    "reject_share": 0.2613195342820181,
+    "empty_share": 0.0
+   }
+  },
+  "current_pipeline_review_share": 0.755
+ },
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_conformal/conformal_risk.py"
+}
