@@ -1,0 +1,16 @@
+{
+ "version": "perpixel_v1",
+ "q": 4,
+ "source": {
+  "rule_list": "jadal/perpixel/scorer.py quality_stage.rules",
+  "config": "configs/perpixel_v1.json",
+  "config_branch": "b/ood-main",
+  "config_commit": "211ef2a",
+  "note": "Frozen quality tripwires (OR). thr_int is the Q=4 fixed-point integer threshold; comparisons happen ONLY on integers."
+ },
+ "rules": [
+  {"name": "lowent", "code": "BAD:lowent", "feature": "hist_ent", "src": "physics", "op": "<", "thr_int": 64861, "threshold_dec": "6.4861"},
+  {"name": "blur", "code": "BAD:blur", "feature": "blur_norm", "src": "theory", "op": "<", "thr_int": 950933, "threshold_dec": "95.0933"},
+  {"name": "ten", "code": "BAD:ten", "feature": "ten_norm", "src": "physics", "op": "<", "thr_int": 3392751, "threshold_dec": "339.2751"}
+ ]
+}
