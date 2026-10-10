@@ -1,0 +1,157 @@
+{
+  "threshold": 3.0,
+  "threshold_provenance": "pooled null of 40000 seeded wrong nonces (4 SNR levels x 2 clips x 5000, full lag search each); pooled p99=2.564; threshold 3.0 set above it",
+  "decision_rule": "fresh iff bits_matched==32 (exact, primary) and z>=threshold (supporting)",
+  "delta": 0.1,
+  "levels": [
+    {
+      "level": "A",
+      "swing": 190.0,
+      "sigma": 5.0,
+      "snr": 38.0,
+      "n_clips": 2,
+      "n_null": 10000,
+      "null_z_p99": 2.531,
+      "null_z_p999": 3.5641,
+      "null_z_max": 4.5635,
+      "fa_count_full_rule": 0,
+      "fa_n": 10000,
+      "fa_rate": 0.0,
+      "fa_upper_cp": 0.00023,
+      "true_z_min": 6.9687,
+      "true_bits_min": 32
+    },
+    {
+      "level": "B",
+      "swing": 90.0,
+      "sigma": 15.0,
+      "snr": 6.0,
+      "n_clips": 2,
+      "n_null": 10000,
+      "null_z_p99": 2.6816,
+      "null_z_p999": 3.5237,
+      "null_z_max": 4.0723,
+      "fa_count_full_rule": 0,
+      "fa_n": 10000,
+      "fa_rate": 0.0,
+      "fa_upper_cp": 0.00023,
+      "true_z_min": 6.6791,
+      "true_bits_min": 32
+    },
+    {
+      "level": "C",
+      "swing": 40.0,
+      "sigma": 20.0,
+      "snr": 2.0,
+      "n_clips": 2,
+      "n_null": 10000,
+      "null_z_p99": 2.5308,
+      "null_z_p999": 3.383,
+      "null_z_max": 4.2509,
+      "fa_count_full_rule": 0,
+      "fa_n": 10000,
+      "fa_rate": 0.0,
+      "fa_upper_cp": 0.00023,
+      "true_z_min": 6.6192,
+      "true_bits_min": 32
+    },
+    {
+      "level": "D",
+      "swing": 20.0,
+      "sigma": 20.0,
+      "snr": 1.0,
+      "n_clips": 2,
+      "n_null": 10000,
+      "null_z_p99": 2.5365,
+      "null_z_p999": 3.5738,
+      "null_z_max": 4.1571,
+      "fa_count_full_rule": 0,
+      "fa_n": 10000,
+      "fa_rate": 0.0,
+      "fa_upper_cp": 0.00023,
+      "true_z_min": 6.7847,
+      "true_bits_min": 32
+    }
+  ],
+  "pooled": {
+    "n_null": 40000,
+    "p99": 2.5642,
+    "p999": 3.5315,
+    "max": 4.5635
+  },
+  "clips": [
+    {
+      "level": "A",
+      "clip": 0,
+      "snr": 38.0,
+      "true_z": 6.9687,
+      "true_bits": 32,
+      "null_mean": 0.3832,
+      "null_sd": 0.086
+    },
+    {
+      "level": "A",
+      "clip": 1,
+      "snr": 38.0,
+      "true_z": 6.9831,
+      "true_bits": 32,
+      "null_mean": 0.3756,
+      "null_sd": 0.0869
+    },
+    {
+      "level": "B",
+      "clip": 0,
+      "snr": 6.0,
+      "true_z": 6.6791,
+      "true_bits": 32,
+      "null_mean": 0.3747,
+      "null_sd": 0.0913
+    },
+    {
+      "level": "B",
+      "clip": 1,
+      "snr": 6.0,
+      "true_z": 7.0235,
+      "true_bits": 32,
+      "null_mean": 0.3717,
+      "null_sd": 0.0876
+    },
+    {
+      "level": "C",
+      "clip": 0,
+      "snr": 2.0,
+      "true_z": 6.6192,
+      "true_bits": 32,
+      "null_mean": 0.3611,
+      "null_sd": 0.0965
+    },
+    {
+      "level": "C",
+      "clip": 1,
+      "snr": 2.0,
+      "true_z": 6.6211,
+      "true_bits": 32,
+      "null_mean": 0.3634,
+      "null_sd": 0.0934
+    },
+    {
+      "level": "D",
+      "clip": 0,
+      "snr": 1.0,
+      "true_z": 6.8018,
+      "true_bits": 32,
+      "null_mean": 0.3717,
+      "null_sd": 0.0918
+    },
+    {
+      "level": "D",
+      "clip": 1,
+      "snr": 1.0,
+      "true_z": 6.7847,
+      "true_bits": 32,
+      "null_mean": 0.3743,
+      "null_sd": 0.0896
+    }
+  ],
+  "created_utc": "2026-10-10T07:11:44Z"
+}
