@@ -1,49 +1,44 @@
-{
-  "_note": "ILLUSTRATIVE mock gap counts. Not a measured result.",
-  "gaps": [
-    {
-      "reason_code": "HANDS_NOT_VISIBLE",
-      "count": 14,
-      "sop_section": "4.1 table height",
-      "share": 0.28
-    },
-    {
-      "reason_code": "WRONG_STEP",
-      "count": 11,
-      "sop_section": "3.2 hem alignment",
-      "share": 0.22
-    },
-    {
-      "reason_code": "BLUR",
-      "count": 8,
-      "sop_section": "2.5 head-camera fit",
-      "share": 0.16
-    },
-    {
-      "reason_code": "LOW_CONFIDENCE",
-      "count": 7,
-      "sop_section": "5.3 lighting",
-      "share": 0.14
-    },
-    {
-      "reason_code": "NO_ACTIVE_WORK",
-      "count": 5,
-      "sop_section": "3.1 station setup",
-      "share": 0.1
-    },
-    {
-      "reason_code": "TOO_DARK",
-      "count": 3,
-      "sop_section": "5.3 lighting",
-      "share": 0.06
-    },
-    {
-      "reason_code": "DUPLICATE",
-      "count": 2,
-      "sop_section": "1.4 upload retries",
-      "share": 0.04
-    }
-  ],
-  "total_segments": 50,
-  "window_utc": "2026-10-09T00:00:00Z/2026-10-10T00:00:00Z"
-}
+[
+  {
+    "reason_code": "HANDS_NOT_VISIBLE",
+    "count": 14,
+    "sop_section": "4.1 table height",
+    "share": 0.28
+  },
+  {
+    "reason_code": "WRONG_STEP",
+    "count": 11,
+    "sop_section": "3.2 hem alignment",
+    "share": 0.22
+  },
+  {
+    "reason_code": "BLUR",
+    "count": 8,
+    "sop_section": "2.5 head-camera fit",
+    "share": 0.16
+  },
+  {
+    "reason_code": "LOW_CONFIDENCE",
+    "count": 7,
+    "sop_section": "5.3 lighting",
+    "share": 0.14
+  },
+  {
+    "reason_code": "NO_ACTIVE_WORK",
+    "count": 5,
+    "sop_section": "3.1 station setup",
+    "share": 0.1
+  },
+  {
+    "reason_code": "TOO_DARK",
+    "count": 3,
+    "sop_section": "5.3 lighting",
+    "share": 0.06
+  },
+  {
+    "reason_code": "DUPLICATE",
+    "count": 2,
+    "sop_section": "1.4 upload retries",
+    "share": 0.04
+  }
+]

@@ -1,118 +1,107 @@
-{
-  "_note": "ILLUSTRATIVE mock curve. Not a measured calibration result.",
-  "points": [
-    {
-      "threshold": 0.0,
-      "coverage": 1.0,
-      "error": 0.0
-    },
-    {
-      "threshold": 0.05,
-      "coverage": 0.9725,
-      "error": 0.0019
-    },
-    {
-      "threshold": 0.1,
-      "coverage": 0.945,
-      "error": 0.0054
-    },
-    {
-      "threshold": 0.15,
-      "coverage": 0.9175,
-      "error": 0.0098
-    },
-    {
-      "threshold": 0.2,
-      "coverage": 0.89,
-      "error": 0.0147
-    },
-    {
-      "threshold": 0.25,
-      "coverage": 0.8625,
-      "error": 0.0198
-    },
-    {
-      "threshold": 0.3,
-      "coverage": 0.835,
-      "error": 0.0251
-    },
-    {
-      "threshold": 0.35,
-      "coverage": 0.8075,
-      "error": 0.0304
-    },
-    {
-      "threshold": 0.4,
-      "coverage": 0.78,
-      "error": 0.0358
-    },
-    {
-      "threshold": 0.45,
-      "coverage": 0.7525,
-      "error": 0.0412
-    },
-    {
-      "threshold": 0.5,
-      "coverage": 0.725,
-      "error": 0.0465
-    },
-    {
-      "threshold": 0.55,
-      "coverage": 0.6975,
-      "error": 0.0518
-    },
-    {
-      "threshold": 0.6,
-      "coverage": 0.67,
-      "error": 0.0571
-    },
-    {
-      "threshold": 0.65,
-      "coverage": 0.6425,
-      "error": 0.0623
-    },
-    {
-      "threshold": 0.7,
-      "coverage": 0.615,
-      "error": 0.0674
-    },
-    {
-      "threshold": 0.75,
-      "coverage": 0.5875,
-      "error": 0.0725
-    },
-    {
-      "threshold": 0.8,
-      "coverage": 0.56,
-      "error": 0.0776
-    },
-    {
-      "threshold": 0.85,
-      "coverage": 0.5325,
-      "error": 0.0825
-    },
-    {
-      "threshold": 0.9,
-      "coverage": 0.505,
-      "error": 0.0875
-    },
-    {
-      "threshold": 0.95,
-      "coverage": 0.4775,
-      "error": 0.0923
-    },
-    {
-      "threshold": 1.0,
-      "coverage": 0.45,
-      "error": 0.0971
-    }
-  ],
-  "n": 240,
-  "errors": 12,
-  "target_error": 0.05,
-  "delta": 0.1,
-  "error_bound": 0.0684,
-  "min_accepted": 30,
-  "split": "val_20261009",
-  "generated_utc": "2026-10-10T08:40:11Z"
-}
+[
+  {
+    "threshold": 0.95,
+    "coverage": 0.0678,
+    "error": 0.0946
+  },
+  {
+    "threshold": 0.9,
+    "coverage": 0.0836,
+    "error": 0.0925
+  },
+  {
+    "threshold": 0.85,
+    "coverage": 0.1052,
+    "error": 0.0896
+  },
+  {
+    "threshold": 0.8,
+    "coverage": 0.1316,
+    "error": 0.0861
+  },
+  {
+    "threshold": 0.75,
+    "coverage": 0.1623,
+    "error": 0.082
+  },
+  {
+    "threshold": 0.7,
+    "coverage": 0.1969,
+    "error": 0.0776
+  },
+  {
+    "threshold": 0.65,
+    "coverage": 0.2352,
+    "error": 0.0727
+  },
+  {
+    "threshold": 0.6,
+    "coverage": 0.277,
+    "error": 0.0675
+  },
+  {
+    "threshold": 0.55,
+    "coverage": 0.322,
+    "error": 0.062
+  },
+  {
+    "threshold": 0.5,
+    "coverage": 0.3701,
+    "error": 0.0564
+  },
+  {
+    "threshold": 0.45,
+    "coverage": 0.4212,
+    "error": 0.0505
+  },
+  {
+    "threshold": 0.4,
+    "coverage": 0.4751,
+    "error": 0.0446
+  },
+  {
+    "threshold": 0.35,
+    "coverage": 0.5318,
+    "error": 0.0386
+  },
+  {
+    "threshold": 0.3,
+    "coverage": 0.5912,
+    "error": 0.0326
+  },
+  {
+    "threshold": 0.25,
+    "coverage": 0.6532,
+    "error": 0.0267
+  },
+  {
+    "threshold": 0.2,
+    "coverage": 0.7178,
+    "error": 0.021
+  },
+  {
+    "threshold": 0.15,
+    "coverage": 0.7848,
+    "error": 0.0156
+  },
+  {
+    "threshold": 0.1,
+    "coverage": 0.8542,
+    "error": 0.0108
+  },
+  {
+    "threshold": 0.05,
+    "coverage": 0.9259,
+    "error": 0.0066
+  },
+  {
+    "threshold": -0.0,
+    "coverage": 1.0,
+    "error": 0.004
+  },
+  {
+    "threshold": 0.0,
+    "coverage": 1.0,
+    "error": 0.052
+  }
+]

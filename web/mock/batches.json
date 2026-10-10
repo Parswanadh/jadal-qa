@@ -1,431 +1,224 @@
-[
-  {
-    "batch_id": "B-20261010-0912-a3f1",
-    "site_id": "site_tirupur_02",
-    "segment_ids": [
-      "seg_20261010_0912_000",
-      "seg_20261010_0912_001",
-      "seg_20261010_0912_002",
-      "seg_20261010_0912_003",
-      "seg_20261010_0912_004",
-      "seg_20261010_0912_005",
-      "seg_20261010_0912_006",
-      "seg_20261010_0912_007"
-    ],
-    "segments": [
-      {
-        "segment_id": "seg_20261010_0912_000",
-        "receipt_id": "827335a0e262bed8",
-        "worker_id": "w_arun",
-        "site_id": "site_tirupur_02",
-        "source_clip": "clip_site_tirupur_02_headcam_01.mp4",
-        "start_s": 0.0,
-        "end_s": 20.0,
-        "latency_ms": 3370
-      },
-      {
-        "segment_id": "seg_20261010_0912_001",
-        "receipt_id": "de593bb1cad38ef7",
-        "worker_id": "w_meena",
-        "site_id": "site_tirupur_02",
-        "source_clip": "clip_site_tirupur_02_headcam_01.mp4",
-        "start_s": 20.0,
-        "end_s": 40.0,
-        "latency_ms": 4871
-      },
-      {
-        "segment_id": "seg_20261010_0912_002",
-        "receipt_id": "307b9ba47793b6e9",
-        "worker_id": "w_kavya",
-        "site_id": "site_tirupur_02",
-        "source_clip": "clip_site_tirupur_02_headcam_01.mp4",
-        "start_s": 40.0,
-        "end_s": 60.0,
-        "latency_ms": 2043
-      },
-      {
-        "segment_id": "seg_20261010_0912_003",
-        "receipt_id": "fa36f6486b1af5fd",
-        "worker_id": "w_rahul",
-        "site_id": "site_tirupur_02",
-        "source_clip": "clip_site_tirupur_02_headcam_01.mp4",
-        "start_s": 60.0,
-        "end_s": 80.0,
-        "latency_ms": 3794
-      },
-      {
-        "segment_id": "seg_20261010_0912_004",
-        "receipt_id": "1203d95bc4536743",
-        "worker_id": "w_deepa",
-        "site_id": "site_tirupur_02",
-        "source_clip": "clip_site_tirupur_02_headcam_01.mp4",
-        "start_s": 80.0,
-        "end_s": 100.0,
-        "latency_ms": 3601
-      },
-      {
-        "segment_id": "seg_20261010_0912_005",
-        "receipt_id": "858e52114ebabd85",
-        "worker_id": "w_sanjay",
-        "site_id": "site_tirupur_02",
-        "source_clip": "clip_site_tirupur_02_headcam_01.mp4",
-        "start_s": 100.0,
-        "end_s": 120.0,
-        "latency_ms": 2552
-      },
-      {
-        "segment_id": "seg_20261010_0912_006",
-        "receipt_id": "34b79a92d20b418f",
-        "worker_id": "w_arun",
-        "site_id": "site_tirupur_02",
-        "source_clip": "clip_site_tirupur_02_headcam_01.mp4",
-        "start_s": 120.0,
-        "end_s": 140.0,
-        "latency_ms": 2769
-      },
-      {
-        "segment_id": "seg_20261010_0912_007",
-        "receipt_id": "183e7a4590422bac",
-        "worker_id": "w_meena",
-        "site_id": "site_tirupur_02",
-        "source_clip": "clip_site_tirupur_02_headcam_01.mp4",
-        "start_s": 140.0,
-        "end_s": 160.0,
-        "latency_ms": 3710
-      }
-    ],
-    "verdicts": [
-      {
-        "segment_id": "seg_20261010_0912_000",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.91,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0912_001",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.87,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0912_002",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.78,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0912_003",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.83,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0912_004",
-        "verdict": "review",
-        "reasons": [
-          "LOW_CONFIDENCE"
-        ],
-        "answer_conf": 0.44,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0912_005",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.88,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0912_006",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.81,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0912_007",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.76,
-        "threshold": 0.5
-      }
-    ],
-    "batch_decision": "accept",
-    "rule": "reject if rejected_count > k",
-    "k": 1,
-    "n": 8,
-    "rejected_count": 0,
-    "created_utc": "2026-10-10T09:12:00Z"
-  },
-  {
-    "batch_id": "B-20261010-0931-7c09",
-    "site_id": "site_ludhiana_07",
-    "segment_ids": [
-      "seg_20261010_0931_100",
-      "seg_20261010_0931_101",
-      "seg_20261010_0931_102",
-      "seg_20261010_0931_103",
-      "seg_20261010_0931_104"
-    ],
-    "segments": [
-      {
-        "segment_id": "seg_20261010_0931_100",
-        "receipt_id": "8f2d3bd40239cf9c",
-        "worker_id": "w_rahul",
-        "site_id": "site_ludhiana_07",
-        "source_clip": "clip_site_ludhiana_07_headcam_02.mp4",
-        "start_s": 0.0,
-        "end_s": 20.0,
-        "latency_ms": 1614
-      },
-      {
-        "segment_id": "seg_20261010_0931_101",
-        "receipt_id": "721fe3fd6ce8bac7",
-        "worker_id": "w_deepa",
-        "site_id": "site_ludhiana_07",
-        "source_clip": "clip_site_ludhiana_07_headcam_02.mp4",
-        "start_s": 20.0,
-        "end_s": 40.0,
-        "latency_ms": 4588
-      },
-      {
-        "segment_id": "seg_20261010_0931_102",
-        "receipt_id": "88336dda60c5f84a",
-        "worker_id": "w_sanjay",
-        "site_id": "site_ludhiana_07",
-        "source_clip": "clip_site_ludhiana_07_headcam_02.mp4",
-        "start_s": 40.0,
-        "end_s": 60.0,
-        "latency_ms": 4491
-      },
-      {
-        "segment_id": "seg_20261010_0931_103",
-        "receipt_id": "da3c74ccd2f902d4",
-        "worker_id": "w_arun",
-        "site_id": "site_ludhiana_07",
-        "source_clip": "clip_site_ludhiana_07_headcam_02.mp4",
-        "start_s": 60.0,
-        "end_s": 80.0,
-        "latency_ms": 2120
-      },
-      {
-        "segment_id": "seg_20261010_0931_104",
-        "receipt_id": "63204f1526bcecd9",
-        "worker_id": "w_meena",
-        "site_id": "site_ludhiana_07",
-        "source_clip": "clip_site_ludhiana_07_headcam_02.mp4",
-        "start_s": 80.0,
-        "end_s": 100.0,
-        "latency_ms": 3176
-      }
-    ],
-    "verdicts": [
-      {
-        "segment_id": "seg_20261010_0931_100",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.9,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0931_101",
-        "verdict": "reject",
-        "reasons": [
-          "HANDS_NOT_VISIBLE",
-          "LOW_CONFIDENCE"
-        ],
-        "answer_conf": 0.31,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0931_102",
-        "verdict": "reject",
-        "reasons": [
-          "BLUR",
-          "SHAKY"
-        ],
-        "answer_conf": 0.22,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0931_103",
-        "verdict": "review",
-        "reasons": [
-          "WRONG_STEP",
-          "LOW_CONFIDENCE"
-        ],
-        "answer_conf": 0.47,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0931_104",
-        "verdict": "reject",
-        "reasons": [
-          "DUPLICATE"
-        ],
-        "answer_conf": 0.35,
-        "threshold": 0.5
-      }
-    ],
-    "batch_decision": "reject",
-    "rule": "reject if rejected_count > k",
-    "k": 1,
-    "n": 5,
-    "rejected_count": 3,
-    "created_utc": "2026-10-10T09:31:07Z"
-  },
-  {
-    "batch_id": "B-20261010-1004-d21b",
-    "site_id": "site_surat_01",
-    "segment_ids": [
-      "seg_20261010_0950_200",
-      "seg_20261010_0950_201",
-      "seg_20261010_0950_202",
-      "seg_20261010_0950_203",
-      "seg_20261010_0950_204",
-      "seg_20261010_0950_205",
-      "seg_20261010_0950_206"
-    ],
-    "segments": [
-      {
-        "segment_id": "seg_20261010_0950_200",
-        "receipt_id": "576d46620481cafe",
-        "worker_id": "w_arun",
-        "site_id": "site_surat_01",
-        "source_clip": "clip_site_surat_01_headcam_03.mp4",
-        "start_s": 0.0,
-        "end_s": 20.0,
-        "latency_ms": 5160
-      },
-      {
-        "segment_id": "seg_20261010_0950_201",
-        "receipt_id": "d470a58b7430da1b",
-        "worker_id": "w_meena",
-        "site_id": "site_surat_01",
-        "source_clip": "clip_site_surat_01_headcam_03.mp4",
-        "start_s": 20.0,
-        "end_s": 40.0,
-        "latency_ms": 3165
-      },
-      {
-        "segment_id": "seg_20261010_0950_202",
-        "receipt_id": "5d538ec57bd5cea4",
-        "worker_id": "w_kavya",
-        "site_id": "site_surat_01",
-        "source_clip": "clip_site_surat_01_headcam_03.mp4",
-        "start_s": 40.0,
-        "end_s": 60.0,
-        "latency_ms": 4745
-      },
-      {
-        "segment_id": "seg_20261010_0950_203",
-        "receipt_id": "735ac0499bbc93aa",
-        "worker_id": "w_rahul",
-        "site_id": "site_surat_01",
-        "source_clip": "clip_site_surat_01_headcam_03.mp4",
-        "start_s": 60.0,
-        "end_s": 80.0,
-        "latency_ms": 4504
-      },
-      {
-        "segment_id": "seg_20261010_0950_204",
-        "receipt_id": "5362ccbe42202a63",
-        "worker_id": "w_deepa",
-        "site_id": "site_surat_01",
-        "source_clip": "clip_site_surat_01_headcam_03.mp4",
-        "start_s": 80.0,
-        "end_s": 100.0,
-        "latency_ms": 3974
-      },
-      {
-        "segment_id": "seg_20261010_0950_205",
-        "receipt_id": "887185f4945b2ef0",
-        "worker_id": "w_sanjay",
-        "site_id": "site_surat_01",
-        "source_clip": "clip_site_surat_01_headcam_03.mp4",
-        "start_s": 100.0,
-        "end_s": 120.0,
-        "latency_ms": 4904
-      },
-      {
-        "segment_id": "seg_20261010_0950_206",
-        "receipt_id": "4ff69ba0f71828e9",
-        "worker_id": "w_arun",
-        "site_id": "site_surat_01",
-        "source_clip": "clip_site_surat_01_headcam_03.mp4",
-        "start_s": 120.0,
-        "end_s": 140.0,
-        "latency_ms": 1679
-      }
-    ],
-    "verdicts": [
-      {
-        "segment_id": "seg_20261010_0950_200",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.85,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0950_201",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.79,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0950_202",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.92,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0950_203",
-        "verdict": "reject",
-        "reasons": [
-          "TOO_DARK"
-        ],
-        "answer_conf": 0.19,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0950_204",
-        "verdict": "review",
-        "reasons": [
-          "OVEREXPOSED",
-          "LOW_CONFIDENCE"
-        ],
-        "answer_conf": 0.27,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0950_205",
-        "verdict": "review",
-        "reasons": [
-          "NO_ACTIVE_WORK",
-          "LOW_CONFIDENCE"
-        ],
-        "answer_conf": 0.41,
-        "threshold": 0.5
-      },
-      {
-        "segment_id": "seg_20261010_0950_206",
-        "verdict": "accept",
-        "reasons": [],
-        "answer_conf": 0.86,
-        "threshold": 0.5
-      }
-    ],
-    "batch_decision": "accept",
-    "rule": "reject if rejected_count > k",
-    "k": 1,
-    "n": 7,
-    "rejected_count": 1,
-    "created_utc": "2026-10-10T09:50:14Z"
-  }
-]
+{
+  "batches": [
+    {
+      "batch_id": "bc892b7a38ebcfd17",
+      "site_id": "site_tirupur_02",
+      "segment_ids": [
+        "seg_20261010_0912_000",
+        "seg_20261010_0912_001",
+        "seg_20261010_0912_002",
+        "seg_20261010_0912_003",
+        "seg_20261010_0912_004",
+        "seg_20261010_0912_005",
+        "seg_20261010_0912_006",
+        "seg_20261010_0912_007"
+      ],
+      "verdicts": [
+        {
+          "segment_id": "seg_20261010_0912_000",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.91,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0912_001",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.87,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0912_002",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.78,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0912_003",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.83,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0912_004",
+          "verdict": "review",
+          "reasons": [
+            "LOW_CONFIDENCE"
+          ],
+          "answer_conf": 0.44,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0912_005",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.88,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0912_006",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.81,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0912_007",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.76,
+          "threshold": 0.5
+        }
+      ],
+      "batch_decision": "accept",
+      "rule": "reject if rejected_count > k",
+      "k": 1,
+      "n": 8,
+      "created_utc": "2026-10-10T09:12:00+00:00"
+    },
+    {
+      "batch_id": "baa66dc91c57cac66",
+      "site_id": "site_ludhiana_07",
+      "segment_ids": [
+        "seg_20261010_0931_100",
+        "seg_20261010_0931_101",
+        "seg_20261010_0931_102",
+        "seg_20261010_0931_103",
+        "seg_20261010_0931_104"
+      ],
+      "verdicts": [
+        {
+          "segment_id": "seg_20261010_0931_100",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.9,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0931_101",
+          "verdict": "reject",
+          "reasons": [
+            "HANDS_NOT_VISIBLE",
+            "LOW_CONFIDENCE"
+          ],
+          "answer_conf": 0.31,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0931_102",
+          "verdict": "reject",
+          "reasons": [
+            "BLUR",
+            "SHAKY"
+          ],
+          "answer_conf": 0.22,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0931_103",
+          "verdict": "review",
+          "reasons": [
+            "WRONG_STEP",
+            "LOW_CONFIDENCE"
+          ],
+          "answer_conf": 0.47,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0931_104",
+          "verdict": "reject",
+          "reasons": [
+            "DUPLICATE"
+          ],
+          "answer_conf": 0.35,
+          "threshold": 0.5
+        }
+      ],
+      "batch_decision": "reject",
+      "rule": "reject if rejected_count > k",
+      "k": 1,
+      "n": 5,
+      "created_utc": "2026-10-10T09:31:07+00:00"
+    },
+    {
+      "batch_id": "bc161e93a0dee33c4",
+      "site_id": "site_surat_01",
+      "segment_ids": [
+        "seg_20261010_0950_200",
+        "seg_20261010_0950_201",
+        "seg_20261010_0950_202",
+        "seg_20261010_0950_203",
+        "seg_20261010_0950_204",
+        "seg_20261010_0950_205",
+        "seg_20261010_0950_206"
+      ],
+      "verdicts": [
+        {
+          "segment_id": "seg_20261010_0950_200",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.85,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0950_201",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.79,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0950_202",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.92,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0950_203",
+          "verdict": "reject",
+          "reasons": [
+            "TOO_DARK"
+          ],
+          "answer_conf": 0.19,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0950_204",
+          "verdict": "review",
+          "reasons": [
+            "OVEREXPOSED",
+            "LOW_CONFIDENCE"
+          ],
+          "answer_conf": 0.27,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0950_205",
+          "verdict": "review",
+          "reasons": [
+            "NO_ACTIVE_WORK",
+            "LOW_CONFIDENCE"
+          ],
+          "answer_conf": 0.41,
+          "threshold": 0.5
+        },
+        {
+          "segment_id": "seg_20261010_0950_206",
+          "verdict": "accept",
+          "reasons": [],
+          "answer_conf": 0.86,
+          "threshold": 0.5
+        }
+      ],
+      "batch_decision": "accept",
+      "rule": "reject if rejected_count > k",
+      "k": 1,
+      "n": 7,
+      "created_utc": "2026-10-10T09:50:14+00:00"
+    }
+  ]
+}
