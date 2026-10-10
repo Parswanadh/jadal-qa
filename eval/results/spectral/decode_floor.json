@@ -1,0 +1,80 @@
+{
+ "note": "single-core (taskset) decode floor; NOT measured on a Pi; use cpu_benchmark to scale across machines",
+ "single_core": true,
+ "cpu_benchmark": {
+  "matmul_512_reps": 626,
+  "wall_s": 3.001,
+  "reps_per_s": 208.603
+ },
+ "machine": {
+  "nproc": 22
+ },
+ "rows": [
+  {
+   "id": "g000",
+   "clip": "ecu_full",
+   "video_s": 10.2,
+   "full_decode_cv2": {
+    "frames": 102,
+    "wall_s": 0.103
+   },
+   "scaled160_ffmpeg": {
+    "wall_s": 0.153,
+    "rc": 0,
+    "stderr_tail": ""
+   },
+   "keyframe_only_ffmpeg": {
+    "wall_s": 0.051,
+    "rc": 0,
+    "stderr_tail": ""
+   },
+   "rtf_full": 99.03,
+   "rtf_scaled160": 66.67,
+   "rtf_keyonly": 200.0
+  },
+  {
+   "id": "g048",
+   "clip": "ecu_late",
+   "video_s": 10.2,
+   "full_decode_cv2": {
+    "frames": 102,
+    "wall_s": 0.103
+   },
+   "scaled160_ffmpeg": {
+    "wall_s": 0.152,
+    "rc": 0,
+    "stderr_tail": ""
+   },
+   "keyframe_only_ffmpeg": {
+    "wall_s": 0.048,
+    "rc": 0,
+    "stderr_tail": ""
+   },
+   "rtf_full": 99.03,
+   "rtf_scaled160": 67.11,
+   "rtf_keyonly": 212.5
+  },
+  {
+   "id": "g062",
+   "clip": "desk",
+   "video_s": 10.2,
+   "full_decode_cv2": {
+    "frames": 102,
+    "wall_s": 0.114
+   },
+   "scaled160_ffmpeg": {
+    "wall_s": 0.179,
+    "rc": 0,
+    "stderr_tail": ""
+   },
+   "keyframe_only_ffmpeg": {
+    "wall_s": 0.048,
+    "rc": 0,
+    "stderr_tail": ""
+   },
+   "rtf_full": 89.47,
+   "rtf_scaled160": 56.98,
+   "rtf_keyonly": 212.5
+  }
+ ]
+}

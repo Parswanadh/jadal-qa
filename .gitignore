@@ -1,5 +1,6 @@
 # runtime data, models, secrets
 data_runtime/
+.scratch/
 .env
 .env.*
 !.env.example
