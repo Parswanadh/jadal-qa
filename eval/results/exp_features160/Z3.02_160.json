@@ -1,0 +1,81 @@
+{
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "n_factories": 47,
+ "n_indego": 150,
+ "n_good_indego": 100,
+ "n_bad_indego": 50,
+ "label_source": "human (IndEgo manifest_gold n=150 + Egocentric-10K ood160_labels.json n=160: 138 good / 22 bad, 47 factories; merge of q1=60 + q2=100, single labeller)",
+ "protocol": "signed AUROC per feature, label 1 = usable/good; IndEgo CI = clip-bootstrap (7 clips); OOD-160 CI = FACTORY-GROUPED bootstrap (honest, n_boot=2000, seed=0), window-bootstrap kept as the optimistic comparison. E5.03 class rule.",
+ "supersedes": {
+  "branch": "m/new-features",
+  "pr": 127,
+  "n_ood": 60
+ },
+ "device": "CPU (numpy/sklearn; decode done by the O/Z agents, no GPU here)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_features160/run_z3_160.py",
+ "experiment": "Z3.02_160",
+ "title": "Z3 family verdicts on OOD-160",
+ "families": {
+  "compression_telemetry": {
+   "n": 7,
+   "counts": {
+    "stable": 3,
+    "chance": 1,
+    "flip": 3
+   },
+   "stable_features": [
+    "ct_fsize_entropy",
+    "ct_iframe_frac",
+    "ct_fsize_std"
+   ],
+   "flip_features": [
+    "ct_bitrate",
+    "ct_fsize_mean",
+    "ct_fsize_cv"
+   ]
+  },
+  "affine_ego_motion": {
+   "n": 7,
+   "counts": {
+    "stable": 2,
+    "flip": 5
+   },
+   "stable_features": [
+    "mo_affine_gain",
+    "mo_hand_motion_excess"
+   ],
+   "flip_features": [
+    "mo_trans_resid",
+    "mo_affine_resid",
+    "mo_hand_trans_resid",
+    "mo_hand_affine_resid",
+    "mo_motion_frac"
+   ]
+  },
+  "invariants": {
+   "n": 6,
+   "counts": {
+    "stable": 4,
+    "flip": 2
+   },
+   "stable_features": [
+    "inv_dct_hf_lf",
+    "inv_clip_frac",
+    "inv_hist_entropy",
+    "inv_laplacian_var"
+   ],
+   "flip_features": [
+    "inv_noise_snr",
+    "inv_dhash_dist"
+   ]
+  }
+ },
+ "verdicts_160": {
+  "compression": "relative frame-size variability (ct_fsize_std) stable; absolute bitrate/frame-size flip (as at n=60)",
+  "affine": "raw motion residuals (translation-only and full-affine, global and hand-restricted) flip; only hand-region motion EXCESS is stable",
+  "invariants": "exposure-clipping / Laplacian sharpness / histogram entropy stable; noise-SNR and dHash flip"
+ }
+}
