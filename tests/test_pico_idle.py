@@ -192,6 +192,80 @@ class TestPhaseRgb(unittest.TestCase):
             seen.add((round(r, 3), round(g, 3), round(b, 3)))
         self.assertGreater(len(seen), 10)  # actually fades, not static
 
+    def test_breathe_colour_restarts_with_cycle(self):
+        # Regression: tour_phase is periodic over IDLE_CYCLE_MS but the fade
+        # used elapsed % BREATHE_TOTAL_MS, so cycle 1+ showed wrong colours
+        # (e.g. elapsed=14000 gave teal instead of the red restart).
+        for t in range(0, 3 * idle.IDLE_CYCLE_MS, 211):
+            self.assertEqual(idle.phase_rgb("BREATHE", t),
+                             idle.phase_rgb("BREATHE", t % idle.IDLE_CYCLE_MS),
+                             "t=%d" % t)
+        self.assertEqual(idle.phase_rgb("BREATHE", 14000), (1.0, 0.0, 0.0))
+        self.assertEqual(idle.phase_rgb("BREATHE", 0),
+                         idle.phase_rgb("BREATHE", 28000))
+
+
+class TestIdleStep(unittest.TestCase):
+    """The main-loop drive step: host-wins gating + PWM-failure survival."""
+
+    class _StubLeds(object):
+        def __init__(self, fail_at=None):
+            self.calls = []
+            self.fail_at = fail_at
+
+        def idle_begin(self):
+            self.calls.append("begin")
+            if self.fail_at == "begin":
+                raise RuntimeError("no PWM (simulated Pico W)")
+
+        def idle_write(self, brightness, rgb):
+            self.calls.append(("write", brightness, rgb))
+            if self.fail_at == "write":
+                raise RuntimeError("duty failed")
+
+        def idle_end(self):
+            self.calls.append("end")
+            if self.fail_at == "end":
+                raise RuntimeError("deinit failed")
+
+    def test_step_starts_and_drives_when_silent(self):
+        leds = self._StubLeds()
+        on, start, ok = fw._idle_step(leds, idle, 0, None, False, False, 0)
+        self.assertEqual((on, start, ok), (True, 0, True))
+        self.assertEqual(leds.calls[0], "begin")
+        self.assertEqual(leds.calls[1][0], "write")
+
+    def test_step_stops_on_host_frame(self):
+        leds = self._StubLeds()
+        on, start, ok = fw._idle_step(leds, idle, 5000, 5000, False, True, 1000)
+        self.assertEqual((on, start, ok), (False, 1000, True))
+        self.assertIn("end", leds.calls)
+
+    def test_step_suppressed_while_flashing(self):
+        leds = self._StubLeds()
+        on, _, ok = fw._idle_step(leds, idle, 10 ** 6, None, True, False, 0)
+        self.assertEqual((on, ok), (False, True))
+        self.assertEqual(leds.calls, [])
+
+    def test_step_pwm_failure_disables_idle_without_raising(self):
+        # (begin, last_host, busy, idle_on): "end" fails on the stop path, so
+        # it needs an active host to take that path.
+        cases = {
+            "begin": (None, False, False),
+            "write": (None, False, False),
+            "end": (10 ** 6, False, True),
+        }
+        for fail_at, (last, busy, was_on) in cases.items():
+            leds = self._StubLeds(fail_at=fail_at)
+            on, _, ok = fw._idle_step(leds, idle, 10 ** 6, last, busy,
+                                      was_on, 0)
+            self.assertFalse(ok, fail_at)
+            self.assertFalse(on, fail_at)
+
+    def test_idle_stop_never_raises(self):
+        leds = self._StubLeds(fail_at="end")
+        self.assertIsNone(fw._idle_stop(leds))  # must not raise
+
 
 class TestImportSideEffects(unittest.TestCase):
     def test_idle_import_is_clean(self):

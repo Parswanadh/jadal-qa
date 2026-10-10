@@ -1,4 +1,5 @@
-"""Jadal QA Raspberry Pi Pico firmware (MicroPython, RP2040 tested; RP2350 should also work; USB serial only - no Wi-Fi).
+"""Jadal QA Raspberry Pi Pico firmware (MicroPython, RP2040 non-W tested; Pico W
+and RP2350 not tested; USB serial only - no Wi-Fi).
 
 Implements the firmware half of the protocol in ``docs/SPEC.md`` at 115200 baud,
 newline-terminated ASCII:
@@ -42,7 +43,7 @@ import sys
 import time
 
 # ---- configuration (edit to taste) --------------------------------------- #
-ONBOARD_LED_PIN = 25             # Raspberry Pi Pico (RP2040 tested; RP2350 should also work) built-in LED (GPIO 25)
+ONBOARD_LED_PIN = 25             # Raspberry Pi Pico (RP2040 non-W tested; Pico W / RP2350 not tested) built-in LED (GPIO 25)
 RGB_PINS = None                  # None = onboard LED only; else (r_pin, g_pin, b_pin)
                                  #   e.g. (17, 16, 18) wires an external RGB LED.
 HEARTBEAT_S = 1.0                # seconds between HB frames
@@ -149,16 +150,24 @@ class Leds:
         return self._state
 
     # -- idle/attract mode: PWM drive, hardware only (never called on CPython).
-    # GPIO25 supports machine.PWM on the non-W Pico; RGB pins too when wired.
+    # Tested on the RP2040 non-W Pico, where GPIO25 supports machine.PWM (RGB
+    # pins too when wired). NOT tested on Pico W (its onboard LED hangs off
+    # the CYW43 chip, not GPIO25) or RP2350: there idle_begin may raise, which
+    # the main loop treats as "no attract mode" (host protocol keeps running).
     def idle_begin(self):
-        self._pwm = machine.PWM(self._onboard, freq=1000)
+        self._pwm = None
         self._pwm_rgb = None
-        if self._r is not None:
-            self._pwm_rgb = (
-                machine.PWM(self._r, freq=1000),
-                machine.PWM(self._g, freq=1000),
-                machine.PWM(self._b, freq=1000),
-            )
+        try:
+            self._pwm = machine.PWM(self._onboard, freq=1000)
+            if self._r is not None:
+                self._pwm_rgb = (
+                    machine.PWM(self._r, freq=1000),
+                    machine.PWM(self._g, freq=1000),
+                    machine.PWM(self._b, freq=1000),
+                )
+        except Exception:
+            self.idle_end()  # best-effort release of anything attached
+            raise
         self.idle_write(0.0, (0.0, 0.0, 0.0))
 
     def idle_write(self, brightness, rgb):
@@ -179,10 +188,20 @@ class Leds:
 
     def idle_end(self):
         # Back to plain outputs + the last host-set colour (host always wins).
-        self._pwm.deinit()
-        if self._pwm_rgb is not None:
+        # Never leaves a deinit'd handle behind; safe to call twice or after
+        # a half-failed idle_begin.
+        if getattr(self, "_pwm", None) is not None:
+            try:
+                self._pwm.deinit()
+            except Exception:
+                pass
+            self._pwm = None
+        if getattr(self, "_pwm_rgb", None) is not None:
             for pwm in self._pwm_rgb:
-                pwm.deinit()
+                try:
+                    pwm.deinit()
+                except Exception:
+                    pass
             self._pwm_rgb = None
         self._onboard = machine.Pin(ONBOARD_LED_PIN, machine.Pin.OUT)
         if self._r is not None:
@@ -247,6 +266,45 @@ def _handle(text, leds, flasher):
         _send("PONG %d\n" % time.ticks_ms())
 
 
+def _idle_step(leds, idle_mod, now_ms, last_host_ms, flasher_busy,
+               idle_on, idle_start_ms):
+    """Advance attract mode by one tick; NEVER raises.
+
+    Returns ``(idle_on, idle_start_ms, ok)``. ``ok=False`` means the LED
+    driver (PWM) failed: the caller must stop using idle mode, while the host
+    protocol loop keeps running. A failed stop is best-effort (pins are
+    restored if possible) and likewise never raises.
+    """
+    try:
+        if not idle_mod.idle_state(now_ms, last_host_ms) or flasher_busy:
+            if idle_on:
+                leds.idle_end()
+            return (False, idle_start_ms, True)
+        if not idle_on:
+            leds.idle_begin()
+            idle_on = True
+            idle_start_ms = now_ms
+        elapsed = idle_mod.ticks_diff(now_ms, idle_start_ms)
+        name, level = idle_mod.tour_phase(elapsed)
+        r, g, b = idle_mod.phase_rgb(name, elapsed)
+        leds.idle_write(level, (r * level, g * level, b * level))
+        return (True, idle_start_ms, True)
+    except Exception:
+        try:
+            leds.idle_end()
+        except Exception:
+            pass
+        return (False, idle_start_ms, False)
+
+
+def _idle_stop(leds):
+    """Leave idle mode if active; never raises (broken PWM must not kill HB)."""
+    try:
+        leds.idle_end()
+    except Exception:
+        pass
+
+
 def main():
     if not _ON_HARDWARE:
         raise SystemExit("pico/main.py must run on MicroPython hardware")
@@ -281,29 +339,29 @@ def main():
 
         # Non-blocking input: only read when poll says bytes are ready, one
         # byte at a time, buffering until a newline. A partial line never
-        # stalls the loop, so HB and FLASH timing keep running. Every
-        # completed line (and even an overlong dropped one: the host is
-        # clearly talking) counts as host activity and stops idle mode
-        # BEFORE the frame is handled, so a FLASH starting here drives plain
-        # output pins with no added latency beyond this tick.
+        # stalls the loop, so HB and FLASH timing keep running. ANY received
+        # byte counts as host activity (a slow sender dribbling a frame
+        # without a newline yet is still a live host, and the host always
+        # wins); every completed line stops idle mode BEFORE the frame is
+        # handled, so a FLASH starting here drives plain output pins with no
+        # added latency beyond this tick.
         if poll.poll(0):
             chunk = sys.stdin.read(1)
             if chunk:
                 if isinstance(chunk, str):
                     chunk = chunk.encode("ascii", "ignore")
                 rx += chunk
+                last_host_ms = now
                 if len(rx) > MAX_LINE:
                     rx = b""  # overlong line without newline: drop, stay live
-                    last_host_ms = now
                     if idle_on:
-                        leds.idle_end()
+                        _idle_stop(leds)
                         idle_on = False
                 else:
                     while b"\n" in rx:
                         line, rx = rx.split(b"\n", 1)
-                        last_host_ms = now
                         if idle_on:
-                            leds.idle_end()
+                            _idle_stop(leds)
                             idle_on = False
                         _handle(line.decode("ascii", "ignore"), leds, flasher)
         else:
@@ -311,20 +369,15 @@ def main():
 
         # Idle animation: non-blocking, one drive step per tick; never runs
         # while a FLASH pattern is playing (belt-and-braces: a FLASH command
-        # always implies a host frame well inside IDLE_AFTER_S anyway).
+        # always implies a host frame well inside IDLE_AFTER_S anyway). A PWM
+        # failure (e.g. Pico W, whose LED is not GPIO25) disables attract
+        # mode permanently; the host loop is unaffected.
         if use_idle:
-            if idle.idle_state(now, last_host_ms) and flasher.pattern is None:
-                if not idle_on:
-                    leds.idle_begin()
-                    idle_on = True
-                    idle_start_ms = now
-                elapsed = idle.ticks_diff(now, idle_start_ms)
-                name, level = idle.tour_phase(elapsed)
-                r, g, b = idle.phase_rgb(name, elapsed)
-                leds.idle_write(level, (r * level, g * level, b * level))
-            elif idle_on:
-                leds.idle_end()
-                idle_on = False
+            idle_on, idle_start_ms, ok = _idle_step(
+                leds, idle, now, last_host_ms, flasher.pattern is not None,
+                idle_on, idle_start_ms)
+            if not ok:
+                use_idle = False
 
 
 if __name__ == "__main__":

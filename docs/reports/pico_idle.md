@@ -133,6 +133,132 @@ once. Power-cycle the Pico (or `mpremote connect /dev/ttyACM0 reset`) and
 watch the onboard LED with no laptop attached: breathing, then
 solid / slow-blink / fast-blink tour, 0.5 s dark, repeat.
 
+## Fix round 1 (review of PR #45 — all Critical/Important addressed)
+
+Review: `/home/parshu/projects/jadal-qa-wt/reviews/pr45-review.md`
+(SPEC: FAIL — 4 Important, 3 Minor; Security/Determinism/Honesty PASS).
+
+### Important #1 — BREATHE RGB desync after cycle 1: CONFIRMED, FIXED
+
+Reproduced before the fix (`elapsed=14000` gives teal, not the red restart):
+
+```
+14000 BREATHE (0.0, 0.33, 0.67)
+```
+
+Fix (`pico/idle.py`, `phase_rgb`): the BREATHE fade now reduces mod
+`IDLE_CYCLE_MS` first, so it restarts with the tour cycle however the caller
+passes time — strictly stronger than the suggested caller-side `tcyc`, and
+`main.py` (which passes raw elapsed to both `tour_phase` and `phase_rgb`)
+is consistent with no change. After the fix:
+
+```
+0 BREATHE (1.0, 0.0, 0.0)
+14000 BREATHE (1.0, 0.0, 0.0)
+28000 BREATHE (1.0, 0.0, 0.0)
+42000 BREATHE (1.0, 0.0, 0.0)
+cycle-check: True
+```
+
+Regression test added (`test_breathe_colour_restarts_with_cycle`: equality
+across 3 cycles at 211 ms steps + the exact 14000/red assertion). Onboard
+PWM was never affected (reviewer agrees); RGB still has no hardware
+observation (nothing wired).
+
+### Important #2 — README deploy dropped idle.py: FIXED
+
+`pico/README.md` step 4 now copies BOTH files (`:main.py` + `:idle.py`),
+states both are required (without `:idle.py` the firmware boots with attract
+mode silently off), notes `run` needs `idle.py` beside `main.py`, and
+documents the `flock -w 900 <repo>/tools/pico.lock` discipline.
+
+### Important #3 — lock file missing from repo: FIXED
+
+Committed empty `tools/pico.lock` (0 bytes, `LOCK-OK` via
+`flock -w 5 tools/pico.lock true`) and documented it in the README flashing
+section. All round-1 port commands used `flock -w <60..120> tools/pico.lock`
+(repo path this time, not the worktree-parent path). Residual risk, stated
+plainly: sibling workers (`verify`, `picoshow`, …) open `/dev/ttyACM0`
+without flock, so the lock disciplines only those who take it.
+
+### Important #4 — PWM failure killed firmware: FIXED (+ docs corrected)
+
+- New `_idle_step()` helper (`pico/main.py`): one drive tick, returns
+  `(idle_on, idle_start_ms, ok)`, NEVER raises; any PWM/driver exception
+  best-effort stops idle and reports `ok=False`, and the main loop then sets
+  `use_idle=False` permanently while HB/LED/FLASH/PING continue. New
+  `_idle_stop()` similarly never raises (used on the receive path, so a
+  broken PWM state cannot kill the loop when a host frame arrives).
+- `idle_begin` initialises handles to `None` first and releases/re-raises on
+  partial failure; `idle_end` guards every `deinit`, clears `_pwm` (also
+  fixes Minor #2, stale handle) and is safe to call twice.
+- "RP2350 should also work" claims removed (module docstring +
+  `ONBOARD_LED_PIN` comment): RP2040 non-W tested; Pico W (LED on CYW43, not
+  GPIO25) / RP2350 not tested, and on such boards attract mode now degrades
+  to off instead of killing the firmware.
+- Tests: 5 new stub-driven cases (`TestIdleStep`: start/drive, host-frame
+  stop, FLASH suppression, begin/write/end failure → `ok=False` without
+  raising, `_idle_stop` never raises). A W-board failure itself is not
+  reproducible on CPython — stated, not simulated beyond the stubs.
+
+### Minor #1 — any-byte wakes (adopted), #2 — done above, #3 — not mine
+
+- Minor #1: `last_host_ms` now updates on ANY received byte (`rx += chunk`),
+  so a slow sender dribbling a frame without newline still counts as a live
+  host; documented in the `main.py` comment (SPEC frames stay
+  newline-terminated).
+- Minor #3 (`web/api.js` IDLE→OFF mapping) is outside owned files;
+  follow-up only, no action taken.
+
+### Verification (real outputs)
+
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m py_compile pico/main.py pico/idle.py tests/test_pico_idle.py && echo COMPILE-OK
+COMPILE-OK
+$ flock -w 5 tools/pico.lock true && echo LOCK-OK
+LOCK-OK
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 584 tests in 26.859s
+OK (skipped=8)
+```
+
+(`tests/test_pico_idle.py` now 32 tests; `test_pico_protocol.py` /
+`test_pico_link.py` untouched and green. The 584 total vs 329 in round 0 is
+the `origin/main` merge, not this diff.)
+
+### Hardware re-verify: BLOCKED — board silent, exact failure stated
+
+The fix-round-1 image is NOT on the board (it still holds the round-0
+image, flash assumed intact). Re-upload was attempted and failed, documented
+exactly:
+
+- `flock … mpremote … fs cp pico/main.py :main.py` → `TransportError:
+  could not enter raw repl` (two attempts), then `exec "print('STOP-OK')`
+  → same error. `mpremote … reset` → same error path (`do_exec`/
+  `ensure_raw_repl`, exit 1) plus `OSError: [Errno 71] Protocol error` on
+  close RTS ioctl.
+- Direct pyserial probe (flock-held): 3 s passive read → zero bytes (no HB);
+  `PING` → 4 s → zero bytes (no PONG). Raw `Ctrl-C Ctrl-C` → `b''`,
+  `Ctrl-A` → `b''`. Post-"reset" 5 s read → `lines=0`.
+- `lsusb` still shows `Bus 003 Device 013: ID 2e8a:0005 MicroPython Board in
+  FS mode` (enumeration healthy); `fuser` shows no holder. `dmesg`
+  unavailable (Operation not permitted). Conclusion: the on-board runtime is
+  hung — reachable via neither REPL nor protocol. Sibling `picoshow` tooling
+  only sends PING/LED/FLASH (no foreign image; read-only grep of their
+  script), so the flash should still be the round-0 build, but its death is
+  unexplained from here (a PWM-path hang after hours of idle is one
+  unproven suspect — notably the class of failure Important #4 now guards
+  against; the guard itself is host-tested only).
+- No host-side USB reset possible (uid 1000, sysfs `authorized` root-owned).
+  Recovery needs a physical power-cycle (user action) — after which the
+  board will boot the round-0 image (attract mode starts at once) until the
+  fix-round-1 image is uploaded and re-verified in a later session.
+
+Shipped without a fresh on-board boot test: mitigated by `py_compile` +
+CPython import-freedom test + 32 unit tests (incl. stub-driven `_idle_step`
+failure paths); the refactor preserves the round-0 call sequence
+(begin→write…/end) and adds only guards. Not claimed otherwise.
+
 ## NOT claimed
 
 - The LED was not visually observed (no camera on the bench); proven via the

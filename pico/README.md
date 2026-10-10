@@ -67,14 +67,21 @@ breathes and tours verdicts on its own.
    - Download the latest `.uf2` from <https://micropython.org/download/RPI_PICO2/>.
    - Copy it onto the `RPI-RP2` drive. The board reboots into MicroPython.
 
-4. Install the app and reset:
+4. Install the app and reset (both files are required — without `:idle.py`
+   the firmware boots but attract mode stays off with no error):
 
    ```bash
-   mpremote run pico/main.py          # quick test run (Ctrl-C to stop)
+   mpremote run pico/main.py          # quick test run (Ctrl-C to stop; idle.py must be next to main.py)
    # deploy persistently:
    mpremote fs cp pico/main.py :main.py
+   mpremote fs cp pico/idle.py :idle.py
    mpremote reset                     # reboot into main.py
    ```
+
+   Port access is serialised with `flock`: wrap every `mpremote connect
+   /dev/ttyACM0 ...` command in
+   `flock -w 900 <repo>/tools/pico.lock <command>` (the empty `tools/pico.lock`
+   file is committed so all workers share one lock).
 
 5. Watch the serial console:
 

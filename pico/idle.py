@@ -122,7 +122,11 @@ def phase_rgb(name, t_ms):
     if name == "REJECT":
         return (1.0, 0.0, 0.0)
     if name == "BREATHE":
-        t = t_ms % BREATHE_TOTAL_MS
+        # Cycle-relative: tour_phase is periodic over IDLE_CYCLE_MS, so the
+        # fade must restart with the cycle (elapsed=14000 is BREATHE offset 0,
+        # red) rather than running on elapsed % BREATHE_TOTAL_MS (which
+        # desyncs the colour from cycle 1 on).
+        t = (t_ms % IDLE_CYCLE_MS) % BREATHE_TOTAL_MS
         seg = t // BREATHE_PERIOD_MS
         f = (t % BREATHE_PERIOD_MS) / BREATHE_PERIOD_MS
         if seg == 0:
