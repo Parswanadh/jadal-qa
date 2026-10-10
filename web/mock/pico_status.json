@@ -1,0 +1,12 @@
+{
+  "_note": "ILLUSTRATIVE mock status for GET /pico/status.",
+  "connected": true,
+  "led": "A",
+  "led_meaning": "review pending",
+  "port": "/dev/ttyACM0",
+  "baud": 115200,
+  "ticks_ms": 1486220,
+  "last_heartbeat_utc": "2026-10-10T10:20:00Z",
+  "firmware": "jadal-pico-0.1.0",
+  "flash_pattern": null
+}

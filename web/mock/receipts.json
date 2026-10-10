@@ -1,0 +1,1502 @@
+{
+  "827335a0e262bed8": {
+    "segment_sha256": "76b471fffe34df72e4960a8881dd03c485ac349db6e94ef4ed1b622b932f7c57",
+    "signals": {
+      "decodable": true,
+      "blur_var": 38.2658,
+      "brightness_mean": 127.8774,
+      "under_exposed_frac": 0.186,
+      "over_exposed_frac": 0.2063,
+      "motion_mean": 11.9342,
+      "hands_visible_frac": 0.3274,
+      "hand_count_mode": 2,
+      "faces_found": 0,
+      "faces_blurred": 0,
+      "phash": "e302123b7000bfe4",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.6396
+      },
+      "active_work": {
+        "p_yes": 0.685
+      },
+      "step": {
+        "choice": "align_hem",
+        "probs": {
+          "align_hem": 0.91,
+          "attach_collar": 0.0302,
+          "press_seam": 0.012,
+          "inspect_label": 0.0294,
+          "pack": 0.0184
+        },
+        "answer_conf": 0.91
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0912_000",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.91,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "827335a0e262bed8",
+    "created_utc": "2026-10-10T09:12:00Z",
+    "receipt_sha256": "827335a0e262bed8e324c710c833528f391acae7a0116832246b4a39015a087e"
+  },
+  "de593bb1cad38ef7": {
+    "segment_sha256": "e6e7d7603ee2a88ca9251ee363594a476fbf36f643b7d247eb4cbcb9ca92c965",
+    "signals": {
+      "decodable": true,
+      "blur_var": 54.4087,
+      "brightness_mean": 106.0262,
+      "under_exposed_frac": 0.0317,
+      "over_exposed_frac": 0.3843,
+      "motion_mean": 10.4998,
+      "hands_visible_frac": 0.9425,
+      "hand_count_mode": 1,
+      "faces_found": 1,
+      "faces_blurred": 0,
+      "phash": "b876e020a4fc512f",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.4146
+      },
+      "active_work": {
+        "p_yes": 0.3992
+      },
+      "step": {
+        "choice": "attach_collar",
+        "probs": {
+          "align_hem": 0.0356,
+          "attach_collar": 0.8699,
+          "press_seam": 0.0337,
+          "inspect_label": 0.0461,
+          "pack": 0.0147
+        },
+        "answer_conf": 0.87
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0912_001",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.87,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "de593bb1cad38ef7",
+    "created_utc": "2026-10-10T09:12:21Z",
+    "receipt_sha256": "de593bb1cad38ef77a4b633849eca7a3cd19060aca6f1856a5caada1f604d19b"
+  },
+  "307b9ba47793b6e9": {
+    "segment_sha256": "858848ac5d2b7ba83d93d8e5d7c35fee9a0603783ffdde27d99a18cf0d2beaf6",
+    "signals": {
+      "decodable": true,
+      "blur_var": 45.5006,
+      "brightness_mean": 53.9871,
+      "under_exposed_frac": 0.0959,
+      "over_exposed_frac": 0.049,
+      "motion_mean": 7.3404,
+      "hands_visible_frac": 0.8316,
+      "hand_count_mode": 2,
+      "faces_found": 1,
+      "faces_blurred": 0,
+      "phash": "4e1cbfaef1f5ee98",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.7551
+      },
+      "active_work": {
+        "p_yes": 0.8223
+      },
+      "step": {
+        "choice": "press_seam",
+        "probs": {
+          "align_hem": 0.0679,
+          "attach_collar": 0.0576,
+          "press_seam": 0.7801,
+          "inspect_label": 0.0566,
+          "pack": 0.0378
+        },
+        "answer_conf": 0.78
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0912_002",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.78,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "307b9ba47793b6e9",
+    "created_utc": "2026-10-10T09:12:42Z",
+    "receipt_sha256": "307b9ba47793b6e984d31ccf046fecbffba746ec09641e4f080213a7fae9a24d"
+  },
+  "fa36f6486b1af5fd": {
+    "segment_sha256": "978b8b5408ddad285992448528fe5d925935778b26629a9422ce2a347bcc0436",
+    "signals": {
+      "decodable": true,
+      "blur_var": 32.7025,
+      "brightness_mean": 64.04,
+      "under_exposed_frac": 0.0161,
+      "over_exposed_frac": 0.1748,
+      "motion_mean": 3.0448,
+      "hands_visible_frac": 0.4551,
+      "hand_count_mode": 2,
+      "faces_found": 2,
+      "faces_blurred": 0,
+      "phash": "84ae22c619172a9e",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.9028
+      },
+      "active_work": {
+        "p_yes": 0.4996
+      },
+      "step": {
+        "choice": "align_hem",
+        "probs": {
+          "align_hem": 0.83,
+          "attach_collar": 0.0261,
+          "press_seam": 0.0562,
+          "inspect_label": 0.0633,
+          "pack": 0.0244
+        },
+        "answer_conf": 0.83
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0912_003",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.83,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "fa36f6486b1af5fd",
+    "created_utc": "2026-10-10T09:13:03Z",
+    "receipt_sha256": "fa36f6486b1af5fd42efcd3b59611bd92a4d03783f1bb04306e52420b0900a64"
+  },
+  "1203d95bc4536743": {
+    "segment_sha256": "e20b5ab58f684a4cda07ab25234d16bee202d673bd295de1e83eb958c2c1cd2b",
+    "signals": {
+      "decodable": true,
+      "blur_var": 18.3788,
+      "brightness_mean": 122.4576,
+      "under_exposed_frac": 0.1404,
+      "over_exposed_frac": 0.3107,
+      "motion_mean": 2.3424,
+      "hands_visible_frac": 0.2988,
+      "hand_count_mode": 2,
+      "faces_found": 1,
+      "faces_blurred": 0,
+      "phash": "691b4ffa441542a5",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.8907
+      },
+      "active_work": {
+        "p_yes": 0.9468
+      },
+      "step": {
+        "choice": "inspect_label",
+        "probs": {
+          "align_hem": 0.1755,
+          "attach_collar": 0.0813,
+          "press_seam": 0.1909,
+          "inspect_label": 0.44,
+          "pack": 0.1123
+        },
+        "answer_conf": 0.44
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0912_004",
+      "verdict": "review",
+      "reasons": [
+        "LOW_CONFIDENCE"
+      ],
+      "answer_conf": 0.44,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "1203d95bc4536743",
+    "created_utc": "2026-10-10T09:13:24Z",
+    "receipt_sha256": "1203d95bc4536743886fb4513d065fad686258b3df29993e86702fcadb40b87d"
+  },
+  "858e52114ebabd85": {
+    "segment_sha256": "5753a15ba02f42e474bb9402ca2f3adfb91c3458bfbc25fdb35cca6644aab45d",
+    "signals": {
+      "decodable": true,
+      "blur_var": 29.6548,
+      "brightness_mean": 150.8403,
+      "under_exposed_frac": 0.0969,
+      "over_exposed_frac": 0.3185,
+      "motion_mean": 2.5657,
+      "hands_visible_frac": 0.3779,
+      "hand_count_mode": 0,
+      "faces_found": 1,
+      "faces_blurred": 0,
+      "phash": "9da4288dc83c869c",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.5164
+      },
+      "active_work": {
+        "p_yes": 0.5467
+      },
+      "step": {
+        "choice": "pack",
+        "probs": {
+          "align_hem": 0.0259,
+          "attach_collar": 0.0273,
+          "press_seam": 0.0375,
+          "inspect_label": 0.0293,
+          "pack": 0.88
+        },
+        "answer_conf": 0.88
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0912_005",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.88,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "858e52114ebabd85",
+    "created_utc": "2026-10-10T09:13:45Z",
+    "receipt_sha256": "858e52114ebabd85095f448e77fa91a82a0831750d8867dd7f47e313cf222825"
+  },
+  "34b79a92d20b418f": {
+    "segment_sha256": "e51b5adcdbd80accbf0ab7edce0fa7e433610d2199bace8e19ec53a8c6f7afab",
+    "signals": {
+      "decodable": true,
+      "blur_var": 185.2948,
+      "brightness_mean": 167.3949,
+      "under_exposed_frac": 0.0657,
+      "over_exposed_frac": 0.2813,
+      "motion_mean": 4.7307,
+      "hands_visible_frac": 0.933,
+      "hand_count_mode": 2,
+      "faces_found": 2,
+      "faces_blurred": 0,
+      "phash": "bb65ef0e30bf24ab",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.6757
+      },
+      "active_work": {
+        "p_yes": 0.4319
+      },
+      "step": {
+        "choice": "press_seam",
+        "probs": {
+          "align_hem": 0.0299,
+          "attach_collar": 0.0717,
+          "press_seam": 0.81,
+          "inspect_label": 0.0356,
+          "pack": 0.0528
+        },
+        "answer_conf": 0.81
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0912_006",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.81,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "34b79a92d20b418f",
+    "created_utc": "2026-10-10T09:14:06Z",
+    "receipt_sha256": "34b79a92d20b418f72f973300e7aa7e458833489dd6563c1be4234614842b1b9"
+  },
+  "183e7a4590422bac": {
+    "segment_sha256": "0101920d05bb191f197900a29b0a622ad715403ed5df082b1ff19175a1819507",
+    "signals": {
+      "decodable": true,
+      "blur_var": 132.4749,
+      "brightness_mean": 88.8378,
+      "under_exposed_frac": 0.1134,
+      "over_exposed_frac": 0.0283,
+      "motion_mean": 10.3505,
+      "hands_visible_frac": 0.3755,
+      "hand_count_mode": 2,
+      "faces_found": 2,
+      "faces_blurred": 0,
+      "phash": "ae82378b40c1164a",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.7394
+      },
+      "active_work": {
+        "p_yes": 0.4248
+      },
+      "step": {
+        "choice": "attach_collar",
+        "probs": {
+          "align_hem": 0.0354,
+          "attach_collar": 0.7599,
+          "press_seam": 0.0568,
+          "inspect_label": 0.068,
+          "pack": 0.0799
+        },
+        "answer_conf": 0.76
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0912_007",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.76,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "183e7a4590422bac",
+    "created_utc": "2026-10-10T09:14:27Z",
+    "receipt_sha256": "183e7a4590422bac3fdd42a76c02615691a480acc905ca27896539ed6e440226"
+  },
+  "8f2d3bd40239cf9c": {
+    "segment_sha256": "8abad1cd1a3a914a7ccbf7bc40e176ae9d6be310d5dd64f3d997824725d1951a",
+    "signals": {
+      "decodable": true,
+      "blur_var": 224.3985,
+      "brightness_mean": 134.8059,
+      "under_exposed_frac": 0.1487,
+      "over_exposed_frac": 0.3634,
+      "motion_mean": 8.313,
+      "hands_visible_frac": 0.1717,
+      "hand_count_mode": 1,
+      "faces_found": 2,
+      "faces_blurred": 0,
+      "phash": "75ff42475ca4e1b2",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.5
+      },
+      "active_work": {
+        "p_yes": 0.559
+      },
+      "step": {
+        "choice": "align_hem",
+        "probs": {
+          "align_hem": 0.8999,
+          "attach_collar": 0.0279,
+          "press_seam": 0.0158,
+          "inspect_label": 0.0315,
+          "pack": 0.0249
+        },
+        "answer_conf": 0.9
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0931_100",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.9,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "8f2d3bd40239cf9c",
+    "created_utc": "2026-10-10T09:31:07Z",
+    "receipt_sha256": "8f2d3bd40239cf9cc2a5594bc8a95814446baa32a3cad306df45d0053c4cbf5d"
+  },
+  "721fe3fd6ce8bac7": {
+    "segment_sha256": "4816e6991cefcdddd59a62139bb44e1a66ac8731089a79266859ad5164a6e355",
+    "signals": {
+      "decodable": true,
+      "blur_var": 65.1241,
+      "brightness_mean": 55.5029,
+      "under_exposed_frac": 0.2178,
+      "over_exposed_frac": 0.2544,
+      "motion_mean": 9.9715,
+      "hands_visible_frac": 0.5466,
+      "hand_count_mode": 1,
+      "faces_found": 1,
+      "faces_blurred": 0,
+      "phash": "0e29da4f70bbd520",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.4937
+      },
+      "active_work": {
+        "p_yes": 0.4792
+      },
+      "step": {
+        "choice": null,
+        "probs": {
+          "align_hem": 0.2293,
+          "attach_collar": 0.0762,
+          "press_seam": 0.2961,
+          "inspect_label": 0.1827,
+          "pack": 0.2157
+        },
+        "answer_conf": 0.31
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0931_101",
+      "verdict": "reject",
+      "reasons": [
+        "HANDS_NOT_VISIBLE",
+        "LOW_CONFIDENCE"
+      ],
+      "answer_conf": 0.31,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "721fe3fd6ce8bac7",
+    "created_utc": "2026-10-10T09:31:28Z",
+    "receipt_sha256": "721fe3fd6ce8bac76dd936a300aa4124ed1c32252453e62bb1cd7a0c02b25716"
+  },
+  "88336dda60c5f84a": {
+    "segment_sha256": "4f25feebd4f01e3408204558b9f0dba5986016f252e902b267f96d950a44f271",
+    "signals": {
+      "decodable": true,
+      "blur_var": 119.4247,
+      "brightness_mean": 155.5361,
+      "under_exposed_frac": 0.1929,
+      "over_exposed_frac": 0.3965,
+      "motion_mean": 7.5206,
+      "hands_visible_frac": 0.4655,
+      "hand_count_mode": 1,
+      "faces_found": 1,
+      "faces_blurred": 0,
+      "phash": "b790a8316b5a9b85",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.8692
+      },
+      "active_work": {
+        "p_yes": 0.59
+      },
+      "step": {
+        "choice": null,
+        "probs": {
+          "align_hem": 0.1277,
+          "attach_collar": 0.2728,
+          "press_seam": 0.1035,
+          "inspect_label": 0.2919,
+          "pack": 0.2041
+        },
+        "answer_conf": 0.22
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0931_102",
+      "verdict": "reject",
+      "reasons": [
+        "BLUR",
+        "SHAKY"
+      ],
+      "answer_conf": 0.22,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "88336dda60c5f84a",
+    "created_utc": "2026-10-10T09:31:49Z",
+    "receipt_sha256": "88336dda60c5f84a97dc1ef6d03a6b3d4562ff98ea4ef44234cde34a51c6b783"
+  },
+  "da3c74ccd2f902d4": {
+    "segment_sha256": "91701f1570aa1b2fb9a856bd35935a820536076b7ea9f639a134ced8ed4e208d",
+    "signals": {
+      "decodable": true,
+      "blur_var": 105.0646,
+      "brightness_mean": 69.1024,
+      "under_exposed_frac": 0.1149,
+      "over_exposed_frac": 0.1662,
+      "motion_mean": 11.5856,
+      "hands_visible_frac": 0.6368,
+      "hand_count_mode": 2,
+      "faces_found": 1,
+      "faces_blurred": 0,
+      "phash": "ffeb3c43ff34872a",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.5659
+      },
+      "active_work": {
+        "p_yes": 0.2131
+      },
+      "step": {
+        "choice": "press_seam",
+        "probs": {
+          "align_hem": 0.1675,
+          "attach_collar": 0.1636,
+          "press_seam": 0.47,
+          "inspect_label": 0.0501,
+          "pack": 0.1488
+        },
+        "answer_conf": 0.47
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0931_103",
+      "verdict": "review",
+      "reasons": [
+        "WRONG_STEP",
+        "LOW_CONFIDENCE"
+      ],
+      "answer_conf": 0.47,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "da3c74ccd2f902d4",
+    "created_utc": "2026-10-10T09:32:10Z",
+    "receipt_sha256": "da3c74ccd2f902d4a2fc328d6e7824c1441b611eb692c97be8acb4864abf26b6"
+  },
+  "63204f1526bcecd9": {
+    "segment_sha256": "90b5babd12c63f23331022869c83d9c4e22bf9f1e519091f1e037b32d844888f",
+    "signals": {
+      "decodable": true,
+      "blur_var": 152.9104,
+      "brightness_mean": 75.025,
+      "under_exposed_frac": 0.0831,
+      "over_exposed_frac": 0.2849,
+      "motion_mean": 3.0147,
+      "hands_visible_frac": 0.1356,
+      "hand_count_mode": 2,
+      "faces_found": 1,
+      "faces_blurred": 1,
+      "phash": "ffeb3c43ff34872a",
+      "dup_of": "seg_20261010_0931_103"
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.4686
+      },
+      "active_work": {
+        "p_yes": 0.9631
+      },
+      "step": {
+        "choice": "pack",
+        "probs": {
+          "align_hem": 0.1006,
+          "attach_collar": 0.088,
+          "press_seam": 0.2675,
+          "inspect_label": 0.1939,
+          "pack": 0.35
+        },
+        "answer_conf": 0.35
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0931_104",
+      "verdict": "reject",
+      "reasons": [
+        "DUPLICATE"
+      ],
+      "answer_conf": 0.35,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "63204f1526bcecd9",
+    "created_utc": "2026-10-10T09:32:31Z",
+    "receipt_sha256": "63204f1526bcecd9ebd1c3f40c5ddfe57a6b3a3236bf4f30affe156a087d98e3"
+  },
+  "576d46620481cafe": {
+    "segment_sha256": "8ec2307e510a474eede2f679de972991c58bb372d6efc6f6757656e9c29b864d",
+    "signals": {
+      "decodable": true,
+      "blur_var": 104.9746,
+      "brightness_mean": 123.9782,
+      "under_exposed_frac": 0.1086,
+      "over_exposed_frac": 0.1016,
+      "motion_mean": 4.1493,
+      "hands_visible_frac": 0.9541,
+      "hand_count_mode": 2,
+      "faces_found": 0,
+      "faces_blurred": 0,
+      "phash": "5cc099a746eeda8d",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.6963
+      },
+      "active_work": {
+        "p_yes": 0.3212
+      },
+      "step": {
+        "choice": "press_seam",
+        "probs": {
+          "align_hem": 0.0136,
+          "attach_collar": 0.0395,
+          "press_seam": 0.85,
+          "inspect_label": 0.038,
+          "pack": 0.0589
+        },
+        "answer_conf": 0.85
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0950_200",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.85,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "576d46620481cafe",
+    "created_utc": "2026-10-10T09:50:14Z",
+    "receipt_sha256": "576d46620481cafe699fb256f12e84304898d095913400241941449d7a7e80ab"
+  },
+  "d470a58b7430da1b": {
+    "segment_sha256": "9c5bd805394d533943505507792e78cfd366e4296f439c515a852b4a02fcc4f8",
+    "signals": {
+      "decodable": true,
+      "blur_var": 197.2493,
+      "brightness_mean": 31.6564,
+      "under_exposed_frac": 0.1857,
+      "over_exposed_frac": 0.074,
+      "motion_mean": 2.324,
+      "hands_visible_frac": 0.4826,
+      "hand_count_mode": 1,
+      "faces_found": 1,
+      "faces_blurred": 0,
+      "phash": "e0c2227cfc79ae29",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.8858
+      },
+      "active_work": {
+        "p_yes": 0.7975
+      },
+      "step": {
+        "choice": "align_hem",
+        "probs": {
+          "align_hem": 0.79,
+          "attach_collar": 0.0343,
+          "press_seam": 0.0789,
+          "inspect_label": 0.0585,
+          "pack": 0.0383
+        },
+        "answer_conf": 0.79
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0950_201",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.79,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "d470a58b7430da1b",
+    "created_utc": "2026-10-10T09:50:35Z",
+    "receipt_sha256": "d470a58b7430da1be2e1ac548202b4af2b76676b9fd18b5051a0c4b6ab85540d"
+  },
+  "5d538ec57bd5cea4": {
+    "segment_sha256": "e3671d9cd71d4bec4e9f5cd3d815e0acb4194d9d635f5a1fa0fea26c187de9c5",
+    "signals": {
+      "decodable": true,
+      "blur_var": 62.6407,
+      "brightness_mean": 101.1374,
+      "under_exposed_frac": 0.2026,
+      "over_exposed_frac": 0.1405,
+      "motion_mean": 9.2858,
+      "hands_visible_frac": 0.4695,
+      "hand_count_mode": 0,
+      "faces_found": 2,
+      "faces_blurred": 0,
+      "phash": "f8a52e7e728484c6",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.2131
+      },
+      "active_work": {
+        "p_yes": 0.8781
+      },
+      "step": {
+        "choice": "inspect_label",
+        "probs": {
+          "align_hem": 0.0223,
+          "attach_collar": 0.021,
+          "press_seam": 0.0165,
+          "inspect_label": 0.92,
+          "pack": 0.0202
+        },
+        "answer_conf": 0.92
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0950_202",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.92,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "5d538ec57bd5cea4",
+    "created_utc": "2026-10-10T09:50:56Z",
+    "receipt_sha256": "5d538ec57bd5cea439367de54e8011ada0af656833eb3e45fd9baa3207ada284"
+  },
+  "735ac0499bbc93aa": {
+    "segment_sha256": "d96ae64d4a66f8540c7282104ddb28f2e12dd0662bebf65b935e3e0264e44062",
+    "signals": {
+      "decodable": true,
+      "blur_var": 223.0668,
+      "brightness_mean": 91.3243,
+      "under_exposed_frac": 0.1884,
+      "over_exposed_frac": 0.1004,
+      "motion_mean": 5.891,
+      "hands_visible_frac": 0.1466,
+      "hand_count_mode": 2,
+      "faces_found": 0,
+      "faces_blurred": 0,
+      "phash": "e70ddfda7f9f0093",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.4911
+      },
+      "active_work": {
+        "p_yes": 0.2916
+      },
+      "step": {
+        "choice": null,
+        "probs": {
+          "align_hem": 0.3533,
+          "attach_collar": 0.1252,
+          "press_seam": 0.1241,
+          "inspect_label": 0.0943,
+          "pack": 0.303
+        },
+        "answer_conf": 0.19
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0950_203",
+      "verdict": "reject",
+      "reasons": [
+        "TOO_DARK"
+      ],
+      "answer_conf": 0.19,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "735ac0499bbc93aa",
+    "created_utc": "2026-10-10T09:51:17Z",
+    "receipt_sha256": "735ac0499bbc93aabfab04078a112b2e05b1ff16d2e438467e556418702ea71d"
+  },
+  "fd59bfc186a5f846": {
+    "segment_sha256": "6f7b5f964bca54e92adb7893161a267311f4cd631282fb4fea28108d4c1552e9",
+    "signals": {
+      "decodable": true,
+      "blur_var": 214.0425,
+      "brightness_mean": 60.298,
+      "under_exposed_frac": 0.137,
+      "over_exposed_frac": 0.2362,
+      "motion_mean": 12.0983,
+      "hands_visible_frac": 0.3218,
+      "hand_count_mode": 2,
+      "faces_found": 0,
+      "faces_blurred": 0,
+      "phash": "72c1480b1801df09",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.4308
+      },
+      "active_work": {
+        "p_yes": 0.6932
+      },
+      "step": {
+        "choice": null,
+        "probs": {
+          "align_hem": 0.1602,
+          "attach_collar": 0.2083,
+          "press_seam": 0.3095,
+          "inspect_label": 0.241,
+          "pack": 0.081
+        },
+        "answer_conf": 0.27
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0950_204",
+      "verdict": "reject",
+      "reasons": [
+        "OVEREXPOSED"
+      ],
+      "answer_conf": 0.27,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "fd59bfc186a5f846",
+    "created_utc": "2026-10-10T09:51:38Z",
+    "receipt_sha256": "fd59bfc186a5f84629612ec8a352670b89ebd21ca34a87043b33e4aba5c97f23"
+  },
+  "887185f4945b2ef0": {
+    "segment_sha256": "875b1599225f0b60b4cfa8b55469c8ad8c2d59e77b08f53eea92ce907f9e162d",
+    "signals": {
+      "decodable": true,
+      "blur_var": 164.1659,
+      "brightness_mean": 85.1642,
+      "under_exposed_frac": 0.0973,
+      "over_exposed_frac": 0.0749,
+      "motion_mean": 1.7971,
+      "hands_visible_frac": 0.8938,
+      "hand_count_mode": 2,
+      "faces_found": 2,
+      "faces_blurred": 0,
+      "phash": "6519f0d5da932da1",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.7496
+      },
+      "active_work": {
+        "p_yes": 0.2541
+      },
+      "step": {
+        "choice": null,
+        "probs": {
+          "align_hem": 0.2439,
+          "attach_collar": 0.2496,
+          "press_seam": 0.2874,
+          "inspect_label": 0.1112,
+          "pack": 0.1079
+        },
+        "answer_conf": 0.41
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0950_205",
+      "verdict": "review",
+      "reasons": [
+        "NO_ACTIVE_WORK",
+        "LOW_CONFIDENCE"
+      ],
+      "answer_conf": 0.41,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "887185f4945b2ef0",
+    "created_utc": "2026-10-10T09:51:59Z",
+    "receipt_sha256": "887185f4945b2ef0707c6b2f808d395b1df20e6d856086c4268bd3fdac5ace1e"
+  },
+  "4ff69ba0f71828e9": {
+    "segment_sha256": "cd6cb74b074abb65d69b3c12dc027277ff2091cebdcdeab41c2db030389b149a",
+    "signals": {
+      "decodable": true,
+      "blur_var": 129.5005,
+      "brightness_mean": 122.2822,
+      "under_exposed_frac": 0.1275,
+      "over_exposed_frac": 0.164,
+      "motion_mean": 7.9739,
+      "hands_visible_frac": 0.6503,
+      "hand_count_mode": 2,
+      "faces_found": 2,
+      "faces_blurred": 0,
+      "phash": "2af822e0b163e518",
+      "dup_of": null
+    },
+    "decisions": {
+      "hands_ok": {
+        "p_yes": 0.2778
+      },
+      "active_work": {
+        "p_yes": 0.3988
+      },
+      "step": {
+        "choice": "pack",
+        "probs": {
+          "align_hem": 0.0358,
+          "attach_collar": 0.0279,
+          "press_seam": 0.0464,
+          "inspect_label": 0.0298,
+          "pack": 0.8601
+        },
+        "answer_conf": 0.86
+      },
+      "model_versions": {
+        "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+        "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+      }
+    },
+    "verdict": {
+      "segment_id": "seg_20261010_0950_206",
+      "verdict": "accept",
+      "reasons": [],
+      "answer_conf": 0.86,
+      "threshold": 0.5
+    },
+    "config": {
+      "thresholds": {
+        "hands_ok": 0.55,
+        "active_work": 0.6,
+        "step": 0.5,
+        "blur_var_min": 60.0,
+        "brightness_min": 40.0,
+        "over_exposed_frac_max": 0.35,
+        "motion_max": 12.0,
+        "hands_visible_frac_min": 0.5
+      },
+      "pipeline_version": "0.1.0",
+      "versions": {
+        "python": "3.12.15",
+        "torch": "2.9.0+cu130",
+        "opencv": "4.11.0",
+        "models": {
+          "hands": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "active_work": "embeddinggemma2-3b-heads@sha256:9f2c1d4e",
+          "step": "embeddinggemma2-3b-heads@sha256:9f2c1d4e"
+        }
+      }
+    },
+    "receipt_id": "4ff69ba0f71828e9",
+    "created_utc": "2026-10-10T09:52:20Z",
+    "receipt_sha256": "4ff69ba0f71828e94c7896d9690862e8638138b662575b0469976a95e245c25b"
+  }
+}
