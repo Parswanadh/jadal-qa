@@ -12,9 +12,11 @@ resolution stays sequential in manifest order (exact reuse of
 
 Writes:
   eval/results/gold_l0_signals.json  (per-segment signals + backend versions)
-  eval/results/funnel_calibration_gold.json (calibrate_two_sided output with
+  eval/results/funnel_gold_calibration.json (calibrate_two_sided output with
       schema-checked human_provenance + sidecar, same shape as
-      calibrate_funnel.py --from-gold)
+      calibrate_funnel.py --from-gold; named to NOT match the service's
+      ``funnel_calibration*.json`` fallback glob, so the shipped
+      synthetic-labelled endpoint output is undisturbed)
 
 Usage:
     JADAL_MODELS_DIR=/home/parshu/projects/jadal-qa/models \\
@@ -67,7 +69,7 @@ def main(argv: list[str] | None = None) -> int:
                         / "gold_l0_signals.json")
     parser.add_argument("--calibration-out", type=Path,
                         default=ROOT / "eval" / "results"
-                        / "funnel_calibration_gold.json")
+                        / "funnel_gold_calibration.json")
     parser.add_argument("--jobs", type=int, default=6)
     parser.add_argument("--seed", type=int, default=1234)
     parser.add_argument("--alpha", type=float, default=0.05)

@@ -13,7 +13,7 @@ with NO certificate attached:
   * signal medians for good vs each bad-reason group (separation, not a bound).
 
 Writes eval/results/funnel_gold_descriptive.json. Every number here is
-exploratory: the certified numbers live in funnel_calibration_gold.json.
+exploratory: the certified numbers live in funnel_gold_calibration.json.
 
 Usage:
     PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/analyze_gold_l0.py

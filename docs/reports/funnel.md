@@ -370,6 +370,156 @@ Rulings addressed, with evidence:
   rulings, not by code gaps — 1g asserted the old silent-null behaviour
   (ruling 4 now demands refusal; the probe exits there with
   `REFUSING ... Nothing was written`), and 5j hard-codes `False`
-  (unpassable as written). A byte-identical copy of the probe with only
-  those two checks updated to the post-fix contracts passes 51/51
-  (`/tmp` copy, reviewer's file untouched).
+   (unpassable as written). A byte-identical copy of the probe with only
+   those two checks updated to the post-fix contracts passes 51/51
+   (`/tmp` copy, reviewer's file untouched).
+
+---
+
+## Round 3 (issue #56: autonomous mode + calibrate on the 150 human gold labels)
+
+Branch `feat/funnel3`. Every number below is generated from the committed
+JSON artifacts, not hand-typed. Reproduce with the commands shown
+(`PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python` throughout,
+CPU only, `JADAL_MODELS_DIR=/home/parshu/projects/jadal-qa/models`
+for the signals step).
+
+### Autonomous mode (DONE, shipped default unchanged)
+
+`thresholds['mode']`: `'supervised'` (DEFAULT when absent — every existing
+test passes unchanged) or `'autonomous'` (anything else raises
+`ValueError`; a `mode=` argument overrides the file). Autonomous has no
+`review` bucket: confident accepts and evidence rejects are unchanged,
+and every clip supervised mode would review instead rejects with
+`LOW_CONFIDENCE` (soft L1 codes ride along as context, plus an
+`autonomous` marker evidence entry with a value/op/threshold triple).
+L1 heads still never hard-reject; non-boolean `decodable` and missing L0
+measurements still fail closed (now to reject, never accept). The shipped
+`configs/funnel_thresholds.json` gains `"mode": "supervised"` (sha
+`304b96a418e8819d840989bc0cc5ad336fe32441c5205aee65b45b158b7b1e3d`).
+`calibrate_two_sided` additionally measures `union_autonomous` on CERTIFY
+at full delta: evidence rejects PLUS fallback rejects — this bound
+INCLUDES the LOW_CONFIDENCE count and IS the safety claim with no human
+backstop. New `tests/test_funnel_autonomous.py` (12 tests): 3000-case
+seeded fuzz (autonomous never emits `review`; every reject carries
+evidence with check/value/op/threshold/code), mode switch, L1-never-rejects,
+garbage-decodable fails closed, `union_autonomous` fired >= `union` fired,
+tampered-thresholds-file raises, forged `human_gold` records without the
+schema-checked gold path stay `provisional`.
+
+### Human gold snapshot (READ-ONLY source, copied once)
+
+Live file `/home/parshu/projects/jadal-qa-wt/funnel/eval/gold/labels.json`
+(never written by this worker) snapshotted to
+`eval/results/gold_labels_snapshot.json`
+(sha256 `43ab44e5…cab062dc`, identical before/after):
+`latest` = 150 entries: 100 good / 50 bad; bad reasons NO_ACTIVE_WORK 23,
+HANDS_NOT_VISIBLE 14, DUPLICATE 6, TOO_DARK 6, UNDECODABLE 1.
+Manifest `eval/gold/segments.json` (identical to the funnel worktree's):
+150 x 10 s windows from 7 clips (ecu_full 48, desk 29, organise 19,
+pallet 17, logistics4 17, ecu_late 14, pallet2 6).
+
+### Real L0 signals (DONE): eval/results/gold_l0_signals.json
+
+```
+JADAL_MODELS_DIR=/home/parshu/projects/jadal-qa/models PYTHONNOUSERSITE=1 \
+/home/parshu/envs/jadal/bin/python eval/compute_gold_l0.py --jobs 6
+```
+
+Cut exactly [start_s, end_s) per window (cached under git-ignored
+`data_runtime/gold_cuts/`, sources read-only) + real
+`jadal.signals.compute_signals`, 6 processes, then the exact
+`build_gold_records` join (decisions None — no L1 yet; dup by exact phash
+in manifest order). Backends recorded in the JSON: faces mediapipe,
+hands mediapipe, mediapipe 1.1.0, opencv 5.0.0, face/hand model sha256
+pinned. 150/150 windows.
+
+### Certified calibration: eval/results/funnel_gold_calibration.json
+(NB: named `funnel_gold_*`, not `funnel_calibration_*`, so the service's
+`funnel_calibration*.json` fallback glob keeps surfacing the shipped
+synthetic-labelled file — verified by
+`test_stats_and_sop_endpoints_work`.)
+
+Same command as above (calibration half: `calibrate_two_sided` defaults —
+alpha/beta 0.05, delta 0.1, Bonferroni delta/m = 0.0125, seed 1234 — with
+schema-checked `human_provenance` attached):
+
+```
+## source=human_gold (N=150, select=66 (4 clips), certify=84 (3 clips);
+n_segments=150, n_clips=7, n_wearers=3, n_labellers=unknown,
+label_source=human_gold, delta_per_rule=0.0125)
+| side | threshold | certify fired | certify errors | certify UCB | gate |
+|---|---|---|---|---|---|
+| accept | None | 0 | 0 | None | WRITTEN |
+(every reject rule DISABLED: strictest supported candidate already exceeds
+target_beta — support floor 86)
+union CERTIFY (evidence_reject): rejected=0 errors=0 UCB=None (n_certify=84)
+union_autonomous CERTIFY: rejected=84 errors=58 UCB=0.757 (n_certify=84)
+```
+
+Read it plainly. **Nothing certifies at N=150 with 7 clips**: the
+Bonferroni support floor (86 clean fires) exceeds the whole CERTIFY split
+(84 segments on 3 clips), so all 8 rules are DISABLED and no rule could
+have passed in principle. `accept_conf` is null and uncalibratable — no
+decider score exists for these windows (`spectral_data/arms/E/gold.json`
+carries 79 embeddings, every score null; said so, not worked around).
+The evidence-reject union fires 0 times (UCB None: no measurable claim).
+The autonomous union rejects all 84 CERTIFY clips with 58 false
+(UCB 0.757): with decisions None there is no confidence signal, so
+autonomous mode rejects everything, goods included. The 7-clip split
+means this openly: SELECT is 4 clips, CERTIFY 3 — one odd clip swings
+every bound, and wearer coverage is 3 ids with unknown labeller.
+`configs/funnel_thresholds.calibrated.json` is therefore written with
+status **`provisional`** (all quality thresholds nulled/disabled,
+`load_thresholds()`-verified) and says why in its note — no placeholder
+is presented as calibrated.
+
+### Descriptive only (NO certificate): eval/results/funnel_gold_descriptive.json
+
+```
+PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/analyze_gold_l0.py
+```
+
+Routing all 150 gold windows at SHIPPED placeholder thresholds under
+`evidence_reject` (decisions None, so 0 accepts anywhere — description,
+not evaluation): bad 19 reject / 31 review; good 12 reject / 88 review.
+L0-checkable bads (TOO_DARK+DUPLICATE+UNDECODABLE = 13): 7 reject at
+placeholders — the TOO_DARK rule catches 6/6 TOO_DARK bads at 1 false
+(brightness medians 19.0 bad vs 72.1 good: separable); exact-phash
+duplicate catches 0/6 human DUPLICATEs (near-dups, not bit-copies).
+HANDS_NOT_VISIBLE: 13/14 reject under the assembly profile
+(requires_hands). NO_ACTIVE_WORK (23, not L0-checkable per the brief):
+motion medians good 9.32 vs bad 9.32 — pixel motion does not separate
+human activity judgement at all; this 46% of the bad set is what the
+learned/spectral tier must catch. Blur never fires (good median 738 vs
+placeholder 60; zero BLUR-labelled bads). SHAKY at placeholder 12.0 is
+noisy (11 goods + 11 bads fire) — exactly the kind of rule certification
+stops, and here it did.
+
+### Verification commands (all ran)
+
+- `python -m unittest discover -s tests -p 'test_funnel*'` → Ran 120
+  tests, OK (53 round-1 + 55 round-2/fix-round-1 + 12 autonomous).
+- `python -m unittest discover -s tests` → Ran 565 tests, OK
+  (skipped=8). Two service tests needed attention after the legitimate
+  thresholds change and are green again: `receipt.json` in
+  `docs/api_examples/` regenerated via the documented
+  `scripts/gen_api_examples.py` (receipt hashes cover the thresholds, and
+  batch receipts list `ORDER BY receipt_id`, so the `mode` key reshuffles
+  which receipt is first — the regeneration is the design working, not
+  drift; `pico_status.json` hardware values left untouched), and the gold
+  calibration file renamed out of the service glob (above).
+- End-to-end gold commands above; all outputs committed under
+  `eval/results/` with snapshot sha `43ab44e5…` and mediapipe backends
+  pinned beside the signals.
+
+### NOT DONE / caveats
+
+- No certified L0 threshold exists at this N (provisional config only);
+  autonomous operation has no safety bound below UCB 0.757 until a
+  confidence signal (decider scores on these windows) enables accept
+  calibration and more clips lift the support floor.
+- Single labelling session, labeller id unknown; 7 IndEgo clips, 3
+  wearers — nothing here transfers to Awign footage without re-calibration.
+- Learned/spectral tier for the 23 NO_ACTIVE_WORK bads is other workers'
+  scope; this report only bounds what L0 cannot do.
