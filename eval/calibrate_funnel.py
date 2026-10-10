@@ -25,9 +25,9 @@ written threshold's CERTIFY bound met; else 'provisional' (source stated).
 label source stated).
 
 Usage:
-    PYTHONNOUSERSITE=1 python3 \\
+    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python \\
         eval/calibrate_funnel.py --synthetic 400 --seed 7
-    PYTHONNOUSERSITE=1 python3 \\
+    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python \\
         eval/calibrate_funnel.py --from-gold --source human_gold --write-config
 """
 from __future__ import annotations
