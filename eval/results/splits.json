@@ -1,6 +1,6 @@
 {
   "created_utc": "2026-10-10T06:18:28Z",
-  "data_dir": "/home/parshu/projects/awing/data/ego10k_eval",
+  "data_dir": "/workspace/jadal_pod_bundle/data/ego10k_eval",
   "dataset_report": {
     "distinct_frame_ids": 30000,
     "files": {

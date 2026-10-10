@@ -16,7 +16,7 @@ Writes eval/results/funnel_gold_descriptive.json. Every number here is
 exploratory: the certified numbers live in funnel_gold_calibration.json.
 
 Usage:
-    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/analyze_gold_l0.py
+    PYTHONNOUSERSITE=1 python3 eval/analyze_gold_l0.py
 """
 from __future__ import annotations
 

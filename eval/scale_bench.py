@@ -20,7 +20,7 @@ Honest-labelling notes (read before quoting any number):
   runs L1 alone when the module exists AND the GPU is otherwise idle.
 
 Usage:
-    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/scale_bench.py
+    PYTHONNOUSERSITE=1 python3 eval/scale_bench.py
 """
 from __future__ import annotations
 

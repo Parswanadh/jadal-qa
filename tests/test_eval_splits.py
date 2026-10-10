@@ -1,7 +1,7 @@
 """Tests for the eval harness: make_splits components/splits, check_leakage,
 calibration_report (select-on-calibration / report-on-test).
 
-Run: PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests
+Run: PYTHONNOUSERSITE=1 python3 -m unittest discover -s tests
 (from the repo root). All fixtures are synthetic; real parquet inputs untouched.
 """
 
