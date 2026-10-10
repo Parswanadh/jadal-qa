@@ -193,8 +193,9 @@ def bench_decode():
             sampler.stop()
             sampler.join(timeout=5)
             frames = sum(totals) / frame_bytes
-            fps = frames / wall
-            rtf = (dur * conc) / wall
+            ok = all(rc == 0 for rc in rcs) and frames > 0
+            fps = frames / wall if ok else None
+            rtf = (dur * conc) / wall if ok else None
             # parse dec util samples
             decvals = []
             for s in sampler.samples:
@@ -207,8 +208,9 @@ def bench_decode():
                 "decoder": "nvdec", "scale": scale, "concurrency": conc,
                 "wall_s": round(wall, 2), "bytes_per_proc": totals,
                 "returncodes": rcs, "frames_total": round(frames, 1),
-                "frames_per_s": round(fps, 1),
-                "video_s_per_wall_s": round(rtf, 2),
+                "frames_per_s": round(fps, 1) if fps is not None else None,
+                "video_s_per_wall_s": round(rtf, 2) if rtf is not None else None,
+                "failed": not ok,
                 "dec_util_max": max(decvals) if decvals else None,
                 "dec_util_mean": round(sum(decvals) / len(decvals), 1) if decvals else None,
             })

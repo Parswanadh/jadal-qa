@@ -26,10 +26,11 @@
      234
     ],
     "frames_total": 0.0,
-    "frames_per_s": 0.0,
-    "video_s_per_wall_s": 53.17,
+    "frames_per_s": null,
+    "video_s_per_wall_s": null,
     "dec_util_max": 0.0,
-    "dec_util_mean": 0.0
+    "dec_util_mean": 0.0,
+    "failed": true
    },
    {
     "decoder": "nvdec",
@@ -45,10 +46,11 @@
      234
     ],
     "frames_total": 0.0,
-    "frames_per_s": 0.0,
-    "video_s_per_wall_s": 59.76,
+    "frames_per_s": null,
+    "video_s_per_wall_s": null,
     "dec_util_max": 0.0,
-    "dec_util_mean": 0.0
+    "dec_util_mean": 0.0,
+    "failed": true
    },
    {
     "decoder": "nvdec",
@@ -68,10 +70,11 @@
      234
     ],
     "frames_total": 0.0,
-    "frames_per_s": 0.0,
-    "video_s_per_wall_s": 66.28,
+    "frames_per_s": null,
+    "video_s_per_wall_s": null,
     "dec_util_max": 0.0,
-    "dec_util_mean": 0.0
+    "dec_util_mean": 0.0,
+    "failed": true
    },
    {
     "decoder": "nvdec",
@@ -99,10 +102,11 @@
      234
     ],
     "frames_total": 0.0,
-    "frames_per_s": 0.0,
-    "video_s_per_wall_s": 78.19,
+    "frames_per_s": null,
+    "video_s_per_wall_s": null,
     "dec_util_max": 0.0,
-    "dec_util_mean": 0.0
+    "dec_util_mean": 0.0,
+    "failed": true
    },
    {
     "decoder": "cpu",
@@ -111,7 +115,8 @@
     "wall_s": 0.15,
     "frames_total": 150.0,
     "frames_per_s": 989.0,
-    "video_s_per_wall_s": 98.9
+    "video_s_per_wall_s": 98.9,
+    "failed": false
    },
    {
     "decoder": "cpu",
@@ -120,7 +125,8 @@
     "wall_s": 0.4,
     "frames_total": 600.0,
     "frames_per_s": 1511.9,
-    "video_s_per_wall_s": 151.19
+    "video_s_per_wall_s": 151.19,
+    "failed": false
    },
    {
     "decoder": "nvdec",
@@ -134,10 +140,11 @@
      234
     ],
     "frames_total": 0.0,
-    "frames_per_s": 0.0,
-    "video_s_per_wall_s": 50.27,
+    "frames_per_s": null,
+    "video_s_per_wall_s": null,
     "dec_util_max": 0.0,
-    "dec_util_mean": 0.0
+    "dec_util_mean": 0.0,
+    "failed": true
    },
    {
     "decoder": "nvdec",
@@ -153,10 +160,11 @@
      234
     ],
     "frames_total": 0.0,
-    "frames_per_s": 0.0,
-    "video_s_per_wall_s": 59.25,
+    "frames_per_s": null,
+    "video_s_per_wall_s": null,
     "dec_util_max": 0.0,
-    "dec_util_mean": 0.0
+    "dec_util_mean": 0.0,
+    "failed": true
    },
    {
     "decoder": "nvdec",
@@ -176,10 +184,11 @@
      234
     ],
     "frames_total": 0.0,
-    "frames_per_s": 0.0,
-    "video_s_per_wall_s": 63.45,
+    "frames_per_s": null,
+    "video_s_per_wall_s": null,
     "dec_util_max": 7.0,
-    "dec_util_mean": 3.5
+    "dec_util_mean": 3.5,
+    "failed": true
    },
    {
     "decoder": "nvdec",
@@ -207,10 +216,11 @@
      234
     ],
     "frames_total": 0.0,
-    "frames_per_s": 0.0,
-    "video_s_per_wall_s": 71.39,
+    "frames_per_s": null,
+    "video_s_per_wall_s": null,
     "dec_util_max": 0.0,
-    "dec_util_mean": 0.0
+    "dec_util_mean": 0.0,
+    "failed": true
    },
    {
     "decoder": "cpu",
@@ -219,7 +229,8 @@
     "wall_s": 0.15,
     "frames_total": 150.0,
     "frames_per_s": 1017.2,
-    "video_s_per_wall_s": 101.72
+    "video_s_per_wall_s": 101.72,
+    "failed": false
    },
    {
     "decoder": "cpu",
@@ -228,7 +239,8 @@
     "wall_s": 0.37,
     "frames_total": 600.0,
     "frames_per_s": 1614.0,
-    "video_s_per_wall_s": 161.4
+    "video_s_per_wall_s": 161.4,
+    "failed": false
    }
   ]
  },
@@ -262,5 +274,6 @@
   }
  },
  "peak_vram_mib": 1226.0,
- "wall_s": 12.9
+ "wall_s": 12.9,
+ "note": "NVDEC rows failed (rc=234, scale_cuda/hwdownload filter error in this ffmpeg build); see nvdec_probe.json. CPU rows valid."
 }
