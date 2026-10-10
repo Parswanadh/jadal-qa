@@ -17,12 +17,22 @@
   "indego_windows": 150,
   "ood_windows": 60
  },
- "classification_rule": "stable/flip require both |AUROC-0.5|>=0.05 on the same/opposite side; else 'chance'",
+ "classification_rule": "chance iff BOTH |AUROC-0.5| < 0.05 (tol); otherwise stable if both AUROCs are on the same side of 0.5, flip if opposite (e5lib.classify_transfer)",
  "counts": {
   "stable": 8,
   "flip": 14,
   "chance": 4
  },
+ "counts_native30": {
+  "stable": 9,
+  "flip": 16,
+  "chance": 1
+ },
+ "native30_vs_10fps_class_disagreements": [
+  "temp_b3",
+  "flicker_idx",
+  "dark_frac"
+ ],
  "table": [
   {
    "feature": "temp_b0",
@@ -37,6 +47,7 @@
     0.07036135756740458,
     0.4506379519400353
    ],
+   "ood_native30_sign": "low-usable",
    "ood_10fps_auroc": 0.23965141612200436,
    "ood_10fps_ci95": [
     0.07268138111888112,
@@ -44,7 +55,9 @@
    ],
    "ood_10fps_sign": "low-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "temp_b1",
@@ -59,6 +72,7 @@
     0.39182692307692313,
     0.7501043599257886
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.5838779956427015,
    "ood_10fps_ci95": [
     0.4044071999429143,
@@ -66,7 +80,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "temp_b2",
@@ -81,6 +97,7 @@
     0.5228427223719677,
     0.8596754385964912
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.6949891067538126,
    "ood_10fps_ci95": [
     0.5183916488603988,
@@ -88,7 +105,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "temp_b3",
@@ -103,6 +122,7 @@
     0.43741477272727275,
     0.7932143281101616
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.5,
    "ood_10fps_ci95": [
     0.5,
@@ -110,7 +130,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "chance",
-   "sign_agrees_10fps": true
+   "class_native30": "flip",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": false
   },
   {
    "feature": "frozen_frac",
@@ -125,6 +147,7 @@
     0.35578247978436656,
     0.5661329825834543
    ],
+   "ood_native30_sign": "low-usable",
    "ood_10fps_auroc": 0.49673202614379086,
    "ood_10fps_ci95": [
     0.35817307692307687,
@@ -132,7 +155,9 @@
    ],
    "ood_10fps_sign": "low-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "flicker_idx",
@@ -147,6 +172,7 @@
     0.5369883697713886,
     0.8483482142857144
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.5,
    "ood_10fps_ci95": [
     0.5,
@@ -154,7 +180,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "chance",
-   "sign_agrees_10fps": true
+   "class_native30": "flip",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": false
   },
   {
    "feature": "radial_slope",
@@ -169,6 +197,7 @@
     0.4005230813499404,
     0.8510076976594835
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.644880174291939,
    "ood_10fps_ci95": [
     0.4005230813499404,
@@ -176,7 +205,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "stable",
-   "sign_agrees_10fps": true
+   "class_native30": "stable",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "hf_ratio",
@@ -191,6 +222,7 @@
     0.4335125369592282,
     0.8980111111111111
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.6928104575163399,
    "ood_10fps_ci95": [
     0.4335125369592282,
@@ -198,7 +230,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "stable",
-   "sign_agrees_10fps": true
+   "class_native30": "stable",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "dct_energy",
@@ -213,6 +247,7 @@
     0.5288053338171262,
     0.858001851851852
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.701525054466231,
    "ood_10fps_ci95": [
     0.5288053338171262,
@@ -220,7 +255,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "stable",
-   "sign_agrees_10fps": true
+   "class_native30": "stable",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "pca_resid",
@@ -235,6 +272,7 @@
     0.41830065359477125,
     0.9215884466994344
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.6928104575163399,
    "ood_10fps_ci95": [
     0.41830065359477125,
@@ -242,7 +280,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "pca_top1_share",
@@ -257,6 +297,7 @@
     0.10879824151882976,
     0.6226754223702059
    ],
+   "ood_native30_sign": "low-usable",
    "ood_10fps_auroc": 0.3485838779956427,
    "ood_10fps_ci95": [
     0.10879824151882976,
@@ -264,7 +305,9 @@
    ],
    "ood_10fps_sign": "low-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "luma_mean",
@@ -279,6 +322,7 @@
     0.11867099465883661,
     0.4905791404612159
    ],
+   "ood_native30_sign": "low-usable",
    "ood_10fps_auroc": 0.29193899782135074,
    "ood_10fps_ci95": [
     0.11867099465883661,
@@ -286,7 +330,9 @@
    ],
    "ood_10fps_sign": "low-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "luma_p05",
@@ -301,6 +347,7 @@
     0.269473661080511,
     0.6875375
    ],
+   "ood_native30_sign": "low-usable",
    "ood_10fps_auroc": 0.47276688453159044,
    "ood_10fps_ci95": [
     0.26796510270774976,
@@ -308,7 +355,9 @@
    ],
    "ood_10fps_sign": "low-usable",
    "class": "stable",
-   "sign_agrees_10fps": true
+   "class_native30": "stable",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "luma_p50",
@@ -323,6 +372,7 @@
     0.06969150641025641,
     0.40409215686274513
    ],
+   "ood_native30_sign": "low-usable",
    "ood_10fps_auroc": 0.22440087145969495,
    "ood_10fps_ci95": [
     0.07438850948579723,
@@ -330,7 +380,9 @@
    ],
    "ood_10fps_sign": "low-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "luma_p95",
@@ -345,6 +397,7 @@
     0.5271738048852019,
     0.9006335282651073
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.7233115468409587,
    "ood_10fps_ci95": [
     0.5271738048852019,
@@ -352,7 +405,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "dark_frac",
@@ -367,6 +422,7 @@
     0.2243118775287893,
     0.6801437908496734
    ],
+   "ood_native30_sign": "low-usable",
    "ood_10fps_auroc": 0.4509803921568627,
    "ood_10fps_ci95": [
     0.2243118775287893,
@@ -374,7 +430,9 @@
    ],
    "ood_10fps_sign": "low-usable",
    "class": "chance",
-   "sign_agrees_10fps": true
+   "class_native30": "stable",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": false
   },
   {
    "feature": "bright_frac",
@@ -389,6 +447,7 @@
     0.4151599702380952,
     0.9106753812636166
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.6775599128540305,
    "ood_10fps_ci95": [
     0.4155539772727273,
@@ -396,7 +455,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "motion_energy",
@@ -411,6 +472,7 @@
     0.5089299242424243,
     0.8480160714285714
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.7211328976034859,
    "ood_10fps_ci95": [
     0.5488963293650794,
@@ -418,7 +480,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "global_shift",
@@ -433,6 +497,7 @@
     0.25329051002905456,
     0.6825030687397708
    ],
+   "ood_native30_sign": "low-usable",
    "ood_10fps_auroc": 0.4607843137254902,
    "ood_10fps_ci95": [
     0.25329051002905456,
@@ -440,7 +505,9 @@
    ],
    "ood_10fps_sign": "low-usable",
    "class": "stable",
-   "sign_agrees_10fps": true
+   "class_native30": "stable",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "skin_frac",
@@ -455,6 +522,7 @@
     0.10493827160493827,
     0.4286044973544974
    ],
+   "ood_native30_sign": "low-usable",
    "ood_10fps_auroc": 0.2570806100217865,
    "ood_10fps_ci95": [
     0.10570690883190884,
@@ -462,7 +530,9 @@
    ],
    "ood_10fps_sign": "low-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "illum_r",
@@ -477,6 +547,7 @@
     0.06532530480140775,
     0.2963112708395727
    ],
+   "ood_native30_sign": "low-usable",
    "ood_10fps_auroc": 0.16339869281045752,
    "ood_10fps_ci95": [
     0.06009615384615385,
@@ -484,7 +555,9 @@
    ],
    "ood_10fps_sign": "low-usable",
    "class": "stable",
-   "sign_agrees_10fps": true
+   "class_native30": "stable",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "illum_g",
@@ -499,6 +572,7 @@
     0.522885430705301,
     0.8519206199460917
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.6949891067538126,
    "ood_10fps_ci95": [
     0.5206448801742919,
@@ -506,7 +580,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "illum_b",
@@ -521,6 +597,7 @@
     0.5956645447530864,
     0.8976304945054947
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.7625272331154684,
    "ood_10fps_ci95": [
     0.5953688392352988,
@@ -528,7 +605,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "stable",
-   "sign_agrees_10fps": true
+   "class_native30": "stable",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "rppg_pulse",
@@ -543,6 +622,7 @@
     0.5239727272727273,
     0.908686625874126
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.6753812636165578,
    "ood_10fps_ci95": [
     0.47685727762803237,
@@ -550,7 +630,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "flip",
-   "sign_agrees_10fps": false
+   "class_native30": "flip",
+   "sign_agrees_10fps": false,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "dup_hash_mean",
@@ -565,6 +647,7 @@
     0.5,
     0.5
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.5,
    "ood_10fps_ci95": [
     0.5,
@@ -572,7 +655,9 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "chance",
-   "sign_agrees_10fps": true
+   "class_native30": "chance",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": true
   },
   {
    "feature": "zncc_self",
@@ -587,6 +672,7 @@
     0.2945398351648352,
     0.7789326923076924
    ],
+   "ood_native30_sign": "high-usable",
    "ood_10fps_auroc": 0.5446623093681917,
    "ood_10fps_ci95": [
     0.3045822102425876,
@@ -594,9 +680,11 @@
    ],
    "ood_10fps_sign": "high-usable",
    "class": "stable",
-   "sign_agrees_10fps": true
+   "class_native30": "stable",
+   "sign_agrees_10fps": true,
+   "class_agrees_native30_vs_10fps": true
   }
  ],
  "command": "OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py e5_03",
- "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+ "git_sha": "c59daf5ab0f92aea975c0ba86ae91d7f39327226"
 }

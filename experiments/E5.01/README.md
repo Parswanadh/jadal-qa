@@ -22,3 +22,11 @@ Results file: eval/results/exp_domain/E5.01.json
 Decision: Keep pooled AI-frame heads as a cheap prior only; they do not beat the in-domain EG2 embedding baseline. Do not claim transfer/ground truth.
 
 Cost: CPU ~2 min; 10k AI frames + 150 windows; no GPU encode
+
+**Verdict (2026-10-10 16:20): maybe.** Pooled AI-frame heads on 150 IndEgo human windows (LOCO over 7 clips, clip-bootstrap CI): work-prob mean 0.813 [0.695,0.864]; hands-prob mean 0.818 [0.685,0.893]; both 0.826 [0.717,0.881]; 12-feat LOCO logistic 0.789 [0.686,0.862]. Below the 0.85 in-domain EG2-window-embedding baseline. Frame-level 0.911/0.957 is AI-vs-AI (model-vs-model, NOT ground-truth); the window-level 0.789-0.826 IS scored against the human IndEgo gold labels.
+
+Results file: eval/results/exp_domain/E5.01.json
+
+Decision: Keep pooled AI-frame heads as a cheap prior only; they do not beat the in-domain EG2 embedding baseline. Do not claim transfer/ground truth.
+
+Cost: CPU ~2 min; 10k AI frames + 150 windows; no GPU encode

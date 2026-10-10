@@ -13,7 +13,7 @@
   "pallet2"
  ],
  "label_source": "head trained on AI labels (10k FACTORY frames, NOT human); evaluated vs HUMAN IndEgo gold (single labeller)",
- "caveat": "model-vs-model agreement on AI targets, NOT ground-truth accuracy",
+ "caveat": "the frame-level 0.911/0.957 is AI-vs-AI (model-vs-model), NOT ground-truth; the window-level 0.789-0.826 IS scored against the human IndEgo gold labels (single labeller) but the head itself was trained on AI labels",
  "protocol": "LOCO over 7 IndEgo clips; clip-bootstrap CI (2000); frame heads C=1 fixed on 10k AI frames",
  "device": "CPU (numpy/sklearn); GPU not used",
  "cost": {
@@ -100,5 +100,5 @@
   "source": "experiments/EXPERIMENTS.md / nested_loco.json"
  },
  "command": "OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py e5_01",
- "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+ "git_sha": "c59daf5ab0f92aea975c0ba86ae91d7f39327226"
 }

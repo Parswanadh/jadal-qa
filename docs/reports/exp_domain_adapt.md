@@ -1,24 +1,28 @@
 # E5 — Domain adaptation (IndEgo ↔ Egocentric-10K factory)
 
-Track E5, branch `feat/exp-domain-adapt`, experiments E5.01–E5.04
+Track E5, branch `feat/exp-domain-adapt`, experiments E5.00–E5.04
 (registry: `experiments/EXPERIMENTS.md`; results: `eval/results/exp_domain/`).
 All numbers come from a results JSON in this repo; every JSON carries
 `n`, `label_source`, `protocol`, `ci95`, `device`, `command`, `git_sha`.
 
-**Context (not redone here).** Every IndEgo-trained model failed out-of-domain on
-60 human-labelled Egocentric-10K windows (51 good / 9 bad): the frozen ensemble
-scores 0.415 AUROC [0.210, 0.647] on those windows (`caches/ensemble/ood_scores.json`,
-report `docs/reports/ensemble_views.md`). The OOD set has **n_bad = 9** and about
-one window per factory, so all out-of-domain numbers are **exploratory** and the
-window-bootstrap CI is **optimistic**.
+**Context (reproduced here as E5.00, `eval/results/exp_domain/E5.00.json`).** Every
+IndEgo-trained model failed out-of-domain on 60 human-labelled Egocentric-10K windows
+(51 good / 9 bad): the frozen ensemble `usable_prob` scores **0.415 AUROC [0.201, 0.656]**
+on those windows (window bootstrap, optimistic). E5.00 recomputes this from the frozen
+scores in the pod bundle `$JADAL_BUNDLE/caches/ensemble/ood_scores.json`; the earlier
+report with CI [0.210, 0.647] (`docs/reports/ensemble_views.md`) lives on `main` / PR #79
+and is **not on this branch**. The OOD set has **n_bad = 9** and about one window per
+factory, so all out-of-domain numbers are **exploratory** and the window-bootstrap CI is
+**optimistic**.
 
 ## TL;DR
 
 | id | question | headline | verdict |
 |---|---|---|---|
+| E5.00 | does the frozen ensemble reproduce its OOD prior on the 60 human windows? | **0.415** AUROC [0.201, 0.656] (exploratory, n_bad=9) | cited prior |
 | E5.01 | does a head trained on the 10k **AI-labelled FACTORY** frames carry window signal on the 150 human IndEgo windows? | LOCO AUROC **0.789–0.826** (pooled AI-frame heads) vs the 0.85 in-domain EG2-window-embedding baseline | maybe |
 | E5.02 | how many human OOD labels to beat chance? | pixel-26 **0.756** [0.575, 0.902], two-view **0.767** [0.596, 0.904]; ~12 labels already ~0.71 (std 0.10); smallest n_bad in any train fold **7** | maybe |
-| E5.03 | which of the 26 per-pixel features keep their sign? | **8 stable, 14 flip, 4 chance**; sharpness/light stable, motion/temporal-band flipped | maybe |
+| E5.03 | which of the 26 per-pixel features keep their sign? | **8 stable, 14 flip, 4 chance**; sign-stable, still weak out-of-domain (AUROC 0.64–0.70); motion/temporal-band flip | maybe |
 | E5.04 | frozen re-score of the 160 OOD windows | labels2 **not delivered** → confirmatory eval **inconclusive** (n = 0); 160 windows scored descriptively only | inconclusive |
 
 ## E5.01 — in-domain heads from AI labels, pooled to human windows
@@ -43,9 +47,12 @@ evaluated against the **human** gold labels with **leave-one-clip-out** over the
 Reference in-domain baseline: EG2 window-embedding logistic **0.85** (nested 0.846,
 `caches/ensemble/nested_loco.json`); 26 per-pixel-feature logistic 0.81.
 The pooled AI-frame heads are **below** that baseline, so E5.01 is not adopted as
-an improvement. It is **model-vs-model agreement on AI targets, not ground-truth
-accuracy**: the numbers say a factory-frame head produces a window score that
-ranks IndEgo usable/bad windows above chance, nothing more.
+an improvement. Two different claims have to be kept apart: the **frame-level**
+0.911 / 0.957 5-fold CV is **AI-vs-AI (model-vs-model)** and is **not ground-truth
+accuracy**; the **window-level** 0.789–0.826 *is* **scored against the human IndEgo
+gold labels** (single labeller, LOCO over 7 clips). What it measures is how well a
+score produced by an AI-label-trained head ranks 150 human-labelled windows — nothing
+more.
 
 Chosen in-domain recipe: keep the **mean of p(active_labor) and p(hands_ok)** as a
 cheap prior view only (0.826 LOCO), documented as a weak signal; do not replace the
@@ -56,8 +63,10 @@ EG2-embedding view.
 Signed AUROC per feature (label 1 = usable/good). IndEgo = 150 human gold windows,
 native ~10 fps, clip-bootstrap CI; OOD = 60 human windows, 10 fps effective
 (480p transcode subsampled), window-bootstrap CI (optimistic). Full table with CIs
-in `E5.03.json`. Classification: **stable / flip** require both |AUROC − 0.5| ≥ 0.05;
-otherwise **chance**.
+in `E5.03.json`. Classification rule (`e5lib.classify_transfer`, asserted in the
+tests): **chance** iff **both** domains have |AUROC − 0.5| < 0.05; otherwise
+**stable** if the two AUROCs are on the same side of 0.5, **flip** if opposite. A
+feature informative in only one domain is therefore *not* `chance`.
 
 | feature | IndEgo | OOD (10 fps) | class |
 |---|---|---|---|
@@ -88,16 +97,22 @@ otherwise **chance**.
 | dark_frac | 0.480 | 0.451 | chance |
 | dup_hash_mean | 0.500 | 0.500 | chance |
 
-Counts: **8 stable, 14 flip, 4 chance** (26 total). The **sharpness / spatial-spectrum**
-group (radial_slope, hf_ratio, dct_energy) is the only group that is stable *and*
-informative in both domains. **Motion / temporal-band** features (motion_energy,
-temp_b0/1/2) carry the most weight in-domain but **invert** out-of-domain, which is the
-mechanistic reason the frozen IndEgo pixel view does not transfer. Illumination features
-are unstable in magnitude (illum_r/illum_g flip) though the white-balance pair partly
-holds. This is a description of feature sign, not a quality measure.
+Counts: **8 stable, 14 flip, 4 chance** (26 total). Only *feature-sign stability* was
+measured. The **sharpness / spatial-spectrum** group (radial_slope, hf_ratio,
+dct_energy) is sign-stable, but still **weak out-of-domain (OOD AUROC 0.64–0.70)**.
+**Motion / temporal-band** features (motion_energy, temp_b0/1/2) carry the most weight
+in-domain but **invert** out-of-domain, which is the mechanistic reason the frozen
+IndEgo pixel view does not transfer. The illumination features do **not** hold as a
+group: `illum_g` flips, and `illum_r` is labelled `stable` only because both domains
+are near chance (|AUROC − 0.5| < 0.05 on the IndEgo side), so it is not a usable cue.
+This is a description of feature sign, not a quality measure.
 
-The OOD native (≈30 fps) column in `E5.03.json` agrees with the 10 fps column for
-these features (rank-identical classes), so the flips are not an fps artefact.
+The OOD native (≈30 fps) column is stored per row as `class_native30`. Applied to the
+same rule it **disagrees with the 10 fps-effective class for 3 of 26 features**
+(`temp_b3`, `flicker_idx`: chance→flip; `dark_frac`: chance→stable); the other 23 agree.
+So most flips are not an fps artefact, but those three near-chance features are
+fps-sensitive and are not a reliable `chance`/`flip`/`stable` call
+(`native30_vs_10fps_class_disagreements` in `E5.03.json`).
 
 ## E5.02 — few-shot on the human OOD labels (factory-grouped)
 
@@ -108,28 +123,35 @@ CI = window bootstrap (optimistic). **Smallest n_bad in any training fold = 7.**
 
 | recipe | OOF AUROC | 95% CI | bal.acc@0.5 |
 |---|---|---|---|
-| logistic on 26 per-pixel feats | 0.756 | [0.575, 0.902] | — |
-| logistic on EG2 window means (768-d) | 0.546 | [0.350, 0.736] | — |
-| two-view probability average | **0.767** | [0.596, 0.904] | — |
+| logistic on 26 per-pixel feats | 0.756 | [0.575, 0.902] | 0.634 |
+| logistic on EG2 window means (768-d) | 0.546 | [0.350, 0.736] | 0.520 |
+| two-view probability average | **0.767** | [0.596, 0.904] | 0.614 |
 
-Learning curve (grouped random subsampling, 20 repeats, pixel-26, C = 1 balanced):
-~12 windows → 0.709 (std 0.102; 76 % of repeats > 0.6), ~24 → 0.715 (std 0.081),
-~36 → 0.703 (std 0.156), ~45 → 0.691 (std 0.274). On *this* set **about a dozen
-human labels already lift a fresh head to ~0.7 AUROC**, but the wide spread and the
-near leave-one-out grouped geometry (≈1 window/factory) make that an optimistic
-upper bound, and n_bad = 9 means every estimate is unstable.
+Learning curve (grouped random subsampling, pixel-26, C = 1 balanced): ~12 windows →
+0.709 (std 0.102; 76 % of repeats > 0.6), ~24 → 0.715 (std 0.081), ~36 → 0.703
+(std 0.156), ~45 → 0.691 (std 0.274). Repeats per point are **17 / 20 / 20 / 19**
+(not 20 everywhere): draws are dropped when a train/test side ends up single-class. At
+the 12-window point a training fold can contain as few as **1 bad example**
+(`min_n_bad_train: 1` in `E5.02.json`), so that point sits close to a single-example
+signal. On *this* set **about a dozen human labels already lift a fresh head to ~0.7
+AUROC**, but the wide spread and the near leave-one-out grouped geometry
+(≈1 window/factory) make that an optimistic upper bound, and n_bad = 9 means every
+estimate is unstable.
 
 ## E5.04 — frozen re-score of the 160 OOD windows
 
-`ood_labels2.json` is **not delivered**. Result JSON records `labels_missing: true`,
-`n = 0`, `ci95 = "n/a (no labels)"` — the confirmatory eval is **inconclusive** and
-**no accuracy is computed**. Descriptive only, frozen `ensemble_v1`
-(config sha `4da1068a…`, matches `configs/ensemble_v1.json`): 160 windows scored
-(60 batch-1 `caches/ensemble/ood_scores.json` + 100 batch-2
+`ood_labels2.json` is **not delivered**: the 160 scored windows have **no labels**
+(`label_source` in `E5.04.json` says so explicitly) and the confirmatory eval is
+**inconclusive** (`labels_missing: true`, `n = 0`, `ci95 = "n/a (no labels)"`); **no
+accuracy is computed**. Descriptive only, frozen `ensemble_v1`: 160 windows scored
+(60 batch-1 `$JADAL_BUNDLE/caches/ensemble/ood_scores.json` + 100 batch-2
 `ood_scores2.json`), mean usable_prob 0.560 (median 0.460); accept 71 / review 35 /
-reject 54. Batch-1 mean 0.496, batch-2 mean 0.598. `eval/exp_domain/watch_e5_04.sh`
-re-scores and runs the confirmatory window-bootstrap eval automatically when
-`ood_labels2.json` appears.
+reject 54. Batch-1 mean 0.496, batch-2 mean 0.598. Config check: the frozen scorer
+recorded sha `4da1068a…`; the local `configs/ensemble_v1.json` raw sha is `d62a95a…`
+because `scripts/remap_paths.py` rewrote pod paths, but the canonical content (path
+and provenance fields stripped) **matches** — `config_assert` and both observed shas
+are stored in `E5.04.json`. `eval/exp_domain/watch_e5_04.sh` re-scores and runs the
+confirmatory window-bootstrap eval automatically when `ood_labels2.json` appears.
 
 ## What did NOT transfer
 
@@ -137,16 +159,20 @@ re-scores and runs the confirmatory window-bootstrap eval automatically when
   IndEgo → Egocentric-10K (E5.03); the frozen IndEgo pixel view therefore does not transfer.
 - **EG2 window means as a few-shot OOD head** — 0.546 [0.350, 0.736], indistinguishable
   from chance with 9 bad windows (E5.02).
-- **AI-frame heads as a drop-in** — 0.789–0.826 LOCO, below the 0.85 in-domain baseline;
-  and model-vs-model, not ground truth (E5.01).
-- **The frozen ensemble out-of-domain** — 0.415 [0.210, 0.647] (cited prior; the reason E5 exists).
+- **AI-frame heads as a drop-in** — 0.789–0.826 LOCO (scored against human IndEgo
+  labels) but from an AI-label-trained head, so it is agreement, not a transferable
+  accuracy, and it is below the 0.85 in-domain baseline (E5.01).
+- **The frozen ensemble out-of-domain** — 0.415 AUROC [0.201, 0.656] (reproduced in
+  E5.00 from the frozen bundle scores; exploratory, n_bad = 9). This is why E5 exists.
 
 ## Caveats
 
 - OOD = **60 human windows, n_bad = 9, ~1 window/factory, single labeller**; every OOD
   number is exploratory and its window-bootstrap CI is optimistic.
 - IndEgo = 150 windows from 7 clips / ~3 wearers, single labeller; clip-bootstrap CI.
-- E5.01 is **model-vs-model agreement** (AI head labels vs human eval labels), **not accuracy**.
+- E5.01: the frame-level 0.911/0.957 is **AI-vs-AI (model-vs-model)**; the window-level
+  0.789–0.826 *is* scored against the human IndEgo gold labels, but comes from a head
+  trained on AI labels — agreement, not ground truth.
 - The 10k frame labels are **AI**, **not human**.
 - E5.02 grouped CV with ≈1 window/factory is close to leave-one-out, so few-shot numbers
   are an optimistic bound for adaptation to this specific set, not a generalisation rate.
