@@ -1,0 +1,210 @@
+{
+ "experiment": "N1.03",
+ "title": "Best OOD score with grouped CI and error-vs-labels curve",
+ "n": 160,
+ "n_bad": 22,
+ "label_source": "human, single labeller: labels/ood160_labels.json (160 Egocentric-10K windows, 138 good / 22 bad, 47 factories, q1=60 + q2=100) + labels/manifest_gold.json (150 IndEgo, 100/50)",
+ "protocol": "factory-grouped StratifiedGroupKFold(5, shuffle, seed=0) OOF; per-domain z-score (unsupervised target mean/std); sign from IndEgo gold; factory-grouped bootstrap 95% CI (n_boot=2000, seed=0) on the OOF scores; paired grouped bootstrap for gains. No OOD threshold tuning (0 for signed-z, 0.5 for probs).",
+ "device": "CPU (numpy/sklearn, OMP_NUM_THREADS=2; no GPU, no decode)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_acc/run_n1.py",
+ "baseline_equal_weight_mean": {
+  "recipe": "equal-weight mean (baseline)",
+  "method": "mean of IndEgo-signed per-domain z-scores, 14 features",
+  "threshold": 0.0,
+  "ood_auroc": 0.781,
+  "ood_balacc": 0.7325,
+  "ood_error": 0.2675,
+  "ood_auroc_ci95_factory_grouped": [
+   0.6344,
+   0.8952
+  ],
+  "ood_balacc_ci95_factory_grouped": [
+   0.6285,
+   0.8302
+  ]
+ },
+ "best_auroc": {
+  "recipe": "median of signed z (best AUROC)",
+  "method": "14 transferable features, per-domain z-score, IndEgo-signed",
+  "threshold": 0.0,
+  "ood_auroc": 0.7852,
+  "ood_balacc": 0.7253,
+  "ood_error": 0.2747,
+  "ood_auroc_ci95_factory_grouped": [
+   0.649,
+   0.8968
+  ],
+  "ood_balacc_ci95_factory_grouped": [
+   0.6209,
+   0.8234
+  ]
+ },
+ "best_error": {
+  "recipe": "top-12 selection grouped CV (best error)",
+  "method": "per-fold top-12 by train AUROC, equal-weight mean",
+  "threshold": 0.0,
+  "ood_auroc": 0.7813,
+  "ood_balacc": 0.7408,
+  "ood_error": 0.2592,
+  "ood_auroc_ci95_factory_grouped": [
+   0.6352,
+   0.8964
+  ],
+  "ood_balacc_ci95_factory_grouped": [
+   0.639,
+   0.8433
+  ]
+ },
+ "gain_vs_baseline_paired_grouped": {
+  "median": {
+   "mean": 0.0047,
+   "ci95": [
+    -0.0258,
+    0.0398
+   ],
+   "frac_resamples_gt_0": 0.5965,
+   "n_boot": 2000
+  },
+  "top12_selection": {
+   "mean": 0.0008,
+   "ci95": [
+    -0.0207,
+    0.0236
+   ],
+   "frac_resamples_gt_0": 0.5145,
+   "n_boot": 2000
+  }
+ },
+ "error_vs_labels_curve": {
+  "equal-weight mean (label-free)": [
+   {
+    "k": 10,
+    "auroc": 0.781,
+    "balacc": 0.7325,
+    "error": 0.2675
+   },
+   {
+    "k": 20,
+    "auroc": 0.781,
+    "balacc": 0.7325,
+    "error": 0.2675
+   },
+   {
+    "k": 40,
+    "auroc": 0.781,
+    "balacc": 0.7325,
+    "error": 0.2675
+   },
+   {
+    "k": 80,
+    "auroc": 0.781,
+    "balacc": 0.7325,
+    "error": 0.2675
+   },
+   {
+    "k": 160,
+    "auroc": 0.781,
+    "balacc": 0.7325,
+    "error": 0.2675
+   }
+  ],
+  "median signed-z (label-free)": [
+   {
+    "k": 10,
+    "auroc": 0.7852,
+    "balacc": 0.7253,
+    "error": 0.2747
+   },
+   {
+    "k": 20,
+    "auroc": 0.7852,
+    "balacc": 0.7253,
+    "error": 0.2747
+   },
+   {
+    "k": 40,
+    "auroc": 0.7852,
+    "balacc": 0.7253,
+    "error": 0.2747
+   },
+   {
+    "k": 80,
+    "auroc": 0.7852,
+    "balacc": 0.7253,
+    "error": 0.2747
+   },
+   {
+    "k": 160,
+    "auroc": 0.7852,
+    "balacc": 0.7253,
+    "error": 0.2747
+   }
+  ],
+  "logistic C=0.1 (uses k labels)": [
+   {
+    "k": 10,
+    "auroc": 0.6712,
+    "balacc": 0.6284,
+    "error": 0.3716
+   },
+   {
+    "k": 20,
+    "auroc": 0.6413,
+    "balacc": 0.5944,
+    "error": 0.4056
+   },
+   {
+    "k": 40,
+    "auroc": 0.6967,
+    "balacc": 0.6318,
+    "error": 0.3682
+   },
+   {
+    "k": 80,
+    "auroc": 0.7033,
+    "balacc": 0.6465,
+    "error": 0.3535
+   },
+   {
+    "k": 160,
+    "auroc": 0.7579,
+    "balacc": 0.6924,
+    "error": 0.3076
+   }
+  ],
+  "top-12 selection (uses k labels)": [
+   {
+    "k": 10,
+    "auroc": 0.7731,
+    "balacc": 0.7079,
+    "error": 0.2921
+   },
+   {
+    "k": 20,
+    "auroc": 0.7687,
+    "balacc": 0.7067,
+    "error": 0.2933
+   },
+   {
+    "k": 40,
+    "auroc": 0.7721,
+    "balacc": 0.7125,
+    "error": 0.2875
+   },
+   {
+    "k": 80,
+    "auroc": 0.7731,
+    "balacc": 0.7217,
+    "error": 0.2783
+   },
+   {
+    "k": 160,
+    "auroc": 0.7579,
+    "balacc": 0.6924,
+    "error": 0.3076
+   }
+  ]
+ },
+ "curve_protocol": "k<160: 20 repeated factory-grouped 5-fold subsamples (train on k windows from the train factories, test on the factory-disjoint complement). k=160: factory-grouped 5-fold OOF over all 160. Label-free recipes (mean/median) do not change with k."
+}

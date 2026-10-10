@@ -1,0 +1,415 @@
+{
+ "experiment": "N1.01",
+ "title": "OOD model shape, grouped-CV feature selection and domain adaptation on 160 labels",
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "n_factories": 47,
+ "label_source": "human, single labeller: labels/ood160_labels.json (160 Egocentric-10K windows, 138 good / 22 bad, 47 factories, q1=60 + q2=100) + labels/manifest_gold.json (150 IndEgo, 100/50)",
+ "protocol": "factory-grouped StratifiedGroupKFold(5, shuffle, seed=0) OOF; per-domain z-score (unsupervised target mean/std); sign from IndEgo gold; factory-grouped bootstrap 95% CI (n_boot=2000, seed=0) on the OOF scores; paired grouped bootstrap for gains. No OOD threshold tuning (0 for signed-z, 0.5 for probs).",
+ "device": "CPU (numpy/sklearn, OMP_NUM_THREADS=2; no GPU, no decode)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_acc/run_n1.py",
+ "features": {
+  "set": "stable-8 + Z3 transferable-6",
+  "names": [
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy",
+   "luma_p05",
+   "global_shift",
+   "illum_r",
+   "illum_b",
+   "zncc_self",
+   "ct_fsize_std",
+   "mo_hand_motion_excess",
+   "inv_clip_frac",
+   "inv_laplacian_var",
+   "inv_hist_entropy",
+   "inv_dct_hf_lf"
+  ],
+  "n_features": 14,
+  "indego_auroc": {
+   "radial_slope": 0.6334,
+   "hf_ratio": 0.6182,
+   "dct_energy": 0.6306,
+   "luma_p05": 0.3924,
+   "global_shift": 0.3761,
+   "illum_r": 0.4898,
+   "illum_b": 0.5278,
+   "zncc_self": 0.5738,
+   "ct_fsize_std": 0.6202,
+   "mo_hand_motion_excess": 0.6492,
+   "inv_clip_frac": 0.6564,
+   "inv_laplacian_var": 0.6412,
+   "inv_hist_entropy": 0.5342,
+   "inv_dct_hf_lf": 0.31
+  },
+  "indego_sign": {
+   "radial_slope": 1,
+   "hf_ratio": 1,
+   "dct_energy": 1,
+   "luma_p05": -1,
+   "global_shift": -1,
+   "illum_r": -1,
+   "illum_b": 1,
+   "zncc_self": 1,
+   "ct_fsize_std": 1,
+   "mo_hand_motion_excess": 1,
+   "inv_clip_frac": 1,
+   "inv_laplacian_var": 1,
+   "inv_hist_entropy": 1,
+   "inv_dct_hf_lf": -1
+  }
+ },
+ "model_shape": [
+  {
+   "recipe": "equal-weight mean (baseline)",
+   "method": "mean of IndEgo-signed per-domain z-scores, 14 features",
+   "threshold": 0.0,
+   "ood_auroc": 0.781,
+   "ood_balacc": 0.7325,
+   "ood_error": 0.2675,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6344,
+    0.8952
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.6285,
+    0.8302
+   ]
+  },
+  {
+   "recipe": "median of signed z",
+   "method": "median aggregation, 14 features",
+   "threshold": 0.0,
+   "ood_auroc": 0.7852,
+   "ood_balacc": 0.7253,
+   "ood_error": 0.2747,
+   "ood_auroc_ci95_factory_grouped": [
+    0.649,
+    0.8968
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.6209,
+    0.8234
+   ]
+  },
+  {
+   "recipe": "trimmed mean (drop 2 each tail)",
+   "method": "trimmed aggregation",
+   "threshold": 0.0,
+   "ood_auroc": 0.7839,
+   "ood_balacc": 0.7325,
+   "ood_error": 0.2675,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6425,
+    0.8972
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.6273,
+    0.8346
+   ]
+  },
+  {
+   "recipe": "robust z mean (median/IQR)",
+   "method": "robust per-domain scale",
+   "threshold": 0.0,
+   "ood_auroc": 0.7846,
+   "ood_balacc": 0.7181,
+   "ood_error": 0.2819,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6378,
+    0.8979
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.6156,
+    0.8155
+   ]
+  },
+  {
+   "recipe": "logistic (C by inner grouped CV)",
+   "method": "StandardScaler+LogisticRegression(balanced), nested C",
+   "threshold": 0.5,
+   "ood_auroc": 0.7174,
+   "ood_balacc": 0.6479,
+   "ood_error": 0.3521,
+   "ood_auroc_ci95_factory_grouped": [
+    0.5273,
+    0.8638
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5254,
+    0.7781
+   ],
+   "C_picks": [
+    0.01,
+    0.1,
+    0.01,
+    0.01,
+    0.01
+   ]
+  },
+  {
+   "recipe": "linear SVM C=0.1",
+   "method": "StandardScaler+LinearSVC(balanced)",
+   "threshold": 0.0,
+   "ood_auroc": 0.7447,
+   "ood_balacc": 0.726,
+   "ood_error": 0.274,
+   "ood_auroc_ci95_factory_grouped": [
+    0.588,
+    0.8672
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.6204,
+    0.8269
+   ]
+  },
+  {
+   "recipe": "gradient-boosted tree (depth1)",
+   "method": "HistGradientBoosting depth1",
+   "threshold": 0.5,
+   "ood_auroc": 0.7428,
+   "ood_balacc": 0.6805,
+   "ood_error": 0.3195,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6186,
+    0.8613
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5574,
+    0.8099
+   ]
+  },
+  {
+   "recipe": "logistic C=0.1",
+   "method": "StandardScaler+LogisticRegression(balanced)",
+   "threshold": 0.5,
+   "ood_auroc": 0.7579,
+   "ood_balacc": 0.6924,
+   "ood_error": 0.3076,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6136,
+    0.8772
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.573,
+    0.8163
+   ]
+  }
+ ],
+ "feature_selection_grouped_cv": [
+  {
+   "recipe": "select top-4 (train AUROC, grouped)",
+   "method": "per-fold top-m by train-fold signed AUROC, equal mean",
+   "threshold": 0.0,
+   "ood_auroc": 0.7754,
+   "ood_balacc": 0.6907,
+   "ood_error": 0.3093,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6483,
+    0.8843
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5758,
+    0.8017
+   ],
+   "mean_n_features": 4.0
+  },
+  {
+   "recipe": "select top-6 (train AUROC, grouped)",
+   "method": "per-fold top-m by train-fold signed AUROC, equal mean",
+   "threshold": 0.0,
+   "ood_auroc": 0.7325,
+   "ood_balacc": 0.6545,
+   "ood_error": 0.3455,
+   "ood_auroc_ci95_factory_grouped": [
+    0.5745,
+    0.8617
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5202,
+    0.7835
+   ],
+   "mean_n_features": 6.0
+  },
+  {
+   "recipe": "select top-8 (train AUROC, grouped)",
+   "method": "per-fold top-m by train-fold signed AUROC, equal mean",
+   "threshold": 0.0,
+   "ood_auroc": 0.7586,
+   "ood_balacc": 0.6927,
+   "ood_error": 0.3073,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6043,
+    0.8804
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5743,
+    0.8026
+   ],
+   "mean_n_features": 8.0
+  },
+  {
+   "recipe": "select top-10 (train AUROC, grouped)",
+   "method": "per-fold top-m by train-fold signed AUROC, equal mean",
+   "threshold": 0.0,
+   "ood_auroc": 0.7731,
+   "ood_balacc": 0.6736,
+   "ood_error": 0.3264,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6227,
+    0.8994
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5468,
+    0.795
+   ],
+   "mean_n_features": 10.0
+  },
+  {
+   "recipe": "select top-12 (train AUROC, grouped)",
+   "method": "per-fold top-m by train-fold signed AUROC, equal mean",
+   "threshold": 0.0,
+   "ood_auroc": 0.7813,
+   "ood_balacc": 0.7408,
+   "ood_error": 0.2592,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6352,
+    0.8964
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.639,
+    0.8433
+   ],
+   "mean_n_features": 12.0
+  },
+  {
+   "recipe": "forward selection (grouped)",
+   "method": "per-fold greedy forward selection, equal mean",
+   "threshold": 0.0,
+   "ood_auroc": 0.7572,
+   "ood_balacc": 0.6472,
+   "ood_error": 0.3528,
+   "ood_auroc_ci95_factory_grouped": [
+    0.6142,
+    0.8777
+   ],
+   "ood_balacc_ci95_factory_grouped": [
+    0.5305,
+    0.7667
+   ],
+   "mean_n_features": 4.6
+  }
+ ],
+ "adaptation": {
+  "class_weighting": [
+   {
+    "recipe": "logistic C=0.1, class_weight=balanced",
+    "method": "class-prior / importance weighting",
+    "threshold": 0.5,
+    "ood_auroc": 0.7579,
+    "ood_balacc": 0.6924,
+    "ood_error": 0.3076,
+    "ood_auroc_ci95_factory_grouped": [
+     0.6136,
+     0.8772
+    ],
+    "ood_balacc_ci95_factory_grouped": [
+     0.573,
+     0.8163
+    ]
+   },
+   {
+    "recipe": "logistic C=0.1, class_weight=none",
+    "method": "class-prior / importance weighting",
+    "threshold": 0.5,
+    "ood_auroc": 0.7645,
+    "ood_balacc": 0.4891,
+    "ood_error": 0.5109,
+    "ood_auroc_ci95_factory_grouped": [
+     0.6269,
+     0.883
+    ],
+    "ood_balacc_ci95_factory_grouped": [
+     0.4754,
+     0.5
+    ]
+   },
+   {
+    "recipe": "logistic C=0.1, class_weight=prior-corrected (13.75% bad)",
+    "method": "class-prior / importance weighting",
+    "threshold": 0.5,
+    "ood_auroc": 0.7556,
+    "ood_balacc": 0.7223,
+    "ood_error": 0.2777,
+    "ood_auroc_ci95_factory_grouped": [
+     0.6058,
+     0.8768
+    ],
+    "ood_balacc_ci95_factory_grouped": [
+     0.6207,
+     0.8337
+    ]
+   }
+  ],
+  "domain_classifier_diagnostic": {
+   "indego_vs_ood160_all14_auroc": 0.9994,
+   "indego_vs_ood160_stable8_auroc": 0.9838,
+   "ood160_vs_unlabelled1546_stable8_auroc": 0.9017,
+   "n_unlabelled": 1546,
+   "note": "AUROC 0.5 = indistinguishable (domain-invariant). Reported as a diagnostic only; the domain classifier is never in the decision path."
+  },
+  "test_time_normalization": [
+   {
+    "recipe": "stable8 global z (baseline)",
+    "method": "per-domain z-score on the 160",
+    "threshold": 0.0,
+    "ood_auroc": 0.7269,
+    "ood_balacc": 0.6318,
+    "ood_error": 0.3682,
+    "ood_auroc_ci95_factory_grouped": [
+     0.5919,
+     0.844
+    ],
+    "ood_balacc_ci95_factory_grouped": [
+     0.4923,
+     0.7682
+    ]
+   },
+   {
+    "recipe": "stable8 per-factory z (unlabelled 1546)",
+    "method": "z-score each window by its factory's unlabelled windows",
+    "threshold": 0.0,
+    "ood_auroc": 0.3827,
+    "ood_balacc": 0.5125,
+    "ood_error": 0.4875,
+    "ood_auroc_ci95_factory_grouped": [
+     0.2597,
+     0.5111
+    ],
+    "ood_balacc_ci95_factory_grouped": [
+     0.4446,
+     0.5752
+    ]
+   },
+   {
+    "recipe": "all14 (stable8 per-factory + Z3-6 global)",
+    "method": "mixed normalization",
+    "threshold": 0.0,
+    "ood_auroc": 0.6426,
+    "ood_balacc": 0.5968,
+    "ood_error": 0.4032,
+    "ood_auroc_ci95_factory_grouped": [
+     0.4957,
+     0.7705
+    ],
+    "ood_balacc_ci95_factory_grouped": [
+     0.518,
+     0.6598
+    ]
+   }
+  ]
+ }
+}
