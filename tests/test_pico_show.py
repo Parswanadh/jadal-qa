@@ -5,7 +5,7 @@ FakePicoSerial, and the missing-port path uses an open_serial stub that
 raises PicoLinkError without touching the real serial stack.
 
 Run from the repo root:
-    PYTHONNOUSERSITE=1 python3 -m unittest tests.test_pico_show -v
+    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_pico_show -v
 """
 import os
 import sys
