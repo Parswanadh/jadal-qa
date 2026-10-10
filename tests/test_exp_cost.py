@@ -17,21 +17,30 @@ from eval.exp_cost import run_e7 as E  # noqa: E402
 
 def synth_measure():
     dec = {}
-    for fam, rate in (("indego_480p10_h264", 100.0),
-                      ("ego10k_1080p30_hevc", 60.0)):
+    for fam, rate, native in (("indego_480p10_h264", 100.0, 10.0),
+                              ("ego10k_1080p30_hevc", 60.0, 30.0)):
         for hw in ("cpu", "nvdec"):
             r = rate if hw == "cpu" else rate * 4
-            dec[f"{fam}__{hw}"] = {"by_duration_s": {
-                "4.0": {"fps": r, "n_windows": 3, "wall_s_ci95": [0.1, 0.2]},
-                "10.0": {"fps": r * 0.95, "n_windows": 3,
-                         "wall_s_ci95": [0.2, 0.4]}}}
+            by = {}
+            for dur in (4.0, 10.0):
+                frames = dur * native
+                by[str(dur)] = {"fps": r, "n_windows": 3,
+                                "frames_mean": frames,
+                                "wall_s_mean": frames / r,
+                                "wall_s_ci95": [0.1, 0.2]}
+            dec[f"{fam}__{hw}"] = {"by_duration_s": by}
     return {
         "decode": dec,
         "features_pixel26": {"n_windows": 12,
                              "features_ms_per_window": {
-                                 "10": {"mean": 100.0, "ci95": [90, 110], "n": 12},
-                                 "5": {"mean": 60.0, "ci95": [50, 70], "n": 12},
-                                 "2": {"mean": 30.0, "ci95": [25, 35], "n": 12}}},
+                                 "10@10": {"mean": 100.0, "ci95": [90, 110], "n": 12},
+                                 "5@10": {"mean": 60.0, "ci95": [50, 70], "n": 12},
+                                 "2@10": {"mean": 30.0, "ci95": [25, 35], "n": 12},
+                                 "10@4": {"mean": 45.0, "ci95": [40, 50], "n": 12},
+                                 "5@4": {"mean": 30.0, "ci95": [25, 35], "n": 12},
+                                 "2@4": {"mean": 15.0, "ci95": [12, 18], "n": 12}}},
+        "mosaic_build": {"status": "measured", "layout_ms_mean": 30.0,
+                         "png_encode_ms_mean": 20.0, "n_windows": 6},
         "embedding_eg2": {"inputs": {
             "tile_224x224": {"ms_per_image_mean": 5.0,
                              "ms_per_image_ci95": [4.0, 6.0], "n_timed": 8},
@@ -64,6 +73,32 @@ def test_decode_ms_for_scales_with_native_frames():
     with pytest.raises(KeyError):
         E.decode_ms_for(dec, "nope", "CPU", 10.0)
     assert E.decode_ms_for({}, "indego_480p10_h264", "CPU", 10.0) is None
+
+
+def test_decode_fit_negative_slope_falls_back():
+    # real pod shape: NVDEC on the small 480p clip is slower than CPU and the
+    # 4 s run is dominated by session startup -> negative slope -> fallback
+    dec = {"indego_480p10_h264__nvdec": {"by_duration_s": {
+        "4.0": {"wall_s_mean": 1.3667, "frames_mean": 40.0},
+        "10.0": {"wall_s_mean": 1.1128, "frames_mean": 100.0}}}}
+    fit = E.decode_fit(dec, "indego_480p10_h264", "NVDEC")
+    assert fit["usable_marginal_fit"] is False
+    assert fit["fps_marginal"] is None
+    assert fit["ms_per_frame"] == pytest.approx(1.1128 / 100.0 * 1000.0, rel=1e-6)
+    assert E.decode_fit({}, "indego_480p10_h264", "CPU") is None
+
+
+def test_decode_fit_excludes_constant_startup():
+    # wall = 2 s startup + 10 ms/frame for both durations
+    dec = {"ego10k_1080p30_hevc__cpu": {"by_duration_s": {
+        "4.0": {"wall_s_mean": 2.0 + 120 * 0.010, "frames_mean": 120.0},
+        "10.0": {"wall_s_mean": 2.0 + 300 * 0.010, "frames_mean": 300.0}}}}
+    fit = E.decode_fit(dec, "ego10k_1080p30_hevc", "CPU")
+    assert fit["ms_per_frame"] == pytest.approx(10.0)
+    assert fit["startup_ms"] == pytest.approx(2000.0)
+    assert fit["fps_marginal"] == pytest.approx(100.0)
+    # 4 s span -> 120 native frames * 10 ms (startup NOT charged per window)
+    assert E.decode_ms_for(dec, "ego10k_1080p30_hevc", "CPU", 4.0) == pytest.approx(1200.0)
 
 
 def test_boot_ci_contains_mean():
@@ -99,10 +134,10 @@ def test_stage_model_end_to_end(tmp_path, monkeypatch):
     assert d["ms_per_window"]["decode"] == pytest.approx(1000.0)
     assert d["ms_per_window"]["features_pixel26"] == pytest.approx(100.0)
     assert d["ms_per_window"]["embedding_eg2"] == pytest.approx(500.0)   # 100 frames
-    assert d["ms_per_window"]["mosaic_evidence"] == pytest.approx(200.0)
-    assert d["ms_per_window"]["total"] == pytest.approx(1800.1)
+    assert d["ms_per_window"]["mosaic_evidence"] == pytest.approx(250.0)  # 30+20+200
+    assert d["ms_per_window"]["total"] == pytest.approx(1850.1)
     assert d["video_hours_per_wall_hour"] == pytest.approx(
-        E.video_hours_per_wall_hour(1800.1, 1), abs=0.01)
+        E.video_hours_per_wall_hour(1850.1, 1), abs=0.01)
 
     # factory_1080p30 decodes the 1080p HEVC family, NVDEC is cheaper there
     f_cpu = [r for r in out["rows"] if r["profile"] == "factory_1080p30"
