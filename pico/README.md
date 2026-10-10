@@ -64,7 +64,8 @@ breathes and tours verdicts on its own.
 
 3. First time only — install the MicroPython firmware:
 
-   - Download the latest `.uf2` from <https://micropython.org/download/RPI_PICO2/>.
+   - Download the latest RP2040 `.uf2` from <https://micropython.org/download/RPI_PICO/>.
+     (Pico 2 / RP2350 is a different chip and is NOT tested with this firmware.)
    - Copy it onto the `RPI-RP2` drive. The board reboots into MicroPython.
 
 4. Install the app and reset (both files are required — without `:idle.py`

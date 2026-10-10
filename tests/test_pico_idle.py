@@ -267,6 +267,85 @@ class TestIdleStep(unittest.TestCase):
         self.assertIsNone(fw._idle_stop(leds))  # must not raise
 
 
+class TestIdleBeginNoLeak(unittest.TestCase):
+    """Minor #2: a partial RGB PWM failure must not strand handles."""
+
+    def _make_machine(self, fail_names=()):
+        created = []
+        deinited = []
+
+        class Pin(object):
+            OUT = 0
+
+            def __init__(self, name, *args, **kwargs):
+                self._name = name
+
+            def value(self, v=None):
+                pass
+
+        class PWM(object):
+            def __init__(self, pin, **kwargs):
+                name = getattr(pin, "_name", pin)
+                if name in fail_names:
+                    raise RuntimeError("PWM unsupported here")
+                created.append(name)
+                self._name = name
+
+            def duty_u16(self, duty):
+                pass
+
+            def deinit(self):
+                deinited.append(self._name)
+
+        fake = type("machine", (), {"Pin": Pin, "PWM": PWM})
+        return fake, created, deinited
+
+    def _patched(self, fake, rgb_pins):
+        old_machine = getattr(fw, "machine", None)
+        old_rgb = fw.RGB_PINS
+        fw.machine = fake
+        fw.RGB_PINS = rgb_pins
+        return old_machine, old_rgb
+
+    def _unpatched(self, old_machine, old_rgb):
+        fw.RGB_PINS = old_rgb
+        if old_machine is None:
+            del fw.machine
+        else:
+            fw.machine = old_machine
+
+    def test_partial_rgb_failure_deinits_predecessors(self):
+        fake, created, deinited = self._make_machine(fail_names=("G-pin",))
+        old_machine, old_rgb = self._patched(fake, ("R-pin", "G-pin", "B-pin"))
+        try:
+            leds = fw.Leds()
+            with self.assertRaises(RuntimeError):
+                leds.idle_begin()
+            self.assertEqual(created, [25, "R-pin"])
+            self.assertEqual(sorted(deinited, key=repr),
+                             sorted(created, key=repr))
+            self.assertIsNone(leds._pwm)
+            self.assertIsNone(leds._pwm_rgb)
+        finally:
+            self._unpatched(old_machine, old_rgb)
+
+    def test_rgb_begin_write_end_cycle(self):
+        fake, created, deinited = self._make_machine()
+        old_machine, old_rgb = self._patched(fake, ("R-pin", "G-pin", "B-pin"))
+        try:
+            leds = fw.Leds()
+            leds.idle_begin()
+            self.assertEqual(created, [25, "R-pin", "G-pin", "B-pin"])
+            leds.idle_write(0.5, (1.0, 0.0, 0.0))
+            leds.idle_end()
+            self.assertEqual(sorted(deinited, key=repr),
+                             sorted(created, key=repr))
+            self.assertIsNone(leds._pwm)
+            self.assertIsNone(leds._pwm_rgb)
+        finally:
+            self._unpatched(old_machine, old_rgb)
+
+
 class TestImportSideEffects(unittest.TestCase):
     def test_idle_import_is_clean(self):
         self.assertFalse(hasattr(idle, "machine"))

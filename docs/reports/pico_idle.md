@@ -320,6 +320,59 @@ No firmware-code change in round 2 (docs/report only), so the round-1
 `py_compile`/unit-test evidence stands; suite re-run above confirms the
 merge base is still green.
 
+## Fix round 3 (second re-review — 2 new minors fixed, hardware still blocked)
+
+Review: `/home/parshu/projects/jadal-qa-wt/reviews/pr45-review.md`
+(fresh adversarial pass: host logic solid, 584 green, protected surface
+clean; 1 Important carried, 2 NEW minors, both proven by probes).
+
+### Minor #1 — README linked the Pico 2 (RP2350) image: CONFIRMED, FIXED
+
+The guide linked `.../download/RPI_PICO2/` while the firmware is RP2040-only.
+Now links `https://micropython.org/download/RPI_PICO/` with an explicit
+"Pico 2 / RP2350 … NOT tested" note; `grep PICO2 pico/README.md` is empty.
+
+### Minor #2 — idle_begin leaked first RGB handle: CONFIRMED, FIXED
+
+Reproduced the reviewer's probe shape with a fake `machine` (RGB wired,
+green-pin PWM raises): old tuple constructor attached onboard + R, raised
+on G, and R was never deinit'd. Fix (`pico/main.py`, `idle_begin`): RGB
+PWMs attach one at a time; on failure predecessors are deinit'd, then
+`idle_end()` (guarded) releases the onboard handle, then re-raise. Two new
+fake-machine tests (`TestIdleBeginNoLeak`): partial-failure case asserts
+`created == [25, 'R-pin']` with every created handle deinit'd and both
+handles `None`; success case asserts the full attach→write→end cycle with
+zero stranded handles. `tests/test_pico_idle.py` now 33 tests
+(`grep -c "def test_"` → `33`).
+
+### Important #1 — fix image not on board: STILL BLOCKED, fresh evidence
+
+All flock-held (`tools/pico.lock`); no holder at probe time (`fuser` empty),
+same bus/device (`003/013`, no re-enumeration), `lsusb` healthy
+(`2e8a:0005 MicroPython Board in FS mode`):
+
+- 6 s passive pyserial read (Sat Oct 10 11:19:17 UTC) → `lines=0`.
+- `mpremote … exec "print('R3-ALIVE-CHECK')"` → `TransportError: could not
+  enter raw repl` (same as rounds 1–2).
+
+The board has been silent across three rounds; recovery still needs a
+physical power-cycle (user action), then upload + sha256 + reset + 26 s
+HB-IDLE/PING capture, plus a visual LED check this agent cannot perform
+(no camera). No firmware-code path in round 3 affects the boot sequence
+beyond the guarded `idle_begin` already host-tested in round 1.
+
+### Verification (real outputs)
+
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m py_compile pico/main.py pico/idle.py tests/test_pico_idle.py && echo COMPILE-OK
+COMPILE-OK
+$ grep -c "def test_" tests/test_pico_idle.py
+33
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 586 tests in 69.486s
+OK (skipped=8)
+```
+
 ## NOT claimed
 
 - The LED was not visually observed (no camera on the bench); proven via the

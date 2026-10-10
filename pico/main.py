@@ -157,16 +157,25 @@ class Leds:
     def idle_begin(self):
         self._pwm = None
         self._pwm_rgb = None
+        rgb = []
         try:
             self._pwm = machine.PWM(self._onboard, freq=1000)
             if self._r is not None:
-                self._pwm_rgb = (
-                    machine.PWM(self._r, freq=1000),
-                    machine.PWM(self._g, freq=1000),
-                    machine.PWM(self._b, freq=1000),
-                )
+                # One at a time: a tuple constructor would strand the
+                # already-attached handles if a later one raises.
+                for pin in (self._r, self._g, self._b):
+                    rgb.append(machine.PWM(pin, freq=1000))
+                self._pwm_rgb = tuple(rgb)
         except Exception:
-            self.idle_end()  # best-effort release of anything attached
+            for pwm in rgb:
+                try:
+                    pwm.deinit()
+                except Exception:
+                    pass
+            try:
+                self.idle_end()  # releases onboard PWM if attached
+            except Exception:
+                pass
             raise
         self.idle_write(0.0, (0.0, 0.0, 0.0))
 
