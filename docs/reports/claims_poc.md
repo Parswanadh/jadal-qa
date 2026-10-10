@@ -8,7 +8,8 @@ direction, keep every number honest (n + label source + backing pointer).
 
 Review verdict was SPEC: FAIL. All four blocking findings verified correct
 against the repo — no pushback, all fixed in owned files only
-(README.md, docs/ARCHITECTURE.md; ATTRIBUTIONS.md untouched, no findings there;
+(README.md, docs/ARCHITECTURE.md; ATTRIBUTIONS.md: 2-row wording alignment only
+(EmbeddingGemma 2 → "Optional helper, not the core", Laya → "Not in the pipeline");
 jadal/config.py, jadal/__init__.py, docs/SPEC.md and other workers' files untouched).
 
 - C1 (measurement table + speed/VLM/10K numbers unbacked) — confirmed:
@@ -73,3 +74,86 @@ OK (skipped=8)
 
 (582 vs the review's 568: +14 from the merged origin/main spectral-features tests.)
 Suite fast and hang-free (unittest with timeout; no waits added — docs-only diff).
+
+## Fix round 2 (2026-10-10, answer to PR #74 REFUSE review)
+
+Review verdict was SPEC: FAIL, QUALITY: CHANGES NEEDED. Every Critical and
+Important finding verified correct against the repo — no pushback, all fixed
+in owned files only (README.md, docs/ARCHITECTURE.md, docs/reports/claims_poc.md;
+ATTRIBUTIONS.md wording from round 1 kept; jadal/config.py, jadal/__init__.py,
+docs/SPEC.md and other workers' files untouched).
+
+- C1 ("Measured numbers" contradicts own disclaimer) — confirmed: README:5
+  claimed "Measured numbers are in the table below" while README:22 disclaimed
+  every row as unverified with no backing file, and `eval/results/BASELINE.json`
+  still does not exist. Fix applied: line 5 replaced with "No measured numbers
+  are claimed on this branch (`eval/results/BASELINE.json` does not exist, so
+  per `docs/BASELINE.md` there is nothing citable); the table below lists
+  unverified builder notes with their stated n and label source."
+- C2 (table point estimates unbacked; merged spectral-harness numbers disagree)
+  — confirmed: no file under eval/ or docs/reports/ backs any table AUROC, and
+  docs/reports/spectral_features.md:218 gives T0 0.725 / T1 0.748 for a
+  different (spectral-harness) method. Fix applied (delete option): every point
+  estimate removed from the table (11 rows now read "direction tested, result
+  pending"); the "about 0.8 AUROC honest ceiling" sentence in "What this means"
+  removed; table intro now states "No point estimates are given and no
+  intervals are claimed until backing files land."
+- I1 (unbacked "10 repeated runs" digest claim) — confirmed: grep finds
+  "quantised digest" only in my own two lines; no 10-run log anywhere (closest
+  backing is docs/reports/edge.md:81-83: identical across 3 repeats and 1-vs-4
+  cores, different artifact). Fix applied in README + ARCH: replaced with the
+  edge.md claim verbatim with pointer plus "the 10x receipt-hash proof through
+  the real modules is pending".
+- I2 (early-reject "1-2 seconds" stated as fact) — confirmed. Fix applied:
+  README:14 now carries "(timing unverified — no backing file or measurement
+  in this repo, cf. ARCHITECTURE.md Stage 0 note)"; ARCH:22 reworded to
+  "planned to reject … (timing unverified …; see the Stage 0 note below)",
+  joining the existing ARCH Stage 0 qualifier.
+- I3 (unpointed pallet/chance, 1080p/HEVC, SmolVLM2, RTX 4070 claims) —
+  confirmed: "smolvlm" occurs nowhere in docs/ or eval/; no report backs a
+  1080p/30fps-HEVC PoC run or pallet "at chance" (pallet/pallet2 names exist
+  only in eval/gold/segments.json). Fix applied: SmolVLM2 was already qualified
+  and is kept; pallet/chance reworded to an unverified builder note; 1080p/HEVC
+  reworded to "footage described in an unverified builder note … as 1080p/30
+  fps HEVC"; ARCH hardware line now opens "(unverified builder note — no
+  backing measurement file in this repo)".
+- I4 (label breakdown without pointer) — confirmed backing exists
+  (docs/reports/funnel.md:421-422; eval/results/gold_labels_snapshot.json).
+  Fix applied: pointer appended to the README human-set bullet.
+- M1 (report said "ATTRIBUTIONS.md untouched" but the diff touches it) —
+  confirmed: the diff has the 2-row wording alignment. Fix applied: report
+  sentence corrected above.
+
+Verification probes (all short, real outputs):
+
+```
+$ grep -n -e "Measured numbers are in the table" -e "AUROC about" \
+  -e "balanced accuracy about" -e "near chance, preliminary" \
+  -e "0.8 AUROC as an honest ceiling" -e "quantised digest over 10" \
+  README.md docs/ARCHITECTURE.md
+(no hits — exit 1: all point estimates and the false measurement claim gone)
+
+$ grep -n "first 1-2 seconds" README.md docs/ARCHITECTURE.md
+README.md:14: ... rejected in the first 1-2 seconds (timing unverified — no backing file or measurement in this repo, cf. ARCHITECTURE.md Stage 0 note).
+docs/ARCHITECTURE.md:22: ... Stage 0 is planned to reject ... in the first 1-2 seconds, with evidence (timing unverified — no backing file or measurement in this repo; see the Stage 0 note below).
+
+$ grep -rn -i "smolvlm" docs/ eval/ | head
+(no hits — SmolVLM2 sentence stays qualified as an unverified builder note)
+
+$ git status --short
+ M README.md
+ M docs/ARCHITECTURE.md
+ M docs/reports/claims_poc.md
+(owned files only; no protected or other-worker files)
+```
+
+Tests (real command output):
+
+```
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 582 tests in 38.668s
+OK (skipped=8)
+```
+
+Suite fast and hang-free (unittest with timeout; every wait already timed out
+— docs-only diff, no waits added).

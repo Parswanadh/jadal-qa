@@ -2,7 +2,7 @@
 
 Jadal QA is a quality-assurance add-on for crowd-captured head-camera (egocentric) video. For each clip window it decides whether the footage is usable (dark, blocked, frozen, duplicate, hands not visible, no active work), and it writes each decision with its evidence into a content-hashed receipt. Built for the Awign Hackathon: Physical AI (10-11 October 2026).
 
-This page states what is built, what is measured, and what is not yet shown. It is current as of 2026-10-10. Measured numbers are in the table below, each with its n and label source.
+This page states what is built, what is measured, and what is not yet shown. It is current as of 2026-10-10. No measured numbers are claimed on this branch (`eval/results/BASELINE.json` does not exist, so per `docs/BASELINE.md` there is nothing citable); the table below lists unverified builder notes with their stated n and label source.
 
 The build contract is [`docs/SPEC.md`](docs/SPEC.md). The architecture and the status of each stage is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The docs index is [`docs/README.md`](docs/README.md).
 
@@ -11,7 +11,7 @@ The build contract is [`docs/SPEC.md`](docs/SPEC.md). The architecture and the s
 Planned direction, pending a `docs/SPEC.md` amendment: where this direction and `docs/SPEC.md` disagree, `SPEC.md` governs.
 
 - **Edge-first.** The target is analysis on the capture device, with no mandatory human in the loop. Running on a Raspberry Pi is **not yet measured**. The only speed numbers are on x86 laptop cores, as a proxy. A real Pi run is pending.
-- **Whole-video, per-pixel analysis of every frame.** No sampled frames. Streaming: 2-second chunks are analysed while the worker records. Dark, blocked or frozen footage is rejected in the first 1-2 seconds.
+- **Whole-video, per-pixel analysis of every frame.** No sampled frames. Streaming: 2-second chunks are analysed while the worker records. Dark, blocked or frozen footage is rejected in the first 1-2 seconds (timing unverified — no backing file or measurement in this repo, cf. ARCHITECTURE.md Stage 0 note).
 - **Deterministic, mathematics-first decisions.** The inputs are measured signals: noise level, sharpness, exposure, frame difference against the noise floor, residual motion after camera-motion removal, and rhythm tests. The intended decision is a transparent rule list with exact thresholds, and every reject carries its evidence (value, comparison, threshold). Logistic regression and boosted trees are comparison baselines only. The current scorer direction is a logistic head over per-pixel features (unverified builder note — no backing file or command in this repo). The first threshold rule list rejected nearly everything and was dropped, so the rule-list form is not yet working.
 - **Not in the pipeline.** A generic vision-language model was tried and stopped as too probabilistic. Unverified builder note (no backing file or command in this repo): an interim SmolVLM2 run at about 1 s per segment scale, cost extrapolation withheld until backing files land. Laya (text-only) and Clef (hosted) are not in the pipeline.
 - **EmbeddingGemma 2 is an optional helper**, used for hub search, de-duplication and frame heads. It is not the core.
@@ -19,28 +19,28 @@ Planned direction, pending a `docs/SPEC.md` amendment: where this direction and 
 
 ## Status and preliminary builder notes (unverified here)
 
-The rows below are UNVERIFIED builder notes (2026-10-10), not results: no backing file or re-runnable command for any row exists in this repo (`eval/results/BASELINE.json` does not exist; per `docs/BASELINE.md` pitch claims come only from that file). Point estimates are preliminary and intervals are withheld until backing files land. Rows about the per-pixel scorer, GPU pipeline, and Egocentric-10K PoC describe unmerged, off-branch work (open PRs #52, #57, #61, #66-#73; PoC demo on `integration/poc`, pending merge) — there is no commit, file, or reproduce command on this branch to check out and re-run. Do not cite these as measured results.
+The rows below are UNVERIFIED builder notes (2026-10-10), not results: no backing file or re-runnable command for any row exists in this repo (`eval/results/BASELINE.json` does not exist; per `docs/BASELINE.md` pitch claims come only from that file). No point estimates are given and no intervals are claimed until backing files land. Rows about the per-pixel scorer, GPU pipeline, and Egocentric-10K PoC describe unmerged, off-branch work (open PRs #52, #57, #61, #66-#73; PoC demo on `integration/poc`, pending merge) — there is no commit, file, or reproduce command on this branch to check out and re-run. Do not cite these as measured results.
 
-| What was noted (unverified, unmerged where stated) | Preliminary note (no interval) | n and label source (as noted, unverified) |
+| What was noted (unverified, unmerged where stated) | Status | n and label source (as noted, unverified) |
 |---|---|---|
-| Per-pixel features + logistic head (unmerged) | AUROC about 0.8, preliminary | 150 windows from 7 clips, one human labeller (as noted) |
-| EmbeddingGemma 2 frame heads, pooled over every 0.5 s frame (unmerged) | AUROC about 0.8, preliminary | same 150 windows (as noted) |
-| EmbeddingGemma 2 human-only head (unmerged) | AUROC about 0.8, preliminary | same 150 windows (as noted) |
-| EmbeddingGemma 2 combined (unmerged) | AUROC about 0.8, preliminary | same 150 windows (as noted) |
-| 1D-conv on per-frame series (unmerged) | AUROC about 0.8, preliminary | same 150 windows (as noted) |
-| Boosted trees / physics-only logistic (unmerged) | AUROC about 0.7, preliminary | same 150 windows (as noted) |
-| Quality problems only (dark, duplicate, undecodable) by physics features (unmerged) | AUROC about 0.85, preliminary | same 150 windows; quality labels only (as noted) |
-| Best single feature: residual optical flow in the hand region after ego-motion removal (unmerged) | AUROC about 0.8, preliminary | same 150 windows (as noted) |
-| Features + logistic, deciding every window (unmerged) | balanced accuracy about 0.7, preliminary | same 150 windows (as noted) |
-| Features + logistic, keeping the most confident windows (unmerged) | balanced accuracy about 0.8, preliminary | same 150 windows (as noted) |
-| Harness arms (OpenCV + MediaPipe signals; spectral arm B) (unmerged) | near chance, preliminary | 150 windows, each arm's own protocol (as noted) |
+| Per-pixel features + logistic head (unmerged) | direction tested, result pending | 150 windows from 7 clips, one human labeller (as noted, unverified) |
+| EmbeddingGemma 2 frame heads, pooled over every 0.5 s frame (unmerged) | direction tested, result pending | same 150 windows (as noted, unverified) |
+| EmbeddingGemma 2 human-only head (unmerged) | direction tested, result pending | same 150 windows (as noted, unverified) |
+| EmbeddingGemma 2 combined (unmerged) | direction tested, result pending | same 150 windows (as noted, unverified) |
+| 1D-conv on per-frame series (unmerged) | direction tested, result pending | same 150 windows (as noted, unverified) |
+| Boosted trees / physics-only logistic (unmerged) | direction tested, result pending | same 150 windows (as noted, unverified) |
+| Quality problems only (dark, duplicate, undecodable) by physics features (unmerged) | direction tested, result pending | same 150 windows; quality labels only (as noted, unverified) |
+| Best single feature: residual optical flow in the hand region after ego-motion removal (unmerged) | direction tested, result pending | same 150 windows (as noted, unverified) |
+| Features + logistic, deciding every window (unmerged) | direction tested, result pending | same 150 windows (as noted, unverified) |
+| Features + logistic, keeping the most confident windows (unmerged) | direction tested, result pending | same 150 windows (as noted, unverified) |
+| Harness arms (OpenCV + MediaPipe signals; spectral arm B) (unmerged) | direction tested, result pending | 150 windows, each arm's own protocol (as noted, unverified) |
 | Egocentric-10K proof of concept (unmerged, unlabelled) | **descriptive only**: pipeline runs, no accuracy claimed | no human labels exist for this set |
 
 What this means:
 
-- **Accuracy is not yet high.** The unverified notes above suggest about 0.8 AUROC as an honest ceiling so far, with two clips (pallet, pallet2) at chance for every model — all preliminary, no backing file in this repo.
-- **The human set is small.** 150 windows: 100 usable, 50 bad (NO_ACTIVE_WORK 23, HANDS_NOT_VISIBLE 14, DUPLICATE 6, TOO_DARK 6, UNDECODABLE 1). It comes from 7 IndEgo videos (Fraunhofer IPK), 480p at about 10 fps. The file names suggest only about 3 wearers. It is not Awign footage.
-- **Egocentric-10K has no human labels.** Its frame labels come from an AI model. The proof of concept shows the pipeline runs on real 1080p/30 fps HEVC footage. Its verdicts are not accuracy results. The scorer was calibrated on 480p/10 fps IndEgo, so the domain shift is untested. Unverified builder note (no backing file in this repo): an earlier partial run had a higher reject share; a small out-of-domain labelling queue is ready for the builder to label.
+- **Accuracy is not yet shown.** No accuracy number is claimed on this branch; the directions above are recorded as tested-with-result-pending. Unverified builder note (no backing file in this repo): two clips (pallet, pallet2) were noted at chance for every model tried.
+- **The human set is small.** 150 windows: 100 usable, 50 bad (NO_ACTIVE_WORK 23, HANDS_NOT_VISIBLE 14, DUPLICATE 6, TOO_DARK 6, UNDECODABLE 1) (see `docs/reports/funnel.md:421-422`; `eval/results/gold_labels_snapshot.json`). It comes from 7 IndEgo videos (Fraunhofer IPK), 480p at about 10 fps. The file names suggest only about 3 wearers. It is not Awign footage.
+- **Egocentric-10K has no human labels.** Its frame labels come from an AI model. The proof of concept shows the pipeline runs on footage described in an unverified builder note (no backing file in this repo) as 1080p/30 fps HEVC. Its verdicts are not accuracy results. The scorer was calibrated on 480p/10 fps IndEgo, so the domain shift is untested. Unverified builder note (no backing file in this repo): an earlier partial run had a higher reject share; a small out-of-domain labelling queue is ready for the builder to label.
 - **Speed (unverified builder note — no backing file or single end-to-end measurement in this repo; not a Pi).** Laptop CPU/GPU decode and kernel rates were noted informally on x86 hardware; end-to-end throughput is decode-bound and is not yet measured as one number.
 
 Still in progress or not claimed:
@@ -57,7 +57,7 @@ Still in progress or not claimed:
 
 - **No certified bounds.** The certification machinery exists in `jadal/certify.py`: `exact_binomial_upper` (Clopper-Pearson), `pick_threshold` (fixed-sequence testing) and `batch_rule`. It does not give a usable guarantee on the current data. With 150 labels from 7 clips, a multiple-testing correction needs about 86 clean windows (see `docs/reports/funnel.md`: support floor 86). Windows within a clip are correlated, so the usable independent sample is smaller than 150. Error rates are therefore reported as observed, with n and label source, and not as certified bounds. A certified bound needs more labelled, independent clips than we have.
 - **Receipts are content-hashed, not signed.** A receipt is the SHA-256 of its canonical JSON. Re-verifying means re-running the pinned pipeline on the original clip and comparing hashes. A tampered receipt fails. An optional HMAC sidecar exists (see [`docs/reports/verify.md`](docs/reports/verify.md)), but no receipt is signed.
-- **Determinism is narrow.** The CPU feature path gives an identical quantised digest over 10 repeated runs, on this machine. GPU numerics are not claimed identical across devices, and cross-architecture determinism is not claimed.
+- **Determinism is narrow.** The CPU feature path's canonical-JSON digest (`sha256(canonical-json(signals+route))`) was identical across 3 repeats and across 1-core vs 4-core runs (see `docs/reports/edge.md:81-83`); the 10x receipt-hash proof through the real modules is pending. GPU numerics are not claimed identical across devices, and cross-architecture determinism is not claimed.
 - **Raspberry Pi.** A Raspberry Pi Pico (RP2040) drives verdict LEDs, and the Pico firmware is verified on that hardware (MicroPython 1.29.0). This is a status light, not the compute device. RP2350 is not tested. Running the analysis on a Pi is not measured.
 - **Labels.** Egocentric-10K-Evaluation labels are AI-generated (gemini-2.5-flash, per [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md)) and not human-checked. The 150 human gold labels come from one labeller.
 - **Thresholds.** The answer threshold on `main` is a placeholder (0.9). No threshold on `main` is certified.

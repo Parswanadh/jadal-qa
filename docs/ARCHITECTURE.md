@@ -13,13 +13,13 @@ Status labels used below:
 
 The pipeline runs in a Python 3.12 conda env with torch+cu130 (CUDA user-space wheels inside the env; the NVIDIA driver is not changed). Set the path to that env locally; it is not stored in this repo. Use `PYTHONNOUSERSITE=1` so user-site packages do not shadow the env.
 
-Measurement hardware so far: an RTX 4070 laptop GPU (36 SMs, 8 GiB VRAM, power capped at 80 W by firmware, thermally limited) and x86 laptop CPU cores. There is no Raspberry Pi measurement yet.
+Measurement hardware so far (unverified builder note — no backing measurement file in this repo): an RTX 4070 laptop GPU (36 SMs, 8 GiB VRAM, power capped at 80 W by firmware, thermally limited) and x86 laptop CPU cores. There is no Raspberry Pi measurement yet.
 
 ## Direction (2026-10-10)
 
 - **Edge-first.** Mentors at Awign said workers record their own video, a decentralised deployment is acceptable if it runs on a Raspberry Pi, rejection reasons can be generic, and accept/reject may be fully automated with no mandatory human. The Pi run is pending. x86 cores are a proxy.
 - **Whole-video, per-pixel analysis of every frame.** Frames are not sampled. Stage 1 streams over every frame at reduced resolution and keeps running accumulators.
-- **Streaming with early reject.** The worker analyses 2-second chunks while it records. Stage 0 rejects dark, blocked, over-exposed or frozen footage in the first 1-2 seconds, with evidence.
+- **Streaming with early reject.** The worker analyses 2-second chunks while it records. Stage 0 is planned to reject dark, blocked, over-exposed or frozen footage in the first 1-2 seconds, with evidence (timing unverified — no backing file or measurement in this repo; see the Stage 0 note below).
 - **Mathematics-first, deterministic decisions.** Decisions come from measured signals and a transparent rule list with exact thresholds. Logistic regression and boosted trees are comparison baselines only. Every reject carries its evidence (value, comparison, threshold). The first rule list tried rejected nearly everything and was dropped.
 - **Signals.** Poisson-Gaussian noise model (SNR), H.264 bits per frame, frame difference against the noise floor, noise-normalised sharpness, residual optical flow after ego-motion removal, exposure clipping, histogram entropy, dHash. Heat-equation blur, colour temperature, MSCN and max-entropy were dropped.
 - **Not in the pipeline.** A generic VLM (stopped as too probabilistic), Laya (text-only) and Clef (hosted). EmbeddingGemma 2 is an optional helper for hub search, de-duplication and frame heads.
@@ -125,7 +125,7 @@ These come from `SPEC.md` and apply to every merged module.
 4. Versions recorded: Python, torch, model names and weight SHA-256 (or size and name if hashing is too slow), and a pipeline config hash. Only the first two and the config hash are recorded today.
 5. `segment_sha256` is the hash of the file the pipeline read (the original).
 
-What is measured: the CPU feature path gives an identical quantised digest over 10 repeated runs on this machine. GPU numerics are not claimed identical across devices, and cross-architecture determinism is not claimed. The batch-independence tests on `main` call pure functions repeatedly and do not run a real batch. The real "alone vs batch of five" proof (10 identical receipt hashes through the real modules) is **pending**.
+What is measured: the CPU feature path's canonical-JSON digest (`sha256(canonical-json(signals+route))`) was identical across 3 repeats and across 1-core vs 4-core runs (see `reports/edge.md:81-83`). GPU numerics are not claimed identical across devices, and cross-architecture determinism is not claimed. The batch-independence tests on `main` call pure functions repeatedly and do not run a real batch. The real "alone vs batch of five" proof (10 identical receipt hashes through the real modules) is **pending**.
 
 ## Failure modes
 
@@ -148,7 +148,7 @@ What is measured: the CPU feature path gives an identical quantised digest over 
 ## What we deliberately do not claim
 
 - **No certified error bounds.** The machinery exists; it does not produce a usable guarantee at n = 150 from 7 clips.
-- **No accuracy claim beyond the preliminary, unverified builder notes** in the README. Every row is labelled with its (unverified) n and label source; intervals are withheld until backing files land.
+- **No accuracy claim.** The README records directions tested with results pending; no accuracy numbers are claimed on this branch. The Egocentric-10K notes below are descriptive.
 - **Egocentric-10K notes are descriptive.** Those windows have no human labels. The domain shift from the 480p/10 fps calibration data is untested.
 - **Labels for Egocentric-10K-Evaluation are AI-generated** (gemini-2.5-flash per ATTRIBUTIONS) and not human-checked.
 - **Thresholds are placeholders** (0.9) until calibrated on our own clips. No threshold on `main` is certified.
