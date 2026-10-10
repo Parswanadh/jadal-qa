@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "by_source": {
+      "synthetic": 1200
+    },
+    "method": "per-source independent calibration; group-based SELECT/CERTIFY split; no Bonferroni \u2014 measured union bound on CERTIFY instead",
+    "n_total": 1200,
+    "produced_utc": "2026-10-10T07:12:49.558812+00:00",
+    "provenance": "synthetic-fixtures",
+    "seed": 7,
+    "support_floor": 45,
+    "targets": {
+      "accept_step": 0.05,
+      "delta": 0.1,
+      "min_accepted": 30,
+      "min_support": 10,
+      "target_alpha": 0.05,
+      "target_beta": 0.05
+    }
+  },
+  "per_source": {
+    "synthetic": {
+      "accept": {
+        "candidate": 0.4,
+        "certify": {
+          "errors": 9,
+          "fired": 364,
+          "n_certify": 600,
+          "upper_bound": 0.0387
+        },
+        "n_no_conf": 0,
+        "n_select": 600,
+        "select_certified": {
+          "accepted": 364,
+          "coverage": 0.6067,
+          "errors": 8,
+          "upper_bound": 0.0355
+        },
+        "threshold": 0.4
+      },
+      "n_certify": 600,
+      "n_select": 600,
+      "n_total": 1200,
+      "reject_rules": {
+        "blur_var_min": {
+          "certify": {
+            "errors": 0,
+            "fired": 91,
+            "n_certify": 600,
+            "upper_bound": 0.025
+          },
+          "code": "BLUR",
+          "disabled": false,
+          "n_eligible_candidates": 555,
+          "select": {
+            "errors": 0,
+            "fired": 69,
+            "upper_bound": 0.0328
+          },
+          "threshold": 90.0458
+        },
+        "brightness_min": {
+          "certify": {
+            "errors": 0,
+            "fired": 88,
+            "n_certify": 600,
+            "upper_bound": 0.0258
+          },
+          "code": "TOO_DARK",
+          "disabled": false,
+          "n_eligible_candidates": 555,
+          "select": {
+            "errors": 0,
+            "fired": 87,
+            "upper_bound": 0.0261
+          },
+          "threshold": 80.1498
+        },
+        "hands_visible_frac_min": {
+          "certify": {
+            "errors": 2,
+            "fired": 82,
+            "n_certify": 600,
+            "upper_bound": 0.0636
+          },
+          "code": "HANDS_NOT_VISIBLE",
+          "disabled": true,
+          "n_eligible_candidates": 515,
+          "reason": "SELECT candidate rejected on CERTIFY: bound=0.0636 (target 0.05), support=82 (min 10)",
+          "select_candidate": 0.7019,
+          "threshold": null
+        },
+        "min_duration_s": {
+          "certify": {
+            "errors": 0,
+            "fired": 0,
+            "n_certify": 600,
+            "upper_bound": null
+          },
+          "code": "UNDECODABLE",
+          "disabled": true,
+          "n_eligible_candidates": 0,
+          "reason": "no candidate certified on SELECT: the strictest candidate with support >= 45 already exceeds target_beta (or no candidate reaches support)",
+          "select_candidate": null,
+          "threshold": null
+        },
+        "motion_max": {
+          "certify": {
+            "errors": 3,
+            "fired": 70,
+            "n_certify": 600,
+            "upper_bound": 0.093
+          },
+          "code": "SHAKY",
+          "disabled": true,
+          "n_eligible_candidates": 552,
+          "reason": "SELECT candidate rejected on CERTIFY: bound=0.093 (target 0.05), support=70 (min 10)",
+          "select_candidate": 7.9447,
+          "threshold": null
+        },
+        "motion_min": {
+          "certify": {
+            "errors": 0,
+            "fired": 69,
+            "n_certify": 600,
+            "upper_bound": 0.0328
+          },
+          "code": "NO_ACTIVE_WORK",
+          "disabled": false,
+          "n_eligible_candidates": 555,
+          "select": {
+            "errors": 0,
+            "fired": 65,
+            "upper_bound": 0.0348
+          },
+          "threshold": 2.0011
+        },
+        "over_exposed_frac_max": {
+          "certify": {
+            "errors": 1,
+            "fired": 95,
+            "n_certify": 600,
+            "upper_bound": 0.0403
+          },
+          "code": "OVEREXPOSED",
+          "disabled": false,
+          "n_eligible_candidates": 359,
+          "select": {
+            "errors": 1,
+            "fired": 82,
+            "upper_bound": 0.0466
+          },
+          "threshold": 0.0497
+        },
+        "under_exposed_frac_max": {
+          "certify": {
+            "errors": 0,
+            "fired": 0,
+            "n_certify": 600,
+            "upper_bound": null
+          },
+          "code": "TOO_DARK",
+          "disabled": true,
+          "n_eligible_candidates": 327,
+          "reason": "no candidate certified on SELECT: the strictest candidate with support >= 45 already exceeds target_beta (or no candidate reaches support)",
+          "select_candidate": null,
+          "threshold": null
+        }
+      },
+      "threshold_updates": {
+        "accept_conf": 0.4,
+        "blur_var_min": 90.0458,
+        "brightness_min": 80.1498,
+        "hands_visible_frac_min": null,
+        "min_duration_s": null,
+        "motion_max": null,
+        "motion_min": 2.0011,
+        "over_exposed_frac_max": 0.0497,
+        "under_exposed_frac_max": null
+      },
+      "union": {
+        "errors": 1,
+        "fired": 223,
+        "n_certify": 600,
+        "note": "union of all selected reject rules as route() applies them; per-rule bounds do not bound this",
+        "upper_bound": 0.0173
+      }
+    }
+  },
+  "threshold_updates": {
+    "synthetic": {
+      "accept_conf": 0.4,
+      "blur_var_min": 90.0458,
+      "brightness_min": 80.1498,
+      "hands_visible_frac_min": null,
+      "min_duration_s": null,
+      "motion_max": null,
+      "motion_min": 2.0011,
+      "over_exposed_frac_max": 0.0497,
+      "under_exposed_frac_max": null
+    }
+  }
+}

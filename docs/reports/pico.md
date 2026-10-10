@@ -1,12 +1,12 @@
 # Pico module report (issue #2)
 
-Owner branch: `feat/pico` (worktree `.../jadal-qa-wt/pico`). Implements the Pico 2
+Owner branch: `feat/pico` (worktree `.../jadal-qa-wt/pico`). Implements the Raspberry Pi Pico (RP2040 tested)
 firmware + host serial link per the protocol in [`docs/SPEC.md`](../SPEC.md).
 USB serial only, no Wi-Fi.
 
 ## What exists
 
-- `pico/main.py` — MicroPython firmware for Raspberry Pi Pico 2 (RP2350).
+- `pico/main.py` — MicroPython firmware for Raspberry Pi Pico (RP2040 tested; RP2350 not tested).
   - `HB <ticks_ms> <led_state>` every 1.0 s (non-blocking schedule).
   - `LED G|A|R|OFF` — onboard LED plus an **optional external RGB LED** via
     `RGB_PINS` at the top of the file (G=green, A=red+green amber, R=red).
@@ -43,7 +43,7 @@ was done.
 # firmware syntax check + import-safety (no hardware)
 /home/parshu/envs/jadal/bin/python -m py_compile pico/main.py
 
-# deploy to a real Pico 2 (see pico/README.md)
+# deploy to a real Pico (see pico/README.md)
 mpremote fs cp pico/main.py :main.py && mpremote reset
 ```
 
@@ -66,10 +66,9 @@ passed.
 
 ## Known gaps / NOT DONE
 
-- **Firmware never run on a real Pico 2 from this repo** (no device in CI). Only
-  syntax-checked (`py_compile`) and logic-checked against stubbed
-  `machine`/`uselect`. Board-level behaviour (pin mapping, USB-CDC framing under
-  load, actual `mpremote` flash) is unverified.
+- **Firmware run on a real Raspberry Pi Pico (RP2040)**, MicroPython 1.29.0: heartbeat,
+  LED, FLASH and PING/PONG verified over USB serial. See `docs/reports/pico_hardware.md`.
+  Not verified: RP2350, USB-CDC framing under load, external RGB LED wiring.
 - **No measured sync accuracy.** `estimate_offset` is an NTP-style *estimate*
   whose uncertainty is bounded by half the measured round-trip
   (`sync_error_bound_ms`). We deliberately do not claim anything tighter than one
