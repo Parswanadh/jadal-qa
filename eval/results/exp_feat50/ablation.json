@@ -1,0 +1,421 @@
+{
+ "n_gold": 150,
+ "n_good_gold": 100,
+ "n_ood": 160,
+ "n_good_ood": 138,
+ "n_factories_ood": 47,
+ "n_hold": 108,
+ "n_good_hold": 92,
+ "device": "CPU (numpy/sklearn; decode by ffmpeg)",
+ "feature_layout": "cols 0-25 frozen 26 pixel; 26-31 frozen Z3 transferable (reused cache); 32-49 18 new per-pixel computed here",
+ "protocol": "In-domain = LOCO logistic C=0.3 balanced over 7 IndEgo clips, clip-bootstrap CI. OOD = adapted per-domain z-score (per-domain mean/std, sign from IndEgo AUROC, equal-weight mean), FACTORY-GROUPED bootstrap CI (n_boot=2000). Hold-out108 scored once.",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "experiment": "F50.03",
+ "title": "Ablation of the added features (adapted OOD score)",
+ "groups": {
+  "dct_bands": [
+   "dct_band_r1",
+   "dct_band_r2",
+   "dct_band_r3",
+   "dct_band_r4plus"
+  ],
+  "colour": [
+   "col_rg_ratio",
+   "col_bg_ratio",
+   "col_sat_std"
+  ],
+  "temporal_lags": [
+   "lag1_diff",
+   "lag2_diff",
+   "lag3_diff",
+   "lag4_diff"
+  ],
+  "noise_floor": [
+   "noise_floor_med",
+   "noise_floor_p90"
+  ],
+  "exposure_clip": [
+   "clip_low_5pct",
+   "clip_high_99"
+  ],
+  "edge_lap": [
+   "edge_density",
+   "lap_mean_abs"
+  ],
+  "hand": [
+   "hand_occupancy"
+  ]
+ },
+ "leave_one_family_out": {
+  "drop_dct_bands": {
+   "tag": "drop_dct_bands",
+   "n_features": 46,
+   "indego_auroc": 0.8278,
+   "ood_auroc": 0.4433,
+   "ood_ci95_factory": [
+    0.2734,
+    0.5833
+   ],
+   "ood_ba": 0.4582
+  },
+  "drop_colour": {
+   "tag": "drop_colour",
+   "n_features": 47,
+   "indego_auroc": 0.8098,
+   "ood_auroc": 0.5408,
+   "ood_ci95_factory": [
+    0.3736,
+    0.685
+   ],
+   "ood_ba": 0.5145
+  },
+  "drop_temporal_lags": {
+   "tag": "drop_temporal_lags",
+   "n_features": 46,
+   "indego_auroc": 0.8098,
+   "ood_auroc": 0.558,
+   "ood_ci95_factory": [
+    0.3902,
+    0.7053
+   ],
+   "ood_ba": 0.5754
+  },
+  "drop_noise_floor": {
+   "tag": "drop_noise_floor",
+   "n_features": 48,
+   "indego_auroc": 0.8072,
+   "ood_auroc": 0.528,
+   "ood_ci95_factory": [
+    0.3599,
+    0.6742
+   ],
+   "ood_ba": 0.5036
+  },
+  "drop_exposure_clip": {
+   "tag": "drop_exposure_clip",
+   "n_features": 48,
+   "indego_auroc": 0.7994,
+   "ood_auroc": 0.526,
+   "ood_ci95_factory": [
+    0.3591,
+    0.6698
+   ],
+   "ood_ba": 0.4964
+  },
+  "drop_edge_lap": {
+   "tag": "drop_edge_lap",
+   "n_features": 48,
+   "indego_auroc": 0.798,
+   "ood_auroc": 0.4858,
+   "ood_ci95_factory": [
+    0.3162,
+    0.6283
+   ],
+   "ood_ba": 0.4881
+  },
+  "drop_hand": {
+   "tag": "drop_hand",
+   "n_features": 49,
+   "indego_auroc": 0.8036,
+   "ood_auroc": 0.528,
+   "ood_ci95_factory": [
+    0.3509,
+    0.6743
+   ],
+   "ood_ba": 0.5072
+  }
+ },
+ "family_only": {
+  "only_dct_bands": {
+   "tag": "only_dct_bands",
+   "n_features": 4,
+   "indego_auroc": 0.6182,
+   "ood_auroc": 0.7276,
+   "ood_ci95_factory": [
+    0.5952,
+    0.8454
+   ],
+   "ood_ba": 0.6446
+  },
+  "only_colour": {
+   "tag": "only_colour",
+   "n_features": 3,
+   "indego_auroc": 0.6404,
+   "ood_auroc": 0.2688,
+   "ood_ci95_factory": [
+    0.1402,
+    0.3995
+   ],
+   "ood_ba": 0.3419
+  },
+  "only_temporal_lags": {
+   "tag": "only_temporal_lags",
+   "n_features": 4,
+   "indego_auroc": 0.682,
+   "ood_auroc": 0.3788,
+   "ood_ci95_factory": [
+    0.2366,
+    0.4994
+   ],
+   "ood_ba": 0.4173
+  },
+  "only_noise_floor": {
+   "tag": "only_noise_floor",
+   "n_features": 2,
+   "indego_auroc": 0.7066,
+   "ood_auroc": 0.3949,
+   "ood_ci95_factory": [
+    0.2421,
+    0.5185
+   ],
+   "ood_ba": 0.4473
+  },
+  "only_exposure_clip": {
+   "tag": "only_exposure_clip",
+   "n_features": 2,
+   "indego_auroc": 0.5686,
+   "ood_auroc": 0.4022,
+   "ood_ci95_factory": [
+    0.2116,
+    0.5863
+   ],
+   "ood_ba": 0.3801
+  },
+  "only_edge_lap": {
+   "tag": "only_edge_lap",
+   "n_features": 2,
+   "indego_auroc": 0.6974,
+   "ood_auroc": 0.6805,
+   "ood_ci95_factory": [
+    0.5222,
+    0.8237
+   ],
+   "ood_ba": 0.6627
+  },
+  "only_hand": {
+   "tag": "only_hand",
+   "n_features": 1,
+   "indego_auroc": 0.6622,
+   "ood_auroc": 0.3309,
+   "ood_ci95_factory": [
+    0.2013,
+    0.4669
+   ],
+   "ood_ba": 0.3883
+  }
+ },
+ "cumulative_by_family_only_rank": [
+  {
+   "tag": "cum_dct_bands",
+   "n_features": 4,
+   "indego_auroc": 0.6182,
+   "ood_auroc": 0.7276,
+   "ood_ci95_factory": [
+    0.5952,
+    0.8454
+   ],
+   "ood_ba": 0.6446,
+   "family_added": "dct_bands",
+   "families": [
+    "dct_bands"
+   ]
+  },
+  {
+   "tag": "cum_edge_lap",
+   "n_features": 6,
+   "indego_auroc": 0.6694,
+   "ood_auroc": 0.7273,
+   "ood_ci95_factory": [
+    0.5864,
+    0.8511
+   ],
+   "ood_ba": 0.6627,
+   "family_added": "edge_lap",
+   "families": [
+    "dct_bands",
+    "edge_lap"
+   ]
+  },
+  {
+   "tag": "cum_exposure_clip",
+   "n_features": 8,
+   "indego_auroc": 0.6836,
+   "ood_auroc": 0.7006,
+   "ood_ci95_factory": [
+    0.5745,
+    0.8235
+   ],
+   "ood_ba": 0.6555,
+   "family_added": "exposure_clip",
+   "families": [
+    "dct_bands",
+    "edge_lap",
+    "exposure_clip"
+   ]
+  },
+  {
+   "tag": "cum_noise_floor",
+   "n_features": 10,
+   "indego_auroc": 0.7398,
+   "ood_auroc": 0.663,
+   "ood_ci95_factory": [
+    0.506,
+    0.8003
+   ],
+   "ood_ba": 0.6291,
+   "family_added": "noise_floor",
+   "families": [
+    "dct_bands",
+    "edge_lap",
+    "exposure_clip",
+    "noise_floor"
+   ]
+  },
+  {
+   "tag": "cum_temporal_lags",
+   "n_features": 14,
+   "indego_auroc": 0.7558,
+   "ood_auroc": 0.5639,
+   "ood_ci95_factory": [
+    0.3815,
+    0.717
+   ],
+   "ood_ba": 0.5599,
+   "family_added": "temporal_lags",
+   "families": [
+    "dct_bands",
+    "edge_lap",
+    "exposure_clip",
+    "noise_floor",
+    "temporal_lags"
+   ]
+  },
+  {
+   "tag": "cum_hand",
+   "n_features": 15,
+   "indego_auroc": 0.7616,
+   "ood_auroc": 0.5431,
+   "ood_ci95_factory": [
+    0.3557,
+    0.7058
+   ],
+   "ood_ba": 0.5636,
+   "family_added": "hand",
+   "families": [
+    "dct_bands",
+    "edge_lap",
+    "exposure_clip",
+    "noise_floor",
+    "temporal_lags",
+    "hand"
+   ]
+  },
+  {
+   "tag": "cum_colour",
+   "n_features": 18,
+   "indego_auroc": 0.7554,
+   "ood_auroc": 0.4921,
+   "ood_ci95_factory": [
+    0.3048,
+    0.648
+   ],
+   "ood_ba": 0.5754,
+   "family_added": "colour",
+   "families": [
+    "dct_bands",
+    "edge_lap",
+    "exposure_clip",
+    "noise_floor",
+    "temporal_lags",
+    "hand",
+    "colour"
+   ]
+  }
+ ],
+ "cumulative_from_documented_recipe": [
+  {
+   "tag": "doc+cum_dct_bands",
+   "n_features": 18,
+   "indego_auroc": 0.7122,
+   "ood_auroc": 0.7787,
+   "ood_ci95_factory": [
+    0.6368,
+    0.8901
+   ],
+   "ood_ba": 0.6999,
+   "family_added": "dct_bands"
+  },
+  {
+   "tag": "doc+cum_edge_lap",
+   "n_features": 20,
+   "indego_auroc": 0.7126,
+   "ood_auroc": 0.7691,
+   "ood_ci95_factory": [
+    0.6247,
+    0.8833
+   ],
+   "ood_ba": 0.6999,
+   "family_added": "edge_lap"
+  },
+  {
+   "tag": "doc+cum_exposure_clip",
+   "n_features": 22,
+   "indego_auroc": 0.7146,
+   "ood_auroc": 0.7648,
+   "ood_ci95_factory": [
+    0.6225,
+    0.8838
+   ],
+   "ood_ba": 0.7072,
+   "family_added": "exposure_clip"
+  },
+  {
+   "tag": "doc+cum_noise_floor",
+   "n_features": 24,
+   "indego_auroc": 0.7534,
+   "ood_auroc": 0.7467,
+   "ood_ci95_factory": [
+    0.5935,
+    0.8801
+   ],
+   "ood_ba": 0.6845,
+   "family_added": "noise_floor"
+  },
+  {
+   "tag": "doc+cum_temporal_lags",
+   "n_features": 28,
+   "indego_auroc": 0.7848,
+   "ood_auroc": 0.6999,
+   "ood_ci95_factory": [
+    0.5324,
+    0.8519
+   ],
+   "ood_ba": 0.6281,
+   "family_added": "temporal_lags"
+  },
+  {
+   "tag": "doc+cum_hand",
+   "n_features": 29,
+   "indego_auroc": 0.7934,
+   "ood_auroc": 0.6927,
+   "ood_ci95_factory": [
+    0.5252,
+    0.8501
+   ],
+   "ood_ba": 0.6318,
+   "family_added": "hand"
+  },
+  {
+   "tag": "doc+cum_colour",
+   "n_features": 32,
+   "indego_auroc": 0.791,
+   "ood_auroc": 0.6571,
+   "ood_ci95_factory": [
+    0.4778,
+    0.8236
+   ],
+   "ood_ba": 0.6509,
+   "family_added": "colour"
+  }
+ ]
+}

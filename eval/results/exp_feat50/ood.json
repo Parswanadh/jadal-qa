@@ -1,0 +1,112 @@
+{
+ "n_gold": 150,
+ "n_good_gold": 100,
+ "n_ood": 160,
+ "n_good_ood": 138,
+ "n_factories_ood": 47,
+ "n_hold": 108,
+ "n_good_hold": 92,
+ "device": "CPU (numpy/sklearn; decode by ffmpeg)",
+ "feature_layout": "cols 0-25 frozen 26 pixel; 26-31 frozen Z3 transferable (reused cache); 32-49 18 new per-pixel computed here",
+ "protocol": "In-domain = LOCO logistic C=0.3 balanced over 7 IndEgo clips, clip-bootstrap CI. OOD = adapted per-domain z-score (per-domain mean/std, sign from IndEgo AUROC, equal-weight mean), FACTORY-GROUPED bootstrap CI (n_boot=2000). Hold-out108 scored once.",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "experiment": "F50.02",
+ "title": "OOD160 adapted per-domain z-score: 26 vs 50 features",
+ "baseline_26_documented_auroc": 0.781,
+ "frozen_26_documented_auroc": 0.566,
+ "rows": {
+  "f26_all": {
+   "tag": "26 all (adapted z-score)",
+   "n_features": 26,
+   "indego_auroc": 0.7832,
+   "ood_auroc": 0.3864,
+   "ood_ci95_factory": [
+    0.2308,
+    0.5251
+   ],
+   "ood_ba": 0.4127
+  },
+  "f50_all": {
+   "tag": "50 all (adapted z-score)",
+   "n_features": 50,
+   "indego_auroc": 0.805,
+   "ood_auroc": 0.5122,
+   "ood_ci95_factory": [
+    0.3408,
+    0.658
+   ],
+   "ood_ba": 0.5072
+  },
+  "documented_baseline_stable8+transfer6": {
+   "tag": "stable8(26)+transfer6(Z3 frozen)",
+   "n_features": 14,
+   "indego_auroc": 0.7364,
+   "ood_auroc": 0.781,
+   "ood_ci95_factory": [
+    0.6344,
+    0.8952
+   ],
+   "ood_ba": 0.7325
+  },
+  "documented_plus_18new": {
+   "tag": "stable8+transfer6+18 new",
+   "n_features": 32,
+   "indego_auroc": 0.791,
+   "ood_auroc": 0.6571,
+   "ood_ci95_factory": [
+    0.4778,
+    0.8236
+   ],
+   "ood_ba": 0.6509
+  },
+  "fnew24_only": {
+   "tag": "24 new only (6 Z3 + 18)",
+   "n_features": 24,
+   "indego_auroc": 0.7958,
+   "ood_auroc": 0.6018,
+   "ood_ci95_factory": [
+    0.4085,
+    0.7841
+   ],
+   "ood_ba": 0.6163
+  },
+  "fnew18_only": {
+   "tag": "18 newly computed only",
+   "n_features": 18,
+   "indego_auroc": 0.7554,
+   "ood_auroc": 0.4921,
+   "ood_ci95_factory": [
+    0.3048,
+    0.648
+   ],
+   "ood_ba": 0.5754
+  },
+  "frozen_ensemble_v1": {
+   "ood_auroc": 0.566,
+   "ood_ci95_factory": [
+    0.4238,
+    0.6999
+   ],
+   "ood_ba": 0.5464,
+   "missing": 0
+  }
+ },
+ "paired_gain_all50_vs_all26": {
+  "mean": 0.1264,
+  "ci95": [
+   0.0034,
+   0.2607
+  ],
+  "frac_gt_0": 0.9795,
+  "n_boot": 2000
+ },
+ "paired_gain_documented+18_vs_documented": {
+  "mean": -0.1227,
+  "ci95": [
+   -0.2243,
+   -0.035
+  ],
+  "frac_gt_0": 0.0035,
+  "n_boot": 2000
+ }
+}

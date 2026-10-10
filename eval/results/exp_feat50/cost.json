@@ -1,0 +1,23 @@
+{
+ "experiment": "F50.05",
+ "title": "Per-window cost of the added 24 per-pixel features",
+ "device": "CPU (single core; ffmpeg decode on CPU)",
+ "n_repeats": 15,
+ "frames": 100,
+ "resolution": [
+  160,
+  90
+ ],
+ "synthetic_frames": {
+  "frozen26_kernel_ms": 239.50641153690717,
+  "new24_kernel_ms": 43.14763587123404
+ },
+ "real_window": {
+  "decode_ms": 156.94912932813168,
+  "ffprobe_ms": 104.43425733440866
+ },
+ "total_new24_end_to_end_ms": 147.58,
+ "frozen26_kernel_ms": 239.50641153690717,
+ "note": "decode is shared with the frozen 26 pipeline; the added cost is the new-24 kernels + one ffprobe for ct_fsize_std. Measured on CPU, not GPU.",
+ "command": "OMP_NUM_THREADS=2 python3 eval/gpu/cost_feat50.py"
+}

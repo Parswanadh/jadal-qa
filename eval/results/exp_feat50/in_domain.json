@@ -1,0 +1,46 @@
+{
+ "n_gold": 150,
+ "n_good_gold": 100,
+ "n_ood": 160,
+ "n_good_ood": 138,
+ "n_factories_ood": 47,
+ "n_hold": 108,
+ "n_good_hold": 92,
+ "device": "CPU (numpy/sklearn; decode by ffmpeg)",
+ "feature_layout": "cols 0-25 frozen 26 pixel; 26-31 frozen Z3 transferable (reused cache); 32-49 18 new per-pixel computed here",
+ "protocol": "In-domain = LOCO logistic C=0.3 balanced over 7 IndEgo clips, clip-bootstrap CI. OOD = adapted per-domain z-score (per-domain mean/std, sign from IndEgo AUROC, equal-weight mean), FACTORY-GROUPED bootstrap CI (n_boot=2000). Hold-out108 scored once.",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "experiment": "F50.01",
+ "title": "In-domain LOCO: 26 vs 50 per-pixel features",
+ "baseline_26_documented": 0.81,
+ "rows": {
+  "f26": {
+   "n_features": 26,
+   "auroc": 0.81,
+   "auroc_ci95_clip": [
+    0.6826,
+    0.8919
+   ],
+   "ba": 0.74
+  },
+  "f50": {
+   "n_features": 50,
+   "auroc": 0.7874,
+   "auroc_ci95_clip": [
+    0.6527,
+    0.8725
+   ],
+   "ba": 0.715
+  },
+  "f50_mine_z3": {
+   "n_features": 50,
+   "auroc": 0.8042,
+   "auroc_ci95_clip": [
+    0.6899,
+    0.8792
+   ],
+   "ba": 0.765
+  }
+ },
+ "delta_auroc_f50_vs_f26": -0.0226
+}
