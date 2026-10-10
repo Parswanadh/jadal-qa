@@ -8,7 +8,14 @@ PY=/home/parshu/envs/jadal/bin/python
 export PYTHONNOUSERSITE=1
 export OMP_NUM_THREADS=2
 
-CLIP="${1:-$(find /home/parshu/projects/awing/data/ego10k_scale/clips -name '*.mp4' | head -n 1)}"
+DEFAULT_CLIP=/home/parshu/projects/awing/data/ego10k_scale/clips/factory_069/worker_004/factory069_worker004_00077.mp4
+if [[ -n "${1:-}" ]]; then
+  CLIP="$1"
+elif [[ -f "$DEFAULT_CLIP" ]]; then
+  CLIP="$DEFAULT_CLIP"  # pinned: DEMO.md expected scores were measured here
+else
+  CLIP="$(find /home/parshu/projects/awing/data/ego10k_scale/clips -name '*.mp4' | sort | head -n 1)"
+fi
 EVENTS="${EVENTS:-/home/parshu/projects/jadal-qa-wt/poc_data/stream_events.jsonl}"
 PORT=8840
 SERVER_PID=""
@@ -44,9 +51,12 @@ fi
 
 # -- 2. scripted replay: clean start, then a blackout the funnel must catch --
 echo "-- replay: 6 clean chunks, then blackout at t=12s --"
-"$PY" "$ROOT/scripts/poc_stream_replay.py" --clip "$CLIP" \
+if ! "$PY" "$ROOT/scripts/poc_stream_replay.py" --clip "$CLIP" \
   --speed 4 --max-chunks 16 --degrade blackout --degrade-at 12 \
-  --out "$EVENTS" ${PICO:+--pico}
+  --out "$EVENTS" ${PICO:+--pico}; then
+  echo "demo: REPLAY FAILED (exit $?) -- NOT showing stale events" >&2
+  exit 1
+fi
 
 echo "-- last verdicts --"
 tail -n 6 "$EVENTS"

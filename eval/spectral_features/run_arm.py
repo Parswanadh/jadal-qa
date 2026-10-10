@@ -149,6 +149,20 @@ def main():
                          "score --manifest items (transfer mode for synth)")
     args = ap.parse_args()
 
+    # Owner-operated CLI, but keep user-supplied strings out of paths:
+    # manifests must be plain basenames inside DATA, tiers must be known,
+    # and the suffix may not contain path separators or parent refs.
+    for m in [args.manifest, args.train_manifest]:
+        if m and ("/" in m or "\\" in m or ".." in m):
+            ap.error("--manifest/--train-manifest must be a plain basename")
+    tiers = [t.strip() for t in args.tiers.split(",") if t.strip()]
+    for t in tiers:
+        if t not in TIERS:
+            ap.error(f"--tiers must be a subset of {sorted(TIERS)}")
+    if "/" in args.out_suffix or "\\" in args.out_suffix or ".." in args.out_suffix:
+        ap.error("--out-suffix may not contain path separators or '..'")
+    args.tiers = ",".join(tiers)
+
     from sklearn.linear_model import LogisticRegression
     from sklearn.metrics import roc_auc_score
     from sklearn.preprocessing import StandardScaler
@@ -272,24 +286,27 @@ def main():
                 print(f"[armB] {tier} transfer family-only {fam}: AUROC={a:.3f}",
                       flush=True)
 
-        # LOCO with per-fold standardization (fit on train clips only)
-        oof, fold_clf = {}, {}
-        for c in clips:
-            tr = [(i, f) for cc, i, f in data if cc != c]
-            te = [(i, f) for cc, i, f in data if cc == c]
-            if not tr or not te:
-                continue
-            Xtr = design_matrix(tr, ALL_FEATURES)
-            ytr = np.array([y[i] for i, _ in tr])
-            if len(set(ytr)) < 2:
-                for i, _ in te:
-                    oof[i] = 0.5
-                continue
-            sc = StandardScaler().fit(Xtr)
-            clf = LogisticRegression(max_iter=2000, C=1.0).fit(sc.transform(Xtr), ytr)
-            fold_clf[c] = (clf, sc.mean_, sc.scale_)
-            for i, f in te:
-                oof[i] = score_one(f, clf, sc.mean_, sc.scale_)
+        # LOCO with per-fold standardization (fit on train clips only).
+        # Transfer mode skips this: oof/fold_clf already hold the pooled
+        # gold-head scores, so `auc` below is the transfer AUROC.
+        if not args.train_manifest:
+            oof, fold_clf = {}, {}
+            for c in clips:
+                tr = [(i, f) for cc, i, f in data if cc != c]
+                te = [(i, f) for cc, i, f in data if cc == c]
+                if not tr or not te:
+                    continue
+                Xtr = design_matrix(tr, ALL_FEATURES)
+                ytr = np.array([y[i] for i, _ in tr])
+                if len(set(ytr)) < 2:
+                    for i, _ in te:
+                        oof[i] = 0.5
+                    continue
+                sc = StandardScaler().fit(Xtr)
+                clf = LogisticRegression(max_iter=2000, C=1.0).fit(sc.transform(Xtr), ytr)
+                fold_clf[c] = (clf, sc.mean_, sc.scale_)
+                for i, f in te:
+                    oof[i] = score_one(f, clf, sc.mean_, sc.scale_)
 
         yv = np.array([y[i] for i in feats])
         sv = np.array([oof[i] for i in feats])
@@ -316,7 +333,8 @@ def main():
             lo, hi = float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5))
         else:
             lo, hi = float("nan"), float("nan")
-        print(f"[armB] {tier} LOCO AUROC={auc:.3f} 95%CI=({lo:.3f},{hi:.3f})",
+        tag = "TRANSFER-AUROC" if args.train_manifest else "LOCO AUROC"
+        print(f"[armB] {tier} {tag}={auc:.3f} 95%CI=({lo:.3f},{hi:.3f})",
               flush=True)
 
         # streaming chunk scores (score each chunk with its own clip's fold clf)
@@ -331,8 +349,10 @@ def main():
                 entry["chunk_scores"] = cs
                 entry["chunk_latency_s"] = cl
                 if args.train_manifest:
-                    # time-to-decision: first chunk crossing operating thr
-                    thr = transfer.get("threshold", 0.5)
+                    # time-to-decision: first chunk crossing the operating
+                    # (Youden) threshold. Gold LOCO mode has no single
+                    # operating point, so TTD is transfer-mode only.
+                    thr = transfer["threshold_youden"]
                     ttd = next((k + 1 for k, s_ in enumerate(cs)
                                 if s_ < thr), None)
                     entry["time_to_decision_chunks"] = ttd
@@ -341,6 +361,9 @@ def main():
         mname = args.manifest.replace("manifest_", "").replace(".json", "")
         out = {"arm": "B", "tier": tier, "version": "spectral-features",
                "label_source": meta["source"],
+               "protocol": ("transfer: pooled head trained on " +
+                            args.train_manifest if args.train_manifest
+                            else "LOCO clip-level"),
                "loco_auroc": auc, "loco_ci": [lo, hi],
                "transfer": transfer,
                "items": arm_items}

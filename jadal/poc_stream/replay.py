@@ -10,16 +10,13 @@ chunk one event is appended (and flushed) to ``stream_events.jsonl``::
 
 ``decision`` is ``continue`` | ``early_reject`` | ``accept``.
 
-Reuse strategy (read-only, best-effort): S0 rule thresholds are loaded by
-path from the gpu-pipeline worker's ``eval/gpu/cascade.py`` (``S0_RULES``);
-the streaming per-pixel path tries to load ``SpectralStream`` by path from
-the spectral-features worker's ``jadal/spectral/stream.py``. Both imports are
-wrapped in try/except: the other workers' trees may not be checked out, and
-their module imports may assume their own ``jadal`` package first on
-``sys.path``. On any failure the replay falls back to a small local
-implementation of the same rules/features operating on the same decoded
-frames, and records which engine was used in every event (``engine`` field).
-Nothing outside OWNED PATHS is written.
+Reuse strategy: S0 rule thresholds are loaded by path from the
+gpu-pipeline worker's ``eval/gpu/cascade.py`` (``S0_RULES``) where that tree
+is checked out, else from a local copy of the identical constants; the
+streaming per-pixel path uses the in-tree ``jadal.spectral.stream``
+(merged from spectral-features). Every event records which engine and rule
+source were used (``engine`` / ``s0_source`` fields). Nothing outside OWNED
+PATHS is written.
 """
 
 from __future__ import annotations
@@ -30,7 +27,6 @@ import json
 import os
 import re
 import subprocess
-import sys
 import time
 
 import cv2
@@ -47,6 +43,10 @@ S0_RULES_FALLBACK = [
 ]
 
 DECISION_TO_LED = {"accept": "G", "early_reject": "R", "continue": "A"}
+
+REPO_ROOT = os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))))
+DEFAULT_PICO_LOCK = os.path.join(REPO_ROOT, "tools", "pico.lock")
 
 
 def load_by_path(modname, path):
@@ -83,37 +83,29 @@ def load_s0_rules():
 
 
 def make_spectral_stream():
-    """Best-effort read-only reuse of the spectral-features SpectralStream.
+    """Use the in-tree SpectralStream (merged from spectral-features).
 
-    Returns (stream_or_None, source_tag). The spectral module does
-    ``from jadal.spectral.features import ...`` which resolves against this
-    worktree's own ``jadal`` package unless the spectral-features tree is
-    first on ``sys.path``; so the import is attempted with that tree
-    temporarily prepended, then ``sys.path`` is restored.
+    Returns (stream_or_None, source_tag). Plain package import only — no
+    sys.path or sys.modules manipulation (a previous revision rebound
+    sys.modules['jadal'] to another worktree; never again).
     """
-    tree = "/home/parshu/projects/jadal-qa-wt/spectral-features"
-    spath = os.path.join(tree, "jadal", "spectral", "stream.py")
-    if not os.path.exists(spath):
-        return None, "local-fallback:stream.py not checked out"
-    saved = list(sys.path)
     try:
-        sys.path.insert(0, tree)
-        for m in ("jadal.spectral.stream", "jadal.spectral.features"):
-            sys.modules.pop(m, None)
-        sys.modules.pop("jadal", None)
-        mod = load_by_path("poc_spectral_stream", spath)
-        stream = mod.SpectralStream(tier="T1")
-        # Smoke-test on a dummy chunk so a broken import fails here, not
-        # mid-demo.
+        from jadal.spectral.stream import SpectralStream
+    except Exception as exc:
+        return None, f"local-fallback (import: {type(exc).__name__}: {exc})"
+    try:
+        stream = SpectralStream(tier="T1")
+        # Smoke-test a THROWAWAY instance so a broken import fails here, not
+        # mid-demo — feed() is stateful, so never reuse the probe as the
+        # returned stream (its first chunk would include one black frame).
+        probe = SpectralStream(tier="T1")
         dummy = [np.zeros((90, 160, 3), np.uint8)]
-        feats = stream.feed(dummy)
+        feats = probe.feed(dummy)
         if not isinstance(feats, dict) or not feats:
             raise ValueError("SpectralStream.feed returned no features")
-        return stream, f"SpectralStream:{spath}"
+        return stream, "jadal.spectral.stream.SpectralStream (in-tree)"
     except Exception as exc:
         return None, f"local-fallback ({type(exc).__name__}: {exc})"
-    finally:
-        sys.path[:] = saved
 
 
 # --------------------------------------------------------------------------- #
@@ -129,8 +121,10 @@ def decode_chunk(clip, start_s, chunk_s, fps=5, width=160, use_cuda=False):
     otherwise CPU, recorded in the return value.
     """
     height = max(2, int(round(width * 9 / 16)) // 2 * 2)
-    size = f"{width}x{height}"
-    vf = f"scale={width}:-1,fps={fps}"
+    # Exact scale (not scale=-1): the raw-byte slicing below assumes a fixed
+    # frame size, so non-16:9 sources are stretched (aspect not preserved;
+    # irrelevant to the S0 luma rules) rather than silently garbled.
+    vf = f"scale={width}:{height},fps={fps}"
     backend = "cpu"
     pre = []
     if use_cuda:
@@ -158,8 +152,13 @@ def decode_chunk(clip, start_s, chunk_s, fps=5, width=160, use_cuda=False):
                            f"{proc.stderr.decode()[:300]}")
     raw = proc.stdout
     npx = width * height * 3
-    # Height may differ by a pixel from rounding; reshape what we can.
+    if not raw or len(raw) % npx != 0:
+        raise RuntimeError(
+            f"ffmpeg raw size mismatch t={start_s}: got {len(raw)} bytes, "
+            f"frame needs {npx} ({width}x{height}x3)")
     nframes = len(raw) // npx
+    if nframes == 0:
+        raise RuntimeError(f"ffmpeg decoded zero frames t={start_s}")
     frames = [np.frombuffer(raw[i * npx:(i + 1) * npx], np.uint8)
               .reshape(height, width, 3).copy()
               for i in range(nframes)]
@@ -180,7 +179,7 @@ def apply_degrade(frames, kind, freeze_frame=None):
         if freeze_frame is None and frames:
             freeze_frame = frames[0].copy()
         base = freeze_frame if freeze_frame is not None else frames[0]
-        return [base.copy() for base in [base] for _ in frames], freeze_frame
+        return [base.copy() for _ in frames], freeze_frame
     if kind == "blur":
         return [cv2.GaussianBlur(f, (31, 31), 0) for f in frames], freeze_frame
     raise ValueError(f"unknown degradation {kind!r}")
@@ -255,21 +254,26 @@ def window_id_for(clip, start_s):
 # Pico hook                                                                    #
 # --------------------------------------------------------------------------- #
 
-def send_pico(decision, lock_path="tools/pico.lock", serial_obj=None):
+def send_pico(decision, lock_path=None, serial_obj=None):
     """Send the running verdict to the Pico LED under flock.
 
     accept->green, continue(uncertain)->amber, early_reject->red. Works
     headless: with no hardware it logs 'pico: not connected' and returns
     False. ``serial_obj`` injects a fake serial (tests/demo without hw).
+    ``lock_path`` defaults to <repo-root>/tools/pico.lock (CWD-independent).
     """
     color = DECISION_TO_LED.get(decision, "OFF")
+    if lock_path is None:
+        lock_path = DEFAULT_PICO_LOCK
     try:
         from jadal.pico_link import PicoLink
-        os.makedirs(os.path.dirname(lock_path) or ".", exist_ok=True)
-        with open(lock_path, "a+"):
-            pass
-        with open(lock_path, "r") as lockf:
-            fcntl.flock(lockf.fileno(), fcntl.LOCK_EX)
+        os.makedirs(os.path.dirname(os.path.abspath(lock_path)), exist_ok=True)
+        with open(lock_path, "a+") as lockf:
+            try:
+                fcntl.flock(lockf.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                print("pico: busy (lock held)", flush=True)
+                return False
             try:
                 if serial_obj is not None:
                     link = PicoLink(serial=serial_obj)
@@ -296,18 +300,31 @@ def send_pico(decision, lock_path="tools/pico.lock", serial_obj=None):
 def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
            max_chunks=None, degrade="none", degrade_at=None,
            accept_thr=0.5, use_pico=False, fps=5, width=160,
-           use_cuda=False, lock_path="tools/pico.lock",
-           serial_obj=None):
-    """Run the replay; return a summary dict. Appends+flushes per chunk."""
+           use_cuda=False, lock_path=None,
+           serial_obj=None, append=False):
+    """Run the replay; return a summary dict. Flushes one event per chunk.
+
+    Fresh file per run by default (``append=False`` truncates at start) so
+    re-running the demo never doubles the timeline; pass ``append=True`` to
+    concatenate runs.
+    """
     rules, s0_source = load_s0_rules()
     stream, engine = make_spectral_stream()
-    wid = window_id_for(clip, 0.0)
     per_window = max(1, int(round(window_s / chunk_s)))
+    # True window-sized cap in frames (10 s window = per_window chunks of
+    # chunk_s seconds at fps) plus a small slack; the stats span now matches
+    # the documented window_s and the accept cadence.
+    cap = int(round(per_window * chunk_s * fps)) + 8
     os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+    if not append:
+        with open(out_path, "w"):
+            pass
     freeze_frame = None
     gray_window = []
     degraded_seen_at = None
     rejected_at = None
+    truncated = False
+    error = None
     decisions = []
     lat_ms = []
     t0 = time.perf_counter()
@@ -323,9 +340,14 @@ def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
         except Exception as exc:
             if n == 0:
                 raise
-            print(f"replay: end of clip at t={t:.0f}s ({exc})", flush=True)
+            # Mid-stream decode failure: never silently pass as a clean short
+            # run — flag it in the summary (and stdout) for judges/operators.
+            truncated, error = True, str(exc)[:200]
+            print(f"replay: TRUNCATED at t={t:.0f}s ({error})", flush=True)
             break
         if not frames:
+            truncated, error = True, f"zero frames decoded at t={t:.0f}s"
+            print(f"replay: TRUNCATED at t={t:.0f}s ({error})", flush=True)
             break
         degraded = (degrade not in (None, "none") and degrade_at is not None
                     and t >= degrade_at)
@@ -335,7 +357,7 @@ def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
                                              else "none", freeze_frame)
         gray = [cv2.cvtColor(f, cv2.COLOR_BGR2GRAY) for f in frames]
         gray_window.extend(gray)
-        gray_window = gray_window[-(per_window * fps + 8):]
+        gray_window = gray_window[-cap:]
         stats = window_stats(gray_window)
         score = running_score(stats, gray_window)
         # S0 fires on the running window OR on the current chunk alone:
@@ -373,7 +395,10 @@ def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
             ram_mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
         except Exception:
             ram_mb = -1.0
-        event = {"t": round(t, 1), "window_id": wid, "chunk": n + 1,
+        event = {"t": round(t, 1),
+                 "window_id": window_id_for(clip, (n // per_window)
+                                            * window_s),
+                 "chunk": n + 1,
                  "running_score": score, "decision": decision,
                  "reason": reason, "latency_ms": round(ms, 1),
                  "ram_mb": round(ram_mb, 1), "decode": backend,
@@ -405,4 +430,5 @@ def replay(clip, out_path, chunk_s=2.0, window_s=10.0, speed=20.0,
             "degrade": degrade, "degrade_at": degrade_at,
             "mean_latency_ms": round(float(np.mean(lat_ms)), 1) if lat_ms else -1,
             "wall_s": round(wall, 1), "events": out_path,
-            "engine": engine, "s0_source": s0_source}
+            "engine": engine, "s0_source": s0_source,
+            "truncated": truncated, "error": error}

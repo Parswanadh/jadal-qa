@@ -23,6 +23,9 @@ scripted: the blackout is injected at t=12 s (not from the footage).
 Watch: the very next chunk flips to `early_reject`, evidence on screen:
 `S0 rule black p95=0.0 < 0.03`. Time-to-reject: **0.0 s of video** (same
 2 s chunk; freeze degradation also 0.0 s via `frozen temp_e < 5e-4`).
+(Time-to-reject is chunk-quantized: a degradation starting mid-chunk is first
+seen at the next 2 s boundary, so the true delay can be up to one chunk
+larger than the reported video-seconds number.)
 Red Pico LED.
 
 1:50 — "Every verdict carries evidence (value, operator, threshold) and the
@@ -36,7 +39,10 @@ green/amber/red — under `flock tools/pico.lock`. No hardware today? It logs
 
 2:40 — Close: "This is descriptive behaviour on unlabelled video, not
 accuracy. Accuracy is measured only on 150 human-labelled windows
-(AUROC ~0.7–0.8, leave-one-clip-out)."
+(AUROC ~0.7–0.8, leave-one-clip-out; re-verify at
+`/home/parshu/projects/jadal-qa-wt/gpu-pipeline/eval/results/gpu/cascade.json`
+(`loco.auc`, `loco.auc_ci95`, n=150) and the label snapshot
+`/home/parshu/projects/jadal-qa-wt/spectral_data/GOLD_FINAL_150*`)."
 
 ## Expected output
 
@@ -52,6 +58,7 @@ accuracy. Accuracy is measured only on 150 human-labelled windows
 | `poc_server.py` missing | `poc_demo.sh` prints a stub line and continues; `tail -f` the events file instead |
 | Pico absent | Hook logs `pico: not connected`; demo continues (tested with `FakePicoSerial`) |
 | Slow machine (latency >2 s/chunk) | Normal under load: decode of 1080p HEVC dominates; per-chunk latency is printed honestly — never hidden |
+| Corrupt chunk mid-stream | Replay prints `TRUNCATED at t=...` and the summary carries `"truncated": true` + `error` — never shown as a clean run; `poc_demo.sh` exits 1 instead of tailing stale events |
 | No network/clip missing | Play `docs/screens/poc_demo_backup.mp4` (80 s, pre-rendered from real events) |
 
 ## Claims to avoid (binding)
