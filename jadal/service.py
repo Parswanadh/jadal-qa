@@ -19,8 +19,10 @@ lives here): ``JADAL_BATCH_MAX_AGE_S`` (30.0 s), ``JADAL_WATCH_BUCKET`` (1),
 No network calls happen at import time; the SQLite file is created lazily.
 
 NOT DONE:
-- L0/L1/segmenter are stubs (hash-derived fakes, whole clip = one segment)
-  until the real modules merge; set JADAL_USE_STUBS=1 to run on stubs.
+- L0/L1/segmenter run on the REAL modules when importable (preferred); the
+  deterministic stubs in ``jadal/stubs.py`` engage ONLY under
+  ``JADAL_USE_STUBS=1``. ``scripts/demo.sh`` unsets the flag and fails closed
+  on any stub-named ``config.versions`` (see ``pipeline.receipt_problems``).
 - /stats/risk_coverage returns per-head entries from
   eval/results/decider_baseline.json + funnel_calibration.json when present
   (else SQLite calibration rows, else [] = no measured data, never invented).
@@ -108,6 +110,12 @@ class _Service:
         self._lock = threading.RLock()
         self._pending: dict[str, list[dict]] = {}   # site -> [{"segment", "ts"}]
         self._ingested: set[tuple[str, str]] = set()  # (real path, sha256)
+        # Real paths with a process_clip currently running: a second
+        # concurrent handle_clip for the same bytes (POST + bucket watcher,
+        # or two watcher ticks) is answered as a duplicate instead of
+        # running the segmenter twice into the same files (concurrent
+        # writers tear the segment bytes and receipts stop re-verifying).
+        self._in_flight: set[str] = set()
         self._errors: dict[str, str] = {}           # real path -> last error
         self._watch_backoff: dict[str, dict] = {}   # clip name -> {"attempts", "next_ts"}
         self._flush_backoff: dict[str, dict] = {}   # site -> {"attempts", "next_ts"}
@@ -156,18 +164,21 @@ class _Service:
             raise PermissionError(f"clip outside bucket: {clip}")
         key = (str(resolved), self._sha(resolved))
         with self._lock:
-            if key in self._ingested:
+            if key in self._ingested or str(resolved) in self._in_flight:
                 return {"duplicate": True, "segments": [],
                         "pending": self.pending_count(), "batch": None}
+            self._in_flight.add(str(resolved))
         # process first; only a success marks the clip ingested (I3)
         try:
             segments = pipeline.process_clip(resolved, worker_id, site_id, self.cfg)
         except Exception as exc:
             with self._lock:
+                self._in_flight.discard(str(resolved))
                 self._errors[str(resolved)] = f"{type(exc).__name__}: {exc}"
             log.warning("ingest failed for %s: %s", resolved, exc)
             raise
         with self._lock:
+            self._in_flight.discard(str(resolved))
             self._ingested.add(key)
             self._errors.pop(str(resolved), None)
             buf = self._pending.setdefault(site_id, [])
