@@ -1,5 +1,5 @@
 {
- "created_utc": "2026-10-10T10:07:32Z",
+ "created_utc": "2026-10-10T10:08:37Z",
  "label_source": "human gold (IndEgo workers; NOT Awign footage)",
  "gold_snapshot": {
   "snapshot_utc": "2026-10-10T09:53:36.001340+00:00",
@@ -23,7 +23,7 @@
     "n_bad": 14,
     "n_clips": 3,
     "protocol": "leave-one-clip-out",
-    "n_features": 10,
+    "n_features": 9,
     "results": {
      "head": {
       "auroc": 0.457,
@@ -133,7 +133,18 @@
      "g077",
      "g078"
     ]
-   }
+   },
+   "feature_keys": [
+    "blur_var",
+    "brightness_mean",
+    "faces_blurred",
+    "faces_found",
+    "hand_count_mode",
+    "hands_visible_frac",
+    "motion_mean",
+    "over_exposed_frac",
+    "under_exposed_frac"
+   ]
   },
   "E": {
    "status": "RUN",
@@ -260,7 +271,406 @@
      "g077",
      "g078"
     ]
-   }
+   },
+   "feature_keys": []
+  },
+  "B-T0": {
+   "status": "RUN",
+   "files": {
+    "gold.json": false,
+    "synth.json": false,
+    "dups.json": false,
+    "chunks.json": false,
+    "cost.json": false
+   },
+   "provisional": true,
+   "note": "non-contract filename scored as-is; final number waits for arms/B/gold.json",
+   "gold": {
+    "n": 79,
+    "n_good": 65,
+    "n_bad": 14,
+    "n_clips": 3,
+    "protocol": "leave-one-clip-out",
+    "n_features": 40,
+    "results": {
+     "head": {
+      "auroc": 0.43,
+      "auroc_ci95": [
+       0.359,
+       0.683
+      ],
+      "n_boot": 1000,
+      "balanced_accuracy": 0.448,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 17,
+        "train_threshold": 0.6659
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.5208
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.5973
+       }
+      ]
+     },
+     "as_is": {
+      "auroc": 0.637,
+      "auroc_ci95": [
+       0.467,
+       0.693
+      ],
+      "n_boot": 1000
+     },
+     "score_logistic": {
+      "auroc": 0.324,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 17,
+        "train_threshold": 0.8631
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.7272
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.8931
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078"
+    ]
+   },
+   "feature_keys": [
+    "brightness",
+    "cb_mean",
+    "cb_std",
+    "colorfulness",
+    "contrast",
+    "cr_mean",
+    "cr_std",
+    "dct_dcmean",
+    "dct_hfenergy",
+    "frame_size_std",
+    "i_size",
+    "lap_var",
+    "motion_energy",
+    "motion_std",
+    "mv_per_frame",
+    "opp_rg_mean",
+    "opp_rg_std",
+    "over_frac",
+    "p_count_frac",
+    "p_size_mean",
+    "pb_size_ratio",
+    "skin_centroid_motion",
+    "skin_frac_mean",
+    "skin_frac_std",
+    "skin_maxfrac",
+    "sobel_energy",
+    "spec_hfenergy",
+    "spec_hfratio",
+    "spec_slope",
+    "spec_total",
+    "temp_flicker",
+    "temp_frozen_frac",
+    "temp_hi",
+    "temp_lo",
+    "temp_mid",
+    "temp_period",
+    "under_frac",
+    "wav_HH",
+    "wav_HL",
+    "wav_LH"
+   ]
+  },
+  "B-T1": {
+   "status": "RUN",
+   "files": {
+    "gold.json": false,
+    "synth.json": false,
+    "dups.json": false,
+    "chunks.json": false,
+    "cost.json": false
+   },
+   "provisional": true,
+   "note": "non-contract filename scored as-is; final number waits for arms/B/gold.json",
+   "gold": {
+    "n": 79,
+    "n_good": 65,
+    "n_bad": 14,
+    "n_clips": 3,
+    "protocol": "leave-one-clip-out",
+    "n_features": 40,
+    "results": {
+     "head": {
+      "auroc": 0.481,
+      "auroc_ci95": [
+       0.41,
+       0.667
+      ],
+      "n_boot": 1000,
+      "balanced_accuracy": 0.448,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 17,
+        "train_threshold": 0.6814
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.5566
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.5384
+       }
+      ]
+     },
+     "as_is": {
+      "auroc": 0.678,
+      "auroc_ci95": [
+       0.5,
+       0.684
+      ],
+      "n_boot": 1000
+     },
+     "score_logistic": {
+      "auroc": 0.364,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 17,
+        "train_threshold": 0.8584
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.7265
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.8926
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078"
+    ]
+   },
+   "feature_keys": [
+    "brightness",
+    "cb_mean",
+    "cb_std",
+    "colorfulness",
+    "contrast",
+    "cr_mean",
+    "cr_std",
+    "dct_dcmean",
+    "dct_hfenergy",
+    "frame_size_std",
+    "i_size",
+    "lap_var",
+    "motion_energy",
+    "motion_std",
+    "mv_per_frame",
+    "opp_rg_mean",
+    "opp_rg_std",
+    "over_frac",
+    "p_count_frac",
+    "p_size_mean",
+    "pb_size_ratio",
+    "skin_centroid_motion",
+    "skin_frac_mean",
+    "skin_frac_std",
+    "skin_maxfrac",
+    "sobel_energy",
+    "spec_hfenergy",
+    "spec_hfratio",
+    "spec_slope",
+    "spec_total",
+    "temp_flicker",
+    "temp_frozen_frac",
+    "temp_hi",
+    "temp_lo",
+    "temp_mid",
+    "temp_period",
+    "under_frac",
+    "wav_HH",
+    "wav_HL",
+    "wav_LH"
+   ]
   },
   "B": {
    "status": "NOT RUN",
@@ -294,7 +704,13 @@
   },
   "A-full": {
    "status": "RUN",
-   "files": {},
+   "files": {
+    "gold.json": true,
+    "synth.json": true,
+    "dups.json": true,
+    "chunks.json": true,
+    "cost.json": true
+   },
    "gold": {
     "n": 79,
     "n_good": 65,
@@ -411,7 +827,17 @@
      "g077",
      "g078"
     ]
-   }
+   },
+   "feature_keys": [
+    "lap_mean",
+    "lap_std",
+    "bri_mean",
+    "bri_std",
+    "mot_mean",
+    "mot_std",
+    "skin_mean",
+    "skin_std"
+   ]
   }
  },
  "synth": {
@@ -528,6 +954,12 @@
      "control_FAR": null
     }
    }
+  },
+  "B-T0": {
+   "status": "NOT RUN"
+  },
+  "B-T1": {
+   "status": "NOT RUN"
   },
   "B": {
    "status": "NOT RUN"
@@ -951,6 +1383,14 @@
    },
    "note": "prefix-recompute latency is an UPPER bound; true incremental is cheaper"
   },
+  "B-T0": {
+   "status": "NOT STREAMABLE",
+   "reason": "no chunk scores exposed"
+  },
+  "B-T1": {
+   "status": "NOT STREAMABLE",
+   "reason": "no chunk scores exposed"
+  },
   "B": {
    "status": "NOT RUN"
   },
@@ -971,5 +1411,5 @@
  "vlm_verdict": {
   "status": "NOT RUN"
  },
- "scorer_wall_s": 4.2
+ "scorer_wall_s": 12.1
 }

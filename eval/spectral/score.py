@@ -103,6 +103,20 @@ def make_head():
                          LogisticRegression(C=1.0, max_iter=5000))
 
 
+def resolve_keys(arm_key: str, items: dict) -> list[str]:
+    """Feature keys per arm: canonical for A/A-full, embedding for E,
+    auto (sorted numeric keys) for anything else (e.g. provisional B tiers)."""
+    if arm_key in FEAT_KEYS:
+        return FEAT_KEYS[arm_key]
+    v0 = next(iter(items.values()))
+    f0 = v0.get("features", {})
+    if "emb" in f0:
+        return []
+    keys = [k for k, v in f0.items()
+            if isinstance(v, (int, float)) and not isinstance(v, bool)]
+    return sorted(keys)
+
+
 def feat_matrix(items: dict, keys: list[str]):
     X, ids = [], []
     for i, v in items.items():
@@ -232,6 +246,7 @@ def main() -> None:
     }
 
     arm_docs = {}
+    arm_key_order = []
     for a in ARMS + ["A-full"]:
         if a == "A-full":
             d = load(DATA / "arms" / "A" / "allframes.json")
@@ -239,12 +254,35 @@ def main() -> None:
         else:
             d = load(DATA / "arms" / a / "gold.json")
             key = a
-        arm_docs[key] = d
-        entry = {"status": "RUN" if d else "NOT RUN", "files": status.get(a, {})}
-        if d and gold_manifest:
+            if d is None:
+                # provisional: score gold_<suffix>.json variants without touching them
+                import glob as _glob
+                for vf in sorted(_glob.glob(str(DATA / "arms" / a / "gold_*.json"))):
+                    suf = Path(vf).stem[len("gold_"):]
+                    try:
+                        vd = json.loads(Path(vf).read_text())
+                    except Exception:
+                        continue
+                    if isinstance(vd, dict) and vd.get("items"):
+                        arm_docs[f"{a}-{suf}"] = vd
+                        arm_key_order.append(f"{a}-{suf}")
+        if key not in arm_docs:
+            arm_docs[key] = d
+        arm_key_order.append(key)
+    for key in arm_key_order:
+        a = key.split("-")[0] if key != "A-full" else "A"
+        entry = {"status": "RUN" if arm_docs[key] else "NOT RUN",
+                 "files": status.get(a, {})}
+        if "-" in key and key != "A-full":
+            entry["provisional"] = True
+            entry["note"] = ("non-contract filename scored as-is; "
+                             "final number waits for arms/B/gold.json")
+        if arm_docs[key] and gold_manifest:
             try:
-                entry["gold"] = gold_task(a, d, gold_manifest,
-                                          FEAT_KEYS.get(key, FEAT_KEYS["default"]))
+                akeys = (resolve_keys(key, arm_docs[key]["items"])
+                         if key not in FEAT_KEYS else FEAT_KEYS[key])
+                entry["gold"] = gold_task(a, arm_docs[key], gold_manifest, akeys)
+                entry["feature_keys"] = akeys
             except Exception as e:  # never let one arm kill the scorer
                 entry["gold"] = {"error": f"{type(e).__name__}: {e}"}
         summary["arms"][key] = entry
@@ -541,7 +579,9 @@ def write_report(s: dict) -> None:
     L.append("## Results per task\n")
     L.append("| arm | gold AUROC (95% CI) | bal.acc | synth sens. (median over degs) | dups F1 | status |")
     L.append("|---|---|---|---|---|---|")
-    for a in ["A", "A-full", "E", "B", "D"]:
+    table_arms = ["A", "A-full", "E", "B", "D"] + sorted(
+        k for k in s["arms"] if k.startswith("B-") or k.startswith("D-"))
+    for a in table_arms:
         e = s["arms"].get(a, {})
         g = e.get("gold") or {}
         if e.get("status") != "RUN" or "results" not in g:
@@ -561,7 +601,7 @@ def write_report(s: dict) -> None:
         f1 = ((s["dups"].get(a, {}) or {}).get("heldout_overall", {}) or {}).get("F1", "—")
         L.append(f"| {a} | {au} {ci_s} | {ba} | {sens_s} | {f1} | RUN |")
     L.append("\n### Gold detail (per arm, LOCO folds)")
-    for a in ["A", "A-full", "E", "B", "D"]:
+    for a in table_arms:
         e = s["arms"].get(a, {})
         g = e.get("gold") or {}
         if e.get("status") == "RUN" and "results" in g:
@@ -596,7 +636,7 @@ def write_report(s: dict) -> None:
              "(single-core; RTF excl decode in summary.json per arm)._")
     L.append("\n### Accuracy-vs-cost Pareto (gold AUROC vs cores for 10kh/2h)")
     pareto = []
-    for a in ["A", "A-full", "E", "B", "D"]:
+    for a in table_arms:
         e = s["arms"].get(a, {})
         g = (e.get("gold") or {}).get("results", {}).get("head", {})
         c = (s.get("cost", {}).get("arms") or {}).get(a, {})
@@ -636,12 +676,12 @@ def write_report(s: dict) -> None:
 
 def partial_recommendation(s: dict) -> str:
     bits = []
-    for a in ("A", "A-full", "E"):
-        e = s["arms"].get(a, {})
+    for a, e in s["arms"].items():
         g = (e.get("gold") or {}).get("results", {}).get("head", {})
         if g.get("auroc") is not None:
-            bits.append(f"{a}: AUROC {g['auroc']} CI {g.get('auroc_ci95')}")
-    return ("Partial (arms B/D pending): " + "; ".join(bits) + "." if bits
+            flag = " (PROVISIONAL filename)" if e.get("provisional") else ""
+            bits.append(f"{a}: AUROC {g['auroc']} CI {g.get('auroc_ci95')}{flag}")
+    return ("Partial (arms B-final/D pending): " + "; ".join(bits) + "." if bits
             else "No arms scored yet.")
 
 

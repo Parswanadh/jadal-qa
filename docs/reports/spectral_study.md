@@ -1,6 +1,6 @@
 # Spectral study — harness-scored comparison
 
-_Generated 2026-10-10T10:07:32Z by eval/spectral/score.py. Every number below comes from eval/results/spectral/summary.json._
+_Generated 2026-10-10T10:08:37Z by eval/spectral/score.py. Every number below comes from eval/results/spectral/summary.json._
 
 ## Question
 
@@ -23,6 +23,8 @@ Does per-pixel frequency/temporal-spectral analysis of RGB video (arm B), a boun
 | E | 0.596 (0.505–0.817) | 0.553 | 0.67 | 0.909 | RUN |
 | B | — | — | — | — | NOT RUN |
 | D | — | — | — | — | NOT RUN |
+| B-T0 | 0.43 (0.359–0.683) | 0.448 | — | — | RUN |
+| B-T1 | 0.481 (0.41–0.667) | 0.448 | — | — | RUN |
 
 ### Gold detail (per arm, LOCO folds)
 
@@ -32,11 +34,19 @@ Does per-pixel frequency/temporal-spectral analysis of RGB video (arm B), a boun
 
 **E** n=79 (good=65, bad=14, clips=3): `{"head": {"auroc": 0.596, "auroc_ci95": [0.505, 0.817], "n_boot": 1000, "balanced_accuracy": 0.553, "folds": [{"test_clip": "desk", "n_test": 17, "train_threshold": 0.9788}, {"test_clip": "ecu_full", "n_test": 48, "train_threshold": 0.9744}, {"test_clip": "ecu_late", "n_test": 14, "train_threshold": 0.9757}]}}`
 
+**B-T0** n=79 (good=65, bad=14, clips=3): `{"head": {"auroc": 0.43, "auroc_ci95": [0.359, 0.683], "n_boot": 1000, "balanced_accuracy": 0.448, "folds": [{"test_clip": "desk", "n_test": 17, "train_threshold": 0.6659}, {"test_clip": "ecu_full", "n_test": 48, "train_threshold": 0.5208}, {"test_clip": "ecu_late", "n_test": 14, "train_threshold": 0.5973}]}, "as_is": {"auroc": 0.637, "auroc_ci95": [0.467, 0.693], "n_boot": 1000}, "score_logistic": {"auroc": 0.324, "folds": [{"test_clip": "desk", "n_test": 17, "train_threshold": 0.8631}, {"test_clip": "ecu_full", "n_test": 48, "train_threshold": 0.7272}, {"test_clip": "ecu_late", "n_test": 14, "train_threshold": 0.8931}]}}`
+
+**B-T1** n=79 (good=65, bad=14, clips=3): `{"head": {"auroc": 0.481, "auroc_ci95": [0.41, 0.667], "n_boot": 1000, "balanced_accuracy": 0.448, "folds": [{"test_clip": "desk", "n_test": 17, "train_threshold": 0.6814}, {"test_clip": "ecu_full", "n_test": 48, "train_threshold": 0.5566}, {"test_clip": "ecu_late", "n_test": 14, "train_threshold": 0.5384}]}, "as_is": {"auroc": 0.678, "auroc_ci95": [0.5, 0.684], "n_boot": 1000}, "score_logistic": {"auroc": 0.364, "folds": [{"test_clip": "desk", "n_test": 17, "train_threshold": 0.8584}, {"test_clip": "ecu_full", "n_test": 48, "train_threshold": 0.7265}, {"test_clip": "ecu_late", "n_test": 14, "train_threshold": 0.8926}]}}`
+
 ### Synthetic detail (sensitivity at 5% FAR)
 
 **A** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.5695, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 0.0}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 0.167, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.333, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.0, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 0.167, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}}}`
 
 **E** `{"status": "RUN", "threshold_5pct_FAR_on_gold_good": 0.976, "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.", "per_degradation": {"black": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "blur": {"n": 6, "sensitivity_at_5pct_FAR": 0.667, "control_FAR": null}, "clean": {"n": 6, "sensitivity_at_5pct_FAR": null, "control_FAR": 0.167}, "darken": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}, "frozen": {"n": 6, "sensitivity_at_5pct_FAR": 0.667, "control_FAR": null}, "lowbitrate": {"n": 6, "sensitivity_at_5pct_FAR": 0.333, "control_FAR": null}, "noise": {"n": 6, "sensitivity_at_5pct_FAR": 0.333, "control_FAR": null}, "overexpose": {"n": 6, "sensitivity_at_5pct_FAR": 0.333, "control_FAR": null}, "shake": {"n": 6, "sensitivity_at_5pct_FAR": 0.5, "control_FAR": null}, "static": {"n": 6, "sensitivity_at_5pct_FAR": 1.0, "control_FAR": null}}}`
+
+**B-T0** `{"status": "NOT RUN"}`
+
+**B-T1** `{"status": "NOT RUN"}`
 
 **B** `{"status": "NOT RUN"}`
 
@@ -88,6 +98,10 @@ EG2: 2209 seg/h/GPU → 1629.7 GPU-h (0.19 GPU-years) for 10,000 h = 3.6M segmen
 
 **E** `{"status": "RUN", "operating_threshold": 0.976, "per_chunk_latency_s_mean": 0.144, "realtime_capable": true, "ttd_per_degradation": {"black": {"n": 6, "median_ttd_s": 2.0, "never_decided": 0}, "blur": {"n": 6, "median_ttd_s": 2.0, "never_decided": 0}, "darken": {"n": 6, "median_ttd_s": 2.0, "never_decided": 0}, "frozen": {"n": 6, "median_ttd_s": 2.0, "never_decided": 2}, "lowbitrate": {"n": 6, "median_ttd_s": 2.0, "never_decided": 1}, "noise": {"n": 6, "median_ttd_s": 2.0, "never_decided": 1}, "overexpose": {"n": 6, "median_ttd_s": 2.0, "never_decided": 1}, "shake": {"n": 6, "median_ttd_s": 2.0, "never_decided": 2}, "static": {"n": 6, "median_ttd_s": 2.0, "never_decided": 0}}, "note": "prefix-recompute latency is an UPPER bound; true incremental is cheaper"}`
 
+**B-T0** `{"status": "NOT STREAMABLE", "reason": "no chunk scores exposed"}`
+
+**B-T1** `{"status": "NOT STREAMABLE", "reason": "no chunk scores exposed"}`
+
 **B** `{"status": "NOT RUN"}`
 
 **C** `{"status": "NOT RUN"}`
@@ -108,7 +122,7 @@ EG2: 2209 seg/h/GPU → 1629.7 GPU-h (0.19 GPU-years) for 10,000 h = 3.6M segmen
 
 _TBD once arms B and D report; current partial read below._
 
-Partial (arms B/D pending): A: AUROC 0.457 CI [0.375, 0.521]; A-full: AUROC 0.675 CI [0.6, 0.8]; E: AUROC 0.596 CI [0.505, 0.817].
+Partial (arms B-final/D pending): A: AUROC 0.457 CI [0.375, 0.521]; E: AUROC 0.596 CI [0.505, 0.817]; B-T0: AUROC 0.43 CI [0.359, 0.683] (PROVISIONAL filename); B-T1: AUROC 0.481 CI [0.41, 0.667] (PROVISIONAL filename); A-full: AUROC 0.675 CI [0.6, 0.8].
 
 ## Limitations
 
