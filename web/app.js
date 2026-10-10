@@ -1,17 +1,28 @@
-/* Jadal QA dashboard — vanilla JS, no build step, no CDN.
+/* Jadal QA dashboard v2 — vanilla JS, no build step, no CDN.
  *
- * Three screens in one page: Batches (live list), Segment (receipt + re-verify),
- * Insights (risk/coverage + SOP gaps). Live against the service (docs/SPEC.md),
- * or against web/mock/*.json with ?mock=1.
+ * Three screens in one page: Batches (filterable list), Segment (receipt
+ * tree + re-verify + step timeline), Insights (risk/coverage + SOP gaps).
+ * A global filter bar of real <select>s + search; ALL state lives in the
+ * URL hash (see JadalApi.parseHash / buildHash).
+ *
+ * Field access rule: every payload field is read through web/api.js
+ * (`JadalApi`). app.js never touches raw service keys directly.
+ *
+ * Live against the service (docs/SPEC.md), or against web/mock/*.json
+ * with ?mock=1.
  *
  * NOT DONE:
+ * - Per-head risk curves and per-segment worker/clip/latency are not
+ *   exposed by the API; the UI labels the fallbacks instead of inventing
+ *   data (see the notes rendered on screen).
  * - No retry/backoff jitter tuning beyond a fixed schedule.
- * - Mock mode fabricates only latency/labels, never payloads; payloads in
- *   mock mode come straight from web/mock/*.json.
  */
 
 (function () {
 'use strict';
+
+var A = window.JadalApi;
+if (!A) throw new Error('web/api.js must load before web/app.js');
 
 /* ============================ basics ============================ */
 
@@ -35,19 +46,22 @@ var params = new URLSearchParams(location.search);
 var MOCK = params.get('mock') === '1';
 var API = (params.get('api') || '').replace(/\/+$/, ''); // explicit base override, default same-origin
 
-var LANGS = ['hi-IN', 'kn-IN', 'ta-IN', 'te-IN', 'en-IN'];
-var MOCK_DELAY = 260; // ms: simulate a network round-trip so loading states are real
 var PICO_POLL_MS = 5000;
 var WS_RECONNECT = [1000, 2000, 4000, 8000];
+var SEARCH_DEBOUNCE_MS = 250;
+
+var clientOpts = { mock: MOCK, apiBase: API, forceMismatch: false };
+var client = A.createClient(clientOpts);
 
 var state = {
   route: 'batches',       // 'batches' | 'segment' | 'insights'
   segmentId: null,
-  filter: 'all',
-  expanded: {},           // batch_id -> true (show all segments)
+  filters: Object.assign({}, A.FILTER_DEFAULTS),
+  lang: A.LANGS[0],
+  head: '',
   batches: null,          // normalized batches, or null while loading
   batchesError: null,
-  receipt: null,
+  receipt: null,          // normalized receipt (JadalApi.normReceipt)
   receiptError: null,
   receiptId: null,        // the receipt actually displayed
   requestedId: null,      // the id the route asked for (differs on fallback)
@@ -56,19 +70,17 @@ var state = {
   rvSeq: 0,               // invalidates stale re-verify responses
   risk: null, riskError: null,
   gaps: null, gapsError: null,
-  lang: 'hi-IN',
   pico: null,
   live: false, lastEvent: null,
   mockMismatch: false,
-  batchDetailCache: {},   // batch_id -> GET /batches/{id} payload
+  batchDetailCache: {},   // batch_id -> batch detail payload
   receiptCache: {},       // receipt_id -> receipt body
+  applyingHash: false,    // guard: control events while syncing from hash
+  searchTimer: null,
 };
 
 function wsURL() {
-  if (API) {
-    return API.replace(/^http/, 'ws') + '/ws';
-  }
-  return (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws';
+  return A.wsUrl(API, location.protocol, location.host);
 }
 
 /* ============================ formatting ============================ */
@@ -77,8 +89,7 @@ function clamp(x, a, b) { return Math.min(b, Math.max(a, x)); }
 
 function num(v, d) {
   if (v === null || v === undefined || isNaN(v)) return '—';
-  var s = Number(v).toFixed(d === undefined ? 4 : d);
-  return s;
+  return Number(v).toFixed(d === undefined ? 4 : d);
 }
 
 function fmtTime(iso) {
@@ -86,24 +97,13 @@ function fmtTime(iso) {
   var date = new Date(iso);
   if (isNaN(date.getTime())) return String(iso);
   return new Intl.DateTimeFormat(undefined, {
-    month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit'
+    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
   }).format(date);
 }
 
 function fullTime(iso) {
   var date = new Date(String(iso || ''));
   return isNaN(date.getTime()) ? String(iso || '') : date.toLocaleString();
-}
-
-function ageText(ts) {
-  if (!ts) return '—';
-  var s = Math.max(0, (Date.now() - ts) / 1000);
-  if (s < 5) return 'just now';
-  if (s < 60) return Math.floor(s) + ' s ago';
-  var m = s / 60;
-  if (m < 60) return Math.floor(m) + ' min ago';
-  return Math.floor(m / 60) + ' h ' + Math.floor(m % 60) + ' min ago';
 }
 
 function verdictClass(v) {
@@ -118,274 +118,6 @@ function verdictChip(v, extra) {
   return '<span class="verdict ' + verdictClass(v) + (extra ? ' ' + extra : '') + '">' + esc(v || '—') + '</span>';
 }
 
-/* ============================ normalizers ============================
- * The service responses are tolerated liberally: accept the SPEC shapes,
- * plus camelCase / wrapped variants, because sibling modules are built by
- * other agents in parallel.
- */
-
-function first(obj, keys) {
-  for (var i = 0; i < keys.length; i++) {
-    if (obj && obj[keys[i]] !== undefined && obj[keys[i]] !== null) return obj[keys[i]];
-  }
-  return undefined;
-}
-
-function normSegments(raw) {
-  // Rows from the REAL batch shape: {segment_ids, verdicts}. The service
-  // exposes no worker, latency or receipt links per segment (see "API needs"
-  // in docs/reports/dashboard.md); those render as "—" and the receipt id is
-  // resolved on demand via GET /batches/{id} + GET /receipts/{id}.
-  var verdicts = first(raw, ['verdicts']) || [];
-  var vById = {};
-  verdicts.forEach(function (v) {
-    if (v && (v.segment_id || v.segmentId)) vById[v.segment_id || v.segmentId] = v;
-  });
-  var ids = first(raw, ['segment_ids', 'segmentIds']) || [];
-  Object.keys(vById).forEach(function (id) {
-    if (ids.indexOf(id) === -1) ids.push(id);
-  });
-  var site = first(raw, ['site_id', 'siteId']) || '—';
-  return ids.map(function (id) {
-    var v = vById[id] || {};
-    return {
-      segment_id: id,
-      site_id: site,
-      verdict: first(v, ['verdict']) || '—',
-      reasons: first(v, ['reasons']) || [],
-      conf: first(v, ['answer_conf', 'conf']),
-      threshold: first(v, ['threshold']),
-    };
-  });
-}
-
-function normBatch(raw) {
-  var decision = first(raw, ['batch_decision', 'batchDecision', 'decision']) || '—';
-  var rows = normSegments(raw);
-  var rejected = rows.filter(function (r) { return r.verdict === 'reject'; }).length;
-  return {
-    batch_id: first(raw, ['batch_id', 'batchId', 'id']) || '—',
-    site_id: first(raw, ['site_id', 'siteId']) || '—',
-    decision: decision,
-    rule: first(raw, ['rule']) || null,
-    k: first(raw, ['k']),
-    n: first(raw, ['n']) !== undefined ? first(raw, ['n']) : rows.length,
-    rejected_count: rejected,
-    created_utc: first(raw, ['created_utc', 'createdUtc', 'created']) || null,
-    rows: rows,
-  };
-}
-
-function normBatchList(raw) {
-  var arr = Array.isArray(raw) ? raw : (first(raw, ['batches', 'items', 'data', 'results']) || []);
-  if (!Array.isArray(arr)) arr = [];
-  return arr.map(normBatch);
-}
-
-function normRisk(raw) {
-  // Live: a bare list [{threshold, coverage, error}] from certify.
-  // Bound/threshold metadata is NOT returned by the service yet; read it
-  // opportunistically (upper_bound wins: that is certify's name) and render
-  // "no certified threshold yet" when it is absent.
-  var pts = Array.isArray(raw) ? raw : (first(raw, ['points', 'curve', 'data']) || []);
-  pts = (pts || []).map(function (p) {
-    return {
-      threshold: Number(first(p, ['threshold', 't'])),
-      coverage: Number(first(p, ['coverage', 'c', 'cov'])),
-      error: Number(first(p, ['error', 'err', 'e'])),
-    };
-  }).filter(function (p) { return isFinite(p.coverage) && isFinite(p.error); });
-  var bound = Array.isArray(raw) ? undefined : first(raw, ['upper_bound', 'upperBound', 'error_bound', 'errorBound', 'bound']);
-  return {
-    points: pts,
-    error_bound: bound,
-    chosen_threshold: Array.isArray(raw) ? undefined : first(raw, ['chosen_threshold', 'chosenThreshold', 'operating_threshold']),
-    n: Array.isArray(raw) ? undefined : first(raw, ['n', 'n_val', 'samples']),
-    errors: Array.isArray(raw) ? undefined : first(raw, ['errors']),
-    target_error: Array.isArray(raw) ? undefined : first(raw, ['target_error', 'targetError', 'target']),
-    delta: Array.isArray(raw) ? undefined : first(raw, ['delta']),
-    min_accepted: Array.isArray(raw) ? undefined : first(raw, ['min_accepted', 'minAccepted']),
-  };
-}
-
-function normGaps(raw) {
-  // Live: a bare list (currently [] until sop/ merges). reason_code + count
-  // are the contract; section/share are optional extras.
-  var arr = Array.isArray(raw) ? raw : (first(raw, ['gaps', 'bars', 'items', 'data']) || []);
-  return {
-    gaps: (arr || []).map(function (g) {
-      if (typeof g !== 'object' || g === null) return { code: String(g), count: 0, section: '', share: null };
-      return {
-        code: first(g, ['reason_code', 'reasonCode', 'code', 'reason']) || '—',
-        count: Number(first(g, ['count', 'n', 'value'])) || 0,
-        section: first(g, ['sop_section', 'section', 'sop', 'label']) || '',
-        share: first(g, ['share', 'fraction', 'frac']),
-      };
-    }),
-    total: Array.isArray(raw) ? undefined : first(raw, ['total_segments', 'total', 'n']),
-    window: Array.isArray(raw) ? undefined : first(raw, ['window_utc', 'window']),
-  };
-}
-
-function normPico(raw) {
-  // Live shape is PicoLink.status(): {connected, port, last_hb_age_s,
-  // last_hb_ticks_ms, last_hb_led}; offline is {connected: false, reason}.
-  raw = raw || {};
-  var led = String(first(raw, ['last_hb_led', 'lastHbLed', 'led']) || 'OFF').toUpperCase();
-  if (['G', 'A', 'R', 'OFF'].indexOf(led) === -1) {
-    var m = { GREEN: 'G', AMBER: 'A', RED: 'R', GRAY: 'OFF', OFF: 'OFF', ON: 'G' };
-    led = m[led] || 'OFF';
-  }
-  var ageS = first(raw, ['last_hb_age_s', 'lastHbAgeS', 'heartbeat_age_s', 'heartbeatAgeS']);
-  var ageMs = (ageS === undefined || ageS === null) ? null : Number(ageS) * 1000;
-  return {
-    connected: first(raw, ['connected']) !== undefined ? !!first(raw, ['connected']) : (led !== 'OFF'),
-    led: led,
-    port: first(raw, ['port']) || null,
-    ageMs: ageMs,
-    ticks: first(raw, ['last_hb_ticks_ms', 'lastHbTicksMs', 'ticks_ms', 'ticks']),
-    offlineReason: first(raw, ['reason']) || null,
-  };
-}
-
-/* ============================ transport ============================ */
-
-async function liveGet(path) {
-  var ctl = new AbortController();
-  var timer = setTimeout(function () { ctl.abort(); }, 12000);
-  try {
-    var res = await fetch(API + path, { headers: { Accept: 'application/json' }, signal: ctl.signal });
-    if (!res.ok) throw new Error('GET ' + path + ' → ' + res.status + ' ' + res.statusText);
-    return await res.json();
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-async function livePost(path, body) {
-  var ctl = new AbortController();
-  var timer = setTimeout(function () { ctl.abort(); }, 60000);
-  try {
-    var res = await fetch(API + path, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(body || {}),
-      signal: ctl.signal,
-    });
-    if (!res.ok) throw new Error('POST ' + path + ' → ' + res.status + ' ' + res.statusText);
-    return await res.json();
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-/* ---- mock transport: real payloads from web/mock/*.json ---- */
-var mockCache = {};
-async function mockFile(name) {
-  if (mockCache[name]) return mockCache[name];
-  await new Promise(function (r) { setTimeout(r, MOCK_DELAY); });
-  var res = await fetch('mock/' + name + '.json', { headers: { Accept: 'application/json' } });
-  if (!res.ok) throw new Error('mock/' + name + '.json → ' + res.status);
-  var data = await res.json();
-  mockCache[name] = data;
-  return data;
-}
-
-var mockApi = {
-  // Every method returns exactly what the live endpoint returns; the fixture
-  // files underneath are transport-internal and never reach the UI directly.
-  async batches() { return mockFile('batches'); }, // {"batches": [...]}
-  async batchDetail(id) {
-    var all = await mockFile('batches');
-    var list = all.batches || all;
-    var b = list.filter(function (x) {
-      return (x.batch_id || x.batchId || x.id) === id;
-    })[0];
-    if (!b) throw new Error('mock: batch ' + id + ' not in fixture');
-    var receipts = await mockFile('receipts');
-    var ids = Object.keys(receipts).filter(function (k) { return k.charAt(0) !== '_'; });
-    var mine = ids.filter(function (rid) {
-      var seg = receipts[rid].verdict && receipts[rid].verdict.segment_id;
-      return (b.segment_ids || []).indexOf(seg) !== -1;
-    });
-    mine.sort(); // live orders receipt_ids by receipt_id
-    var out = {};
-    Object.keys(b).forEach(function (k) { out[k] = b[k]; });
-    out.receipt_ids = mine;
-    return out;
-  },
-  async receipt(id) {
-    await new Promise(function (r) { setTimeout(r, MOCK_DELAY); });
-    var all = await mockFile('receipts');
-    var keys = Object.keys(all).filter(function (k) { return k.charAt(0) !== '_'; });
-    if (all[id]) return { receipt: all[id], id: id, fallback: false };
-    // unknown id → first fixture, labelled, never silent
-    return { receipt: all[keys[0]], id: keys[0], fallback: id };
-  },
-  async reverify(id, expected) {
-    await new Promise(function (r) { setTimeout(r, 900); }); // re-verify is slow: it re-runs the pipeline
-    if (state.mockMismatch) {
-      return { match: false, expected: expected, actual: 'm' + String(expected || '').slice(1), diff: ['decisions.step.answer_conf', '_mock.forced_mismatch'] };
-    }
-    return { match: true, expected: expected, actual: expected, diff: [] };
-  },
-  async risk() { return mockFile('risk_coverage'); }, // bare list
-  async gaps() { return mockFile('sop_gaps'); },      // bare list
-  async pico() {
-    var p = await mockFile('pico_status');
-    var out = Object.assign({}, p);
-    out.last_hb_age_s = 0.9; // a live heartbeat: last beat ~1s before each poll
-    out.last_hb_ticks_ms = (p.last_hb_ticks_ms || 0) + 900;
-    // reflect the newest loaded batch so every LED state is reachable
-    if (state.batches && state.batches.length) {
-      var d = state.batches[0].decision;
-      out.last_hb_led = d === 'accept' ? 'G' : (d === 'reject' ? 'R' : 'A');
-    }
-    return out;
-  },
-};
-
-async function getBatchDetail(id) {
-  if (state.batchDetailCache[id]) return state.batchDetailCache[id];
-  var detail = MOCK ? await mockApi.batchDetail(id) : await api.get('/batches/' + encodeURIComponent(id));
-  state.batchDetailCache[id] = detail;
-  return detail;
-}
-
-async function getReceiptCached(id) {
-  if (state.receiptCache[id]) return state.receiptCache[id];
-  var body = MOCK ? (await mockApi.receipt(id)).receipt : await api.get('/receipts/' + encodeURIComponent(id));
-  state.receiptCache[id] = body;
-  return body;
-}
-
-// Segment rows link by RECEIPT id only. Resolve segment -> receipt through
-// GET /batches/{id}.receipt_ids + each receipt's verdict.segment_id,
-// exactly as the live API requires (no invented fields).
-async function resolveReceiptId(batchId, segmentId) {
-  var detail = await getBatchDetail(batchId);
-  var ids = detail.receipt_ids || detail.receiptIds || [];
-  for (var i = 0; i < ids.length; i++) {
-    var body = await getReceiptCached(ids[i]);
-    var vseg = body.verdict && (body.verdict.segment_id || body.verdict.segmentId);
-    if (vseg === segmentId) return { receiptId: ids[i], batch: detail };
-  }
-  throw new Error('no receipt found for segment ' + segmentId + ' in batch ' + batchId);
-}
-
-async function openReceipt(batchId, segmentId, btn) {
-  if (btn) { btn.disabled = true; btn.textContent = 'Opening…'; }
-  try {
-    var found = await resolveReceiptId(batchId, segmentId);
-    state.segBatch = found.batch;
-    location.hash = '#/segment/' + encodeURIComponent(found.receiptId);
-  } catch (e) {
-    if (btn) { btn.disabled = true; btn.textContent = 'Unavailable'; btn.title = String((e && e.message) || e); }
-  }
-}
-
-var api = MOCK ? null : { get: liveGet, post: livePost };
-
 /* ============================ data loading ============================ */
 
 async function loadBatches(soft) {
@@ -395,46 +127,71 @@ async function loadBatches(soft) {
     renderBatches();
   }
   try {
-    var raw = MOCK ? await mockApi.batches() : await api.get('/batches');
-    state.batches = normBatchList(raw);
-    state.batches.sort(function (a, b) {
+    var raw = await client.batches();
+    var list = A.normBatchList(raw);
+    list.sort(function (a, b) {
       return String(b.created_utc || '').localeCompare(String(a.created_utc || ''));
     });
+    state.batches = list;
     state.batchesError = null;
-    // mock LED follows the newest batch; refresh it once the list lands
+    populateFilterSelects();
     if (MOCK) loadPico();
   } catch (e) {
-    if (!soft) { state.batches = null; }
+    if (!soft) state.batches = null;
     state.batchesError = e;
   }
   renderBatches();
 }
 
+async function getBatchDetail(id) {
+  if (state.batchDetailCache[id]) return state.batchDetailCache[id];
+  var detail = await client.batchDetail(id);
+  state.batchDetailCache[id] = detail;
+  return detail;
+}
+
+async function getReceiptBody(id) {
+  if (state.receiptCache[id]) return state.receiptCache[id];
+  var r = await client.receipt(id);
+  state.receiptCache[r.id] = r.body;
+  return r.body;
+}
+
+// Segment rows link by RECEIPT id only. Resolve segment -> receipt through
+// the batch detail's receipt_ids + each receipt's verdict.segment_id.
+async function openReceipt(batchId, segmentId, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = 'Opening…'; }
+  try {
+    var detail = await getBatchDetail(batchId);
+    var ids = detail.receipt_ids || detail.receiptIds || [];
+    var bodies = {};
+    for (var i = 0; i < ids.length; i++) bodies[ids[i]] = await getReceiptBody(ids[i]);
+    var rid = A.findReceiptForSegment(detail, bodies, segmentId);
+    if (!rid) throw new Error('no receipt found for segment ' + segmentId);
+    state.segBatch = detail;
+    location.hash = A.buildHash('segment', rid, null, { lang: state.lang });
+  } catch (e) {
+    if (btn) { btn.disabled = true; btn.textContent = 'Unavailable'; btn.title = String((e && e.message) || e); }
+  }
+}
+
 async function loadReceipt(id) {
   state.receipt = null;
   state.receiptError = null;
-  state.receiptId = null; // set once the body (or error) lands
+  state.receiptId = null;
   state.requestedId = id;
   state.segBatch = null;
-  state.rvSeq++; // invalidate any in-flight re-verify
+  state.rvSeq++;
   state.rv = { status: 'idle', result: null, error: null };
   renderSegment();
   try {
-    if (MOCK) {
-      var m = await mockApi.receipt(id);
-      if (state.requestedId !== id) return; // user moved on
-      state.receipt = m.receipt;
-      state.receiptId = m.id;
-      state.receiptFallback = m.fallback || null;
-      state.receiptCache[m.id] = m.receipt;
-    } else {
-      var body = await api.get('/receipts/' + encodeURIComponent(id));
-      if (state.requestedId !== id) return;
-      state.receipt = body;
-      state.receiptId = id;
-      state.receiptFallback = null;
-      state.receiptCache[id] = body;
-    }
+    var r = await client.receipt(id);
+    if (state.requestedId !== id) return; // user moved on
+    state.receipt = A.normReceipt(r.body);
+    state.receiptId = r.id;
+    state.receiptFallback = r.fallback || null;
+    state.receiptCache[r.id] = r.body;
+    collectHeadOptions(state.receipt);
   } catch (e) {
     if (state.requestedId !== id) return;
     state.receipt = null;
@@ -444,17 +201,15 @@ async function loadReceipt(id) {
 }
 
 async function runReverify() {
-  if (!state.receipt) return;
-  var my = ++state.rvSeq; // tag this request; stale responses are ignored
+  if (!state.receipt || !state.receipt.receipt_sha256) return;
+  var my = ++state.rvSeq;
   var id = state.receiptId;
   state.rv = { status: 'busy', result: null, error: null };
-  renderSegment(); // shows the "re-running" line; keeps receipt visible
+  renderSegment();
   try {
-    var expected = state.receipt.receipt_sha256 || state.receipt.receiptSha256;
-    var res = MOCK
-      ? await mockApi.reverify(id, expected)
-      : await api.post('/receipts/' + encodeURIComponent(id) + '/reverify', {});
-    if (my !== state.rvSeq || id !== state.receiptId) return; // stale: user moved on
+    clientOpts.forceMismatch = state.mockMismatch;
+    var res = await client.reverify(id, state.receipt.receipt_sha256);
+    if (my !== state.rvSeq || id !== state.receiptId) return;
     state.rv = { status: 'done', result: res, error: null };
   } catch (e) {
     if (my !== state.rvSeq || id !== state.receiptId) return;
@@ -466,16 +221,14 @@ async function runReverify() {
 async function loadInsights() {
   if (state.risk === null && state.riskError === null) renderInsights();
   try {
-    var raw = MOCK ? await mockApi.risk() : await api.get('/stats/risk_coverage');
-    state.risk = normRisk(raw);
+    state.risk = A.normRisk(await client.risk());
     state.riskError = null;
   } catch (e) {
     state.risk = null;
     state.riskError = e;
   }
   try {
-    var g = MOCK ? await mockApi.gaps() : await api.get('/stats/sop_gaps');
-    state.gaps = normGaps(g);
+    state.gaps = A.normGaps(await client.gaps());
     state.gapsError = null;
   } catch (e) {
     state.gaps = null;
@@ -486,21 +239,126 @@ async function loadInsights() {
 
 async function loadPico() {
   try {
-    var raw = MOCK ? await mockApi.pico() : await api.get('/pico/status');
-    state.pico = normPico(raw);
+    state.pico = A.normPico(await client.pico());
   } catch (e) {
     state.pico = { connected: false, led: 'OFF', ageMs: null, offlineReason: String((e && e.message) || e || 'unreachable') };
   }
   renderPico();
+  renderSystem();
 }
 
-/* ============================ batches screen ============================ */
+/* ============================ filter bar ============================ */
+
+function setSelectOptions(sel, items, allLabel) {
+  var cur = sel.value;
+  sel.innerHTML = '';
+  sel.appendChild(el('<option value="">' + esc(allLabel) + '</option>'));
+  items.forEach(function (v) {
+    var o = document.createElement('option');
+    o.value = v;
+    o.textContent = v;
+    sel.appendChild(o);
+  });
+  // keep the selection if it still exists, else fall back to All
+  if (cur && items.indexOf(cur) !== -1) sel.value = cur;
+}
+
+function populateFilterSelects() {
+  if (!state.batches) return;
+  var opts = A.filterOptions(state.batches);
+  state.applyingHash = true;
+  try {
+    setSelectOptions($('#f-site'), opts.sites, 'All sites');
+    var wsel = $('#f-worker');
+    setSelectOptions(wsel, opts.workers, 'All workers');
+    wsel.disabled = !opts.workers.length;
+    wsel.title = opts.workers.length ? '' : 'Worker ids are not exposed by the API yet';
+    setSelectOptions($('#f-batch'), opts.batches, 'All batches');
+    setSelectOptions($('#f-reason'), opts.reasons, 'All reasons');
+  } finally {
+    state.applyingHash = false;
+  }
+  syncControlsFromState();
+}
+
+function syncControlsFromState() {
+  state.applyingHash = true;
+  try {
+    $('#f-site').value = state.filters.site || '';
+    var w = $('#f-worker');
+    if (!w.disabled) w.value = state.filters.worker || '';
+    $('#f-batch').value = state.filters.batch || '';
+    $('#f-verdict').value = state.filters.verdict || '';
+    $('#f-reason').value = state.filters.reason || '';
+    $('#f-lang').value = state.lang;
+    if (document.activeElement !== $('#f-q') || $('#f-q').value !== state.filters.q) {
+      $('#f-q').value = state.filters.q || '';
+    }
+  } finally {
+    state.applyingHash = false;
+  }
+}
+
+function pushHash() {
+  var extra = { lang: state.lang !== A.LANGS[0] ? state.lang : '' };
+  if (state.route === 'insights' && state.head) extra.head = state.head;
+  var h = state.route === 'segment' && state.segmentId
+    ? A.buildHash('segment', state.segmentId, null, { lang: state.lang !== A.LANGS[0] ? state.lang : '' })
+    : state.route === 'insights'
+      ? A.buildHash('insights', null, null, extra.head ? { head: state.head } : null)
+      : A.buildHash('batches', null, state.filters, state.lang !== A.LANGS[0] ? { lang: state.lang } : null);
+  if (location.hash !== h) location.hash = h;
+  else routeFromHash();
+}
+
+function bindFilterbar() {
+  ['f-site', 'f-worker', 'f-batch', 'f-verdict', 'f-reason', 'f-lang'].forEach(function (id) {
+    $('#' + id).addEventListener('change', function () {
+      if (state.applyingHash) return;
+      state.filters.site = $('#f-site').value;
+      state.filters.worker = $('#f-worker').disabled ? '' : $('#f-worker').value;
+      state.filters.batch = $('#f-batch').value;
+      state.filters.verdict = $('#f-verdict').value;
+      state.filters.reason = $('#f-reason').value;
+      state.lang = $('#f-lang').value;
+      if (state.route === 'batches') pushHash();
+      else location.hash = A.buildHash('batches', null, state.filters, null);
+      renderBatches();
+    });
+  });
+  $('#f-q').addEventListener('input', function () {
+    if (state.applyingHash) return;
+    clearTimeout(state.searchTimer);
+    state.searchTimer = setTimeout(function () {
+      state.filters.q = $('#f-q').value.trim();
+      if (state.route !== 'batches') {
+        location.hash = A.buildHash('batches', null, state.filters, null);
+      } else pushHash();
+      renderBatches();
+    }, SEARCH_DEBOUNCE_MS);
+  });
+  $('#filterbar').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    clearTimeout(state.searchTimer);
+    state.filters.q = $('#f-q').value.trim();
+    if (state.route !== 'batches') location.hash = A.buildHash('batches', null, state.filters, null);
+    else pushHash();
+    renderBatches();
+  });
+  $('#f-reset').addEventListener('click', function () {
+    state.filters = Object.assign({}, A.FILTER_DEFAULTS);
+    syncControlsFromState();
+    if (state.route !== 'batches') location.hash = '#/batches';
+    else pushHash();
+    renderBatches();
+  });
+}
+
+/* ============================ shared states ============================ */
 
 function skeletonCards(n) {
   var html = '';
-  for (var i = 0; i < n; i++) {
-    html += '<div class="skel skel-card" aria-hidden="true"></div>';
-  }
+  for (var i = 0; i < n; i++) html += '<div class="skel skel-card" aria-hidden="true"></div>';
   return html;
 }
 
@@ -511,6 +369,16 @@ function errorState(msg, retry) {
       '<p class="state-note">' + esc(msg) + '</p>' +
       '<button class="btn" type="button" data-retry="' + retry + '">Retry</button>' +
     '</div>');
+}
+
+/* ============================ batches screen ============================ */
+
+function activeFilterCount() {
+  var n = 0;
+  ['site', 'worker', 'batch', 'verdict', 'reason', 'q'].forEach(function (k) {
+    if (state.filters[k]) n++;
+  });
+  return n;
 }
 
 function renderBatches() {
@@ -531,14 +399,14 @@ function renderBatches() {
     return;
   }
 
-  var list = state.batches.filter(function (b) {
-    return state.filter === 'all' || b.decision === state.filter;
-  });
-  var segTotal = list.reduce(function (n, b) { return n + b.rows.length; }, 0);
+  var items = A.applyFilters(state.batches, state.filters);
+  var segTotal = items.reduce(function (n, x) { return n + x.rows.length; }, 0);
+  var nf = activeFilterCount();
 
   meta.hidden = false;
-  meta.textContent = list.length + (list.length === 1 ? ' batch' : ' batches') +
+  meta.textContent = items.length + (items.length === 1 ? ' batch' : ' batches') +
     ' · ' + segTotal + ' segments' +
+    (nf ? ' · ' + nf + ' filter' + (nf === 1 ? '' : 's') + ' on' : '') +
     (state.batchesError ? ' · refresh failed, showing cached list' : '') +
     (MOCK ? ' · mock' : ' · live');
 
@@ -546,29 +414,28 @@ function renderBatches() {
     ? 'Fixture list from web/mock/batches.json. Switch off ?mock=1 for the live service.'
     : 'Every batch decision with its per-segment verdicts, newest first.';
 
-  if (!list.length) {
+  if (!items.length) {
     body.appendChild(el(
       '<div class="state" role="status">' +
-        '<p class="state-title">No batches yet</p>' +
-        '<p class="state-note">Nothing has been ingested' +
-        (state.filter !== 'all' ? ' matching this filter' : '') +
-        '. Batches appear here as soon as the service segments clips.</p>' +
+        '<p class="state-title">No batches match</p>' +
+        '<p class="state-note">Nothing ingested yet, or the filters hide everything. ' +
+        '<button class="btn btn-ghost" type="button" id="empty-reset">Clear filters</button></p>' +
       '</div>'));
+    var rb = $('#empty-reset');
+    if (rb) rb.addEventListener('click', function () { $('#f-reset').click(); });
     body.setAttribute('aria-busy', 'false');
     return;
   }
 
-  list.forEach(function (b) {
-    body.appendChild(batchCard(b));
+  items.forEach(function (x, i) {
+    // newest card starts expanded so the list never looks empty
+    body.appendChild(batchCard(x.batch, x.rows, i === 0 || nf > 0));
   });
   body.setAttribute('aria-busy', 'false');
 }
 
-function batchCard(b) {
-  var expanded = !!state.expanded[b.batch_id];
-  var shown = expanded ? b.rows : b.rows.slice(0, 5);
-  var card = el('<article class="card" aria-label="Batch ' + esc(b.batch_id) + '"></article>');
-
+function batchCard(b, rows, open) {
+  var card = el('<article class="card batch" aria-label="Batch ' + esc(b.batch_id) + '"></article>');
   var rule = b.rule ? esc(b.rule) :
     (b.k !== undefined ? 'rule: reject if rejected_count &gt; ' + esc(b.k) : 'fixed rule: reject if rejected_count &gt; k');
 
@@ -583,11 +450,20 @@ function batchCard(b) {
     '</div>' +
     '<p class="batch-rule">' + rule + ' · n = ' + esc(b.n) + '</p>'));
 
+  var det = document.createElement('details');
+  det.className = 'segdetails';
+  if (open) det.setAttribute('open', '');
+  var sum = document.createElement('summary');
+  sum.className = 'segdetails-sum';
+  sum.innerHTML = '<span>' + esc(rows.length) + (rows.length === 1 ? ' segment' : ' segments') + '</span>' +
+    '<span class="segdetails-caret" aria-hidden="true">▾</span>';
+  det.appendChild(sum);
+
   var list = el('<div class="seglist"></div>');
-  if (!shown.length) {
-    list.appendChild(el('<p class="state-note" style="padding: var(--s3) var(--s4);">This batch has no segments.</p>'));
+  if (!rows.length) {
+    list.appendChild(el('<p class="state-note" style="padding: var(--s3) var(--s4);">No segments match the filters in this batch.</p>'));
   }
-    shown.forEach(function (r) {
+  rows.forEach(function (r) {
     var reasons = (r.reasons && r.reasons.length)
       ? r.reasons.map(function (c) { return '<span class="reason">' + esc(c) + '</span>'; }).join('')
       : '<span class="reason-none">no flags</span>';
@@ -599,28 +475,17 @@ function batchCard(b) {
         '</div>' +
         '<div class="seg-reasons">' + reasons + '</div>' +
         '<div class="seg-meta">' +
-          '<span title="site">' + esc(r.site_id) + '</span>' +
-          '<span title="per-segment worker: not exposed by the API">worker —</span>' +
-          '<span title="per-segment latency: not exposed by the API">latency —</span>' +
-          '<button class="btn btn-open" type="button">Open receipt</button>' +
+          '<button class="btn btn-open" type="button">Open receipt →</button>' +
         '</div>' +
       '</div>');
     var btn = $('.btn-open', row);
     btn.setAttribute('data-batch', b.batch_id);
     btn.setAttribute('data-segment', r.segment_id);
+    btn.setAttribute('aria-label', 'Open receipt for segment ' + r.segment_id);
     list.appendChild(row);
   });
-  card.appendChild(list);
-
-  if (b.rows.length > 5) {
-    var more = el(
-      '<div class="seg-more">' +
-        '<button class="btn" type="button" data-expand="' + esc(b.batch_id) + '">' +
-          (expanded ? 'Show less' : 'Show all ' + b.rows.length + ' segments') +
-        '</button>' +
-      '</div>');
-    card.appendChild(more);
-  }
+  det.appendChild(list);
+  card.appendChild(det);
   return card;
 }
 
@@ -638,7 +503,6 @@ function renderSegment() {
   actions.innerHTML = '';
   body.setAttribute('aria-busy', 'true');
 
-  // opener for a raw receipt id (useful when a batch has unlinked segments)
   actions.appendChild(el(
     '<form class="voice-row" id="open-form" role="search" aria-label="Open receipt by id">' +
       '<div class="field">' +
@@ -652,7 +516,7 @@ function renderSegment() {
   $('#open-form').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var v = $('#open-id').value.trim();
-    if (v) location.hash = '#/segment/' + encodeURIComponent(v);
+    if (v) location.hash = A.buildHash('segment', v, null, null);
   });
 
   if (!state.segmentId) {
@@ -685,34 +549,27 @@ function renderSegment() {
 
 function renderSegmentReady(body) {
   var r = state.receipt;
-  var v = r.verdict || {};
-  var sig = r.signals || {};
-  var dec = r.decisions || {};
-  var reasons = v.reasons || [];
+  var raw = r.raw;
+  var sig = raw.signals || {};
+  var reasons = r.reasons;
 
-  var segLabel = v.segment_id || state.requestedId || state.receiptId;
-  var batchId = (state.segBatch && state.segBatch.batch_id) || null;
-  // site comes from the batch the receipt was opened from; worker, clip path
-  // and latency are not exposed by the API (see "API needs").
-  var siteId = (state.segBatch && state.segBatch.site_id) || '—';
+  var segLabel = r.segment_id || state.requestedId || state.receiptId;
+  var batchId = (state.segBatch && (state.segBatch.batch_id || state.segBatch.batchId)) || null;
+  var siteId = (state.segBatch && (state.segBatch.site_id || state.segBatch.siteId)) || '—';
 
   $('#segment-title').textContent = 'Segment';
-  $('#segment-sub').textContent = 'Receipt for ' + segLabel +
-    (batchId ? ' · from batch ' + batchId : '');
+  $('#segment-sub').textContent = 'Receipt for ' + segLabel + (batchId ? ' · from batch ' + batchId : '');
 
-  // ---- head ----
   var head = el(
     '<div class="seg-head">' +
-      verdictChip(v.verdict) +
+      verdictChip(r.verdict) +
       '<span class="seg-head-id">' + esc(segLabel) + '</span>' +
     '</div>');
   body.appendChild(head);
 
   if (reasons.length) {
     var rc = el('<div class="seg-reasons" style="margin-bottom:var(--s4);"></div>');
-    reasons.forEach(function (c) {
-      rc.appendChild(el('<span class="reason">' + esc(c) + '</span>'));
-    });
+    reasons.forEach(function (c) { rc.appendChild(el('<span class="reason">' + esc(c) + '</span>')); });
     body.appendChild(rc);
   }
 
@@ -725,26 +582,25 @@ function renderSegmentReady(body) {
       '</div>'));
   }
 
-  // ---- meta + reverify/voice grid ----
+  // ---- meta + reverify grid ----
   var grid = el('<div class="panel-grid panel-grid-2"></div>');
-
-  var conf = Number(v.answer_conf);
-  var metaCard = el(
+  var conf = Number(r.answer_conf);
+  grid.appendChild(el(
     '<section class="card" aria-label="Segment facts">' +
       '<div class="card-head"><h2 class="card-title">Segment</h2>' +
       '<span class="card-note">' + esc(fullTime(r.created_utc)) + '</span></div>' +
       '<div class="card-body"><div class="kv">' +
-        segHeadRow('snapshot', 'answer_conf ' + (isFinite(conf) ? num(conf) : '—') + ' · threshold ' + esc(first(v, ['threshold']) !== undefined ? first(v, ['threshold']) : '—')) +
+        segHeadRow('snapshot', 'answer_conf ' + (isFinite(conf) ? num(conf) : '—') + ' · threshold ' + (r.threshold !== undefined && r.threshold !== null ? r.threshold : '—')) +
         segHeadRow('site', siteId) +
         segHeadRow('worker', '—') +
         segHeadRow('source clip', '—') +
         segHeadRow('latency', '—') +
       '</div>' +
-      '<p class="state-note" style="margin-top:var(--s3);">Worker, clip path and latency are not exposed by the API yet — see “API needs” in docs/reports/dashboard.md.</p>' +
+      '<p class="state-note" style="margin-top:var(--s3);">Worker, clip path and latency are not exposed by the API yet.</p>' +
       '</div>' +
-    '</section>');
+    '</section>'));
 
-  var hasHash = !!(r.receipt_sha256 || r.receiptSha256);
+  var hasHash = !!r.receipt_sha256;
   var rvCard = el(
     '<section class="card" aria-label="Re-verify receipt">' +
       '<div class="card-head"><h2 class="card-title">Re-verify</h2>' +
@@ -762,8 +618,6 @@ function renderSegmentReady(body) {
         '<div id="rv-out"></div>' +
       '</div>' +
     '</section>');
-
-  grid.appendChild(metaCard);
   grid.appendChild(rvCard);
   body.appendChild(grid);
 
@@ -772,6 +626,9 @@ function renderSegmentReady(body) {
   var mm = $('#mock-mismatch');
   if (mm) mm.addEventListener('change', function () { state.mockMismatch = mm.checked; });
 
+  // ---- step timeline ----
+  body.appendChild(stepTimelineCard(r));
+
   // ---- voice ----
   var voiceCard = el(
     '<section class="card" aria-label="Voice message">' +
@@ -779,11 +636,13 @@ function renderSegmentReady(body) {
       '<span class="card-note">' + (MOCK ? 'mock: placeholder tone, real audio comes from the service' : 'GET /voice/{code}/{lang}') + '</span></div>' +
       '<div class="card-body">' +
         '<div class="voice-row">' +
-          '<div class="field"><span class="field-label" id="voice-code-label">Reason code</span>' +
-            '<span class="mono" id="voice-code" style="font-size:.8125rem;">' + esc(reasons[0] || '—') + '</span></div>' +
-          '<div class="field"><span class="field-label" id="voice-lang-label">Language</span>' +
-            '<div class="langrow" role="group" aria-labelledby="voice-lang-label" id="lang-row"></div></div>' +
-          '<button class="btn" type="button" id="voice-play"' + (reasons.length ? '' : ' disabled') + '>▶ Play</button>' +
+          '<div class="field"><span class="field-label">Reason code</span>' +
+            '<span class="mono" style="font-size:.8125rem;">' + esc(reasons[0] || '—') + '</span></div>' +
+          '<div class="field"><label class="field-label" for="voice-lang">Language</label>' +
+            '<select id="voice-lang">' + A.LANGS.map(function (l) {
+              return '<option value="' + l + '"' + (l === state.lang ? ' selected' : '') + '>' + l + '</option>';
+            }).join('') + '</select></div>' +
+          '<button class="btn" type="button" id="voice-play"' + (reasons.length ? '' : ' disabled') + '>▶ Play message</button>' +
         '</div>' +
         '<p class="audio-note" id="voice-note" role="status">' +
           (reasons.length ? 'Reads the supervisor message for the first reason code (' + esc(reasons[0]) + ').' : 'No reason codes on this segment, so there is no voice message.') +
@@ -791,49 +650,52 @@ function renderSegmentReady(body) {
       '</div>' +
     '</section>');
   body.appendChild(voiceCard);
-
-  var lr = $('#lang-row');
-  LANGS.forEach(function (l) {
-    var b = el('<button class="langbtn' + (l === state.lang ? ' is-on' : '') + '" type="button" data-lang="' + l + '"' +
-      (l === state.lang ? ' aria-pressed="true"' : ' aria-pressed="false"') + '>' + l + '</button>');
-    lr.appendChild(b);
+  $('#voice-lang').addEventListener('change', function () {
+    state.lang = this.value;
+    $('#f-lang').value = state.lang;
+    pushHash();
   });
   $('#voice-play').addEventListener('click', function () { playVoice(reasons[0]); });
 
-  // ---- hashes (blurred_sha256 lives on the receipt top level per SPEC) ----
+  // ---- hashes ----
   var hashCard = el(
     '<section class="card" aria-label="Hashes">' +
       '<div class="card-head"><h2 class="card-title">Hashes</h2>' +
-      '<span class="card-note">SHA-256, per docs/SPEC.md</span></div>' +
+      '<span class="card-note">SHA-256, per docs/SPEC.md · hover for full value, button copies</span></div>' +
       '<div class="card-body">' +
-        '<div class="hash-row"><span class="hash-key">receipt id</span><span class="hash-val">' + esc(r.receipt_id || '—') + '</span></div>' +
-        '<div class="hash-row"><span class="hash-key">receipt sha256</span><span class="hash-val">' + esc(r.receipt_sha256 || '—') + '</span></div>' +
-        '<div class="hash-row"><span class="hash-key">segment sha256</span><span class="hash-val">' + esc(r.segment_sha256 || '—') + '</span></div>' +
-        (r.blurred_sha256
-          ? '<div class="hash-row"><span class="hash-key">blurred file sha256</span><span class="hash-val">' + esc(r.blurred_sha256) + '</span></div>'
-          : '') +
+        hashRow('receipt id', r.receipt_id) +
+        hashRow('receipt sha256', r.receipt_sha256) +
+        hashRow('segment sha256', r.segment_sha256) +
+        (r.blurred_sha256 ? hashRow('blurred file sha256', r.blurred_sha256) : '') +
       '</div>' +
     '</section>');
   body.appendChild(hashCard);
+  $$('[data-copy]', hashCard).forEach(function (b) {
+    b.addEventListener('click', function () { copyText(b.getAttribute('data-copy'), 'Hash copied.'); });
+  });
 
-  // ---- signals ----
+  // ---- signals (compact) ----
   body.appendChild(signalsCard(sig));
 
-  // ---- decisions ----
-  body.appendChild(decisionsCard(dec));
-
-  // ---- raw receipt ----
-  var rawCard = el(
-    '<section class="card" aria-label="Receipt JSON">' +
-      '<div class="card-head"><h2 class="card-title">Receipt JSON</h2>' +
-      '<button class="btn" type="button" id="copy-receipt">Copy</button></div>' +
-      '<div class="card-body"><pre class="pre" id="receipt-pre" tabindex="0"></pre></div>' +
+  // ---- collapsible receipt tree (instead of a JSON dump) ----
+  var treeCard = el(
+    '<section class="card" aria-label="Receipt detail">' +
+      '<div class="card-head"><h2 class="card-title">Receipt detail</h2>' +
+      '<span class="card-note">expand objects, every hash copiable</span></div>' +
+      '<div class="card-body"><div class="rtree" id="receipt-tree"></div></div>' +
     '</section>');
-  body.appendChild(rawCard);
-  $('#receipt-pre').textContent = JSON.stringify(r, null, 2);
-  $('#copy-receipt').addEventListener('click', function () {
-    copyText(JSON.stringify(r, null, 2), 'Receipt JSON copied.');
-  });
+  body.appendChild(treeCard);
+  $('#receipt-tree').appendChild(receiptTree(raw, []));
+}
+
+function hashRow(label, value) {
+  var v = value || '—';
+  var short = A.shortHash(v);
+  return '<div class="hash-row"><span class="hash-key">' + esc(label) + '</span>' +
+    '<span class="hash-val" title="' + esc(v) + '">' + esc(short) + '</span>' +
+    (value ? '<button class="btn btn-ghost btn-copy" type="button" data-copy="' + esc(v) +
+      '" aria-label="Copy ' + esc(label) + '">copy</button>' : '') +
+    '</div>';
 }
 
 function renderReverify(out) {
@@ -853,8 +715,6 @@ function renderReverify(out) {
   var res = state.rv.result;
   if (!res) return;
   var match = !!res.match;
-  // Neutral banner: state is carried by the ✓/✕ glyph and the words, never
-  // by green/red (reserved for verdicts and the Pico LED).
   var banner = el(
     '<div class="rv-banner ' + (match ? 'is-match' : 'is-mismatch') + '" role="status">' +
       '<p class="rv-verdict">' +
@@ -868,11 +728,110 @@ function renderReverify(out) {
   out.appendChild(banner);
 }
 
+/* ---- step timeline: SOP steps left-to-right, detected step marked ---- */
+
+function stepTimelineCard(r) {
+  var names = r.step_names.length ? r.step_names : ['—'];
+  var probs = r.step_probs;
+  var choice = r.step_choice;
+  var conf = Number(r.step_conf);
+  var thr = Number(r.threshold);
+  var confTxt = isFinite(conf) ? conf.toFixed(2) : '—';
+
+  var track = el('<ol class="timeline" aria-label="SOP step timeline"></ol>');
+  names.forEach(function (name) {
+    var p = Number(probs[name]) || 0;
+    var isTop = name === choice;
+    var li = document.createElement('li');
+    li.className = 'tl-step' + (isTop ? ' is-detected ' + verdictClass(r.verdict) : '');
+    if (isTop) li.setAttribute('aria-current', 'step');
+    var dot = isTop && isFinite(conf) && isFinite(thr)
+      ? (conf >= thr ? 'conf-high' : 'conf-low') : '';
+    li.innerHTML =
+      '<span class="tl-dot ' + dot + '" aria-hidden="true"></span>' +
+      '<span class="tl-name">' + esc(name) + '</span>' +
+      '<span class="tl-prob">' + (probs[name] !== undefined ? num(p, 2) : '—') + '</span>' +
+      (isTop ? '<span class="tl-flag">detected · conf ' + esc(confTxt) + '</span>' : '');
+    li.title = name + ': p = ' + (probs[name] !== undefined ? num(p) : '—') +
+      (isTop ? ' (detected, confidence ' + confTxt + ')' : '');
+    track.appendChild(li);
+  });
+
+  var card = el(
+    '<section class="card" aria-label="Step timeline">' +
+      '<div class="card-head"><h2 class="card-title">Step timeline</h2>' +
+      '<span class="card-note">SOP steps · detected step marked, shaded by confidence</span></div>' +
+      '<div class="card-body"><div class="tl-scroll"></div>' +
+      '<p class="state-note">Hands p(yes) ' +
+        esc(r.raw.decisions && r.raw.decisions.hands_ok && r.raw.decisions.hands_ok.p_yes !== undefined ? num(r.raw.decisions.hands_ok.p_yes) : '—') +
+        ' · active-work p(yes) ' +
+        esc(r.raw.decisions && r.raw.decisions.active_work && r.raw.decisions.active_work.p_yes !== undefined ? num(r.raw.decisions.active_work.p_yes) : '—') +
+      '</p></div>' +
+    '</section>');
+  $('.tl-scroll', card).appendChild(track);
+  return card;
+}
+
+/* ---- collapsible receipt tree ---- */
+
+function isHashLike(key, value) {
+  if (typeof value !== 'string') return false;
+  key = String(key || '').toLowerCase();
+  if (key.indexOf('sha256') !== -1 || key === 'phash' || key === 'receipt_id') return true;
+  return /^[0-9a-f]{16,128}$/i.test(value) && value.length >= 16;
+}
+
+function leafRow(key, value) {
+  var row = el('<div class="rt-leaf"></div>');
+  var display, full = String(value);
+  if (value === null) display = 'null';
+  else if (typeof value === 'boolean') display = value ? 'yes' : 'no';
+  else if (typeof value === 'number') display = num(value);
+  else if (typeof value === 'string' && isHashLike(key, value)) display = A.shortHash(value);
+  else display = String(value);
+  row.innerHTML = '<span class="rt-key">' + esc(key) + '</span>' +
+    '<span class="rt-val" title="' + esc(full) + '">' + esc(display) + '</span>';
+  if (typeof value === 'string' && isHashLike(key, value)) {
+    var b = el('<button class="btn btn-ghost btn-copy" type="button" aria-label="Copy ' + esc(key) + '">copy</button>');
+    b.addEventListener('click', function (ev) { ev.stopPropagation(); copyText(full, 'Hash copied.'); });
+    row.appendChild(b);
+  }
+  return row;
+}
+
+function receiptTree(value, path) {
+  if (value !== null && typeof value === 'object') {
+    var keys = Array.isArray(value) ? value.map(function (_, i) { return i; }) : Object.keys(value).sort();
+    var det = document.createElement('details');
+    det.className = 'rt-node';
+    if (path.length === 0) det.setAttribute('open', '');
+    var label = path.length === 0 ? 'receipt' : String(path[path.length - 1]);
+    var sum = document.createElement('summary');
+    sum.className = 'rt-sum';
+    sum.innerHTML = '<span class="rt-key">' + esc(label) + '</span>' +
+      '<span class="rt-count">' + esc(keys.length) + (Array.isArray(value) ? ' items' : ' keys') + '</span>';
+    det.appendChild(sum);
+    var kids = el('<div class="rt-kids"></div>');
+    keys.forEach(function (k) {
+      var wrap = el('<div class="rt-item"></div>');
+      if (value[k] !== null && typeof value[k] === 'object') wrap.appendChild(receiptTree(value[k], path.concat([k])));
+      else wrap.appendChild(leafRow(String(k), value[k]));
+      kids.appendChild(wrap);
+    });
+    det.appendChild(kids);
+    return det;
+  }
+  return leafRow(String(path[path.length - 1] || 'value'), value);
+}
+
+/* ---- signals (compact stat grid, no walls of text) ---- */
+
 function signalsCard(sig) {
   function stat(label, value, unit) {
     return '<div class="stat"><div class="stat-label">' + esc(label) + '</div>' +
       '<div class="stat-value">' + esc(value) + (unit ? '<span class="stat-unit">' + esc(unit) + '</span>' : '') + '</div></div>';
   }
+  sig = sig || {};
   var grid = el('<div class="statgrid"></div>');
   grid.innerHTML =
     stat('decodable', sig.decodable === undefined ? '—' : (sig.decodable ? 'yes' : 'no')) +
@@ -889,52 +848,6 @@ function signalsCard(sig) {
       '<div class="card-head"><h2 class="card-title">Signals</h2><span class="card-note">exact, per-segment (L0)</span></div>' +
     '</section>');
   card.appendChild(grid);
-  var extra = el('<div class="card-body"><div class="kv">' +
-    '<div class="kv-row"><span class="kv-key">phash</span><span class="kv-val">' + esc(sig.phash || '—') + '</span></div>' +
-    '<div class="kv-row"><span class="kv-key">duplicate of</span><span class="kv-val">' + esc(sig.dup_of || '—') + '</span></div>' +
-    '<div class="kv-row"><span class="kv-key">over-exposed frac</span><span class="kv-val">' + esc(sig.over_exposed_frac === undefined ? '—' : num(sig.over_exposed_frac)) + '</span></div>' +
-  '</div></div>');
-  card.appendChild(extra);
-  return card;
-}
-
-function probBars(title, probs, topChoice) {
-  var keys = Object.keys(probs || {});
-  if (!keys.length) return '<p class="state-note">No ' + esc(title) + ' scores.</p>';
-  var max = Math.max.apply(null, keys.map(function (k) { return Number(probs[k]) || 0; }));
-  var html = '<div class="bars" role="list" aria-label="' + esc(title) + '">';
-  keys.sort(function (a, b) { return (Number(probs[b]) || 0) - (Number(probs[a]) || 0); }).forEach(function (k) {
-    var p = Number(probs[k]) || 0;
-    var pct = max > 0 ? (p / max) * 100 : 0;
-    html += '<div class="bar-row" role="listitem">' +
-      '<span class="bar-label" title="' + esc(k) + '">' + esc(k) + '</span>' +
-      '<span class="bar-track"><span class="bar-fill' + (k === topChoice ? ' is-top' : '') +
-        '" style="width:' + pct.toFixed(1) + '%"></span></span>' +
-      '<span class="bar-value">' + num(p) + '</span></div>';
-  });
-  return html + '</div>';
-}
-
-function decisionsCard(dec) {
-  var step = dec.step || {};
-  var card = el(
-    '<section class="card" aria-label="Decisions (L1)">' +
-      '<div class="card-head"><h2 class="card-title">Decisions</h2><span class="card-note">typed decision models (L1)</span></div>' +
-      '<div class="card-body">' +
-        '<div class="kv" style="margin-bottom:var(--s4);">' +
-          '<div class="kv-row"><span class="kv-key">hands ok — p(yes)</span><span class="kv-val">' + esc(dec.hands_ok && dec.hands_ok.p_yes !== undefined ? num(dec.hands_ok.p_yes) : '—') + '</span></div>' +
-          '<div class="kv-row"><span class="kv-key">active work — p(yes)</span><span class="kv-val">' + esc(dec.active_work && dec.active_work.p_yes !== undefined ? num(dec.active_work.p_yes) : '—') + '</span></div>' +
-          '<div class="kv-row"><span class="kv-key">step choice</span><span class="kv-val">' + esc(step.choice || '—') + '</span></div>' +
-          '<div class="kv-row"><span class="kv-key">answer confidence</span><span class="kv-val">' + esc(step.answer_conf === undefined ? '—' : num(step.answer_conf)) + '</span></div>' +
-        '</div>' +
-        probBars('step probabilities', step.probs, step.choice) +
-        '<div class="kv" style="margin-top:var(--s4);">' +
-          Object.keys(dec.model_versions || {}).map(function (m) {
-            return '<div class="kv-row"><span class="kv-key">model · ' + esc(m) + '</span><span class="kv-val">' + esc(dec.model_versions[m]) + '</span></div>';
-          }).join('') +
-        '</div>' +
-      '</div>' +
-    '</section>');
   return card;
 }
 
@@ -981,8 +894,7 @@ function playVoice(code) {
     return;
   }
   say('Loading voice message for ' + code + ' in ' + state.lang + '…');
-  var url = API + '/voice/' + encodeURIComponent(code) + '/' + encodeURIComponent(state.lang);
-  fetch(url, { headers: { Accept: 'audio/*' } }).then(function (res) {
+  fetch(client.voiceUrl(code, state.lang), { headers: { Accept: 'audio/*' } }).then(function (res) {
     if (!res.ok) throw new Error('GET /voice/' + code + '/' + state.lang + ' → ' + res.status +
       (res.status === 404 ? ' (the voice file has not been generated yet)' : ' ' + res.statusText));
     return res.blob();
@@ -1006,8 +918,7 @@ function mockTone(code) {
     var Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return;
     var ctx = mockTone.ctx || (mockTone.ctx = new Ctx());
-    var codes = ['UNDECODABLE', 'HANDS_NOT_VISIBLE', 'BLUR', 'TOO_DARK', 'OVEREXPOSED', 'SHAKY', 'DUPLICATE', 'WRONG_STEP', 'NO_ACTIVE_WORK', 'LOW_CONFIDENCE'];
-    var idx = Math.max(0, codes.indexOf(code));
+    var idx = Math.max(0, A.REASON_CODES.indexOf(code));
     var osc = ctx.createOscillator();
     var gain = ctx.createGain();
     osc.type = 'sine';
@@ -1023,6 +934,25 @@ function mockTone(code) {
 
 /* ============================ insights ============================ */
 
+var headOptions = [];
+
+function collectHeadOptions(receipt) {
+  Object.keys(receipt.model_versions || {}).forEach(function (h) {
+    if (headOptions.indexOf(h) === -1) headOptions.push(h);
+  });
+  headOptions.sort();
+  var sel = $('#f-head');
+  var cur = state.head;
+  sel.innerHTML = '<option value="">aggregate</option>';
+  headOptions.forEach(function (h) {
+    var o = document.createElement('option');
+    o.value = h;
+    o.textContent = h;
+    sel.appendChild(o);
+  });
+  sel.value = cur;
+}
+
 function renderInsights() {
   var body = $('#insights-body');
   body.innerHTML = '';
@@ -1030,11 +960,12 @@ function renderInsights() {
 
   $('#insights-mock-pill').hidden = !MOCK;
 
-  // ---- risk / coverage ----
   var riskSec = el(
     '<section class="card" aria-label="Risk coverage curve">' +
       '<div class="card-head"><h2 class="card-title">Risk / coverage</h2>' +
-      '<span class="card-note">GET /stats/risk_coverage</span></div>' +
+      '<span class="card-note">GET /stats/risk_coverage' +
+      (state.head ? ' · head: ' + esc(state.head) + ' (aggregate curve — per-head curves not exposed yet)' : '') +
+      '</span></div>' +
       '<div class="card-body"><div id="risk-out"></div></div>' +
     '</section>');
   body.appendChild(riskSec);
@@ -1052,7 +983,6 @@ function renderInsights() {
     rOut.appendChild(riskLegend(state.risk));
   }
 
-  // ---- SOP gaps ----
   var gapSec = el(
     '<section class="card" aria-label="SOP gaps">' +
       '<div class="card-head"><h2 class="card-title">Where the SOP leaks</h2>' +
@@ -1135,7 +1065,6 @@ function riskChart(d) {
     return n;
   }
 
-  // grid + axes
   for (var i = 0; i <= 4; i++) {
     var c = i / 4;
     node('line', { x1: x(c), y1: T, x2: x(c), y2: T + ih, 'class': 'grid-line' });
@@ -1151,12 +1080,10 @@ function riskChart(d) {
   node('text', { x: L + iw / 2, y: T + ih + 40, 'text-anchor': 'middle', 'class': 'label-t' }, 'coverage');
   node('text', { x: L, y: T - 7, 'class': 'label-t' }, 'error');
 
-  // area + curve
   var dAttr = pts.map(function (p, k) { return (k ? 'L' : 'M') + x(p.coverage).toFixed(1) + ' ' + y(p.error).toFixed(1); }).join(' ');
   node('path', { d: dAttr + ' L' + x(pts[pts.length - 1].coverage).toFixed(1) + ' ' + (T + ih) + ' L' + x(pts[0].coverage).toFixed(1) + ' ' + (T + ih) + ' Z', 'class': 'curve-area' });
   node('path', { d: dAttr, 'class': 'curve' });
 
-  // bound + target lines (only when the payload carries them)
   if (hasBound) {
     var yb = y(d.error_bound);
     node('line', { x1: L, y1: yb, x2: L + iw, y2: yb, 'class': 'bound' });
@@ -1169,8 +1096,6 @@ function riskChart(d) {
     node('text', { x: L + 4, y: yt - 6, 'class': 'label-t' }, 'target ' + num(d.target_error));
   }
 
-  // operating point: the curve point nearest the certified threshold.
-  // One consistent state: no certified threshold -> no dot, no label.
   var pick = null;
   if (hasChosen) {
     pts.forEach(function (p) {
@@ -1186,11 +1111,9 @@ function riskChart(d) {
       'operating θ=' + num(pick.threshold, 2));
   }
 
-  // accessible description
-  var desc = 'Risk/coverage curve with ' + pts.length + ' points. ' +
+  svg.setAttribute('aria-label', 'Risk/coverage curve with ' + pts.length + ' points. ' +
     (hasBound ? 'Error bound ' + num(d.error_bound) + '. ' : 'No certified error bound yet. ') +
-    (hasTarget ? 'Target error ' + num(d.target_error) + '.' : '');
-  svg.setAttribute('aria-label', desc);
+    (hasTarget ? 'Target error ' + num(d.target_error) + '.' : ''));
   return svg;
 }
 
@@ -1221,7 +1144,7 @@ function gapsBars(g) {
   return wrap;
 }
 
-/* ============================ pico strip ============================ */
+/* ============================ pico strip + system drawer ============================ */
 
 function renderPico() {
   var led = $('#pico-led');
@@ -1250,6 +1173,46 @@ function fmtBeatAge(ms) {
   return Math.round(ms / 60000) + ' min ago';
 }
 
+// Collapsed-by-default drawer: Pico status, model versions, pipeline version.
+function renderSystem() {
+  var box = $('#sys-body');
+  box.innerHTML = '';
+  var p = state.pico;
+  var ledWord = p ? ({ G: 'green', A: 'amber', R: 'red', OFF: 'off' })[p.led] || 'off' : 'unknown';
+
+  box.appendChild(el(
+    '<div class="kv">' +
+      segHeadRow('pico', p && p.connected ? 'connected · LED ' + ledWord : 'offline') +
+      segHeadRow('port', p && p.port ? p.port : '—') +
+      segHeadRow('heartbeat age', p && p.ageMs !== null && p.ageMs !== undefined ? fmtBeatAge(p.ageMs) : '—') +
+      segHeadRow('pico ticks', p && p.ticks !== undefined && p.ticks !== null ? String(p.ticks) : '—') +
+    '</div>'));
+
+  var r = state.receipt;
+  if (r) {
+    var mv = el('<div class="kv" style="margin-top:var(--s3);"></div>');
+    var names = Object.keys(r.model_versions);
+    mv.innerHTML = names.length
+      ? names.map(function (m) {
+          return '<div class="kv-row"><span class="kv-key">model · ' + esc(m) + '</span>' +
+            '<span class="kv-val">' + esc(r.model_versions[m]) + '</span></div>';
+        }).join('')
+      : '<div class="kv-row"><span class="kv-key">models</span><span class="kv-val">—</span></div>';
+    mv.innerHTML += '<div class="kv-row"><span class="kv-key">pipeline</span>' +
+      '<span class="kv-val">' + esc(r.pipeline_version || '—') + '</span></div>';
+    var vers = r.config_versions || {};
+    ['python', 'torch', 'opencv'].forEach(function (k) {
+      if (vers[k]) {
+        mv.innerHTML += '<div class="kv-row"><span class="kv-key">' + esc(k) + '</span>' +
+          '<span class="kv-val">' + esc(vers[k]) + '</span></div>';
+      }
+    });
+    box.appendChild(mv);
+  } else {
+    box.appendChild(el('<p class="state-note" style="margin-top:var(--s3);">Open a segment to see model and pipeline versions.</p>'));
+  }
+}
+
 /* ============================ live channel ============================ */
 
 function onPushEvent(data) {
@@ -1257,12 +1220,11 @@ function onPushEvent(data) {
   var live = $('#live-pill');
   live.hidden = false;
   live.textContent = 'live · event ' + ageText(state.lastEvent);
-  // tolerate any shape: full batch → merge, anything else → soft refresh
   try {
     var type = data && data.type;
-    if (type === 'hello' || type === 'pong') return; // housekeeping, not data
+    if (type === 'hello' || type === 'pong') return;
     if (data && (data.batch_id || data.batchId || data.id) && (data.verdicts || data.rows || data.segments)) {
-      var nb = normBatch(data);
+      var nb = A.normBatch(data);
       var found = false;
       state.batches = (state.batches || []).map(function (b) {
         if (b.batch_id === nb.batch_id) { found = true; return nb; }
@@ -1272,6 +1234,7 @@ function onPushEvent(data) {
       state.batches.sort(function (a, b) {
         return String(b.created_utc || '').localeCompare(String(a.created_utc || ''));
       });
+      populateFilterSelects();
       if (state.route === 'batches') renderBatches();
     } else if (state.route === 'batches') {
       loadBatches(true);
@@ -1279,8 +1242,18 @@ function onPushEvent(data) {
   } catch (e) { /* a bad push must never break the list */ }
 }
 
+function ageText(ts) {
+  if (!ts) return '—';
+  var s = Math.max(0, (Date.now() - ts) / 1000);
+  if (s < 5) return 'just now';
+  if (s < 60) return Math.floor(s) + ' s ago';
+  var m = s / 60;
+  if (m < 60) return Math.floor(m) + ' min ago';
+  return Math.floor(m / 60) + ' h ' + Math.floor(m % 60) + ' min ago';
+}
+
 function connectWS() {
-  if (MOCK) { return; } // mock mode: no socket; source is labelled mock
+  if (MOCK) return;
   var attempt = 0;
   var pill = $('#live-pill');
 
@@ -1326,7 +1299,7 @@ function tickLivePill() {
   if (state.route === 'batches' && state.live && state.lastEvent) {
     $('#live-pill').textContent = 'live · event ' + ageText(state.lastEvent);
   }
-  if (state.pico && state.pico.connected) renderPico(); // refresh the heartbeat age
+  if (state.pico && state.pico.connected) renderPico();
   setTimeout(tickLivePill, 5000);
 }
 
@@ -1347,26 +1320,29 @@ function setRoute(name, id) {
   });
   document.title = 'Jadal QA — ' + (TITLES[name] || 'dashboard');
 
-  if (name === 'batches' && (state.batches === null || state.batchesError)) loadBatches(false);
+  if (name === 'batches') {
+    if (state.batches === null || state.batchesError) loadBatches(false);
+    else renderBatches();
+  }
   if (name === 'segment') {
-    if (!id) renderSegment(); // "no segment selected" state
+    if (!id) renderSegment();
     else if (id !== state.requestedId || (!state.receipt && !state.receiptError)) loadReceipt(id);
     else renderSegment();
   }
   if (name === 'insights' && (state.risk === null || state.gaps === null)) loadInsights();
+  else if (name === 'insights') renderInsights();
 }
 
 function routeFromHash() {
-  var h = location.hash || '#/batches';
-  var m = h.match(/^#\/segment(?:\/(.+))?$/);
-  if (m) {
-    state.segmentId = m[1] ? decodeURIComponent(m[1]) : null;
-    setRoute('segment', state.segmentId);
-    return;
-  }
-  if (h === '#/insights') { state.segmentId = null; setRoute('insights'); return; }
-  state.segmentId = null;
-  setRoute('batches');
+  var parsed = A.parseHash(location.hash);
+  state.filters = parsed.filters;
+  state.lang = parsed.lang;
+  state.head = parsed.head || '';
+  var sel = $('#f-head');
+  if (sel && sel.querySelector('option[value="' + (state.head || '') + '"]')) sel.value = state.head;
+  syncControlsFromState();
+  state.segmentId = parsed.route === 'segment' ? parsed.id : null;
+  setRoute(parsed.route, state.segmentId);
 }
 
 /* ============================ boot ============================ */
@@ -1374,9 +1350,17 @@ function routeFromHash() {
 function bindStatic() {
   $$('.tab').forEach(function (tab) {
     tab.addEventListener('click', function () {
-      location.hash = '#/' + tab.getAttribute('data-route') +
-        (tab.getAttribute('data-route') === 'segment' && state.segmentId
-          ? '/' + encodeURIComponent(state.segmentId) : '');
+      var route = tab.getAttribute('data-route');
+      if (route === state.route) return;
+      if (route === 'segment' && state.segmentId) {
+        location.hash = A.buildHash('segment', state.segmentId, null, null);
+      } else if (route === 'segment') {
+        location.hash = '#/segment';
+      } else if (route === 'insights') {
+        location.hash = A.buildHash('insights', null, null, state.head ? { head: state.head } : null);
+      } else {
+        location.hash = A.buildHash('batches', null, state.filters, null);
+      }
     });
     tab.addEventListener('keydown', function (ev) {
       if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return;
@@ -1389,17 +1373,12 @@ function bindStatic() {
     });
   });
 
-  $$('#batches-filters .chip').forEach(function (chip) {
-    chip.addEventListener('click', function () {
-      $$('#batches-filters .chip').forEach(function (c) {
-        c.classList.remove('is-on');
-        c.setAttribute('aria-pressed', 'false');
-      });
-      chip.classList.add('is-on');
-      chip.setAttribute('aria-pressed', 'true');
-      state.filter = chip.getAttribute('data-filter');
-      if (state.batches) renderBatches();
-    });
+  bindFilterbar();
+
+  $('#f-head').addEventListener('change', function () {
+    state.head = this.value;
+    pushHash();
+    renderInsights();
   });
 
   $('#batches-refresh').addEventListener('click', function () { loadBatches(false); });
@@ -1409,7 +1388,6 @@ function bindStatic() {
     loadInsights();
   });
 
-  // delegated clicks: retry / expand / language
   document.addEventListener('click', function (ev) {
     var t = ev.target;
     if (t && t.getAttribute) {
@@ -1417,22 +1395,6 @@ function bindStatic() {
       if (retry === 'batches') { loadBatches(false); return; }
       if (retry === 'segment') { loadReceipt(state.segmentId); return; }
       if (retry === 'insights') { loadInsights(); return; }
-      var exp = t.getAttribute('data-expand');
-      if (exp) {
-        state.expanded[exp] = !state.expanded[exp];
-        renderBatches();
-        return;
-      }
-      var lang = t.getAttribute('data-lang');
-      if (lang) {
-        state.lang = lang;
-        $$('#lang-row .langbtn').forEach(function (b) {
-          var on = b.getAttribute('data-lang') === lang;
-          b.classList.toggle('is-on', on);
-          b.setAttribute('aria-pressed', on ? 'true' : 'false');
-        });
-        return;
-      }
       if (t.classList && t.classList.contains('btn-open')) {
         openReceipt(t.getAttribute('data-batch'), t.getAttribute('data-segment'), t);
         return;
@@ -1458,7 +1420,8 @@ function boot() {
   routeFromHash();
   if (state.route === 'batches') loadBatches(false);
   if (state.route === 'insights') loadInsights();
-  if (state.route === 'segment') loadReceipt(state.segmentId);
+  if (state.route === 'segment' && state.segmentId) loadReceipt(state.segmentId);
+  else if (state.route === 'segment') renderSegment();
 }
 
 if (document.readyState === 'loading') {

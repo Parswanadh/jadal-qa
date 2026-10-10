@@ -232,9 +232,7 @@ function applyFilters(batches, f) {
     if (site && b.site_id !== site) return null;
     if (batch && b.batch_id !== batch) return null;
     var rows = (b.rows || []).filter(function (r) {
-      if (verdict && r.verdict !== verdict && b.decision !== verdict) {
-        if (r.verdict !== verdict) return false;
-      }
+      if (verdict && r.verdict !== verdict) return false;
       if (worker && r.worker_id !== worker) return false;
       if (reason && (r.reasons || []).indexOf(reason) === -1) return false;
       if (q && !matchQuery(b, r, q)) return false;
@@ -296,8 +294,13 @@ function buildHash(route, id, filters, extra) {
 
 /* ============================ transport ============================ */
 
-function httpGet(fetchFn, base, path, timeoutMs) {
-  var ctl = new AbortController();
+// WebSocket URL for WS /ws (live push channel).
+function wsUrl(apiBase, protocol, host) {
+  if (apiBase) return apiBase.replace(/^http/, 'ws') + '/ws';
+  return (protocol === 'https:' ? 'wss://' : 'ws://') + host + '/ws';
+}
+
+function httpGet(fetchFn, base, path, timeoutMs) {  var ctl = new AbortController();
   var timer = setTimeout(function () { ctl.abort(); }, timeoutMs || 12000);
   return fetchFn(base + path, { headers: { Accept: 'application/json' }, signal: ctl.signal })
     .then(function (res) {
@@ -449,7 +452,7 @@ return {
   normBatch: normBatch, normBatchList: normBatchList, normReceipt: normReceipt,
   normRisk: normRisk, normGaps: normGaps, normPico: normPico, normReverify: normReverify,
   filterOptions: filterOptions, applyFilters: applyFilters, matchQuery: matchQuery,
-  parseHash: parseHash, buildHash: buildHash,
+  parseHash: parseHash, buildHash: buildHash, wsUrl: wsUrl,
   createClient: createClient, findReceiptForSegment: findReceiptForSegment,
   shortHash: shortHash,
 };
