@@ -6,7 +6,7 @@
   which was not edited). Subcommands: `verdict accept|review|reject`, `demo`
   (all six patterns incl. SOS, double-pulse heartbeat, countdown), `status`,
   `pattern HEX8`. Pure `pattern_for(verdict) -> hex` for later service reuse.
-- `tests/test_pico_show.py` — 11 tests, fake serial only (`FakePicoSerial`);
+- `tests/test_pico_show.py` — 21 tests, fake serial only (`FakePicoSerial`);
   never opens `/dev/ttyACM0`.
 
 Behaviour: waits up to 2.5 s for the first heartbeat after connect (announced;
@@ -120,3 +120,35 @@ Ran 340 tests in 10.335s
 OK
 ```
 (340 = 338 after round 1 + 2 new pattern/width tests; pico_show adds ~0.8 s.)
+
+## Fix round 3 (round-3 review -> SPEC: FAIL; no Critical findings)
+Fixed in owned files only (`scripts/pico_show.py`, `tests/test_pico_show.py`,
+this report):
+- Important #1 (wait-phase exception skipped cleanup): `wait_for_heartbeat`
+  now runs inside the `try` that owns `cleanup()` in all four subcommands, so
+  a `KeyboardInterrupt` during the ~2.5 s wait still sends LED OFF and
+  disconnects (the interrupt itself still propagates — only cleanup is
+  guaranteed). New `test_wait_phase_interrupt_still_cleans_up` raises a
+  synthetic `KeyboardInterrupt` inside the wait and asserts LED OFF +
+  disconnected.
+- Important #2 (mid-pattern `PicoLinkError` escaped as traceback, exit 1):
+  `verdict`/`demo`/`pattern` now catch `PicoLinkError` around the flash/play
+  section and return 2 with `error: Pico failed mid-pattern (...)` on stderr
+  (cleanup still runs in `finally`). New
+  `test_flash_failure_returns_2_and_cleans_up` uses a raising-flash seam and
+  asserts rc 2, the message, nothing flashed, and LED OFF sent.
+- Minor #1: header above now says 21 tests (was stale "11" from round 0).
+- Minor #2: `hex_to_bits` accepts an optional `0x`/`0X` prefix (documented),
+  matching the `pattern` subcommand; new
+  `test_hex_to_bits_accepts_optional_0x_prefix`.
+
+REAL command outputs (this round):
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_pico_show
+Ran 21 tests in 0.824s
+OK
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 343 tests in 10.839s
+OK
+```
+(343 = 340 after round 2 + 3 new tests; pico_show adds ~0.8 s.)

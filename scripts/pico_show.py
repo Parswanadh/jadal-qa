@@ -22,12 +22,14 @@ first one, so ``status()`` read immediately after connect says
 ``connected False``. The wait is announced on stdout.
 
 ``--fake`` uses :class:`jadal.pico_link.FakePicoSerial` so tests and a
-no-hardware demo work without opening ``/dev/ttyACM0``. Every path sends
-``LED OFF`` and disconnects in a ``finally`` block. When no Pico answers the
-script exits 2 with a clear message; ``verdict``/``demo``/``pattern`` exit 3
-with a warning when no heartbeat is seen (``status`` still exits 0 — the
-disconnected status is its answer). ``--port`` is rejected together with
-``--fake``, and ``--pause`` must be >= 0.
+no-hardware demo work without opening ``/dev/ttyACM0``. The heartbeat wait
+runs inside the same ``try``/``finally`` as the flash, so every path sends
+``LED OFF`` and disconnects even if the wait is interrupted. When no Pico
+answers, or the device fails mid-pattern, the script exits 2 with a clear
+message; ``verdict``/``demo``/``pattern`` exit 3 with a warning when no
+heartbeat is seen (``status`` still exits 0 — the disconnected status is its
+answer). ``--port`` is rejected together with ``--fake``, and ``--pause``
+must be >= 0.
 
 Run from the repo root, e.g.::
 
@@ -88,12 +90,17 @@ def _bits_to_hex(bits: str) -> str:
 def hex_to_bits(hex8: str) -> str:
     """Expand 8 hex digits to the 32-bit MSB-first bit string the firmware plays.
 
-    Raises :class:`ValueError` on anything that is not exactly 8 hex digits
-    (padding a short string or overflowing 32 bits would misdescribe FLASH).
+    An optional ``0x``/``0X`` prefix is accepted (same as the ``pattern``
+    subcommand). Raises :class:`ValueError` on anything that is not exactly
+    8 hex digits (padding a short string or overflowing 32 bits would
+    misdescribe FLASH).
     """
-    if len(hex8) != 8:
+    s = hex8.strip()
+    if s.lower().startswith("0x"):
+        s = s[2:]
+    if len(s) != 8:
         raise ValueError(f"expected exactly 8 hex digits, got {hex8!r}")
-    return format(int(hex8, 16), "032b")
+    return format(int(s, 16), "032b")
 
 
 def pattern_for(verdict: str) -> str:
@@ -176,13 +183,16 @@ def _connect(link: PicoLink, port: str | None) -> PicoLink:
 
 def _cmd_verdict(link: PicoLink, verdict: str, pause_s: float) -> int:
     hexpat = pattern_for(verdict)
-    hb_ok = wait_for_heartbeat(link)
-    print(f"verdict {verdict}: FLASH {hexpat} (32 bits, 100 ms/bit, MSB first)",
-          flush=True)
     try:
+        hb_ok = wait_for_heartbeat(link)
+        print(f"verdict {verdict}: FLASH {hexpat} (32 bits, 100 ms/bit, MSB first)",
+              flush=True)
         link.flash(hexpat)
         print("pattern sent; playing...", flush=True)
         time.sleep(pause_s)
+    except PicoLinkError as exc:
+        print(f"error: Pico failed mid-pattern ({exc})", file=sys.stderr)
+        return 2
     finally:
         cleanup(link)
     if not hb_ok:
@@ -194,8 +204,8 @@ def _cmd_verdict(link: PicoLink, verdict: str, pause_s: float) -> int:
 
 
 def _cmd_demo(link: PicoLink, pause_s: float) -> int:
-    hb_ok = wait_for_heartbeat(link)
     try:
+        hb_ok = wait_for_heartbeat(link)
         for name, hexpat in DEMO_PATTERNS:
             print(f"{name:<34} FLASH {hexpat}", flush=True)
             link.flash(hexpat)
@@ -206,6 +216,9 @@ def _cmd_demo(link: PicoLink, pause_s: float) -> int:
             + str({k: st.get(k) for k in ("connected", "last_hb_age_s", "last_hb_led")}),
             flush=True,
         )
+    except PicoLinkError as exc:
+        print(f"error: Pico failed mid-pattern ({exc})", file=sys.stderr)
+        return 2
     finally:
         cleanup(link)
     if not hb_ok:
@@ -217,8 +230,8 @@ def _cmd_demo(link: PicoLink, pause_s: float) -> int:
 
 
 def _cmd_status(link: PicoLink) -> int:
-    wait_for_heartbeat(link)
     try:
+        wait_for_heartbeat(link)
         print(f"status: {link.status()}", flush=True)
     finally:
         cleanup(link)
@@ -239,12 +252,15 @@ def _cmd_pattern(link: PicoLink, hexpat: str, pause_s: float) -> int:
         cleanup(link)
         return 2
     hexpat = hexpat.upper()
-    hb_ok = wait_for_heartbeat(link)
-    print(f"FLASH {hexpat} (32 bits, 100 ms/bit, MSB first)", flush=True)
     try:
+        hb_ok = wait_for_heartbeat(link)
+        print(f"FLASH {hexpat} (32 bits, 100 ms/bit, MSB first)", flush=True)
         link.flash(hexpat)
         print("pattern sent; playing...", flush=True)
         time.sleep(pause_s)
+    except PicoLinkError as exc:
+        print(f"error: Pico failed mid-pattern ({exc})", file=sys.stderr)
+        return 2
     finally:
         cleanup(link)
     if not hb_ok:

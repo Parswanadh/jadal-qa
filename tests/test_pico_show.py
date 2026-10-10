@@ -67,6 +67,12 @@ class PatternBitsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             pattern_for("maybe")
 
+    def test_hex_to_bits_accepts_optional_0x_prefix(self):
+        # Same input the `pattern` subcommand accepts must work for service reuse.
+        self.assertEqual(hex_to_bits("0xF0F0F0F0"), "11110000" * 4)
+        self.assertEqual(hex_to_bits("0XF0F0F0F0"), "11110000" * 4)
+        self.assertEqual(hex_to_bits("F0F0F0F0"), hex_to_bits("0xF0F0F0F0"))
+
     def test_helpers_reject_off_spec_widths(self):
         import scripts.pico_show as psmod_inner
 
@@ -154,6 +160,55 @@ class FakeCliTest(unittest.TestCase):
         finally:
             psmod.wait_for_heartbeat = orig
         self.assertEqual(rc, 0)
+
+    def test_wait_phase_interrupt_still_cleans_up(self):
+        # Important #1 (round 3): an exception during the heartbeat wait must
+        # still send LED OFF and disconnect (wait is inside try/finally).
+        import io
+        from contextlib import redirect_stderr
+
+        ser = FakePicoSerial()
+        made = {}
+        orig_make, orig_wait = psmod._make_link, psmod.wait_for_heartbeat
+
+        def _factory(args):
+            link = PicoLink(serial=ser)
+            made["link"] = link
+            return link
+
+        def _boom(link, timeout=2.5):
+            raise KeyboardInterrupt("synthetic interrupt during wait")
+
+        psmod._make_link, psmod.wait_for_heartbeat = _factory, _boom
+        try:
+            with self.assertRaises(KeyboardInterrupt):
+                main(["--fake", "verdict", "accept"])
+        finally:
+            psmod._make_link, psmod.wait_for_heartbeat = orig_make, orig_wait
+        self.assertIn("LED OFF", ser.pico.led_commands)
+        self.assertFalse(made["link"].connected)
+
+    def test_flash_failure_returns_2_and_cleans_up(self):
+        # Important #2 (round 3): a device failing mid-pattern -> rc 2 with a
+        # clear message (not an uncaught traceback), LED OFF still sent.
+        import io
+        from contextlib import redirect_stderr
+
+        def _fail(self, pattern):
+            raise PicoLinkError("write failed (synthetic unplug)")
+
+        orig_flash = PicoLink.flash
+        PicoLink.flash = _fail
+        try:
+            err = io.StringIO()
+            with redirect_stderr(err):
+                rc, ser = _run_main_with_fake(["--fake", "verdict", "accept"])
+        finally:
+            PicoLink.flash = orig_flash
+        self.assertEqual(rc, 2)
+        self.assertIn("Pico failed mid-pattern", err.getvalue())
+        self.assertEqual(ser.pico.flashed, [])
+        self.assertIn("LED OFF", ser.pico.led_commands)
 
     def test_negative_pause_rejected(self):
         with self.assertRaises(SystemExit) as ctx:
