@@ -1,0 +1,127 @@
+{
+ "experiment": "E1.04",
+ "n": 150,
+ "label_source": "human (IndEgo gold)",
+ "protocol": "LOCO logistic C=0.3 balanced; CI=clip-bootstrap B=1000 seed0",
+ "features": "18 spatial (dt-independent) features; NOT all span-independent: see span_dependent_features",
+ "span_dependent_features": {
+  "list": [
+   "global_shift",
+   "zncc_self",
+   "dup_hash_mean"
+  ],
+  "why": {
+   "global_shift": "first vs middle frame displacement",
+   "zncc_self": "first vs last frame",
+   "dup_hash_mean": "middle frame"
+  },
+  "consequence": "uniform20, motion20 and random20 pick different endpoints and middle frames, so the arm comparison is confounded for these features; the rows above include them"
+ },
+ "rows": [
+  {
+   "strategy": "uniform20",
+   "frames": 20,
+   "status": "valid",
+   "auroc": 0.6794,
+   "ci95": [
+    0.5502,
+    0.792
+   ],
+   "bal_acc": 0.67,
+   "feat_ms_mean": 43.6
+  },
+  {
+   "strategy": "motion20",
+   "frames": 20,
+   "status": "valid",
+   "auroc": 0.5784,
+   "ci95": [
+    0.4995,
+    0.6844
+   ],
+   "bal_acc": 0.575,
+   "feat_ms_mean": 36.3
+  },
+  {
+   "strategy": "random20",
+   "frames": 20,
+   "status": "valid",
+   "auroc": 0.5478,
+   "ci95": [
+    0.3808,
+    0.6518
+   ],
+   "bal_acc": 0.555,
+   "feat_ms_mean": 34.7
+  },
+  {
+   "strategy": "keyframe",
+   "frames": 20,
+   "status": "INVALID",
+   "auroc": null,
+   "ci95": null,
+   "bal_acc": null,
+   "keyframe_fallback_windows": 150,
+   "n_windows": 150,
+   "iframes_per_window_min": 0,
+   "iframes_per_window_median": 1.0,
+   "iframes_per_window_max": 5,
+   "reason": "fewer than 20 distinct I-frame positions on the 10 fps grid in these windows; the arm would not be a 20-frame keyframe selection, so no result is reported"
+  }
+ ],
+ "sensitivity_without_span_dependent": {
+  "features": [
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy",
+   "pca_resid",
+   "pca_top1_share",
+   "luma_mean",
+   "luma_p05",
+   "luma_p50",
+   "luma_p95",
+   "dark_frac",
+   "bright_frac",
+   "illum_r",
+   "illum_g",
+   "illum_b",
+   "skin_frac"
+  ],
+  "note": "same arms, same LOCO and bootstrap, 15 features; the keyframe arm is excluded (INVALID)",
+  "rows": [
+   {
+    "strategy": "uniform20",
+    "n_features": 15,
+    "auroc": 0.6488,
+    "ci95": [
+     0.5112,
+     0.747
+    ],
+    "bal_acc": 0.6
+   },
+   {
+    "strategy": "motion20",
+    "n_features": 15,
+    "auroc": 0.5684,
+    "ci95": [
+     0.4755,
+     0.6393
+    ],
+    "bal_acc": 0.54
+   },
+   {
+    "strategy": "random20",
+    "n_features": 15,
+    "auroc": 0.5326,
+    "ci95": [
+     0.4046,
+     0.6154
+    ],
+    "bal_acc": 0.57
+   }
+  ]
+ },
+ "budget": "20 frames/window (~2 fps); motion=top-19 inter-frame-diff + frame0; random=seed0; keyframe=I-frame positions from ffprobe (valid only if >=20 per window)",
+ "decode_ms_per_window": 88.9,
+ "command": "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_fps/run_fps.py --mode select --shard {0,1}/2; then merge_e1_04.py"
+}

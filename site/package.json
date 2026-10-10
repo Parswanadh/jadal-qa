@@ -1,0 +1,21 @@
+{
+  "name": "jadal-qa-explorer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static results explorer for the Jadal QA README (GitHub Pages).",
+  "type": "module",
+  "scripts": {
+    "data": "python3 -I scripts/build_data.py",
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "preview": "vite preview --host 127.0.0.1 --port 8874"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3",
+    "vite": "7.3.6",
+    "vitest": "4.1.11"
+  }
+}
