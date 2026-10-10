@@ -205,7 +205,7 @@ def main():
         json_fig("indomain_n", "in-domain windows (IndEgo, LOCO)", "150", NESTED, ["n"]),
         json_fig("e101_features", "per-pixel features in the S1 view", "26", E101,
                  ["rows", 0, "n_features"]),
-        literal_fig("s1_threshold", "S1 operating threshold", "0.6", 0.6, CASCADE,
+        literal_fig("s1_legacy_threshold", "legacy threshold field in S1 receipts (never decides a verdict)", "0.6", 0.6, CASCADE,
                     "THRESHOLD = 0.6"),
         literal_fig("s1_margin", "S2 review margin", "0.25", 0.25, CASCADE,
                     "MARGIN = 0.25"),
