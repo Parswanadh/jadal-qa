@@ -9,7 +9,7 @@ read-only from the verified B/verify-rules artefact:
 
 Metrics: AUROC + balanced accuracy with FACTORY-GROUPED bootstrap CI (honest;
 window bootstrap is optimistic, ~1 window/factory). Compared to the frozen
-ensemble_v1 logistic baseline usable_prob (0.566 [0.414,0.697] grouped).
+ensemble_v1 logistic baseline usable_prob (0.566 [0.424,0.700] grouped).
 
 Evaluation only. Output: eval/results/exp_phys/Q2.01.json
 """
@@ -26,7 +26,7 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, REPO)
 
 RES = os.path.join(REPO, "eval", "results", "exp_phys")
-BUNDLE = os.environ.get("JADAL_BUNDLE")
+BUNDLE = os.environ.get("JADAL_BUNDLE")  # required at run time; see load_frozen_scores()
 SEED = 0
 N_BOOT = 2000
 
@@ -150,6 +150,8 @@ def apply_rules(order, ph, th, thr, names):
 
 def load_frozen_scores():
     """Frozen ensemble_v1 usable_prob for the 160 (60 + 100 from caches)."""
+    if not BUNDLE:
+        raise SystemExit("JADAL_BUNDLE is required (path to the pod data bundle)")
     ids, probs = [], {}
     for fn in ("ood_scores.json", "ood_scores2.json"):
         d = json.load(open(os.path.join(BUNDLE, "caches", "ensemble", fn)))
@@ -174,6 +176,22 @@ def main():
     factory = np.asarray(z["factory"])
     batch = np.asarray(z["batch"])
     thr, active, v1_rules = load_frozen()
+    # Fail loud: never score a window whose extraction errored, and never let a
+    # non-finite value silently abstain on an active rule.
+    n_err = sum(1 for e in [str(x) for x in z["errors"]] if e) if "errors" in z.files else 0
+    assert n_err == 0, f"refusing to score: {n_err} decode errors"
+    for nm in sorted(set(v1_rules) | set(active)):
+        r = thr.get(nm)
+        if r is not None and r["thr"] is not None:
+            v = (th if r["src"] == "th" else ph)[r["feature"]]
+            assert np.all(np.isfinite(v)), f"non-finite feature for active rule {nm}"
+    nonfinite = {}
+    for src_name, d in (("phys", ph), ("th", th)):
+        for k, v in d.items():
+            c = int((~np.isfinite(v)).sum())
+            if c:
+                nonfinite[f"{src_name}.{k}"] = c
+    print(f"decode_errors={n_err} nonfinite_features={nonfinite}", flush=True)
     print(f"n={len(ids)} good={int((y==1).sum())} bad={int((y==0).sum())} "
           f"factories={len(set(factory.tolist()))}", flush=True)
     print("active rules:", active, "| perpixel_v1 quality stage:", v1_rules, flush=True)
@@ -206,8 +224,13 @@ def main():
                            "normalised margin over the rule set (positive = fires); "
                            "usable_score = -score_bad (higher = more usable)"),
         "device": "CPU (numpy/cv2/scipy; ffmpeg decode only, no GPU)",
-        "command": ("OMP_NUM_THREADS=2 python3 eval/exp_phys/extract_ood.py --jobs 2 "
-                    "&& OMP_NUM_THREADS=2 python3 eval/exp_phys/run_phys_ood.py"),
+        "decode_errors": 0,
+        "nonfinite_features": nonfinite,
+        "command": ("JADAL_BUNDLE=/path/to/bundle OMP_NUM_THREADS=2 "
+                    "python3 eval/exp_phys/extract_ood.py --jobs 2 && "
+                    "JADAL_BUNDLE=/path/to/bundle OMP_NUM_THREADS=2 "
+                    "python3 eval/exp_phys/run_phys_ood.py && "
+                    "python3 eval/exp_phys/make_figure.py"),
         "cost": "CPU; 160 windows; 170 s extraction (2 workers); no GPU",
         "git_sha": git_sha(),
         "baseline_frozen_logistic": {
@@ -344,17 +367,28 @@ def main():
 
     out["conclusion"] = {
         "deterministic_rule_list_viable_ood": False,
-        "headline": ("The frozen IndEgo deterministic rule list does NOT transfer: "
-                     "AUROC below chance, BA below chance, and it rejects more GOOD "
-                     "than BAD windows. The review-band frontier gets WORSE as review "
-                     "increases (the score is anti-correlated OOD), so review cannot "
-                     "rescue it."),
+        "headline": ("No evidence of transfer. R3 AUROC 0.475 (factory-grouped 95% CI "
+                     "[0.327, 0.630]) and R5 0.493 ([0.349, 0.636]) are not "
+                     "distinguishable from chance (both CIs contain 0.5) and sit at or "
+                     "below chance; balanced accuracy is also at/below chance "
+                     "(R3 0.441, R5 0.456). The point estimates are below the frozen "
+                     "logistic baseline (0.566) but that difference is not resolved "
+                     "(overlapping CIs, no paired difference CI). The review-band "
+                     "frontier worsens as review grows under the review-as-miss metric, "
+                     "so review cannot rescue it."),
+        "power_caveat": ("n_bad = 22, 47 factories, ~1 window/factory; the AUROC CI "
+                         "half-width is ~0.15, so only differences larger than roughly "
+                         "0.13-0.2 AUROC are resolvable. The batch split (q1 n=60, "
+                         "9 bad; q2 n=100, 13 bad) cannot support a 'not a single-batch "
+                         "artefact' claim."),
         "safe_rules_ood": [r["rule"] for r in per_rule
                            if r["ood_safety"].startswith(("abstains", "safe"))],
         "must_abstain_ood": [r["rule"] for r in per_rule
                              if r["ood_safety"].startswith("UNSAFE")],
-        "vs_frozen_logistic": ("worse than the frozen ensemble_v1 usable_prob "
-                               "baseline (AUROC 0.566, BA 0.546)."),
+        "vs_frozen_logistic": ("point estimate below the frozen ensemble_v1 usable_prob "
+                               "baseline (AUROC 0.566 [0.424, 0.700], BA 0.546) but the "
+                               "difference is NOT established: the CIs overlap and no "
+                               "paired difference CI was computed."),
     }
 
     # ---- evidence sample ----

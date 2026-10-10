@@ -488,15 +488,19 @@ Every experiment: why it was run, on what data, what came out, and the decision.
   AUROC + balanced accuracy with factory-grouped bootstrap (n_boot=2000);
   per-rule precision/recall; review-band frontier.
 - **Owner / started / finished:** Q2 / 2026-10-10 18:54 / 2026-10-10 18:54
-- **Verdict:** **drop** — Frozen rule list does NOT transfer: R3 AUROC 0.475
-  [0.327,0.630] grouped, BA 0.441 [0.325,0.581], rejects 60/160, false-accept
-  16/22, false-reject 54/138; R5 AUROC 0.493, BA 0.456. Below chance and worse
-  than the frozen logistic baseline 0.566/0.546. Review band monotonically worse
-  (0.456 → 0.049 at 84 % review). `lowent`/`frozen`/`ffroz`/`still` abstain;
+- **Verdict:** **drop** — No evidence of transfer: R3 AUROC 0.475
+  [0.327,0.630] grouped (CI contains 0.5), BA 0.441 [0.325,0.581], rejects
+  60/160, false-accept 16/22, false-reject 54/138; R5 AUROC 0.493, BA 0.456.
+  At/below chance and point-estimate below the frozen logistic baseline
+  0.566/0.546, but the difference is NOT established (CIs overlap; n_bad=22,
+  CI half-width ~0.15). Review band monotonically worse under review-as-miss
+  (0.456 → 0.023 at 91 % review), error-on-decided rises 0.44 → 0.93.
+  `lowent`/`frozen`/`ffroz`/`still` abstain;
   `blur`/`ten`/`dark`/`lowsnr`/`overexp`/`pbytes`/`clipfrac` misfire (precision
-  0.03–0.18); only `madfroz` >chance (0.333, recall 0.09).
+  0.03–0.18); only `madfroz` >chance (0.333, 2 hits, single-window scale).
 - **Decision:** Do not ship the deterministic physics rule list as an OOD gate,
-  not even as a review tripwire. Keep the abstaining rules as no-ops; gate with
-  the adapted per-pixel model (O2/O4). Re-derive absolute thresholds per regime.
+  not even as a review tripwire. Keep the abstaining rules as no-ops. No
+  replacement OOD scorer is established by this PR (the O2/O4 0.65–0.70 figure
+  is not a committed result). Re-derive absolute thresholds per regime.
 - **Cost:** CPU; 160 windows × physics+theory (170 s, 2 workers); no GPU.
 - **Results:** `eval/results/exp_phys/Q2.01.json`

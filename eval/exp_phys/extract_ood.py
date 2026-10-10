@@ -35,14 +35,16 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, REPO)
 
 BUNDLE = os.environ.get("JADAL_BUNDLE")
+if not BUNDLE:
+    raise SystemExit("JADAL_BUNDLE is required (path to the pod data bundle)")
 OUT = os.path.join(REPO, "eval", "results", "exp_phys", "inputs")
 # frozen IndEgo per-window features (150 gold windows) produced by the same code
 INDEGO_PHYS = os.environ.get("JADAL_INDEGO_PHYS") or os.path.join(
-    BUNDLE or "", "caches", "perpixel", "physics_feats.npz")
+    BUNDLE, "caches", "perpixel", "physics_feats.npz")
 INDEGO_TH = os.environ.get("JADAL_INDEGO_TH") or os.path.join(
-    BUNDLE or "", "caches", "perpixel", "theory_feats.npz")
+    BUNDLE, "caches", "perpixel", "theory_feats.npz")
 INDEGO_MANIFEST = os.environ.get("JADAL_INDEGO_MANIFEST") or os.path.join(
-    BUNDLE or "", "labels", "manifest_gold.json")
+    BUNDLE, "labels", "manifest_gold.json")
 
 
 def load_labels160():

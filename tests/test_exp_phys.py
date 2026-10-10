@@ -48,9 +48,10 @@ def test_rule_application_is_deterministic_and_monotone():
 
 
 def test_ood_features_present_and_shaped():
+    import pytest
     p = os.path.join(INPUTS, "ood_phys.npz")
     if not os.path.exists(p):
-        return  # inputs are git-ignored; skip when absent
+        pytest.skip("inputs are git-ignored (pod-only); skip when absent")
     z = np.load(p, allow_pickle=True)
     assert z["Xphys"].shape == (160, 16)
     assert z["Xth"].shape == (160, 18)
@@ -74,9 +75,13 @@ def test_result_json_shape_and_verdict():
         assert 0.0 <= r["ood_balacc"] <= 1.0
         lo, hi = r["ood_auroc_ci95_factory_grouped"]
         assert lo <= r["ood_auroc"] <= hi
-    # below-chance finding: both rule sets < 0.5 AUROC and BA
-    assert d["rule_sets"]["perpixel_v1_quality_stage"]["ood_auroc"] < 0.5
-    assert d["rule_sets"]["active_rules"]["ood_balacc"] < 0.5
+    # The honest claim is "not distinguishable from chance": every grouped AUROC
+    # CI contains 0.5 (NOT a "worse than chance" claim, which the CI cannot support).
+    for k in ("perpixel_v1_quality_stage", "active_rules"):
+        lo, hi = d["rule_sets"][k]["ood_auroc_ci95_factory_grouped"]
+        assert lo <= 0.5 <= hi, (k, lo, hi)
+    lo, hi = d["rule_sets"]["perpixel_v1_quality_stage"]["ood_balacc_ci95_factory_grouped"]
+    assert lo <= 0.5 <= hi
     # baseline reproduces the quoted frozen logistic
     assert abs(d["baseline_frozen_logistic"]["auroc"] - 0.566) < 0.01
 
