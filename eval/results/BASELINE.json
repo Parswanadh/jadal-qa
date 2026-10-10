@@ -1,0 +1,89 @@
+{
+  "generated_utc": "2026-10-10T07:03:03.457788+00:00",
+  "git_sha": "6b3f1965a3632c35f82b4ba5eb33b2fab8be0d2c",
+  "checks": {
+    "B1": {
+      "status": "FAIL",
+      "evidence": "1/6 subchecks failed: suite tests (signals unimportable)"
+    },
+    "B2": {
+      "status": "PENDING",
+      "evidence": "real jadal.signals and/or jadal.decision not importable on main; demo stays on stubs (probe: Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nModuleNotFoundError: No module named 'jadal.signals')"
+    },
+    "B3": {
+      "status": "PENDING",
+      "evidence": "no real-pipeline demo output (B2 PENDING), nothing to parse"
+    },
+    "B4": {
+      "status": "PENDING",
+      "evidence": "missing measured artifacts: eval/results/decider_baseline.json (decider accuracy/ECE/certified bound); eval/results/funnel_calibration.json (funnel split on IndEgo segments); scale bench / bench_eg2.json (per-stage latency, segments/hour)"
+    },
+    "B5": {
+      "status": "FAIL",
+      "evidence": "jadal/pipeline.py has no mention of funnel: the funnel router is not the verdict implementation (fallback: current inline logic)"
+    },
+    "B6": {
+      "status": "PENDING",
+      "evidence": "screenshots (13 png, last 2026-10-10T12:08:30+05:30) are NOT newer than last web/ change (2026-10-10T12:08:30+05:30): re-capture against the live service"
+    },
+    "B7": {
+      "status": "PASS",
+      "evidence": "GET /pico/status -> 200: {\"connected\":false,\"port\":\"/dev/ttyACM0\",\"last_hb_age_s\":null,\"last_hb_ticks_ms\":null,\"last_hb_led\":null}"
+    },
+    "B8": {
+      "status": "FAIL",
+      "evidence": "git tag baseline-v1 absent on this repo; clean-clone check skipped (rerun with --clean-clone)"
+    }
+  },
+  "numbers": {
+    "decider": {},
+    "funnel": {},
+    "latency": {},
+    "dataset": {
+      "split_sizes": {
+        "value": {
+          "calibration": 0.15,
+          "test": 0.1499,
+          "train": 0.7
+        },
+        "source": "eval/results/splits.json",
+        "n": null,
+        "label_source": "gemini-2.5-flash auto-labels, NOT human-checked (see eval/README.md)"
+      },
+      "seed": {
+        "value": 1234,
+        "source": "eval/results/splits.json",
+        "n": null,
+        "label_source": "gemini-2.5-flash auto-labels, NOT human-checked (see eval/README.md)"
+      },
+      "ratios": {
+        "value": {
+          "calibration": 0.15,
+          "test": 0.15,
+          "train": 0.7
+        },
+        "source": "eval/results/splits.json",
+        "n": null,
+        "label_source": "gemini-2.5-flash auto-labels, NOT human-checked (see eval/README.md)"
+      },
+      "duplicate_map_entries": {
+        "value": 793,
+        "source": "eval/results/splits.json",
+        "n": null,
+        "label_source": "gemini-2.5-flash auto-labels, NOT human-checked (see eval/README.md)"
+      },
+      "distinct_frame_ids": {
+        "value": 30000,
+        "source": "eval/results/dataset_report.json",
+        "n": 30000,
+        "label_source": "gemini-2.5-flash auto-labels, NOT human-checked (see eval/README.md)"
+      },
+      "total_rows": {
+        "value": 30000,
+        "source": "eval/results/dataset_report.json",
+        "n": 30000,
+        "label_source": "gemini-2.5-flash auto-labels, NOT human-checked (see eval/README.md)"
+      }
+    }
+  }
+}
