@@ -1,0 +1,34 @@
+{
+ "experiment": "F30.02",
+ "n_windows": 16,
+ "frames_per_window_mean": 100.0,
+ "view": "ffmpeg cpu rgb24 160x90, 10 s window, subsampled to ~10 fps",
+ "device": "CPU (single process, OMP_NUM_THREADS=2)",
+ "ms_per_window": {
+  "decode": {
+   "mean": 609.96,
+   "median": 636.94,
+   "p90": 779.41
+  },
+  "features_26": {
+   "mean": 228.48,
+   "median": 229.0,
+   "p90": 234.09
+  },
+  "added_4_invariants": {
+   "mean": 57.36,
+   "median": 57.4,
+   "p90": 57.93
+  },
+  "features_30_total": {
+   "mean": 286.37,
+   "median": 283.96,
+   "p90": 293.03
+  }
+ },
+ "marginal_4_median_ms": 57.4,
+ "marginal_4_mean_ms": 57.36,
+ "marginal_4_frac_of_26": 0.2507,
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_feat30/measure_cost.py",
+ "note": "timing only (no GPU); per-window = one 10-s 160x90 ~10 fps window. The 4 invariants are O(HW) per frame plus one 64x64 DCT."
+}
