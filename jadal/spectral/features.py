@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from collections import deque
 
 import cv2
@@ -63,6 +64,9 @@ def decode_pipe(path: str, start_s: float, end_s: float, size: int):
          "-map", "0:v:0", "-vf", f"scale={size}:{size}",
          "-pix_fmt", "rgb24", "-f", "rawvideo", "-"],
         capture_output=True, timeout=300)
+    if p.returncode != 0:
+        tail = p.stderr.decode("utf-8", "replace")[-500:]
+        raise FileNotFoundError(f"ffmpeg failed (rc={p.returncode}) on {path}: {tail}")
     px = len(p.stdout) // (size * size * 3)
     if px == 0:
         raise ValueError(f"no frames decoded in [{start_s},{end_s}) of {path}")
@@ -99,6 +103,8 @@ def compressed_stats(path: str, start_s: float, end_s: float,
              "-show_entries", "packet=size,flags,pts_time",
              "-of", "json", path],
             capture_output=True, text=True, timeout=120)
+        if p.returncode != 0:
+            raise RuntimeError(f"ffprobe rc={p.returncode}: {p.stderr[-300:]}")
         pkts = json.loads(p.stdout).get("packets", [])
         key, nonkey = [], []
         for f in pkts:
@@ -123,8 +129,11 @@ def compressed_stats(path: str, start_s: float, end_s: float,
             out["p_size_mean"] = float(np.mean(np.asarray(nonkey or [0], dtype=np.float64)))
             out["pb_size_ratio"] = float(out["p_size_mean"] / (out["i_size"] + 1e-9))
             out["p_count_frac"] = float(len(nonkey) / len(allp))
-    except Exception:
-        pass
+    except Exception as e:
+        # Loud fallback: zeros are returned so the pipeline continues, but
+        # the failure is visible on stderr (never silent).
+        print(f"[spectral] compressed_stats failed for {path}: {e}",
+              file=sys.stderr, flush=True)
     return out
 
 

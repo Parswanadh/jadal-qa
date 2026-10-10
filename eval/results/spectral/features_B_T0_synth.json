@@ -1,54 +1,54 @@
 {
- "loco_auroc_full": 0.9320987654320988,
+ "loco_auroc_full": 0.5277777777777778,
  "ci": [
-  0.9320987654320987,
-  1.0
+  0.4444444444444445,
+  0.638888888888889
  ],
  "leave_one_out": {},
  "family_only": {},
  "transfer": {
-  "threshold_youden": 0.8354149411628573,
-  "threshold_far5": 1.462870348691944e-09,
+  "threshold_youden": 0.6727326222107141,
+  "threshold_far5": 0.024329318564260616,
   "train_source": "manifest_gold.json",
   "per_degradation": {
    "black": {
     "n": 6,
-    "detect_rate": 1.0,
-    "auroc_vs_clean": 1.0
-   },
-   "blur": {
-    "n": 6,
     "detect_rate": 0.0,
     "auroc_vs_clean": 0.0
    },
+   "blur": {
+    "n": 6,
+    "detect_rate": 0.6666666666666666,
+    "auroc_vs_clean": 0.6111111111111112
+   },
    "clean": {
     "n": 6,
-    "detect_rate": 1.0
+    "detect_rate": 0.6666666666666666
    },
    "darken": {
     "n": 6,
-    "detect_rate": 1.0,
-    "auroc_vs_clean": 1.0
+    "detect_rate": 0.3333333333333333,
+    "auroc_vs_clean": 0.3888888888888889
    },
    "frozen": {
     "n": 6,
-    "detect_rate": 1.0,
-    "auroc_vs_clean": 1.0
+    "detect_rate": 0.0,
+    "auroc_vs_clean": 0.0
    },
    "lowbitrate": {
     "n": 6,
     "detect_rate": 0.0,
-    "auroc_vs_clean": 0.0
+    "auroc_vs_clean": 0.1111111111111111
    },
    "noise": {
     "n": 6,
-    "detect_rate": 0.5,
-    "auroc_vs_clean": 0.02777777777777777
+    "detect_rate": 1.0,
+    "auroc_vs_clean": 1.0
    },
    "overexpose": {
     "n": 6,
     "detect_rate": 0.6666666666666666,
-    "auroc_vs_clean": 0.4444444444444444
+    "auroc_vs_clean": 0.6388888888888888
    },
    "shake": {
     "n": 6,
@@ -57,28 +57,28 @@
    },
    "static": {
     "n": 6,
-    "detect_rate": 0.0,
-    "auroc_vs_clean": 0.0
+    "detect_rate": 1.0,
+    "auroc_vs_clean": 1.0
    }
   },
   "family_only_auroc": {
-   "spatial_fft": 0.558641975308642,
-   "spatial_dct": 0.8117283950617284,
-   "wavelet": 0.5123456790123457,
-   "basic": 0.5123456790123457,
-   "temporal": 0.7407407407407407,
-   "chroma": 0.7376543209876543,
-   "skin": 0.5154320987654321,
-   "compressed": 0.3641975308641975
+   "spatial_fft": 0.5185185185185185,
+   "spatial_dct": 0.8364197530864197,
+   "wavelet": 0.4876543209876543,
+   "basic": 0.7716049382716049,
+   "temporal": 0.43518518518518523,
+   "chroma": 0.6944444444444444,
+   "skin": 0.4320987654320988,
+   "compressed": 0.6851851851851852
   }
  },
  "rtf": {
   "seg_seconds": 10.0,
-  "mean_latency_total_s": 0.2715853929519653,
-  "mean_latency_decode_s": 0.14998935063680013,
-  "mean_latency_math_s": 0.06859134435653687,
-  "rtf_total": 36.82083153039338,
-  "rtf_no_decode": 145.79099001209448
+  "mean_latency_total_s": 0.6340972463289897,
+  "mean_latency_decode_s": 0.42282791137695314,
+  "mean_latency_math_s": 0.11456015507380167,
+  "rtf_total": 15.770451705780921,
+  "rtf_no_decode": 87.29038463292777
  },
  "n": {
   "items": 60,

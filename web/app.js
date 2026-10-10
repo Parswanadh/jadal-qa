@@ -1,9 +1,12 @@
 /* Jadal QA dashboard v2 — vanilla JS, no build step, no CDN.
  *
- * Three screens in one page: Batches (filterable list), Segment (receipt
- * tree + re-verify + step timeline), Insights (risk/coverage + SOP gaps).
+ * Five screens in one page: Batches (filterable list), QA queue (review
+ * pile), Segment (receipt tree + re-verify + step timeline), Video search
+ * (hub clips), Insights (risk/coverage + SOP gaps).
  * A global filter bar of real <select>s + search; ALL state lives in the
- * URL hash (see JadalApi.parseHash / buildHash).
+ * URL hash (see JadalApi.parseHash / buildHash) — queue reason as `qr`,
+ * hub search as `hq`/`hsite`/`hverdict`/`hreason`, so filtered queues and
+ * hub searches deep-link and survive reload.
  *
  * Field access rule: every payload field is read through web/api.js
  * (`JadalApi`). app.js never touches raw service keys directly.
@@ -54,7 +57,7 @@ var clientOpts = { mock: MOCK, apiBase: API, forceMismatch: false };
 var client = A.createClient(clientOpts);
 
 var state = {
-  route: 'batches',       // 'batches' | 'segment' | 'insights'
+  route: 'batches',       // 'batches' | 'queue' | 'segment' | 'videos' | 'insights'
   segmentId: null,
   filters: Object.assign({}, A.FILTER_DEFAULTS),
   lang: A.LANGS[0],
@@ -68,11 +71,15 @@ var state = {
   segBatch: null,         // batch detail the displayed receipt was opened from
   rv: { status: 'idle', result: null, error: null }, // re-verify
   rvSeq: 0,               // invalidates stale re-verify responses
+  hubSeq: 0,              // invalidates stale hub-search responses
   risk: null, riskError: null,
   gaps: null, gapsError: null,
   pico: null,
   live: false, lastEvent: null,
   mockMismatch: false,
+  queueReason: '',
+  hub: { status: 'idle', items: [], total: undefined, mock: false, error: null },
+  hubQ: '', hubSite: '', hubVerdict: '', hubReason: '',
   batchDetailCache: {},   // batch_id -> batch detail payload
   receiptCache: {},       // receipt_id -> receipt body
   applyingHash: false,    // guard: control events while syncing from hash
@@ -169,7 +176,7 @@ async function openReceipt(batchId, segmentId, btn) {
     var rid = A.findReceiptForSegment(detail, bodies, segmentId);
     if (!rid) throw new Error('no receipt found for segment ' + segmentId);
     state.segBatch = detail;
-    location.hash = A.buildHash('segment', rid, null, { lang: state.lang });
+    location.hash = A.buildHash('segment', rid, null, withLang(null));
   } catch (e) {
     if (btn) { btn.disabled = true; btn.textContent = 'Unavailable'; btn.title = String((e && e.message) || e); }
   }
@@ -299,16 +306,55 @@ function syncControlsFromState() {
   }
 }
 
+function langExtra() {
+  return state.lang !== A.LANGS[0] ? { lang: state.lang } : null;
+}
+
+// Merge the shared language extra into a route's own extras, dropping
+// empties the way buildHash does. Every hash built in this file goes
+// through here so tab switches and filter reroutes never silently reset
+// the language (or the queue/hub state they carry).
+function withLang(extra) {
+  var out = {};
+  [extra, langExtra()].forEach(function (e) {
+    if (!e) return;
+    Object.keys(e).forEach(function (k) { if (e[k]) out[k] = e[k]; });
+  });
+  return Object.keys(out).length ? out : null;
+}
+
+function queueExtra() {
+  return state.queueReason ? { qr: state.queueReason } : null;
+}
+
+function hubExtra() {
+  var hx = {};
+  if (state.hubQ) hx.hq = state.hubQ;
+  if (state.hubSite) hx.hsite = state.hubSite;
+  if (state.hubVerdict) hx.hverdict = state.hubVerdict;
+  if (state.hubReason) hx.hreason = state.hubReason;
+  return Object.keys(hx).length ? hx : null;
+}
+
 function pushHash() {
-  var extra = { lang: state.lang !== A.LANGS[0] ? state.lang : '' };
-  if (state.route === 'insights' && state.head) extra.head = state.head;
-  var h = state.route === 'segment' && state.segmentId
-    ? A.buildHash('segment', state.segmentId, null, { lang: state.lang !== A.LANGS[0] ? state.lang : '' })
-    : state.route === 'insights'
-      ? A.buildHash('insights', null, null, extra.head ? { head: state.head } : null)
-      : A.buildHash('batches', null, state.filters, state.lang !== A.LANGS[0] ? { lang: state.lang } : null);
+  var h;
+  if (state.route === 'segment' && state.segmentId) {
+    h = A.buildHash('segment', state.segmentId, null, withLang(null));
+  } else if (state.route === 'insights') {
+    h = A.buildHash('insights', null, null, withLang(state.head ? { head: state.head } : null));
+  } else if (state.route === 'queue') {
+    h = A.buildHash('queue', null, null, withLang(queueExtra()));
+  } else if (state.route === 'videos') {
+    h = A.buildHash('videos', null, null, withLang(hubExtra()));
+  } else {
+    h = A.buildHash('batches', null, state.filters, withLang(null));
+  }
   if (location.hash !== h) location.hash = h;
   else routeFromHash();
+}
+
+function hubKey() {
+  return [state.hubQ, state.hubSite, state.hubVerdict, state.hubReason].join('|');
 }
 
 function bindFilterbar() {
@@ -322,7 +368,7 @@ function bindFilterbar() {
       state.filters.reason = $('#f-reason').value;
       state.lang = $('#f-lang').value;
       if (state.route === 'batches') pushHash();
-      else location.hash = A.buildHash('batches', null, state.filters, null);
+      else location.hash = A.buildHash('batches', null, state.filters, withLang(null));
       renderBatches();
     });
   });
@@ -332,7 +378,7 @@ function bindFilterbar() {
     state.searchTimer = setTimeout(function () {
       state.filters.q = $('#f-q').value.trim();
       if (state.route !== 'batches') {
-        location.hash = A.buildHash('batches', null, state.filters, null);
+        location.hash = A.buildHash('batches', null, state.filters, withLang(null));
       } else pushHash();
       renderBatches();
     }, SEARCH_DEBOUNCE_MS);
@@ -341,14 +387,16 @@ function bindFilterbar() {
     ev.preventDefault();
     clearTimeout(state.searchTimer);
     state.filters.q = $('#f-q').value.trim();
-    if (state.route !== 'batches') location.hash = A.buildHash('batches', null, state.filters, null);
+    if (state.route !== 'batches') location.hash = A.buildHash('batches', null, state.filters, withLang(null));
     else pushHash();
     renderBatches();
   });
   $('#f-reset').addEventListener('click', function () {
     state.filters = Object.assign({}, A.FILTER_DEFAULTS);
     syncControlsFromState();
-    if (state.route !== 'batches') location.hash = '#/batches';
+    // Filters are just-cleared, so this yields a bare #/batches — plus the
+    // non-default language, exactly like the submit sibling above.
+    if (state.route !== 'batches') location.hash = A.buildHash('batches', null, state.filters, withLang(null));
     else pushHash();
     renderBatches();
   });
@@ -427,11 +475,39 @@ function renderBatches() {
     return;
   }
 
+  // One-line funnel summary with a segmented bar, ahead of the cards.
+  var allRows = [];
+  items.forEach(function (x) { x.rows.forEach(function (r) { allRows.push(r); }); });
+  body.appendChild(funnelBar(A.funnelCounts(allRows)));
+
   items.forEach(function (x, i) {
     // newest card starts expanded so the list never looks empty
     body.appendChild(batchCard(x.batch, x.rows, i === 0 || nf > 0));
   });
   body.setAttribute('aria-busy', 'false');
+}
+
+function funnelBar(c) {
+  function pct(n) { return c.total ? (100 * n / c.total) : 0; }
+  var bar = el(
+    '<div class="funnel" role="img" aria-label="Funnel: ' + c.accept + ' accept, ' +
+      c.reject + ' reject, ' + c.review + ' review, ' + c.other + ' other out of ' +
+      c.total + ' segments">' +
+      '<p class="funnel-line">' +
+        '<b>' + c.total + '</b> segments — ' +
+        '<span class="verdict verdict-accept">' + c.accept + ' accept</span> · ' +
+        '<span class="verdict verdict-reject">' + c.reject + ' reject</span> · ' +
+        '<span class="verdict verdict-review">' + c.review + ' review</span>' +
+        (c.other ? ' · <span class="other-count">' + c.other + ' other</span>' : '') +
+      '</p>' +
+      '<div class="funnel-track">' +
+        '<span class="funnel-seg is-accept" style="width:' + pct(c.accept).toFixed(1) + '%"></span>' +
+        '<span class="funnel-seg is-reject" style="width:' + pct(c.reject).toFixed(1) + '%"></span>' +
+        '<span class="funnel-seg is-review" style="width:' + pct(c.review).toFixed(1) + '%"></span>' +
+        (c.other ? '<span class="funnel-seg is-other" style="width:' + pct(c.other).toFixed(1) + '%"></span>' : '') +
+      '</div>' +
+    '</div>');
+  return bar;
 }
 
 function batchCard(b, rows, open) {
@@ -516,7 +592,7 @@ function renderSegment() {
   $('#open-form').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var v = $('#open-id').value.trim();
-    if (v) location.hash = A.buildHash('segment', v, null, null);
+    if (v) location.hash = A.buildHash('segment', v, null, withLang(null));
   });
 
   if (!state.segmentId) {
@@ -563,18 +639,32 @@ function renderSegmentReady(body) {
   $('#segment-title').textContent = 'Segment';
   $('#segment-sub').textContent = 'Receipt for ' + segLabel + (batchId ? ' · from batch ' + batchId : '');
 
-  var head = el(
-    '<div class="seg-head">' +
-      verdictChip(r.verdict) +
-      '<span class="seg-head-id">' + esc(segLabel) + '</span>' +
-    '</div>');
-  body.appendChild(head);
-
-  if (reasons.length) {
-    var rc = el('<div class="seg-reasons" style="margin-bottom:var(--s4);"></div>');
-    reasons.forEach(function (c) { rc.appendChild(el('<span class="reason">' + esc(c) + '</span>')); });
-    body.appendChild(rc);
-  }
+  // ---- top: one summary card (verdict + reasons + snapshot), then the
+  // Re-verify result, then a compact step strip — all above the fold.
+  // The receipt tree follows immediately; Segment facts, voice, hashes
+  // and signals live collapsed in <details> below it. ----
+  var confTop = Number(r.answer_conf);
+  var summary = el(
+    '<section class="card seg-summary" aria-label="Segment summary">' +
+      '<div class="card-body">' +
+        '<div class="seg-head">' +
+          verdictChip(r.verdict) +
+          '<span class="seg-head-id">' + esc(segLabel) + '</span>' +
+        '</div>' +
+        '<div class="seg-reasons" style="margin-bottom:var(--s2);">' +
+          (reasons.length
+            ? reasons.map(function (c) { return '<span class="reason">' + esc(c) + '</span>'; }).join('')
+            : '<span class="reason-none">no flags</span>') +
+        '</div>' +
+        '<dl class="sumline">' +
+          '<div><dt>confidence</dt><dd>' + esc(isFinite(confTop) ? num(confTop) : '—') + '</dd></div>' +
+          '<div><dt>threshold</dt><dd>' + esc(r.threshold !== undefined && r.threshold !== null ? r.threshold : '—') + '</dd></div>' +
+          '<div><dt>site</dt><dd>' + esc(siteId) + '</dd></div>' +
+          (batchId ? '<div><dt>batch</dt><dd>' + esc(batchId) + '</dd></div>' : '') +
+        '</dl>' +
+      '</div>' +
+    '</section>');
+  body.appendChild(summary);
 
   if (state.receiptFallback) {
     body.appendChild(el(
@@ -626,44 +716,37 @@ function renderSegmentReady(body) {
   body.appendChild(treeCard);
   $('#receipt-tree').appendChild(receiptTree(raw, []));
 
-  // ---- details below the fold ----
+  // ---- collapsed below the fold: Segment facts, voice, hashes, signals ----
   var conf = Number(r.answer_conf);
-  body.appendChild(el(
-    '<section class="card" aria-label="Segment facts">' +
-      '<div class="card-head"><h2 class="card-title">Segment</h2>' +
-      '<span class="card-note">' + esc(fullTime(r.created_utc)) + '</span></div>' +
-      '<div class="card-body"><div class="kv">' +
-        segHeadRow('snapshot', 'answer_conf ' + (isFinite(conf) ? num(conf) : '—') + ' · threshold ' + (r.threshold !== undefined && r.threshold !== null ? r.threshold : '—')) +
-        segHeadRow('site', siteId) +
-        segHeadRow('worker', '—') +
-        segHeadRow('source clip', '—') +
-        segHeadRow('latency', '—') +
-      '</div>' +
-      '<p class="state-note" style="margin-top:var(--s3);">Worker, clip path and latency are not exposed by the API yet.</p>' +
-      '</div>' +
-    '</section>'));
+  var facts = moreDetails('Segment', fullTime(r.created_utc));
+  facts.body.innerHTML =
+    '<div class="kv">' +
+      segHeadRow('snapshot', 'answer_conf ' + (isFinite(conf) ? num(conf) : '—') + ' · threshold ' + (r.threshold !== undefined && r.threshold !== null ? r.threshold : '—')) +
+      segHeadRow('site', siteId) +
+      segHeadRow('worker', '—') +
+      segHeadRow('source clip', '—') +
+      segHeadRow('latency', '—') +
+    '</div>' +
+    '<p class="state-note" style="margin-top:var(--s3);">Worker, clip path and latency are not exposed by the API yet.</p>';
+  body.appendChild(facts.det);
 
   // ---- voice ----
-  var voiceCard = el(
-    '<section class="card" aria-label="Voice message">' +
-      '<div class="card-head"><h2 class="card-title">Voice message</h2>' +
-      '<span class="card-note">' + (MOCK ? 'mock: placeholder tone, real audio comes from the service' : 'GET /voice/{code}/{lang}') + '</span></div>' +
-      '<div class="card-body">' +
-        '<div class="voice-row">' +
-          '<div class="field"><span class="field-label">Reason code</span>' +
-            '<span class="mono" style="font-size:.8125rem;">' + esc(reasons[0] || '—') + '</span></div>' +
-          '<div class="field"><label class="field-label" for="voice-lang">Language</label>' +
-            '<select id="voice-lang">' + A.LANGS.map(function (l) {
-              return '<option value="' + l + '"' + (l === state.lang ? ' selected' : '') + '>' + l + '</option>';
-            }).join('') + '</select></div>' +
-          '<button class="btn" type="button" id="voice-play"' + (reasons.length ? '' : ' disabled') + '>▶ Play message</button>' +
-        '</div>' +
-        '<p class="audio-note" id="voice-note" role="status">' +
-          (reasons.length ? 'Reads the supervisor message for the first reason code (' + esc(reasons[0]) + ').' : 'No reason codes on this segment, so there is no voice message.') +
-        '</p>' +
-      '</div>' +
-    '</section>');
-  body.appendChild(voiceCard);
+  var voice = moreDetails('Voice message',
+    MOCK ? 'mock placeholder tone' : 'GET /voice/{code}/{lang}');
+  voice.body.innerHTML =
+    '<div class="voice-row">' +
+      '<div class="field"><span class="field-label">Reason code</span>' +
+        '<span class="mono" style="font-size:.8125rem;">' + esc(reasons[0] || '—') + '</span></div>' +
+      '<div class="field"><label class="field-label" for="voice-lang">Language</label>' +
+        '<select id="voice-lang">' + A.LANGS.map(function (l) {
+          return '<option value="' + l + '"' + (l === state.lang ? ' selected' : '') + '>' + l + '</option>';
+        }).join('') + '</select></div>' +
+      '<button class="btn" type="button" id="voice-play"' + (reasons.length ? '' : ' disabled') + '>▶ Play message</button>' +
+    '</div>' +
+    '<p class="audio-note" id="voice-note" role="status">' +
+      (reasons.length ? 'Reads the supervisor message for the first reason code (' + esc(reasons[0]) + ').' : 'No reason codes on this segment, so there is no voice message.') +
+    '</p>';
+  body.appendChild(voice.det);
   $('#voice-lang').addEventListener('change', function () {
     state.lang = this.value;
     $('#f-lang').value = state.lang;
@@ -672,22 +755,17 @@ function renderSegmentReady(body) {
   $('#voice-play').addEventListener('click', function () { playVoice(reasons[0]); });
 
   // ---- hashes ----
-  var hashCard = el(
-    '<section class="card" aria-label="Hashes">' +
-      '<div class="card-head"><h2 class="card-title">Hashes</h2>' +
-      '<span class="card-note">per docs/SPEC.md · hover or click a value for the full string, button copies</span></div>' +
-      '<div class="card-body">' +
-        hashRow('ID', r.receipt_id, 'id') +
-        hashRow('receipt SHA-256', r.receipt_sha256, 'sha') +
-        hashRow('segment SHA-256', r.segment_sha256, 'sha') +
-        (r.blurred_sha256 ? hashRow('blurred file SHA-256', r.blurred_sha256, 'sha') : '') +
-      '</div>' +
-    '</section>');
-  body.appendChild(hashCard);
-  $$('[data-copy]', hashCard).forEach(function (b) {
+  var hashes = moreDetails('Hashes', 'per docs/SPEC.md · click a value for the full string');
+  hashes.body.innerHTML =
+    hashRow('ID', r.receipt_id, 'id') +
+    hashRow('receipt SHA-256', r.receipt_sha256, 'sha') +
+    hashRow('segment SHA-256', r.segment_sha256, 'sha') +
+    (r.blurred_sha256 ? hashRow('blurred file SHA-256', r.blurred_sha256, 'sha') : '');
+  body.appendChild(hashes.det);
+  $$('[data-copy]', hashes.det).forEach(function (b) {
     b.addEventListener('click', function () { copyText(b.getAttribute('data-copy'), 'copied', b); });
   });
-  $$('.hash-val[data-full]', hashCard).forEach(function (s) {
+  $$('.hash-val[data-full]', hashes.det).forEach(function (s) {
     function toggle() {
       var full = s.getAttribute('data-full');
       var expanded = s.getAttribute('data-expanded') === '1';
@@ -700,8 +778,22 @@ function renderSegmentReady(body) {
     });
   });
 
-  // ---- signals (compact) ----
-  body.appendChild(signalsCard(sig));
+  // ---- signals (compact, collapsed) ----
+  var sigWrap = moreDetails('Signals', 'exact, per-segment (L0)');
+  sigWrap.body.appendChild(signalsCardBody(sig));
+  body.appendChild(sigWrap.det);
+}
+
+/* ---- collapsed "more" sections: long lists hide behind <details> ---- */
+
+function moreDetails(label, note) {
+  var det = el(
+    '<details class="card more">' +
+      '<summary class="more-sum"><span class="card-title">' + esc(label) + '</span>' +
+      '<span class="card-note">' + esc(note || 'collapsed') + '</span></summary>' +
+      '<div class="more-body"></div>' +
+    '</details>');
+  return { det: det, body: $('.more-body', det) };
 }
 
 function endsHash(v) {
@@ -759,7 +851,7 @@ function renderReverify(out) {
   out.appendChild(banner);
 }
 
-/* ---- step timeline: SOP steps left-to-right, detected step marked ---- */
+/* ---- compact step strip: wraps, never scrolls sideways ---- */
 
 function stepTimelineCard(r) {
   var names = r.step_names.length ? r.step_names : ['—'];
@@ -777,12 +869,12 @@ function stepTimelineCard(r) {
   });
   topP = topP >= 0 ? topP.toFixed(2) : '—';
 
-  var track = el('<ol class="timeline" aria-label="SOP step timeline"></ol>');
+  var track = el('<ol class="timeline tl-compact" aria-label="SOP step timeline"></ol>');
   names.forEach(function (name) {
     var p = Number(probs[name]) || 0;
     var isTop = name === choice;
     var li = document.createElement('li');
-    li.className = 'tl-step' + (isTop ? ' is-detected ' + verdictClass(r.verdict) : '');
+    li.className = 'tl-chip' + (isTop ? ' is-detected ' + verdictClass(r.verdict) : '');
     if (isTop) li.setAttribute('aria-current', 'step');
     var dot = isTop && isFinite(conf) && isFinite(thr)
       ? (conf >= thr ? 'conf-high' : 'conf-low') : '';
@@ -790,7 +882,7 @@ function stepTimelineCard(r) {
       '<span class="tl-dot ' + dot + '" aria-hidden="true"></span>' +
       '<span class="tl-name">' + esc(name) + '</span>' +
       '<span class="tl-prob">' + (probs[name] !== undefined ? num(p, 2) : '—') + '</span>' +
-      (isTop ? '<span class="tl-flag">detected · conf ' + esc(confTxt) + '</span>' : '');
+      (isTop ? '<span class="tl-flag">detected</span>' : '');
     li.title = name + ': p = ' + (probs[name] !== undefined ? num(p) : '—') +
       (isTop ? ' (detected, confidence ' + confTxt + ')' : '');
     track.appendChild(li);
@@ -798,21 +890,21 @@ function stepTimelineCard(r) {
 
   var card = el(
     '<section class="card" aria-label="Step timeline">' +
-      '<div class="card-head"><h2 class="card-title">Step timeline</h2>' +
-      '<span class="card-note">SOP steps · detected step marked, shaded by confidence</span></div>' +
-      '<div class="card-body"><div class="tl-scroll"></div>' +
+      '<div class="card-head"><h2 class="card-title">Steps</h2>' +
+      '<span class="card-note">detected step marked · conf ' + esc(confTxt) +
+      (isFinite(thr) ? ' · threshold ' + thr : '') + '</span></div>' +
+      '<div class="card-body"><div class="tl-wrap"></div>' +
       (choice
         ? ''
-        : '<p class="state-note" style="margin-bottom:var(--s3);">No step detected — top candidate ' +
-          esc(topName) + ' (' + esc(topP) + '), confidence ' + esc(confTxt +
-          (isFinite(thr) ? ', threshold ' + thr : '')) + ').</p>') +
+        : '<p class="state-note" style="margin-bottom:var(--s2);">No step detected — top candidate ' +
+          esc(topName) + ' (' + esc(topP) + ').</p>') +
       '<p class="state-note">Hands p(yes) ' +
         esc(r.hands_p_yes !== undefined && r.hands_p_yes !== null ? num(r.hands_p_yes) : '—') +
         ' · active-work p(yes) ' +
         esc(r.active_work_p_yes !== undefined && r.active_work_p_yes !== null ? num(r.active_work_p_yes) : '—') +
       '</p></div>' +
     '</section>');
-  $('.tl-scroll', card).appendChild(track);
+  $('.tl-wrap', card).appendChild(track);
   return card;
 }
 
@@ -870,7 +962,7 @@ function receiptTree(value, path) {
 
 /* ---- signals (compact stat grid, no walls of text) ---- */
 
-function signalsCard(sig) {
+function signalsCardBody(sig) {
   function stat(label, value, unit) {
     return '<div class="stat"><div class="stat-label">' + esc(label) + '</div>' +
       '<div class="stat-value">' + esc(value) + (unit ? '<span class="stat-unit">' + esc(unit) + '</span>' : '') + '</div></div>';
@@ -887,12 +979,7 @@ function signalsCard(sig) {
     stat('faces', (sig.faces_found === undefined ? '—' : sig.faces_found) +
       (sig.faces_blurred ? ' · ' + sig.faces_blurred + ' blurred' : '')) +
     stat('underexposed', sig.under_exposed_frac === undefined ? '—' : num(sig.under_exposed_frac, 2));
-  var card = el(
-    '<section class="card" aria-label="Exact signals (L0)">' +
-      '<div class="card-head"><h2 class="card-title">Signals</h2><span class="card-note">exact, per-segment (L0)</span></div>' +
-    '</section>');
-  card.appendChild(grid);
-  return card;
+  return grid;
 }
 
 function copyText(text, okMsg, btn) {
@@ -1046,11 +1133,13 @@ function renderInsights() {
     var chart = el('<div class="chart" role="img"></div>');
     chart.appendChild(riskChart(state.risk));
     rOut.appendChild(chart);
-    // The bound line is drawn only when the API provides it (see
-    // riskChart). When absent there is no line and no guess — just this
-    // caption, so a missing bound never reads as a zero bound.
-    if (state.risk.error_bound === undefined || !isFinite(state.risk.error_bound)) {
-      rOut.appendChild(el('<p class="state-note">bound not reported</p>'));
+    // The bound line is drawn only for a finite number (see riskChart /
+    // JadalApi.isBound). Absent and explicit-null each get their own
+    // caption so a missing bound never reads as a zero bound, and an
+    // explicit null never reads as "not reported".
+    var cap = A.boundCaption(state.risk.error_bound);
+    if (cap) {
+      rOut.appendChild(el('<p class="state-note">' + esc(cap) + '</p>'));
     }
     rOut.appendChild(riskLegend(state.risk));
   }
@@ -1097,11 +1186,18 @@ function riskStatsRow(d) {
     ctValue = num(ct);
     ctNote = (d.min_accepted !== undefined ? '≥ ' + d.min_accepted + ' accepted' : '');
   }
-  var ebNote = d.error_bound === undefined
-    ? 'bound not reported by the API'
-    : (d.delta !== undefined ? 'exact binomial, δ = ' + d.delta : 'exact binomial upper bound');
+  var ebNote, ebValue;
+  if (A.isBound(d.error_bound)) {
+    ebValue = num(d.error_bound);
+    ebNote = (d.delta !== undefined ? 'exact binomial, δ = ' + d.delta : 'exact binomial upper bound');
+  } else {
+    // Same shared caption as under the chart, so the two can never
+    // disagree — including for unparseable non-null values.
+    ebValue = d.error_bound === null ? 'not certified' : '—';
+    ebNote = A.boundCaption(d.error_bound);
+  }
   row.innerHTML =
-    stat('error bound', d.error_bound === undefined ? '—' : num(d.error_bound), ebNote) +
+    stat('error bound', ebValue, ebNote) +
     stat('target error', d.target_error === undefined ? '—' : num(d.target_error)) +
     stat('errors / n', (d.errors !== undefined && d.n !== undefined) ? d.errors + ' / ' + d.n : '—') +
     stat('chosen threshold', ctValue, ctNote);
@@ -1111,7 +1207,7 @@ function riskStatsRow(d) {
 function riskLegend(d) {
   var html = '<div class="legend">' +
     '<span class="legend-item"><span class="legend-swatch"></span> error vs coverage</span>';
-  if (d.error_bound !== undefined && isFinite(d.error_bound)) {
+  if (A.isBound(d.error_bound)) {
     html += '<span class="legend-item"><span class="legend-swatch accent dashed"></span> error bound (exact binomial)</span>';
   }
   if (d.target_error !== undefined && isFinite(d.target_error)) {
@@ -1125,14 +1221,17 @@ function riskChart(d) {
   var pts = (d.points || []).slice().sort(function (a, b) { return a.coverage - b.coverage; });
   if (!pts.length) return el('<p class="state-note">No risk/coverage points were returned.</p>');
 
-  // Readable at 390 px without any horizontal scroll: the SVG rescales
-  // to the card width, so ticks are few (3 + 3) and set large enough to
-  // survive the ~0.45× shrink on a phone. No scroll container here.
-  var W = 720, H = 308, L = 76, R = 16, T = 24, B = 64;
+  // Readable at 390 px with no horizontal scroll: the viewBox is narrow
+  // (480 wide, so a ~360 px card shrinks it only ~0.75×) and type is set
+  // large enough to survive the shrink (16-unit ticks land at ~12 px
+  // effective). Only 2 + 2 ticks — endpoints only — so labels never crowd.
+  // Desktop caps the width in CSS (.chart svg max-width) instead of
+  // stretching the artboard, so the same type reads well at both sizes.
+  var W = 480, H = 308, L = 56, R = 12, T = 26, B = 56;
   var iw = W - L - R, ih = H - T - B;
   var maxErr = 0;
   pts.forEach(function (p) { maxErr = Math.max(maxErr, p.error); });
-  var hasBound = d.error_bound !== undefined && isFinite(d.error_bound);
+  var hasBound = A.isBound(d.error_bound);
   var hasTarget = d.target_error !== undefined && isFinite(d.target_error);
   var hasChosen = d.chosen_threshold !== undefined && d.chosen_threshold !== null && isFinite(d.chosen_threshold);
   if (hasBound) maxErr = Math.max(maxErr, d.error_bound);
@@ -1153,20 +1252,19 @@ function riskChart(d) {
     return n;
   }
 
-  for (var i = 0; i <= 2; i++) {
-    var c = i / 2;
+  // Endpoints only: 2 coverage ticks, 2 error ticks.
+  [0, 1].forEach(function (c) {
     node('line', { x1: x(c), y1: T, x2: x(c), y2: T + ih, 'class': 'grid-line' });
-    node('text', { x: x(c), y: T + ih + 24, 'text-anchor': 'middle', 'class': 'tick-t' }, Math.round(c * 100) + '%');
-  }
-  for (var j = 0; j <= 2; j++) {
-    var ev = (yMax * j) / 2;
+    node('text', { x: x(c), y: T + ih + 22, 'text-anchor': c === 0 ? 'start' : 'end', 'class': 'tick-t' }, Math.round(c * 100) + '%');
+  });
+  [0, yMax].forEach(function (ev) {
     node('line', { x1: L, y1: y(ev), x2: L + iw, y2: y(ev), 'class': 'grid-line' });
-    node('text', { x: L - 10, y: y(ev) + 6, 'text-anchor': 'end', 'class': 'tick-t' }, ev.toFixed(2));
-  }
+    node('text', { x: L - 8, y: y(ev) + 5, 'text-anchor': 'end', 'class': 'tick-t' }, ev.toFixed(2));
+  });
   node('line', { x1: L, y1: T, x2: L, y2: T + ih, 'class': 'axis-line' });
   node('line', { x1: L, y1: T + ih, x2: L + iw, y2: T + ih, 'class': 'axis-line' });
-  node('text', { x: L + iw / 2, y: T + ih + 46, 'text-anchor': 'middle', 'class': 'label-t' }, 'coverage');
-  node('text', { x: 8, y: 16, 'class': 'label-t' }, 'error');
+  node('text', { x: L + iw / 2, y: T + ih + 44, 'text-anchor': 'middle', 'class': 'label-t' }, 'coverage');
+  node('text', { x: L, y: 12, 'text-anchor': 'start', 'class': 'label-t' }, 'error');
 
   var dAttr = pts.map(function (p, k) { return (k ? 'L' : 'M') + x(p.coverage).toFixed(1) + ' ' + y(p.error).toFixed(1); }).join(' ');
   node('path', { d: dAttr + ' L' + x(pts[pts.length - 1].coverage).toFixed(1) + ' ' + (T + ih) + ' L' + x(pts[0].coverage).toFixed(1) + ' ' + (T + ih) + ' Z', 'class': 'curve-area' });
@@ -1199,8 +1297,10 @@ function riskChart(d) {
       'operating θ=' + num(pick.threshold, 2));
   }
 
+  var noBound = A.boundCaption(d.error_bound);
   svg.setAttribute('aria-label', 'Risk/coverage curve with ' + pts.length + ' points. ' +
-    (hasBound ? 'Error bound ' + num(d.error_bound) + '. ' : 'Bound not reported. ') +
+    (hasBound ? 'Error bound ' + num(d.error_bound) + '. '
+      : (noBound.charAt(0).toUpperCase() + noBound.slice(1) + '. ')) +
     (hasTarget ? 'Target error ' + num(d.target_error) + '.' : ''));
   return svg;
 }
@@ -1230,6 +1330,248 @@ function gapsBars(g) {
     (g.window ? ' · ' + esc(g.window) : '') + '.';
   wrap.appendChild(el('<p class="state-note">' + note + '</p>'));
   return wrap;
+}
+
+/* ============================ QA queue ============================ */
+
+function renderQueue() {
+  var body = $('#queue-body');
+  body.innerHTML = '';
+  body.setAttribute('aria-busy', 'true');
+
+  $('#queue-mock-pill').hidden = !MOCK;
+
+  if (state.batchesError && !state.batches) {
+    $('#queue-meta').hidden = true;
+    body.appendChild(errorState(String(state.batchesError.message || state.batchesError), 'queue'));
+    body.setAttribute('aria-busy', 'false');
+    return;
+  }
+  if (state.batches === null) {
+    $('#queue-meta').hidden = true;
+    body.innerHTML = skeletonCards(2);
+    return;
+  }
+
+  var rows = A.queueRows(state.batches);
+  var reasons = A.queueReasons(rows);
+  var sel = $('#q-reason');
+  var cur = state.queueReason || '';
+  sel.innerHTML = '<option value="">All reasons</option>' +
+    reasons.map(function (c) {
+      return '<option value="' + esc(c) + '"' + (c === cur ? ' selected' : '') + '>' + esc(c) + '</option>';
+    }).join('');
+  if (reasons.indexOf(cur) === -1) {
+    // Unknown ?qr=... (stale link, data changed): coerce to All and push
+    // so the URL stops advertising a filter the UI is not showing.
+    if (cur) { state.queueReason = ''; pushHash(); }
+    sel.value = '';
+  }
+
+  var list = state.queueReason
+    ? rows.filter(function (r) { return (r.reasons || []).indexOf(state.queueReason) !== -1; })
+    : rows;
+
+  $('#queue-meta').hidden = false;
+  $('#queue-meta').textContent = list.length + (list.length === 1 ? ' segment' : ' segments') +
+    ' awaiting review' + (state.queueReason ? ' · reason ' + state.queueReason : '') +
+    (MOCK ? ' · mock' : ' · live');
+
+  if (!list.length) {
+    body.appendChild(el(
+      '<div class="state" role="status">' +
+        '<p class="state-title">Queue is clear</p>' +
+        '<p class="state-note">No review-routed segments' +
+        (state.queueReason ? ' with reason ' + esc(state.queueReason) : '') + '.</p>' +
+      '</div>'));
+    body.setAttribute('aria-busy', 'false');
+    return;
+  }
+
+  var wrap = el('<div class="card"><div class="seglist"></div></div>');
+  var inner = $('.seglist', wrap);
+  list.forEach(function (r) {
+    var chips = (r.reasons && r.reasons.length)
+      ? r.reasons.map(function (c) { return '<span class="reason">' + esc(c) + '</span>'; }).join('')
+      : '<span class="reason-none">no flags</span>';
+    var row = el(
+      '<div class="seg-row q-row">' +
+        '<div class="seg-main">' +
+          '<span class="q-prio" title="queue priority — “—” means the field is absent">' +
+            esc(r.queue_priority === null || r.queue_priority === undefined ? '—' : r.queue_priority) + '</span>' +
+          '<span class="seg-id">' + esc(r.segment_id) + '</span>' +
+          verdictChip(r.verdict) +
+        '</div>' +
+        '<div class="seg-reasons">' + chips + '</div>' +
+        '<div class="seg-meta"><span>' + esc(r.site_id) + ' · ' + esc(r.batch_id) + '</span>' +
+          '<button class="btn btn-open" type="button">Open segment →</button>' +
+        '</div>' +
+      '</div>');
+    var btn = $('.btn-open', row);
+    btn.setAttribute('data-batch', r.batch_id);
+    btn.setAttribute('data-segment', r.segment_id);
+    btn.setAttribute('aria-label', 'Open segment ' + r.segment_id);
+    inner.appendChild(row);
+  });
+  body.appendChild(wrap);
+  body.setAttribute('aria-busy', 'false');
+}
+
+/* ============================ video search (mock placeholder) ============================ */
+
+function syncHubControls() {
+  $('#v-q').value = state.hubQ || '';
+  var opts = state.batches ? A.filterOptions(state.batches) : null;
+  var sites = opts ? opts.sites : [];
+  var ssel = $('#v-site');
+  var curS = state.hubSite || '';
+  ssel.innerHTML = '<option value="">All sites</option>' +
+    sites.map(function (s) {
+      return '<option value="' + esc(s) + '"' + (s === curS ? ' selected' : '') + '>' + esc(s) + '</option>';
+    }).join('');
+  if (sites.indexOf(curS) === -1 && curS) { state.hubSite = ''; ssel.value = ''; }
+  $('#v-verdict').value = state.hubVerdict || '';
+  var rsel = $('#v-reason');
+  var reasons = opts ? opts.reasons : A.REASON_CODES;
+  var curR = state.hubReason || '';
+  rsel.innerHTML = '<option value="">All reasons</option>' +
+    reasons.map(function (c) {
+      return '<option value="' + esc(c) + '"' + (c === curR ? ' selected' : '') + '>' + esc(c) + '</option>';
+    }).join('');
+  if (reasons.indexOf(curR) === -1 && curR) { state.hubReason = ''; rsel.value = ''; }
+}
+
+function renderVideos() {
+  var body = $('#videos-body');
+  body.innerHTML = '';
+  body.setAttribute('aria-busy', 'true');
+  syncHubControls();
+  $('#videos-mock-pill').hidden = !MOCK;
+
+  var h = state.hub;
+  if (!h || h.status === 'idle') {
+    $('#videos-meta').hidden = true;
+    body.appendChild(el(
+      '<div class="state" role="status">' +
+        '<p class="state-title">Search the video hub</p>' +
+        '<p class="state-note">Type a query and press Search. ' +
+        (MOCK ? 'Mock mode: results are placeholders projected from the batch fixtures — no footage.' : '') + '</p>' +
+      '</div>'));
+    body.setAttribute('aria-busy', 'false');
+    return;
+  }
+  if (h.status === 'busy') {
+    $('#videos-meta').hidden = true;
+    body.innerHTML = skeletonCards(2);
+    return;
+  }
+  if (h.status === 'error') {
+    $('#videos-meta').hidden = true;
+    var msg = String((h.error && h.error.message) || h.error || 'search failed');
+    // The adapter formats transport failures as "GET <path> → <status>",
+    // so a 404 from the hub search endpoint lands here without app.js
+    // naming any hub URL itself.
+    var hubGone = msg.indexOf('→ 404') !== -1;
+    body.appendChild(el(
+      '<div class="state is-error" role="alert">' +
+        '<p class="state-title">' +
+          (hubGone ? 'Video hub not available in this deployment' : 'Couldn’t search the hub') + '</p>' +
+        '<p class="state-note">' + esc(hubGone ? 'The hub search endpoint returned 404.' : msg) + '</p>' +
+        (hubGone ? '' : '<button class="btn" type="button" data-retry="videos">Retry</button>') +
+      '</div>'));
+    body.setAttribute('aria-busy', 'false');
+    return;
+  }
+
+  var items = h.items || [];
+  $('#videos-meta').hidden = false;
+  $('#videos-meta').textContent = items.length + (items.length === 1 ? ' result' : ' results') +
+    (h.total !== undefined && h.total !== items.length ? ' of ' + h.total : '') +
+    (h.mock ? ' · mock placeholders' : ' · live');
+  if (!items.length) {
+    body.appendChild(el(
+      '<div class="state" role="status">' +
+        '<p class="state-title">No footage matches</p>' +
+        '<p class="state-note">Try a shorter query or fewer filters.</p>' +
+      '</div>'));
+    body.setAttribute('aria-busy', 'false');
+    return;
+  }
+
+  var grid = el('<div class="video-grid"></div>');
+  items.forEach(function (it) {
+    var card = el(
+      '<article class="card v-card">' +
+        '<div class="v-thumb"></div>' +
+        '<div class="v-meta">' +
+          '<span class="seg-id">' + esc(it.segment_id) + '</span>' +
+          verdictChip(it.verdict) +
+          '<div class="seg-reasons">' +
+            ((it.reasons && it.reasons.length)
+              ? it.reasons.map(function (c) { return '<span class="reason">' + esc(c) + '</span>'; }).join('')
+              : '<span class="reason-none">no flags</span>') +
+          '</div>' +
+          '<p class="state-note">' + esc(it.site_id) + '</p>' +
+        '</div>' +
+        '<div class="v-actions"></div>' +
+        '<div class="v-player"></div>' +
+      '</article>');
+    var thumb = $('.v-thumb', card);
+    var src = it.thumb_url || ((!h.mock && !MOCK) ? client.hubThumbUrl(it.segment_id) : null);
+    if (src) {
+      var img = document.createElement('img');
+      img.loading = 'lazy';
+      img.alt = 'thumbnail for ' + it.segment_id;
+      img.src = src;
+      img.addEventListener('error', function () {
+        thumb.innerHTML = '<div class="v-thumb-missing">no thumbnail</div>';
+      });
+      thumb.appendChild(img);
+    } else {
+      thumb.innerHTML = '<div class="v-thumb-missing">mock placeholder — no footage</div>';
+    }
+    var actions = $('.v-actions', card);
+    if (h.mock || MOCK) {
+      actions.appendChild(el('<p class="state-note">mock: playback disabled — live plays ' +
+        '<span class="mono">/hub/video/' + esc(it.segment_id) + '.mp4</span>.</p>'));
+    } else {
+      var play = el('<button class="btn" type="button">▶ Play clip</button>');
+      play.addEventListener('click', function () {
+        var holder = $('.v-player', card);
+        if (holder.firstChild) { holder.innerHTML = ''; play.textContent = '▶ Play clip'; return; }
+        var v = document.createElement('video');
+        v.controls = true;
+        v.preload = 'metadata';
+        v.src = it.video_url || client.hubVideoUrl(it.segment_id, it.start_s, it.end_s);
+        holder.appendChild(v);
+        play.textContent = '■ Close player';
+      });
+      actions.appendChild(play);
+    }
+    grid.appendChild(card);
+  });
+  body.appendChild(grid);
+  body.setAttribute('aria-busy', 'false');
+}
+
+async function loadHub() {
+  // Stale-response guard mirroring runReverify's rvSeq: a rapid second
+  // search invalidates the first, so out-of-order resolves are dropped.
+  var my = ++state.hubSeq;
+  state.hubKeyFor = hubKey();
+  state.hub = { status: 'busy', items: [], error: null };
+  renderVideos();
+  try {
+    var res = await client.hubSearch(state.hubQ || '', {
+      site: state.hubSite || '', verdict: state.hubVerdict || '', reason: state.hubReason || '',
+    });
+    if (my !== state.hubSeq) return;
+    state.hub = { status: 'done', items: res.items || [], total: res.total, mock: !!res.mock, error: null };
+  } catch (e) {
+    if (my !== state.hubSeq) return;
+    state.hub = { status: 'error', items: [], error: e };
+  }
+  renderVideos();
 }
 
 /* ============================ pico strip + system drawer ============================ */
@@ -1393,13 +1735,16 @@ function tickLivePill() {
 
 /* ============================ router ============================ */
 
-var TITLES = { batches: 'Batches', segment: 'Segment', insights: 'Insights' };
+var TITLES = { batches: 'Batches', segment: 'Segment', insights: 'Insights', queue: 'QA queue', videos: 'Video search' };
+
+var VIEWS = ['batches', 'segment', 'insights', 'queue', 'videos'];
 
 function setRoute(name, id) {
   state.route = name;
-  ['batches', 'segment', 'insights'].forEach(function (n) {
+  VIEWS.forEach(function (n) {
     var view = $('#view-' + n);
     var tab = $('#tab-' + n);
+    if (!view || !tab) return;
     var on = n === name;
     view.hidden = !on;
     tab.classList.toggle('is-on', on);
@@ -1419,6 +1764,21 @@ function setRoute(name, id) {
   }
   if (name === 'insights' && (state.risk === null || state.gaps === null)) loadInsights();
   else if (name === 'insights') renderInsights();
+  if (name === 'queue') {
+    if (state.batches === null || state.batchesError) {
+      loadBatches(false).then(function () { if (state.route === 'queue') renderQueue(); });
+      renderQueue();
+    } else renderQueue();
+  }
+  if (name === 'videos') {
+    if (state.batches === null && !state.batchesError) {
+      loadBatches(true).then(function () { if (state.route === 'videos') renderVideos(); });
+    }
+    // Hash-driven (deep link, back button) searches refetch; in-view
+    // re-renders reuse the last result.
+    if (!state.hub || state.hub.status === 'idle' || state.hubKeyFor !== hubKey()) loadHub();
+    else renderVideos();
+  }
 }
 
 function routeFromHash() {
@@ -1437,6 +1797,13 @@ function routeFromHash() {
   }
   syncControlsFromState();
   state.segmentId = parsed.route === 'segment' ? parsed.id : null;
+  // Queue + hub search state round-trips through the hash like everything
+  // else, so filtered queues and hub searches are deep-linkable.
+  state.queueReason = parsed.queueReason || '';
+  state.hubQ = (parsed.hub && parsed.hub.q) || '';
+  state.hubSite = (parsed.hub && parsed.hub.site) || '';
+  state.hubVerdict = (parsed.hub && parsed.hub.verdict) || '';
+  state.hubReason = (parsed.hub && parsed.hub.reason) || '';
   setRoute(parsed.route, state.segmentId);
 }
 
@@ -1448,13 +1815,17 @@ function bindStatic() {
       var route = tab.getAttribute('data-route');
       if (route === state.route) return;
       if (route === 'segment' && state.segmentId) {
-        location.hash = A.buildHash('segment', state.segmentId, null, null);
+        location.hash = A.buildHash('segment', state.segmentId, null, withLang(null));
       } else if (route === 'segment') {
-        location.hash = '#/segment';
+        location.hash = A.buildHash('segment', null, null, withLang(null));
       } else if (route === 'insights') {
-        location.hash = A.buildHash('insights', null, null, state.head ? { head: state.head } : null);
+        location.hash = A.buildHash('insights', null, null, withLang(state.head ? { head: state.head } : null));
+      } else if (route === 'queue') {
+        location.hash = A.buildHash('queue', null, null, withLang(queueExtra()));
+      } else if (route === 'videos') {
+        location.hash = A.buildHash('videos', null, null, withLang(hubExtra()));
       } else {
-        location.hash = A.buildHash('batches', null, state.filters, null);
+        location.hash = A.buildHash('batches', null, state.filters, withLang(null));
       }
     });
     tab.addEventListener('keydown', function (ev) {
@@ -1490,11 +1861,38 @@ function bindStatic() {
       if (retry === 'batches') { loadBatches(false); return; }
       if (retry === 'segment') { loadReceipt(state.segmentId); return; }
       if (retry === 'insights') { loadInsights(); return; }
+      if (retry === 'queue') { loadBatches(false).then(function () { renderQueue(); }); return; }
+      if (retry === 'videos') { loadHub(); return; }
       if (t.classList && t.classList.contains('btn-open')) {
         openReceipt(t.getAttribute('data-batch'), t.getAttribute('data-segment'), t);
         return;
       }
     }
+  });
+
+  $('#q-reason').addEventListener('change', function () {
+    state.queueReason = this.value;
+    pushHash();
+    renderQueue();
+  });
+
+  $('#videos-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    state.hubQ = $('#v-q').value.trim();
+    state.hubSite = $('#v-site').value;
+    state.hubVerdict = $('#v-verdict').value;
+    state.hubReason = $('#v-reason').value;
+    pushHash();
+    loadHub();
+  });
+  $('#videos-reset').addEventListener('click', function () {
+    state.hubQ = ''; state.hubSite = ''; state.hubVerdict = ''; state.hubReason = '';
+    syncHubControls();
+    // Push the cleared state first (yields a clean #/videos, lang kept):
+    // the follow-up hashchange finds hubKeyFor already on the cleared key,
+    // so it re-renders without refetching.
+    pushHash();
+    loadHub();
   });
 
   window.addEventListener('hashchange', routeFromHash);

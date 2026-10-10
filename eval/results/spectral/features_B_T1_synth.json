@@ -1,14 +1,14 @@
 {
- "loco_auroc_full": 0.9567901234567902,
+ "loco_auroc_full": 0.6635802469135803,
  "ci": [
-  0.9567901234567902,
-  1.0
+  0.6111111111111112,
+  0.7777777777777778
  ],
  "leave_one_out": {},
  "family_only": {},
  "transfer": {
-  "threshold_youden": 0.6756403179890811,
-  "threshold_far5": 0.018875727713163013,
+  "threshold_youden": 0.6594400678330836,
+  "threshold_far5": 0.018809958474489553,
   "train_source": "manifest_gold.json",
   "per_degradation": {
    "black": {
@@ -33,7 +33,7 @@
    "frozen": {
     "n": 6,
     "detect_rate": 1.0,
-    "auroc_vs_clean": 1.0
+    "auroc_vs_clean": 0.9444444444444444
    },
    "lowbitrate": {
     "n": 6,
@@ -69,16 +69,16 @@
    "temporal": 0.5246913580246914,
    "chroma": 0.6419753086419753,
    "skin": 0.42592592592592593,
-   "compressed": 0.6820987654320988
+   "compressed": 0.6851851851851852
   }
  },
  "rtf": {
   "seg_seconds": 10.0,
-  "mean_latency_total_s": 0.493531334400177,
-  "mean_latency_decode_s": 0.17862366437911986,
-  "mean_latency_math_s": 0.25932302077611286,
-  "rtf_total": 20.262137989989423,
-  "rtf_no_decode": 38.56194475165213
+  "mean_latency_total_s": 0.45350451866785685,
+  "mean_latency_decode_s": 0.17466969887415568,
+  "mean_latency_math_s": 0.23061681985855104,
+  "rtf_total": 22.050496937438282,
+  "rtf_no_decode": 43.36197162953468
  },
  "n": {
   "items": 60,

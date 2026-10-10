@@ -22,7 +22,6 @@ def main():
     sigs, lat = {}, {}
     for fid, path in sorted(files.items()):
         t0 = time.time()
-        dur = 12.0
         sigs[fid] = signature(path, 0, None)
         lat[fid] = time.time() - t0
     sims = {}

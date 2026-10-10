@@ -1,0 +1,230 @@
+{
+  "bad_reasons": {
+    "DUPLICATE": 6,
+    "HANDS_NOT_VISIBLE": 14,
+    "NO_ACTIVE_WORK": 23,
+    "TOO_DARK": 6,
+    "UNDECODABLE": 1
+  },
+  "confusion_label_x_verdict": {
+    "bad/accept": 0,
+    "bad/reject": 19,
+    "bad/review": 31,
+    "good/accept": 0,
+    "good/reject": 12,
+    "good/review": 88
+  },
+  "l0_catch": {
+    "checkable_bad_n": 13,
+    "checkable_rejected_n": 7,
+    "goods_falsely_rejected_n": 12,
+    "hands_bad_n": 14,
+    "hands_rejected_under_assembly_n": 13,
+    "non_l0_checkable_bad_n": 23,
+    "non_l0_checkable_reasons": {
+      "NO_ACTIVE_WORK": 23
+    }
+  },
+  "n": 150,
+  "n_bad": 50,
+  "n_good": 100,
+  "note": "DESCRIPTIVE ONLY, no certificate: placeholder thresholds, decisions None (no L1 yet), profile default unless noted.",
+  "rule_fired_x_gold": {
+    "HANDS_NOT_VISIBLE": {
+      "DUPLICATE": 5,
+      "HANDS_NOT_VISIBLE": 12,
+      "NO_ACTIVE_WORK": 13,
+      "TOO_DARK": 6,
+      "UNDECODABLE": 1,
+      "good": 34
+    },
+    "LOW_CONFIDENCE": {
+      "DUPLICATE": 6,
+      "HANDS_NOT_VISIBLE": 14,
+      "NO_ACTIVE_WORK": 23,
+      "TOO_DARK": 6,
+      "UNDECODABLE": 1,
+      "good": 100
+    },
+    "SHAKY": {
+      "DUPLICATE": 1,
+      "HANDS_NOT_VISIBLE": 4,
+      "NO_ACTIVE_WORK": 6,
+      "good": 11
+    },
+    "TOO_DARK": {
+      "HANDS_NOT_VISIBLE": 1,
+      "NO_ACTIVE_WORK": 1,
+      "TOO_DARK": 6,
+      "good": 1
+    },
+    "WRONG_STEP": {
+      "DUPLICATE": 6,
+      "HANDS_NOT_VISIBLE": 14,
+      "NO_ACTIVE_WORK": 23,
+      "TOO_DARK": 6,
+      "UNDECODABLE": 1,
+      "good": 100
+    }
+  },
+  "signal_medians_by_group": {
+    "blur_var": {
+      "bad:DUPLICATE": {
+        "median": 371.8199,
+        "n": 6
+      },
+      "bad:HANDS_NOT_VISIBLE": {
+        "median": 482.4521,
+        "n": 14
+      },
+      "bad:NO_ACTIVE_WORK": {
+        "median": 559.0582,
+        "n": 23
+      },
+      "bad:TOO_DARK": {
+        "median": 767.3865,
+        "n": 6
+      },
+      "bad:UNDECODABLE": {
+        "median": 195.2904,
+        "n": 1
+      },
+      "good": {
+        "median": 738.4867,
+        "n": 100
+      }
+    },
+    "brightness_mean": {
+      "bad:DUPLICATE": {
+        "median": 87.0778,
+        "n": 6
+      },
+      "bad:HANDS_NOT_VISIBLE": {
+        "median": 84.5076,
+        "n": 14
+      },
+      "bad:NO_ACTIVE_WORK": {
+        "median": 71.5761,
+        "n": 23
+      },
+      "bad:TOO_DARK": {
+        "median": 19.0397,
+        "n": 6
+      },
+      "bad:UNDECODABLE": {
+        "median": 87.6921,
+        "n": 1
+      },
+      "good": {
+        "median": 72.1155,
+        "n": 100
+      }
+    },
+    "hands_visible_frac": {
+      "bad:DUPLICATE": {
+        "median": 0.0625,
+        "n": 6
+      },
+      "bad:HANDS_NOT_VISIBLE": {
+        "median": 0.0938,
+        "n": 14
+      },
+      "bad:NO_ACTIVE_WORK": {
+        "median": 0.375,
+        "n": 23
+      },
+      "bad:TOO_DARK": {
+        "median": 0.125,
+        "n": 6
+      },
+      "bad:UNDECODABLE": {
+        "median": 0.0,
+        "n": 1
+      },
+      "good": {
+        "median": 0.875,
+        "n": 100
+      }
+    },
+    "motion_mean": {
+      "bad:DUPLICATE": {
+        "median": 9.3811,
+        "n": 6
+      },
+      "bad:HANDS_NOT_VISIBLE": {
+        "median": 10.9343,
+        "n": 14
+      },
+      "bad:NO_ACTIVE_WORK": {
+        "median": 9.3168,
+        "n": 23
+      },
+      "bad:TOO_DARK": {
+        "median": 3.1311,
+        "n": 6
+      },
+      "bad:UNDECODABLE": {
+        "median": 8.6633,
+        "n": 1
+      },
+      "good": {
+        "median": 9.3174,
+        "n": 100
+      }
+    },
+    "over_exposed_frac": {
+      "bad:DUPLICATE": {
+        "median": 0.0251,
+        "n": 6
+      },
+      "bad:HANDS_NOT_VISIBLE": {
+        "median": 0.0039,
+        "n": 14
+      },
+      "bad:NO_ACTIVE_WORK": {
+        "median": 0.0017,
+        "n": 23
+      },
+      "bad:TOO_DARK": {
+        "median": 0.0009,
+        "n": 6
+      },
+      "bad:UNDECODABLE": {
+        "median": 0.0051,
+        "n": 1
+      },
+      "good": {
+        "median": 0.0005,
+        "n": 100
+      }
+    },
+    "under_exposed_frac": {
+      "bad:DUPLICATE": {
+        "median": 0.1464,
+        "n": 6
+      },
+      "bad:HANDS_NOT_VISIBLE": {
+        "median": 0.1789,
+        "n": 14
+      },
+      "bad:NO_ACTIVE_WORK": {
+        "median": 0.2232,
+        "n": 23
+      },
+      "bad:TOO_DARK": {
+        "median": 0.7716,
+        "n": 6
+      },
+      "bad:UNDECODABLE": {
+        "median": 0.1489,
+        "n": 1
+      },
+      "good": {
+        "median": 0.2281,
+        "n": 100
+      }
+    }
+  },
+  "snapshot_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+  "thresholds": "shipped configs/funnel_thresholds.json, evidence_reject evaluated for description (shipped default integrity_only)"
+}

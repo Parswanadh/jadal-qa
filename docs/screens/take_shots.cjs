@@ -1,7 +1,7 @@
 /* Screenshots for the Jadal QA dashboard (docs/screens/).
  *
  * Run from the repo root of this worktree:
- *   node docs/screens/take_shots.mjs
+ *   node docs/screens/take_shots.cjs
  *
  * Serves web/ on 127.0.0.1:8123 itself (no extra tooling), drives it with
  * Playwright, and asserts: zero console errors, zero failed requests, and no
@@ -84,8 +84,21 @@ async function shot(page, name, url, viewport, colorScheme) {
     const segId = rids.find((rid) => receipts[rid].verdict.segment_id === rejectSeg);
     if (!segId) throw new Error('fixture has no receipt for segment ' + rejectSeg);
 
+    // Fresh page per shot: same-document hash navigations would otherwise
+    // leak JS state between shots (e.g. the forced-mismatch checkbox).
+    async function freshShot(name, url, viewport, colorScheme) {
+      const pg = await browser.newPage();
+      try {
+        await shot(pg, name, url, viewport, colorScheme);
+      } finally {
+        await pg.close();
+      }
+    }
+
+    await freshShot('batches-1280.png', BASE + '#/batches', { width: 1280, height: 900 });
+    await freshShot('queue-1280.png', BASE + '#/queue', { width: 1280, height: 900 });
+    await freshShot('videos-1280.png', BASE + '#/videos', { width: 1280, height: 900 });
     const page = await browser.newPage();
-    await shot(page, 'batches-1280.png', BASE + '#/batches', { width: 1280, height: 900 });
     await shot(page, 'segment-1280.png', BASE + '#/segment/' + segId, { width: 1280, height: 900 });
     // click Re-verify to capture the MATCH banner
     await page.click('#rv-run');
@@ -104,13 +117,18 @@ async function shot(page, name, url, viewport, colorScheme) {
     const banner2 = await page.textContent('#rv-out');
     console.log('  banner text: ' + banner2.replace(/\s+/g, ' ').slice(0, 140));
     if (!/MISMATCH/.test(banner2)) throw new Error('re-verify banner missing MISMATCH');
-    await shot(page, 'insights-1280.png', BASE + '#/insights', { width: 1280, height: 900 });
-    await shot(page, 'batches-390.png', BASE + '#/batches', { width: 390, height: 844 });
-    await shot(page, 'segment-390.png', BASE + '#/segment/' + segId, { width: 390, height: 844 });
-    await shot(page, 'insights-390.png', BASE + '#/insights', { width: 390, height: 844 });
-    await shot(page, 'batches-dark-1280.png', BASE + '#/batches', { width: 1280, height: 900 }, 'dark');
-    await shot(page, 'segment-dark-1280.png', BASE + '#/segment/' + segId, { width: 1280, height: 900 }, 'dark');
-    await shot(page, 'insights-dark-1280.png', BASE + '#/insights', { width: 1280, height: 900 }, 'dark');
+    await page.close(); // drop the forced-mismatch state before the rest
+    await freshShot('insights-1280.png', BASE + '#/insights', { width: 1280, height: 900 });
+    await freshShot('batches-390.png', BASE + '#/batches', { width: 390, height: 844 });
+    await freshShot('queue-390.png', BASE + '#/queue', { width: 390, height: 844 });
+    await freshShot('segment-390.png', BASE + '#/segment/' + segId, { width: 390, height: 844 });
+    await freshShot('videos-390.png', BASE + '#/videos', { width: 390, height: 844 });
+    await freshShot('insights-390.png', BASE + '#/insights', { width: 390, height: 844 });
+    await freshShot('batches-dark-1280.png', BASE + '#/batches', { width: 1280, height: 900 }, 'dark');
+    await freshShot('queue-dark-1280.png', BASE + '#/queue', { width: 1280, height: 900 }, 'dark');
+    await freshShot('videos-dark-1280.png', BASE + '#/videos', { width: 1280, height: 900 }, 'dark');
+    await freshShot('segment-dark-1280.png', BASE + '#/segment/' + segId, { width: 1280, height: 900 }, 'dark');
+    await freshShot('insights-dark-1280.png', BASE + '#/insights', { width: 1280, height: 900 }, 'dark');
     console.log('ALL SHOTS OK');
   } finally {
     await browser.close();
