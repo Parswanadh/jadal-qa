@@ -1,0 +1,542 @@
+{
+ "meta": {
+  "n_windows": 150,
+  "n_good": 100,
+  "n_bad": 50,
+  "n_clips": 7,
+  "label_source": "IndEgo human gold 150 windows / 7 clips (labels/manifest_gold.json)",
+  "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+  "score": "caches/ensemble/oof_probs.npz p_ens (LOCO window AUROC 0.834)",
+  "clip_truth_bad_frac": {
+   "desk": 0.4483,
+   "ecu_full": 0.1042,
+   "ecu_late": 0.2857,
+   "logistics4": 0.1765,
+   "organise": 0.5263,
+   "pallet": 0.6471,
+   "pallet2": 0.6667
+  },
+  "clip_verdict_at_0.30": {
+   "desk": "reject",
+   "ecu_full": "accept",
+   "ecu_late": "accept",
+   "logistics4": "accept",
+   "organise": "reject",
+   "pallet": "reject",
+   "pallet2": "reject"
+  },
+  "note": "4 reject / 3 accept at 0.30 -> clip verdicts are discriminative but thin (n=7).",
+  "thresh": 0.3,
+  "thresh_secondary": 0.5
+ },
+ "experiment": "Z4.01 clip-level aggregation + LOCO clip calibration",
+ "protocol": "aggregate window bad-score 1-p_ens per clip (mean/median/q75/q90/trimmed/rankmean); clip truth = bad fraction >= 0.30; LOCO over 7 clips for threshold + isotonic calibration; clip AUROC over 7 clips; review curve = per-clip highest-uncertainty windows get TRUE labels",
+ "aggregators": {
+  "mean": {
+   "scores": {
+    "desk": 0.49518,
+    "ecu_full": 0.30177,
+    "ecu_late": 0.35498,
+    "logistics4": 0.50729,
+    "organise": 0.60306,
+    "pallet": 0.81534,
+    "pallet2": 0.38986
+   },
+   "auroc": 0.8333333333333334,
+   "loco_threshold_ba": {
+    "loco_ba": 0.7083333333333333,
+    "sensitivity": 0.75,
+    "specificity": 0.6666666666666666,
+    "n_correct": 5,
+    "n": 7,
+    "predictions": {
+     "desk": 1,
+     "ecu_full": 0,
+     "ecu_late": 0,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "thresholds": {
+     "desk": 0.38986188230375696,
+     "ecu_full": 0.38986188230375696,
+     "ecu_late": 0.38986188230375696,
+     "logistics4": 0.38986188230375696,
+     "organise": 0.38986188230375696,
+     "pallet": 0.38986188230375696,
+     "pallet2": 0.4951777481572276
+    }
+   },
+   "loco_isotonic_ba": {
+    "loco_ba": 0.5416666666666666,
+    "sensitivity": 0.75,
+    "specificity": 0.3333333333333333,
+    "n_correct": 4,
+    "n": 7,
+    "predictions": {
+     "desk": 1,
+     "ecu_full": 0,
+     "ecu_late": 1,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "pred_frac": {
+     "desk": 0.5,
+     "ecu_full": 0.0,
+     "ecu_late": 0.4027227215647149,
+     "logistics4": 1.0,
+     "organise": 0.7703051412603228,
+     "pallet": 1.0,
+     "pallet2": 0.12439288097817651
+    }
+   }
+  },
+  "median": {
+   "scores": {
+    "desk": 0.51243,
+    "ecu_full": 0.28963,
+    "ecu_late": 0.32138,
+    "logistics4": 0.47501,
+    "organise": 0.63001,
+    "pallet": 0.9101,
+    "pallet2": 0.26116
+   },
+   "auroc": 0.75,
+   "loco_threshold_ba": {
+    "loco_ba": 0.75,
+    "sensitivity": 0.5,
+    "specificity": 1.0,
+    "n_correct": 5,
+    "n": 7,
+    "predictions": {
+     "desk": 0,
+     "ecu_full": 0,
+     "ecu_late": 0,
+     "logistics4": 0,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "thresholds": {
+     "desk": 0.6300148318858194,
+     "ecu_full": 0.5124259984381403,
+     "ecu_late": 0.5124259984381403,
+     "logistics4": 0.5124259984381403,
+     "organise": 0.5124259984381403,
+     "pallet": 0.5124259984381403,
+     "pallet2": 0.5124259984381403
+    }
+   },
+   "loco_isotonic_ba": {
+    "loco_ba": 0.375,
+    "sensitivity": 0.75,
+    "specificity": 0.0,
+    "n_correct": 3,
+    "n": 7,
+    "predictions": {
+     "desk": 1,
+     "ecu_full": 1,
+     "ecu_late": 1,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "pred_frac": {
+     "desk": 0.4310245805555256,
+     "ecu_full": 0.3333333333333333,
+     "ecu_late": 0.3333333333333333,
+     "logistics4": 0.8694495172340044,
+     "organise": 1.0,
+     "pallet": 1.0,
+     "pallet2": 0.0
+    }
+   }
+  },
+  "q75": {
+   "scores": {
+    "desk": 0.66143,
+    "ecu_full": 0.31857,
+    "ecu_late": 0.42678,
+    "logistics4": 0.60877,
+    "organise": 0.82225,
+    "pallet": 0.96206,
+    "pallet2": 0.56179
+   },
+   "auroc": 0.9166666666666667,
+   "loco_threshold_ba": {
+    "loco_ba": 0.7083333333333333,
+    "sensitivity": 0.75,
+    "specificity": 0.6666666666666666,
+    "n_correct": 5,
+    "n": 7,
+    "predictions": {
+     "desk": 1,
+     "ecu_full": 0,
+     "ecu_late": 0,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "thresholds": {
+     "desk": 0.5617930774832284,
+     "ecu_full": 0.661427759286334,
+     "ecu_late": 0.661427759286334,
+     "logistics4": 0.5617930774832284,
+     "organise": 0.5617930774832284,
+     "pallet": 0.5617930774832284,
+     "pallet2": 0.661427759286334
+    }
+   },
+   "loco_isotonic_ba": {
+    "loco_ba": 0.7083333333333333,
+    "sensitivity": 0.75,
+    "specificity": 0.6666666666666666,
+    "n_correct": 5,
+    "n": 7,
+    "predictions": {
+     "desk": 1,
+     "ecu_full": 0,
+     "ecu_late": 0,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "pred_frac": {
+     "desk": 0.6233296693452374,
+     "ecu_full": 0.0,
+     "ecu_late": 0.22245171584234186,
+     "logistics4": 1.0,
+     "organise": 1.0,
+     "pallet": 1.0,
+     "pallet2": 0.0
+    }
+   }
+  },
+  "q90": {
+   "scores": {
+    "desk": 0.73392,
+    "ecu_full": 0.4259,
+    "ecu_late": 0.61386,
+    "logistics4": 0.8089,
+    "organise": 0.89484,
+    "pallet": 0.96667,
+    "pallet2": 0.72252
+   },
+   "auroc": 0.8333333333333334,
+   "loco_threshold_ba": {
+    "loco_ba": 0.7083333333333333,
+    "sensitivity": 0.75,
+    "specificity": 0.6666666666666666,
+    "n_correct": 5,
+    "n": 7,
+    "predictions": {
+     "desk": 1,
+     "ecu_full": 0,
+     "ecu_late": 0,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "thresholds": {
+     "desk": 0.7225219913707079,
+     "ecu_full": 0.7225219913707079,
+     "ecu_late": 0.7225219913707079,
+     "logistics4": 0.7225219913707079,
+     "organise": 0.7225219913707079,
+     "pallet": 0.7225219913707079,
+     "pallet2": 0.7339196229478628
+    }
+   },
+   "loco_isotonic_ba": {
+    "loco_ba": 0.6666666666666666,
+    "sensitivity": 1.0,
+    "specificity": 0.3333333333333333,
+    "n_correct": 5,
+    "n": 7,
+    "predictions": {
+     "desk": 1,
+     "ecu_full": 0,
+     "ecu_late": 1,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 1
+    },
+    "pred_frac": {
+     "desk": 0.5,
+     "ecu_full": 0.0,
+     "ecu_late": 0.42244610988001147,
+     "logistics4": 1.0,
+     "organise": 0.8482332480970123,
+     "pallet": 1.0,
+     "pallet2": 0.4525339972210519
+    }
+   }
+  },
+  "trimmed": {
+   "scores": {
+    "desk": 0.497,
+    "ecu_full": 0.29901,
+    "ecu_late": 0.34597,
+    "logistics4": 0.49833,
+    "organise": 0.61074,
+    "pallet": 0.83631,
+    "pallet2": 0.34419
+   },
+   "auroc": 0.75,
+   "loco_threshold_ba": {
+    "loco_ba": 0.41666666666666663,
+    "sensitivity": 0.5,
+    "specificity": 0.3333333333333333,
+    "n_correct": 3,
+    "n": 7,
+    "predictions": {
+     "desk": 0,
+     "ecu_full": 0,
+     "ecu_late": 1,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "thresholds": {
+     "desk": 0.6107431379225984,
+     "ecu_full": 0.6107431379225984,
+     "ecu_late": 0.3441874400713405,
+     "logistics4": 0.4969995390728527,
+     "organise": 0.3441874400713405,
+     "pallet": 0.3441874400713405,
+     "pallet2": 0.4969995390728527
+    }
+   },
+   "loco_isotonic_ba": {
+    "loco_ba": 0.375,
+    "sensitivity": 0.75,
+    "specificity": 0.0,
+    "n_correct": 3,
+    "n": 7,
+    "predictions": {
+     "desk": 1,
+     "ecu_full": 1,
+     "ecu_late": 1,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "pred_frac": {
+     "desk": 0.3333333333333333,
+     "ecu_full": 0.5,
+     "ecu_late": 0.6666666666666666,
+     "logistics4": 1.0,
+     "organise": 0.6662948105741157,
+     "pallet": 1.0,
+     "pallet2": 0.0
+    }
+   }
+  },
+  "rankmean": {
+   "scores": {
+    "desk": 0.55311,
+    "ecu_full": 0.3111,
+    "ecu_late": 0.37488,
+    "logistics4": 0.57402,
+    "organise": 0.64465,
+    "pallet": 0.85788,
+    "pallet2": 0.36465
+   },
+   "auroc": 0.75,
+   "loco_threshold_ba": {
+    "loco_ba": 0.41666666666666663,
+    "sensitivity": 0.5,
+    "specificity": 0.3333333333333333,
+    "n_correct": 3,
+    "n": 7,
+    "predictions": {
+     "desk": 0,
+     "ecu_full": 0,
+     "ecu_late": 1,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "thresholds": {
+     "desk": 0.644648534086895,
+     "ecu_full": 0.644648534086895,
+     "ecu_late": 0.36465324384787473,
+     "logistics4": 0.5531127053922704,
+     "organise": 0.36465324384787473,
+     "pallet": 0.36465324384787473,
+     "pallet2": 0.5531127053922704
+    }
+   },
+   "loco_isotonic_ba": {
+    "loco_ba": 0.375,
+    "sensitivity": 0.75,
+    "specificity": 0.0,
+    "n_correct": 3,
+    "n": 7,
+    "predictions": {
+     "desk": 1,
+     "ecu_full": 1,
+     "ecu_late": 1,
+     "logistics4": 1,
+     "organise": 1,
+     "pallet": 1,
+     "pallet2": 0
+    },
+    "pred_frac": {
+     "desk": 0.3333333333333333,
+     "ecu_full": 0.5,
+     "ecu_late": 0.6666666666666666,
+     "logistics4": 1.0,
+     "organise": 0.6244052411975696,
+     "pallet": 1.0,
+     "pallet2": 0.0
+    }
+   }
+  }
+ },
+ "best_aggregator_by_auroc": "q75",
+ "review_curve": [
+  {
+   "review_frac": 0.0,
+   "n_reviewed": 0,
+   "agreement": 0.5714285714285714,
+   "error": 0.4285714285714286
+  },
+  {
+   "review_frac": 0.05,
+   "n_reviewed": 7,
+   "agreement": 0.5714285714285714,
+   "error": 0.4285714285714286
+  },
+  {
+   "review_frac": 0.1,
+   "n_reviewed": 16,
+   "agreement": 0.5714285714285714,
+   "error": 0.4285714285714286
+  },
+  {
+   "review_frac": 0.15,
+   "n_reviewed": 23,
+   "agreement": 0.5714285714285714,
+   "error": 0.4285714285714286
+  },
+  {
+   "review_frac": 0.2,
+   "n_reviewed": 30,
+   "agreement": 0.5714285714285714,
+   "error": 0.4285714285714286
+  },
+  {
+   "review_frac": 0.25,
+   "n_reviewed": 38,
+   "agreement": 0.5714285714285714,
+   "error": 0.4285714285714286
+  },
+  {
+   "review_frac": 0.3,
+   "n_reviewed": 45,
+   "agreement": 0.7142857142857143,
+   "error": 0.2857142857142857
+  },
+  {
+   "review_frac": 0.35,
+   "n_reviewed": 53,
+   "agreement": 0.8571428571428571,
+   "error": 0.1428571428571429
+  },
+  {
+   "review_frac": 0.4,
+   "n_reviewed": 61,
+   "agreement": 0.8571428571428571,
+   "error": 0.1428571428571429
+  },
+  {
+   "review_frac": 0.45,
+   "n_reviewed": 69,
+   "agreement": 0.8571428571428571,
+   "error": 0.1428571428571429
+  },
+  {
+   "review_frac": 0.5,
+   "n_reviewed": 74,
+   "agreement": 0.8571428571428571,
+   "error": 0.1428571428571429
+  },
+  {
+   "review_frac": 0.55,
+   "n_reviewed": 81,
+   "agreement": 0.8571428571428571,
+   "error": 0.1428571428571429
+  },
+  {
+   "review_frac": 0.6,
+   "n_reviewed": 89,
+   "agreement": 0.8571428571428571,
+   "error": 0.1428571428571429
+  },
+  {
+   "review_frac": 0.65,
+   "n_reviewed": 97,
+   "agreement": 1.0,
+   "error": 0.0
+  },
+  {
+   "review_frac": 0.7,
+   "n_reviewed": 105,
+   "agreement": 1.0,
+   "error": 0.0
+  },
+  {
+   "review_frac": 0.75,
+   "n_reviewed": 112,
+   "agreement": 1.0,
+   "error": 0.0
+  },
+  {
+   "review_frac": 0.8,
+   "n_reviewed": 120,
+   "agreement": 0.8571428571428571,
+   "error": 0.1428571428571429
+  },
+  {
+   "review_frac": 0.85,
+   "n_reviewed": 127,
+   "agreement": 0.8571428571428571,
+   "error": 0.1428571428571429
+  },
+  {
+   "review_frac": 0.9,
+   "n_reviewed": 134,
+   "agreement": 1.0,
+   "error": 0.0
+  },
+  {
+   "review_frac": 0.95,
+   "n_reviewed": 143,
+   "agreement": 1.0,
+   "error": 0.0
+  },
+  {
+   "review_frac": 1.0,
+   "n_reviewed": 150,
+   "agreement": 1.0,
+   "error": 0.0
+  }
+ ],
+ "min_review_frac_for_error": {
+  "<=0.143 (6/7)": 0.35,
+  "==0 (7/7)": 0.65
+ },
+ "caveat": "n=7 clips -> clip AUROC/BA and LOCO thresholds are coarse/noisy."
+}
