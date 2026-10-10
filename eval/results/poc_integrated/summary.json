@@ -76,8 +76,18 @@
  "descriptive_only": true,
  "deterministic": true,
  "device": "CPU only (torch.cuda not used; cached features)",
- "generated_utc": "2026-10-10T16:00:19Z",
- "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "framing": {
+  "c_sensitivity": "C-insensitive (+/-0.0002) per independent verification PR #98",
+  "do_not_read_as_improvement": "fused_4s AUROC is NOT comparable to the published 0.848: that is a full-window inner-OOF number (the same table gives 0.8514 at C=0.003), not a like-for-like 4 s-LOCO comparator"
+ },
+ "frozen_ensemble_path": "configs/frozen/ensemble_v1.prereg.json",
+ "frozen_ensemble_sha256_verified": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+ "generated_utc": "2026-10-10T16:16:43Z",
+ "git_sha": "7e5cbc271651ad3d2fbdb41b2123660cd5b89378",
+ "independent_verification": {
+  "result": "REPRODUCED: fused 4 s AUROC 0.8736 at C_eg2=0.003 vs 0.8734 at the published C_eg2=0.01; paired clip-bootstrap delta -0.0002, CI [-0.0133, +0.0095]; C-insensitive (+/-0.0002)",
+  "source": "LB4 independent verification, PR #98"
+ },
  "label_source": "human gold (single labeller, 100 good / 50 bad), manifest_gold.json",
  "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
  "limitations": [
@@ -187,13 +197,15 @@
   "descriptive_only": true,
   "early_exit_s": 4.0,
   "eg2_prefix_frames": 8,
+  "frozen_ensemble_path": "configs/frozen/ensemble_v1.prereg.json",
+  "frozen_ensemble_sha256": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
   "fusion": "equal_weight_probability_average",
   "pixel_prefix_index": 1,
   "provenance": {
    "cost": "E3.04",
    "early_exit": "E3.03",
    "eg2_view": "E1.02",
-   "fusion_and_thresholds": "caches/ensemble/ensemble_v1.json",
+   "fusion_and_thresholds": "configs/frozen/ensemble_v1.prereg.json (sha256 4da1068a\u2026)",
    "pixel_view": "E1.01",
    "sampling_grid": "E3.01/E3.05"
   },
