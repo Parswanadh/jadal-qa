@@ -46,9 +46,10 @@ def main():
     rl = json.load(open(os.path.join(RES, "rulelist.json")))
     theory = json.load(open(os.path.join(RES, "theory.json")))
     phys = json.load(open(os.path.join(RES, "physics.json")))
-    audit = json.load(open(os.path.join(RES, "audit.json")))
+    # M2: no audit load (dead code removed; audit data never fed the freeze).
     z = np.load(os.path.join(RES, "gold.npz"), allow_pickle=False)
     names = [str(n) for n in z["names"]]
+    stage = rl.get("stage_lowent_blur_ten", {})
     qrules = []
     for n in STAGE:
         f = rl["frozen"][n]
@@ -81,12 +82,14 @@ def main():
                                "still reported, never a decision input."),
         "quality_stage": {
             "rules": qrules,
-            "loco": {"sens": 0.714, "frr_good": 0.13, "bal_acc": 0.792,
-                     "per_rule": {
-                         "lowent": {"sens": 0.714, "frr": 0.08},
-                         "blur": {"sens": 0.429, "frr": 0.01},
-                         "ten": {"sens": 0.286, "frr": 0.04}},
-                     "baselines": {"accept_all": 0.5, "reject_all": 0.5}},
+            "loco": {"sens": stage.get("sens"),
+                     "frr_good": stage.get("frr"),
+                     "bal_acc": stage.get("bal"),
+                     "per_rule": {k: rl.get("per_rule_loco", {}).get(k)
+                                  for k in STAGE},
+                     "baselines": {"accept_all": 0.5, "reject_all": 0.5},
+                     "source": "rulelist.json:stage_lowent_blur_ten + "
+                               "per_rule_loco"},
             "note": ("OR of the only rules beating trivial out-of-clip; "
                      "9 other candidates rejected (rulelist.json + "
                      "perrule.log). No 'primary decider' claim: the stage "

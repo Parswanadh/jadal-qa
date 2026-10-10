@@ -169,11 +169,15 @@ class TestScorerContract(unittest.TestCase):
         a = SC.score(self.clip, 0, 2.0)
         self.assertIn("loop_tripwire", a["reasons"])
         self.assertIn("hit", a["reasons"]["loop_tripwire"])
-        # I3: duplicate reason carries the loop-tripwire hit (not hardcoded).
-        self.assertEqual(a["reasons"]["duplicate"]["hit"],
-                         a["reasons"]["loop_tripwire"]["hit"])
-        self.assertEqual(a["reasons"]["duplicate"]["via"], "loop_tripwire")
-        self.assertIn("threshold", a["reasons"]["duplicate"])
+        # I2/I3: duplicate.hit == loop hit and carries the GOVERNING ints,
+        # never the offline corpus threshold as "threshold".
+        dup = a["reasons"]["duplicate"]
+        self.assertEqual(dup["hit"], a["reasons"]["loop_tripwire"]["hit"])
+        self.assertEqual(dup["via"], "loop_tripwire")
+        self.assertIn("dhash_max", dup)
+        self.assertIn("still_min", dup)
+        self.assertNotIn("threshold", dup)
+        self.assertIn("offline_corpus_threshold", dup)
 
     def test_config_path_selects_net(self):
         # I1: score(config_path=alt) uses the ALT config's model+threshold.

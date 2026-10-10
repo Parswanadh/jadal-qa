@@ -183,7 +183,7 @@ Retrain with/without flagged evaluated on HUMAN windows only.
 
 ## M3 — frozen scorer + compare (`eval/perpixel/freeze_v2.py`)
 
-`configs/perpixel_v1.json` (sha256 `f2baaf99…`, full hash in
+`configs/perpixel_v1.json` (sha256 `d43938e0…`, full hash in
 `configs/perpixel_v1.json.sha256`) + `configs/perpixel_conv.json`.
 PRE-REGISTERED for one later scoring on a new human-labelled Egocentric-10K
 sample; do NOT tune after freezing.
@@ -280,8 +280,10 @@ Real command outputs (abridged; full logs alongside the JSONs):
 - M2: `freeze_v2.py` reads stage numbers from `rulelist.json`
   (`rules_fix.py` now stores `stage_lowent_blur_ten`).
 - M3: `.sha256` now covers the canonical payload excluding `created_utc` /
-  `git_sha`; re-freeze hash `edb61f7c…` (previous `27b350ac…` covered the
-  volatile envelope — superseded, reason recorded here).
+  `git_sha`; re-freeze hash `d43938e0…` (`edb61f7c…` superseded by the
+  round-3 payload: +`dup.in_scorer`, +`loop_tripwire` doc, rulelist-sourced
+  loco; previous `27b350ac…` covered the volatile envelope — superseded,
+  reason recorded here).
 - M4: scorer loads the net once (module cache), no per-call global torch
   mutation.
 - Full suite (round 1): `PYTHONNOUSERSITE=1 timeout 250 .../python -m unittest
@@ -322,3 +324,25 @@ Real command outputs (abridged; full logs alongside the JSONs):
   `Ran 17 tests in 3.990s` / `OK` — config/clip paths cwd-independent.
   (Full discover from `/` fails on `No module named 'jadal'` — pre-existing
   harness path setup, unrelated; the specified command runs from worktree.)
+
+## Fix round 3 (review `reviews/pr72-review.md`, round-3 findings)
+
+- I1 OOD operating point: FIXED. `ego10k_score.py` loads
+  `cfg["activity"]["threshold"]` (0.3624…) and records `frozen_threshold` in
+  the output; no hardcoded 0.5 remains. Probe (mocked scorer, 1 item):
+  `frozen_threshold: 0.36240947246551514`. Placeholder restored afterwards.
+- I2 duplicate evidence: FIXED. `reasons["duplicate"]` now carries the
+  GOVERNING ints (`dhash_max: 4`, `still_min: 0.5`, measured
+  `dhash_loop_min`/`still_run`) with `via: loop_tripwire`; the corpus number
+  survives only as labelled offline context (`offline_corpus_threshold`, no
+  bare `threshold` field). Test asserts the shape + hit equality.
+- M1 scorer docstring: FIXED (mot_frac third-condition clause removed; code
+  implements the two frozen ints).
+- M2 freeze_v2: FIXED. Dead `audit.json` load removed (audit data never fed
+  the freeze — now unreadable as such); `quality_stage.loco` + per-rule
+  numbers read from `rulelist.json` (`stage_lowent_blur_ten`,
+  `per_rule_loco`, computed by the extended `rules_fix.py`; values match the
+  old hardcodes exactly: 0.714/0.13/0.792).
+- Re-freeze: canonical hash `d43938e0…` (payload adds `dup.in_scorer` doc,
+  rulelist-sourced loco; `f2baaf99…` superseded, reason here).
+- Full suite (round 3): `Ran 634 tests in 24.406s` / `OK (skipped=8)`.

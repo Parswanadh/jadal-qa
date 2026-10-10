@@ -201,6 +201,22 @@ def main():
                              f["thr"])
     ss = float(dec2[mask][yb[mask] == 1].mean())
     ff = float(dec2[mask][yb[mask] == 0].mean())
+    # M2 (round 3): per-rule LOCO for every candidate, stored for freeze.
+    per_rule = {}
+    for name, src, feat, op, fixed in CANDS:
+        v = col(src, feat, order, meta, pmap)
+        d1 = np.zeros(len(order), bool)
+        for tc in uclips:
+            tr = np.array([c != tc for c in clips])
+            pool = tr & (is_q | (yb == 0))
+            f = fit_rule_fixed(v[pool], yb[pool], op, fixed)
+            if f is None:
+                continue
+            d1[~tr] = hits(v[~tr], op, f["thr"])
+        s1 = float(d1[mask][yb[mask] == 1].mean())
+        f1 = float(d1[mask][yb[mask] == 0].mean())
+        per_rule[name] = {"sens": s1, "frr": f1,
+                          "bal": (s1 + 1 - f1) / 2}
     out = {"frr_cap": FRR_CAP,
            "loco": {"sens": sens, "frr_good": frr, "bal_acc": bal,
                     "per_reason": rec,
@@ -208,6 +224,7 @@ def main():
                     "beats_trivial": bool(bal > 0.5)},
            "stage_lowent_blur_ten": {"sens": ss, "frr": ff,
                                            "bal": (ss + 1 - ff) / 2},
+           "per_rule_loco": per_rule,
            "fold_thresholds": fold_thr, "frozen": frozen,
            "active_rules": sorted(active),
            "primary_claim": ("quality stage only; activity stays a score; "

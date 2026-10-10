@@ -8,9 +8,9 @@ Stage 1 (deterministic rules, rounded compare at Q=4): OR of frozen quality
 tripwires {lowent, blur, ten} -> BAD:<rule> with evidence.
 Stage 2: conv1d activity score on the per-frame series (frozen JSON weights,
 seed 0, CPU); usable_prob = round4(p). Quality hit forces 0.0.
-Duplicate: single-window loop-tripwire (dhash_loop_min <= 4 AND still_run >
-0.5 AND mot_frac < train-kept median — all frozen ints) fires BAD:loop with
-evidence; cross-window NN stays offline (same constructed threshold).
+Duplicate: single-window loop-tripwire (dhash_loop_min <= dhash_max AND
+still_run > still_min, frozen ints from loop_tripwire) fires BAD:loop with
+evidence; cross-window NN stays offline.
 Digest = sha256 over round-4 M1 row (EXCLUDING B_mv_per_frame: ffmpeg MV
 debug counts vary run to run) + theory fixed-point ints + round-4 physics
 (NaN -> sentinel) + round-4 conv prob. Repeat runs -> identical.
@@ -146,15 +146,18 @@ def score(video_path, start_s, end_s, config_path=CONFIG):
                                float(cfg["activity"]["threshold"]), _Q),
                            "model": "conv1d(seed0,json-weights)"}
     d = cfg["dup"]
-    # I3: the in-scorer duplicate reason IS the loop-tripwire (promoted from
-    # evidence-only to a live duplicate hit); cross-window corpus-NN stays
-    # offline. Frozen scope = quality + activity + single-window duplicate.
+    # I2/I3: the in-scorer duplicate reason IS the loop-tripwire. It carries
+    # the GOVERNING ints (dhash_max/still_min + measurements), not the
+    # offline corpus threshold (kept labelled as offline context only).
     reasons["duplicate"] = {
         "hit": bool(loop_hit), "via": "loop_tripwire",
-        "op": ">=", "threshold": round(d["threshold"], _Q),
-        "note": ("in-scorer duplicate evidence is single-window only "
-                 "(loop-tripwire); cross-window corpus-NN stays offline "
-                 "(M2, same threshold)")}
+        "dhash_max": lz["dhash_max"], "still_min": lz["still_min"],
+        "dhash_loop_min": ph.get("dhash_loop_min"),
+        "still_run": round(float(th.get("still_run", 0.0)), _Q),
+        "offline_corpus_threshold": round(d["threshold"], _Q),
+        "note": ("hit governed by dhash_loop_min <= dhash_max AND still_run "
+                 "> still_min; the corpus number is offline context, never "
+                 "applied to these statistics")}
     keep = [i for i, n in enumerate(names)
             if n not in cfg.get("digest_exclude", [])]
     blob = (np.round(row[keep].astype(np.float64), _Q).tobytes()

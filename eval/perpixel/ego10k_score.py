@@ -49,13 +49,17 @@ def main():
     from jadal.perpixel import scorer as SC
     from sklearn.metrics import balanced_accuracy_score, roc_auc_score
     gm = json.load(open(args.manifest))
+    # I1: operate at the FROZEN threshold, never a hardcoded 0.5.
+    fcfg = json.load(open(os.path.normpath(os.path.join(
+        HERE, "..", "..", "configs", "perpixel_v1.json"))))
+    thr = float(fcfg["activity"]["threshold"])
     ys, ss = [], []
     for it in gm["items"]:
         o = SC.score(it["path"], it["start_s"], it["end_s"])
         ss.append(o["usable_prob"])
         ys.append(it["label"])
-    pred = [1 if s >= 0.5 else 0 for s in ss]
-    out = {"n": len(ys),
+    pred = [1 if s >= thr else 0 for s in ss]
+    out = {"n": len(ys), "frozen_threshold": thr,
            "auroc": float(roc_auc_score(ys, ss)),
            "bal_acc": float(balanced_accuracy_score(ys, pred))}
     with open(os.path.join(RES, "ego10k.json"), "w") as f:
