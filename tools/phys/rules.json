@@ -1,0 +1,437 @@
+{
+ "derivation": "thresholds = quantiles p01/p05/p10/p25 (mirrored to p99/p95/p90/p75 for high-is-bad features) of feature values on all 7 clips, quantised to 4 dp; score = count of crossed thresholds; reject if score>=threshold or a quality rule fires",
+ "description": "Deterministic physics rule-list scorer (Q1 frozen rule table).",
+ "false_reject_budget": 0.05,
+ "hard_reject": "a QUALITY rule forces REJECT only when it crosses its extreme threshold (index 0 = p01 for low-is-bad, p99 for high-is-bad); softer crossings only add to the integer score",
+ "name": "phys_rules_v1",
+ "quality_rule_forces_reject": "extreme_threshold_only",
+ "quantisation": 4,
+ "reject_threshold": 14,
+ "rules": [
+  {
+   "feature": "full.luma_mean",
+   "op": "<",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "TOO_DARK",
+   "side": "low",
+   "source_quantile": "p01/p05/p10/p25",
+   "strength": "quality",
+   "thresholds": [
+    0.0723,
+    0.1845,
+    0.236,
+    0.2678
+   ],
+   "thresholds_q": [
+    723,
+    1845,
+    2360,
+    2678
+   ]
+  },
+  {
+   "feature": "full.dark_frac",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "TOO_DARK",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "quality",
+   "thresholds": [
+    0.7398,
+    0.3709,
+    0.2394,
+    0.1949
+   ],
+   "thresholds_q": [
+    7398,
+    3709,
+    2394,
+    1949
+   ]
+  },
+  {
+   "feature": "full.bright_frac",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "OVEREXPOSED",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "quality",
+   "thresholds": [
+    0.0979,
+    0.0459,
+    0.0251,
+    0.0057
+   ],
+   "thresholds_q": [
+    979,
+    459,
+    251,
+    57
+   ]
+  },
+  {
+   "feature": "full.hf_ratio",
+   "op": "<",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "BLUR",
+   "side": "low",
+   "source_quantile": "p01/p05/p10/p25",
+   "strength": "quality",
+   "thresholds": [
+    0.0047,
+    0.0077,
+    0.0097,
+    0.0134
+   ],
+   "thresholds_q": [
+    47,
+    77,
+    97,
+    134
+   ]
+  },
+  {
+   "feature": "full.dct_energy",
+   "op": "<",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "BLUR",
+   "side": "low",
+   "source_quantile": "p01/p05/p10/p25",
+   "strength": "quality",
+   "thresholds": [
+    0.0002,
+    0.0035,
+    0.0049,
+    0.0068
+   ],
+   "thresholds_q": [
+    2,
+    35,
+    49,
+    68
+   ]
+  },
+  {
+   "feature": "full.temp_b0",
+   "op": "<",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "FROZEN_STATIC",
+   "side": "low",
+   "source_quantile": "p01/p05/p10/p25",
+   "strength": "quality",
+   "thresholds": [
+    0.8563,
+    4.7671,
+    7.6483,
+    9.7065
+   ],
+   "thresholds_q": [
+    8563,
+    47671,
+    76483,
+    97065
+   ]
+  },
+  {
+   "feature": "full.frozen_frac",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "FROZEN_STATIC",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "quality",
+   "thresholds": [
+    0.0223,
+    0.0041,
+    0.0024,
+    0.0003
+   ],
+   "thresholds_q": [
+    223,
+    41,
+    24,
+    3
+   ]
+  },
+  {
+   "feature": "phys.flow_act",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "NO_ACTIVE_WORK",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "weak",
+   "thresholds": [
+    0.8914,
+    0.797,
+    0.7661,
+    0.6394
+   ],
+   "thresholds_q": [
+    8914,
+    7970,
+    7661,
+    6394
+   ]
+  },
+  {
+   "feature": "phys.flow_med",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "NO_ACTIVE_WORK",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "weak",
+   "thresholds": [
+    2.2787,
+    2.0763,
+    1.9475,
+    1.3544
+   ],
+   "thresholds_q": [
+    22787,
+    20763,
+    19475,
+    13544
+   ]
+  },
+  {
+   "feature": "full.motion_energy",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "NO_ACTIVE_WORK",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "weak",
+   "thresholds": [
+    0.0734,
+    0.0669,
+    0.0624,
+    0.0502
+   ],
+   "thresholds_q": [
+    734,
+    669,
+    624,
+    502
+   ]
+  },
+  {
+   "feature": "full.skin_frac",
+   "op": "<",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "HANDS_NOT_VISIBLE",
+   "side": "low",
+   "source_quantile": "p01/p05/p10/p25",
+   "strength": "weak",
+   "thresholds": [
+    0.0003,
+    0.0046,
+    0.0066,
+    0.0161
+   ],
+   "thresholds_q": [
+    3,
+    46,
+    66,
+    161
+   ]
+  },
+  {
+   "feature": "phys.dhash_loop_min",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "DUPLICATE",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "weak",
+   "thresholds": [
+    12.0,
+    10.0,
+    9.1,
+    7.0
+   ],
+   "thresholds_q": [
+    120000,
+    100000,
+    91000,
+    70000
+   ]
+  },
+  {
+   "feature": "phys.mad_mean",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "DUPLICATE",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "weak",
+   "thresholds": [
+    19.7433,
+    15.8866,
+    14.1781,
+    12.12
+   ],
+   "thresholds_q": [
+    197433,
+    158866,
+    141781,
+    121200
+   ]
+  },
+  {
+   "feature": "phys.frm_bytes_med",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "CODING_NOISE",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "weak",
+   "thresholds": [
+    10000.07,
+    8914.25,
+    8247.05,
+    6957.25
+   ],
+   "thresholds_q": [
+    100000700,
+    89142500,
+    82470500,
+    69572500
+   ]
+  },
+  {
+   "feature": "phys.p_size_med",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "CODING_NOISE",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "weak",
+   "thresholds": [
+    9904.74,
+    8849.2,
+    8120.6,
+    6758.875
+   ],
+   "thresholds_q": [
+    99047400,
+    88492000,
+    81206000,
+    67588750
+   ]
+  },
+  {
+   "feature": "phys.snr_db",
+   "op": ">",
+   "quantiles": [
+    0.01,
+    0.05,
+    0.1,
+    0.25
+   ],
+   "rule": "CODING_NOISE",
+   "side": "high",
+   "source_quantile": "p99/p95/p90/p75",
+   "strength": "weak",
+   "thresholds": [
+    18.9924,
+    16.8766,
+    16.0496,
+    14.8676
+   ],
+   "thresholds_q": [
+    189924,
+    168766,
+    160496,
+    148676
+   ]
+  }
+ ],
+ "score": "integer count of crossed thresholds (each contributes +1)",
+ "source": "Q1 frozen rule table: eval/results/exp_phys/rule_table.json @ m/phys-rules commit fd01b6d (thresholds = training-clip quantiles p01/p05/p10/p25, mirrored to p99/p95/p90/p75 for high-is-bad features, quantised to 4 dp; score = count of crossed thresholds; reject if a quality rule crosses its extreme threshold or score >= reject_threshold)",
+ "undecodable_features": [
+  "full.luma_mean",
+  "full.motion_energy",
+  "full.luma_p05"
+ ],
+ "undecodable_score": 1000000,
+ "version": "1.0.0"
+}
