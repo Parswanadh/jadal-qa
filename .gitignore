@@ -21,3 +21,8 @@ __pycache__/
 # editor / os
 .DS_Store
 *.swp
+
+# scale-data worker (local, untracked)
+eval/results/scale/_proxy/
+eval/results/scale/download.log
+eval/results/scale/download_status.json
