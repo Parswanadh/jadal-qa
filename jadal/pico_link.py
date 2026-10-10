@@ -13,6 +13,13 @@ The :class:`PicoLink` class opens a real pyserial port (auto-detected from
 testable without hardware. A background daemon thread reads frames, tracks the
 heartbeat, and correlates ``PING``/``PONG`` pairs for :meth:`PicoLink.estimate_offset`.
 
+Connection semantics: ``connected`` is derived from heartbeat freshness — it is
+True only while the reader is running *and* the last heartbeat is younger than
+``HB_STALE_S``. A silent/hung device therefore reads as disconnected. The
+explicit port and baud defaults come from the read-only shared
+``jadal.config.DEFAULT`` (so ``JADAL_PICO_PORT`` is honoured); this module never
+edits that file. All open failures surface as :class:`PicoLinkError`.
+
 NOT DONE:
   * No measurement of true end-to-end sync accuracy. ``estimate_offset`` returns
     an *estimate* with a conservative error bound (half the measured round-trip);
@@ -30,8 +37,12 @@ import time
 from statistics import median
 from typing import Callable, List, Optional, Tuple
 
+from jadal.config import DEFAULT as _CONFIG_DEFAULT  # read-only shared defaults
+
 __all__ = [
     "BAUD",
+    "HB_PERIOD_S",
+    "HB_STALE_S",
     "VALID_LED",
     "PicoLink",
     "PicoLinkError",
@@ -44,7 +55,9 @@ __all__ = [
     "offset_sample",
 ]
 
-BAUD = 115200
+BAUD = _CONFIG_DEFAULT.pico_baud   # protocol baud; single source is jadal.config
+HB_PERIOD_S = 1.0                  # firmware emits HB this often (docs/SPEC.md)
+HB_STALE_S = 2.5 * HB_PERIOD_S     # no HB within this -> link reads disconnected
 VALID_LED = ("G", "A", "R", "OFF")
 _HEX_DIGITS = "0123456789abcdef"
 
@@ -125,27 +138,19 @@ def encode_flash(pattern) -> bytes:
 
 
 def offset_sample(t0_s: float, t1_ticks_ms: float, t3_s: float) -> Tuple[float, float]:
-    """NTP-style offset/RTT from one PING/PONG pair.
+    """RTT/offset from one PING/PONG pair (NTP symmetric-delay model).
 
-    All timestamps are in seconds (host clock) here so caller/test doubles are exact.
+    ``t0_s`` is the host send time of PING, ``t3_s`` the host receive time of
+    PONG, ``t1_ticks_ms`` the tick counter (in ms) the device stamped in the
+    PONG, treating the device reply as instantaneous. Returns
+    ``(rtt_ms, offset_ms)`` with ``offset_ms = t1 - mid(t0, t3)`` in ms.
 
-    * ``t0_s``  : host send time of PING.
-    * ``t3_s``  : host receive time of PONG.
-    * ``t1_ticks_ms`` : the tick counter (in ms) the device stamped in the PONG.
-
-    This is the NTP symmetric-delay model with the device's reply treated as
-    instantaneous (t1 == t2). Returns ``(rtt_ms, offset_ms)`` where
-
-        rtt_ms   = (t3 - t0) * 1000
-        offset_ms = t1_ticks_ms - (t0 + t3) / 2 * 1000
-
-    With no artificial latency and identical clocks, ``offset_ms`` is ~0.
-
-    The *pico clock* is assumed to be the same virtual clock as ``t0/t3`` (host
-    monotonic expressed in ms) plus a constant offset; if the real device's epoch
-    differs, ``offset_ms`` recovers that constant epoch difference instead. Because
-    the device reply is stamped once (t1 == t2), the *interpretation* of
-    ``offset_ms`` also absorbs any forward-path delay asymmetry.
+    Caveats: the device tick counter wraps (MicroPython ``ticks_ms`` is ~2**30
+    ms) and the device may reboot, either of which shifts ``offset_ms`` by an
+    arbitrary amount — only compare offsets taken from one unbroken run. The
+    reader thread also stamps ``t3`` up to one ``read_poll_s`` after the byte
+    arrived, so ``rtt_ms`` is inflated by at most that poll interval (this keeps
+    the error bound conservative but biases ``offset_ms`` by about half of it).
     """
     rtt_ms = (t3_s - t0_s) * 1000.0
     offset_ms = t1_ticks_ms - ((t0_s + t3_s) / 2.0) * 1000.0
@@ -202,18 +207,23 @@ class FakePicoSerial:
         baud: int = BAUD,
         port: str = "FAKE",
         pico: Optional[FakePico] = None,
+        hb_period_s: float = 1.0,
     ):
         self.baudrate = baud
         self.port = port
         self.is_open = True
         self.pico = pico or FakePico(epoch_offset_ms=epoch_offset_ms)
         self.latency_s = latency_s
+        self.hb_period_s = hb_period_s  # <= 0 disables periodic heartbeats
         self._ready = b""            # bytes delivered and readable now
         self._pending = []           # list of (due_monotonic_s, bytes)
         self._out_accum = b""        # every byte the host has written
-        # The real Pico emits an HB about once per second on connect; emit one
-        # immediately so a freshly-connected host sees a heartbeat quickly.
-        self._pending.append((time.monotonic(), self.pico.hb_line()))
+        # The real Pico emits an HB about once per second; emit one immediately
+        # so a freshly-connected host sees a heartbeat quickly, then keep the
+        # 1 s rhythm while the transport is open.
+        now = time.monotonic()
+        self._last_hb_emit = now
+        self._pending.append((now, self.pico.hb_line(now)))
 
     # -- pyserial-like transport ------------------------------------------- #
     def write(self, data) -> int:
@@ -240,6 +250,18 @@ class FakePicoSerial:
 
     def _pump(self) -> None:
         now = time.monotonic()
+        if self.hb_period_s > 0:
+            # keep the device's ~1 s heartbeat rhythm; if the reader falls far
+            # behind, skip missed beats instead of queueing a backlog.
+            while (
+                self._last_hb_emit + self.hb_period_s <= now
+                and len(self._pending) < 8
+            ):
+                self._last_hb_emit += self.hb_period_s
+                emit_at = self._last_hb_emit
+                self._pending.append((emit_at, self.pico.hb_line(emit_at)))
+            if self._last_hb_emit + self.hb_period_s <= now:
+                self._last_hb_emit = now
         still = []
         for due, payload in self._pending:
             if due <= now:
@@ -281,8 +303,13 @@ def _open_real_serial(port: str, baud: int):
     return serial.Serial(port=port, baudrate=baud, timeout=0)
 
 
-def _default_candidates() -> List[str]:
-    return sorted(glob.glob("/dev/ttyACM*")) + sorted(glob.glob("/dev/ttyUSB*"))
+def _default_candidates(include_usb: bool = False) -> List[str]:
+    # SPEC names /dev/ttyACM* only; ttyUSB adapters are opt-in (they may be
+    # unrelated USB-UART dongles we should not PING by default).
+    cands = sorted(glob.glob("/dev/ttyACM*"))
+    if include_usb:
+        cands += sorted(glob.glob("/dev/ttyUSB*"))
+    return cands
 
 
 # --------------------------------------------------------------------------- #
@@ -294,7 +321,9 @@ class PicoLink:
     Two ways to obtain one:
 
     * Real hardware - ``link.connect()`` auto-detects a ``/dev/ttyACM*`` port
-      (pyserial is opened lazily and required only for this path).
+      (pyserial is opened lazily and required only for this path), falling back
+      to the configured ``jadal.config.DEFAULT.pico_port`` when the scan finds
+      nothing (so ``JADAL_PICO_PORT`` is honoured).
     * Tests/fake - ``PicoLink(serial=FakePicoSerial(...))`` then ``connect()``.
     """
 
@@ -310,59 +339,96 @@ class PicoLink:
         self._open_serial = open_serial
         self._read_poll_s = read_poll_s
         self.ser = serial
+        self._injected = serial is not None
         self.pong_q: "queue.Queue[Tuple[int, float]]" = queue.Queue()
         self._thread: Optional[threading.Thread] = None
         self._running = False
-        self._lock = threading.Lock()
+        self._lock = threading.Lock()    # guards _running/_port/_last_hb_*
+        self._wlock = threading.Lock()   # serialises concurrent ser.write calls
         self._buf = b""
-        self._connected = False
         self._port: Optional[str] = None
         self._last_hb_time: Optional[float] = None
         self._last_hb_ticks: Optional[int] = None
         self._last_hb_led: Optional[str] = None
 
     # -- connection -------------------------------------------------------- #
+    def _open_wrapped(self, port: str, baud: int):
+        # I-3: every open failure (SerialException/OSError/...) surfaces as
+        # PicoLinkError, never a raw serial error.
+        try:
+            return self._open_serial(port, baud)
+        except PicoLinkError:
+            raise
+        except Exception as exc:
+            raise PicoLinkError(f"could not open serial port {port!r}: {exc}") from exc
+
     def connect(
         self,
         port: Optional[str] = None,
         *,
         probe_timeout: float = 1.0,
         candidates: Optional[List[str]] = None,
+        include_usb: bool = False,
     ) -> "PicoLink":
-        if self._running:
-            return self
-        if self.ser is not None:                       # injected fake-serial mode
+        with self._lock:
+            if self._running:
+                return self
+        if (
+            self.ser is not None
+            and self._injected
+            and getattr(self.ser, "is_open", True)
+        ):
             used_port = getattr(self.ser, "port", "FAKE")
         elif port is not None:
-            self.ser = self._open_serial(port, BAUD)
+            self.ser = self._open_wrapped(port, _CONFIG_DEFAULT.pico_baud)
+            self._injected = False
             used_port = port
         else:
-            self.ser, used_port = self._autodetect(probe_timeout, candidates)
+            try:
+                self.ser, used_port = self._autodetect(
+                    probe_timeout, candidates, include_usb
+                )
+            except PicoLinkError:
+                if candidates is not None:
+                    raise  # explicit scan list: respect it strictly
+                # Last resort: the configured default port, so JADAL_PICO_PORT
+                # (read from jadal.config at import) is honoured.
+                default_port = _CONFIG_DEFAULT.pico_port
+                self.ser = self._open_wrapped(
+                    default_port, _CONFIG_DEFAULT.pico_baud
+                )
+                used_port = default_port
+            self._injected = False
         self._reset_state()
-        self._port = used_port
-        self._connected = True
-        self._running = True
+        with self._lock:
+            self._port = used_port
+            self._running = True
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
         return self
 
     def _reset_state(self) -> None:
-        self._buf = b""
-        self._connected = False
-        self._last_hb_time = None
-        self._last_hb_ticks = None
-        self._last_hb_led = None
+        with self._lock:
+            self._buf = b""
+            self._last_hb_time = None
+            self._last_hb_ticks = None
+            self._last_hb_led = None
         while not self.pong_q.empty():
             try:
                 self.pong_q.get_nowait()
             except queue.Empty:
                 break
 
-    def _autodetect(self, probe_timeout: float, candidates: Optional[List[str]]):
-        cands = candidates if candidates is not None else _default_candidates()
+    def _autodetect(
+        self,
+        probe_timeout: float,
+        candidates: Optional[List[str]],
+        include_usb: bool,
+    ):
+        cands = candidates if candidates is not None else _default_candidates(include_usb)
         for candidate in cands:
             try:
-                ser = self._open_serial(candidate, BAUD)
+                ser = self._open_serial(candidate, _CONFIG_DEFAULT.pico_baud)
             except Exception:
                 continue
             if self._probe(ser, probe_timeout):
@@ -393,7 +459,10 @@ class PicoLink:
         return False
 
     def _run(self) -> None:
-        while self._running:
+        while True:
+            with self._lock:
+                if not self._running:
+                    break
             ser = self.ser
             if ser is None:
                 break
@@ -407,7 +476,8 @@ class PicoLink:
                 else:
                     time.sleep(self._read_poll_s)
             except Exception:
-                self._connected = False
+                with self._lock:
+                    self._running = False
                 break
 
     def _process_line(self, line: bytes) -> None:
@@ -418,56 +488,70 @@ class PicoLink:
                 self._last_hb_time = self._clock()
                 self._last_hb_ticks = ticks
                 self._last_hb_led = state
-                self._connected = True
             return
         pong_ticks = parse_pong(line)
         if pong_ticks is not None:
-            with self._lock:
-                self._connected = True
             self.pong_q.put((pong_ticks, self._clock()))
 
     # -- status ------------------------------------------------------------ #
     @property
     def port(self) -> Optional[str]:
-        return self._port
+        with self._lock:
+            return self._port
 
     @property
     def connected(self) -> bool:
+        # I-1: derived from heartbeat freshness, never latched at connect().
         with self._lock:
-            return self._connected and self._running
+            running = self._running
+            last = self._last_hb_time
+        if not running or last is None:
+            return False
+        return (self._clock() - last) < HB_STALE_S
 
     def status(self) -> dict:
         with self._lock:
             last = self._last_hb_time
             age = None if last is None else max(0.0, self._clock() - last)
-            return {
-                "connected": self._connected and self._running,
-                "port": self._port,
-                "last_hb_age_s": age,
-                "last_hb_ticks_ms": self._last_hb_ticks,
-                "last_hb_led": self._last_hb_led,
-            }
+            port = self._port
+            ticks = self._last_hb_ticks
+            led = self._last_hb_led
+        return {
+            "connected": self.connected,
+            "port": port,
+            "last_hb_age_s": age,
+            "last_hb_ticks_ms": ticks,
+            "last_hb_led": led,
+        }
 
     # -- commands ---------------------------------------------------------- #
     def _require_up(self) -> None:
-        if getattr(self.ser, "is_open", True) is False:
-            raise PicoLinkError("link is closed")
-        if not self._running:
+        with self._lock:
+            running = self._running
+        ser = self.ser
+        if ser is None or getattr(ser, "is_open", True) is False or not running:
             raise PicoLinkError("not connected")
+
+    def _write(self, payload: bytes) -> None:
+        self._require_up()
+        try:
+            with self._wlock:
+                self.ser.write(payload)
+        except PicoLinkError:
+            raise
+        except Exception as exc:
+            raise PicoLinkError(f"write failed: {exc}") from exc
 
     def set_led(self, color: str) -> None:
         payload = encode_led(color)          # validate before touching the wire
-        self._require_up()
-        self.ser.write(payload)
+        self._write(payload)
 
     def flash(self, pattern) -> None:
         payload = encode_flash(pattern)       # validate before touching the wire
-        self._require_up()
-        self.ser.write(payload)
+        self._write(payload)
 
     def ping(self) -> None:
-        self._require_up()
-        self.ser.write(b"PING\n")
+        self._write(b"PING\n")
 
     # -- clock offset estimation ------------------------------------------ #
     def estimate_offset(self, samples: int = 8, timeout: float = 2.0) -> dict:
@@ -517,21 +601,26 @@ class PicoLink:
 
     # -- lifecycle --------------------------------------------------------- #
     def disconnect(self) -> None:
-        self._running = False
+        with self._lock:
+            self._running = False
+            self._port = None
+            self._last_hb_time = None
+            self._last_hb_ticks = None
+            self._last_hb_led = None
         thread = self._thread
         if thread is not None and thread.is_alive():
             thread.join(timeout=1.0)
         self._thread = None
-        if self.ser is not None:
+        # I-2: drop a factory-opened handle so a later connect(port=...) really
+        # opens the new port. An injected test double is kept (tests own it).
+        ser = self.ser
+        if not self._injected:
+            self.ser = None
+        if ser is not None:
             try:
-                self.ser.close()
+                ser.close()
             except Exception:
                 pass
-        with self._lock:
-            self._connected = False
-            self._last_hb_time = None
-            self._last_hb_ticks = None
-            self._last_hb_led = None
 
     def __enter__(self) -> "PicoLink":
         return self

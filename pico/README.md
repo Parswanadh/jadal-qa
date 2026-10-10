@@ -12,6 +12,9 @@ Host -> Pico             :  FLASH <8 hex digits>   (32 bits, 100 ms each, MSB fi
 Host -> Pico             :  PING                   -> Pico replies  PONG <ticks_ms>
 ```
 
+Unknown or malformed frames are silently ignored by the firmware (an unknown
+`LED` colour never latches the LED on).
+
 ## Hardware
 
 - Raspberry Pi Pico 2 (RP2350) running **MicroPython**.

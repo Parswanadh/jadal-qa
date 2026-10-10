@@ -2,7 +2,7 @@
 
 These run WITHOUT any Pico hardware: PicoLink is exercised against an in-memory
 fake serial device (FakePicoSerial) that emulates the firmware protocol from
-docs/SPEC.md, and against a fake clock for the offset math.
+docs/SPEC.md, and against a fake clock for the heartbeat-freshness logic.
 
 Run from the repo root:
     /home/parshu/envs/jadal/bin/python -m unittest discover -s tests -v
@@ -11,11 +11,14 @@ import os
 import sys
 import time
 import unittest
+from types import SimpleNamespace
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import jadal.pico_link as plmod  # noqa: E402  (monkeypatched in the config test)
 from jadal.pico_link import (  # noqa: E402
     BAUD,
+    HB_STALE_S,
     VALID_LED,
     FakePico,
     FakePicoSerial,
@@ -50,6 +53,16 @@ class _MuteSerial:
 
     def close(self):
         self.is_open = False
+
+
+def _await_cond(cond, timeout=2.0):
+    """Poll ``cond`` until True or timeout; shared by the test classes."""
+    end = time.monotonic() + timeout
+    while time.monotonic() < end:
+        if cond():
+            return True
+        time.sleep(0.005)
+    return cond()
 
 
 class TestProtocolParsing(unittest.TestCase):
@@ -125,17 +138,17 @@ class TestPicoLinkWithFake(unittest.TestCase):
         return link, ser
 
     def _await(self, cond, timeout=2.0):
-        end = time.monotonic() + timeout
-        while time.monotonic() < end:
-            if cond():
-                return True
-            time.sleep(0.005)
-        return cond()
+        return _await_cond(cond, timeout)
 
     def test_connect_fake_sets_connected_and_port(self):
         link, ser = self._connect()
         try:
-            self.assertTrue(link.connected)
+            # connected is derived from heartbeat freshness, so it appears
+            # once the reader thread has parsed the device's first HB.
+            self.assertTrue(
+                self._await(lambda: link.connected),
+                "link never became connected (no heartbeat seen)",
+            )
             self.assertEqual(link.port, "FAKE")
         finally:
             link.disconnect()
@@ -154,12 +167,37 @@ class TestPicoLinkWithFake(unittest.TestCase):
         finally:
             link.disconnect()
 
+    def test_connected_goes_stale_without_heartbeat(self):
+        # I-1: with a fake clock, advance past the staleness threshold and
+        # assert connected flips to False even though nothing errored.
+        now = [1000.0]
+        # long HB period: exactly one heartbeat (the initial one) arrives, so
+        # the staleness assertion below is deterministic.
+        ser = FakePicoSerial(hb_period_s=3600.0)
+        link = PicoLink(serial=ser, clock=lambda: now[0])
+        link.connect()
+        try:
+            self.assertTrue(
+                self._await(lambda: link.status()["last_hb_ticks_ms"] is not None),
+                "reader never saw the initial heartbeat",
+            )
+            self.assertTrue(link.connected)
+            now[0] += HB_STALE_S + 1.0
+            self.assertFalse(link.connected)
+            st = link.status()
+            self.assertFalse(st["connected"])
+            self.assertGreater(st["last_hb_age_s"], HB_STALE_S)
+        finally:
+            link.disconnect()
+
     def test_set_led_writes_correct_bytes(self):
         link, ser = self._connect()
         try:
             link.set_led("A")
             time.sleep(0.03)
             self.assertIn(b"LED A\n", ser._out_accum)
+            self.assertIn("LED A", ser.pico.led_commands)
+            self.assertEqual(ser.pico._led, "A")
         finally:
             link.disconnect()
 
@@ -169,6 +207,7 @@ class TestPicoLinkWithFake(unittest.TestCase):
             link.flash(0xDEADBEEF)
             time.sleep(0.03)
             self.assertIn(b"FLASH DEADBEEF\n", ser._out_accum)
+            self.assertEqual(ser.pico.flashed, ["deadbeef"])
         finally:
             link.disconnect()
 
@@ -199,9 +238,9 @@ class TestPicoLinkWithFake(unittest.TestCase):
             link.disconnect()
 
     def test_estimate_offset_with_latency_rtt_and_bound(self):
-        # Symmetric one-way latency L -> round trip ~2L; offset still centred,
-        # but the honest error bound grows with latency. We assert the RTT is in
-        # a loose band and that the offset is within half the measured RTT.
+        # Symmetric one-way latency L -> round trip ~2L; the recovered offset
+        # must stay inside the reported error bound (bound grows with the same
+        # reader delay that shifts the offset, so this holds by construction).
         L = 0.03
         link, ser = self._connect(latency_s=L, epoch_offset_ms=0.0)
         try:
@@ -209,14 +248,80 @@ class TestPicoLinkWithFake(unittest.TestCase):
             self.assertGreater(est["rtt_ms_min"], 0.0)
             self.assertLess(est["rtt_ms_median"], 500.0)
             self.assertLessEqual(est["sync_error_bound_ms"], est["rtt_ms_median"])
-            self.assertLessEqual(abs(est["offset_ms"]), est["rtt_ms_median"])
+            self.assertLessEqual(abs(est["offset_ms"]), est["sync_error_bound_ms"])
         finally:
             link.disconnect()
 
     def test_disconnect_stops_thread(self):
         link, ser = self._connect()
+        thread = link._thread
+        self.assertIsNotNone(thread)
         link.disconnect()
         self.assertFalse(link.connected)
+        self.assertFalse(thread.is_alive())
+
+    def test_connect_after_disconnect_opens_new_port(self):
+        # I-2: disconnect() must drop a factory-opened handle so a later
+        # connect(port=...) really opens the new port.
+        opened = []
+
+        def factory(port, baud):
+            opened.append(port)
+            return FakePicoSerial(port=port)
+
+        link = PicoLink(open_serial=factory)
+        link.connect(port="ACM0")
+        try:
+            self.assertEqual(link.port, "ACM0")
+            link.disconnect()
+            link.connect(port="ACM1")
+            self.assertEqual(opened, ["ACM0", "ACM1"])
+            self.assertEqual(link.port, "ACM1")
+            self.assertTrue(
+                self._await(lambda: link.connected),
+                "reconnected link never saw a heartbeat",
+            )
+        finally:
+            link.disconnect()
+
+    def test_connect_open_error_wrapped(self):
+        # I-3: a failing open (SerialException/OSError) must surface as
+        # PicoLinkError, not a raw serial error.
+        def boom(port, baud):
+            raise OSError(2, "No such file or directory: %s" % port)
+
+        link = PicoLink(open_serial=boom)
+        with self.assertRaises(PicoLinkError):
+            link.connect(port="/dev/ttyACM9")
+
+    def test_default_port_fallback_comes_from_config(self):
+        # I-6: with no explicit port and no Pico answering the scan, connect()
+        # falls back to opening jadal.config DEFAULT.pico_port (honours
+        # JADAL_PICO_PORT). Proved by monkeypatching the config default.
+        saved_default, saved_cands = plmod._CONFIG_DEFAULT, plmod._default_candidates
+        plmod._CONFIG_DEFAULT = SimpleNamespace(pico_port="CFGPORT", pico_baud=115200)
+        plmod._default_candidates = lambda include_usb=False: ["NOPE"]
+        try:
+            fake = FakePicoSerial(port="CFGPORT")
+
+            def factory(port, baud):
+                if port == "CFGPORT":
+                    return fake
+                raise OSError("no such port: %s" % port)
+
+            link = PicoLink(open_serial=factory)
+            link.connect()
+            try:
+                self.assertEqual(link.port, "CFGPORT")
+                self.assertTrue(
+                    self._await(lambda: link.connected),
+                    "fallback link never saw a heartbeat",
+                )
+            finally:
+                link.disconnect()
+        finally:
+            plmod._CONFIG_DEFAULT = saved_default
+            plmod._default_candidates = saved_cands
 
 
 class TestAutoDetect(unittest.TestCase):
@@ -230,8 +335,15 @@ class TestAutoDetect(unittest.TestCase):
         link = PicoLink(open_serial=lambda port, baud: factory[port](port, baud))
         try:
             link.connect(port=None, probe_timeout=0.4, candidates=["MUTE", "PICO"])
-            self.assertTrue(link.connected)
+            # the probe consumed the fake's first HB; the next periodic one
+            # (<= ~1 s, like the real device) brings the link up.
+            self.assertTrue(
+                _await_cond(lambda: link.connected, timeout=3.0),
+                "link never became connected after autodetect",
+            )
             self.assertEqual(link.port, "PICO")
+            # the non-Pico device was probed with exactly one PING and skipped.
+            self.assertEqual(mute.writes, [b"PING\n"])
         finally:
             link.disconnect()
 

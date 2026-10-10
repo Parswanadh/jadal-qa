@@ -84,7 +84,79 @@ passed.
 
 ## Contract change proposals
 
-None. `jadal/config.py` already exposes `pico_port` and `pico_baud`; the module
-honours `JADAL_PICO_PORT` via those defaults and needs no config edit. If the
-service wants to *use* this link, `jadal/service.py` should add a
-`GET /pico/status` that returns `PicoLink.status()`.
+None. `jadal/config.py` (read-only, untouched) exposes `pico_port` and
+`pico_baud`; since fix round 1, `PicoLink` reads them via
+`from jadal.config import DEFAULT` — explicit-port and scan opens use the
+configured baud, and when no explicit port is given and the `/dev/ttyACM*`
+scan finds no answering Pico, `connect()` falls back to opening
+`DEFAULT.pico_port`, so `JADAL_PICO_PORT` is honoured. No config edit is
+needed. If the service wants to *use* this link, `jadal/service.py` should
+add a `GET /pico/status` that returns `PicoLink.status()`.
+
+## Fix round 1 (review of PR #10)
+
+Fixed all 7 Important findings, in owned files only:
+
+- **I-7** — deleted `from __future__ import annotations` from `pico/main.py`
+  and removed all function annotations, so boot needs nothing but stdlib
+  `sys`/`time` before the guarded hardware import.
+- **I-1** — `connected` is now derived from heartbeat freshness
+  (`HB_STALE_S = 2.5 s`): True only while the reader runs *and* the last HB is
+  fresh. New test advances a fake clock past the threshold and asserts
+  `connected is False` with no error involved.
+- **I-2** — `disconnect()` drops a factory-opened handle (`self.ser = None`,
+  injected test doubles are kept) and checks `is_open` before reusing one, so
+  `connect(port=...)` after `disconnect()` really opens the new port. Tested
+  with a two-port factory asserting both opens.
+- **I-3** — every open failure (`SerialException`/`OSError`/...) is wrapped in
+  `PicoLinkError` by `_open_wrapped`. Tested with an `open_serial` stub that
+  raises `OSError`.
+- **I-4** — firmware loop reworked: the `uselect.poll` object is created once,
+  the loop sleeps 1 ms when idle, and input is buffered one byte at a time and
+  split on newline, so a partial line can never stall HB/FLASH timing.
+  Overlong lines (>256 B, no newline) are dropped.
+- **I-5** — new committed `tests/test_pico_protocol.py` (14 tests) imports the
+  pure helpers straight from `pico/main.py`: `flash_bits(0xDEADBEEF)` asserted
+  against a literal MSB-first bit list (plus roundtrip guard),
+  `FLASH_BIT_MS == 100`, `led_levels` onboard+RGB mapping, and `_handle`
+  routing (LED set/ignore/cancels-flash, FLASH 8-hex validation). Host tests
+  now also assert `FakePico.flashed == ["deadbeef"]` and `led_commands`.
+- **I-6** — `PicoLink` now reads `from jadal.config import DEFAULT` (file
+  itself untouched): opens use the configured baud, and with no explicit port
+  and an empty scan it falls back to opening `DEFAULT.pico_port`, so
+  `JADAL_PICO_PORT` is honoured. Tested by monkeypatching the config default.
+  The inaccurate sentence in the previous "Contract change proposals" section
+  above has been corrected.
+
+Cheap minors also fixed: reader-exception path stops the thread and writes are
+wrapped as `PicoLinkError` behind a write lock (M-1/M-2); `t3` poll bias and
+tick-wrap caveats documented on `offset_sample` (M-3/M-4); scan defaults to
+ACM-only with USB opt-in (M-5); onboard LED pin defaults to GPIO 25 (M-6);
+latency test asserts `|offset| <= sync_error_bound_ms`, disconnect test asserts
+the thread exited, and the probe write to a mute device is asserted (M-7/M-8);
+unknown-frame behaviour documented (M-10). Skipped: moving the fake serial to
+a new `jadal/` module (M-9, outside owned files) and any on-device verification
+of I-4/I-7 (no Pico in CI — still NOT DONE).
+
+The fake serial now also emits the device's ~1 s periodic heartbeat (this fell
+out of I-1 testing: the probe consumes the first HB, so the fake must keep
+beating like real firmware).
+
+Command and real output tail
+(`cd /home/parshu/projects/jadal-qa-wt/pico`):
+
+```
+$ /home/parshu/envs/jadal/bin/python -m unittest discover -s tests -v 2>&1 | tail -30
+...
+test_unknown_led_ignored (test_pico_protocol.TestHandleCommands.test_unknown_led_ignored) ... ok
+test_onboard_levels (test_pico_protocol.TestLedMapping.test_onboard_levels) ... ok
+test_rgb_mapping (test_pico_protocol.TestLedMapping.test_rgb_mapping) ... ok
+test_unknown_colour_is_dark (test_pico_protocol.TestLedMapping.test_unknown_colour_is_dark) ... ok
+
+----------------------------------------------------------------------
+Ran 39 tests in 2.257s
+
+OK
+```
+Stable across 5 repeated runs (each `OK`). Firmware `py_compile` passes and the
+stub-based logic smoke check still passes after the loop rewrite.
