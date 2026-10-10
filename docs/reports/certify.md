@@ -50,13 +50,13 @@ Closes [Parswanadh/jadal-qa#1](https://github.com/Parswanadh/jadal-qa/issues/1).
 `/home/parshu/envs/jadal/bin/python -m unittest discover -s tests -v`
 (python 3.12.15, numpy 2.4.4, scipy 1.17.1 — nothing installed, as required).
 
-## Test output tail (real, all 59 pass)
+## Test output tail (real, all 67 pass: 40 certify + 27 receipts)
 
 ```text
-test_picks_the_strictest_threshold_that_meets_target_and_min_accepted ...
-```
+Ran 67 tests in 0.061s
 
-Actually run: 40 `test_certify` + 19 `test_receipts` tests, `OK`.
+OK
+```
 Acceptance coverage from the issue:
 
 - `exact_binomial_upper(0, 100, 0.1)` == 0.0228 to 4 places (0.022763), plus
