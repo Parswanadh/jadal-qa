@@ -1,0 +1,20 @@
+{
+  "gold": {
+    "n": 150,
+    "errors": 0,
+    "wall_s": 56.6,
+    "ms_per_window": 377.3
+  },
+  "ood": {
+    "n": 160,
+    "errors": 0,
+    "wall_s": 96.6,
+    "ms_per_window": 603.5
+  },
+  "holdout": {
+    "n": 108,
+    "errors": 0,
+    "wall_s": 446.0,
+    "ms_per_window": 4129.2
+  }
+}
