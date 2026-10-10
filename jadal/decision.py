@@ -55,6 +55,7 @@ CACHE_MAX_SIDE = 256
 
 HANDS_HEAD = "decider_hands.npz"
 WORK_HEAD = "decider_work.npz"
+STEP_PROTO = "decider_step_prototypes.npz"
 
 
 def _sigmoid(z: np.ndarray) -> np.ndarray:
@@ -107,6 +108,40 @@ def head_predict_proba(head: dict[str, Any], X: np.ndarray) -> np.ndarray:
         X = X[None, :]
     logits = X @ head["coef"] + head["intercept"]
     return _sigmoid(logits / head["temperature"])
+
+
+def save_step_prototypes(path: str | Path, *, steps: list[str],
+                         prototypes: np.ndarray, temperature: float) -> str:
+    """Save nearest-prototype STEP head; returns the file sha256."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    np.savez(path, steps=np.asarray(steps),
+             prototypes=np.asarray(prototypes, dtype=np.float64),
+             temperature=np.float64(temperature))
+    return file_sha256(path)
+
+
+def load_step_prototypes(path: str | Path) -> dict[str, Any]:
+    z = np.load(str(path), allow_pickle=True)
+    return {
+        "steps": [str(s) for s in z["steps"]],
+        "prototypes": np.asarray(z["prototypes"], dtype=np.float64),
+        "temperature": float(z["temperature"]),
+        "sha256": file_sha256(path),
+    }
+
+
+def step_predict_proba(proto: dict[str, Any], seg: np.ndarray) -> dict[str, float]:
+    """Softmax over cosine similarities / temperature (segment embedding unit-norm)."""
+    P = proto["prototypes"]
+    norms = np.linalg.norm(P, axis=1, keepdims=True)
+    Pn = P / np.maximum(norms, 1e-12)
+    sims = Pn @ np.asarray(seg, dtype=np.float64).reshape(-1)
+    scaled = sims / proto["temperature"]
+    scaled = scaled - scaled.max()
+    e = np.exp(scaled)
+    probs = e / e.sum()
+    return {s: float(p) for s, p in zip(proto["steps"], probs)}
 
 
 def sample_frames_bgr(path: str, n: int = N_FRAMES,
@@ -233,6 +268,8 @@ class Decider:
             for name, fname in (("hands_ok", HANDS_HEAD), ("active_work", WORK_HEAD)):
                 p = self.heads_dir / fname
                 self._heads[name] = load_head(p) if p.exists() else None
+            sp = self.heads_dir / STEP_PROTO
+            self._heads["step"] = load_step_prototypes(sp) if sp.exists() else None
         return self._heads
 
     def _versions(self) -> dict[str, str]:
@@ -247,9 +284,11 @@ class Decider:
             backbone += f":safetensors_bytes={st.stat().st_size}"
         else:
             backbone += ":weights_missing"
+        sp = heads.get("step") if heads else None
         return {
             "backbone": backbone,
             "heads": ",".join(parts),
+            "step": "none" if sp is None else f"prototypes:{sp['sha256'][:16]}",
         }
 
     # -- main entry -------------------------------------------------------
@@ -272,10 +311,17 @@ class Decider:
         for name in ("hands_ok", "active_work"):
             h = heads[name]
             probs[name] = float(head_predict_proba(h, seg)[0]) if h is not None else 0.5
+        step_proto = heads.get("step")
+        if step_proto is None:
+            step = {"choice": None, "probs": {}, "answer_conf": 0.0}
+        else:
+            p = step_predict_proba(step_proto, seg)
+            choice = max(p, key=p.get)
+            step = {"choice": choice, "probs": p, "answer_conf": p[choice]}
         return self._round({
             "hands_ok": {"p_yes": probs["hands_ok"]},
             "active_work": {"p_yes": probs["active_work"]},
-            "step": {"choice": None, "probs": {}, "answer_conf": 0.0},
+            "step": step,
             "model_versions": {**self._versions(), "frames_decoded": str(len(frames))},
         })
 

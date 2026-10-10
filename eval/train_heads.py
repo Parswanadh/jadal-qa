@@ -56,6 +56,21 @@ BUDGET = 140
 THUMB = 512
 LABEL_CAVEAT = "labels by gemini-2.5-flash, not human-checked"
 
+INDEGO_DIR = "/home/parshu/projects/awing/data/indego"
+INDEGO_CLIPS = {
+    "User_15_410_0411_2_480.mp4": (
+        f"{INDEGO_DIR}/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+        f"{INDEGO_DIR}/1_Assembly/annotated_keysteps_assembly_disassembly/AS_User_15_410_0411_2.json",
+    ),
+    "User_1_412_2010_3_480.mp4": (
+        f"{INDEGO_DIR}/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+        f"{INDEGO_DIR}/1_Assembly/annotated_keysteps_assembly_disassembly/AS_User_1_412_2010_3.json",
+    ),
+}
+STEP_FRAMES_PER_SEG = 5
+STEP_TRAIN_CLIP = "User_15_410_0411_2_480.mp4"  # 15 segments / 14 steps
+STEP_TEST_CLIP = "User_1_412_2010_3_480.mp4"    # 5 segments (late steps)
+
 
 def load_model():
     from sentence_transformers import SentenceTransformer
@@ -200,10 +215,191 @@ def main() -> int:
     ap.add_argument("--out", default="eval/results/decider_baseline_DEV_ONLY.json")
     ap.add_argument("--dev-n", type=int, default=1500)
     ap.add_argument("--splits", default=None, help="fixed splits manifest for full mode")
+    ap.add_argument("--step", action="store_true",
+                    help="IndEgo ECU STEP prototype head instead of hands/work heads")
     ap.add_argument("--heads-dir", default="models")
     ap.add_argument("--cache-dir", default="models/.embed_cache_ego10k")
     args = ap.parse_args()
 
+    if args.step:
+        return cmd_step(args)
+    return cmd_heads(args)
+
+
+def parse_via_segments(ann_path: str) -> list[dict]:
+    """Parse a VIA temporal-segment JSON -> [{start_s, end_s, step}]."""
+    spec = json.loads(Path(ann_path).read_text())
+    options = spec["attribute"]["1"]["options"]
+    segs = []
+    for v in spec["metadata"].values():
+        z = v.get("z") or []
+        if len(z) != 2:
+            continue
+        opt = (v.get("av") or {}).get("1")
+        if opt not in options:
+            continue
+        segs.append({"start_s": float(z[0]), "end_s": float(z[1]),
+                     "step": str(options[opt])})
+    segs.sort(key=lambda s: (s["start_s"], s["end_s"]))
+    return segs
+
+
+def sample_segment_frames(clip_path: str, start_s: float, end_s: float,
+                          k: int = STEP_FRAMES_PER_SEG) -> list[np.ndarray]:
+    """Fixed-fraction BGR frames from [start_s, end_s] (OpenCV)."""
+    import cv2
+
+    cap = cv2.VideoCapture(clip_path)
+    try:
+        if not cap.isOpened():
+            return []
+        fps = cap.get(cv2.CAP_PROP_FPS) or 10.0
+        total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
+        out = []
+        for i in range(k):
+            t = start_s + (end_s - start_s) * (i + 0.5) / k
+            idx = min(max(int(t * fps), 0), max(total - 1, 0))
+            cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+            ok, frame = cap.read()
+            if ok and frame is not None:
+                out.append(frame)
+        return out
+    finally:
+        cap.release()
+
+
+def embed_pil_frames(model, imgs: list[Image.Image], cache_dir: Path) -> np.ndarray:
+    embs = []
+    for img in imgs:
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        key = hashlib.sha256(buf.getvalue()).hexdigest()
+        hit = cache_dir / f"{key}.npy"
+        if hit.exists():
+            embs.append(np.load(str(hit)))
+            continue
+        with torch.inference_mode():
+            e = model.encode(
+                img, batch_size=1, show_progress_bar=False,
+                convert_to_numpy=True, normalize_embeddings=True,
+                processing_kwargs={"image": {"max_soft_tokens": BUDGET}},
+            )
+        e = np.asarray(e, dtype=np.float64).reshape(-1)
+        np.save(str(hit), e)
+        embs.append(e)
+    return np.stack(embs, axis=0)
+
+
+def cmd_step(args) -> int:
+    """IndEgo ECU STEP head: prototypes on train clip, segment accuracy held-out."""
+    import cv2  # noqa: F401  (ensures the dependency is present)
+
+    heads_dir = Path(args.heads_dir)
+    cache_dir = Path("models/.embed_cache_indego")
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    clips: dict[str, list[dict]] = {}
+    for clip_name, (clip_path, ann_path) in INDEGO_CLIPS.items():
+        segs = parse_via_segments(ann_path)
+        for s in segs:
+            s["clip"] = clip_name
+        clips[clip_name] = segs
+        print(f"{clip_name}: {len(segs)} segments", flush=True)
+    train_segs = clips[STEP_TRAIN_CLIP]
+    test_segs = clips[STEP_TEST_CLIP]
+
+    model = load_model()
+    from PIL import Image as PILImage
+
+    def seg_embedding(seg: dict) -> np.ndarray:
+        clip_path = INDEGO_CLIPS[seg["clip"]][0]
+        frames = sample_segment_frames(clip_path, seg["start_s"], seg["end_s"])
+        imgs = [PILImage.fromarray(cv2.cvtColor(f, cv2.COLOR_BGR2RGB)) for f in frames]
+        for im in imgs:
+            im.thumbnail((THUMB, THUMB), PILImage.BILINEAR)
+        E = embed_pil_frames(model, imgs, cache_dir)
+        m = E.mean(axis=0)
+        return m / (np.linalg.norm(m) or 1.0)
+
+    Xtr = np.stack([seg_embedding(s) for s in train_segs])
+    ytr = [s["step"] for s in train_segs]
+    Xte = np.stack([seg_embedding(s) for s in test_segs])
+    yte = [s["step"] for s in test_segs]
+    steps = sorted(set(ytr))
+    proto = np.stack([Xtr[np.array(ytr) == s].mean(axis=0) for s in steps])
+    proto = proto / np.maximum(np.linalg.norm(proto, axis=1, keepdims=True), 1e-12)
+
+    def accuracy(X, y, P, classes) -> tuple[float, list]:
+        sims = (X / np.maximum(np.linalg.norm(X, axis=1, keepdims=True), 1e-12)) @ P.T
+        pred = [classes[int(i)] for i in sims.argmax(axis=1)]
+        return float(np.mean([p == t for p, t in zip(pred, y)])), pred
+
+    # temperature: deterministic grid fit on TRAIN segments (NLL of softmax sims/T)
+    best_T, best_nll = 0.05, float("inf")
+    str_sims = (Xtr @ proto.T)
+    for T in (0.02, 0.05, 0.1, 0.2):
+        sc = str_sims / T
+        sc = sc - sc.max(axis=1, keepdims=True)
+        logp = sc - np.log(np.exp(sc).sum(axis=1, keepdims=True))
+        idx = np.array([steps.index(t) for t in ytr])
+        nll = float(-logp[np.arange(len(ytr)), idx].mean())
+        if nll < best_nll:
+            best_T, best_nll = T, nll
+
+    cross_acc, cross_pred = accuracy(Xte, yte, proto, steps)
+    # leave-one-segment-out within the train clip. Only segments whose step
+    # has >= 2 segments are evaluable (13/14 steps are singletons, whose
+    # class prototype would be empty when held out) -> tiny N, stated as-is.
+    from collections import Counter as _Counter
+    _counts = _Counter(ytr)
+    loo_preds, loo_true = [], []
+    for j in range(len(train_segs)):
+        if _counts[ytr[j]] < 2:
+            continue
+        mask = np.ones(len(train_segs), bool)
+        mask[j] = False
+        Pj = np.stack([Xtr[mask][np.array(ytr)[mask] == s].mean(axis=0) for s in steps])
+        Pj = Pj / np.maximum(np.linalg.norm(Pj, axis=1, keepdims=True), 1e-12)
+        sims = Xtr[j][None, :] @ Pj.T
+        loo_preds.append(steps[int(np.nanargmax(sims))])
+        loo_true.append(ytr[j])
+    loo_acc = float(np.mean([p == t for p, t in zip(loo_preds, loo_true)])) if loo_true else float("nan")
+    loo_n = len(loo_true)
+
+    sha = decision_mod.save_step_prototypes(
+        heads_dir / decision_mod.STEP_PROTO, steps=steps,
+        prototypes=proto, temperature=best_T)
+    results = {
+        "created_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "mode": "step_prototypes",
+        "train_clip": STEP_TRAIN_CLIP,
+        "train_segments": len(train_segs),
+        "train_steps": steps,
+        "test_clip": STEP_TEST_CLIP,
+        "cross_clip_segment_accuracy": round(cross_acc, 4),
+        "cross_clip_n": len(test_segs),
+        "cross_clip_detail": [
+            {"step": t, "pred": p} for t, p in zip(yte, cross_pred)],
+        "loo_train_clip_segment_accuracy": round(loo_acc, 4),
+        "loo_n": loo_n,
+        "loo_note": "only multi-segment steps are LOO-evaluable (13/14 train steps are singletons)",
+        "temperature": best_T,
+        "proto_file": decision_mod.STEP_PROTO,
+        "proto_sha256": sha,
+        "backbone": f"embeddinggemma2:budget={BUDGET}:bfloat16",
+        "seed": SEED,
+    }
+    out = Path(args.out if args.out != "eval/results/decider_baseline_DEV_ONLY.json"
+               else "eval/results/decider_step.json")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(results, indent=2, sort_keys=True) + "\n")
+    print(f"cross-clip acc={cross_acc:.4f} (N={len(test_segs)}) "
+          f"loo acc={loo_acc:.4f} (N={loo_n}) T={best_T}; wrote {out}", flush=True)
+    return 0
+
+
+def cmd_heads(args) -> int:
+    """Hands/work heads (dev-subset or fixed-manifest mode)."""
     heads_dir = Path(args.heads_dir)
     dev_mode = args.splits is None
     if dev_mode:

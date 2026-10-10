@@ -15,6 +15,7 @@ import numpy as np
 
 from jadal import decision as decision_mod
 from jadal.decision import Decider, head_predict_proba, load_head, save_head
+from jadal.decision import save_step_prototypes, step_predict_proba
 
 
 def fake_embed(bgr: np.ndarray) -> np.ndarray:
@@ -80,6 +81,27 @@ class TestDeciderDeterminism(unittest.TestCase):
         z = float(x @ coef + 0.5)
         want = 1.0 / (1.0 + np.exp(-z / 2.0))
         self.assertAlmostEqual(float(head_predict_proba(h, x)[0]), want, places=9)
+
+    def test_step_prototypes_wire_into_decide(self):
+        d = make_decider()
+        self.assertIsNone(d.decide("/tmp/nostep.mp4", {})["step"]["choice"])
+        rng = np.random.default_rng(3)
+        A = rng.standard_normal(decision_mod.EMBED_DIM)
+        A = A / np.linalg.norm(A)
+        B = -A
+        save_step_prototypes(os.path.join(d.heads_dir, decision_mod.STEP_PROTO),
+                             steps=["step_a", "step_b"],
+                             prototypes=np.stack([A, B]), temperature=0.05)
+        d2 = Decider(config=None, heads_dir=d.heads_dir,
+                     cache_dir=os.path.join(d.heads_dir, "cache3"), embed_fn=fake_embed)
+        out = d2.decide("/tmp/withstep.mp4", {})
+        step = out["step"]
+        self.assertIn(step["choice"], ("step_a", "step_b"))
+        self.assertAlmostEqual(sum(step["probs"].values()), 1.0, places=3)
+        self.assertEqual(step["answer_conf"], round(step["probs"][step["choice"]], 4))
+        self.assertNotEqual(step["choice"], None)
+        # deterministic across calls
+        self.assertEqual(out, d2.decide("/tmp/withstep.mp4", {}))
 
     def test_trained_heads_change_probs(self):
         d = make_decider()
