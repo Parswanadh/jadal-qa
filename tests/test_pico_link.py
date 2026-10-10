@@ -5,7 +5,7 @@ fake serial device (FakePicoSerial) that emulates the firmware protocol from
 docs/SPEC.md, and against a fake clock for the heartbeat-freshness logic.
 
 Run from the repo root:
-    /home/parshu/envs/jadal/bin/python -m unittest discover -s tests -v
+    python3 -m unittest discover -s tests -v
 """
 import os
 import sys

@@ -19,7 +19,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 FEATS = os.path.join(HERE, "..", "results", "gpu", "features.json")
 OUT = os.path.join(HERE, "..", "results", "gpu", "stream.json")
-GOLD = "/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"
+GOLD = "/workspace/jadal_pod_bundle/labels/manifest_gold.json"
 
 FEAT_NAMES = [
     "temp_b0", "temp_b1", "temp_b2", "temp_b3", "frozen_frac", "flicker_idx",
@@ -154,7 +154,7 @@ def main():
             lat.append(time.perf_counter() - t0)
     res = {
         "device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
-        "regenerate": "/home/parshu/envs/jadal/bin/python eval/gpu/stream.py",
+        "regenerate": "python3 eval/gpu/stream.py",
         "loco_verify": {"auc": auc, "auc_ci95": ci, "n": len(ids),
                         "note": "independent head; corroborates eval/results/gpu/cascade.json"},
         "threshold": thr, "margin": margin,

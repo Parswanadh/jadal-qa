@@ -2,7 +2,7 @@
 
 Usage (from the repo root):
 
-    /home/parshu/envs/jadal/bin/python -m eval.calibration_report \
+    python3 -m eval.calibration_report \
         --predictions eval/results/predictions.json \
         --splits eval/results/splits.json \
         --select-split calibration --report-split test

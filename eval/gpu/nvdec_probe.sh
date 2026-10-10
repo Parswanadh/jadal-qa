@@ -1,7 +1,7 @@
 #!/bin/bash
 # NVDEC filter-chain probe: find a working hwaccel decode->scale->pipe path.
 # Usage: flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock bash eval/gpu/nvdec_probe.sh
-CLIP="/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4"
+CLIP="/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4"
 T=3; W=160; H=90; EXPECT=$((T * 10 * W * H))
 probe() {
   local name="$1"; shift

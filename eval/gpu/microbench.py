@@ -2,7 +2,7 @@
 
 Regenerates eval/results/gpu/microbench.json. Run:
   flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock \
-    /home/parshu/envs/jadal/bin/python eval/gpu/microbench.py
+    python3 eval/gpu/microbench.py
 Hardware label: RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU.
 """
 import json
@@ -19,7 +19,7 @@ OUT = os.path.join(HERE, "..", "results", "gpu", "microbench.json")
 GPU = "cuda:0"
 
 CLIPS = [
-    "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
 ]
 
 DEVICE = "RTX 4070 Laptop"
@@ -386,7 +386,7 @@ def main():
         "torch": torch.__version__,
         "gpu_name": torch.cuda.get_device_name(0),
         "regenerate": "flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock "
-                      "/home/parshu/envs/jadal/bin/python eval/gpu/microbench.py [--only memcpy,kernels|decode]",
+                      "python3 eval/gpu/microbench.py [--only memcpy,kernels|decode]",
     })
     t0 = time.perf_counter()
     if want("memcpy"):

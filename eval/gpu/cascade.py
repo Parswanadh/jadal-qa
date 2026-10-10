@@ -1,7 +1,7 @@
 """Early-reject cascade S0/S1/S2 + LOCO eval + streaming sim.
 
 Regenerates eval/results/gpu/cascade.json. CPU-only (no GPU lock).
-Run: /home/parshu/envs/jadal/bin/python eval/gpu/cascade.py
+Run: python3 eval/gpu/cascade.py
 Requires eval/results/gpu/features.json (via `python eval/gpu/run_features.py`).
 
 S0: exact rules on the 2-s tiny probe stored in features.json, each firing with

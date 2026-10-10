@@ -8,7 +8,7 @@ import subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "results", "gpu", "nvdec_probe.json")
-CLIP = "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4"
+CLIP = "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4"
 
 CHAINS = {
     "A_scale_cuda_hwdownload_gray": ["-hwaccel", "cuda", "-hwaccel_output_format", "cuda",
@@ -52,7 +52,7 @@ def main():
         print(name, rows[name]["rc"], rows[name]["bytes"],
               rows[name]["stderr"][-120:].replace("\n", " | "))
     json.dump({"device": "RTX 4070 Laptop", "chains": rows,
-               "regenerate": "flock ... /home/parshu/envs/jadal/bin/python eval/gpu/nvdec_probe.py"},
+               "regenerate": "flock ... python3 eval/gpu/nvdec_probe.py"},
               open(OUT, "w"), indent=1)
     print("wrote", OUT)
 
