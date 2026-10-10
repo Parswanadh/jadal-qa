@@ -66,13 +66,19 @@ class StaticAssets(unittest.TestCase):
         self.assertIn('href="style.css"', html)
         self.assertIn('src="api.js"', html)
         self.assertIn('src="app.js"', html)
-        for view in ["view-batches", "view-segment", "view-insights"]:
+        for view in ["view-batches", "view-segment", "view-insights",
+                     "view-queue", "view-videos"]:
             self.assertIn(f'id="{view}"', html)
+        for tab in ["tab-batches", "tab-segment", "tab-insights",
+                    "tab-queue", "tab-videos"]:
+            self.assertIn(f'id="{tab}"', html)
         # v2: system drawer + global filter bar of real <select>s + search
         self.assertIn('id="sys-drawer"', html)
         self.assertIn('id="pico-led"', html)
         self.assertIn('id="filterbar"', html)
-        for sel in ["f-site", "f-worker", "f-batch", "f-verdict", "f-reason", "f-lang", "f-q"]:
+        for sel in ["f-site", "f-worker", "f-batch", "f-verdict", "f-reason", "f-lang", "f-q",
+                    "q-reason", "v-q", "v-site", "v-verdict", "v-reason",
+                    "videos-form", "queue-body", "videos-body"]:
             self.assertIn(f'id="{sel}"', html)
         for tag in ["<select", "<details"]:
             self.assertIn(tag, html)
@@ -109,30 +115,37 @@ class StaticAssets(unittest.TestCase):
         app = (WEB / "app.js").read_text(encoding="utf-8")
         # all transport lives in the adapter; app.js only goes through it
         for ep in ["/ws", "/batches", "/receipts/", "/reverify",
-                   "/voice/", "/stats/risk_coverage", "/stats/sop_gaps", "/pico/status"]:
+                   "/voice/", "/stats/risk_coverage", "/stats/sop_gaps", "/pico/status",
+                   "/hub/search", "/hub/thumb"]:
             self.assertIn(ep, api, f"api.js never calls {ep}")
         # exact live field names (upper_bound is certify's name, not error_bound)
         for field in ["receipt_ids", "upper_bound", "last_hb_led", "last_hb_age_s",
                       "blurred_sha256", "findReceiptForSegment", "parseHash", "buildHash",
-                      "filterOptions", "applyFilters", "normReceipt", "createClient"]:
+                      "filterOptions", "applyFilters", "normReceipt", "createClient",
+                      "isBound", "funnelCounts", "queueRows", "normHub", "hubSearch"]:
             self.assertIn(field, api, f"api.js never defines {field}")
         self.assertIn("JadalApi", app, "app.js must go through the web/api.js adapter")
         self.assertIn("createClient", app)
         # app.js reaches every operation through the client (never its own fetch):
         for call in ["client.batches(", "client.batchDetail(", "client.receipt(",
                      "client.reverify(", "client.risk(", "client.gaps(",
-                     "client.pico(", "client.voiceUrl("]:
+                     "client.pico(", "client.voiceUrl(", "client.hubSearch(",
+                     "client.hubThumbUrl(", "client.hubVideoUrl("]:
             self.assertIn(call, app, f"app.js never calls {call}")
         for helper in ["A.normBatch", "A.normReceipt", "A.normRisk", "A.normGaps",
                        "A.normPico", "A.applyFilters", "A.filterOptions",
                        "A.parseHash", "A.buildHash", "A.shortHash",
-                       "A.findReceiptForSegment", "A.wsUrl"]:
+                       "A.findReceiptForSegment", "A.wsUrl", "A.isBound",
+                       "A.funnelCounts", "A.queueRows", "A.queueReasons"]:
             self.assertIn(helper, app, f"app.js never uses adapter {helper}")
         # ... and builds no transport URLs of its own
         self.assertNotIn("fetch(API", app, "app.js bypasses the adapter transport")
         self.assertNotIn("fetch('mock", app, "app.js fetches mock files directly")
+        self.assertNotIn("/hub/search", app, "hub URLs must come from the adapter")
         # v2 components: expandable rows, receipt tree, timeline, voice select
-        for token in ["segdetails", "receipt-tree", "timeline", "voice-lang", "sys-body", "f-head"]:
+        for token in ["segdetails", "receipt-tree", "timeline", "voice-lang", "sys-body", "f-head",
+                      "funnel", "queue-body", "videos-body", "tl-compact", "more-body",
+                      "video-grid", "q-reason", "videos-form"]:
             self.assertIn(token, app, f"app.js never builds {token}")
         for lang in LANGS:
             self.assertIn(lang, api, f"language {lang} missing from api.js")
@@ -434,6 +447,103 @@ class FixRound1(unittest.TestCase):
         self.assertIn("copy-toast", app, "copy feedback must render next to the button")
         css = (WEB / "style.css").read_text(encoding="utf-8")
         self.assertIn(".copy-toast", css)
+
+
+class Dashboard3(unittest.TestCase):
+    """dashboard3 round: null-vs-absent bound tri-state, chart tokens,
+    funnel/queue/video-hub adapter coverage, new routes."""
+
+    def test_bound_tristate_strings(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("A.isBound", app, "bound checks must use the adapter gate")
+        self.assertIn("bound not reported", app)
+        self.assertIn("not certified (no threshold meets the target)", app)
+        # no bare isFinite(null)-style bound test may remain (isFinite(null) is true)
+        for line in app.splitlines():
+            if "error_bound" in line and "isFinite" in line and "isBound" not in line:
+                self.fail(f"bare isFinite on error_bound (null coerces to 0): {line.strip()}")
+
+    def test_bound_tristate_in_node(self):
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("node not on PATH")
+        script = (
+            "const A = require(" + repr(str(WEB / "api.js")) + ");\n"
+            "const assert = require('node:assert');\n"
+            "assert.strictEqual(A.isBound(undefined), false);\n"
+            "assert.strictEqual(A.isBound(null), false);\n"
+            "assert.strictEqual(A.isBound(0.07), true);\n"
+            "assert.strictEqual(A.isBound(0), true);\n"
+            "assert.strictEqual(A.isBound(NaN), false);\n"
+            "assert.strictEqual(A.isBound('0.07'), false);\n"
+            "let d = A.normRisk({points: [{threshold: 0.5, coverage: 0.8, error: 0.05}], upper_bound: null});\n"
+            "assert.strictEqual(d.error_bound, null);\n"
+            "assert.strictEqual(A.isBound(d.error_bound), false);\n"
+            "d = A.normRisk({points: [{threshold: 0.5, coverage: 0.8, error: 0.05}]});\n"
+            "assert.strictEqual(d.error_bound, undefined);\n"
+            "assert.strictEqual(A.isBound(d.error_bound), false);\n"
+            "d = A.normRisk({points: [], upper_bound: 0.07});\n"
+            "assert.strictEqual(A.isBound(d.error_bound), true);\n"
+            "console.log('BOUND-OK');\n"
+        )
+        r = subprocess.run([node, "-e", script],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0,
+                         f"bound node cases failed:\n{r.stdout}\n{r.stderr}")
+        self.assertIn("BOUND-OK", r.stdout)
+
+    def test_funnel_and_queue_in_node(self):
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("node not on PATH")
+        script = (
+            "const A = require(" + repr(str(WEB / "api.js")) + ");\n"
+            "const assert = require('node:assert');\n"
+            "const c = A.funnelCounts([{verdict: 'accept'}, {verdict: 'reject'},"
+            " {verdict: 'review'}, {verdict: 'review'}, {verdict: 'weird'}]);\n"
+            "assert.deepStrictEqual(c, {accept: 1, reject: 1, review: 2, other: 1, total: 5});\n"
+            "const batches = [{batch_id: 'b1', site_id: 's', created_utc: '2026-10-10T02:00:00Z', rows: [\n"
+            " {segment_id: 's2', site_id: 's', verdict: 'review', reasons: ['BLUR'], queue_priority: null},\n"
+            " {segment_id: 's1', site_id: 's', verdict: 'review', reasons: [], queue_priority: 5},\n"
+            " {segment_id: 's0', site_id: 's', verdict: 'accept', reasons: [], queue_priority: 9}]} ,\n"
+            " {batch_id: 'b2', site_id: 's', created_utc: '2026-10-10T03:00:00Z', rows: [\n"
+            " {segment_id: 's3', site_id: 's', verdict: 'review', reasons: [], queue_priority: null}]}];\n"
+            "const q = A.queueRows(batches);\n"
+            "assert.deepStrictEqual(q.map(r => r.segment_id), ['s1', 's3', 's2']);\n"
+            "assert.ok(q.every(r => r.verdict === 'review'));\n"
+            "assert.deepStrictEqual(A.queueReasons(q), ['BLUR']);\n"
+            "assert.strictEqual(A.parseHash('#/queue').route, 'queue');\n"
+            "assert.strictEqual(A.parseHash('#/videos?q=x').route, 'videos');\n"
+            "console.log('QUEUE-OK');\n"
+        )
+        r = subprocess.run([node, "-e", script],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0,
+                         f"queue node cases failed:\n{r.stdout}\n{r.stderr}")
+        self.assertIn("QUEUE-OK", r.stdout)
+
+    def test_hub_adapter_shape(self):
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("node not on PATH")
+        script = (
+            "const A = require(" + repr(str(WEB / "api.js")) + ");\n"
+            "const assert = require('node:assert');\n"
+            "const h = A.normHub({items: [{segment_id: 's1', verdict: 'review', reasons: ['BLUR']}], total: 1});\n"
+            "assert.strictEqual(h.items.length, 1);\n"
+            "assert.strictEqual(h.items[0].thumb_url, null);\n"
+            "assert.strictEqual(h.total, 1);\n"
+            "console.log('HUB-OK');\n"
+        )
+        r = subprocess.run([node, "-e", script],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0,
+                         f"hub node cases failed:\n{r.stdout}\n{r.stderr}")
+        self.assertIn("HUB-OK", r.stdout)
+
+    def test_hub_unavailable_copy(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("Video hub not available in this deployment", app)
 
 
 if __name__ == "__main__":

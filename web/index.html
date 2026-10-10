@@ -39,8 +39,14 @@
       <button class="tab" role="tab" id="tab-batches" aria-controls="view-batches" data-route="batches" aria-selected="true">
         <span class="tab-name">Batches</span><span class="tab-hint">live list</span>
       </button>
+      <button class="tab" role="tab" id="tab-queue" aria-controls="view-queue" data-route="queue" aria-selected="false" tabindex="-1">
+        <span class="tab-name">QA queue</span><span class="tab-hint">needs review</span>
+      </button>
       <button class="tab" role="tab" id="tab-segment" aria-controls="view-segment" data-route="segment" aria-selected="false" tabindex="-1">
         <span class="tab-name">Segment</span><span class="tab-hint">receipt &amp; re-verify</span>
+      </button>
+      <button class="tab" role="tab" id="tab-videos" aria-controls="view-videos" data-route="videos" aria-selected="false" tabindex="-1">
+        <span class="tab-name">Video search</span><span class="tab-hint">hub clips</span>
       </button>
       <button class="tab" role="tab" id="tab-insights" aria-controls="view-insights" data-route="insights" aria-selected="false" tabindex="-1">
         <span class="tab-name">Insights</span><span class="tab-hint">risk &amp; gaps</span>
@@ -117,6 +123,28 @@
     <div id="batches-body" aria-live="polite" aria-busy="true"></div>
   </section>
 
+  <!-- ── Screen 2: QA queue ──────────────────────────────────────────── -->
+  <section class="view" id="view-queue" role="tabpanel" aria-labelledby="tab-queue" tabindex="0" hidden>
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">QA queue</h1>
+        <p class="view-sub">Review-routed segments, highest priority first. “—” means no queue_priority from the API yet.</p>
+      </div>
+      <div class="view-actions">
+        <span class="pill pill-mock" id="queue-mock-pill" hidden>mock data</span>
+      </div>
+    </div>
+
+    <div class="field field-inline" id="queue-filter">
+      <label class="field-label" for="q-reason">Reason code</label>
+      <select id="q-reason" name="reason"><option value="">All reasons</option></select>
+    </div>
+
+    <p class="micro meta-line" id="queue-meta" hidden></p>
+
+    <div id="queue-body" aria-live="polite" aria-busy="true"></div>
+  </section>
+
   <!-- ── Screen 2: segment ─────────────────────────────────────────────── -->
   <section class="view" id="view-segment" role="tabpanel" aria-labelledby="tab-segment" tabindex="0" hidden>
     <div class="view-head">
@@ -129,6 +157,51 @@
     </div>
 
     <div id="segment-body" aria-live="polite" aria-busy="true"></div>
+  </section>
+
+  <!-- ── Screen 4: video search (hub placeholder) ─────────────────────── -->
+  <section class="view" id="view-videos" role="tabpanel" aria-labelledby="tab-videos" tabindex="0" hidden>
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Video search</h1>
+        <p class="view-sub">Clip search over GET /hub/search. Mock mode shows placeholders — no footage ships with fixtures.</p>
+      </div>
+      <div class="view-actions">
+        <span class="pill pill-mock" id="videos-mock-pill" hidden>mock data</span>
+      </div>
+    </div>
+
+    <form class="filterbar" id="videos-form" role="search" aria-label="Search video hub">
+      <div class="field field-search">
+        <label class="field-label" for="v-q">Query</label>
+        <input id="v-q" name="q" type="search" placeholder="segment, site, reason…" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="field-label" for="v-site">Site</label>
+        <select id="v-site" name="site"><option value="">All sites</option></select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="v-verdict">Verdict</label>
+        <select id="v-verdict" name="verdict">
+          <option value="">All verdicts</option>
+          <option value="accept">accept</option>
+          <option value="reject">reject</option>
+          <option value="review">review</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="v-reason">Reason</label>
+        <select id="v-reason" name="reason"><option value="">All reasons</option></select>
+      </div>
+      <div class="field field-go">
+        <button class="btn btn-primary" type="submit">Search</button>
+        <button class="btn btn-ghost" type="button" id="videos-reset">Reset</button>
+      </div>
+    </form>
+
+    <p class="micro meta-line" id="videos-meta" hidden></p>
+
+    <div id="videos-body" aria-live="polite" aria-busy="true"></div>
   </section>
 
   <!-- ── Screen 3: insights ────────────────────────────────────────────── -->
