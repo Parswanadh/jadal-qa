@@ -462,6 +462,15 @@ def choose_reject_threshold(train_scores, train_y, fr_budget: float = 0.05) -> i
 # --------------------------------------------------------------------------- #
 # data
 # --------------------------------------------------------------------------- #
+def sha256_file(path: str) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 16), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def load_npz(path: str) -> dict:
     d = np.load(path, allow_pickle=True)
     return {"ids": [str(x) for x in d["ids"]], "y": np.asarray(d["y"], int),
@@ -782,8 +791,69 @@ def main() -> int:
                           f"--calib-seeds {args.calib_seeds} --k-regimes {args.k_regimes}")
     results["device"] = "CPU (threads only; multiprocessing blocked by the sandbox)"
     results["rule_table"] = {"path": "eval/results/exp_phys/rule_table.json",
-                             "sha256": __import__("hashlib").sha256(
-                                 open(RULES_PATH, "rb").read()).hexdigest()}
+                             "sha256": sha256_file(RULES_PATH)}
+    results["inputs"] = {
+        "ood160_full.npz": {"sha256": sha256_file(os.path.join(INPUTS, "ood160_full.npz")),
+                            "n": len(ood["y"]), "n_features": len(names_o)},
+        "indego_full.npz": {"sha256": sha256_file(os.path.join(INPUTS, "indego_full.npz")),
+                            "n": len(ind["y"]), "n_features": len(names_i)},
+        "note": "built by the lead from the frozen vendored kernels "
+                "(eval/exp_phys_dsh/build_matrix.py / build_indego.py); 0 extraction failures",
+    }
+    results["extra"]["regime_sources"] = {
+        "ood": os.path.join(REGIME_DIR, "desc_ood.jsonl") + " (transcode rows preferred)",
+        "indego": os.path.join(REGIME_DIR, "desc_indego.jsonl") +
+                  " exists; the in-domain regime analogue used here is one held-out IndEgo clip "
+                  "per fold (LOCO), because a clip is the natural homogeneous sub-domain and the "
+                  "LOCO protocol is the binding in-domain metric",
+    }
+    # self-contained answers to the three questions the pod asked
+    ood_by = {v["label"]: v for v in results["variants_ood"]}
+    ind_by = {v["label"]: v for v in results["variants_in_domain"]}
+    results["summary"] = {
+        "does_label_free_requantile_rescue_ood": {
+            "raw": {"auroc": ood_by["a_raw_frozen"]["auroc"],
+                    "ci95": ood_by["a_raw_frozen"]["auroc_ci95_window_bootstrap"]},
+            "requantile": {"auroc": ood_by["b_requantile_target"]["auroc"],
+                           "ci95": ood_by["b_requantile_target"]["auroc_ci95_window_bootstrap"],
+                           "paired_delta_vs_raw":
+                               results["extra"]["paired_delta_auroc_vs_raw_ood"]
+                               ["b_requantile_target"]},
+            "regime_requantile_k2": {"auroc": ood_by["d_regime_requantile"]["auroc"],
+                                     "ci95": ood_by["d_regime_requantile"]
+                                     ["auroc_ci95_window_bootstrap"],
+                                     "paired_delta_vs_raw":
+                                         results["extra"]["paired_delta_auroc_vs_raw_ood"]
+                                         ["d_regime_requantile"]},
+            "answer": "PARTIALLY: +0.12 to +0.15 AUROC over raw, paired-bootstrap CI excludes 0 "
+                      "for the rank/quantile variants, but the result (0.54-0.58) is only "
+                      "marginally above chance and no better than the 26-feature logistic OOD "
+                      "baseline (0.566, Q4.01). Not a rescue.",
+            "reject_everything_pathology": "raw rejects 64.4% of OOD-160 (and the naive "
+                                           "z-score-literal reading rejects 98.8%); "
+                                           "re-quantiling brings reject rate to 16-26%",
+        },
+        "cost_in_domain": {
+            "raw_in_sample": ind_by["a_raw_frozen"]["auroc"],
+            "requantile_all_150_as_target": ind_by["b_requantile_selfquantile"]["auroc"],
+            "requantile_per_heldout_clip_loco": ind_by["b_requantile_heldout_clip"]["auroc"],
+            "target_size_curve": results["extra"]["in_domain_target_size_curve"],
+            "answer": "ZERO when the target domain spans the pool (150 windows: identical to raw; "
+                      "16-64 random windows: |delta| <= 0.03). The -0.11 drop in the per-clip "
+                      "LOCO is the cost of normalising inside ONE label-homogeneous clip, i.e. it "
+                      "removes the between-clip level component of the pooled AUROC, not a "
+                      "semantic cost of the transform.",
+        },
+        "what_did_not_work": [
+            "per-domain z-score (c): +0.07 OOD AUROC, CI includes 0 - the first two moments do "
+            "not capture the shift (distributions shift shape, not just location/scale)",
+            "naive z-score-literal (c1): 98.8% reject, AUROC 0.434 - the literal reading of "
+            "'apply frozen thresholds to target z-values' is broken by construction",
+            "regime z-score (d2): 0.470, no better than raw",
+            "in-domain per-clip normalisation: -0.09 to -0.12 pooled AUROC vs the frozen global "
+            "table (because between-clip level differences are real in-domain signal)",
+        ],
+    }
     results["runtime_s"] = round(time.time() - t0, 1)
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)

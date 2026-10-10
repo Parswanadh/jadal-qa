@@ -1,0 +1,2471 @@
+{
+ "experiment": "A3",
+ "title": "Cheap-signal deterministic rule candidates and NEW closed-form series composites (IndEgo gold-150, LOCO)",
+ "determinism": "no learned weights; per-fold direction from the training-clip AUROC sign; thresholds = quantiles p01/p05/p10/p25 (mirrored) of TRAINING clips, quantised to 4 dp; integer Q=4 comparisons (thresholds_q = int(round(t*1e4))); indicator = any rung crossed; severity = integer count of rungs crossed; RNG only in the seeded clip bootstrap",
+ "data": {
+  "source": "/workspace/jadal_pod_bundle/caches/perpixel/gold.npz",
+  "series": "/workspace/jadal_pod_bundle/caches/perpixel/series_gold.npz",
+  "n": 150,
+  "n_good": 100,
+  "n_bad": 50,
+  "n_clips": 7,
+  "clips": {
+   "desk": 29,
+   "ecu_full": 48,
+   "ecu_late": 14,
+   "logistics4": 17,
+   "organise": 19,
+   "pallet": 17,
+   "pallet2": 6
+  },
+  "label_source": "human (IndEgo gold, labels/manifest_gold.json)",
+  "window": "10 s, 100 frames decoded at 160x90 (P_nframes=100 for all 150)"
+ },
+ "protocol": {
+  "in_domain": "leave-one-clip-out over the 7 IndEgo clips; direction+thresholds from the 6 training clips only",
+  "ci": "clip bootstrap B=2000 seed=0, percentile 95%",
+  "indicator": "score >= 1 rung crossed (comparable to Q1 per-rule indicator AUROC)",
+  "severity": "integer 0..4 count of rungs crossed",
+  "q1_reference": {
+   "BLUR": 0.695,
+   "CODING_NOISE": 0.695,
+   "NO_ACTIVE_WORK": 0.695,
+   "DUPLICATE": 0.675,
+   "HANDS_NOT_VISIBLE": 0.61,
+   "OVEREXPOSED": 0.565,
+   "TOO_DARK": 0.55,
+   "FROZEN_STATIC": 0.5
+  }
+ },
+ "exact_command": "OMP_NUM_THREADS=2 python3 eval/exp_phys_dsh/a3_candidates.py",
+ "device": "CPU only (no GPU; torch present but unused)",
+ "wall_s": 30.14,
+ "auc_impl_max_abs_diff_vs_sklearn": 5.551115123125783e-17,
+ "ranked_features": [
+  "B_p_size_mean",
+  "B_dct_hfenergy",
+  "B_spec_slope",
+  "P_dct_hf_mean",
+  "P_dct_hf_std",
+  "B_wav_HH",
+  "B_mv_per_frame",
+  "B_lap_var",
+  "G_zncc_self",
+  "P_sharp_flicker",
+  "B_pb_size_ratio",
+  "B_wav_HL",
+  "B_wav_LH",
+  "G_global_shift",
+  "G_radial_slope",
+  "P_shift_mean",
+  "P_shift_max",
+  "P_motion_floor",
+  "P_motion_tonality",
+  "B_spec_hfratio",
+  "P_motion_frac_above",
+  "P_still_run_frac",
+  "P_burst_onset_rate",
+  "B_frame_size_std",
+  "B_p_count_frac",
+  "G_pca_resid",
+  "G_dup_hash_mean",
+  "G_flicker_idx",
+  "P_lap_var_ac_lag",
+  "P_motion_excess_nf",
+  "P_ac1_contrast",
+  "P_clip_total",
+  "B_i_size",
+  "G_pca_top1_share",
+  "B_temp_period",
+  "P_luma_mean_ac_peak"
+ ],
+ "candidates": [
+  {
+   "feature": "B_p_size_mean",
+   "rule": "CODING_NOISE",
+   "source": "gold.npz:B_p_size_mean",
+   "derivation": "mean P-frame packet size (bytes); P bytes rise with residual motion and coding noise at fixed quality",
+   "n_unique": 130,
+   "loco_direction": "mixed:high,low",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    11678.4197
+   ],
+   "frozen_thresholds_q": [
+    116784197
+   ],
+   "loco_indicator_auroc": 0.54,
+   "loco_indicator_ci95": [
+    0.5078,
+    0.6
+   ],
+   "loco_severity_auroc": 0.54,
+   "loco_severity_ci95": [
+    0.5078,
+    0.6
+   ],
+   "loco_raw_signed_auroc": 0.6272,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 4,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 4,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "low",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.7221,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": 0.7221
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": 0.3887
+    },
+    {
+     "feature": "full.dark_frac",
+     "rho": -0.375
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.540 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.155
+  },
+  {
+   "feature": "B_dct_hfenergy",
+   "rule": "BLUR",
+   "source": "gold.npz:B_dct_hfenergy",
+   "derivation": "mean |DCT| energy outside the top-left 8x8 block; drops when the frame is defocused/motion-blurred, rises with sensor/compression noise",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.0095
+   ],
+   "frozen_thresholds_q": [
+    95
+   ],
+   "loco_indicator_auroc": 0.54,
+   "loco_indicator_ci95": [
+    0.5,
+    0.6132
+   ],
+   "loco_severity_auroc": 0.54,
+   "loco_severity_ci95": [
+    0.5,
+    0.6132
+   ],
+   "loco_raw_signed_auroc": 0.6576,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 4,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 4,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.7721,
+   "max_abs_spearman_partner": "full.dct_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dct_energy",
+     "rho": 0.7721
+    },
+    {
+     "feature": "full.temp_b0",
+     "rho": 0.2944
+    },
+    {
+     "feature": "full.hf_ratio",
+     "rho": 0.2491
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.540 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.155
+  },
+  {
+   "feature": "B_spec_slope",
+   "rule": "BLUR",
+   "source": "gold.npz:B_spec_slope",
+   "derivation": "log-log FFT power-spectrum slope; steeper (more negative) = energy concentrated at low frequencies = blurred",
+   "n_unique": 150,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    0.1361
+   ],
+   "frozen_thresholds_q": [
+    1361
+   ],
+   "loco_indicator_auroc": 0.54,
+   "loco_indicator_ci95": [
+    0.5,
+    0.6071
+   ],
+   "loco_severity_auroc": 0.54,
+   "loco_severity_ci95": [
+    0.5,
+    0.6071
+   ],
+   "loco_raw_signed_auroc": 0.7252,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 4,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 4,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.3637,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": 0.3637
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": 0.3042
+    },
+    {
+     "feature": "full.dct_energy",
+     "rho": -0.2822
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.540 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.155
+  },
+  {
+   "feature": "P_dct_hf_mean",
+   "rule": "BLUR",
+   "source": "gold.npz:P_dct_hf_mean",
+   "derivation": "per-frame mean high-frequency DCT energy averaged over the 100-frame series (same quantity as B_dct_hfenergy but series-averaged)",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.0102
+   ],
+   "frozen_thresholds_q": [
+    102
+   ],
+   "loco_indicator_auroc": 0.54,
+   "loco_indicator_ci95": [
+    0.5,
+    0.6132
+   ],
+   "loco_severity_auroc": 0.54,
+   "loco_severity_ci95": [
+    0.5,
+    0.6132
+   ],
+   "loco_raw_signed_auroc": 0.646,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 4,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 4,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.7863,
+   "max_abs_spearman_partner": "full.dct_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dct_energy",
+     "rho": 0.7863
+    },
+    {
+     "feature": "full.temp_b0",
+     "rho": 0.3397
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": 0.2772
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.540 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.155
+  },
+  {
+   "feature": "P_dct_hf_std",
+   "rule": "CODING_NOISE",
+   "source": "gold.npz:P_dct_hf_std",
+   "derivation": "std over frames of the per-frame HF DCT energy; unstable HF energy despite static content = coding noise/flicker",
+   "n_unique": 150,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    0.0144
+   ],
+   "frozen_thresholds_q": [
+    144
+   ],
+   "loco_indicator_auroc": 0.54,
+   "loco_indicator_ci95": [
+    0.5,
+    0.6132
+   ],
+   "loco_severity_auroc": 0.54,
+   "loco_severity_ci95": [
+    0.5,
+    0.6132
+   ],
+   "loco_raw_signed_auroc": 0.7692,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 4,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 4,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.6777,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": 0.6777
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": -0.5525
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": 0.3591
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.540 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.155
+  },
+  {
+   "feature": "B_wav_HH",
+   "rule": "BLUR",
+   "source": "gold.npz:B_wav_HH",
+   "derivation": "Haar HH (diagonal) sub-band energy share; diagonal detail is the first thing blur removes",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.0495
+   ],
+   "frozen_thresholds_q": [
+    495
+   ],
+   "loco_indicator_auroc": 0.535,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5667
+   ],
+   "loco_severity_auroc": 0.535,
+   "loco_severity_ci95": [
+    0.5,
+    0.5667
+   ],
+   "loco_raw_signed_auroc": 0.733,
+   "fire_any_loco_good": 1,
+   "fire_any_loco_bad": 4,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 1,
+   "fire_extreme_loco_bad": 4,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.3937,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": -0.3937
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": 0.2574
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": -0.1937
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.535 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.16
+  },
+  {
+   "feature": "B_mv_per_frame",
+   "rule": "NO_ACTIVE_WORK",
+   "source": "gold.npz:B_mv_per_frame",
+   "derivation": "mean number of exported motion vectors per decoded frame; motion-vector count is encoder flow activity, high = busy camera/hands",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    1292.1122
+   ],
+   "frozen_thresholds_q": [
+    12921122
+   ],
+   "loco_indicator_auroc": 0.53,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5656
+   ],
+   "loco_severity_auroc": 0.53,
+   "loco_severity_ci95": [
+    0.5,
+    0.5656
+   ],
+   "loco_raw_signed_auroc": 0.6522,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 3,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 3,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.4281,
+   "max_abs_spearman_partner": "full.dct_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dct_energy",
+     "rho": 0.4281
+    },
+    {
+     "feature": "full.hf_ratio",
+     "rho": 0.2275
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": -0.1162
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.530 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.165
+  },
+  {
+   "feature": "B_lap_var",
+   "rule": "BLUR",
+   "source": "gold.npz:B_lap_var",
+   "derivation": "variance of the Laplacian (raw sharpness units, window mean); the classic focus measure",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.0014
+   ],
+   "frozen_thresholds_q": [
+    14
+   ],
+   "loco_indicator_auroc": 0.53,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5849
+   ],
+   "loco_severity_auroc": 0.53,
+   "loco_severity_ci95": [
+    0.5,
+    0.5849
+   ],
+   "loco_raw_signed_auroc": 0.6468,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 3,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 3,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.7232,
+   "max_abs_spearman_partner": "full.dct_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dct_energy",
+     "rho": 0.7232
+    },
+    {
+     "feature": "full.temp_b0",
+     "rho": 0.301
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": 0.2362
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.530 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.165
+  },
+  {
+   "feature": "G_zncc_self",
+   "rule": "DUPLICATE",
+   "source": "gold.npz:G_zncc_self",
+   "derivation": "self zero-normalised cross-correlation of the window against its own frames; high = the window repeats its own content",
+   "n_unique": 150,
+   "loco_direction": "mixed:high,low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.0523
+   ],
+   "frozen_thresholds_q": [
+    523
+   ],
+   "loco_indicator_auroc": 0.53,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5804
+   ],
+   "loco_severity_auroc": 0.53,
+   "loco_severity_ci95": [
+    0.5,
+    0.5804
+   ],
+   "loco_raw_signed_auroc": 0.3118,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 3,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 3,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "high",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.2613,
+   "max_abs_spearman_partner": "full.frozen_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.frozen_frac",
+     "rho": 0.2613
+    },
+    {
+     "feature": "full.motion_energy",
+     "rho": -0.2434
+    },
+    {
+     "feature": "full.hf_ratio",
+     "rho": -0.2351
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.530 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.145
+  },
+  {
+   "feature": "P_sharp_flicker",
+   "rule": null,
+   "source": "series_gold.npz",
+   "derivation": "closed form: mean_t |lap_var(t)-lap_var(t-1)| / (mean_t lap_var(t)+1e-6); relative frame-to-frame sharpness instability (focus hunting / rolling-shutter strobe) at zero extra decode cost",
+   "n_unique": 150,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    0.1701
+   ],
+   "frozen_thresholds_q": [
+    1701
+   ],
+   "loco_indicator_auroc": 0.53,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5849
+   ],
+   "loco_severity_auroc": 0.53,
+   "loco_severity_ci95": [
+    0.5,
+    0.5849
+   ],
+   "loco_raw_signed_auroc": 0.7864,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 3,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 3,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.6745,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": 0.6745
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": -0.4561
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": 0.3881
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.530 <= 0.55 (near chance)"
+  },
+  {
+   "feature": "B_pb_size_ratio",
+   "rule": "CODING_NOISE",
+   "source": "gold.npz:B_pb_size_ratio",
+   "derivation": "mean P-frame bytes / mean I-frame bytes; high = inter frames nearly as expensive as intra = high residual/noise, low = static over-compressed scene",
+   "n_unique": 130,
+   "loco_direction": "mixed:high,low",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    11459114932633.592
+   ],
+   "frozen_thresholds_q": [
+    114591149326335920
+   ],
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.55
+   ],
+   "loco_severity_auroc": 0.52,
+   "loco_severity_ci95": [
+    0.5,
+    0.55
+   ],
+   "loco_raw_signed_auroc": 0.6048,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 2,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 2,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "low",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.1604,
+   "max_abs_spearman_partner": "full.frozen_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.frozen_frac",
+     "rho": 0.1604
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": 0.0948
+    },
+    {
+     "feature": "full.dark_frac",
+     "rho": -0.0827
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.175
+  },
+  {
+   "feature": "B_wav_HL",
+   "rule": "BLUR",
+   "source": "gold.npz:B_wav_HL",
+   "derivation": "Haar HL (vertical-edge) sub-band energy share; vertical edges vanish under horizontal motion blur",
+   "n_unique": 150,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    0.6033
+   ],
+   "frozen_thresholds_q": [
+    6033
+   ],
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5385
+   ],
+   "loco_severity_auroc": 0.52,
+   "loco_severity_ci95": [
+    0.5,
+    0.5385
+   ],
+   "loco_raw_signed_auroc": 0.677,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 2,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 2,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.405,
+   "max_abs_spearman_partner": "full.dark_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dark_frac",
+     "rho": -0.405
+    },
+    {
+     "feature": "full.hf_ratio",
+     "rho": -0.3734
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": 0.3448
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.175
+  },
+  {
+   "feature": "B_wav_LH",
+   "rule": "BLUR",
+   "source": "gold.npz:B_wav_LH",
+   "derivation": "Haar LH (horizontal-edge) sub-band energy share; horizontal edges vanish under vertical motion blur",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.3401
+   ],
+   "frozen_thresholds_q": [
+    3401
+   ],
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5385
+   ],
+   "loco_severity_auroc": 0.52,
+   "loco_severity_ci95": [
+    0.5,
+    0.5385
+   ],
+   "loco_raw_signed_auroc": 0.619,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 2,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 2,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.3956,
+   "max_abs_spearman_partner": "full.dark_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dark_frac",
+     "rho": 0.3956
+    },
+    {
+     "feature": "full.hf_ratio",
+     "rho": 0.3622
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": -0.347
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.175
+  },
+  {
+   "feature": "G_global_shift",
+   "rule": "NO_ACTIVE_WORK",
+   "source": "gold.npz:G_global_shift",
+   "derivation": "median global (phase-correlation) shift magnitude in px; large = camera/ego motion, near-zero = static viewpoint",
+   "n_unique": 99,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    75.3884
+   ],
+   "frozen_thresholds_q": [
+    753884
+   ],
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5345
+   ],
+   "loco_severity_auroc": 0.52,
+   "loco_severity_ci95": [
+    0.5,
+    0.5345
+   ],
+   "loco_raw_signed_auroc": 0.6239,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 2,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 2,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.2728,
+   "max_abs_spearman_partner": "full.dark_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dark_frac",
+     "rho": 0.2728
+    },
+    {
+     "feature": "full.temp_b0",
+     "rho": -0.2299
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": -0.2166
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.175
+  },
+  {
+   "feature": "G_radial_slope",
+   "rule": "BLUR",
+   "source": "gold.npz:G_radial_slope",
+   "derivation": "slope of radially averaged power spectrum; flatter spectra (less negative) carry relatively more high-frequency energy",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    -4.4101
+   ],
+   "frozen_thresholds_q": [
+    -44101
+   ],
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5345
+   ],
+   "loco_severity_auroc": 0.52,
+   "loco_severity_ci95": [
+    0.5,
+    0.5345
+   ],
+   "loco_raw_signed_auroc": 0.6334,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 2,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 2,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.8994,
+   "max_abs_spearman_partner": "full.hf_ratio",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.hf_ratio",
+     "rho": 0.8994
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": -0.3036
+    },
+    {
+     "feature": "full.temp_b0",
+     "rho": -0.2958
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.175
+  },
+  {
+   "feature": "P_shift_mean",
+   "rule": "NO_ACTIVE_WORK",
+   "source": "gold.npz:P_shift_mean",
+   "derivation": "mean over frames of phase-correlation shift vs the first frame (px at 160x90); accumulated viewpoint displacement",
+   "n_unique": 150,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    43.1823
+   ],
+   "frozen_thresholds_q": [
+    431823
+   ],
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.55
+   ],
+   "loco_severity_auroc": 0.52,
+   "loco_severity_ci95": [
+    0.5,
+    0.55
+   ],
+   "loco_raw_signed_auroc": 0.8054,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 2,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 2,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.4766,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": 0.4766
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": -0.4225
+    },
+    {
+     "feature": "full.skin_frac",
+     "rho": -0.2907
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.175
+  },
+  {
+   "feature": "P_shift_max",
+   "rule": "NO_ACTIVE_WORK",
+   "source": "gold.npz:P_shift_max",
+   "derivation": "max over frames of the shift vs the first frame; a single jump (scene change / hard cut)",
+   "n_unique": 134,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    89.3165
+   ],
+   "frozen_thresholds_q": [
+    893165
+   ],
+   "loco_indicator_auroc": 0.515,
+   "loco_indicator_ci95": [
+    0.481,
+    0.5492
+   ],
+   "loco_severity_auroc": 0.515,
+   "loco_severity_ci95": [
+    0.481,
+    0.5492
+   ],
+   "loco_raw_signed_auroc": 0.7228,
+   "fire_any_loco_good": 1,
+   "fire_any_loco_bad": 2,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 1,
+   "fire_any_frozen_bad": 1,
+   "fire_extreme_frozen_good": 1,
+   "fire_extreme_frozen_bad": 1,
+   "fire_extreme_loco_good": 1,
+   "fire_extreme_loco_bad": 2,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.5006,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": 0.5006
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": -0.4005
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": 0.2332
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.515 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.18
+  },
+  {
+   "feature": "P_motion_floor",
+   "rule": "NO_ACTIVE_WORK",
+   "source": "gold.npz:P_motion_floor",
+   "derivation": "data-driven motion floor of diff_e (median+MAD of the window); the window's own noise/jitter level",
+   "n_unique": 150,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    0.0903
+   ],
+   "frozen_thresholds_q": [
+    903
+   ],
+   "loco_indicator_auroc": 0.515,
+   "loco_indicator_ci95": [
+    0.4833,
+    0.5488
+   ],
+   "loco_severity_auroc": 0.515,
+   "loco_severity_ci95": [
+    0.4833,
+    0.5488
+   ],
+   "loco_raw_signed_auroc": 0.7,
+   "fire_any_loco_good": 1,
+   "fire_any_loco_bad": 2,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 1,
+   "fire_any_frozen_bad": 1,
+   "fire_extreme_frozen_good": 1,
+   "fire_extreme_frozen_bad": 1,
+   "fire_extreme_loco_good": 1,
+   "fire_extreme_loco_bad": 2,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.9738,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": 0.9738
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": 0.4748
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": 0.4597
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.515 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.18
+  },
+  {
+   "feature": "P_motion_tonality",
+   "rule": null,
+   "source": "series_gold.npz",
+   "derivation": "closed form: Wiener entropy of the diff_e spectrum, exp(mean(log(P+1e-12)))/mean(P+1e-12) over rfft bins 1..T/2; ~0 = tonal/periodic motion (oscillation, strobe), ~1 = broadband noise motion (coding noise / shake)",
+   "n_unique": 150,
+   "loco_direction": "mixed:high,low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.0641
+   ],
+   "frozen_thresholds_q": [
+    641
+   ],
+   "loco_indicator_auroc": 0.51,
+   "loco_indicator_ci95": [
+    0.4865,
+    0.5362
+   ],
+   "loco_severity_auroc": 0.51,
+   "loco_severity_ci95": [
+    0.4865,
+    0.5362
+   ],
+   "loco_raw_signed_auroc": 0.4916,
+   "fire_any_loco_good": 2,
+   "fire_any_loco_bad": 2,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 2,
+   "fire_extreme_loco_bad": 2,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "high",
+    "organise": "low",
+    "pallet": "high",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.2519,
+   "max_abs_spearman_partner": "full.dark_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dark_frac",
+     "rho": -0.2519
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": 0.1815
+    },
+    {
+     "feature": "full.skin_frac",
+     "rho": 0.13
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.510 <= 0.55 (near chance)"
+  },
+  {
+   "feature": "B_spec_hfratio",
+   "rule": "BLUR",
+   "source": "gold.npz:B_spec_hfratio",
+   "derivation": "share of FFT power above the mid band; a flat/smooth image loses high frequencies",
+   "n_unique": 150,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    0.9983
+   ],
+   "frozen_thresholds_q": [
+    9983
+   ],
+   "loco_indicator_auroc": 0.505,
+   "loco_indicator_ci95": [
+    0.4846,
+    0.5224
+   ],
+   "loco_severity_auroc": 0.505,
+   "loco_severity_ci95": [
+    0.4846,
+    0.5224
+   ],
+   "loco_raw_signed_auroc": 0.675,
+   "fire_any_loco_good": 1,
+   "fire_any_loco_bad": 1,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 1,
+   "fire_any_frozen_bad": 1,
+   "fire_extreme_frozen_good": 1,
+   "fire_extreme_frozen_bad": 1,
+   "fire_extreme_loco_good": 1,
+   "fire_extreme_loco_bad": 1,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.5572,
+   "max_abs_spearman_partner": "full.dark_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dark_frac",
+     "rho": -0.5572
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": 0.4916
+    },
+    {
+     "feature": "full.hf_ratio",
+     "rho": -0.4898
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.505 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.19
+  },
+  {
+   "feature": "P_motion_frac_above",
+   "rule": "NO_ACTIVE_WORK",
+   "source": "gold.npz:P_motion_frac_above",
+   "derivation": "fraction of frames with diff_e above the window's median+MAD floor; duty cycle of real motion",
+   "n_unique": 21,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.2049
+   ],
+   "frozen_thresholds_q": [
+    2049
+   ],
+   "loco_indicator_auroc": 0.505,
+   "loco_indicator_ci95": [
+    0.4912,
+    0.5278
+   ],
+   "loco_severity_auroc": 0.505,
+   "loco_severity_ci95": [
+    0.4912,
+    0.5278
+   ],
+   "loco_raw_signed_auroc": 0.5834,
+   "fire_any_loco_good": 1,
+   "fire_any_loco_bad": 1,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 1,
+   "fire_any_frozen_bad": 1,
+   "fire_extreme_frozen_good": 1,
+   "fire_extreme_frozen_bad": 1,
+   "fire_extreme_loco_good": 1,
+   "fire_extreme_loco_bad": 1,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.1016,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": -0.1016
+    },
+    {
+     "feature": "full.skin_frac",
+     "rho": 0.0942
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": -0.0921
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.505 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.19
+  },
+  {
+   "feature": "P_still_run_frac",
+   "rule": "FROZEN_STATIC",
+   "source": "gold.npz:P_still_run_frac",
+   "derivation": "longest run of frames with diff_e below the floor, as a fraction of the window; high = long dead time",
+   "n_unique": 43,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    0.5702
+   ],
+   "frozen_thresholds_q": [
+    5702
+   ],
+   "loco_indicator_auroc": 0.505,
+   "loco_indicator_ci95": [
+    0.4835,
+    0.5263
+   ],
+   "loco_severity_auroc": 0.505,
+   "loco_severity_ci95": [
+    0.4835,
+    0.5263
+   ],
+   "loco_raw_signed_auroc": 0.5438,
+   "fire_any_loco_good": 1,
+   "fire_any_loco_bad": 1,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 1,
+   "fire_any_frozen_bad": 1,
+   "fire_extreme_frozen_good": 1,
+   "fire_extreme_frozen_bad": 1,
+   "fire_extreme_loco_good": 1,
+   "fire_extreme_loco_bad": 1,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.2649,
+   "max_abs_spearman_partner": "full.skin_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.skin_frac",
+     "rho": -0.2649
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": -0.1763
+    },
+    {
+     "feature": "full.dark_frac",
+     "rho": 0.1493
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.505 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": 0.005
+  },
+  {
+   "feature": "P_burst_onset_rate",
+   "rule": null,
+   "source": "series_gold.npz",
+   "derivation": "closed form: F=median(diff_e)+MAD(diff_e); value=mean_t[ d_t>F and d_{t-1}<=F ]; rate of activity onsets per frame (burst/gap statistic)",
+   "n_unique": 18,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.0303
+   ],
+   "frozen_thresholds_q": [
+    303
+   ],
+   "loco_indicator_auroc": 0.505,
+   "loco_indicator_ci95": [
+    0.4935,
+    0.5287
+   ],
+   "loco_severity_auroc": 0.505,
+   "loco_severity_ci95": [
+    0.4935,
+    0.5287
+   ],
+   "loco_raw_signed_auroc": 0.6078,
+   "fire_any_loco_good": 3,
+   "fire_any_loco_bad": 2,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 1,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 1,
+   "fire_extreme_loco_good": 3,
+   "fire_extreme_loco_bad": 2,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.2504,
+   "max_abs_spearman_partner": "full.frozen_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.frozen_frac",
+     "rho": 0.2504
+    },
+    {
+     "feature": "full.dark_frac",
+     "rho": -0.2123
+    },
+    {
+     "feature": "full.motion_energy",
+     "rho": -0.2
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.505 <= 0.55 (near chance)"
+  },
+  {
+   "feature": "B_frame_size_std",
+   "rule": "CODING_NOISE",
+   "source": "gold.npz:B_frame_size_std",
+   "derivation": "std of all packet sizes / mean, i.e. bitrate instability across the window; a flickering/duplicated/strobing source spends unevenly",
+   "n_unique": 130,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.0
+   ],
+   "frozen_thresholds_q": [
+    0
+   ],
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "loco_severity_auroc": 0.5,
+   "loco_severity_ci95": [
+    0.5,
+    0.5
+   ],
+   "loco_raw_signed_auroc": 0.6304,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 0,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 0,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.4796,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": -0.4796
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": 0.2126
+    },
+    {
+     "feature": "full.hf_ratio",
+     "rho": 0.1934
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.500 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.195
+  },
+  {
+   "feature": "B_p_count_frac",
+   "rule": "FROZEN_STATIC",
+   "source": "gold.npz:B_p_count_frac",
+   "derivation": "fraction of packets that are non-key frames; low means the encoder keeps re-sending I-frames (scene cuts/hard changes) or almost no coded frames",
+   "n_unique": 32,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.0
+   ],
+   "frozen_thresholds_q": [
+    0
+   ],
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "loco_severity_auroc": 0.5,
+   "loco_severity_ci95": [
+    0.5,
+    0.5
+   ],
+   "loco_raw_signed_auroc": 0.5507,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 0,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 0,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.3033,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": -0.3033
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": 0.2667
+    },
+    {
+     "feature": "full.hf_ratio",
+     "rho": 0.188
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.500 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": 0.0
+  },
+  {
+   "feature": "G_pca_resid",
+   "rule": "NO_ACTIVE_WORK",
+   "source": "gold.npz:G_pca_resid",
+   "derivation": "residual of the dominant affine/PCA motion model; high = motion the global model cannot explain (independent object/hand motion)",
+   "n_unique": 150,
+   "loco_direction": "mixed:high,low",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    0.0012
+   ],
+   "frozen_thresholds_q": [
+    12
+   ],
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.4775,
+    0.5061
+   ],
+   "loco_severity_auroc": 0.5,
+   "loco_severity_ci95": [
+    0.4775,
+    0.5061
+   ],
+   "loco_raw_signed_auroc": 0.6026,
+   "fire_any_loco_good": 2,
+   "fire_any_loco_bad": 1,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 2,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 2,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 2,
+   "fire_extreme_loco_bad": 1,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "low",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.6081,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": 0.6081
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": 0.4952
+    },
+    {
+     "feature": "full.dark_frac",
+     "rho": -0.4453
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.500 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.195
+  },
+  {
+   "feature": "G_dup_hash_mean",
+   "rule": "DUPLICATE",
+   "source": "gold.npz:G_dup_hash_mean",
+   "derivation": "mean dHash Hamming distance of consecutive frames (GPU window aggregate)",
+   "n_unique": 1,
+   "loco_direction": "mixed:",
+   "frozen_direction": null,
+   "frozen_op": null,
+   "frozen_thresholds": [],
+   "frozen_thresholds_q": [],
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "loco_severity_auroc": 0.5,
+   "loco_severity_ci95": [
+    0.5,
+    0.5
+   ],
+   "loco_raw_signed_auroc": null,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 0,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 0,
+   "loco_fold_sides": {},
+   "max_abs_spearman_with_q1": null,
+   "max_abs_spearman_partner": null,
+   "spearman_top3_q1": [],
+   "verdict": "DUD_degenerate",
+   "verdict_reason": "only 1 distinct values on gold-150 (constant: cannot threshold)",
+   "delta_vs_rule_table_point": -0.175
+  },
+  {
+   "feature": "G_flicker_idx",
+   "rule": "CODING_NOISE",
+   "source": "gold.npz:G_flicker_idx",
+   "derivation": "GPU flicker index (illumination instability)",
+   "n_unique": 1,
+   "loco_direction": "mixed:",
+   "frozen_direction": null,
+   "frozen_op": null,
+   "frozen_thresholds": [],
+   "frozen_thresholds_q": [],
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "loco_severity_auroc": 0.5,
+   "loco_severity_ci95": [
+    0.5,
+    0.5
+   ],
+   "loco_raw_signed_auroc": null,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 0,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 0,
+   "loco_fold_sides": {},
+   "max_abs_spearman_with_q1": null,
+   "max_abs_spearman_partner": null,
+   "spearman_top3_q1": [],
+   "verdict": "DUD_degenerate",
+   "verdict_reason": "only 1 distinct values on gold-150 (constant: cannot threshold)",
+   "delta_vs_rule_table_point": -0.195
+  },
+  {
+   "feature": "P_lap_var_ac_lag",
+   "rule": "CODING_NOISE",
+   "source": "gold.npz:P_lap_var_ac_lag",
+   "derivation": "lag (frames) of the lap_var autocorrelation peak",
+   "n_unique": 1,
+   "loco_direction": "mixed:",
+   "frozen_direction": null,
+   "frozen_op": null,
+   "frozen_thresholds": [],
+   "frozen_thresholds_q": [],
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "loco_severity_auroc": 0.5,
+   "loco_severity_ci95": [
+    0.5,
+    0.5
+   ],
+   "loco_raw_signed_auroc": null,
+   "fire_any_loco_good": 0,
+   "fire_any_loco_bad": 0,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 0,
+   "fire_extreme_loco_bad": 0,
+   "loco_fold_sides": {},
+   "max_abs_spearman_with_q1": null,
+   "max_abs_spearman_partner": null,
+   "spearman_top3_q1": [],
+   "verdict": "DUD_degenerate",
+   "verdict_reason": "only 1 distinct values on gold-150 (constant: cannot threshold)",
+   "delta_vs_rule_table_point": -0.195
+  },
+  {
+   "feature": "P_motion_excess_nf",
+   "rule": null,
+   "source": "series_gold.npz",
+   "derivation": "closed form: d=diff_e series, F=median(d)+MAD(d) (per-window noise floor), value=mean(max(d-F,0))/(F+1e-6); how far motion spikes rise ABOVE the window's own noise floor, not how often",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.0233
+   ],
+   "frozen_thresholds_q": [
+    233
+   ],
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.4708,
+    0.5334
+   ],
+   "loco_severity_auroc": 0.5,
+   "loco_severity_ci95": [
+    0.4708,
+    0.5334
+   ],
+   "loco_raw_signed_auroc": 0.6132,
+   "fire_any_loco_good": 2,
+   "fire_any_loco_bad": 1,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 1,
+   "fire_any_frozen_bad": 1,
+   "fire_extreme_frozen_good": 1,
+   "fire_extreme_frozen_bad": 1,
+   "fire_extreme_loco_good": 2,
+   "fire_extreme_loco_bad": 1,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.4218,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": -0.4218
+    },
+    {
+     "feature": "full.dark_frac",
+     "rho": 0.2756
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": -0.225
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.500 <= 0.55 (near chance)"
+  },
+  {
+   "feature": "P_ac1_contrast",
+   "rule": null,
+   "source": "series_gold.npz",
+   "derivation": "closed form: ac1(x)=sum((x_t-m)(x_{t-1}-m))/sum((x_t-m)^2); value=ac1(diff_e)-ac1(luma_mean); motion that is bursty while luma is static gives a positive contrast (handheld jitter / strobing), smooth global motion drives both together",
+   "n_unique": 150,
+   "loco_direction": "high",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    0.0338
+   ],
+   "frozen_thresholds_q": [
+    338
+   ],
+   "loco_indicator_auroc": 0.495,
+   "loco_indicator_ci95": [
+    0.4912,
+    0.5096
+   ],
+   "loco_severity_auroc": 0.495,
+   "loco_severity_ci95": [
+    0.4912,
+    0.5096
+   ],
+   "loco_raw_signed_auroc": 0.554,
+   "fire_any_loco_good": 3,
+   "fire_any_loco_bad": 1,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 2,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 2,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 3,
+   "fire_extreme_loco_bad": 1,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.2138,
+   "max_abs_spearman_partner": "full.dark_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dark_frac",
+     "rho": 0.2138
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": -0.1989
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": 0.0919
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.495 <= 0.55 (near chance)"
+  },
+  {
+   "feature": "P_clip_total",
+   "rule": null,
+   "source": "series_gold.npz",
+   "derivation": "closed form: mean_t under_frac(t) + mean_t over_frac(t) with under=luma<0.05, over=luma>0.95; total hard-clipped area, direction-free (fails either way)",
+   "n_unique": 150,
+   "loco_direction": "mixed:high,low",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    0.6893
+   ],
+   "frozen_thresholds_q": [
+    6893
+   ],
+   "loco_indicator_auroc": 0.495,
+   "loco_indicator_ci95": [
+    0.4759,
+    0.5
+   ],
+   "loco_severity_auroc": 0.495,
+   "loco_severity_ci95": [
+    0.4759,
+    0.5
+   ],
+   "loco_raw_signed_auroc": 0.3188,
+   "fire_any_loco_good": 1,
+   "fire_any_loco_bad": 0,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 0,
+   "fire_any_frozen_bad": 2,
+   "fire_extreme_frozen_good": 0,
+   "fire_extreme_frozen_bad": 2,
+   "fire_extreme_loco_good": 1,
+   "fire_extreme_loco_bad": 0,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "high",
+    "ecu_late": "high",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.8014,
+   "max_abs_spearman_partner": "full.dark_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dark_frac",
+     "rho": 0.8014
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": -0.6702
+    },
+    {
+     "feature": "full.temp_b0",
+     "rho": -0.6035
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.495 <= 0.55 (near chance)"
+  },
+  {
+   "feature": "B_i_size",
+   "rule": "CODING_NOISE",
+   "source": "gold.npz:B_i_size",
+   "derivation": "mean I-frame packet size (bytes) over the window; large I-frames at fixed CRF mean fine detail/noise, tiny/zero means no intra refresh or a blank keyframe",
+   "n_unique": 73,
+   "loco_direction": "mixed:high,low",
+   "frozen_direction": "high",
+   "frozen_op": ">",
+   "frozen_thresholds": [
+    29006.575
+   ],
+   "frozen_thresholds_q": [
+    290065750
+   ],
+   "loco_indicator_auroc": 0.49,
+   "loco_indicator_ci95": [
+    0.474,
+    0.5
+   ],
+   "loco_severity_auroc": 0.49,
+   "loco_severity_ci95": [
+    0.474,
+    0.5
+   ],
+   "loco_raw_signed_auroc": 0.5773,
+   "fire_any_loco_good": 2,
+   "fire_any_loco_bad": 0,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 2,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 2,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 2,
+   "fire_extreme_loco_bad": 0,
+   "loco_fold_sides": {
+    "desk": "high",
+    "ecu_full": "low",
+    "ecu_late": "high",
+    "logistics4": "high",
+    "organise": "high",
+    "pallet": "high",
+    "pallet2": "high"
+   },
+   "max_abs_spearman_with_q1": 0.4226,
+   "max_abs_spearman_partner": "full.motion_energy",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.motion_energy",
+     "rho": 0.4226
+    },
+    {
+     "feature": "full.bright_frac",
+     "rho": 0.3379
+    },
+    {
+     "feature": "full.hf_ratio",
+     "rho": -0.2565
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.490 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.205
+  },
+  {
+   "feature": "G_pca_top1_share",
+   "rule": "FROZEN_STATIC",
+   "source": "gold.npz:G_pca_top1_share",
+   "derivation": "share of motion energy in the top PCA component; a single dominant translation = clean ego-motion",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.9187
+   ],
+   "frozen_thresholds_q": [
+    9187
+   ],
+   "loco_indicator_auroc": 0.49,
+   "loco_indicator_ci95": [
+    0.4655,
+    0.5
+   ],
+   "loco_severity_auroc": 0.49,
+   "loco_severity_ci95": [
+    0.4655,
+    0.5
+   ],
+   "loco_raw_signed_auroc": 0.5394,
+   "fire_any_loco_good": 2,
+   "fire_any_loco_bad": 0,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 2,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 2,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 2,
+   "fire_extreme_loco_bad": 0,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.5356,
+   "max_abs_spearman_partner": "full.skin_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.skin_frac",
+     "rho": -0.5356
+    },
+    {
+     "feature": "full.motion_energy",
+     "rho": -0.2823
+    },
+    {
+     "feature": "full.frozen_frac",
+     "rho": -0.2468
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.490 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.01
+  },
+  {
+   "feature": "B_temp_period",
+   "rule": "DUPLICATE",
+   "source": "gold.npz:B_temp_period",
+   "derivation": "dominant temporal period (frames) of the luma signal; a fixed period indicates a loop/repeat rather than live work",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.7543
+   ],
+   "frozen_thresholds_q": [
+    7543
+   ],
+   "loco_indicator_auroc": 0.49,
+   "loco_indicator_ci95": [
+    0.4806,
+    0.5
+   ],
+   "loco_severity_auroc": 0.49,
+   "loco_severity_ci95": [
+    0.4806,
+    0.5
+   ],
+   "loco_raw_signed_auroc": 0.5272,
+   "fire_any_loco_good": 2,
+   "fire_any_loco_bad": 0,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 2,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 2,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 2,
+   "fire_extreme_loco_bad": 0,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.1582,
+   "max_abs_spearman_partner": "full.dark_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dark_frac",
+     "rho": 0.1582
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": -0.1268
+    },
+    {
+     "feature": "full.temp_b0",
+     "rho": -0.1173
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.490 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.185
+  },
+  {
+   "feature": "P_luma_mean_ac_peak",
+   "rule": "DUPLICATE",
+   "source": "gold.npz:P_luma_mean_ac_peak",
+   "derivation": "peak normalised autocorrelation of the luma_mean series (lag>=1); high = the window's brightness pattern repeats",
+   "n_unique": 150,
+   "loco_direction": "low",
+   "frozen_direction": "low",
+   "frozen_op": "<",
+   "frozen_thresholds": [
+    0.754
+   ],
+   "frozen_thresholds_q": [
+    7540
+   ],
+   "loco_indicator_auroc": 0.49,
+   "loco_indicator_ci95": [
+    0.4806,
+    0.5
+   ],
+   "loco_severity_auroc": 0.49,
+   "loco_severity_ci95": [
+    0.4806,
+    0.5
+   ],
+   "loco_raw_signed_auroc": 0.5272,
+   "fire_any_loco_good": 2,
+   "fire_any_loco_bad": 0,
+   "n_good": 100,
+   "n_bad": 50,
+   "fire_any_frozen_good": 2,
+   "fire_any_frozen_bad": 0,
+   "fire_extreme_frozen_good": 2,
+   "fire_extreme_frozen_bad": 0,
+   "fire_extreme_loco_good": 2,
+   "fire_extreme_loco_bad": 0,
+   "loco_fold_sides": {
+    "desk": "low",
+    "ecu_full": "low",
+    "ecu_late": "low",
+    "logistics4": "low",
+    "organise": "low",
+    "pallet": "low",
+    "pallet2": "low"
+   },
+   "max_abs_spearman_with_q1": 0.1583,
+   "max_abs_spearman_partner": "full.dark_frac",
+   "spearman_top3_q1": [
+    {
+     "feature": "full.dark_frac",
+     "rho": 0.1583
+    },
+    {
+     "feature": "full.luma_mean",
+     "rho": -0.1269
+    },
+    {
+     "feature": "full.temp_b0",
+     "rho": -0.1174
+    }
+   ],
+   "verdict": "DUD",
+   "verdict_reason": "best LOCO AUROC 0.490 <= 0.55 (near chance)",
+   "delta_vs_rule_table_point": -0.185
+  }
+ ],
+ "q1_reference_pipeline_check": [
+  {
+   "feature": "G_hf_ratio",
+   "q1_rule": "BLUR",
+   "q1_published_auroc": 0.695,
+   "pipeline_indicator_auroc": 0.52,
+   "pipeline_indicator_ci95": [
+    0.5,
+    0.5345
+   ],
+   "pipeline_severity_auroc": 0.52,
+   "note": "Q1 published value is the named-rule indicator (union of that rule's features, per-fold table); this row is the single feature through the A3 pipeline"
+  },
+  {
+   "feature": "G_dct_energy",
+   "q1_rule": "BLUR",
+   "q1_published_auroc": 0.695,
+   "pipeline_indicator_auroc": 0.54,
+   "pipeline_indicator_ci95": [
+    0.5,
+    0.5943
+   ],
+   "pipeline_severity_auroc": 0.54,
+   "note": "Q1 published value is the named-rule indicator (union of that rule's features, per-fold table); this row is the single feature through the A3 pipeline"
+  },
+  {
+   "feature": "G_luma_mean",
+   "q1_rule": "TOO_DARK",
+   "q1_published_auroc": 0.55,
+   "pipeline_indicator_auroc": 0.48,
+   "pipeline_indicator_ci95": [
+    0.4036,
+    0.5
+   ],
+   "pipeline_severity_auroc": 0.48,
+   "note": "Q1 published value is the named-rule indicator (union of that rule's features, per-fold table); this row is the single feature through the A3 pipeline"
+  },
+  {
+   "feature": "G_dark_frac",
+   "q1_rule": "TOO_DARK",
+   "q1_published_auroc": 0.55,
+   "pipeline_indicator_auroc": 0.495,
+   "pipeline_indicator_ci95": [
+    0.4759,
+    0.5
+   ],
+   "pipeline_severity_auroc": 0.495,
+   "note": "Q1 published value is the named-rule indicator (union of that rule's features, per-fold table); this row is the single feature through the A3 pipeline"
+  },
+  {
+   "feature": "G_bright_frac",
+   "q1_rule": "OVEREXPOSED",
+   "q1_published_auroc": 0.565,
+   "pipeline_indicator_auroc": 0.505,
+   "pipeline_indicator_ci95": [
+    0.4845,
+    0.518
+   ],
+   "pipeline_severity_auroc": 0.505,
+   "note": "Q1 published value is the named-rule indicator (union of that rule's features, per-fold table); this row is the single feature through the A3 pipeline"
+  },
+  {
+   "feature": "G_temp_b0",
+   "q1_rule": "FROZEN_STATIC",
+   "q1_published_auroc": 0.5,
+   "pipeline_indicator_auroc": 0.48,
+   "pipeline_indicator_ci95": [
+    0.4036,
+    0.5
+   ],
+   "pipeline_severity_auroc": 0.48,
+   "note": "Q1 published value is the named-rule indicator (union of that rule's features, per-fold table); this row is the single feature through the A3 pipeline"
+  },
+  {
+   "feature": "G_frozen_frac",
+   "q1_rule": "FROZEN_STATIC",
+   "q1_published_auroc": 0.5,
+   "pipeline_indicator_auroc": 0.5,
+   "pipeline_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "pipeline_severity_auroc": 0.5,
+   "note": "Q1 published value is the named-rule indicator (union of that rule's features, per-fold table); this row is the single feature through the A3 pipeline"
+  },
+  {
+   "feature": "G_motion_energy",
+   "q1_rule": "NO_ACTIVE_WORK",
+   "q1_published_auroc": 0.695,
+   "pipeline_indicator_auroc": 0.515,
+   "pipeline_indicator_ci95": [
+    0.4833,
+    0.5488
+   ],
+   "pipeline_severity_auroc": 0.515,
+   "note": "Q1 published value is the named-rule indicator (union of that rule's features, per-fold table); this row is the single feature through the A3 pipeline"
+  },
+  {
+   "feature": "G_skin_frac",
+   "q1_rule": "HANDS_NOT_VISIBLE",
+   "q1_published_auroc": 0.61,
+   "pipeline_indicator_auroc": 0.52,
+   "pipeline_indicator_ci95": [
+    0.5,
+    0.5536
+   ],
+   "pipeline_severity_auroc": 0.52,
+   "note": "Q1 published value is the named-rule indicator (union of that rule's features, per-fold table); this row is the single feature through the A3 pipeline"
+  }
+ ],
+ "new_composites_closed_form": {
+  "P_motion_excess_nf": "closed form: d=diff_e series, F=median(d)+MAD(d) (per-window noise floor), value=mean(max(d-F,0))/(F+1e-6); how far motion spikes rise ABOVE the window's own noise floor, not how often",
+  "P_ac1_contrast": "closed form: ac1(x)=sum((x_t-m)(x_{t-1}-m))/sum((x_t-m)^2); value=ac1(diff_e)-ac1(luma_mean); motion that is bursty while luma is static gives a positive contrast (handheld jitter / strobing), smooth global motion drives both together",
+  "P_clip_total": "closed form: mean_t under_frac(t) + mean_t over_frac(t) with under=luma<0.05, over=luma>0.95; total hard-clipped area, direction-free (fails either way)",
+  "P_sharp_flicker": "closed form: mean_t |lap_var(t)-lap_var(t-1)| / (mean_t lap_var(t)+1e-6); relative frame-to-frame sharpness instability (focus hunting / rolling-shutter strobe) at zero extra decode cost",
+  "P_motion_tonality": "closed form: Wiener entropy of the diff_e spectrum, exp(mean(log(P+1e-12)))/mean(P+1e-12) over rfft bins 1..T/2; ~0 = tonal/periodic motion (oscillation, strobe), ~1 = broadband noise motion (coding noise / shake)",
+  "P_burst_onset_rate": "closed form: F=median(diff_e)+MAD(diff_e); value=mean_t[ d_t>F and d_{t-1}<=F ]; rate of activity onsets per frame (burst/gap statistic)",
+  "P_series_luma_mean": "context denominator only: mean luma_mean over the 100-frame series",
+  "P_series_diff_e_mean": "context denominator only: mean diff_e over the 100-frame series"
+ },
+ "limitations": [
+  "n=150 with only 7 clips; clip bootstrap has 7 resample units, so CIs are wide and the indicator AUROC is a coarse statistic (binary).",
+  "Direction is chosen inside each fold from training labels (that is LOCO-honest but means the reported direction can differ from a physical prior).",
+  "Severity AUROC and indicator AUROC rank differently when a feature's tail is informative but its bulk is not.",
+  "The frozen_thresholds_* fields are fitted on all 7 clips (what a deployment table would carry); they are NOT used for the LOCO columns.",
+  "0.5-granularity: with a binary indicator the AUROC is determined by TPR/FPR at one operating point (equivalent to balanced accuracy), which is why Q1 per-rule values sit near 0.5.",
+  "No OOD labels were read for this experiment; no hold-out 108 windows were touched."
+ ]
+}

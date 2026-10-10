@@ -112,6 +112,37 @@ uniform count is therefore the more robust statistic, and it is also the one wit
 free parameter to overfit. This is why (a) reweighting loses in-domain under LOCO and
 (b) only the *location* of the thresholds needs adapting across domains.
 
+## 4.1 The model-class ceiling: the deterministic rule model beats every fitted alternative
+
+The v2 model is a deterministic function of the per-feature **quantile levels** a window
+crosses — i.e. of each feature's rank within the domain. Every deterministic rule model
+built from per-feature order statistics lives in that class. So the honest ceiling for the
+class is the best LOCO classifier trained on **rank-transformed** features. Measured under
+the same 7-clip LOCO (`LEAD_ceiling.json`, command
+`python3 eval/exp_phys_dsh/run_ceiling.py`):
+
+| model | LOCO AUROC | in the rule-model class? | shippable? |
+|---|---|---|---|
+| **v2 deterministic rule model (frozen, 0 fitted parameters)** | **0.8472** | yes | **yes** |
+| logistic on 16 per-rule fire counts | 0.7858 | yes | no (float weights) |
+| logistic on raw 42 features | 0.7912 | no (uses scale) | no |
+| logistic on per-fold rank-42 features — **class ceiling** | 0.7060 | yes | no |
+
+Headroom to the class ceiling: **−0.1412**. Headroom to the best possible aggregation of
+exactly the rules we already have: **−0.0614**. Both are negative.
+
+That is the mathematical result of this track: on these 42 hand-crafted physics features and
+this data, the **frozen, zero-parameter, integer rule model is not a cheap approximation of a
+fitted model — it is better than one**. The reason is the same invariance argument as §4:
+the rule model has nothing to overfit, while a fitted classifier on 150 windows over 7 clips
+spends its variance on the source marginals — the exact quantity the domain shift breaks.
+
+**Caveats, stated plainly:** this is a single LOCO protocol with C=0.3 logistic and no
+hyper-parameter search on the baselines; a tuned or regularised learner could close or
+reverse the gap; and the difference between 0.8472 and 0.7912 is well inside the
+clip-bootstrap noise (7 clips). It is a *diagnostic ceiling for the class*, not a claim of
+superiority over machine learning in general.
+
 ## 5. The domain shift: label-free per-domain re-quantiling
 
 `LEAD_v2.json` part C and `A2_ood_transfer.json` (A2, independent implementation).

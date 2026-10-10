@@ -31,6 +31,7 @@ import sys
 import time
 
 import numpy as np
+from scipy.stats import rankdata
 from sklearn.metrics import roc_auc_score
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -206,7 +207,18 @@ Q1_TABLE_ROWS = [
 
 
 def auc(y: np.ndarray, s: np.ndarray) -> float:
-    return float(roc_auc_score(1 - y, s))
+    """Mann-Whitney AUROC P(score_bad > score_good) with average ranks.
+
+    Identical to sklearn.metrics.roc_auc_score(1 - y, s) (verified in main),
+    but ~100x faster, which matters for the 200k bootstrap evaluations.
+    """
+    s = np.asarray(s, float)
+    pos = (y == 0)                                    # y=0 is bad = positive class
+    npos, nneg = int(pos.sum()), int((~pos).sum())
+    if npos == 0 or nneg == 0:
+        return float("nan")
+    r = rankdata(s)
+    return float((r[pos].sum() - npos * (npos + 1) / 2.0) / (npos * nneg))
 
 
 def derive_thresholds(v: np.ndarray, side: str) -> list[float]:
@@ -218,8 +230,8 @@ def derive_thresholds(v: np.ndarray, side: str) -> list[float]:
     qs = np.array(QUANTILES) if side == "low" else 1.0 - np.array(QUANTILES)
     ths = [round(float(t), Q) for t in np.quantile(v, qs)]
     out = []
-    for t in ths:                      # keep severity order, drop duplicates
-        if not out or (t < out[-1] if side == "low" else t > out[-1]):
+    for t in ths:                      # keep severity order, drop exact duplicates
+        if not out or t != out[-1]:
             out.append(t)
     return out
 
@@ -291,6 +303,12 @@ def main() -> int:
     S = sg["S"]
     comp = new_composites(S)
     idx = {nm: i for i, nm in enumerate(names)}
+    # AUROC implementation check (rank-based vs sklearn) on deterministic vectors
+    auc_check = 0.0
+    for k in range(5):
+        s = np.sin(np.arange(len(y)) * (k + 1)) + k
+        auc_check = max(auc_check, abs(auc(y, s) - roc_auc_score(1 - y, s)))
+        auc_check = max(auc_check, abs(auc(y, (s > 0).astype(float)) - roc_auc_score(1 - y, (s > 0).astype(float))))
 
     # candidate value vectors
     values: dict[str, np.ndarray] = {}
@@ -469,6 +487,7 @@ def main() -> int:
         "exact_command": "OMP_NUM_THREADS=2 python3 eval/exp_phys_dsh/a3_candidates.py",
         "device": "CPU only (no GPU; torch present but unused)",
         "wall_s": None,
+        "auc_impl_max_abs_diff_vs_sklearn": auc_check,
         "ranked_features": ranked,
         "candidates": results,
         "q1_reference_pipeline_check": ref,
@@ -507,10 +526,13 @@ def main() -> int:
         if r["verdict"] in shape_ok:
             rules_out.append(entry)
         else:
-            excluded.append({k: entry[k] for k in
-                             ("rule", "feature", "verdict", "loco_indicator_auroc",
-                              "loco_indicator_ci95", "n_unique", "max_abs_spearman_with_q1")}
-                            | {"reason": r["verdict_reason"]})
+            excluded.append({"rule": entry["rule"], "feature": entry["feature"],
+                             "verdict": r["verdict"],
+                             "loco_indicator_auroc": r["loco_indicator_auroc"],
+                             "loco_indicator_ci95": r["loco_indicator_ci95"],
+                             "n_unique": r["n_unique"],
+                             "max_abs_spearman_with_q1": r["max_abs_spearman_with_q1"],
+                             "reason": r["verdict_reason"]})
     rt = {
         "experiment": "A3",
         "description": "Merge candidates for the Q1 rule table: NEW deterministic cheap-signal features (fixed integer Q=4 thresholds).",

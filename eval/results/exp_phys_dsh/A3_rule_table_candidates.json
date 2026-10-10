@@ -1,0 +1,485 @@
+{
+ "experiment": "A3",
+ "description": "Merge candidates for the Q1 rule table: NEW deterministic cheap-signal features (fixed integer Q=4 thresholds).",
+ "derivation": "thresholds = quantiles p01/p05/p10/p25 (mirrored to p99/p95/p90/p75 for high-is-bad) of the feature on the 150 IndEgo gold windows, quantised to 4 dp; thresholds_q = int(round(t*1e4)); score contribution = 1 per crossed rung, no weights. LOCO columns use per-fold (6-clip) tables.",
+ "quantisation": 4,
+ "n": 150,
+ "label_source": "human (IndEgo gold)",
+ "protocol": "leave-one-clip-out over 7 clips; clip-bootstrap 95% CI (B=2000, seed 0)",
+ "exact_command": "OMP_NUM_THREADS=2 python3 eval/exp_phys_dsh/a3_candidates.py",
+ "rules": [],
+ "excluded_candidates": [
+  {
+   "rule": "CODING_NOISE",
+   "feature": "B_p_size_mean",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.54,
+   "loco_indicator_ci95": [
+    0.5078,
+    0.6
+   ],
+   "n_unique": 130,
+   "max_abs_spearman_with_q1": 0.7221,
+   "reason": "best LOCO AUROC 0.540 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "BLUR",
+   "feature": "B_dct_hfenergy",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.54,
+   "loco_indicator_ci95": [
+    0.5,
+    0.6132
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.7721,
+   "reason": "best LOCO AUROC 0.540 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "BLUR",
+   "feature": "B_spec_slope",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.54,
+   "loco_indicator_ci95": [
+    0.5,
+    0.6071
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.3637,
+   "reason": "best LOCO AUROC 0.540 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "BLUR",
+   "feature": "P_dct_hf_mean",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.54,
+   "loco_indicator_ci95": [
+    0.5,
+    0.6132
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.7863,
+   "reason": "best LOCO AUROC 0.540 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "CODING_NOISE",
+   "feature": "P_dct_hf_std",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.54,
+   "loco_indicator_ci95": [
+    0.5,
+    0.6132
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.6777,
+   "reason": "best LOCO AUROC 0.540 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "BLUR",
+   "feature": "B_wav_HH",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.535,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5667
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.3937,
+   "reason": "best LOCO AUROC 0.535 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NO_ACTIVE_WORK",
+   "feature": "B_mv_per_frame",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.53,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5656
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.4281,
+   "reason": "best LOCO AUROC 0.530 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "BLUR",
+   "feature": "B_lap_var",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.53,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5849
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.7232,
+   "reason": "best LOCO AUROC 0.530 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "DUPLICATE",
+   "feature": "G_zncc_self",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.53,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5804
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.2613,
+   "reason": "best LOCO AUROC 0.530 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NEW_RULE",
+   "feature": "P_sharp_flicker",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.53,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5849
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.6745,
+   "reason": "best LOCO AUROC 0.530 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "CODING_NOISE",
+   "feature": "B_pb_size_ratio",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.55
+   ],
+   "n_unique": 130,
+   "max_abs_spearman_with_q1": 0.1604,
+   "reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "BLUR",
+   "feature": "B_wav_HL",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5385
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.405,
+   "reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "BLUR",
+   "feature": "B_wav_LH",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5385
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.3956,
+   "reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NO_ACTIVE_WORK",
+   "feature": "G_global_shift",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5345
+   ],
+   "n_unique": 99,
+   "max_abs_spearman_with_q1": 0.2728,
+   "reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "BLUR",
+   "feature": "G_radial_slope",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5345
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.8994,
+   "reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NO_ACTIVE_WORK",
+   "feature": "P_shift_mean",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.52,
+   "loco_indicator_ci95": [
+    0.5,
+    0.55
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.4766,
+   "reason": "best LOCO AUROC 0.520 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NO_ACTIVE_WORK",
+   "feature": "P_shift_max",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.515,
+   "loco_indicator_ci95": [
+    0.481,
+    0.5492
+   ],
+   "n_unique": 134,
+   "max_abs_spearman_with_q1": 0.5006,
+   "reason": "best LOCO AUROC 0.515 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NO_ACTIVE_WORK",
+   "feature": "P_motion_floor",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.515,
+   "loco_indicator_ci95": [
+    0.4833,
+    0.5488
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.9738,
+   "reason": "best LOCO AUROC 0.515 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NEW_RULE",
+   "feature": "P_motion_tonality",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.51,
+   "loco_indicator_ci95": [
+    0.4865,
+    0.5362
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.2519,
+   "reason": "best LOCO AUROC 0.510 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "BLUR",
+   "feature": "B_spec_hfratio",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.505,
+   "loco_indicator_ci95": [
+    0.4846,
+    0.5224
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.5572,
+   "reason": "best LOCO AUROC 0.505 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NO_ACTIVE_WORK",
+   "feature": "P_motion_frac_above",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.505,
+   "loco_indicator_ci95": [
+    0.4912,
+    0.5278
+   ],
+   "n_unique": 21,
+   "max_abs_spearman_with_q1": 0.1016,
+   "reason": "best LOCO AUROC 0.505 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "FROZEN_STATIC",
+   "feature": "P_still_run_frac",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.505,
+   "loco_indicator_ci95": [
+    0.4835,
+    0.5263
+   ],
+   "n_unique": 43,
+   "max_abs_spearman_with_q1": 0.2649,
+   "reason": "best LOCO AUROC 0.505 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NEW_RULE",
+   "feature": "P_burst_onset_rate",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.505,
+   "loco_indicator_ci95": [
+    0.4935,
+    0.5287
+   ],
+   "n_unique": 18,
+   "max_abs_spearman_with_q1": 0.2504,
+   "reason": "best LOCO AUROC 0.505 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "CODING_NOISE",
+   "feature": "B_frame_size_std",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "n_unique": 130,
+   "max_abs_spearman_with_q1": 0.4796,
+   "reason": "best LOCO AUROC 0.500 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "FROZEN_STATIC",
+   "feature": "B_p_count_frac",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "n_unique": 32,
+   "max_abs_spearman_with_q1": 0.3033,
+   "reason": "best LOCO AUROC 0.500 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NO_ACTIVE_WORK",
+   "feature": "G_pca_resid",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.4775,
+    0.5061
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.6081,
+   "reason": "best LOCO AUROC 0.500 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "DUPLICATE",
+   "feature": "G_dup_hash_mean",
+   "verdict": "DUD_degenerate",
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "n_unique": 1,
+   "max_abs_spearman_with_q1": null,
+   "reason": "only 1 distinct values on gold-150 (constant: cannot threshold)"
+  },
+  {
+   "rule": "CODING_NOISE",
+   "feature": "G_flicker_idx",
+   "verdict": "DUD_degenerate",
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "n_unique": 1,
+   "max_abs_spearman_with_q1": null,
+   "reason": "only 1 distinct values on gold-150 (constant: cannot threshold)"
+  },
+  {
+   "rule": "CODING_NOISE",
+   "feature": "P_lap_var_ac_lag",
+   "verdict": "DUD_degenerate",
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.5,
+    0.5
+   ],
+   "n_unique": 1,
+   "max_abs_spearman_with_q1": null,
+   "reason": "only 1 distinct values on gold-150 (constant: cannot threshold)"
+  },
+  {
+   "rule": "NEW_RULE",
+   "feature": "P_motion_excess_nf",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.5,
+   "loco_indicator_ci95": [
+    0.4708,
+    0.5334
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.4218,
+   "reason": "best LOCO AUROC 0.500 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NEW_RULE",
+   "feature": "P_ac1_contrast",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.495,
+   "loco_indicator_ci95": [
+    0.4912,
+    0.5096
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.2138,
+   "reason": "best LOCO AUROC 0.495 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "NEW_RULE",
+   "feature": "P_clip_total",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.495,
+   "loco_indicator_ci95": [
+    0.4759,
+    0.5
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.8014,
+   "reason": "best LOCO AUROC 0.495 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "CODING_NOISE",
+   "feature": "B_i_size",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.49,
+   "loco_indicator_ci95": [
+    0.474,
+    0.5
+   ],
+   "n_unique": 73,
+   "max_abs_spearman_with_q1": 0.4226,
+   "reason": "best LOCO AUROC 0.490 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "FROZEN_STATIC",
+   "feature": "G_pca_top1_share",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.49,
+   "loco_indicator_ci95": [
+    0.4655,
+    0.5
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.5356,
+   "reason": "best LOCO AUROC 0.490 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "DUPLICATE",
+   "feature": "B_temp_period",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.49,
+   "loco_indicator_ci95": [
+    0.4806,
+    0.5
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.1582,
+   "reason": "best LOCO AUROC 0.490 <= 0.55 (near chance)"
+  },
+  {
+   "rule": "DUPLICATE",
+   "feature": "P_luma_mean_ac_peak",
+   "verdict": "DUD",
+   "loco_indicator_auroc": 0.49,
+   "loco_indicator_ci95": [
+    0.4806,
+    0.5
+   ],
+   "n_unique": 150,
+   "max_abs_spearman_with_q1": 0.1583,
+   "reason": "best LOCO AUROC 0.490 <= 0.55 (near chance)"
+  }
+ ],
+ "notes": [
+  "Only candidates whose best LOCO AUROC clears 0.60 with CI-low > 0.50 are listed in rules[]; everything else is in excluded_candidates with the reason.",
+  "Features whose robustness field is null were not exercised in the resolution/fps sensitivity run (pool/other-source features)."
+ ]
+}
