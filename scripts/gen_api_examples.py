@@ -24,6 +24,12 @@ sys.path.insert(0, str(ROOT))
 
 EXAMPLES_DIR = ROOT / "docs" / "api_examples"
 VOLATILE_KEYS = frozenset({"created_utc", "started_utc", "failed_utc"})
+VOLATILE_VALUES = {
+    "receipt_sha256": "<sha256>",
+    "receipt_id": "<receipt-id>",
+    "expected": "<sha256>",
+    "actual": "<sha256>",
+}
 
 PASS_SIGNALS = {
     "decodable": True, "blur_var": 120.0, "brightness_mean": 90.0,
@@ -39,9 +45,23 @@ PASS_DECISIONS = {
 
 
 def _normalized(obj):
+    # Canonicalize values that legitimately vary run to run (timestamps,
+    # content hashes, impl version strings) to fixed tokens. Key presence
+    # and list lengths stay pinned, so shape drift still fails.
     if isinstance(obj, dict):
-        return {k: _normalized(v) for k, v in obj.items()
-                if k not in VOLATILE_KEYS}
+        out = {}
+        for k, v in obj.items():
+            if k in VOLATILE_KEYS:
+                continue
+            if k == "versions" and isinstance(v, dict):
+                out[k] = {vk: "<version>" for vk in sorted(v)}
+            elif k == "receipt_ids" and isinstance(v, list):
+                out[k] = ["<receipt-id>" for _ in v]
+            elif k in VOLATILE_VALUES and isinstance(v, str):
+                out[k] = VOLATILE_VALUES[k]
+            else:
+                out[k] = _normalized(v)
+        return out
     if isinstance(obj, list):
         return [_normalized(v) for v in obj]
     return obj

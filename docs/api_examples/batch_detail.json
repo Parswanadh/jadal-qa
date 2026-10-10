@@ -4,11 +4,11 @@
  "k": 1,
  "n": 5,
  "receipt_ids": [
-  "6cd913b6043b967a",
-  "78b05213fb337bdc",
-  "79fe9743ee0c24ac",
-  "969ca4c9af8e810f",
-  "fdd066597cf22ad0"
+  "<receipt-id>",
+  "<receipt-id>",
+  "<receipt-id>",
+  "<receipt-id>",
+  "<receipt-id>"
  ],
  "rule": "reject if rejected_count > k",
  "segment_ids": [

@@ -1,7 +1,7 @@
 {
- "actual": "6cd913b6043b967a7bcd42b70d8414e4f79693430d56d19c4c4686ee1dfab2ff",
+ "actual": "<sha256>",
  "diff": [],
- "expected": "6cd913b6043b967a7bcd42b70d8414e4f79693430d56d19c4c4686ee1dfab2ff",
+ "expected": "<sha256>",
  "match": true,
  "version_diff": [],
  "version_match": true
