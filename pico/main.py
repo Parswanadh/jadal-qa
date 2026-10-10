@@ -18,10 +18,10 @@ flowing during a flash. Unknown or malformed frames are silently ignored.
 (No ``from __future__`` import and no function annotations anywhere in this
 file: stock MicroPython must be able to boot it with zero extra modules.)
 
-NOT DONE (no hardware in CI, so none of this is measured/verified on-device):
-  * Never executed on a real Raspberry Pi Pico (RP2040 tested; RP2350 should also work) from this repo; only syntax-checked and
-    logic-verified against stubs on the host (see tests/test_pico_protocol.py
-    for the pure helpers, which run on CPython).
+LIMITS (the pure helpers are logic-tested on the host, see tests/test_pico_protocol.py, which runs on CPython):
+  * Exercised on a real Raspberry Pi Pico (RP2040) with MicroPython 1.29.0: heartbeat, LED, FLASH, PING/PONG
+    verified over USB serial; see docs/reports/pico_hardware.md. LED colours: the onboard LED is a single
+    colour, G/A/R are distinguishable only with an external RGB LED.
   * ``time.ticks_*`` wraparound (~2**30 ms) is handled for the flash/HB timers
     via ``time.ticks_diff``, but the absolute ``ticks_ms`` reported in HB/PONG
     is raw and wraps the same way.

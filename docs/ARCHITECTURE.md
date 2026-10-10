@@ -133,7 +133,7 @@ What the tests show: the batch-independence tests on `main` call pure functions 
 - **The batch rule is a fixed rule with no statistical guarantee** at n = 5 to 10.
 - **The face blur is not a privacy guarantee.**
 - **Batch-independence** is tested through pure-function proxies, not a real batch run.
-- **Pico firmware is not verified on the device.** Hardware validation is pending.
+- **Pico firmware is exercised on a real Raspberry Pi Pico (RP2040)** with MicroPython 1.29.0: heartbeat, LED, FLASH and PING/PONG verified over USB serial (`docs/reports/pico_hardware.md`). The LED colour output and the FLASH pattern were not observed by the agent; RP2350 is not tested.
 - **The SOP is a labelled sample** (`sop/sop_garment_v1.md`), not a task specification taken from the footage.
 - **Voice translations are machine drafts.** The Tamil header has a known typo, deliberately left for native-speaker review.
 - **L1 determinism is not measured**, because no real decider is merged.
