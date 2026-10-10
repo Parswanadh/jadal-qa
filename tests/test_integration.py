@@ -520,6 +520,15 @@ class TestReceiptProblems(IntegrationCase):
         problems = pipeline.receipt_problems(receipt)
         self.assertTrue(any("mediapipe" in p for p in problems), problems)
 
+    def test_backend_versions_spelling_passes(self) -> None:
+        # impl_versions prefers signals.backend_versions(), which spells the
+        # keys faces_backend/hands_backend (backend_info uses faces/hands).
+        import json as _json
+        receipt = _clean_receipt()
+        receipt["config"]["versions"]["signals_backend"] = _json.dumps(
+            {"faces_backend": "mediapipe", "hands_backend": "mediapipe"})
+        self.assertEqual(pipeline.receipt_problems(receipt), [])
+
     def test_missing_heads_and_zero_frames_are_problems(self) -> None:
         receipt = _clean_receipt()
         receipt["decisions"]["model_versions"]["heads"] = (

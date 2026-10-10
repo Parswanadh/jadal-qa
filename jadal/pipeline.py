@@ -295,11 +295,15 @@ def receipt_problems(receipt: dict) -> list[str]:
         backend = json.loads(backend_raw) if isinstance(backend_raw, str) else {}
     except ValueError:
         backend = {}
-    if not isinstance(backend, dict) or backend.get("faces") != "mediapipe" \
-            or backend.get("hands") != "mediapipe":
+    # backend_versions() reports faces_backend/hands_backend while
+    # backend_info() reports faces/hands: accept either spelling.
+    faces = backend.get("faces", backend.get("faces_backend"))
+    hands = backend.get("hands", backend.get("hands_backend"))
+    if not isinstance(backend, dict) or faces != "mediapipe" \
+            or hands != "mediapipe":
         problems.append(
             "signals backend is not mediapipe "
-            f"(faces={backend.get('faces')!r}, hands={backend.get('hands')!r}); "
+            f"(faces={faces!r}, hands={hands!r}); "
             "provide models/blaze_face_short_range.tflite and "
             "models/hand_landmarker.task, do not stub silently")
     decisions = receipt.get("decisions") or {}
