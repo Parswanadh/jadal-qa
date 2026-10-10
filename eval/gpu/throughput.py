@@ -307,6 +307,49 @@ def mode_holdB(sustain_s=360, ndec=4):
                       "extrapolation": thr["extrapolation"]}, indent=1))
 
 
+def mode_holdB2(nwin=24):
+    """R3b: CPU-decode-fed GPU batches (the fair rival to NVDEC R3a)."""
+    import numpy as np
+    import torch
+    assert torch.cuda.is_available()
+    torch.cuda.set_device(0)
+    torch.cuda.reset_peak_memory_stats()
+    from eval.gpu.decode import decode_window, safe_offset
+    from jadal.gpu.features import gpu_window_features_batch
+    items = clips7()
+    thr, lad = load()
+    r3b = {}
+    for B in [8, 32]:
+        t0 = time.perf_counter()
+        done = 0
+        for i in range(0, nwin, B):
+            batch = []
+            for j in range(B):
+                it = items[(i + j) % len(items)]
+                rgb, _ = decode_window(it["path"],
+                                       safe_offset(it["path"], i + j, 10.0),
+                                       10.0, W, H, "rgb24")
+                batch.append(rgb.astype(np.float32))
+            ten = torch.from_numpy(np.stack(batch)).half().cuda()
+            luma = (0.299 * ten[..., 0] + 0.587 * ten[..., 1]
+                    + 0.114 * ten[..., 2])
+            with torch.no_grad():
+                gpu_window_features_batch(luma, ten, fps=10.0)
+            done += B
+        torch.cuda.synchronize()
+        wps = done / (time.perf_counter() - t0)
+        r3b[f"B{B}"] = {"windows_s": round(wps, 2),
+                        "hours_per_hour": round(windows_per_hour(wps), 1)}
+    thr["R3b_cpufeed"] = r3b
+    thr["gpu_peak_vram_mib_holdB2"] = round(torch.cuda.max_memory_reserved() / 2**20, 1)
+    lad["rungs"].append({"rung": "R3b_cpu_decode_gpu_kernels",
+                         "hours_per_hour": {k: v["hours_per_hour"] for k, v in r3b.items()},
+                         "why": "CPU ffmpeg decode (RTF~100) + H2D + batched kernels: "
+                                "NVDEC per-session overhead avoided at tiny frames"})
+    save(thr, lad)
+    print(json.dumps(r3b, indent=1))
+
+
 if __name__ == "__main__":
     m = sys.argv[1]
     if m == "--r0":
@@ -316,5 +359,7 @@ if __name__ == "__main__":
     elif m == "--holdB":
         s = int(sys.argv[2]) if len(sys.argv) > 2 else 360
         mode_holdB(sustain_s=s)
+    elif m == "--holdB2":
+        mode_holdB2()
     else:
-        raise SystemExit("usage: throughput.py --r0|--holdA|--holdB [sustain_s]")
+        raise SystemExit("usage: throughput.py --r0|--holdA|--holdB [s] |--holdB2")
