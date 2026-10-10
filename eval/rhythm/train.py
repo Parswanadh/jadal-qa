@@ -327,11 +327,13 @@ def auroc(y, p):
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--fold", type=int, default=None, help="outer clip index (0-6)")
+    ap.add_argument("--folds", default=None, help="comma-separated outer clip indices, e.g. 0,3,6")
     ap.add_argument("--all", action="store_true", help="run all 7 outer folds")
     ap.add_argument("--K", type=int, default=64)
     ap.add_argument("--top-m", type=int, default=None, help="members kept (default K//2)")
     ap.add_argument("--G", type=int, default=6)
-    ap.add_argument("--epochs", type=int, default=60)
+    ap.add_argument("--epochs", type=int, default=25)
+    ap.add_argument("--batch", type=int, default=16)
     ap.add_argument("--tag", default="")
     ap.add_argument("--out", default=None)
     ap.add_argument("--no-ego", action="store_true")
@@ -344,7 +346,7 @@ def main() -> int:
         "K": 1 if args.single else args.K,
         "epochs": args.epochs,
         "lr": 3e-3, "wd": 1e-2, "dropout": 0.1, "label_smooth": 0.05,
-        "mixup": 0.2, "aux_weight": 0.3, "batch": 16,
+        "mixup": 0.2, "aux_weight": 0.3, "batch": args.batch,
         "aug": {} if (args.no_aug or args.single) else
                {"crop": True, "reverse": True, "speed": True, "hflip": True,
                 "cell_drop": True, "noise": True, "shake": True},
@@ -365,7 +367,10 @@ def main() -> int:
         data["id"] = np.concatenate([data["id"], syn["id"]])
 
     clips = sorted(set(data["clip"].tolist()))
-    folds = list(range(len(clips))) if args.all else [args.fold if args.fold is not None else 0]
+    if args.folds:
+        folds = [int(v) for v in args.folds.split(",") if v.strip() != ""]
+    else:
+        folds = list(range(len(clips))) if args.all else [args.fold if args.fold is not None else 0]
     top_m = args.top_m or max(1, cfg["K"] // 2)
     T = int(np.median([a.shape[0] for a in data["X"]]))
     T = min(T, 100)
