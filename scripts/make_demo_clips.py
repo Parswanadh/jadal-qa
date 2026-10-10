@@ -5,37 +5,47 @@ Reads the real IndEgo clips read-only, cuts one ~20 s window from each of two
 sources (ECU assembly with hands in view, logistics), and deterministically
 emits a small LABELLED set of demo variants plus a manifest.
 
-Outputs go ONLY under ``data_runtime/demo_clips/`` (git-ignored; override with
-``--out``). Source clips are never copied into the repo.
+Outputs go ONLY under ``data_runtime/demo_clips/`` (git-ignored). ``--out``
+accepts another directory only with ``--allow-outside-data-runtime``.
+Source clips are never copied into the repo.
 
-Variants per source window (8 files):
+Variants per source window (9 files):
   good               - re-encoded copy of the window (no defect)
   blurred            - strong cv2.GaussianBlur
   too_dark           - pixel values scaled down
   overexposed        - gain + offset, clipped
   frozen             - first frame repeated (static / duplicate-like)
+  wrong_fps          - same frames written at 15 fps (container fps defect)
   truncated          - good file cut to its first half (damaged container)
   garbage            - seeded random bytes with a .mp4 name (undecodable)
   reupload_duplicate - byte-identical copy of good under a new name
 
-Every manifest entry carries ``label: "SYNTHETIC-DEFECT"``. These labels are
-true by construction (we injected the defect) and MUST NOT be presented as
-human-labelled data.
+Labels (true by construction — we injected the defect — and MUST NOT be
+presented as human-labelled data):
+  good               -> defect "none",      label "SYNTHETIC-GOOD"
+  reupload_duplicate -> defect "duplicate", label "SYNTHETIC-DEFECT"
+  everything else    -> its defect code,    label "SYNTHETIC-DEFECT"
 
 Determinism: fixed seeds, fixed encoder settings (cv2.VideoWriter, fourcc
-``mp4v``, 10 fps, source frame size). Same inputs -> byte-identical outputs
-for ALL variants on the same machine + OpenCV build (verified: two back to
-back re-encodes hash equal). Cross-machine / cross-OpenCV-build byte
-stability is expected for garbage / truncated / reupload_duplicate (pure
-byte ops) but NOT guaranteed for the re-encoded mp4s (encoder version
-differences); the defect itself is deterministic everywhere.
+``mp4v``, 10 fps — 15 fps for the wrong_fps variant — source frame size).
+The manifest stores no timestamps, so same inputs -> byte-identical clips
+AND byte-identical manifest.json on the same machine + OpenCV build
+(verified: two back to back runs hash equal). Cross-machine /
+cross-OpenCV-build byte stability is expected for garbage / truncated /
+reupload_duplicate (pure byte ops) but NOT guaranteed for the re-encoded
+mp4s (encoder version differences); the defect itself is deterministic
+everywhere.
 
-What is NOT done: no wrong-FPS variant (out of scope for this cut), no
-hands-in-view detector (windows are hand-picked from the IndEgo VIA
-annotations, see DEFAULT_SOURCES), no face blurring, no service wiring.
+What is NOT done: no hands-in-view detector (windows are hand-picked from
+the IndEgo VIA annotations, see DEFAULT_SOURCES), no face blurring, no
+service wiring.
 
 Usage:
   python scripts/make_demo_clips.py [--out DIR] [--seed INT] [--list]
+  python scripts/make_demo_clips.py --out /elsewhere --allow-outside-data-runtime
+
+Exit codes: 0 ok; 2 IndEgo sources missing (nothing written);
+3 --out outside data_runtime/ without --allow-outside-data-runtime.
 """
 
 from __future__ import annotations
@@ -52,7 +62,10 @@ import cv2
 import numpy as np
 
 FPS = 10.0
+WRONG_FPS = 15.0
 FOURCC = "mp4v"
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_RUNTIME = os.path.join(REPO_ROOT, "data_runtime")
 DEFAULT_OUT = os.path.join("data_runtime", "demo_clips")
 INDEGO_ROOT = "/home/parshu/projects/awing/data/indego"
 
@@ -76,18 +89,23 @@ DEFAULT_SOURCES = [
     },
 ]
 
-# Variant name -> (defect code, parameters). Parameters are recorded verbatim
-# in the manifest.
-VARIANTS: list[tuple[str, str, dict]] = [
-    ("good", "none", {}),
-    ("blurred", "blur", {"op": "cv2.GaussianBlur", "ksize": [31, 31], "sigmaX": 0}),
-    ("too_dark", "too_dark", {"op": "scale", "scale": 0.25}),
-    ("overexposed", "overexposed", {"op": "gain_offset_clip", "gain": 1.7, "offset": 30.0}),
-    ("frozen", "frozen", {"op": "repeat_first_frame"}),
-    ("truncated", "truncated", {"op": "cut_bytes", "fraction": 0.5}),
-    ("garbage", "garbage", {"op": "seeded_random_bytes", "nbytes": 65536}),
-    ("reupload_duplicate", "none", {"op": "byte_identical_copy_of_good"}),
+# Variant table: (file suffix, defect code, label, parameters).
+# Parameters are recorded verbatim in the manifest.
+VARIANTS: list[tuple[str, str, str, dict]] = [
+    ("good", "none", "SYNTHETIC-GOOD", {}),
+    ("blurred", "blur", "SYNTHETIC-DEFECT", {"op": "cv2.GaussianBlur", "ksize": [31, 31], "sigmaX": 0}),
+    ("too_dark", "too_dark", "SYNTHETIC-DEFECT", {"op": "scale", "scale": 0.25}),
+    ("overexposed", "overexposed", "SYNTHETIC-DEFECT", {"op": "gain_offset_clip", "gain": 1.7, "offset": 30.0}),
+    ("frozen", "frozen", "SYNTHETIC-DEFECT", {"op": "repeat_first_frame"}),
+    ("wrong_fps", "wrong_fps", "SYNTHETIC-DEFECT", {"op": "write_same_frames_at_fps", "fps": WRONG_FPS}),
+    ("truncated", "truncated", "SYNTHETIC-DEFECT", {"op": "cut_bytes", "fraction": 0.5}),
+    ("garbage", "garbage", "SYNTHETIC-DEFECT", {"op": "seeded_random_bytes", "nbytes": 65536}),
+    ("reupload_duplicate", "duplicate", "SYNTHETIC-DEFECT", {"op": "byte_identical_copy_of_good"}),
 ]
+
+PIXEL_VARIANTS = ("good", "blurred", "too_dark", "overexposed", "frozen")
+DECODABLE_VARIANTS = PIXEL_VARIANTS + ("wrong_fps", "reupload_duplicate")
+UNDECODABLE_VARIANTS = ("truncated", "garbage")
 
 
 def sha256_file(path: str) -> str:
@@ -110,8 +128,10 @@ def is_decodable(path: str) -> bool:
         cap.release()
 
 
-def read_window(path: str, start_s: float, duration_s: float) -> tuple[list, int, tuple[int, int]]:
-    """Read a window of frames. Returns (frames, start_frame, (w, h))."""
+def read_window(
+    path: str, start_s: float, duration_s: float
+) -> tuple[list, int, tuple[int, int], float]:
+    """Read a window, resampled to FPS. Returns (frames, start_frame, (w, h), src_fps)."""
     cap = cv2.VideoCapture(path)
     if not cap.isOpened():
         raise RuntimeError(f"cannot open source clip: {path}")
@@ -120,16 +140,24 @@ def read_window(path: str, start_s: float, duration_s: float) -> tuple[list, int
         start_frame = int(round(start_s * src_fps))
         want = int(round(duration_s * src_fps))
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-        frames: list = []
+        raw: list = []
         for _ in range(want):
             ok, frame = cap.read()
             if not ok or frame is None:
                 break
-            frames.append(frame)
-        if not frames:
+            raw.append(frame)
+        if not raw:
             raise RuntimeError(f"no frames read from {path} at {start_s}s")
+        target = int(round(duration_s * FPS))
+        if abs(src_fps - FPS) > 1e-6 and len(raw) != target:
+            # Even resample to the nominal frame rate (deterministic
+            # nearest-neighbour; repeats frames when upsampling).
+            idx = np.linspace(0, len(raw) - 1, target).round().astype(int)
+            frames = [raw[i] for i in idx]
+        else:
+            frames = raw
         h, w = frames[0].shape[:2]
-        return frames, start_frame, (w, h)
+        return frames, start_frame, (w, h), float(src_fps)
     finally:
         cap.release()
 
@@ -147,7 +175,7 @@ def write_frames(frames: list, out_path: str, fps: float = FPS) -> None:
 
 
 def apply_variant(frames: list, variant: str) -> list:
-    if variant == "good":
+    if variant in ("good", "wrong_fps"):
         return [f.copy() for f in frames]
     if variant == "blurred":
         return [cv2.GaussianBlur(f, (31, 31), 0) for f in frames]
@@ -169,24 +197,37 @@ def build_source_set(
     out_dir: str,
     seed: int,
     source_index: int,
-) -> list[dict]:
-    """Build all 8 variants for one source window. Returns manifest entries."""
-    frames, start_frame, _size = read_window(source_abs, start_s, duration_s)
+) -> tuple[list[dict], tuple[int, int]]:
+    """Build all 9 variants for one source window.
+
+    Returns (manifest entries, (w, h)). Good is encoded once; truncated and
+    the duplicate derive from those exact bytes. Postcondition: the
+    decodable set decodes, truncated/garbage do not.
+    """
+    frames, start_frame, size, src_fps = read_window(source_abs, start_s, duration_s)
+    os.makedirs(out_dir, exist_ok=True)
     entries: list[dict] = []
     good_name = f"{key}_good.mp4"
     good_path = os.path.join(out_dir, good_name)
     write_frames(apply_variant(frames, "good"), good_path)
-    good_sha = sha256_file(good_path)
-    good_bytes = open(good_path, "rb").read()
+    with open(good_path, "rb") as f:
+        good_bytes = f.read()
+    good_sha = hashlib.sha256(good_bytes).hexdigest()
 
     garbage_rng = np.random.default_rng(seed + 1000 + source_index)
     garbage_bytes = garbage_rng.integers(0, 256, size=65536, dtype=np.uint8).tobytes()
 
-    for variant, defect, params in VARIANTS:
+    for variant, defect, label, base_params in VARIANTS:
         name = f"{key}_{variant}.mp4"
         path = os.path.join(out_dir, name)
-        if variant in ("good", "blurred", "too_dark", "overexposed", "frozen"):
+        out_fps = FPS
+        if variant == "good":
+            pass  # already written above; entry reuses these exact bytes
+        elif variant in ("blurred", "too_dark", "overexposed", "frozen"):
             write_frames(apply_variant(frames, variant), path)
+        elif variant == "wrong_fps":
+            out_fps = WRONG_FPS
+            write_frames(apply_variant(frames, variant), path, fps=WRONG_FPS)
         elif variant == "truncated":
             with open(path, "wb") as f:
                 f.write(good_bytes[: len(good_bytes) // 2])
@@ -197,33 +238,63 @@ def build_source_set(
             shutil.copyfile(good_path, path)
         else:  # pragma: no cover - guarded by VARIANTS table
             raise ValueError(variant)
+        params = dict(base_params)
+        if variant == "reupload_duplicate":
+            params.update({"copy_of": good_name, "good_sha256": good_sha})
         entries.append(
             {
                 "file": name,
                 "defect": defect,
                 "variant": variant,
                 "parameters": params,
+                "fps": out_fps,
                 "source_clip": source_rel,
                 "window": {
                     "start_s": start_s,
                     "duration_s": duration_s,
                     "start_frame": start_frame,
                     "n_frames": len(frames),
+                    "source_fps": src_fps,
+                    "frame_size": [size[0], size[1]],
                 },
                 "sha256": sha256_file(path),
-                "label": "SYNTHETIC-DEFECT",
+                "label": label,
             }
         )
-    # Sanity: the duplicate really is a duplicate.
+    # Postconditions: decode behaviour + duplicate identity (M3).
     by_name = {e["file"]: e for e in entries}
     assert by_name[f"{key}_reupload_duplicate.mp4"]["sha256"] == good_sha, "duplicate diverged"
-    return entries
+    for variant in DECODABLE_VARIANTS:
+        assert is_decodable(os.path.join(out_dir, f"{key}_{variant}.mp4")), f"{key}_{variant} unreadable"
+    for variant in UNDECODABLE_VARIANTS:
+        assert not is_decodable(os.path.join(out_dir, f"{key}_{variant}.mp4")), f"{key}_{variant} decodes"
+    return entries, size
+
+
+def make_manifest(seed: int, entries: list[dict], width: int, height: int) -> dict:
+    """Manifest dict. No timestamps: same inputs -> identical bytes."""
+    return {
+        "generator": "scripts/make_demo_clips.py",
+        "seed": seed,
+        "encoder": {"backend": "cv2.VideoWriter", "fourcc": FOURCC, "fps": FPS, "width": width, "height": height},
+        "label_note": "SYNTHETIC-* labels are true by construction (defect injected by this script); MUST NOT be presented as human-labelled data.",
+        "sources": DEFAULT_SOURCES,
+        "files": entries,
+    }
+
+
+def write_manifest(out_dir: str, seed: int, entries: list[dict], width: int, height: int) -> str:
+    manifest_path = os.path.join(out_dir, "manifest.json")
+    with open(manifest_path, "w") as f:
+        json.dump(make_manifest(seed, entries, width, height), f, indent=2, sort_keys=True)
+        f.write("\n")
+    return manifest_path
 
 
 def plan_list() -> list[str]:
     names: list[str] = []
     for src in DEFAULT_SOURCES:
-        for variant, _defect, _params in VARIANTS:
+        for variant, _defect, _label, _params in VARIANTS:
             names.append(f"{src['key']}_{variant}.mp4")
     return names
 
@@ -233,12 +304,27 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", default=DEFAULT_OUT, help="output dir (default: %(default)s)")
     ap.add_argument("--seed", type=int, default=42, help="fixed RNG seed (default: %(default)s)")
     ap.add_argument("--list", action="store_true", help="print planned outputs and exit")
+    ap.add_argument(
+        "--allow-outside-data-runtime",
+        action="store_true",
+        help="permit --out outside data_runtime/ (default: refuse)",
+    )
     args = ap.parse_args(argv)
 
     if args.list:
         for name in plan_list():
             print(name)
         return 0
+
+    out_abs = os.path.abspath(args.out)
+    data_abs = os.path.abspath(DATA_RUNTIME)
+    if os.path.commonpath([out_abs, data_abs]) != data_abs and not args.allow_outside_data_runtime:
+        print(
+            f"make_demo_clips: refusing --out outside data_runtime/ ({out_abs}). "
+            "Pass --allow-outside-data-runtime to override.",
+            file=sys.stderr,
+        )
+        return 3
 
     missing = [
         src for src in DEFAULT_SOURCES if not os.path.isfile(os.path.join(INDEGO_ROOT, src["relpath"]))
@@ -256,33 +342,25 @@ def main(argv: list[str] | None = None) -> int:
 
     os.makedirs(args.out, exist_ok=True)
     all_entries: list[dict] = []
+    first_size: tuple[int, int] | None = None
     for i, src in enumerate(DEFAULT_SOURCES):
-        all_entries.extend(
-            build_source_set(
-                os.path.join(INDEGO_ROOT, src["relpath"]),
-                src["relpath"],
-                src["key"],
-                src["start_s"],
-                src["duration_s"],
-                args.out,
-                args.seed,
-                i,
-            )
+        src_entries, size = build_source_set(
+            os.path.join(INDEGO_ROOT, src["relpath"]),
+            src["relpath"],
+            src["key"],
+            src["start_s"],
+            src["duration_s"],
+            args.out,
+            args.seed,
+            i,
         )
-    manifest = {
-        "generator": "scripts/make_demo_clips.py",
-        "seed": args.seed,
-        "encoder": {"backend": "cv2.VideoWriter", "fourcc": FOURCC, "fps": FPS, "size": "source (480x480 for IndEgo)"},
-        "label_note": "SYNTHETIC-DEFECT labels are true by construction (defect injected by this script); MUST NOT be presented as human-labelled data.",
-        "sources": DEFAULT_SOURCES,
-        "created_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "files": all_entries,
-    }
-    manifest_path = os.path.join(args.out, "manifest.json")
-    with open(manifest_path, "w") as f:
-        json.dump(manifest, f, indent=2, sort_keys=True)
-        f.write("\n")
-    print(f"wrote {len(all_entries)} clips + manifest.json to {args.out}")
+        if first_size is None:
+            first_size = size
+        all_entries.extend(src_entries)
+    assert first_size is not None
+    write_manifest(args.out, args.seed, all_entries, first_size[0], first_size[1])
+    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    print(f"wrote {len(all_entries)} clips + manifest.json to {args.out} at {now}")
     return 0
 
 

@@ -1,16 +1,18 @@
 """Tests for scripts/make_demo_clips.py (issue #38).
 
-Builds a tiny synthetic source video in a temp dir (never touches the real
-IndEgo clips), runs the generator's build_source_set twice, and asserts:
-every defect variant is produced, the manifest entries match the files,
-sha256s are stable across two runs, and garbage/truncated fail to decode
-with cv2 while good ones decode. Fast (<30 s) and hang-free (no waits;
-one subprocess call carries an explicit timeout).
+Builds tiny synthetic source videos in a temp dir (never touches the real
+IndEgo clips) and asserts: every defect variant is produced with the right
+defect code and label (SYNTHETIC-GOOD only for the clean copy), the manifest
+entries match the files, byte-ops are sha-stable across runs while re-encoded
+mp4s match by decoded pixels (NOT byte-hash: encoder builds differ), the
+duplicate is byte-identical to good, wrong_fps really is 15 fps, garbage /
+truncated fail to decode while the rest decode, --out outside data_runtime/
+is refused, and read_window resamples odd-fps sources to 10 fps.
+Fast (<30 s) and hang-free (no waits; subprocess calls carry timeouts).
 """
 
 import hashlib
 import importlib.util
-import json
 import os
 import subprocess
 import sys
@@ -21,6 +23,20 @@ import cv2
 import numpy as np
 
 SCRIPT = os.path.join(os.path.dirname(__file__), "..", "scripts", "make_demo_clips.py")
+
+ALL_VARIANTS = [
+    "good",
+    "blurred",
+    "too_dark",
+    "overexposed",
+    "frozen",
+    "wrong_fps",
+    "truncated",
+    "garbage",
+    "reupload_duplicate",
+]
+REENCODED = ("good", "blurred", "too_dark", "overexposed", "frozen", "wrong_fps")
+BYTE_OPS = ("truncated", "garbage", "reupload_duplicate")
 
 
 def load_module():
@@ -81,7 +97,7 @@ def make_synthetic_source(path, n_frames=20, w=64, h=64, fps=10.0):
 
 
 class TestMakeDemoClips(unittest.TestCase):
-    def test_all_variants_manifest_determinism_and_decodability(self):
+    def test_all_variants_labels_and_manifest(self):
         with tempfile.TemporaryDirectory() as tmp:
             src = os.path.join(tmp, "src.mp4")
             make_synthetic_source(src)
@@ -90,61 +106,112 @@ class TestMakeDemoClips(unittest.TestCase):
             os.makedirs(out1)
             os.makedirs(out2)
 
-            e1 = mdc.build_source_set(src, "synthetic/src.mp4", "t", 0.0, 2.0, out1, 7, 0)
-            e2 = mdc.build_source_set(src, "synthetic/src.mp4", "t", 0.0, 2.0, out2, 7, 0)
+            (e1, size1) = mdc.build_source_set(src, "synthetic/src.mp4", "t", 0.0, 2.0, out1, 7, 0)
+            (e2, size2) = mdc.build_source_set(src, "synthetic/src.mp4", "t", 0.0, 2.0, out2, 7, 0)
+            self.assertEqual(size1, (64, 64))
+            self.assertEqual(size2, (64, 64))
 
             # Every defect variant is produced.
-            variants = sorted(e["variant"] for e in e1)
-            self.assertEqual(
-                variants,
-                sorted(
-                    [
-                        "good",
-                        "blurred",
-                        "too_dark",
-                        "overexposed",
-                        "frozen",
-                        "truncated",
-                        "garbage",
-                        "reupload_duplicate",
-                    ]
-                ),
-            )
+            self.assertEqual(sorted(e["variant"] for e in e1), sorted(ALL_VARIANTS))
+            by_name = {e["file"]: e for e in e1}
             for e in e1:
                 self.assertTrue(os.path.isfile(os.path.join(out1, e["file"])), e["file"])
-                # Manifest matches the files; labels are synthetic-by-construction.
-                self.assertEqual(e["label"], "SYNTHETIC-DEFECT")
                 self.assertEqual(e["sha256"], sha256_file(os.path.join(out1, e["file"])))
 
-            # sha256s stable across two runs for the deterministic ones (all 8).
+            # Labels: only the clean copy is SYNTHETIC-GOOD; the duplicate
+            # carries defect "duplicate" pointing at the good file + its sha.
+            self.assertEqual(by_name["t_good.mp4"]["label"], "SYNTHETIC-GOOD")
+            self.assertEqual(by_name["t_good.mp4"]["defect"], "none")
+            dup = by_name["t_reupload_duplicate.mp4"]
+            self.assertEqual(dup["label"], "SYNTHETIC-DEFECT")
+            self.assertEqual(dup["defect"], "duplicate")
+            self.assertEqual(dup["parameters"]["copy_of"], "t_good.mp4")
+            self.assertEqual(dup["parameters"]["good_sha256"], by_name["t_good.mp4"]["sha256"])
+            for v in ("blurred", "too_dark", "overexposed", "frozen", "wrong_fps", "truncated", "garbage"):
+                self.assertEqual(by_name[f"t_{v}.mp4"]["label"], "SYNTHETIC-DEFECT", v)
+            self.assertEqual(by_name["t_wrong_fps.mp4"]["defect"], "wrong_fps")
+            self.assertEqual(by_name["t_wrong_fps.mp4"]["fps"], 15.0)
+
+            # Byte-stability across runs ONLY for pure byte ops (M6: re-encoded
+            # mp4s are not guaranteed stable across OpenCV builds).
             h1 = {e["file"]: e["sha256"] for e in e1}
             h2 = {e["file"]: e["sha256"] for e in e2}
-            self.assertEqual(h1, h2)
+            for v in BYTE_OPS:
+                self.assertEqual(h1[f"t_{v}.mp4"], h2[f"t_{v}.mp4"], v)
+
+            # Re-encoded variants match across runs by decoded pixels instead.
+            for v in REENCODED:
+                f1 = read_all_frames(os.path.join(out1, f"t_{v}.mp4"))
+                f2 = read_all_frames(os.path.join(out2, f"t_{v}.mp4"))
+                self.assertEqual(len(f1), len(f2), v)
+                self.assertGreater(len(f1), 0, v)
+                diff = float(np.mean(np.abs(f1[0].astype(float) - f2[0].astype(float))))
+                self.assertLess(diff, 5.0, v)
+
+            # Manifest bytes are deterministic on the same machine+build
+            # (no timestamps stored — I3 fix).
+            mdc.write_manifest(out1, 7, e1, size1[0], size1[1])
+            mdc.write_manifest(out2, 7, e2, size2[0], size2[1])
+            with open(os.path.join(out1, "manifest.json"), "rb") as f:
+                m1 = f.read()
+            with open(os.path.join(out2, "manifest.json"), "rb") as f:
+                m2 = f.read()
+            self.assertEqual(m1, m2)
 
             # Re-upload duplicate is byte-identical to good.
             with open(os.path.join(out1, "t_good.mp4"), "rb") as f:
                 good = f.read()
             with open(os.path.join(out1, "t_reupload_duplicate.mp4"), "rb") as f:
-                dup = f.read()
-            self.assertEqual(good, dup)
+                dup_bytes = f.read()
+            self.assertEqual(good, dup_bytes)
 
-            # Good-family decodes; garbage/truncated fail.
+            # Decodable set decodes (incl. wrong_fps at ~15 fps); garbage /
+            # truncated fail.
             for v in ("good", "blurred", "too_dark", "overexposed", "frozen", "reupload_duplicate"):
                 self.assertTrue(decodable(os.path.join(out1, f"t_{v}.mp4")), v)
+            self.assertTrue(decodable(os.path.join(out1, "t_wrong_fps.mp4")))
+            cap = cv2.VideoCapture(os.path.join(out1, "t_wrong_fps.mp4"))
+            try:
+                self.assertAlmostEqual(cap.get(cv2.CAP_PROP_FPS), 15.0, places=1)
+                self.assertEqual(len(read_all_frames(os.path.join(out1, "t_wrong_fps.mp4"))), 20)
+            finally:
+                cap.release()
             self.assertFalse(decodable(os.path.join(out1, "t_garbage.mp4")))
             self.assertFalse(decodable(os.path.join(out1, "t_truncated.mp4")))
 
-            # Defects actually change the pixels: frozen frames are all equal,
-            # dark is dimmer and bright is brighter than good (decoded means).
+            # Defects change pixels: frozen frames near-equal (lossy noise
+            # only; closeness, not exact equality), dark dimmer, bright
+            # brighter than good (decoded means).
             frozen = read_all_frames(os.path.join(out1, "t_frozen.mp4"))
             self.assertGreaterEqual(len(frozen), 2)
             for f in frozen[1:]:
-                np.testing.assert_array_equal(frozen[0], f)
+                self.assertLess(float(np.mean(np.abs(f.astype(float) - frozen[0].astype(float)))), 10.0)
             mean = lambda p: float(np.mean(read_all_frames(p)[0].astype(float)))
             self.assertLess(mean(os.path.join(out1, "t_too_dark.mp4")), mean(os.path.join(out1, "t_good.mp4")))
             self.assertGreater(
                 mean(os.path.join(out1, "t_overexposed.mp4")), mean(os.path.join(out1, "t_good.mp4"))
             )
+
+    def test_read_window_resamples_to_fps(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            src = os.path.join(tmp, "src5.mp4")
+            make_synthetic_source(src, n_frames=10, fps=5.0)
+            frames, _start, size, src_fps = mdc.read_window(src, 0.0, 2.0)
+            self.assertAlmostEqual(src_fps, 5.0, places=1)
+            self.assertEqual(len(frames), 20)  # resampled 5 fps -> 10 fps
+            self.assertEqual(size, (64, 64))
+
+    def test_out_guard(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            outside = os.path.join(tmp, "elsewhere")
+            proc = subprocess.run(
+                [sys.executable, SCRIPT, "--out", outside],
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            self.assertEqual(proc.returncode, 3)
+            self.assertFalse(os.path.exists(os.path.join(outside, "manifest.json")))
 
     def test_list_flag(self):
         proc = subprocess.run(
@@ -155,8 +222,9 @@ class TestMakeDemoClips(unittest.TestCase):
         )
         self.assertEqual(proc.returncode, 0)
         lines = proc.stdout.strip().splitlines()
-        self.assertEqual(len(lines), 16)  # 2 sources x 8 variants
+        self.assertEqual(len(lines), 18)  # 2 sources x 9 variants
         self.assertIn("ecu_good.mp4", lines)
+        self.assertIn("ecu_wrong_fps.mp4", lines)
         self.assertIn("logistics_garbage.mp4", lines)
 
 

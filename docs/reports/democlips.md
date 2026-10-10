@@ -66,3 +66,40 @@ across OpenCV builds — documented in the script.
 - Windows are hand-picked from VIA annotations, not auto-detected for hands.
 - ECU window assumed hands-in-view from the step label; not verified by a detector.
 - No service/dashboard wiring; clips are standalone files for other workers.
+
+## Fix round 1 (review findings C1, I1-I3, M1-M6 — all in owned files)
+
+- C1 wrong-FPS: added 9th variant `wrong_fps` (same frames at 15 fps,
+  `fps: 15.0` in manifest entry). Now 18 clips; `--list` test updated 16->18.
+- I1 labels: `good` is now defect `none` + `SYNTHETIC-GOOD`; `reupload_duplicate`
+  is defect `duplicate` + `SYNTHETIC-DEFECT` with `copy_of` + `good_sha256`
+  params. All other variants keep their defect code + `SYNTHETIC-DEFECT`.
+- I2 containment: `--out` outside `data_runtime/` is refused (exit 3, nothing
+  written) unless `--allow-outside-data-runtime` is passed.
+- I3 manifest determinism: dropped `created_utc` from `manifest.json` (time now
+  only printed to stdout). Manifest bytes identical across two runs (verified).
+- M1/M2: good encoded once via `with`-block; truncated/duplicate derive from
+  those bytes. M3: `is_decodable` now a postcondition assert in
+  `build_source_set`. M4: encoder records actual `width/height` (480x480).
+  M5: `read_window` resamples non-10fps sources to 10 fps (nearest-neighbour).
+  M6: tests assert byte-stability only for byte-ops; re-encoded variants match
+  by decoded pixels (first-frame mean-abs-diff < 5.0); frozen uses closeness
+  (< 10.0; measured lossy noise ~2.07 vs ~45-50 for real motion).
+- New tests: `test_read_window_resamples_to_fps` (5 fps source -> 20 frames),
+  `test_out_guard` (exit 3, nothing written). No finding disputed.
+
+REAL outputs (fix round 1):
+
+```
+PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_make_demo_clips -v
+Ran 4 tests in 0.564s
+OK
+timeout 250 env PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 326 tests in 10.107s
+OK
+```
+
+Real run: `wrote 18 clips + manifest.json to data_runtime/demo_clips`
+(~4.4 s); clip shas stable across runs True; manifest bytes identical True;
+`ecu_wrong_fps.mp4`/`logistics_wrong_fps.mp4` report 15.0 fps and decode;
+guard probe exits 3 with nothing written.
