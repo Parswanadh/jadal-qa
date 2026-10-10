@@ -1,0 +1,171 @@
+{
+ "n_ood": 160,
+ "n_good_ood": 138,
+ "n_bad_ood": 22,
+ "n_factories": 47,
+ "n_indego": 150,
+ "label_source": "human (IndEgo manifest_gold n=150 + Egocentric-10K ood160_labels.json n=160: 138 good / 22 bad, 47 factories)",
+ "supersedes": {
+  "branch": "m/conformal",
+  "pr": 126,
+  "n_ood": 60
+ },
+ "device": "CPU only, seed 7",
+ "git_sha": "see git",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_conformal160/run_z2_160.py",
+ "experiment": "Z2.02_160",
+ "title": "Nominal vs empirical coverage on OOD-160 (transfer failure)",
+ "protocol": "q calibrated on IndEgo only; applied to the 160 OOD frozen scores. Empirical coverage = P(true label in the conformal set).",
+ "nominal_vs_empirical_ood160": [
+  {
+   "coverage_target": 0.3,
+   "empirical_coverage_ood160": 0.3063,
+   "coverage_ci95_factory_grouped": [
+    0.2069,
+    0.4128
+   ],
+   "review_share": 0.6375
+  },
+  {
+   "coverage_target": 0.4,
+   "empirical_coverage_ood160": 0.3187,
+   "coverage_ci95_factory_grouped": [
+    0.2119,
+    0.4276
+   ],
+   "review_share": 0.5875
+  },
+  {
+   "coverage_target": 0.5,
+   "empirical_coverage_ood160": 0.325,
+   "coverage_ci95_factory_grouped": [
+    0.2215,
+    0.4331
+   ],
+   "review_share": 0.5687
+  },
+  {
+   "coverage_target": 0.6,
+   "empirical_coverage_ood160": 0.3688,
+   "coverage_ci95_factory_grouped": [
+    0.2616,
+    0.4824
+   ],
+   "review_share": 0.4313
+  },
+  {
+   "coverage_target": 0.7,
+   "empirical_coverage_ood160": 0.4188,
+   "coverage_ci95_factory_grouped": [
+    0.3137,
+    0.5271
+   ],
+   "review_share": 0.1875
+  },
+  {
+   "coverage_target": 0.75,
+   "empirical_coverage_ood160": 0.45,
+   "coverage_ci95_factory_grouped": [
+    0.3445,
+    0.5595
+   ],
+   "review_share": 0.1062
+  },
+  {
+   "coverage_target": 0.8,
+   "empirical_coverage_ood160": 0.475,
+   "coverage_ci95_factory_grouped": [
+    0.3603,
+    0.5915
+   ],
+   "review_share": 0.0125
+  },
+  {
+   "coverage_target": 0.85,
+   "empirical_coverage_ood160": 0.5563,
+   "coverage_ci95_factory_grouped": [
+    0.4275,
+    0.6756
+   ],
+   "review_share": 0.1125
+  },
+  {
+   "coverage_target": 0.9,
+   "empirical_coverage_ood160": 0.8063,
+   "coverage_ci95_factory_grouped": [
+    0.7192,
+    0.8818
+   ],
+   "review_share": 0.4437
+  },
+  {
+   "coverage_target": 0.95,
+   "empirical_coverage_ood160": 0.9688,
+   "coverage_ci95_factory_grouped": [
+    0.9366,
+    0.9938
+   ],
+   "review_share": 0.725
+  },
+  {
+   "coverage_target": 0.99,
+   "empirical_coverage_ood160": 1.0,
+   "coverage_ci95_factory_grouped": [
+    1.0,
+    1.0
+   ],
+   "review_share": 0.9938
+  }
+ ],
+ "worst_factory_coverage_at_target_0.80": 0.0,
+ "per_factory_coverage_at_target_0.80": {
+  "factory_001": 0.4,
+  "factory_003": 0.727,
+  "factory_009": 0.615,
+  "factory_010": 0.333,
+  "factory_013": 0.5,
+  "factory_014": 0.333,
+  "factory_016": 0.25,
+  "factory_019": 1.0,
+  "factory_020": 0.0,
+  "factory_021": 0.0,
+  "factory_022": 1.0,
+  "factory_023": 1.0,
+  "factory_024": 1.0,
+  "factory_026": 0.0,
+  "factory_028": 0.5,
+  "factory_029": 0.0,
+  "factory_033": 1.0,
+  "factory_035": 0.0,
+  "factory_036": 0.0,
+  "factory_037": 1.0,
+  "factory_038": 1.0,
+  "factory_039": 0.0,
+  "factory_040": 1.0,
+  "factory_041": 0.667,
+  "factory_042": 0.0,
+  "factory_044": 0.0,
+  "factory_046": 0.5,
+  "factory_051": 1.0,
+  "factory_053": 0.333,
+  "factory_054": 0.0,
+  "factory_056": 0.5,
+  "factory_057": 0.5,
+  "factory_058": 0.0,
+  "factory_060": 0.0,
+  "factory_061": 0.333,
+  "factory_062": 0.0,
+  "factory_066": 0.5,
+  "factory_068": 0.0,
+  "factory_069": 0.6,
+  "factory_070": 0.0,
+  "factory_073": 1.0,
+  "factory_076": 0.5,
+  "factory_077": 0.0,
+  "factory_079": 0.0,
+  "factory_080": 1.0,
+  "factory_084": 0.0,
+  "factory_085": 0.5
+ },
+ "conclusion": "empirical OOD coverage collapses far below the nominal target because the IndEgo score does not rank the OOD windows (no target exchangeability)."
+}
