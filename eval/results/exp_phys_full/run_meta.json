@@ -1,0 +1,356 @@
+{
+ "run_utc": "2026-10-10T18:58:32Z",
+ "wall_s": 31.64,
+ "wall_start_epoch": 1791658676.6646705,
+ "workers": 2,
+ "manifest": {
+  "n_windows": 1546,
+  "n_clips": 58,
+  "total_hours": 4.404
+ },
+ "n_requested": 4,
+ "n_windows": 4,
+ "n_manifest_windows": 1546,
+ "n_selected": 4,
+ "window_stride": 1,
+ "n_errors": 0,
+ "errors": [],
+ "verdict_distribution": {
+  "reject": 4
+ },
+ "profile_distribution": {
+  "factory_1080p30": 4
+ },
+ "windows_per_s": 0.1264,
+ "footage_h_per_wall_h": 501.028,
+ "processed_footage_h_per_wall_h": 1.264,
+ "optimizations": {
+  "pixel_fps": 3.33,
+  "eg2_fps": 1.0,
+  "native_fps": 0.8,
+  "early_exit_s": 4.0,
+  "skip_mosaic": true
+ },
+ "compare_enabled": false,
+ "omp_threads": "1",
+ "max_rss_gb": 2.72104,
+ "device": "A40",
+ "rule_table_sha256": "2bc865339d74c43361a90ec7157a82d0aae84ec1753ae2bae1dd0fd847c278e1",
+ "reject_threshold": 14,
+ "determinism_probe": [
+  {
+   "window_id": "s_882de93381f5",
+   "verdict_1": "reject",
+   "verdict_2": "reject",
+   "score_1": 25,
+   "score_2": 25,
+   "receipt_1": "478bb4ef9699589f61eddec1600cbd31f1ac1174ebf363bf0d0c5e427ff362bf",
+   "receipt_2": "478bb4ef9699589f61eddec1600cbd31f1ac1174ebf363bf0d0c5e427ff362bf",
+   "features_digest_1": "1cad2667804c7005792edb2b8cb2d7cd09373ce24584c172ad1bfc17982ea591",
+   "features_digest_2": "1cad2667804c7005792edb2b8cb2d7cd09373ce24584c172ad1bfc17982ea591",
+   "receipt_match": true,
+   "features_digest_match": true,
+   "latency_1_ms": 10046.287,
+   "latency_2_ms": 1563.288
+  },
+  {
+   "window_id": "s_42b39aed6d64",
+   "verdict_1": "reject",
+   "verdict_2": "reject",
+   "score_1": 25,
+   "score_2": 25,
+   "receipt_1": "2a18fe26cce2d9c470f45a053a28d69cd22b8d8b9af635bb25fad44e3c2ec5c9",
+   "receipt_2": "2a18fe26cce2d9c470f45a053a28d69cd22b8d8b9af635bb25fad44e3c2ec5c9",
+   "features_digest_1": "910cacada6ef32bd9426f63fd1535b52be618a49a0b7f8b18d114dbe451b8b1d",
+   "features_digest_2": "910cacada6ef32bd9426f63fd1535b52be618a49a0b7f8b18d114dbe451b8b1d",
+   "receipt_match": true,
+   "features_digest_match": true,
+   "latency_1_ms": 1600.578,
+   "latency_2_ms": 1657.815
+  }
+ ],
+ "smi_samples": 56,
+ "smi": [
+  {
+   "t": 1791658676.6929986,
+   "gpu_pct": 0.0,
+   "vram_mib": 25.0
+  },
+  {
+   "t": 1791658677.229353,
+   "gpu_pct": 2.0,
+   "vram_mib": 461.0
+  },
+  {
+   "t": 1791658677.8519464,
+   "gpu_pct": 3.0,
+   "vram_mib": 3.0
+  },
+  {
+   "t": 1791658678.4534512,
+   "gpu_pct": 2.0,
+   "vram_mib": 1058.0
+  },
+  {
+   "t": 1791658679.0146883,
+   "gpu_pct": 4.0,
+   "vram_mib": 1128.0
+  },
+  {
+   "t": 1791658679.5809333,
+   "gpu_pct": 6.0,
+   "vram_mib": 740.0
+  },
+  {
+   "t": 1791658680.1067548,
+   "gpu_pct": 1.0,
+   "vram_mib": 1054.0
+  },
+  {
+   "t": 1791658680.633807,
+   "gpu_pct": 3.0,
+   "vram_mib": 725.0
+  },
+  {
+   "t": 1791658681.161286,
+   "gpu_pct": 0.0,
+   "vram_mib": 725.0
+  },
+  {
+   "t": 1791658681.6888394,
+   "gpu_pct": 0.0,
+   "vram_mib": 725.0
+  },
+  {
+   "t": 1791658682.2286327,
+   "gpu_pct": 0.0,
+   "vram_mib": 725.0
+  },
+  {
+   "t": 1791658682.754023,
+   "gpu_pct": 0.0,
+   "vram_mib": 725.0
+  },
+  {
+   "t": 1791658683.2806478,
+   "gpu_pct": 0.0,
+   "vram_mib": 725.0
+  },
+  {
+   "t": 1791658683.8091445,
+   "gpu_pct": 0.0,
+   "vram_mib": 725.0
+  },
+  {
+   "t": 1791658684.3379672,
+   "gpu_pct": 0.0,
+   "vram_mib": 725.0
+  },
+  {
+   "t": 1791658684.8677926,
+   "gpu_pct": 0.0,
+   "vram_mib": 725.0
+  },
+  {
+   "t": 1791658685.422938,
+   "gpu_pct": 0.0,
+   "vram_mib": 1211.0
+  },
+  {
+   "t": 1791658685.9862056,
+   "gpu_pct": 3.0,
+   "vram_mib": 4553.0
+  },
+  {
+   "t": 1791658686.616582,
+   "gpu_pct": 69.0,
+   "vram_mib": 35830.0
+  },
+  {
+   "t": 1791658687.1463878,
+   "gpu_pct": 28.0,
+   "vram_mib": 37612.0
+  },
+  {
+   "t": 1791658687.6754997,
+   "gpu_pct": 70.0,
+   "vram_mib": 2448.0
+  },
+  {
+   "t": 1791658688.2340815,
+   "gpu_pct": 100.0,
+   "vram_mib": 3308.0
+  },
+  {
+   "t": 1791658688.7615125,
+   "gpu_pct": 66.0,
+   "vram_mib": 5653.0
+  },
+  {
+   "t": 1791658689.2923458,
+   "gpu_pct": 21.0,
+   "vram_mib": 5953.0
+  },
+  {
+   "t": 1791658689.9272597,
+   "gpu_pct": 2.0,
+   "vram_mib": 6242.0
+  },
+  {
+   "t": 1791658690.4938068,
+   "gpu_pct": 7.0,
+   "vram_mib": 6659.0
+  },
+  {
+   "t": 1791658691.0522096,
+   "gpu_pct": 6.0,
+   "vram_mib": 5959.0
+  },
+  {
+   "t": 1791658691.6062543,
+   "gpu_pct": 8.0,
+   "vram_mib": 6367.0
+  },
+  {
+   "t": 1791658692.3772306,
+   "gpu_pct": 0.0,
+   "vram_mib": 1989.0
+  },
+  {
+   "t": 1791658692.9127464,
+   "gpu_pct": 0.0,
+   "vram_mib": 2256.0
+  },
+  {
+   "t": 1791658693.4961643,
+   "gpu_pct": 2.0,
+   "vram_mib": 2374.0
+  },
+  {
+   "t": 1791658694.0588093,
+   "gpu_pct": 6.0,
+   "vram_mib": 2366.0
+  },
+  {
+   "t": 1791658694.6400297,
+   "gpu_pct": 0.0,
+   "vram_mib": 2318.0
+  },
+  {
+   "t": 1791658695.1729784,
+   "gpu_pct": 1.0,
+   "vram_mib": 2318.0
+  },
+  {
+   "t": 1791658695.7030766,
+   "gpu_pct": 0.0,
+   "vram_mib": 1989.0
+  },
+  {
+   "t": 1791658696.23454,
+   "gpu_pct": 25.0,
+   "vram_mib": 2256.0
+  },
+  {
+   "t": 1791658696.8190014,
+   "gpu_pct": 5.0,
+   "vram_mib": 2204.0
+  },
+  {
+   "t": 1791658697.351005,
+   "gpu_pct": 0.0,
+   "vram_mib": 1989.0
+  },
+  {
+   "t": 1791658697.9941835,
+   "gpu_pct": 1.0,
+   "vram_mib": 2392.0
+  },
+  {
+   "t": 1791658698.527226,
+   "gpu_pct": 0.0,
+   "vram_mib": 2318.0
+  },
+  {
+   "t": 1791658699.091228,
+   "gpu_pct": 0.0,
+   "vram_mib": 1989.0
+  },
+  {
+   "t": 1791658699.6369452,
+   "gpu_pct": 2.0,
+   "vram_mib": 2392.0
+  },
+  {
+   "t": 1791658700.8625486,
+   "gpu_pct": 6.0,
+   "vram_mib": 1989.0
+  },
+  {
+   "t": 1791658701.7157242,
+   "gpu_pct": 0.0,
+   "vram_mib": 2204.0
+  },
+  {
+   "t": 1791658702.2447014,
+   "gpu_pct": 3.0,
+   "vram_mib": 2900.0
+  },
+  {
+   "t": 1791658702.7721095,
+   "gpu_pct": 7.0,
+   "vram_mib": 4204.0
+  },
+  {
+   "t": 1791658703.298405,
+   "gpu_pct": 6.0,
+   "vram_mib": 4304.0
+  },
+  {
+   "t": 1791658703.8346899,
+   "gpu_pct": 2.0,
+   "vram_mib": 4386.0
+  },
+  {
+   "t": 1791658704.3825681,
+   "gpu_pct": 7.0,
+   "vram_mib": 4378.0
+  },
+  {
+   "t": 1791658704.9368129,
+   "gpu_pct": 12.0,
+   "vram_mib": 3974.0
+  },
+  {
+   "t": 1791658705.466741,
+   "gpu_pct": 78.0,
+   "vram_mib": 4386.0
+  },
+  {
+   "t": 1791658705.992315,
+   "gpu_pct": 6.0,
+   "vram_mib": 4382.0
+  },
+  {
+   "t": 1791658706.5210721,
+   "gpu_pct": 35.0,
+   "vram_mib": 3974.0
+  },
+  {
+   "t": 1791658707.0471635,
+   "gpu_pct": 2.0,
+   "vram_mib": 4378.0
+  },
+  {
+   "t": 1791658707.586165,
+   "gpu_pct": 2.0,
+   "vram_mib": 4386.0
+  },
+  {
+   "t": 1791658708.2207232,
+   "gpu_pct": 51.0,
+   "vram_mib": 3974.0
+  }
+ ],
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+}
