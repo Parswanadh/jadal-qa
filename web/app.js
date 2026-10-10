@@ -550,12 +550,15 @@ function renderSegment() {
 function renderSegmentReady(body) {
   var r = state.receipt;
   var raw = r.raw;
-  var sig = raw.signals || {};
+  // All named fields come from the api.js normalizer (r.* / A.first),
+  // never from raw service keys. `raw` below is only handed to the
+  // generic receipt tree, which renders whatever keys exist.
+  var sig = r.signals || {};
   var reasons = r.reasons;
 
   var segLabel = r.segment_id || state.requestedId || state.receiptId;
-  var batchId = (state.segBatch && (state.segBatch.batch_id || state.segBatch.batchId)) || null;
-  var siteId = (state.segBatch && (state.segBatch.site_id || state.segBatch.siteId)) || '—';
+  var batchId = (state.segBatch && A.first(state.segBatch, ['batch_id', 'batchId'])) || null;
+  var siteId = (state.segBatch && A.first(state.segBatch, ['site_id', 'siteId'])) || '—';
 
   $('#segment-title').textContent = 'Segment';
   $('#segment-sub').textContent = 'Receipt for ' + segLabel + (batchId ? ' · from batch ' + batchId : '');
@@ -582,24 +585,9 @@ function renderSegmentReady(body) {
       '</div>'));
   }
 
-  // ---- meta + reverify grid ----
-  var grid = el('<div class="panel-grid panel-grid-2"></div>');
-  var conf = Number(r.answer_conf);
-  grid.appendChild(el(
-    '<section class="card" aria-label="Segment facts">' +
-      '<div class="card-head"><h2 class="card-title">Segment</h2>' +
-      '<span class="card-note">' + esc(fullTime(r.created_utc)) + '</span></div>' +
-      '<div class="card-body"><div class="kv">' +
-        segHeadRow('snapshot', 'answer_conf ' + (isFinite(conf) ? num(conf) : '—') + ' · threshold ' + (r.threshold !== undefined && r.threshold !== null ? r.threshold : '—')) +
-        segHeadRow('site', siteId) +
-        segHeadRow('worker', '—') +
-        segHeadRow('source clip', '—') +
-        segHeadRow('latency', '—') +
-      '</div>' +
-      '<p class="state-note" style="margin-top:var(--s3);">Worker, clip path and latency are not exposed by the API yet.</p>' +
-      '</div>' +
-    '</section>'));
-
+  // ---- top: re-verify first so verdict + reasons + result sit above
+  // the fold; the receipt tree and step timeline follow immediately.
+  // Segment facts, hashes, signals and voice are details, below. ----
   var hasHash = !!r.receipt_sha256;
   var rvCard = el(
     '<section class="card" aria-label="Re-verify receipt">' +
@@ -618,16 +606,42 @@ function renderSegmentReady(body) {
         '<div id="rv-out"></div>' +
       '</div>' +
     '</section>');
-  grid.appendChild(rvCard);
-  body.appendChild(grid);
+  body.appendChild(rvCard);
 
   renderReverify($('#rv-out'));
   $('#rv-run').addEventListener('click', runReverify);
   var mm = $('#mock-mismatch');
   if (mm) mm.addEventListener('change', function () { state.mockMismatch = mm.checked; });
 
-  // ---- step timeline ----
+  // ---- step timeline (above the fold) ----
   body.appendChild(stepTimelineCard(r));
+
+  // ---- collapsible receipt tree (above the fold) ----
+  var treeCard = el(
+    '<section class="card" aria-label="Receipt detail">' +
+      '<div class="card-head"><h2 class="card-title">Receipt detail</h2>' +
+      '<span class="card-note">expand objects, every hash copiable</span></div>' +
+      '<div class="card-body"><div class="rtree" id="receipt-tree"></div></div>' +
+    '</section>');
+  body.appendChild(treeCard);
+  $('#receipt-tree').appendChild(receiptTree(raw, []));
+
+  // ---- details below the fold ----
+  var conf = Number(r.answer_conf);
+  body.appendChild(el(
+    '<section class="card" aria-label="Segment facts">' +
+      '<div class="card-head"><h2 class="card-title">Segment</h2>' +
+      '<span class="card-note">' + esc(fullTime(r.created_utc)) + '</span></div>' +
+      '<div class="card-body"><div class="kv">' +
+        segHeadRow('snapshot', 'answer_conf ' + (isFinite(conf) ? num(conf) : '—') + ' · threshold ' + (r.threshold !== undefined && r.threshold !== null ? r.threshold : '—')) +
+        segHeadRow('site', siteId) +
+        segHeadRow('worker', '—') +
+        segHeadRow('source clip', '—') +
+        segHeadRow('latency', '—') +
+      '</div>' +
+      '<p class="state-note" style="margin-top:var(--s3);">Worker, clip path and latency are not exposed by the API yet.</p>' +
+      '</div>' +
+    '</section>'));
 
   // ---- voice ----
   var voiceCard = el(
@@ -661,38 +675,52 @@ function renderSegmentReady(body) {
   var hashCard = el(
     '<section class="card" aria-label="Hashes">' +
       '<div class="card-head"><h2 class="card-title">Hashes</h2>' +
-      '<span class="card-note">SHA-256, per docs/SPEC.md · hover for full value, button copies</span></div>' +
+      '<span class="card-note">per docs/SPEC.md · hover or click a value for the full string, button copies</span></div>' +
       '<div class="card-body">' +
-        hashRow('receipt id', r.receipt_id) +
-        hashRow('receipt sha256', r.receipt_sha256) +
-        hashRow('segment sha256', r.segment_sha256) +
-        (r.blurred_sha256 ? hashRow('blurred file sha256', r.blurred_sha256) : '') +
+        hashRow('ID', r.receipt_id, 'id') +
+        hashRow('receipt SHA-256', r.receipt_sha256, 'sha') +
+        hashRow('segment SHA-256', r.segment_sha256, 'sha') +
+        (r.blurred_sha256 ? hashRow('blurred file SHA-256', r.blurred_sha256, 'sha') : '') +
       '</div>' +
     '</section>');
   body.appendChild(hashCard);
   $$('[data-copy]', hashCard).forEach(function (b) {
-    b.addEventListener('click', function () { copyText(b.getAttribute('data-copy'), 'Hash copied.'); });
+    b.addEventListener('click', function () { copyText(b.getAttribute('data-copy'), 'copied', b); });
+  });
+  $$('.hash-val[data-full]', hashCard).forEach(function (s) {
+    function toggle() {
+      var full = s.getAttribute('data-full');
+      var expanded = s.getAttribute('data-expanded') === '1';
+      s.textContent = expanded ? s.getAttribute('data-short') : full;
+      s.setAttribute('data-expanded', expanded ? '0' : '1');
+    }
+    s.addEventListener('click', toggle);
+    s.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggle(); }
+    });
   });
 
   // ---- signals (compact) ----
   body.appendChild(signalsCard(sig));
-
-  // ---- collapsible receipt tree (instead of a JSON dump) ----
-  var treeCard = el(
-    '<section class="card" aria-label="Receipt detail">' +
-      '<div class="card-head"><h2 class="card-title">Receipt detail</h2>' +
-      '<span class="card-note">expand objects, every hash copiable</span></div>' +
-      '<div class="card-body"><div class="rtree" id="receipt-tree"></div></div>' +
-    '</section>');
-  body.appendChild(treeCard);
-  $('#receipt-tree').appendChild(receiptTree(raw, []));
 }
 
-function hashRow(label, value) {
+function endsHash(v) {
+  // First 8 + last 6 so the receipt ID and the SHA-256 never look
+  // identical at a glance; full value is one click/hover away.
+  var s = String(v || '');
+  if (s.length <= 16) return s;
+  return s.slice(0, 8) + '…' + s.slice(-6);
+}
+
+function hashRow(label, value, kind) {
   var v = value || '—';
-  var short = A.shortHash(v);
-  return '<div class="hash-row"><span class="hash-key">' + esc(label) + '</span>' +
-    '<span class="hash-val" title="' + esc(v) + '">' + esc(short) + '</span>' +
+  var isId = kind === 'id';
+  var short = isId ? endsHash(v) : A.shortHash(v, 16);
+  var cls = isId ? 'hash-val hash-id' : 'hash-val hash-sha';
+  return '<div class="hash-row' + (isId ? ' is-id' : '') + '"><span class="hash-key">' + esc(label) + '</span>' +
+    '<span class="' + cls + '" title="' + esc(v) + ' — click to ' +
+    'toggle full value" data-full="' + esc(v) + '" data-short="' + esc(short) +
+    '" data-expanded="0" role="button" tabindex="0">' + esc(short) + '</span>' +
     (value ? '<button class="btn btn-ghost btn-copy" type="button" data-copy="' + esc(v) +
       '" aria-label="Copy ' + esc(label) + '">copy</button>' : '') +
     '</div>';
@@ -779,9 +807,9 @@ function stepTimelineCard(r) {
           esc(topName) + ' (' + esc(topP) + '), confidence ' + esc(confTxt +
           (isFinite(thr) ? ', threshold ' + thr : '')) + ').</p>') +
       '<p class="state-note">Hands p(yes) ' +
-        esc(r.raw.decisions && r.raw.decisions.hands_ok && r.raw.decisions.hands_ok.p_yes !== undefined ? num(r.raw.decisions.hands_ok.p_yes) : '—') +
+        esc(r.hands_p_yes !== undefined && r.hands_p_yes !== null ? num(r.hands_p_yes) : '—') +
         ' · active-work p(yes) ' +
-        esc(r.raw.decisions && r.raw.decisions.active_work && r.raw.decisions.active_work.p_yes !== undefined ? num(r.raw.decisions.active_work.p_yes) : '—') +
+        esc(r.active_work_p_yes !== undefined && r.active_work_p_yes !== null ? num(r.active_work_p_yes) : '—') +
       '</p></div>' +
     '</section>');
   $('.tl-scroll', card).appendChild(track);
@@ -809,7 +837,7 @@ function leafRow(key, value) {
     '<span class="rt-val" title="' + esc(full) + '">' + esc(display) + '</span>';
   if (typeof value === 'string' && isHashLike(key, value)) {
     var b = el('<button class="btn btn-ghost btn-copy" type="button" aria-label="Copy ' + esc(key) + '">copy</button>');
-    b.addEventListener('click', function (ev) { ev.stopPropagation(); copyText(full, 'Hash copied.'); });
+    b.addEventListener('click', function (ev) { ev.stopPropagation(); copyText(full, 'copied', b); });
     row.appendChild(b);
   }
   return row;
@@ -867,16 +895,38 @@ function signalsCard(sig) {
   return card;
 }
 
-function copyText(text, okMsg) {
+function copyText(text, okMsg, btn) {
   function done() {
-    var n = $('#voice-note');
-    if (n) { n.textContent = okMsg; n.classList.remove('is-bad'); }
+    // Feedback appears next to the clicked button so the user sees it
+    // where they acted — never in an unrelated card.
+    if (btn && btn.parentElement) flashCopied(btn, okMsg || 'copied');
+    else {
+      var n = $('#voice-note');
+      if (n) { n.textContent = okMsg; n.classList.remove('is-bad'); }
+    }
   }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text) && done(); });
   } else {
     fallbackCopy(text) && done();
   }
+}
+
+// Small inline "copied" note inserted right after the clicked button,
+// removed after ~1.5 s. Positioned inline so it never shifts layout much.
+function flashCopied(btn, msg) {
+  try {
+    var parent = btn.parentElement;
+    if (!parent) return;
+    var old = parent.querySelector('.copy-toast');
+    if (old) old.remove();
+    var s = document.createElement('span');
+    s.className = 'copy-toast';
+    s.setAttribute('role', 'status');
+    s.textContent = msg || 'copied';
+    btn.after(s);
+    setTimeout(function () { if (s.parentElement) s.remove(); }, 1500);
+  } catch (e) { /* feedback is best-effort */ }
 }
 
 function fallbackCopy(text) {
@@ -996,6 +1046,12 @@ function renderInsights() {
     var chart = el('<div class="chart" role="img"></div>');
     chart.appendChild(riskChart(state.risk));
     rOut.appendChild(chart);
+    // The bound line is drawn only when the API provides it (see
+    // riskChart). When absent there is no line and no guess — just this
+    // caption, so a missing bound never reads as a zero bound.
+    if (state.risk.error_bound === undefined || !isFinite(state.risk.error_bound)) {
+      rOut.appendChild(el('<p class="state-note">bound not reported</p>'));
+    }
     rOut.appendChild(riskLegend(state.risk));
   }
 
@@ -1026,16 +1082,29 @@ function riskStatsRow(d) {
       (note ? '<div class="stat-note">' + esc(note) + '</div>' : '') + '</div>';
   }
   var row = el('<div class="statgrid" style="margin-bottom:var(--s4);"></div>');
-  var certified = d.chosen_threshold !== undefined && d.chosen_threshold !== null;
+  // chosen_threshold has three states: a number (certified), an explicit
+  // null (the API says "not certified"), and absent/undefined (the API
+  // said nothing — a neutral "not reported", never a verdict).
+  var ct = d.chosen_threshold;
+  var ctValue, ctNote;
+  if (ct === undefined) {
+    ctValue = 'not reported';
+    ctNote = 'no certified threshold reported by the API';
+  } else if (ct === null) {
+    ctValue = 'not certified';
+    ctNote = 'the API returned null — nothing certified yet';
+  } else {
+    ctValue = num(ct);
+    ctNote = (d.min_accepted !== undefined ? '≥ ' + d.min_accepted + ' accepted' : '');
+  }
+  var ebNote = d.error_bound === undefined
+    ? 'bound not reported by the API'
+    : (d.delta !== undefined ? 'exact binomial, δ = ' + d.delta : 'exact binomial upper bound');
   row.innerHTML =
-    stat('error bound', d.error_bound === undefined ? '—' : num(d.error_bound),
-      d.delta !== undefined ? 'exact binomial, δ = ' + d.delta : 'exact binomial upper bound') +
+    stat('error bound', d.error_bound === undefined ? '—' : num(d.error_bound), ebNote) +
     stat('target error', d.target_error === undefined ? '—' : num(d.target_error)) +
     stat('errors / n', (d.errors !== undefined && d.n !== undefined) ? d.errors + ' / ' + d.n : '—') +
-    stat('chosen threshold', certified ? num(d.chosen_threshold) : 'not certified',
-      certified
-        ? (d.min_accepted !== undefined ? '≥ ' + d.min_accepted + ' accepted' : '')
-        : 'no certified threshold yet');
+    stat('chosen threshold', ctValue, ctNote);
   return row;
 }
 
@@ -1056,7 +1125,10 @@ function riskChart(d) {
   var pts = (d.points || []).slice().sort(function (a, b) { return a.coverage - b.coverage; });
   if (!pts.length) return el('<p class="state-note">No risk/coverage points were returned.</p>');
 
-  var W = 720, H = 308, L = 46, R = 16, T = 20, B = 52;
+  // Readable at 390 px without any horizontal scroll: the SVG rescales
+  // to the card width, so ticks are few (3 + 3) and set large enough to
+  // survive the ~0.45× shrink on a phone. No scroll container here.
+  var W = 720, H = 308, L = 76, R = 16, T = 24, B = 64;
   var iw = W - L - R, ih = H - T - B;
   var maxErr = 0;
   pts.forEach(function (p) { maxErr = Math.max(maxErr, p.error); });
@@ -1081,20 +1153,20 @@ function riskChart(d) {
     return n;
   }
 
-  for (var i = 0; i <= 4; i++) {
-    var c = i / 4;
+  for (var i = 0; i <= 2; i++) {
+    var c = i / 2;
     node('line', { x1: x(c), y1: T, x2: x(c), y2: T + ih, 'class': 'grid-line' });
-    node('text', { x: x(c), y: T + ih + 18, 'text-anchor': 'middle' }, Math.round(c * 100) + '%');
+    node('text', { x: x(c), y: T + ih + 24, 'text-anchor': 'middle', 'class': 'tick-t' }, Math.round(c * 100) + '%');
   }
-  for (var j = 0; j <= 4; j++) {
-    var ev = (yMax * j) / 4;
+  for (var j = 0; j <= 2; j++) {
+    var ev = (yMax * j) / 2;
     node('line', { x1: L, y1: y(ev), x2: L + iw, y2: y(ev), 'class': 'grid-line' });
-    node('text', { x: L - 7, y: y(ev) + 3.5, 'text-anchor': 'end' }, ev.toFixed(3));
+    node('text', { x: L - 10, y: y(ev) + 6, 'text-anchor': 'end', 'class': 'tick-t' }, ev.toFixed(2));
   }
   node('line', { x1: L, y1: T, x2: L, y2: T + ih, 'class': 'axis-line' });
   node('line', { x1: L, y1: T + ih, x2: L + iw, y2: T + ih, 'class': 'axis-line' });
-  node('text', { x: L + iw / 2, y: T + ih + 40, 'text-anchor': 'middle', 'class': 'label-t' }, 'coverage');
-  node('text', { x: L, y: T - 7, 'class': 'label-t' }, 'error');
+  node('text', { x: L + iw / 2, y: T + ih + 46, 'text-anchor': 'middle', 'class': 'label-t' }, 'coverage');
+  node('text', { x: 8, y: 16, 'class': 'label-t' }, 'error');
 
   var dAttr = pts.map(function (p, k) { return (k ? 'L' : 'M') + x(p.coverage).toFixed(1) + ' ' + y(p.error).toFixed(1); }).join(' ');
   node('path', { d: dAttr + ' L' + x(pts[pts.length - 1].coverage).toFixed(1) + ' ' + (T + ih) + ' L' + x(pts[0].coverage).toFixed(1) + ' ' + (T + ih) + ' Z', 'class': 'curve-area' });
@@ -1128,7 +1200,7 @@ function riskChart(d) {
   }
 
   svg.setAttribute('aria-label', 'Risk/coverage curve with ' + pts.length + ' points. ' +
-    (hasBound ? 'Error bound ' + num(d.error_bound) + '. ' : 'No certified error bound yet. ') +
+    (hasBound ? 'Error bound ' + num(d.error_bound) + '. ' : 'Bound not reported. ') +
     (hasTarget ? 'Target error ' + num(d.target_error) + '.' : ''));
   return svg;
 }
@@ -1353,9 +1425,16 @@ function routeFromHash() {
   var parsed = A.parseHash(location.hash);
   state.filters = parsed.filters;
   state.lang = parsed.lang;
-  state.head = parsed.head || '';
+  // Never interpolate the hash into a selector: a value like head=a"b
+  // would throw a SyntaxError and kill routing. Compare option values
+  // directly, and reset unknown heads to the aggregate view.
+  state.head = typeof parsed.head === 'string' ? parsed.head : '';
   var sel = $('#f-head');
-  if (sel && sel.querySelector('option[value="' + (state.head || '') + '"]')) sel.value = state.head;
+  if (sel) {
+    var has = Array.prototype.some.call(sel.options, function (o) { return o.value === state.head; });
+    if (has) sel.value = state.head;
+    else { sel.value = ''; state.head = ''; }
+  }
   syncControlsFromState();
   state.segmentId = parsed.route === 'segment' ? parsed.id : null;
   setRoute(parsed.route, state.segmentId);

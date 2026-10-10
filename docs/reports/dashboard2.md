@@ -124,6 +124,82 @@ hash round-trip + bogus rejection, shortHash, pure receipt resolution).
 - `?api=` cross-origin override untested; WS push against live untested.
 - Proposals for other modules: none — no SPEC/config changes needed.
 
+## Fix round 1 (PR #21 review)
+
+All findings fixed in owned files only (`web/*`, `docs/screens/*`,
+`docs/reports/dashboard2.md`):
+
+- **CRITICAL `web/api.js` re-verify:** deleted the stray live-mode
+  pre-flight GET (its 404 rejection was unhandled on every click).
+  Live mode now goes straight to `POST /receipts/{id}/reverify`, and
+  every request failure rejects to the caller, which surfaces it via
+  `runReverify` ("Re-verify failed" banner).
+- **`app.js` route params:** `routeFromHash` no longer interpolates the
+  hash into `querySelector` (a value like `head=a"b` threw
+  `SyntaxError` and killed routing). Head options are matched with
+  `Array.prototype.some` over `sel.options`; unknown heads reset to
+  the aggregate view.
+- **Threshold absent vs null:** `normRisk` now uses a `present()`
+  helper that preserves an explicit `null`. Absent
+  `chosen_threshold` renders neutral "not reported / no certified
+  threshold reported by the API" (never a verdict); explicit `null`
+  renders "not certified"; a number renders the value.
+- **Error bound:** the line is drawn only when the API provides
+  `upper_bound`/`error_bound`; otherwise no line, no guess — the stats
+  row says "— / bound not reported by the API", the chart area shows a
+  small "bound not reported" caption, and the legend omits the entry.
+- **Adapter-only reads:** `raw.signals` → `r.signals`,
+  `segBatch.batch_id/site_id` → `A.first(...)`,
+  `r.raw.decisions.hands_ok/active_work.p_yes` → new normalized
+  `r.hands_p_yes` / `r.active_work_p_yes` from `normReceipt`. (`raw`
+  is still handed to the generic receipt tree, which renders whatever
+  keys exist without naming fields.)
+- **Copy feedback:** `copyText` now takes the clicked button and shows
+  an inline `copy-toast` ("copied", auto-removed after ~1.5 s) next to
+  it instead of writing into the unrelated `#voice-note`.
+- **UX 1 — Segment above the fold:** order is now verdict + reasons →
+  Re-verify (result banner at the top) → step timeline → receipt tree
+  → details (Segment facts, Voice, Hashes, Signals) below.
+- **UX 2 — chart at 390 px:** 3 + 3 ticks (was 5 + 5), tick labels
+  `tick-t` at 19 units with a `48rem` media query shrinking them to
+  11/12 units on wide screens (the SVG rescales to ~0.45× on a phone,
+  ~1.4× on desktop). No scroll container — the SVG keeps
+  `width:100%`.
+- **UX 3 — ID vs SHA-256:** labels are now "ID" vs "receipt/segment
+  SHA-256"; the ID renders as a bold badge (`hash-id`), SHAs as plain
+  mono; values show first-8…last-6 (ID) / 16-char truncate (SHA),
+  full value on hover (`title`) and on click/Enter/Space toggle.
+- **Screenshots:** re-took every view at 1280 / 390 / dark
+  (`node docs/screens/take_shots.cjs`, added the missing
+  `insights-dark-1280.png`) and inspected segment-1280,
+  insights-1280, segment-390, insights-390: 0 overflow, 0 console
+  errors, 0 failed requests on all shots.
+- **Tests:** new `FixRound1` class (5 tests): no stray GET, route-param
+  validation (source check + node `parseHash` with `head=a"b`),
+  absent-vs-null threshold (source check + node `normRisk` cases),
+  adapter-only reads, inline copy toast.
+
+Commands + REAL output:
+
+```sh
+cd /home/parshu/projects/jadal-qa-wt/dashboard2 && PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s web 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+# Ran 19 tests in 0.122s
+# OK
+node --check web/app.js web/api.js
+# (no output — both pass; checked individually: "api.js: syntax OK", "app.js: syntax OK")
+node docs/screens/take_shots.cjs
+# batches-1280.png:   1280x900 overflow=0px consoleErrors=0 failedReqs=0
+# segment-1280.png:   1280x900 overflow=0px consoleErrors=0 failedReqs=0
+# reverify-1280.png:  ✓ MATCH — receipt reproduces (expected == actual)
+# reverify-mismatch-1280.png: ✕ MISMATCH + diff paths (decisions.step.answer_conf, _mock.forced_mismatch)
+# insights-1280.png:  1280x900 overflow=0px consoleErrors=0 failedReqs=0
+# batches-390.png:    390x844  overflow=0px consoleErrors=0 failedReqs=0
+# segment-390.png:    390x844  overflow=0px consoleErrors=0 failedReqs=0
+# insights-390.png:   390x844  overflow=0px consoleErrors=0 failedReqs=0
+# batches-dark-1280.png, segment-dark-1280.png, insights-dark-1280.png (new): dark mode, 0 errors
+# ALL SHOTS OK
+```
+
 ## Files touched (all owned)
 
 `web/api.js` (new), `web/app.js`, `web/index.html`, `web/style.css`,

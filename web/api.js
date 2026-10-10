@@ -40,6 +40,16 @@ function first(obj, keys) {
 
 function asArray(v) { return Array.isArray(v) ? v : []; }
 
+function present(obj, keys) {
+  // Like first(), but preserves an explicit null so callers can tell
+  // "field absent" (undefined) apart from "API returned null".
+  if (!obj) return undefined;
+  for (var i = 0; i < keys.length; i++) {
+    if (Object.prototype.hasOwnProperty.call(obj, keys[i]) && obj[keys[i]] !== undefined) return obj[keys[i]];
+  }
+  return undefined;
+}
+
 /* ============================ normalizers ============================ */
 
 function normSegments(raw) {
@@ -114,6 +124,10 @@ function normReceipt(raw) {
     step_probs: step.probs || {},
     step_names: flat,
     step_conf: first(step, ['answer_conf', 'answerConf']),
+    hands_p_yes: (dec.hands_ok && typeof dec.hands_ok === 'object')
+      ? first(dec.hands_ok, ['p_yes', 'pYes']) : undefined,
+    active_work_p_yes: (dec.active_work && typeof dec.active_work === 'object')
+      ? first(dec.active_work, ['p_yes', 'pYes']) : undefined,
     model_versions: dec.model_versions || dec.modelVersions || {},
     pipeline_version: first(cfg, ['pipeline_version', 'pipelineVersion']) ||
       first(cfg.versions || {}, ['pipeline']) || null,
@@ -133,8 +147,8 @@ function normRisk(raw) {
   }).filter(function (p) { return isFinite(p.coverage) && isFinite(p.error); });
   return {
     points: pts,
-    error_bound: Array.isArray(raw) ? undefined : first(raw, ['upper_bound', 'upperBound', 'error_bound', 'errorBound', 'bound']),
-    chosen_threshold: Array.isArray(raw) ? undefined : first(raw, ['chosen_threshold', 'chosenThreshold', 'operating_threshold']),
+    error_bound: Array.isArray(raw) ? undefined : present(raw, ['upper_bound', 'upperBound', 'error_bound', 'errorBound', 'bound']),
+    chosen_threshold: Array.isArray(raw) ? undefined : present(raw, ['chosen_threshold', 'chosenThreshold', 'operating_threshold']),
     n: Array.isArray(raw) ? undefined : first(raw, ['n', 'n_val', 'samples']),
     errors: Array.isArray(raw) ? undefined : first(raw, ['errors']),
     target_error: Array.isArray(raw) ? undefined : first(raw, ['target_error', 'targetError', 'target']),
@@ -383,6 +397,11 @@ function createClient(opts) {
       return p.then(function (r) { cache.receipts[r.id] = r; return r; });
     },
     reverify: function (id, expected) {
+      // Live mode goes straight to POST reverify. There is deliberately
+      // no pre-flight GET here: an earlier revision fired a stray GET on
+      // every click whose 404 rejection was unhandled. Every request
+      // failure below rejects to the caller, which surfaces it in the
+      // UI (app.js runReverify).
       var p = mock
         ? delay(900).then(function () {
             if (opts.forceMismatch) {
@@ -390,7 +409,7 @@ function createClient(opts) {
             }
             return { match: true, expected: expected, actual: expected, diff: [] };
           })
-        : httpGet(fetchFn, base, '/__unused__').then(function () { return null; });
+        : null;
       if (!mock) {
         var ctl = new AbortController();
         var timer = setTimeout(function () { ctl.abort(); }, 60000);
@@ -404,7 +423,7 @@ function createClient(opts) {
           return res.json();
         }, function (e) { clearTimeout(timer); throw e; });
       }
-      return p.then(normReverify);
+      return p.then(normReverify, function (e) { throw e; });
     },
     risk: function () {
       return mock ? mockFile('risk_coverage') : httpGet(fetchFn, base, '/stats/risk_coverage');

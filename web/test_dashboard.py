@@ -350,5 +350,91 @@ class AdapterLogic(unittest.TestCase):
         self.assertIn("ADAPTER-OK", r.stdout)
 
 
+class FixRound1(unittest.TestCase):
+    """PR #21 fix round 1: no stray re-verify GET, hash-proof routing,
+    absent-vs-null threshold, bound caption, adapter-only reads."""
+
+    def test_no_stray_unused_get(self):
+        api = (WEB / "api.js").read_text(encoding="utf-8")
+        self.assertNotIn("__unused__", api,
+                         "live re-verify must not fire a stray GET")
+
+    def test_route_param_validation(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        # a hash like head=a"b must never be interpolated into a selector
+        self.assertNotIn("querySelector('option[value=\"'", app,
+                         "route param interpolated into querySelector (throws)")
+        self.assertIn("sel.options", app,
+                      "head option must be matched via dataset/options lookup")
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("node not on PATH")
+        script = (
+            "const A = require(" + repr(str(WEB / "api.js")) + ");\n"
+            "const assert = require('node:assert');\n"
+            "const p = A.parseHash('#/insights?head=a\"b');\n"
+            "assert.strictEqual(p.route, 'insights');\n"
+            "assert.strictEqual(p.head, 'a\"b');\n"
+            "const q = A.parseHash('#/segment/abc%22def?lang=xx&verdict=bogus');\n"
+            "assert.strictEqual(q.id, 'abc\"def');\n"
+            "assert.strictEqual(q.lang, 'hi-IN');\n"
+            "assert.strictEqual(q.filters.verdict, '');\n"
+            "console.log('ROUTE-OK');\n"
+        )
+        r = subprocess.run([node, "-e", script],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0,
+                         f"route-param node cases failed:\n{r.stdout}\n{r.stderr}")
+        self.assertIn("ROUTE-OK", r.stdout)
+
+    def test_threshold_absent_vs_null(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("no certified threshold reported", app,
+                      "absent chosen_threshold needs a neutral 'not reported'")
+        self.assertIn("bound not reported", app,
+                      "absent error bound needs a 'bound not reported' caption")
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("node not on PATH")
+        script = (
+            "const A = require(" + repr(str(WEB / "api.js")) + ");\n"
+            "const assert = require('node:assert');\n"
+            "// bare list (live risk shape): metadata absent -> undefined\n"
+            "let d = A.normRisk([{threshold: 0.5, coverage: 0.8, error: 0.05}]);\n"
+            "assert.strictEqual(d.chosen_threshold, undefined);\n"
+            "assert.strictEqual(d.error_bound, undefined);\n"
+            "// object without the keys: still absent -> undefined\n"
+            "d = A.normRisk({points: [{threshold: 0.5, coverage: 0.8, error: 0.05}]});\n"
+            "assert.strictEqual(d.chosen_threshold, undefined);\n"
+            "// explicit null survives (means 'not certified', not 'unreported')\n"
+            "d = A.normRisk({points: [], chosen_threshold: null, upper_bound: 0.07});\n"
+            "assert.strictEqual(d.chosen_threshold, null);\n"
+            "assert.strictEqual(d.error_bound, 0.07);\n"
+            "// a real number survives too\n"
+            "d = A.normRisk({points: [], chosen_threshold: 0.62});\n"
+            "assert.strictEqual(d.chosen_threshold, 0.62);\n"
+            "console.log('THRESHOLD-OK');\n"
+        )
+        r = subprocess.run([node, "-e", script],
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0,
+                         f"threshold node cases failed:\n{r.stdout}\n{r.stderr}")
+        self.assertIn("THRESHOLD-OK", r.stdout)
+
+    def test_named_reads_go_through_adapter(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertNotIn("raw.signals", app, "signals must come from normReceipt")
+        self.assertNotIn("raw.decisions", app, "decisions must come from normReceipt")
+        self.assertIn("r.hands_p_yes", app)
+        self.assertIn("r.active_work_p_yes", app)
+        self.assertIn("A.first(state.segBatch", app)
+
+    def test_copy_feedback_is_inline(self):
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("copy-toast", app, "copy feedback must render next to the button")
+        css = (WEB / "style.css").read_text(encoding="utf-8")
+        self.assertIn(".copy-toast", css)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
