@@ -1,0 +1,122 @@
+{
+ "decode_4s_vs_10s_1worker": {
+  "decode10_p50_ms": 1756.2,
+  "decode4_p50_ms": 1332.2,
+  "rows": [
+   {
+    "decode10_ms": 1204.2,
+    "decode4_ms": 855.5,
+    "window_id": "s_882de93381f5"
+   },
+   {
+    "decode10_ms": 1326.2,
+    "decode4_ms": 1109.3,
+    "window_id": "s_66c62d194270"
+   },
+   {
+    "decode10_ms": 1850.9,
+    "decode4_ms": 2888.9,
+    "window_id": "s_586c7fb2969c"
+   },
+   {
+    "decode10_ms": 1534.3,
+    "decode4_ms": 1179.6,
+    "window_id": "s_b7ddd7d99bb9"
+   },
+   {
+    "decode10_ms": 1760.9,
+    "decode4_ms": 1202.0,
+    "window_id": "s_d76579385290"
+   },
+   {
+    "decode10_ms": 1751.5,
+    "decode4_ms": 1462.5,
+    "window_id": "s_c79528e7a63e"
+   },
+   {
+    "decode10_ms": 3970.2,
+    "decode4_ms": 3101.4,
+    "window_id": "s_aed532b2a4af"
+   },
+   {
+    "decode10_ms": 4015.0,
+    "decode4_ms": 3446.4,
+    "window_id": "s_9f7f7c07c004"
+   }
+  ]
+ },
+ "frames_per_window": {
+  "eg2": {
+   "mean": 4.0,
+   "p50": 4.0,
+   "p95": 4.0
+  },
+  "native": {
+   "mean": 3.0,
+   "p50": 3.0,
+   "p95": 3.0
+  },
+  "pixel": {
+   "mean": 13.0,
+   "p50": 13.0,
+   "p95": 13.0
+  }
+ },
+ "n": 40,
+ "optimizations": {
+  "early_exit_s": 4.0,
+  "eg2_fps": 1.0,
+  "native_fps": 0.8,
+  "pixel_fps": 3.33,
+  "skip_mosaic": true
+ },
+ "per_stage_ms": {
+  "decision": {
+   "mean": 0.9,
+   "p50": 0.9,
+   "p95": 1.0
+  },
+  "decode": {
+   "mean": 976.6,
+   "p50": 942.9,
+   "p95": 1173.4
+  },
+  "descriptors": {
+   "mean": 330.2,
+   "p50": 344.5,
+   "p95": 376.3
+  },
+  "eg2_embed": {
+   "mean": 361.0,
+   "p50": 150.2,
+   "p95": 159.1
+  },
+  "io_probe": {
+   "mean": 2.5,
+   "p50": 2.3,
+   "p95": 3.5
+  },
+  "mosaic": {
+   "mean": 0.0,
+   "p50": 0.0,
+   "p95": 0.0
+  },
+  "pixel_features": {
+   "mean": 60.8,
+   "p50": 61.8,
+   "p95": 73.8
+  },
+  "write": {
+   "mean": 0.0,
+   "p50": 0.0,
+   "p95": 0.0
+  }
+ },
+ "total_ms": {
+  "mean": 1732.0,
+  "p50": 1482.6,
+  "p95": 1730.6
+ },
+ "what": "uncontended (1 worker) per-window per-stage timing of the optimized pipeline on a spread of windows",
+ "workers": 1
+}

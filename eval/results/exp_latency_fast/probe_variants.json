@@ -1,0 +1,115 @@
+{
+ "n": 20,
+ "variants": {
+  "all_adopted": {
+   "mean_p_eg2": 0.7119,
+   "mean_p_pixel": 0.7437,
+   "n": 20,
+   "opts": {
+    "early_exit_s": 4.0,
+    "eg2_fps": 1.0,
+    "native_fps": 0.8,
+    "pixel_fps": 3.33,
+    "skip_mosaic": true
+   },
+   "p_eg2_delta": -0.0056,
+   "p_pixel_delta": 0.3341,
+   "score_mean": 0.7278,
+   "score_mean_delta_vs_baseline": 0.1643,
+   "score_p50": 0.8496,
+   "verdict_distribution": {
+    "accept": 15,
+    "reject": 1,
+    "review": 4
+   }
+  },
+  "baseline": {
+   "mean_p_eg2": 0.7175,
+   "mean_p_pixel": 0.4096,
+   "n": 20,
+   "opts": {
+    "early_exit_s": 0.0,
+    "eg2_fps": 2.0,
+    "native_fps": 0.8,
+    "pixel_fps": 0.0,
+    "skip_mosaic": true
+   },
+   "p_eg2_delta": 0.0,
+   "p_pixel_delta": 0.0,
+   "score_mean": 0.5635,
+   "score_mean_delta_vs_baseline": 0.0,
+   "score_p50": 0.5016,
+   "verdict_distribution": {
+    "accept": 7,
+    "reject": 2,
+    "review": 11
+   }
+  },
+  "early_exit_4s": {
+   "mean_p_eg2": 0.7173,
+   "mean_p_pixel": 0.6394,
+   "n": 20,
+   "opts": {
+    "early_exit_s": 4.0,
+    "eg2_fps": 2.0,
+    "native_fps": 0.8,
+    "pixel_fps": 0.0,
+    "skip_mosaic": true
+   },
+   "p_eg2_delta": -0.0002,
+   "p_pixel_delta": 0.2298,
+   "score_mean": 0.6784,
+   "score_mean_delta_vs_baseline": 0.1149,
+   "score_p50": 0.7698,
+   "verdict_distribution": {
+    "accept": 11,
+    "reject": 1,
+    "review": 8
+   }
+  },
+  "eg2_1fps": {
+   "mean_p_eg2": 0.7177,
+   "mean_p_pixel": 0.4096,
+   "n": 20,
+   "opts": {
+    "early_exit_s": 0.0,
+    "eg2_fps": 1.0,
+    "native_fps": 0.8,
+    "pixel_fps": 0.0,
+    "skip_mosaic": true
+   },
+   "p_eg2_delta": 0.0002,
+   "p_pixel_delta": 0.0,
+   "score_mean": 0.5637,
+   "score_mean_delta_vs_baseline": 0.0002,
+   "score_p50": 0.4979,
+   "verdict_distribution": {
+    "accept": 7,
+    "reject": 2,
+    "review": 11
+   }
+  },
+  "pixel_3.33fps": {
+   "mean_p_eg2": 0.7175,
+   "mean_p_pixel": 0.7126,
+   "n": 20,
+   "opts": {
+    "early_exit_s": 0.0,
+    "eg2_fps": 2.0,
+    "native_fps": 0.8,
+    "pixel_fps": 3.33,
+    "skip_mosaic": true
+   },
+   "p_eg2_delta": 0.0,
+   "p_pixel_delta": 0.303,
+   "score_mean": 0.715,
+   "score_mean_delta_vs_baseline": 0.1515,
+   "score_p50": 0.8452,
+   "verdict_distribution": {
+    "accept": 14,
+    "reject": 2,
+    "review": 4
+   }
+  }
+ }
+}

@@ -30,3 +30,6 @@ tests/fixtures/poc/thumbs/
 
 # local scratch (screenshots, chrome profiles)
 .scratch/
+
+# L3.01 runtime partials (regenerable; the final windows*.jsonl are committed)
+eval/results/exp_latency_fast/*.partial
