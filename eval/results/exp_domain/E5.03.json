@@ -1,0 +1,602 @@
+{
+ "experiment": "E5.03",
+ "n": 210,
+ "n_indego": 150,
+ "n_good_indego": 100,
+ "n_ood": 60,
+ "n_good_ood": 51,
+ "n_bad_ood": 9,
+ "label_source": "human (IndEgo manifest_gold n=150 + Egocentric-10K ood_labels n=60; single labeller each; OOD n_bad=9 exploratory)",
+ "label_source_indego": "human (manifest_gold, single labeller)",
+ "label_source_ood": "human (ood_labels.json, single labeller; n_bad=9 exploratory)",
+ "protocol": "signed AUROC per feature; label 1 = usable/good; IndEgo CI = clip-bootstrap (7 clips), OOD CI = window bootstrap (optimistic)",
+ "regime": "IndEgo 480p ~10fps vs OOD 480p transcode (~30fps native) subsampled to 10fps effective; both decoded 160x90",
+ "device": "CPU (numpy)",
+ "cost": {
+  "features": 26,
+  "indego_windows": 150,
+  "ood_windows": 60
+ },
+ "classification_rule": "stable/flip require both |AUROC-0.5|>=0.05 on the same/opposite side; else 'chance'",
+ "counts": {
+  "stable": 8,
+  "flip": 14,
+  "chance": 4
+ },
+ "table": [
+  {
+   "feature": "temp_b0",
+   "indego_auroc": 0.5338,
+   "indego_ci95": [
+    0.33206933911159264,
+    0.6868131868131868
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.23965141612200436,
+   "ood_native30_ci95": [
+    0.07036135756740458,
+    0.4506379519400353
+   ],
+   "ood_10fps_auroc": 0.23965141612200436,
+   "ood_10fps_ci95": [
+    0.07268138111888112,
+    0.44304074074074085
+   ],
+   "ood_10fps_sign": "low-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "temp_b1",
+   "indego_auroc": 0.3372,
+   "indego_ci95": [
+    0.2226435536294691,
+    0.5195852534562211
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.5751633986928105,
+   "ood_native30_ci95": [
+    0.39182692307692313,
+    0.7501043599257886
+   ],
+   "ood_10fps_auroc": 0.5838779956427015,
+   "ood_10fps_ci95": [
+    0.4044071999429143,
+    0.7561728395061728
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "temp_b2",
+   "indego_auroc": 0.28680000000000005,
+   "indego_ci95": [
+    0.1635969664138678,
+    0.46360153256704983
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.701525054466231,
+   "ood_native30_ci95": [
+    0.5228427223719677,
+    0.8596754385964912
+   ],
+   "ood_10fps_auroc": 0.6949891067538126,
+   "ood_10fps_ci95": [
+    0.5183916488603988,
+    0.8557692307692308
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "temp_b3",
+   "indego_auroc": 0.5,
+   "indego_ci95": [
+    0.5,
+    0.5
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.6252723311546841,
+   "ood_native30_ci95": [
+    0.43741477272727275,
+    0.7932143281101616
+   ],
+   "ood_10fps_auroc": 0.5,
+   "ood_10fps_ci95": [
+    0.5,
+    0.5
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "chance",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "frozen_frac",
+   "indego_auroc": 0.6239999999999999,
+   "indego_ci95": [
+    0.5534391534391535,
+    0.6674592391304348
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.48801742919389973,
+   "ood_native30_ci95": [
+    0.35578247978436656,
+    0.5661329825834543
+   ],
+   "ood_10fps_auroc": 0.49673202614379086,
+   "ood_10fps_ci95": [
+    0.35817307692307687,
+    0.5816326530612245
+   ],
+   "ood_10fps_sign": "low-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "flicker_idx",
+   "indego_auroc": 0.5,
+   "indego_ci95": [
+    0.5,
+    0.5
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.7015250544662309,
+   "ood_native30_ci95": [
+    0.5369883697713886,
+    0.8483482142857144
+   ],
+   "ood_10fps_auroc": 0.5,
+   "ood_10fps_ci95": [
+    0.5,
+    0.5
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "chance",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "radial_slope",
+   "indego_auroc": 0.6334,
+   "indego_ci95": [
+    0.5585738539898133,
+    0.7178666666666667
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.644880174291939,
+   "ood_native30_ci95": [
+    0.4005230813499404,
+    0.8510076976594835
+   ],
+   "ood_10fps_auroc": 0.644880174291939,
+   "ood_10fps_ci95": [
+    0.4005230813499404,
+    0.8510076976594835
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "stable",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "hf_ratio",
+   "indego_auroc": 0.6182000000000001,
+   "indego_ci95": [
+    0.521531100478469,
+    0.7553816046966733
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.6928104575163399,
+   "ood_native30_ci95": [
+    0.4335125369592282,
+    0.8980111111111111
+   ],
+   "ood_10fps_auroc": 0.6928104575163399,
+   "ood_10fps_ci95": [
+    0.4335125369592282,
+    0.8980111111111111
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "stable",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "dct_energy",
+   "indego_auroc": 0.6305999999999999,
+   "indego_ci95": [
+    0.5296610169491525,
+    0.6953039215686263
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.701525054466231,
+   "ood_native30_ci95": [
+    0.5288053338171262,
+    0.858001851851852
+   ],
+   "ood_10fps_auroc": 0.701525054466231,
+   "ood_10fps_ci95": [
+    0.5288053338171262,
+    0.858001851851852
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "stable",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "pca_resid",
+   "indego_auroc": 0.4492,
+   "indego_ci95": [
+    0.3102668475802804,
+    0.6861788617886179
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.6928104575163399,
+   "ood_native30_ci95": [
+    0.41830065359477125,
+    0.9215884466994344
+   ],
+   "ood_10fps_auroc": 0.6928104575163399,
+   "ood_10fps_ci95": [
+    0.41830065359477125,
+    0.9215884466994344
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "pca_top1_share",
+   "indego_auroc": 0.5394,
+   "indego_ci95": [
+    0.4354066985645933,
+    0.6161745827984596
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.3464052287581699,
+   "ood_native30_ci95": [
+    0.10879824151882976,
+    0.6226754223702059
+   ],
+   "ood_10fps_auroc": 0.3485838779956427,
+   "ood_10fps_ci95": [
+    0.10879824151882976,
+    0.624
+   ],
+   "ood_10fps_sign": "low-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "luma_mean",
+   "indego_auroc": 0.5087999999999999,
+   "indego_ci95": [
+    0.2936078006500542,
+    0.6730462519936204
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.29411764705882354,
+   "ood_native30_ci95": [
+    0.11867099465883661,
+    0.4905791404612159
+   ],
+   "ood_10fps_auroc": 0.29193899782135074,
+   "ood_10fps_ci95": [
+    0.11867099465883661,
+    0.48767880460588797
+   ],
+   "ood_10fps_sign": "low-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "luma_p05",
+   "indego_auroc": 0.39239999999999997,
+   "indego_ci95": [
+    0.25585284280936454,
+    0.6493656286043828
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.47712418300653603,
+   "ood_native30_ci95": [
+    0.269473661080511,
+    0.6875375
+   ],
+   "ood_10fps_auroc": 0.47276688453159044,
+   "ood_10fps_ci95": [
+    0.26796510270774976,
+    0.6842454545454546
+   ],
+   "ood_10fps_sign": "low-usable",
+   "class": "stable",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "luma_p50",
+   "indego_auroc": 0.5169,
+   "indego_ci95": [
+    0.2908992416034669,
+    0.6694139194139194
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.2222222222222222,
+   "ood_native30_ci95": [
+    0.06969150641025641,
+    0.40409215686274513
+   ],
+   "ood_10fps_auroc": 0.22440087145969495,
+   "ood_10fps_ci95": [
+    0.07438850948579723,
+    0.40625
+   ],
+   "ood_10fps_sign": "low-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "luma_p95",
+   "indego_auroc": 0.4991,
+   "indego_ci95": [
+    0.3366738894907909,
+    0.6550064184852376
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.7233115468409587,
+   "ood_native30_ci95": [
+    0.5271738048852019,
+    0.9006335282651073
+   ],
+   "ood_10fps_auroc": 0.7233115468409587,
+   "ood_10fps_ci95": [
+    0.5271738048852019,
+    0.9006335282651073
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "dark_frac",
+   "indego_auroc": 0.47979999999999995,
+   "indego_ci95": [
+    0.3171171171171171,
+    0.6752
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.4488017429193899,
+   "ood_native30_ci95": [
+    0.2243118775287893,
+    0.6801437908496734
+   ],
+   "ood_10fps_auroc": 0.4509803921568627,
+   "ood_10fps_ci95": [
+    0.2243118775287893,
+    0.6837458479020979
+   ],
+   "ood_10fps_sign": "low-usable",
+   "class": "chance",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "bright_frac",
+   "indego_auroc": 0.3708,
+   "indego_ci95": [
+    0.2754237288135593,
+    0.5902439024390244
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.6753812636165577,
+   "ood_native30_ci95": [
+    0.4151599702380952,
+    0.9106753812636166
+   ],
+   "ood_10fps_auroc": 0.6775599128540305,
+   "ood_10fps_ci95": [
+    0.4155539772727273,
+    0.9123141945773525
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "motion_energy",
+   "indego_auroc": 0.30820000000000003,
+   "indego_ci95": [
+    0.15980498374864568,
+    0.49297573435504466
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.6906318082788672,
+   "ood_native30_ci95": [
+    0.5089299242424243,
+    0.8480160714285714
+   ],
+   "ood_10fps_auroc": 0.7211328976034859,
+   "ood_10fps_ci95": [
+    0.5488963293650794,
+    0.8646138901529737
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "global_shift",
+   "indego_auroc": 0.3761,
+   "indego_ci95": [
+    0.280411877394636,
+    0.4585542168674699
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.4607843137254902,
+   "ood_native30_ci95": [
+    0.25329051002905456,
+    0.6825030687397708
+   ],
+   "ood_10fps_auroc": 0.4607843137254902,
+   "ood_10fps_ci95": [
+    0.25329051002905456,
+    0.6825030687397708
+   ],
+   "ood_10fps_sign": "low-usable",
+   "class": "stable",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "skin_frac",
+   "indego_auroc": 0.6669999999999999,
+   "indego_ci95": [
+    0.5207336523125996,
+    0.7859960552268245
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.2549019607843137,
+   "ood_native30_ci95": [
+    0.10493827160493827,
+    0.4286044973544974
+   ],
+   "ood_10fps_auroc": 0.2570806100217865,
+   "ood_10fps_ci95": [
+    0.10570690883190884,
+    0.43509615384615385
+   ],
+   "ood_10fps_sign": "low-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "illum_r",
+   "indego_auroc": 0.4898,
+   "indego_ci95": [
+    0.3230392156862745,
+    0.6917613636363636
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.17211328976034862,
+   "ood_native30_ci95": [
+    0.06532530480140775,
+    0.2963112708395727
+   ],
+   "ood_10fps_auroc": 0.16339869281045752,
+   "ood_10fps_ci95": [
+    0.06009615384615385,
+    0.2880307277628033
+   ],
+   "ood_10fps_sign": "low-usable",
+   "class": "stable",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "illum_g",
+   "indego_auroc": 0.40080000000000005,
+   "indego_ci95": [
+    0.21066666666666667,
+    0.6395534290271132
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.6971677559912854,
+   "ood_native30_ci95": [
+    0.522885430705301,
+    0.8519206199460917
+   ],
+   "ood_10fps_auroc": 0.6949891067538126,
+   "ood_10fps_ci95": [
+    0.5206448801742919,
+    0.8517520215633423
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "illum_b",
+   "indego_auroc": 0.5278,
+   "indego_ci95": [
+    0.3462301587301587,
+    0.6470588235294118
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.7603485838779955,
+   "ood_native30_ci95": [
+    0.5956645447530864,
+    0.8976304945054947
+   ],
+   "ood_10fps_auroc": 0.7625272331154684,
+   "ood_10fps_ci95": [
+    0.5953688392352988,
+    0.9017857142857143
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "stable",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "rppg_pulse",
+   "indego_auroc": 0.4704,
+   "indego_ci95": [
+    0.3536931818181818,
+    0.5433035714285713
+   ],
+   "indego_sign": "low-usable",
+   "ood_native30_auroc": 0.7254901960784315,
+   "ood_native30_ci95": [
+    0.5239727272727273,
+    0.908686625874126
+   ],
+   "ood_10fps_auroc": 0.6753812636165578,
+   "ood_10fps_ci95": [
+    0.47685727762803237,
+    0.8605769230769231
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "flip",
+   "sign_agrees_10fps": false
+  },
+  {
+   "feature": "dup_hash_mean",
+   "indego_auroc": 0.5,
+   "indego_ci95": [
+    0.5,
+    0.5
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.5,
+   "ood_native30_ci95": [
+    0.5,
+    0.5
+   ],
+   "ood_10fps_auroc": 0.5,
+   "ood_10fps_ci95": [
+    0.5,
+    0.5
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "chance",
+   "sign_agrees_10fps": true
+  },
+  {
+   "feature": "zncc_self",
+   "indego_auroc": 0.5738000000000001,
+   "indego_ci95": [
+    0.4265873015873016,
+    0.6854066985645932
+   ],
+   "indego_sign": "high-usable",
+   "ood_native30_auroc": 0.5381263616557734,
+   "ood_native30_ci95": [
+    0.2945398351648352,
+    0.7789326923076924
+   ],
+   "ood_10fps_auroc": 0.5446623093681917,
+   "ood_10fps_ci95": [
+    0.3045822102425876,
+    0.7837222222222222
+   ],
+   "ood_10fps_sign": "high-usable",
+   "class": "stable",
+   "sign_agrees_10fps": true
+  }
+ ],
+ "command": "OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py e5_03",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+}

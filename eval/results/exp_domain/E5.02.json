@@ -1,0 +1,232 @@
+{
+ "experiment": "E5.02",
+ "n": 60,
+ "n_good": 51,
+ "n_bad": 9,
+ "n_factories": 47,
+ "label_source": "human (single labeller, ood_labels.json; exploratory, n_bad=9)",
+ "protocol": "StratifiedGroupKFold(5, groups=factory); C in {0.01,0.1,1,10} by inner grouped CV on train only; class_weight=balanced",
+ "ci_kind": "window bootstrap (optimistic: ~1 window/factory)",
+ "device": "CPU (numpy/sklearn)",
+ "cost": {
+  "n_ood_windows": 60,
+  "features": "26 per-pixel / 768 EG2 means"
+ },
+ "recipes": {
+  "pixel26_logistic": {
+   "oof_auroc": 0.75599128540305,
+   "boot_mean": 0.7532852807199664,
+   "ci95": [
+    0.5750854429822243,
+    0.9020360974578511
+   ],
+   "balacc": 0.6339869281045751,
+   "n_train_folds": 5,
+   "smallest_n_bad_in_train_fold": 7,
+   "folds": [
+    {
+     "fold": 0,
+     "skipped": false,
+     "C": 0.01,
+     "n_train": 48,
+     "n_bad_train": 7,
+     "n_test": 12,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 1,
+     "skipped": false,
+     "C": 0.01,
+     "n_train": 49,
+     "n_bad_train": 7,
+     "n_test": 11,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 2,
+     "skipped": false,
+     "C": 0.01,
+     "n_train": 47,
+     "n_bad_train": 7,
+     "n_test": 13,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 3,
+     "skipped": false,
+     "C": 0.01,
+     "n_train": 47,
+     "n_bad_train": 7,
+     "n_test": 13,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 4,
+     "skipped": false,
+     "C": 0.01,
+     "n_train": 49,
+     "n_bad_train": 8,
+     "n_test": 11,
+     "n_bad_test": 1
+    }
+   ]
+  },
+  "eg2_mean_logistic": {
+   "oof_auroc": 0.545751633986928,
+   "boot_mean": 0.5466713912313986,
+   "ci95": [
+    0.3497596153846154,
+    0.7363947770979021
+   ],
+   "balacc": 0.5196078431372549,
+   "n_train_folds": 5,
+   "smallest_n_bad_in_train_fold": 7,
+   "folds": [
+    {
+     "fold": 0,
+     "skipped": false,
+     "C": 1.0,
+     "n_train": 48,
+     "n_bad_train": 7,
+     "n_test": 12,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 1,
+     "skipped": false,
+     "C": 0.1,
+     "n_train": 49,
+     "n_bad_train": 7,
+     "n_test": 11,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 2,
+     "skipped": false,
+     "C": 1.0,
+     "n_train": 47,
+     "n_bad_train": 7,
+     "n_test": 13,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 3,
+     "skipped": false,
+     "C": 10.0,
+     "n_train": 47,
+     "n_bad_train": 7,
+     "n_test": 13,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 4,
+     "skipped": false,
+     "C": 0.1,
+     "n_train": 49,
+     "n_bad_train": 8,
+     "n_test": 11,
+     "n_bad_test": 1
+    }
+   ]
+  },
+  "two_view_avg": {
+   "oof_auroc": 0.7668845315904139,
+   "boot_mean": 0.7642876962945172,
+   "ci95": [
+    0.5956151553852703,
+    0.904320987654321
+   ],
+   "balacc": 0.6143790849673203,
+   "n_train_folds": 5,
+   "smallest_n_bad_in_train_fold": 7,
+   "folds": [
+    {
+     "fold": 0,
+     "skipped": false,
+     "C": 0.01,
+     "n_train": 48,
+     "n_bad_train": 7,
+     "n_test": 12,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 1,
+     "skipped": false,
+     "C": 0.01,
+     "n_train": 49,
+     "n_bad_train": 7,
+     "n_test": 11,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 2,
+     "skipped": false,
+     "C": 0.01,
+     "n_train": 47,
+     "n_bad_train": 7,
+     "n_test": 13,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 3,
+     "skipped": false,
+     "C": 0.01,
+     "n_train": 47,
+     "n_bad_train": 7,
+     "n_test": 13,
+     "n_bad_test": 2
+    },
+    {
+     "fold": 4,
+     "skipped": false,
+     "C": 0.01,
+     "n_train": 49,
+     "n_bad_train": 8,
+     "n_test": 11,
+     "n_bad_test": 1
+    }
+   ]
+  }
+ },
+ "learning_curve": [
+  {
+   "n_train_target": 12,
+   "n_train_mean": 12.176470588235293,
+   "repeats": 17,
+   "auroc_mean": 0.7086187457042826,
+   "auroc_std": 0.10188552800907773,
+   "frac_above_0.6": 0.7647058823529411,
+   "min_n_bad_train": 1
+  },
+  {
+   "n_train_target": 24,
+   "n_train_mean": 24.15,
+   "repeats": 20,
+   "auroc_mean": 0.714965843958214,
+   "auroc_std": 0.08093270839488245,
+   "frac_above_0.6": 0.95,
+   "min_n_bad_train": 1
+  },
+  {
+   "n_train_target": 36,
+   "n_train_mean": 36.5,
+   "repeats": 20,
+   "auroc_mean": 0.7025426789188736,
+   "auroc_std": 0.15582138689943317,
+   "frac_above_0.6": 0.8,
+   "min_n_bad_train": 2
+  },
+  {
+   "n_train_target": 45,
+   "n_train_mean": 45.10526315789474,
+   "repeats": 19,
+   "auroc_mean": 0.6906492630176839,
+   "auroc_std": 0.27418078298245235,
+   "frac_above_0.6": 0.7368421052631579,
+   "min_n_bad_train": 6
+  }
+ ],
+ "caveat": "n_bad=9 -> every estimate is unstable; smallest n_bad in any training fold reported per recipe",
+ "command": "OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py e5_02",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+}

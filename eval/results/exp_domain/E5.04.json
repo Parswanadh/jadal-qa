@@ -1,0 +1,54 @@
+{
+ "experiment": "E5.04",
+ "n_scored": 160,
+ "n_batch1": 60,
+ "n_batch2": 100,
+ "labels2_present": false,
+ "n_labels2": 0,
+ "scores2_path": "/workspace/wt/exp-domain-adapt/eval/results/exp_domain/inputs/ood_scores2.json",
+ "config_sha256_expected": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+ "label_source": "human (ood_labels.json 60 windows) -- ood_labels2.json NOT delivered",
+ "protocol": "frozen ensemble_v1 scores, no tuning; confirmatory OOD eval requires labels2",
+ "device": "frozen scores cached (batch1: bundle caches; batch2: origin/feat/ensemble-views)",
+ "cost": {
+  "n_windows_scored": 160
+ },
+ "descriptive": {
+  "n_scored": 160,
+  "usable_prob": {
+   "mean": 0.55989125,
+   "median": 0.46015,
+   "p05": 0.26700999999999997,
+   "p95": 0.9266749999999999,
+   "min": 0.175,
+   "max": 0.9544
+  },
+  "verdicts": {
+   "accept": 71,
+   "reject": 54,
+   "review": 35
+  },
+  "p_eg2_mean": 0.733134375,
+  "p_pixel_mean": 0.38665562500000006,
+  "batch_1(60)": {
+   "n": 60,
+   "usable_prob_mean": 0.4960449999999999,
+   "accept": 17,
+   "review": 14,
+   "reject": 29
+  },
+  "batch_2(100)": {
+   "n": 100,
+   "usable_prob_mean": 0.598199,
+   "accept": 54,
+   "review": 21,
+   "reject": 25
+  }
+ },
+ "command": "OMP_NUM_THREADS=1 python3 eval/exp_domain/run_e5.py e5_04 (auto-runs on labels2 via eval/exp_domain/watch_e5_04.sh)",
+ "n": 0,
+ "labels_missing": true,
+ "verdict_note": "confirmatory OOD eval INCONCLUSIVE: ood_labels2.json missing; descriptive score distributions only -- NOT accuracy",
+ "ci95": "n/a (no labels)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134"
+}
