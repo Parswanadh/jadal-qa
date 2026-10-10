@@ -1,0 +1,86 @@
+{
+  "backbone": "embeddinggemma2:budget=140:bfloat16",
+  "created_utc": "2026-10-10T06:17:16+00:00",
+  "heads": {
+    "active_work": {
+      "calibration": {
+        "accuracy": 0.8667,
+        "ece": 0.0353,
+        "n": 300,
+        "probs_mean": 0.7739,
+        "temperature": 0.6509,
+        "threshold_pick": {
+          "accepted": 300,
+          "coverage": 1.0,
+          "errors": 40,
+          "threshold": null,
+          "upper_bound": 0.162
+        }
+      },
+      "head_file": "decider_work.npz",
+      "head_sha256": "eda9386b69ac41d9a5e0443e394b87721d13a8aa787e6239d20acd8ace531031",
+      "held_out_bound_at_cal_threshold": {
+        "accepted": 0,
+        "errors": 0,
+        "threshold": null,
+        "upper_bound": null
+      },
+      "test": {
+        "accuracy": 0.9,
+        "ece": 0.0332,
+        "n": 300,
+        "probs_mean": 0.802,
+        "temperature": 0.5834,
+        "threshold_pick": {
+          "accepted": 300,
+          "coverage": 1.0,
+          "errors": 30,
+          "threshold": null,
+          "upper_bound": 0.1259
+        }
+      }
+    },
+    "hands_ok": {
+      "calibration": {
+        "accuracy": 0.8867,
+        "ece": 0.0517,
+        "n": 300,
+        "probs_mean": 0.8724,
+        "temperature": 0.6834,
+        "threshold_pick": {
+          "accepted": 300,
+          "coverage": 1.0,
+          "errors": 34,
+          "threshold": null,
+          "upper_bound": 0.1404
+        }
+      },
+      "head_file": "decider_hands.npz",
+      "head_sha256": "16dbb362bbfa4638e6ef69831d159854298972a44c92a609631d797764f0abe3",
+      "held_out_bound_at_cal_threshold": {
+        "accepted": 0,
+        "errors": 0,
+        "threshold": null,
+        "upper_bound": null
+      },
+      "test": {
+        "accuracy": 0.9067,
+        "ece": 0.0678,
+        "n": 300,
+        "probs_mean": 0.8861,
+        "temperature": 0.6499,
+        "threshold_pick": {
+          "accepted": 300,
+          "coverage": 1.0,
+          "errors": 28,
+          "threshold": null,
+          "upper_bound": 0.1186
+        }
+      }
+    }
+  },
+  "label_caveat": "labels by gemini-2.5-flash, not human-checked",
+  "mode": "DEV_ONLY",
+  "seed": 1234,
+  "split_source": "DEV_ONLY: first 1500 frames round-robined across 3 parquet files, sorted by frame_id, 60/20/20"
+}
