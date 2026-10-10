@@ -7,6 +7,14 @@ poc_data/{summary.json,windows.jsonl,stream_events.jsonl,thumbs/}.
 
 --demo-fixture serves tests/fixtures/poc/ instead of the live poc_data dir.
 Re-reads data files on every request (the run worker appends while we serve).
+
+Environment (optional):
+  JADAL_POC_DATA  default data dir (default: <repo>/../poc_data)
+  JADAL_PY        interpreter used for POST /api/reverify (default: python3 on PATH)
+
+POST /api/reverify/<id> only accepts a Host of 127.0.0.1:<port> or
+localhost:<port>, and an Origin that is absent or equal to http://<that host>.
+Anything else gets 403, so a page on another origin cannot start a re-verify.
 """
 import argparse
 import collections
@@ -21,16 +29,31 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)  # repo / worktree root
 WEB_DIR = os.path.join(ROOT, "web", "poc")
-REAL_DATA = "/home/parshu/projects/jadal-qa-wt/poc_data"
+REAL_DATA = os.path.normpath(os.environ.get(
+    "JADAL_POC_DATA", os.path.join(ROOT, "..", "poc_data")))
 FIXTURE_DATA = os.path.join(ROOT, "tests", "fixtures", "poc")
+PY = os.environ.get("JADAL_PY", "python3")
 
-WINDOW_ID_RE = re.compile(r"^[A-Za-z0-9_.\-]+$")
+# First character may not be "-" so an id can never be parsed as an option.
+WINDOW_ID_RE = re.compile(r"^[A-Za-z0-9_.][A-Za-z0-9_.\-]*$")
 THUMB_RE = re.compile(r"^[A-Za-z0-9_.\-]+\.jpg$")
 MAX_PER_PAGE = 100
 DEFAULT_PER_PAGE = 24
 
 DATA_DIR = REAL_DATA
 DEMO_MODE = False
+PORT = 8840
+
+
+def origin_allowed(host, origin):
+    """Origin/Host check for state-changing POSTs (DNS-rebinding and
+    cross-site form protection). Host must be the loopback name this server
+    listens on; Origin, when sent, must be the same origin."""
+    if host not in (f"127.0.0.1:{PORT}", f"localhost:{PORT}"):
+        return False
+    if origin is None:
+        return True
+    return origin == f"http://{host}"
 
 
 def data_path(name):
@@ -281,8 +304,9 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_file(target, "image/jpeg")
         # static under web/poc/
         if route.startswith("/") and ".." not in route:
-            cand = os.path.realpath(os.path.join(WEB_DIR, route.lstrip("/")))
-            if cand.startswith(os.path.realpath(WEB_DIR)) and os.path.isfile(cand):
+            base = os.path.realpath(WEB_DIR)
+            cand = os.path.realpath(os.path.join(base, route.lstrip("/")))
+            if os.path.commonpath([base, cand]) == base and os.path.isfile(cand):
                 return self.send_file(cand)
         return self.send_error(404, "not found")
 
@@ -290,9 +314,13 @@ class Handler(BaseHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         route = parsed.path
         if route.startswith("/api/reverify/"):
+            if not origin_allowed(self.headers.get("Host", ""), self.headers.get("Origin")):
+                return self.send_json({"error": "forbidden: Host/Origin must be this loopback server"},
+                                      status=403)
             wid = urllib.parse.unquote(route[len("/api/reverify/"):])
             if not WINDOW_ID_RE.match(wid):
-                return self.send_json({"error": "bad window id (allowed: A-Za-z0-9_.-)"}, status=400)
+                return self.send_json({"error": "bad window id (allowed: A-Za-z0-9_.-, not leading -)"},
+                                      status=400)
             script = os.path.join(ROOT, "scripts", "poc_run.py")
             if not os.path.isfile(script):
                 return self.send_json({"status": "unavailable",
@@ -300,7 +328,7 @@ class Handler(BaseHTTPRequestHandler):
                                       status=503)
             try:
                 proc = subprocess.run(
-                    ["python3", script, "--verify", wid],
+                    [PY, script, "--verify", wid],
                     capture_output=True, text=True, timeout=60, cwd=ROOT)
             except subprocess.TimeoutExpired:
                 return self.send_json({"status": "timeout",
@@ -314,12 +342,13 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
-    global DATA_DIR, DEMO_MODE
+    global DATA_DIR, DEMO_MODE, PORT
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8840)
     ap.add_argument("--demo-fixture", action="store_true")
     ap.add_argument("--data-dir", default=REAL_DATA)
     args = ap.parse_args()
+    PORT = args.port
     DEMO_MODE = args.demo_fixture
     DATA_DIR = FIXTURE_DATA if args.demo_fixture else args.data_dir
     srv = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)

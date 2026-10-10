@@ -179,5 +179,119 @@ class PocServerTest(unittest.TestCase):
         self.assertIn('id="claims"', html)
 
 
+class ReverifyMockedTest(unittest.TestCase):
+    """In-process server with subprocess.run mocked: success, mismatch,
+    timeout, and the Host/Origin guard on POST /api/reverify/<id>."""
+
+    @classmethod
+    def setUpClass(cls):
+        import http.server
+        import importlib.util
+        import threading
+        from unittest import mock
+        spec = importlib.util.spec_from_file_location(
+            "poc_server_mod", os.path.join(ROOT, "scripts", "poc_server.py"))
+        cls.mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.mod)
+        cls.srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), cls.mod.Handler)
+        cls.port = cls.srv.server_address[1]
+        cls.mod.PORT = cls.port
+        cls.mod.PY = "python3-test"
+        threading.Thread(target=cls.srv.serve_forever, daemon=True).start()
+        cls.patcher = mock.patch.object(cls.mod.subprocess, "run")
+        cls.subproc = cls.patcher.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.patcher.stop()
+        cls.srv.shutdown()
+        cls.srv.server_close()
+
+    def setUp(self):
+        self.subproc.reset_mock()
+        self.subproc.side_effect = None
+
+    def request(self, path, host=None, origin=None):
+        import http.client
+        conn = http.client.HTTPConnection("127.0.0.1", self.port, timeout=30)
+        conn.putrequest("POST", path, skip_host=True, skip_accept_encoding=True)
+        conn.putheader("Host", host or f"127.0.0.1:{self.port}")
+        if origin is not None:
+            conn.putheader("Origin", origin)
+        conn.putheader("Content-Length", "0")
+        conn.endheaders()
+        resp = conn.getresponse()
+        body = json.loads(resp.read() or b"{}")
+        conn.close()
+        return resp.status, body
+
+    def completed(self, rc, out="", err=""):
+        return subprocess.CompletedProcess(args=[], returncode=rc, stdout=out, stderr=err)
+
+    def test_success_runs_verify_with_argv_list(self):
+        self.subproc.return_value = self.completed(0, out='{"match": true}')
+        status, body = self.request("/api/reverify/f029_w004_c00077_t0000")
+        self.assertEqual(status, 200)
+        self.assertEqual(body["status"], "ok")
+        self.assertEqual(body["returncode"], 0)
+        self.assertIn('{"match": true}', body["stdout"])
+        args, kwargs = self.subproc.call_args
+        argv = args[0]
+        self.assertEqual(argv[0], "python3-test")
+        self.assertTrue(argv[1].endswith(os.path.join("scripts", "poc_run.py")))
+        self.assertEqual(argv[2:], ["--verify", "f029_w004_c00077_t0000"])
+        self.assertNotIn("shell", kwargs)
+
+    def test_mismatch_reports_status_mismatch(self):
+        self.subproc.return_value = self.completed(1, out='{"match": false}', err="differs")
+        status, body = self.request("/api/reverify/f009_w001_c00010_t0030")
+        self.assertEqual(status, 200)
+        self.assertEqual(body["status"], "mismatch")
+        self.assertEqual(body["returncode"], 1)
+        self.assertEqual(body["stderr"], "differs")
+
+    def test_timeout_maps_to_504(self):
+        self.subproc.side_effect = subprocess.TimeoutExpired(cmd="x", timeout=60)
+        status, body = self.request("/api/reverify/f009_w001_c00010_t0030")
+        self.assertEqual(status, 504)
+        self.assertEqual(body["status"], "timeout")
+
+    def test_leading_dash_id_rejected_before_subprocess(self):
+        status, _ = self.request("/api/reverify/--help")
+        self.assertEqual(status, 400)
+        self.subproc.assert_not_called()
+
+    def test_foreign_origin_rejected(self):
+        status, body = self.request("/api/reverify/f009_w001_c00010_t0030",
+                                    origin="http://evil.example")
+        self.assertEqual(status, 403)
+        self.assertIn("forbidden", body["error"])
+        self.subproc.assert_not_called()
+
+    def test_null_origin_rejected(self):
+        status, _ = self.request("/api/reverify/f009_w001_c00010_t0030", origin="null")
+        self.assertEqual(status, 403)
+        self.subproc.assert_not_called()
+
+    def test_foreign_host_rejected(self):
+        status, _ = self.request("/api/reverify/f009_w001_c00010_t0030",
+                                 host="evil.example:%d" % self.port)
+        self.assertEqual(status, 403)
+        self.subproc.assert_not_called()
+
+    def test_same_origin_accepted(self):
+        self.subproc.return_value = self.completed(0)
+        status, _ = self.request("/api/reverify/f009_w001_c00010_t0030",
+                                 host=f"localhost:{self.port}",
+                                 origin=f"http://localhost:{self.port}")
+        self.assertEqual(status, 200)
+        self.subproc.assert_called_once()
+
+    def test_origin_absent_accepted(self):
+        self.subproc.return_value = self.completed(0)
+        status, _ = self.request("/api/reverify/f009_w001_c00010_t0030")
+        self.assertEqual(status, 200)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
