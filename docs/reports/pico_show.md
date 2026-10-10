@@ -62,3 +62,35 @@ Full suite: `python -m unittest discover -s tests` -> `Ran 315 tests ... OK`
 - No camera-in-the-loop check that the flashed pattern is visible to the camera.
 - `pattern_for()` is not wired into the service yet (another worker owns
   `jadal/service.py`); reuse is future work.
+
+## Fix round 1 (review of PR #39 -> SPEC: FAIL; no Critical findings)
+Fixed in owned files only (`scripts/pico_show.py`, `tests/test_pico_show.py`,
+this report):
+- Important #1 (e2e never asserted what was flashed): the verdict e2e test now
+  drives `main()` through a `_make_link` seam with a shared inspectable
+  `FakePicoSerial` and asserts, per verdict, `flashed == [<expected>]` plus
+  `LED OFF` sent; a new demo e2e asserts all six patterns in order. Verified
+  the reviewer's regression (force-flash accept for every verdict) is now
+  caught: probe flashed `['ffffffff']` for `verdict review`, which the test
+  rejects (expects `['f0f0f0f0']`).
+- Minor #2: `--pause` uses `_nonneg_float`; `--fake --pause -1 verdict accept`
+  -> `error: argument --pause: --pause must be >= 0`, exit 2 (no traceback).
+- Minor #3: `--fake --port ...` -> `error: --port is ignored with --fake ...`,
+  exit 2.
+- Minor #4: `hex_to_bits` docstring documents `ValueError` on bad input;
+  `pattern` help now says `8 hex digits with optional 0x prefix`.
+- Minor #5: `verdict`/`demo`/`pattern` exit 3 with a stderr warning when no
+  heartbeat is seen (pattern still attempted, LED OFF still sent); `status`
+  still exits 0 since the disconnected status is its answer.
+
+REAL command outputs (this round):
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_pico_show
+Ran 16 tests in 0.660s
+OK
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 338 tests in 10.875s
+OK
+```
+(338 = 315 pre-existing incl. main-merge additions + 16 pico_show + rest of
+suite growth from other workers' merged work; pico_show adds ~0.66 s.)

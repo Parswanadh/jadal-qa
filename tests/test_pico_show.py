@@ -19,7 +19,20 @@ from scripts.pico_show import (  # noqa: E402
     main,
     pattern_for,
 )
+import scripts.pico_show as psmod  # noqa: E402  (seam patched in the e2e tests)
 from jadal.pico_link import FakePicoSerial, PicoLink, PicoLinkError  # noqa: E402
+
+
+def _run_main_with_fake(argv):
+    """Run main() with a shared, inspectable FakePicoSerial. Returns (rc, ser)."""
+    ser = FakePicoSerial()
+    orig = psmod._make_link
+    psmod._make_link = lambda args: PicoLink(serial=ser)  # noqa: E731
+    try:
+        rc = main(argv)
+    finally:
+        psmod._make_link = orig
+    return rc, ser
 
 
 class PatternBitsTest(unittest.TestCase):
@@ -88,8 +101,57 @@ class FakeCliTest(unittest.TestCase):
         self.assertEqual(link.status()["connected"], False)
 
     def test_main_verdict_fake_end_to_end(self):
-        rc = main(["--fake", "verdict", "review"])
+        # Core wiring: main() must flash the pattern FOR the verdict asked,
+        # then send LED OFF. (Catches a regression that flashes a fixed
+        # pattern regardless of the verdict.)
+        for verdict, expected_hex in (
+            ("accept", "FFFFFFFF"),
+            ("review", "F0F0F0F0"),
+            ("reject", "AAAAAAAA"),
+        ):
+            with self.subTest(verdict=verdict):
+                rc, ser = _run_main_with_fake(["--fake", "verdict", verdict])
+                self.assertEqual(rc, 0)
+                self.assertEqual(ser.pico.flashed, [expected_hex.lower()])
+                self.assertIn("LED OFF", ser.pico.led_commands)
+
+    def test_main_demo_fake_flashes_all_patterns_in_order(self):
+        rc, ser = _run_main_with_fake(["--fake", "demo"])
         self.assertEqual(rc, 0)
+        self.assertEqual(
+            ser.pico.flashed, [hexpat.lower() for _, hexpat in DEMO_PATTERNS]
+        )
+        self.assertIn("LED OFF", ser.pico.led_commands)
+
+    def test_no_heartbeat_means_nonzero_exit_but_still_cleans_up(self):
+        orig = psmod.wait_for_heartbeat
+        psmod.wait_for_heartbeat = lambda link, timeout=2.5: False  # noqa: E731
+        try:
+            rc, ser = _run_main_with_fake(["--fake", "verdict", "accept"])
+        finally:
+            psmod.wait_for_heartbeat = orig
+        self.assertEqual(rc, 3)
+        self.assertEqual(ser.pico.flashed, ["ffffffff"])  # pattern still attempted
+        self.assertIn("LED OFF", ser.pico.led_commands)
+
+    def test_status_still_exits_zero_without_heartbeat(self):
+        orig = psmod.wait_for_heartbeat
+        psmod.wait_for_heartbeat = lambda link, timeout=2.5: False  # noqa: E731
+        try:
+            rc, ser = _run_main_with_fake(["--fake", "status"])
+        finally:
+            psmod.wait_for_heartbeat = orig
+        self.assertEqual(rc, 0)
+
+    def test_negative_pause_rejected(self):
+        with self.assertRaises(SystemExit) as ctx:
+            main(["--fake", "--pause", "-1", "verdict", "accept"])
+        self.assertEqual(ctx.exception.code, 2)
+
+    def test_fake_with_port_rejected(self):
+        with self.assertRaises(SystemExit) as ctx:
+            main(["--fake", "--port", "/dev/ttyNOPE0", "status"])
+        self.assertEqual(ctx.exception.code, 2)
 
     def test_main_pattern_bad_hex_exits_nonzero(self):
         rc = main(["--fake", "pattern", "XYZ"])

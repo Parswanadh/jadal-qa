@@ -24,7 +24,10 @@ first one, so ``status()`` read immediately after connect says
 ``--fake`` uses :class:`jadal.pico_link.FakePicoSerial` so tests and a
 no-hardware demo work without opening ``/dev/ttyACM0``. Every path sends
 ``LED OFF`` and disconnects in a ``finally`` block. When no Pico answers the
-script exits non-zero with a clear message.
+script exits 2 with a clear message; ``verdict``/``demo``/``pattern`` exit 3
+with a warning when no heartbeat is seen (``status`` still exits 0 — the
+disconnected status is its answer). ``--port`` is rejected together with
+``--fake``, and ``--pause`` must be >= 0.
 
 Run from the repo root, e.g.::
 
@@ -77,7 +80,10 @@ def _bits_to_hex(bits: str) -> str:
 
 
 def hex_to_bits(hex8: str) -> str:
-    """Expand 8 hex digits to the 32-bit MSB-first bit string the firmware plays."""
+    """Expand 8 hex digits to the 32-bit MSB-first bit string the firmware plays.
+
+    Raises :class:`ValueError` on anything that is not valid hex.
+    """
     return format(int(hex8, 16), "032b")
 
 
@@ -161,7 +167,7 @@ def _connect(link: PicoLink, port: str | None) -> PicoLink:
 
 def _cmd_verdict(link: PicoLink, verdict: str, pause_s: float) -> int:
     hexpat = pattern_for(verdict)
-    wait_for_heartbeat(link)
+    hb_ok = wait_for_heartbeat(link)
     print(f"verdict {verdict}: FLASH {hexpat} (32 bits, 100 ms/bit, MSB first)",
           flush=True)
     try:
@@ -170,12 +176,16 @@ def _cmd_verdict(link: PicoLink, verdict: str, pause_s: float) -> int:
         time.sleep(pause_s)
     finally:
         cleanup(link)
+    if not hb_ok:
+        print("warning: no heartbeat was seen; the board may not have "
+              "played the pattern.", file=sys.stderr)
+        return 3
     print("done - LED off", flush=True)
     return 0
 
 
 def _cmd_demo(link: PicoLink, pause_s: float) -> int:
-    wait_for_heartbeat(link)
+    hb_ok = wait_for_heartbeat(link)
     try:
         for name, hexpat in DEMO_PATTERNS:
             print(f"{name:<34} FLASH {hexpat}", flush=True)
@@ -189,6 +199,10 @@ def _cmd_demo(link: PicoLink, pause_s: float) -> int:
         )
     finally:
         cleanup(link)
+    if not hb_ok:
+        print("warning: no heartbeat was seen; the board may not have "
+              "played the patterns.", file=sys.stderr)
+        return 3
     print("done - LED off", flush=True)
     return 0
 
@@ -216,7 +230,7 @@ def _cmd_pattern(link: PicoLink, hexpat: str, pause_s: float) -> int:
         cleanup(link)
         return 2
     hexpat = hexpat.upper()
-    wait_for_heartbeat(link)
+    hb_ok = wait_for_heartbeat(link)
     print(f"FLASH {hexpat} (32 bits, 100 ms/bit, MSB first)", flush=True)
     try:
         link.flash(hexpat)
@@ -224,8 +238,23 @@ def _cmd_pattern(link: PicoLink, hexpat: str, pause_s: float) -> int:
         time.sleep(pause_s)
     finally:
         cleanup(link)
+    if not hb_ok:
+        print("warning: no heartbeat was seen; the board may not have "
+              "played the pattern.", file=sys.stderr)
+        return 3
     print("done - LED off", flush=True)
     return 0
+
+
+def _nonneg_float(value: str) -> float:
+    """argparse type for --pause: reject negative sleep lengths with usage text."""
+    try:
+        result = float(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"not a number: {value!r}") from None
+    if result < 0:
+        raise argparse.ArgumentTypeError("--pause must be >= 0")
+    return result
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -236,7 +265,7 @@ def build_parser() -> argparse.ArgumentParser:
                     help="serial port (default: autodetect /dev/ttyACM*).")
     ap.add_argument("--fake", action="store_true",
                     help="use the in-memory FakePicoSerial (no hardware).")
-    ap.add_argument("--pause", type=float, default=None,
+    ap.add_argument("--pause", type=_nonneg_float, default=None,
                     help="seconds to wait while a pattern plays "
                     f"(default {FLASH_PLAY_S}; 0.05 with --fake).")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -245,7 +274,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("demo", help="play all patterns (verdicts + SOS/heartbeat/countdown).")
     sub.add_parser("status", help="connect, wait for heartbeat, print status.")
     p = sub.add_parser("pattern", help="flash one raw 8-hex-digit pattern.")
-    p.add_argument("hex8", help="exactly 8 hex digits, e.g. F0F0F0F0.")
+    p.add_argument("hex8", help="8 hex digits with optional 0x prefix, e.g. F0F0F0F0.")
     return ap
 
 
@@ -256,7 +285,10 @@ def _make_link(args: argparse.Namespace) -> PicoLink:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if args.fake and args.port:
+        parser.error("--port is ignored with --fake (fake link always uses FAKE).")
     pause_s = args.pause if args.pause is not None else (0.05 if args.fake else FLASH_PLAY_S)
     link = _make_link(args)
     _connect(link, args.port)
