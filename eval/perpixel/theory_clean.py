@@ -498,7 +498,7 @@ def main():
           flush=True)
     rl = rule_list_loco(gm, feats)
     print(f"rule list: bal_acc={rl['bal_acc']:.3f} "
-          f"auroc={rl['auroc_usable']:.3f}", flush=True)
+          f"auroc={rl['auroc']:.3f}", flush=True)
     # compare stub: regression numbers merged by freeze.py from m2.json
     out = {"noise_per_clip": noise, "fails": fails,
            "cleaning_ablation": abl, "null_calibration": nulls,
