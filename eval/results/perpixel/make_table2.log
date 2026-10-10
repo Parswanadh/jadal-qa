@@ -1,0 +1,4 @@
+manifest_gold.json: 150/150 ok, fails=0 in 54.8s
+manifest_synth.json: 60/60 ok, fails=0 in 21.5s
+dup_sigs: 150
+wrote /home/parshu/projects/jadal-qa-wt/perpixel-accuracy/eval/results/perpixel
