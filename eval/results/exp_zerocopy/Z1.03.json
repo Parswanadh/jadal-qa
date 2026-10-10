@@ -1,0 +1,97 @@
+{
+ "aggregate": {
+  "h264_480p_160x90": {
+   "codec": "h264",
+   "cpu": {
+    "mean_ms": 265.9,
+    "n": 8,
+    "p50_ms": 227.7
+   },
+   "hwdownload_cost_p50_ms": 9.2,
+   "n": 8,
+   "nvdec_hwdownload": {
+    "mean_ms": 776.1,
+    "n": 8,
+    "p50_ms": 705.2
+   },
+   "nvdec_no_download": {
+    "mean_ms": 794.9,
+    "n": 8,
+    "p50_ms": 696.0
+   },
+   "nvdec_speedup_over_cpu": 0.323,
+   "res": "480p_160x90"
+  },
+  "h264_480p_native": {
+   "codec": "h264",
+   "cpu": {
+    "mean_ms": 233.9,
+    "n": 8,
+    "p50_ms": 233.0
+   },
+   "hwdownload_cost_p50_ms": 91.0,
+   "n": 8,
+   "nvdec_hwdownload": {
+    "mean_ms": 768.0,
+    "n": 8,
+    "p50_ms": 771.7
+   },
+   "nvdec_no_download": {
+    "mean_ms": 773.1,
+    "n": 8,
+    "p50_ms": 680.7
+   },
+   "nvdec_speedup_over_cpu": 0.302,
+   "res": "480p_native"
+  },
+  "hevc_1080p_160x90": {
+   "codec": "hevc",
+   "cpu": {
+    "mean_ms": 4179.7,
+    "n": 8,
+    "p50_ms": 4067.1
+   },
+   "hwdownload_cost_p50_ms": -15.3,
+   "n": 8,
+   "nvdec_hwdownload": {
+    "mean_ms": 879.2,
+    "n": 8,
+    "p50_ms": 832.0
+   },
+   "nvdec_no_download": {
+    "mean_ms": 883.8,
+    "n": 8,
+    "p50_ms": 847.3
+   },
+   "nvdec_speedup_over_cpu": 4.888,
+   "res": "1080p_160x90"
+  },
+  "hevc_1080p_native": {
+   "codec": "hevc",
+   "cpu": {
+    "mean_ms": 3109.0,
+    "n": 8,
+    "p50_ms": 3209.4
+   },
+   "hwdownload_cost_p50_ms": 3564.1,
+   "n": 8,
+   "nvdec_hwdownload": {
+    "mean_ms": 4366.5,
+    "n": 8,
+    "p50_ms": 4403.4
+   },
+   "nvdec_no_download": {
+    "mean_ms": 866.3,
+    "n": 8,
+    "p50_ms": 839.3
+   },
+   "nvdec_speedup_over_cpu": 0.729,
+   "res": "1080p_native"
+  }
+ },
+ "device": "A40",
+ "id": "Z1.03",
+ "n_1080p_windows": 8,
+ "title": "NVDEC vs CPU decode at 1080p30 HEVC and 480p H.264, with/without hwdownload",
+ "track": "zerocopy"
+}

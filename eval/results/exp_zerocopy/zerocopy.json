@@ -1,0 +1,2439 @@
+{
+ "n": 30,
+ "device": "A40",
+ "gpu_mode": "upload",
+ "torchcodec_available": true,
+ "blockers": {
+  "torchcodec_runtime": "RuntimeError: Unsupported device: cuda"
+ },
+ "rows": [
+  {
+   "window_id": "s_4d769eb1e840",
+   "clip": "factory_001/worker_006/factory001_worker006_00008.mp4",
+   "factory": "factory_001",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 2.976,
+     "decode": 1212.115,
+     "pixel_features": 848.98,
+     "descriptors": 808.786,
+     "eg2_embed": 1048.609,
+     "mosaic": 0.0,
+     "decision": 0.985,
+     "total": 3922.477
+    },
+    "verdict": "accept",
+    "score": 0.7752,
+    "features_digest": "84fc613b44b2284d15f2c419109198981835c92d77c06f0560eb0fe59c56168c",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.641,
+     "decode": 1253.492,
+     "pixel_features": 184.581,
+     "descriptors": 793.855,
+     "eg2_embed": 653.404,
+     "decision": 2.031,
+     "mosaic": 0.0,
+     "total": 2890.102
+    },
+    "verdict": "accept",
+    "score": 0.7918,
+    "features_digest": "3295707934b72d58d8df432494c7fd29775b2b60883045534e0f64a066555516",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35390.88427734375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.03167,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": -0.0,
+    "hf_ratio": -0.0,
+    "illum_b": 0.00105,
+    "illum_g": 8e-05,
+    "illum_r": -0.00113,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 1e-05,
+    "pca_top1_share": 0.00096,
+    "radial_slope": 0.0698,
+    "rppg_pulse": -0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.99992,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_8092369a6dd1",
+   "clip": "factory_009/worker_001/factory009_worker001_00007.mp4",
+   "factory": "factory_009",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 21.035,
+     "decode": 1244.131,
+     "pixel_features": 835.109,
+     "descriptors": 682.501,
+     "eg2_embed": 535.395,
+     "mosaic": 0.0,
+     "decision": 0.964,
+     "total": 3319.155
+    },
+    "verdict": "review",
+    "score": 0.3792,
+    "features_digest": "b6efc8aaad84a1a97c52cb798f0ea32de185e8e1f3a5543b28a5fd09b491bd9c",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.418,
+     "decode": 1239.803,
+     "pixel_features": 13.703,
+     "descriptors": 845.356,
+     "eg2_embed": 383.936,
+     "decision": 2.098,
+     "mosaic": 0.0,
+     "total": 2487.396
+    },
+    "verdict": "review",
+    "score": 0.381,
+    "features_digest": "45d9fb99a5e1297da27e8a357cb0ca136a00bfa3b71c6b18071f10927f1a2b27",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35400.197265625
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.09722,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": -0.0,
+    "illum_b": 0.00127,
+    "illum_g": -0.00031,
+    "illum_r": -0.00096,
+    "luma_mean": -0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -1e-05,
+    "pca_top1_share": -0.00055,
+    "radial_slope": 0.16567,
+    "rppg_pulse": -0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99992,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_90380033f298",
+   "clip": "factory_010/worker_002/factory010_worker002_00056.mp4",
+   "factory": "factory_010",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 8.73,
+     "decode": 1190.353,
+     "pixel_features": 959.731,
+     "descriptors": 829.521,
+     "eg2_embed": 561.495,
+     "mosaic": 0.0,
+     "decision": 1.72,
+     "total": 3551.565
+    },
+    "verdict": "review",
+    "score": 0.3416,
+    "features_digest": "c47f70a1d48c730f23285a7a296a217b480ae7159bb0ed86fed6405bb427bf20",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.69,
+     "decode": 1256.096,
+     "pixel_features": 13.188,
+     "descriptors": 807.968,
+     "eg2_embed": 382.377,
+     "decision": 2.057,
+     "mosaic": 0.0,
+     "total": 2464.446
+    },
+    "verdict": "review",
+    "score": 0.3412,
+    "features_digest": "27aea2480357ca28fd5603388a2c95c2d7e2e4bf0009d63deb76078c23460fb3",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35400.26171875
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.04965,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": -0.0,
+    "hf_ratio": 0.0,
+    "illum_b": -0.0003,
+    "illum_g": 0.00027,
+    "illum_r": 4e-05,
+    "luma_mean": -0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 1e-05,
+    "pca_top1_share": -0.00026,
+    "radial_slope": 0.01468,
+    "rppg_pulse": -0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99992,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_1f058ff76496",
+   "clip": "factory_014/worker_041/factory014_worker041_00143.mp4",
+   "factory": "factory_014",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 7.594,
+     "decode": 1155.062,
+     "pixel_features": 797.308,
+     "descriptors": 853.405,
+     "eg2_embed": 601.319,
+     "mosaic": 0.0,
+     "decision": 0.967,
+     "total": 3415.669
+    },
+    "verdict": "accept",
+    "score": 0.9297,
+    "features_digest": "a7cfe12409a0ea723344d04637dc09d93cb55948e5bce6d718d1c4bf50c32aed",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.507,
+     "decode": 1121.721,
+     "pixel_features": 11.228,
+     "descriptors": 796.304,
+     "eg2_embed": 395.18,
+     "decision": 2.187,
+     "mosaic": 0.0,
+     "total": 2329.185
+    },
+    "verdict": "accept",
+    "score": 0.9304,
+    "features_digest": "886704b55758044cb9fa391c5b678a8419a04abb215532b7fbbf05a67c765836",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.09562,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": -0.00011,
+    "illum_g": 7e-05,
+    "illum_r": 4e-05,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": -0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 4e-05,
+    "pca_top1_share": -0.00055,
+    "radial_slope": 0.05824,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99985,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_5d70a1283bad",
+   "clip": "factory_016/worker_002/factory016_worker002_00008.mp4",
+   "factory": "factory_016",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 12.195,
+     "decode": 1172.667,
+     "pixel_features": 1091.787,
+     "descriptors": 852.222,
+     "eg2_embed": 548.33,
+     "mosaic": 0.0,
+     "decision": 0.954,
+     "total": 3678.169
+    },
+    "verdict": "review",
+    "score": 0.3193,
+    "features_digest": "6809b57f26dbb86f6920343e788939b23802affa04554dd1432b0ec4fdc7fbc9",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.99,
+     "decode": 1254.096,
+     "pixel_features": 53.006,
+     "descriptors": 812.874,
+     "eg2_embed": 382.826,
+     "decision": 2.06,
+     "mosaic": 0.0,
+     "total": 2507.911
+    },
+    "verdict": "review",
+    "score": 0.3202,
+    "features_digest": "fd881e8574ad85fe1d7d39db25c1036724257261af0621d747ab385d38e46c26",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.03729,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": -0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.00125,
+    "illum_g": -0.00036,
+    "illum_r": -0.00089,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": -0.0,
+    "pca_resid": 1e-05,
+    "pca_top1_share": -0.00095,
+    "radial_slope": 0.00623,
+    "rppg_pulse": -0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99988,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_d61894812775",
+   "clip": "factory_020/worker_002/factory020_worker002_00157.mp4",
+   "factory": "factory_020",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 4.745,
+     "decode": 1140.936,
+     "pixel_features": 773.917,
+     "descriptors": 754.932,
+     "eg2_embed": 544.859,
+     "mosaic": 0.0,
+     "decision": 0.97,
+     "total": 3220.372
+    },
+    "verdict": "reject",
+    "score": 0.2057,
+    "features_digest": "2185efa99bc1824c15a0a6cdf6af11221785d31a688e8361c8457204311042f3",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.463,
+     "decode": 1198.85,
+     "pixel_features": 10.931,
+     "descriptors": 718.277,
+     "eg2_embed": 383.154,
+     "decision": 2.149,
+     "mosaic": 0.0,
+     "total": 2315.878
+    },
+    "verdict": "reject",
+    "score": 0.2067,
+    "features_digest": "d08e37895d3198d1fb46cd7afab55e30cd9e74b72a55d2951f4aa3d35b06ec59",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.08174,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": -0.0,
+    "illum_b": -0.00312,
+    "illum_g": 0.00203,
+    "illum_r": 0.00109,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": -0.0,
+    "luma_p95": 0.0,
+    "motion_energy": -0.0,
+    "pca_resid": 0.0001,
+    "pca_top1_share": -0.00088,
+    "radial_slope": 0.02483,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99989,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_bc424bd5eaae",
+   "clip": "factory_022/worker_008/factory022_worker008_00154.mp4",
+   "factory": "factory_022",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 19.476,
+     "decode": 1156.474,
+     "pixel_features": 874.054,
+     "descriptors": 834.236,
+     "eg2_embed": 571.011,
+     "mosaic": 0.0,
+     "decision": 0.964,
+     "total": 3456.23
+    },
+    "verdict": "accept",
+    "score": 0.8523,
+    "features_digest": "df8befaba59e76505f18d74ee5c558b31295a3ce0446c08c80c76059b0ebac95",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.371,
+     "decode": 1535.893,
+     "pixel_features": 12.443,
+     "descriptors": 741.101,
+     "eg2_embed": 385.002,
+     "decision": 2.108,
+     "mosaic": 0.0,
+     "total": 2678.973
+    },
+    "verdict": "accept",
+    "score": 0.8531,
+    "features_digest": "28e1c28332f390b5ae07feaf0f22bbf1adc95e3852c4e1326c86b0d4da956c16",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.06875,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.00255,
+    "illum_g": 0.00099,
+    "illum_r": -0.00354,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 0.00017,
+    "pca_top1_share": 0.0025,
+    "radial_slope": 0.09889,
+    "rppg_pulse": -0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.99988,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_5c341722b7f4",
+   "clip": "factory_023/worker_003/factory023_worker003_00055.mp4",
+   "factory": "factory_023",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 5.974,
+     "decode": 1161.373,
+     "pixel_features": 925.402,
+     "descriptors": 809.423,
+     "eg2_embed": 581.094,
+     "mosaic": 0.0,
+     "decision": 0.948,
+     "total": 3484.228
+    },
+    "verdict": "review",
+    "score": 0.3792,
+    "features_digest": "887460b93b3c317f70eb9b1ce71a2a0af6d52f9c36a7f7d796780437408e55e8",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.411,
+     "decode": 1345.483,
+     "pixel_features": 10.551,
+     "descriptors": 774.609,
+     "eg2_embed": 383.147,
+     "decision": 2.021,
+     "mosaic": 0.0,
+     "total": 2518.278
+    },
+    "verdict": "review",
+    "score": 0.3873,
+    "features_digest": "04df9879472d21e1e30ab2a998feecdd885a3790e2d2617342d29e4a34fed291",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": 0.00243,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": -0.0,
+    "illum_b": -0.00052,
+    "illum_g": -0.0001,
+    "illum_r": 0.00062,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": -0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 0.00012,
+    "pca_top1_share": -0.00027,
+    "radial_slope": -0.00265,
+    "rppg_pulse": 0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.99992,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_96b0cc902e6a",
+   "clip": "factory_026/worker_005/factory026_worker005_00111.mp4",
+   "factory": "factory_026",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 13.175,
+     "decode": 1212.378,
+     "pixel_features": 899.623,
+     "descriptors": 806.584,
+     "eg2_embed": 556.266,
+     "mosaic": 0.0,
+     "decision": 1.014,
+     "total": 3489.055
+    },
+    "verdict": "review",
+    "score": 0.2549,
+    "features_digest": "fcf0506b2adeae296e04f661391c30c6a9381845a9f2aecdf08bcf3642d12d52",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.571,
+     "decode": 1242.261,
+     "pixel_features": 11.158,
+     "descriptors": 701.182,
+     "eg2_embed": 385.835,
+     "decision": 2.211,
+     "mosaic": 0.0,
+     "total": 2345.279
+    },
+    "verdict": "review",
+    "score": 0.2504,
+    "features_digest": "2df8cba8a7b0d7080d0ace323f08c7d0491c3ab9300d6eee6f099ca817f768e0",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.13611,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": -0.0,
+    "illum_b": -0.00376,
+    "illum_g": -0.00042,
+    "illum_r": 0.00418,
+    "luma_mean": -0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -0.00057,
+    "pca_top1_share": 0.00307,
+    "radial_slope": 0.00291,
+    "rppg_pulse": 0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.99984,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_f6ceba915aa4",
+   "clip": "factory_028/worker_001/factory028_worker001_00022.mp4",
+   "factory": "factory_028",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 5.719,
+     "decode": 1194.69,
+     "pixel_features": 824.153,
+     "descriptors": 765.518,
+     "eg2_embed": 548.092,
+     "mosaic": 0.0,
+     "decision": 1.019,
+     "total": 3339.207
+    },
+    "verdict": "reject",
+    "score": 0.2497,
+    "features_digest": "b7b5a7b13244c516e2ceb5385556c6a3f4e334af53433fd78b44159ea9054029",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.333,
+     "decode": 1113.988,
+     "pixel_features": 11.225,
+     "descriptors": 696.827,
+     "eg2_embed": 383.007,
+     "decision": 1.974,
+     "mosaic": 0.0,
+     "total": 2209.437
+    },
+    "verdict": "reject",
+    "score": 0.2496,
+    "features_digest": "60c41e20886b170972917432a4572a8c93798ae7c3fc48d00507d3c5d5466412",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.03326,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": -0.0,
+    "hf_ratio": -0.0,
+    "illum_b": 0.00306,
+    "illum_g": 0.00039,
+    "illum_r": -0.00344,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -8e-05,
+    "pca_top1_share": 0.00039,
+    "radial_slope": 0.13483,
+    "rppg_pulse": -0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99988,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_66858a055709",
+   "clip": "factory_033/worker_009/factory033_worker009_00000.mp4",
+   "factory": "factory_033",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 6.367,
+     "decode": 846.171,
+     "pixel_features": 799.321,
+     "descriptors": 788.601,
+     "eg2_embed": 617.768,
+     "mosaic": 0.0,
+     "decision": 0.836,
+     "total": 3059.077
+    },
+    "verdict": "accept",
+    "score": 0.9037,
+    "features_digest": "4991b8a916072a6263f6600306e46308cca1bb3b6c1eb4fd10df24a8692bb16a",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.3,
+     "decode": 886.018,
+     "pixel_features": 11.219,
+     "descriptors": 612.953,
+     "eg2_embed": 375.991,
+     "decision": 1.66,
+     "mosaic": 0.0,
+     "total": 1890.207
+    },
+    "verdict": "accept",
+    "score": 0.9019,
+    "features_digest": "ce03c916d095ee5a3cbdcd2403a8f8ffadfc3dda017b4c835261ca2723dfb99a",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.04382,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.00103,
+    "illum_g": 7e-05,
+    "illum_r": -0.00111,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 0.00023,
+    "pca_top1_share": -0.02302,
+    "radial_slope": 0.02793,
+    "rppg_pulse": -0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.9998,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_6082233e2a06",
+   "clip": "factory_035/worker_014/factory035_worker014_00077.mp4",
+   "factory": "factory_035",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 5.725,
+     "decode": 1192.686,
+     "pixel_features": 767.961,
+     "descriptors": 1865.977,
+     "eg2_embed": 1001.668,
+     "mosaic": 0.0,
+     "decision": 1.708,
+     "total": 4835.741
+    },
+    "verdict": "review",
+    "score": 0.3534,
+    "features_digest": "886eb851feb9701d324129847676b6ce56b8b72654b8e031ec4852f4c342b2c6",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.471,
+     "decode": 2149.974,
+     "pixel_features": 10.69,
+     "descriptors": 863.134,
+     "eg2_embed": 402.468,
+     "decision": 2.159,
+     "mosaic": 0.0,
+     "total": 3430.955
+    },
+    "verdict": "review",
+    "score": 0.3526,
+    "features_digest": "9d9af40a7d33b1afe06e58dd7e4488fce658246a49ccc0e0683afeab2e34a353",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.02361,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.00327,
+    "illum_g": 0.00342,
+    "illum_r": -0.00669,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 7e-05,
+    "pca_top1_share": -0.00353,
+    "radial_slope": 0.17597,
+    "rppg_pulse": -0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99992,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_f460fa52988a",
+   "clip": "factory_037/worker_018/factory037_worker018_00124.mp4",
+   "factory": "factory_037",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 21.142,
+     "decode": 2405.149,
+     "pixel_features": 1656.306,
+     "descriptors": 810.224,
+     "eg2_embed": 555.677,
+     "mosaic": 0.0,
+     "decision": 1.436,
+     "total": 5449.95
+    },
+    "verdict": "accept",
+    "score": 0.9247,
+    "features_digest": "179e8b25218f75df273353239dfa51520305660d1806a69aec06519dd1ccf55e",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.281,
+     "decode": 1489.487,
+     "pixel_features": 10.656,
+     "descriptors": 701.288,
+     "eg2_embed": 384.004,
+     "decision": 2.151,
+     "mosaic": 0.0,
+     "total": 2589.927
+    },
+    "verdict": "accept",
+    "score": 0.9225,
+    "features_digest": "d1265c8254c90b23dcc000da27f569f353f80d783c21fbf257fd03e44833be67",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.08889,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": -0.00197,
+    "illum_g": 0.00065,
+    "illum_r": 0.00132,
+    "luma_mean": -0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 4e-05,
+    "pca_top1_share": 1e-05,
+    "radial_slope": 0.06396,
+    "rppg_pulse": 0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.99974,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_fa204778bc29",
+   "clip": "factory_039/worker_006/factory039_worker006_01017.mp4",
+   "factory": "factory_039",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 5.798,
+     "decode": 1660.181,
+     "pixel_features": 782.025,
+     "descriptors": 753.037,
+     "eg2_embed": 545.836,
+     "mosaic": 0.0,
+     "decision": 0.988,
+     "total": 3747.877
+    },
+    "verdict": "review",
+    "score": 0.488,
+    "features_digest": "a035c35ae54ba12ae2c71ba96126fdcb6f2c2eb9b49cccc8886674e113fd848b",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.009,
+     "decode": 1325.571,
+     "pixel_features": 10.65,
+     "descriptors": 717.642,
+     "eg2_embed": 388.457,
+     "decision": 2.536,
+     "mosaic": 0.0,
+     "total": 2446.933
+    },
+    "verdict": "review",
+    "score": 0.505,
+    "features_digest": "d05976c3b0f5e15d87042e402372c7f90665330128ad034cc31b4c9c8b94b8be",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": -0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.01521,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": -0.0,
+    "illum_b": 0.00118,
+    "illum_g": -0.00067,
+    "illum_r": -0.00052,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 0.0001,
+    "pca_top1_share": 0.00125,
+    "radial_slope": 0.03792,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99991,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_4c25b8f129fb",
+   "clip": "factory_040/worker_001/factory040_worker001_00026.mp4",
+   "factory": "factory_040",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 15.115,
+     "decode": 1185.009,
+     "pixel_features": 783.513,
+     "descriptors": 787.897,
+     "eg2_embed": 542.721,
+     "mosaic": 0.0,
+     "decision": 0.979,
+     "total": 3315.258
+    },
+    "verdict": "accept",
+    "score": 0.9064,
+    "features_digest": "0319e894964e11185c9a25f807f790bf696f06ad164d4fb00bc44dbaf0331275",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.496,
+     "decode": 986.19,
+     "pixel_features": 10.45,
+     "descriptors": 714.497,
+     "eg2_embed": 384.049,
+     "decision": 1.991,
+     "mosaic": 0.0,
+     "total": 2099.73
+    },
+    "verdict": "accept",
+    "score": 0.9066,
+    "features_digest": "9369926a4e5b7b2df1324c2e52aa71ac22d4be5be6bb67534fdc109568b3be2c",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": -0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.06951,
+    "flicker_idx": -0.0,
+    "frozen_frac": -0.00014,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.00047,
+    "illum_g": -0.00038,
+    "illum_r": -0.0001,
+    "luma_mean": -0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -6e-05,
+    "pca_top1_share": -0.00054,
+    "radial_slope": -0.00458,
+    "rppg_pulse": -0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99987,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_c2b731ef752a",
+   "clip": "factory_042/worker_010/factory042_worker010_00056.mp4",
+   "factory": "factory_042",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 26.35,
+     "decode": 1186.973,
+     "pixel_features": 771.813,
+     "descriptors": 748.311,
+     "eg2_embed": 549.324,
+     "mosaic": 0.0,
+     "decision": 1.051,
+     "total": 3283.846
+    },
+    "verdict": "review",
+    "score": 0.4076,
+    "features_digest": "6db5ca99df0c2252b5fd3d96140ef7318bed3bcc8b882b3129708c9b5bc90681",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.535,
+     "decode": 1522.68,
+     "pixel_features": 11.598,
+     "descriptors": 681.674,
+     "eg2_embed": 383.763,
+     "decision": 2.02,
+     "mosaic": 0.0,
+     "total": 2604.34
+    },
+    "verdict": "review",
+    "score": 0.4075,
+    "features_digest": "70fa5a0ed429fc9c8782d6acf8d4f74e7d4b0f9cc6d541535d33a2508ec73857",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.0025,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.0003,
+    "illum_g": 0.00073,
+    "illum_r": -0.00102,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 0.00018,
+    "pca_top1_share": -0.00093,
+    "radial_slope": 0.02508,
+    "rppg_pulse": 0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.99994,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_0f731ed1be78",
+   "clip": "factory_044/worker_014/factory044_worker014_00056.mp4",
+   "factory": "factory_044",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 11.327,
+     "decode": 1190.835,
+     "pixel_features": 781.438,
+     "descriptors": 791.335,
+     "eg2_embed": 551.81,
+     "mosaic": 0.0,
+     "decision": 1.169,
+     "total": 3327.938
+    },
+    "verdict": "review",
+    "score": 0.3757,
+    "features_digest": "f0d24ef2688af64db47f134d14d778395e1aea14535b7be3192e3375d79feca5",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 3.074,
+     "decode": 1204.931,
+     "pixel_features": 12.128,
+     "descriptors": 751.013,
+     "eg2_embed": 387.142,
+     "decision": 2.06,
+     "mosaic": 0.0,
+     "total": 2360.415
+    },
+    "verdict": "review",
+    "score": 0.3761,
+    "features_digest": "bd06494558726699b5be1f26da6088b94db240ee501a554cac0a66d648d4f1cc",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": 0.00938,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": -0.0,
+    "illum_b": 0.00244,
+    "illum_g": -0.00078,
+    "illum_r": -0.00166,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 2e-05,
+    "pca_top1_share": -0.00111,
+    "radial_slope": 0.02066,
+    "rppg_pulse": -0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.99994,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_5464a86afaf6",
+   "clip": "factory_051/worker_005/factory051_worker005_00166.mp4",
+   "factory": "factory_051",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 15.994,
+     "decode": 1227.838,
+     "pixel_features": 766.401,
+     "descriptors": 766.906,
+     "eg2_embed": 542.447,
+     "mosaic": 0.0,
+     "decision": 1.008,
+     "total": 3320.614
+    },
+    "verdict": "accept",
+    "score": 0.8033,
+    "features_digest": "50ed40eee3906d54d0524690bce9b034c8dc13e6253d6a8244bf8df3f457201f",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.655,
+     "decode": 1127.959,
+     "pixel_features": 11.812,
+     "descriptors": 730.787,
+     "eg2_embed": 383.669,
+     "decision": 1.991,
+     "mosaic": 0.0,
+     "total": 2258.929
+    },
+    "verdict": "accept",
+    "score": 0.806,
+    "features_digest": "95faf069124a9e58b1d5563489f7e44c43742409da7f5fda4d116fcb5ecf6c4e",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.04715,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.00063,
+    "illum_g": -8e-05,
+    "illum_r": -0.00054,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 4e-05,
+    "pca_top1_share": -0.00045,
+    "radial_slope": 0.04266,
+    "rppg_pulse": -0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99981,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_d66b64982479",
+   "clip": "factory_054/worker_002/factory054_worker002_00045.mp4",
+   "factory": "factory_054",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 5.825,
+     "decode": 1122.469,
+     "pixel_features": 741.703,
+     "descriptors": 759.202,
+     "eg2_embed": 545.617,
+     "mosaic": 0.0,
+     "decision": 0.998,
+     "total": 3175.828
+    },
+    "verdict": "review",
+    "score": 0.3471,
+    "features_digest": "91ea4204b3e1f56267345538210e4fe920344b2d81ebaa088d048e325ace1244",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 3.389,
+     "decode": 1234.336,
+     "pixel_features": 10.576,
+     "descriptors": 690.964,
+     "eg2_embed": 383.118,
+     "decision": 2.096,
+     "mosaic": 0.0,
+     "total": 2324.545
+    },
+    "verdict": "review",
+    "score": 0.3491,
+    "features_digest": "bf99b5ce8b8d6bd1fcc07ac273854096407b5cbfe239098c2e1b3ceb0cd25415",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": -0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.00375,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": -0.0,
+    "illum_b": 0.00166,
+    "illum_g": 0.0002,
+    "illum_r": -0.00186,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -0.0001,
+    "pca_top1_share": -0.00257,
+    "radial_slope": -0.00118,
+    "rppg_pulse": -0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99994,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_7bc332bccaab",
+   "clip": "factory_056/worker_016/factory056_worker016_00154.mp4",
+   "factory": "factory_056",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 8.282,
+     "decode": 867.892,
+     "pixel_features": 790.705,
+     "descriptors": 757.887,
+     "eg2_embed": 544.762,
+     "mosaic": 0.0,
+     "decision": 0.974,
+     "total": 2970.522
+    },
+    "verdict": "review",
+    "score": 0.6647,
+    "features_digest": "8b9d725d57bfc930c1fb178dc3356225d0ea5da9186fae4cc57a68889912584e",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.915,
+     "decode": 1195.122,
+     "pixel_features": 10.529,
+     "descriptors": 676.462,
+     "eg2_embed": 383.158,
+     "decision": 1.983,
+     "mosaic": 0.0,
+     "total": 2270.22
+    },
+    "verdict": "review",
+    "score": 0.6714,
+    "features_digest": "d8362819f952db5345f2becb8f7ceb0449c0a754a6df4d207104fc3a00bca749",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": -0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.03021,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": -6e-05,
+    "illum_g": 0.00023,
+    "illum_r": -0.00017,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 2e-05,
+    "pca_top1_share": 0.0017,
+    "radial_slope": 0.01486,
+    "rppg_pulse": 0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99983,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_fa4e2eb1bdff",
+   "clip": "factory_058/worker_003/factory058_worker003_00121.mp4",
+   "factory": "factory_058",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 16.152,
+     "decode": 1207.515,
+     "pixel_features": 772.888,
+     "descriptors": 792.438,
+     "eg2_embed": 540.714,
+     "mosaic": 0.0,
+     "decision": 0.983,
+     "total": 3330.704
+    },
+    "verdict": "reject",
+    "score": 0.2462,
+    "features_digest": "556bed344818bdb595d9360fe553ba778b5543a34418499c976e9a36b1b48d7d",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.618,
+     "decode": 885.881,
+     "pixel_features": 11.261,
+     "descriptors": 713.79,
+     "eg2_embed": 382.818,
+     "decision": 2.069,
+     "mosaic": 0.0,
+     "total": 1998.491
+    },
+    "verdict": "reject",
+    "score": 0.2445,
+    "features_digest": "441408e24a7b50ac1dee26cb969cae08753e813297a55b41466e02f75bb673b3",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": -0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": 0.00174,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.00104,
+    "illum_g": 0.00059,
+    "illum_r": -0.00163,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -0.00014,
+    "pca_top1_share": 0.00187,
+    "radial_slope": 0.00574,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99995,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_11d0ba39104b",
+   "clip": "factory_060/worker_008/factory060_worker008_00099.mp4",
+   "factory": "factory_060",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 4.104,
+     "decode": 869.166,
+     "pixel_features": 749.878,
+     "descriptors": 749.338,
+     "eg2_embed": 541.975,
+     "mosaic": 0.0,
+     "decision": 0.957,
+     "total": 2915.432
+    },
+    "verdict": "reject",
+    "score": 0.2464,
+    "features_digest": "0d4d00cdd857c0a3c776da7f0aa527536a0204b86e4f0770fbe0329db1621a26",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.202,
+     "decode": 1112.165,
+     "pixel_features": 11.082,
+     "descriptors": 701.507,
+     "eg2_embed": 382.541,
+     "decision": 1.966,
+     "mosaic": 0.0,
+     "total": 2211.516
+    },
+    "verdict": "review",
+    "score": 0.2513,
+    "features_digest": "fce430253da724cf1cab7f11b54604147a65b1fb375199a8495550cecac5d7f0",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": -0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.07007,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": -0.00073,
+    "illum_g": 0.00057,
+    "illum_r": 0.00016,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 5e-05,
+    "pca_top1_share": -0.0013,
+    "radial_slope": 0.0139,
+    "rppg_pulse": 0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.9999,
+   "verdict_agree": false
+  },
+  {
+   "window_id": "s_df215c6829ee",
+   "clip": "factory_062/worker_014/factory062_worker014_00099.mp4",
+   "factory": "factory_062",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 8.935,
+     "decode": 1124.402,
+     "pixel_features": 742.274,
+     "descriptors": 701.965,
+     "eg2_embed": 528.077,
+     "mosaic": 0.0,
+     "decision": 0.822,
+     "total": 3106.49
+    },
+    "verdict": "review",
+    "score": 0.3348,
+    "features_digest": "f9a0910f65f0309d1c16dbd384ecf7441d00cfd01bbc3cd4e026ee9b6fcc0a62",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 3.548,
+     "decode": 893.253,
+     "pixel_features": 10.344,
+     "descriptors": 697.86,
+     "eg2_embed": 383.444,
+     "decision": 2.018,
+     "mosaic": 0.0,
+     "total": 1990.519
+    },
+    "verdict": "review",
+    "score": 0.3349,
+    "features_digest": "649767c370b03573916b7075c0e207c41f97a7ef81ded0093212aa60d915c083",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": -0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": 0.0059,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": -0.0,
+    "illum_b": -0.00074,
+    "illum_g": -0.00011,
+    "illum_r": 0.00085,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -2e-05,
+    "pca_top1_share": 0.0008,
+    "radial_slope": 0.01315,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.99996,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_079da0d6a7e9",
+   "clip": "factory_066/worker_015/factory066_worker015_00088.mp4",
+   "factory": "factory_066",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 15.477,
+     "decode": 1185.08,
+     "pixel_features": 769.456,
+     "descriptors": 750.802,
+     "eg2_embed": 544.958,
+     "mosaic": 0.0,
+     "decision": 0.966,
+     "total": 3266.754
+    },
+    "verdict": "review",
+    "score": 0.4264,
+    "features_digest": "884a183e8081953624ba28ba13aaa61c7430762862ea886375a3d309da0809ac",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.637,
+     "decode": 843.981,
+     "pixel_features": 11.939,
+     "descriptors": 702.242,
+     "eg2_embed": 384.942,
+     "decision": 2.075,
+     "mosaic": 0.0,
+     "total": 1947.87
+    },
+    "verdict": "review",
+    "score": 0.4271,
+    "features_digest": "1ebb63347687ce9a3a0c6b43e64a4bdd761feaf9288ba9a84d4a7fcb0bff9a86",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.0009,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": -0.00036,
+    "illum_g": 1e-05,
+    "illum_r": 0.00035,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -2e-05,
+    "pca_top1_share": 0.00049,
+    "radial_slope": 0.05269,
+    "rppg_pulse": -0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99995,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_ce18279adf1d",
+   "clip": "factory_069/worker_004/factory069_worker004_00077.mp4",
+   "factory": "factory_069",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 18.043,
+     "decode": 870.596,
+     "pixel_features": 737.482,
+     "descriptors": 767.269,
+     "eg2_embed": 550.256,
+     "mosaic": 0.0,
+     "decision": 0.964,
+     "total": 2944.63
+    },
+    "verdict": "review",
+    "score": 0.3527,
+    "features_digest": "408ad1cd5d1e77905af2bc942f6d4758b975083354b55abc0a30227c04c2b40f",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.817,
+     "decode": 1225.033,
+     "pixel_features": 11.217,
+     "descriptors": 681.327,
+     "eg2_embed": 382.294,
+     "decision": 1.969,
+     "mosaic": 0.0,
+     "total": 2304.712
+    },
+    "verdict": "review",
+    "score": 0.3531,
+    "features_digest": "166cc1e35960417d8dc014d3d6dfd690140929039fd02008c99fae1c855fc9cb",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": -0.0,
+    "dark_frac": -0.0,
+    "dct_energy": -0.0,
+    "dup_hash_mean": -0.01965,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": -0.00101,
+    "illum_g": 5e-05,
+    "illum_r": 0.00096,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -1e-05,
+    "pca_top1_share": 0.00086,
+    "radial_slope": 0.01039,
+    "rppg_pulse": 0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99994,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_81570830b4be",
+   "clip": "factory_073/worker_014/factory073_worker014_00055.mp4",
+   "factory": "factory_073",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 24.736,
+     "decode": 887.629,
+     "pixel_features": 742.346,
+     "descriptors": 738.757,
+     "eg2_embed": 542.49,
+     "mosaic": 0.0,
+     "decision": 0.955,
+     "total": 2936.931
+    },
+    "verdict": "review",
+    "score": 0.4393,
+    "features_digest": "ea475358f7e4822accb82fed773e8c01e2def534f7530ac9f0cd75d1e9190046",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.295,
+     "decode": 1264.802,
+     "pixel_features": 12.418,
+     "descriptors": 716.123,
+     "eg2_embed": 395.715,
+     "decision": 1.733,
+     "mosaic": 0.0,
+     "total": 2393.137
+    },
+    "verdict": "review",
+    "score": 0.4401,
+    "features_digest": "d0a231bbf970a9d40bc92e73ffe1810127610c83f571a346296cdb1fed046ebe",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": 0.0016,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": -0.0,
+    "illum_b": -0.00026,
+    "illum_g": -3e-05,
+    "illum_r": 0.00029,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -1e-05,
+    "pca_top1_share": -0.00121,
+    "radial_slope": 0.00963,
+    "rppg_pulse": -0.0,
+    "skin_frac": 0.0,
+    "temp_b0": 3e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.99993,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_0f3f94da245c",
+   "clip": "factory_076/worker_061/factory076_worker061_00066.mp4",
+   "factory": "factory_076",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 14.067,
+     "decode": 1229.097,
+     "pixel_features": 668.946,
+     "descriptors": 666.199,
+     "eg2_embed": 524.118,
+     "mosaic": 0.0,
+     "decision": 0.852,
+     "total": 3103.294
+    },
+    "verdict": "review",
+    "score": 0.4147,
+    "features_digest": "87bc97e85a9b1a3bd11e908b85e8350bac14fe658be64030619823d5b1e1fad5",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 6.915,
+     "decode": 1168.31,
+     "pixel_features": 9.691,
+     "descriptors": 588.499,
+     "eg2_embed": 376.573,
+     "decision": 1.656,
+     "mosaic": 0.0,
+     "total": 2151.693
+    },
+    "verdict": "review",
+    "score": 0.4158,
+    "features_digest": "830900267aa47d9a43e1c0cf6e889b05e6bffe6e41e85d13755188f428996ca4",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": -0.0,
+    "dup_hash_mean": 0.01451,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": -0.00418,
+    "illum_g": 0.00031,
+    "illum_r": 0.00387,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -0.0001,
+    "pca_top1_share": 0.02087,
+    "radial_slope": 0.06282,
+    "rppg_pulse": -0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99992,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_87c0dbed1d46",
+   "clip": "factory_079/worker_023/factory079_worker023_00000.mp4",
+   "factory": "factory_079",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 16.136,
+     "decode": 1194.812,
+     "pixel_features": 667.854,
+     "descriptors": 675.501,
+     "eg2_embed": 522.552,
+     "mosaic": 0.0,
+     "decision": 0.828,
+     "total": 3077.697
+    },
+    "verdict": "review",
+    "score": 0.377,
+    "features_digest": "0ca602b05751018fcae18ac43edfc4216842907a807657042341e2ddcca3f913",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.514,
+     "decode": 1247.979,
+     "pixel_features": 11.048,
+     "descriptors": 613.833,
+     "eg2_embed": 376.405,
+     "decision": 1.677,
+     "mosaic": 0.0,
+     "total": 2253.503
+    },
+    "verdict": "review",
+    "score": 0.3776,
+    "features_digest": "573eabfc168dcdbcfda6fda553575104f3a0cfa40dd92b2bd44e1dba8cad4fd3",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.00417,
+    "flicker_idx": -0.0,
+    "frozen_frac": 0.0,
+    "global_shift": -0.0,
+    "hf_ratio": -0.0,
+    "illum_b": 0.001,
+    "illum_g": 0.00017,
+    "illum_r": -0.00117,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -5e-05,
+    "pca_top1_share": -0.00026,
+    "radial_slope": 0.03501,
+    "rppg_pulse": 0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": 0.0
+   },
+   "eg2_cosine": 0.99997,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_c94cd4cdd38c",
+   "clip": "factory_080/worker_020/factory080_worker020_00066.mp4",
+   "factory": "factory_080",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 2.193,
+     "decode": 1119.536,
+     "pixel_features": 649.732,
+     "descriptors": 674.375,
+     "eg2_embed": 522.507,
+     "mosaic": 0.0,
+     "decision": 0.824,
+     "total": 2969.18
+    },
+    "verdict": "review",
+    "score": 0.429,
+    "features_digest": "16fe3316288e9867631b50ba51c2373165f7d8f25e496560cefacf30d0e4591c",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.394,
+     "decode": 1204.03,
+     "pixel_features": 11.19,
+     "descriptors": 604.042,
+     "eg2_embed": 377.159,
+     "decision": 1.898,
+     "mosaic": 0.0,
+     "total": 2200.763
+    },
+    "verdict": "review",
+    "score": 0.4289,
+    "features_digest": "86a3506770bbdd80cae812a3b695f36848f3b9171ecd75f32122e2ffd71c68ba",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": -0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.02104,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": -0.00017,
+    "illum_g": 0.00048,
+    "illum_r": -0.00032,
+    "luma_mean": 0.0,
+    "luma_p05": 0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": -2e-05,
+    "pca_top1_share": 0.00093,
+    "radial_slope": 0.03292,
+    "rppg_pulse": -0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 2e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.99994,
+   "verdict_agree": true
+  },
+  {
+   "window_id": "s_aae9f0166f5e",
+   "clip": "factory_085/worker_017/factory085_worker017_00000.mp4",
+   "factory": "factory_085",
+   "mode": "upload",
+   "base": {
+    "latency_ms": {
+     "io_probe": 14.193,
+     "decode": 1145.76,
+     "pixel_features": 675.099,
+     "descriptors": 685.871,
+     "eg2_embed": 525.923,
+     "mosaic": 0.0,
+     "decision": 0.87,
+     "total": 3047.732
+    },
+    "verdict": "review",
+    "score": 0.313,
+    "features_digest": "2c7a167f8a9d537457a23c9a4bed1a6c9f3356c413687a497440e1ac31e55f35",
+    "bytes": {
+     "pix": 12960000,
+     "eg2": 8847360,
+     "native": 49766400
+    }
+   },
+   "gpu": {
+    "latency_ms": {
+     "io_probe": 2.112,
+     "decode": 1202.069,
+     "pixel_features": 11.153,
+     "descriptors": 614.256,
+     "eg2_embed": 377.196,
+     "decision": 1.758,
+     "mosaic": 0.0,
+     "total": 2208.594
+    },
+    "verdict": "review",
+    "score": 0.3123,
+    "features_digest": "ffc3fdf801b332c6d4f583cb41e48c781361484a4838e6b4dde8df6602565d0f",
+    "bytes": {
+     "download": 71573760,
+     "upload": 21807360
+    },
+    "notes": {
+     "decode_backend": "ffmpeg hwdownload -> host -> upload (pix+eg2)",
+     "decode_native_frames": 300
+    },
+    "gpu_vram_peak_mib": 35401.08984375
+   },
+   "feature_delta": {
+    "bright_frac": 0.0,
+    "dark_frac": 0.0,
+    "dct_energy": 0.0,
+    "dup_hash_mean": -0.02333,
+    "flicker_idx": 0.0,
+    "frozen_frac": 0.0,
+    "global_shift": 0.0,
+    "hf_ratio": 0.0,
+    "illum_b": 0.00355,
+    "illum_g": -0.0013,
+    "illum_r": -0.00225,
+    "luma_mean": 0.0,
+    "luma_p05": -0.0,
+    "luma_p50": 0.0,
+    "luma_p95": 0.0,
+    "motion_energy": 0.0,
+    "pca_resid": 5e-05,
+    "pca_top1_share": 0.00084,
+    "radial_slope": 0.02908,
+    "rppg_pulse": 0.0,
+    "skin_frac": -0.0,
+    "temp_b0": 1e-05,
+    "temp_b1": 0.0,
+    "temp_b2": 0.0,
+    "temp_b3": 0.0,
+    "zncc_self": -0.0
+   },
+   "eg2_cosine": 0.9999,
+   "verdict_agree": true
+  }
+ ],
+ "pixel_order": [
+  "bright_frac",
+  "dark_frac",
+  "dct_energy",
+  "dup_hash_mean",
+  "flicker_idx",
+  "frozen_frac",
+  "global_shift",
+  "hf_ratio",
+  "illum_b",
+  "illum_g",
+  "illum_r",
+  "luma_mean",
+  "luma_p05",
+  "luma_p50",
+  "luma_p95",
+  "motion_energy",
+  "pca_resid",
+  "pca_top1_share",
+  "radial_slope",
+  "rppg_pulse",
+  "skin_frac",
+  "temp_b0",
+  "temp_b1",
+  "temp_b2",
+  "temp_b3",
+  "zncc_self"
+ ]
+}
