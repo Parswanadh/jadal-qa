@@ -364,12 +364,54 @@ def test_results_jsons_carry_provenance_and_experiment_fields():
 # `unittest` collects only TestCase subclasses; the functions above were written pytest-style and were
 # therefore silently skipped by `python -m unittest discover -s tests`. This hook adapts them.
 def load_tests(loader, tests, pattern):  # noqa: D103
+    import inspect as _inspect
     import unittest as _u
+
+    class _Missing:
+        pass
+
+    class _MonkeyPatch:
+        """Minimal pytest `monkeypatch` shim: setattr() only (all this module needs), undone per test."""
+
+        def __init__(self):
+            self._undo = []
+
+        def setattr(self, target, name, value=None, raising=True):
+            if isinstance(target, str):  # "module.attr" form
+                mod, _, attr = target.rpartition(".")
+                target, name, value = __import__(mod, fromlist=[attr]), attr, name
+            old = getattr(target, name, _Missing)
+            self._undo.append((target, name, old))
+            setattr(target, name, value)
+
+        def undo(self):
+            while self._undo:
+                target, name, old = self._undo.pop()
+                if old is _Missing:
+                    delattr(target, name)
+                else:
+                    setattr(target, name, old)
 
     class _ModuleTests(_u.TestCase):
         pass
 
     for _name, _fn in sorted(list(globals().items())):
-        if _name.startswith("test_") and callable(_fn):
+        if not (_name.startswith("test_") and callable(_fn)):
+            continue
+        if "monkeypatch" in _inspect.signature(_fn).parameters:
+
+            def _wrap(fn):
+                def _test(self):
+                    mp = _MonkeyPatch()
+                    try:
+                        fn(monkeypatch=mp)
+                    finally:
+                        mp.undo()
+
+                return _test
+
+            setattr(_ModuleTests, _name, _wrap(_fn))
+        else:
             setattr(_ModuleTests, _name, staticmethod(_fn))
     return _u.TestSuite([loader.loadTestsFromTestCase(_ModuleTests)])
+
