@@ -179,6 +179,42 @@ class TestSignals(SignalsBase):
         self.assertGreater(sharp, 50.0)
         self.assertLess(soft, sharp / 3.0)
 
+    def test_blur_var_resolution_invariant(self) -> None:
+        rng = np.random.default_rng(7)
+        big = rng.integers(0, 255, (1440, 1920, 3)).astype(np.uint8)
+        small = cv2.resize(big, (480, 360), interpolation=cv2.INTER_AREA)
+        vb, sb = signals._sharpness(cv2.cvtColor(big, cv2.COLOR_BGR2GRAY))
+        vs, ss = signals._sharpness(cv2.cvtColor(small, cv2.COLOR_BGR2GRAY))
+        self.assertEqual((sb, ss), (0.25, 1.0))
+        self.assertAlmostEqual(vb / vs, 1.0, delta=0.10)
+
+    def test_blur_var_brightness_invariant(self) -> None:
+        bright = signals.compute_signals(self._mp4("bright.mp4", _sharp), self.cfg)["blur_var"]
+
+        def darkened(i: int) -> np.ndarray:
+            return (_sharp(i).astype(np.float32) * 0.25).astype(np.uint8)
+
+        dark = signals.compute_signals(self._mp4("darksharp.mp4", darkened), self.cfg)["blur_var"]
+        self.assertAlmostEqual(dark / bright, 1.0, delta=0.15)
+        thr = DEFAULT.blur_var_min
+        self.assertEqual(bright > thr, dark > thr, "dark copy must not change sharpness class")
+
+    def test_backend_versions(self) -> None:
+        v1 = signals.backend_versions(self.cfg)
+        self.assertEqual(list(v1.keys()), ["faces_backend", "hands_backend",
+                                           "face_model_sha256", "hand_model_sha256",
+                                           "mediapipe_version", "opencv_version"])
+        self.assertEqual(v1, signals.backend_versions(self.cfg))
+        bi = signals.backend_info(self.cfg)
+        self.assertEqual(v1["faces_backend"], bi["faces"])
+        self.assertEqual(v1["hands_backend"], bi["hands"])
+        self.assertEqual(v1["face_model_sha256"], bi["face_model_sha256"])
+        self.assertEqual(v1["hand_model_sha256"], bi["hand_model_sha256"])
+        self.assertIsInstance(v1["opencv_version"], str)
+        self.assertTrue(v1["opencv_version"])
+        self.assertTrue(v1["mediapipe_version"] is None
+                        or isinstance(v1["mediapipe_version"], str))
+
     def test_brightness_and_exposure(self) -> None:
         dark = signals.compute_signals(self._mp4("dark.mp4", lambda i: np.full((H, W, 3), 10, np.uint8)), self.cfg)
         over = signals.compute_signals(self._mp4("over.mp4", lambda i: np.full((H, W, 3), 250, np.uint8)), self.cfg)

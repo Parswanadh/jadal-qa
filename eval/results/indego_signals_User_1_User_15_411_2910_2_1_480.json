@@ -1,0 +1,708 @@
+{
+ "attribution": "IndEgo, Fraunhofer IPK, CC BY 4.0, https://huggingface.co/datasets/FraunhoferIPK/IndEgo",
+ "backend_versions": {
+  "face_model_sha256": "b4578f35940bf5a1a655214a1cce5cab13eba73c1297cd78e1a04c2380b0152f",
+  "faces_backend": "mediapipe",
+  "hand_model_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+  "hands_backend": "mediapipe",
+  "mediapipe_version": "1.1.0",
+  "opencv_version": "5.0.0"
+ },
+ "clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+ "seg_seconds": 20.0,
+ "segments": [
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 20.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0000.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0000",
+    "sha256": "47de46588a8edde332ff29b506ec56a56198e8e53b1117861ef73a53fac6a7cb",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 0.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 458.9922,
+    "brightness_mean": 86.5121,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 9,
+    "faces_found": 9,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.4375,
+    "motion_mean": 5.3095,
+    "over_exposed_frac": 0.0174,
+    "phash": "95cc4319da270fd9",
+    "under_exposed_frac": 0.1717
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 40.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0001.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0001",
+    "sha256": "52c31bf66391e951c4d8a8d054890fc42b0a360e09e9dd3e497f58bed937b974",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 20.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 355.61,
+    "brightness_mean": 84.2756,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 15,
+    "faces_found": 15,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0625,
+    "motion_mean": 4.8207,
+    "over_exposed_frac": 0.0066,
+    "phash": "91634e9533ce6d94",
+    "under_exposed_frac": 0.1969
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 60.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0002.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0002",
+    "sha256": "01a44383ac68a0c3dac5e1435bbcca6d03340a20b359e78c5a9d6869fd184481",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 40.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 326.5231,
+    "brightness_mean": 93.0828,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 7,
+    "faces_found": 7,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.25,
+    "motion_mean": 5.4788,
+    "over_exposed_frac": 0.0287,
+    "phash": "c1c1015e1a1fffcc",
+    "under_exposed_frac": 0.1663
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 80.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0003.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0003",
+    "sha256": "907e8b02a618d876d38729ffcd31a7ecf1583779035883014188236193f48396",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 60.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 306.7155,
+    "brightness_mean": 98.4774,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 2,
+    "faces_found": 2,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.5,
+    "motion_mean": 4.6174,
+    "over_exposed_frac": 0.0249,
+    "phash": "c5c512469e3b2f9c",
+    "under_exposed_frac": 0.1438
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 100.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0004.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0004",
+    "sha256": "6e4de3ff03332d2de339248c853a5deb160149fb1beda7253b3039c6f34b562b",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 80.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 296.064,
+    "brightness_mean": 116.2507,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 7,
+    "faces_found": 7,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 0.8125,
+    "motion_mean": 3.6285,
+    "over_exposed_frac": 0.0974,
+    "phash": "c0c719d3061b4f6f",
+    "under_exposed_frac": 0.1159
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 120.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0005.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0005",
+    "sha256": "189b0462a0eeab1d4b1a5506b70aded39d6042f918ee73c18636776e3ec12840",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 100.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 404.6096,
+    "brightness_mean": 92.7297,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 1,
+    "faces_found": 1,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.375,
+    "motion_mean": 3.6172,
+    "over_exposed_frac": 0.0489,
+    "phash": "c93632cd4de11f64",
+    "under_exposed_frac": 0.1592
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 140.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0006.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0006",
+    "sha256": "937d0330c04c9ff870cf86f3d096d9545e35ba42161903acafa9327926976e30",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 120.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 411.2952,
+    "brightness_mean": 100.0645,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 1,
+    "faces_found": 1,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 2.1219,
+    "over_exposed_frac": 0.089,
+    "phash": "c93736c90ff0136c",
+    "under_exposed_frac": 0.1335
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 160.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0007.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0007",
+    "sha256": "4853853179f23cbf93ca263241dd5cf20203674a40c829fcfb85109cb188ed52",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 140.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 355.4711,
+    "brightness_mean": 102.0552,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 3,
+    "faces_found": 3,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 2.571,
+    "over_exposed_frac": 0.0883,
+    "phash": "c93734c90ff00f6c",
+    "under_exposed_frac": 0.1324
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 180.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0008.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0008",
+    "sha256": "c1d485808b8d8781d9952fd987d8bd5674b3076f712b66672763568f9c550d79",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 160.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 407.7242,
+    "brightness_mean": 95.4254,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 12,
+    "faces_found": 12,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 5.029,
+    "over_exposed_frac": 0.0241,
+    "phash": "96e1531c39b62a4f",
+    "under_exposed_frac": 0.1744
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 200.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0009.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0009",
+    "sha256": "5aed2877e6f9a2e6a7fe7ad7057b5acdd1baa5e8b82da71a0de7a3980b889897",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 180.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 433.8138,
+    "brightness_mean": 85.2989,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 6,
+    "faces_found": 6,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.125,
+    "motion_mean": 6.6983,
+    "over_exposed_frac": 0.012,
+    "phash": "93cc41356a2f4ad7",
+    "under_exposed_frac": 0.1935
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 220.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0010.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0010",
+    "sha256": "1562a8eca8e0f99fd8c87667356380a19e34a8b59554c379d739350888fe55fb",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 200.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 385.8404,
+    "brightness_mean": 78.755,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 7,
+    "faces_found": 7,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 5.7329,
+    "over_exposed_frac": 0.0035,
+    "phash": "d060468f0fb63b9d",
+    "under_exposed_frac": 0.1911
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 240.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0011.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0011",
+    "sha256": "3ee867f639d14bcd4242bd3f9611ee5938c7e60e16bf3004b953b84056306e53",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 220.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 251.0106,
+    "brightness_mean": 85.711,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 9,
+    "faces_found": 9,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 5.1262,
+    "over_exposed_frac": 0.0024,
+    "phash": "c54d13a64ad32eb9",
+    "under_exposed_frac": 0.1525
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 260.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0012.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0012",
+    "sha256": "403a51794799b5720b5368829cfa1d9be786c5a6a447a379c0d935c01eb3f90f",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 240.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 225.6923,
+    "brightness_mean": 78.7356,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 4,
+    "faces_found": 4,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 4.4301,
+    "over_exposed_frac": 0.0057,
+    "phash": "854a5ab64b366b65",
+    "under_exposed_frac": 0.1878
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 280.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0013.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0013",
+    "sha256": "4c1c8ec4a7f3231ce723bd61735a76d5f669f6ba7c2f37b7f3e71907e7a2ed20",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 260.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 339.659,
+    "brightness_mean": 80.8161,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 2,
+    "faces_found": 2,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 4.6127,
+    "over_exposed_frac": 0.0163,
+    "phash": "94ca2937ca3e9b13",
+    "under_exposed_frac": 0.1509
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 300.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0014.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0014",
+    "sha256": "d660d3fe5bc83a7c88ab25907f4af9af847a18348a170fa24cf455d040077452",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 280.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 237.7819,
+    "brightness_mean": 80.4804,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 2,
+    "faces_found": 2,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 4.7105,
+    "over_exposed_frac": 0.0056,
+    "phash": "c4940e46b34ecfea",
+    "under_exposed_frac": 0.1617
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 320.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0015.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0015",
+    "sha256": "267354c8056f6e5da0cc7e5a8fcf2f625c3f84606bc9b4f46e85a3274f705020",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 300.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 375.3947,
+    "brightness_mean": 82.4381,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 3,
+    "faces_found": 3,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 4.2067,
+    "over_exposed_frac": 0.0066,
+    "phash": "8d855097325e7e72",
+    "under_exposed_frac": 0.1524
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 340.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0016.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0016",
+    "sha256": "ff1347b4f93bb60c7093bfa6cad18673f485953ba2e7960b4d514580024baa5e",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 320.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 369.5324,
+    "brightness_mean": 85.9276,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 3,
+    "faces_found": 3,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.1875,
+    "motion_mean": 4.7011,
+    "over_exposed_frac": 0.0067,
+    "phash": "c49f41710ee63bcc",
+    "under_exposed_frac": 0.155
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 360.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0017.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0017",
+    "sha256": "07fa92fdb59db38679ab69f9302af2e54e6a9ee71ea55b537909e968f6885a45",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 340.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 349.1671,
+    "brightness_mean": 87.315,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 3,
+    "faces_found": 3,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.4375,
+    "motion_mean": 4.5324,
+    "over_exposed_frac": 0.0082,
+    "phash": "c49334483f963b6d",
+    "under_exposed_frac": 0.1513
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 380.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0018.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0018",
+    "sha256": "be4f9e247f811b18fe120f55f14a0ed76872826a7f2e4114abec783e7b5c7c99",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 360.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 480.5018,
+    "brightness_mean": 96.6795,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 0,
+    "faces_found": 0,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.4375,
+    "motion_mean": 6.7789,
+    "over_exposed_frac": 0.021,
+    "phash": "c1c1175e020f7e7e",
+    "under_exposed_frac": 0.1361
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 400.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0019.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0019",
+    "sha256": "2e83c482615d222126c7736e91b4398969ad8edfcaa7ccec34d5c9d32945ed79",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 380.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 333.2227,
+    "brightness_mean": 95.938,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 1,
+    "faces_found": 1,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.125,
+    "motion_mean": 4.8741,
+    "over_exposed_frac": 0.0309,
+    "phash": "96f359064add4f60",
+    "under_exposed_frac": 0.1424
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.9375
+   },
+   "segment": {
+    "end_s": 416.1,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_User_15_411_2910_2_1_480-1894dd27-0020.mp4",
+    "segment_id": "User_1_User_15_411_2910_2_1_480-1894dd27-0020",
+    "sha256": "4a707c7eacde79eac74ead6f3f7b9dc5ffec3a2f0ce56f60d044d2319caf7bdd",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "start_s": 400.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 514.7274,
+    "brightness_mean": 83.4428,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 2,
+    "faces_found": 2,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 0.5625,
+    "motion_mean": 6.5797,
+    "over_exposed_frac": 0.0232,
+    "phash": "c195065a7bac8fd2",
+    "under_exposed_frac": 0.1903
+   }
+  }
+ ]
+}

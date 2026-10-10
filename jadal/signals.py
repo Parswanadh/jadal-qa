@@ -1,8 +1,10 @@
 """L0 signal extraction for a single segment (OpenCV decode + deterministic metrics).
 
 Computes the exact L0 signals defined in docs/SPEC.md for one video segment:
-decode with OpenCV (no torchcodec), fixed-rate frame sampling, blur (variance of
-Laplacian), brightness/exposure, motion (Farneback optical flow on a fixed grid),
+decode with OpenCV (no torchcodec), fixed-rate frame sampling, blur (resolution-
+and brightness-normalised variance of Laplacian at a fixed 480-px analysis
+width), brightness/exposure, motion (Farneback optical flow, px/sec at 480-px
+width, annualised by the effective sampled fps),
 hands_visible_frac / hand_count_mode (mediapipe HandLandmarker when its model
 file is available, else a colour proxy), faces_found / faces_blurred (mediapipe
 FaceDetector when its model file is available, else a colour proxy), a
@@ -67,6 +69,7 @@ FACE_AREA_MIN_PX = 600
 FACE_ASPECT_LO, FACE_ASPECT_HI = 0.6, 1.6
 FACE_FILL_MIN = 0.5          # blob_area / bbox_area for a filled/roundish region
 DEFAULT_PHASH_DUP_DISTANCE = 10  # Hamming distance (of 64) treated as a duplicate
+SHARP_WIDTH = 480  # fixed analysis width (px) for blur and motion; smaller frames are never upscaled
 # Mediapipe model filenames (resolved from config paths, else $JADAL_MODELS_DIR).
 FACE_MODEL_NAME = "blaze_face_short_range.tflite"
 HAND_MODEL_NAME = "hand_landmarker.task"
@@ -174,8 +177,35 @@ def _read_sampled_frames(path: str, k: int) -> tuple[list[np.ndarray], list[int]
 
 
 # --- metric primitives ----------------------------------------------------------------
+def _analysis_gray(gray: np.ndarray) -> tuple[np.ndarray, float]:
+    """Resize a gray frame to SHARP_WIDTH (INTER_AREA); never upscale. Returns (frame, scale)."""
+    h, w = gray.shape[:2]
+    scale = min(1.0, SHARP_WIDTH / w)
+    if scale >= 1.0:
+        return gray, 1.0
+    small = cv2.resize(gray, (SHARP_WIDTH, max(1, int(round(h * scale)))),
+                       interpolation=cv2.INTER_AREA)
+    return small, scale
+
+
+def _sharpness(gray: np.ndarray) -> tuple[float, float]:
+    """Resolution- and brightness-normalised Laplacian variance + analysis scale.
+
+    The frame is analysed at a fixed 480-px width so the metric does not grow
+    with resolution (Laplacian variance scales with pixel detail), and divided
+    by (mean_brightness/128)^2 so a globally darkened copy scores the same
+    sharpness (the Laplacian is linear in intensity, hence its variance is
+    quadratic in any global gain; normalising by the squared mean cancels it).
+    The +1e-3 guards black frames against division by zero.
+    """
+    small, scale = _analysis_gray(gray)
+    var = float(cv2.Laplacian(small, cv2.CV_64F).var())
+    norm = (float(small.mean()) / 128.0 + 1e-3) ** 2
+    return var / norm, scale
+
+
 def _laplacian_var(gray: np.ndarray) -> float:
-    return float(cv2.Laplacian(gray, cv2.CV_64F).var())
+    return _sharpness(gray)[0]
 
 
 def _brightness(gray: np.ndarray) -> float:
@@ -187,22 +217,45 @@ def _exposure_fracs(gray: np.ndarray) -> tuple[float, float]:
     return float((flat < DARK_PIX_MAX).mean()), float((flat >= CLIP_PIX_MIN).mean())
 
 
-def _farneback_motion(gray_frames: list[np.ndarray], grid: int = MOTION_GRID) -> float:
-    """Mean optical-flow magnitude between consecutive frames, on a fixed grid of points."""
-    if len(gray_frames) < 2:
+def _clip_fps(path: str) -> float:
+    cap = _open(path)
+    if cap is None:
         return 0.0
-    h, w = gray_frames[0].shape[:2]
+    try:
+        fps = float(cap.get(cv2.CAP_PROP_FPS))
+        return fps if fps > 0 else 0.0
+    finally:
+        cap.release()
+
+
+def _farneback_motion(gray_frames: list[np.ndarray], idx: list[int], fps: float,
+                      grid: int = MOTION_GRID) -> tuple[float, float]:
+    """Mean optical-flow magnitude in pixels-per-second at SHARP_WIDTH + effective sampled fps.
+
+    Flow is computed between consecutive sampled frames on the analysis-size
+    frames (fixed 480-px width, never upscaled) over a fixed grid of points;
+    the mean magnitude (px/frame) is annualised by the effective sampled fps
+    ((n-1) * clip_fps / index_span) so clips at different frame rates compare.
+    Returns (px_per_sec, effective_sampled_fps).
+    """
+    if len(gray_frames) < 2 or len(idx) < 2:
+        return 0.0, 0.0
+    span = idx[-1] - idx[0]
+    eff_fps = (len(idx) - 1) * fps / span if span > 0 and fps > 0 else 0.0
+    smalls = [_analysis_gray(g)[0] for g in gray_frames]
+    h, w = smalls[0].shape[:2]
     ys = np.linspace(0, h - 1, grid).round().astype(int)
     xs = np.linspace(0, w - 1, grid).round().astype(int)
     mags = []
-    prev = gray_frames[0]
-    for cur in gray_frames[1:]:
+    prev = smalls[0]
+    for cur in smalls[1:]:
         flow = cv2.calcOpticalFlowFarneback(prev, cur, None, 0.5, 3, 15, 3, 5, 1.2, 0)
         mag = np.sqrt(flow[..., 0] ** 2 + flow[..., 1] ** 2)
         mags.append(mag[ys[:, None], xs[None, :]])
         prev = cur
     stack = np.stack(mags)
-    return float(stack.mean()) if stack.size else 0.0
+    mean_mag = float(stack.mean()) if stack.size else 0.0
+    return mean_mag * eff_fps, eff_fps
 
 
 def _phash_of_frame(bgr: np.ndarray) -> str:
@@ -364,6 +417,49 @@ def backend_info(config: Optional[Config] = None) -> dict:
     }
 
 
+def backend_versions(config: Optional[Config] = None) -> dict:
+    """Versions record for receipt config.versions (integration hook).
+
+    Stable key order; mediapipe/opencv versions plus the sha256 of the face
+    and hand model files and the active backend names. mediapipe_version is
+    None when mediapipe cannot be imported.
+    """
+    bi = backend_info(config)
+    try:
+        import mediapipe as mp
+
+        mp_version = getattr(mp, "__version__", None)
+    except Exception:
+        mp_version = None
+    return {
+        "faces_backend": bi["faces"],
+        "hands_backend": bi["hands"],
+        "face_model_sha256": bi["face_model_sha256"],
+        "hand_model_sha256": bi["hand_model_sha256"],
+        "mediapipe_version": mp_version,
+        "opencv_version": cv2.__version__,
+    }
+
+
+def analysis_diagnostics(path: str, config: Optional[Config] = None) -> dict:
+    """Non-SPEC diagnostics for a segment: analysis scale, fps, sampled fps.
+
+    Kept OUT of the Signals dict (SPEC fields are fixed); used for eval/report
+    JSON alongside signals.
+    """
+    frames, idx = _read_sampled_frames(path, SAMPLE_FRAMES)
+    if not frames:
+        return {"decodable": False, "analysis_scale": 1.0, "clip_fps": 0.0,
+                "sampled_fps": 0.0, "n_sampled": 0}
+    gray0 = cv2.cvtColor(frames[0], cv2.COLOR_BGR2GRAY)
+    _small, scale = _analysis_gray(gray0)
+    fps = _clip_fps(path)
+    span = idx[-1] - idx[0] if len(idx) > 1 else 0
+    eff = (len(idx) - 1) * fps / span if span > 0 and fps > 0 else 0.0
+    return {"decodable": True, "analysis_scale": scale, "clip_fps": fps,
+            "sampled_fps": eff, "n_sampled": len(frames)}
+
+
 # --- public: blur_faces ----------------------------------------------------------------
 def blur_faces(frame: np.ndarray, config: Optional[Config] = None) -> tuple[np.ndarray, int, int]:
     """Detect faces in one BGR frame, blur them, return (frame, n_found, n_blurred)."""
@@ -473,7 +569,7 @@ def compute_signals(path: str, config: Optional[Config] = None, index: Optional[
     colour proxy (see ``backend_info``).
     """
     cfg = config if config is not None else DEFAULT
-    frames, _idx = _read_sampled_frames(path, SAMPLE_FRAMES)
+    frames, idx = _read_sampled_frames(path, SAMPLE_FRAMES)
     decodable = len(frames) > 0
     if not decodable:
         return {
@@ -485,11 +581,12 @@ def compute_signals(path: str, config: Optional[Config] = None, index: Optional[
         }
 
     grays = [cv2.cvtColor(f, cv2.COLOR_BGR2GRAY) for f in frames]
-    blur_var = float(np.mean([_laplacian_var(g) for g in grays]))
+    sharp_vals = [_sharpness(g)[0] for g in grays]
+    blur_var = float(np.mean(sharp_vals))
     brightness = float(np.mean([_brightness(g) for g in grays]))
     under = float(np.mean([_exposure_fracs(g)[0] for g in grays]))
     over = float(np.mean([_exposure_fracs(g)[1] for g in grays]))
-    motion = _farneback_motion(grays, MOTION_GRID)
+    motion, _eff_fps = _farneback_motion(grays, idx, _clip_fps(path), MOTION_GRID)
 
     faces_found = faces_blurred = 0
     hand_counts = []

@@ -1,0 +1,510 @@
+{
+ "attribution": "IndEgo, Fraunhofer IPK, CC BY 4.0, https://huggingface.co/datasets/FraunhoferIPK/IndEgo",
+ "backend_versions": {
+  "face_model_sha256": "b4578f35940bf5a1a655214a1cce5cab13eba73c1297cd78e1a04c2380b0152f",
+  "faces_backend": "mediapipe",
+  "hand_model_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+  "hands_backend": "mediapipe",
+  "mediapipe_version": "1.1.0",
+  "opencv_version": "5.0.0"
+ },
+ "clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+ "seg_seconds": 20.0,
+ "segments": [
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 20.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0000.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0000",
+    "sha256": "6f1a2899491ab3c0aecb0a59ed0501bc6d3f69c1617cec6a750c11812d58e3aa",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 0.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 841.2931,
+    "brightness_mean": 95.6297,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 4,
+    "faces_found": 4,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 0.625,
+    "motion_mean": 5.0133,
+    "over_exposed_frac": 0.0233,
+    "phash": "95c159164e6e353b",
+    "under_exposed_frac": 0.2025
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 40.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0001.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0001",
+    "sha256": "e17209b5833c5c21d43161f2dbecd8e1f0aad57b7931e04c2e955680d79a8b3b",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 20.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 719.7507,
+    "brightness_mean": 107.4252,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 0,
+    "faces_found": 0,
+    "hand_count_mode": 2,
+    "hands_visible_frac": 0.6875,
+    "motion_mean": 5.3958,
+    "over_exposed_frac": 0.0167,
+    "phash": "c09d03c22eff1f52",
+    "under_exposed_frac": 0.1688
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 60.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0002.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0002",
+    "sha256": "37416080a5f7e5324e40173aa7b47d4125e663731e61bdb9e3039ffca96bc52d",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 40.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 728.878,
+    "brightness_mean": 81.2705,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 4,
+    "faces_found": 4,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 0.6875,
+    "motion_mean": 5.3579,
+    "over_exposed_frac": 0.0068,
+    "phash": "94d0d99e4a4b263f",
+    "under_exposed_frac": 0.2669
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 80.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0003.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0003",
+    "sha256": "b53aeb6eb6301088ad97f42f530623521c47164c29f616c61686ddd2a9dd6866",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 60.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 836.9936,
+    "brightness_mean": 73.9331,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 5,
+    "faces_found": 5,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.4375,
+    "motion_mean": 4.7798,
+    "over_exposed_frac": 0.0041,
+    "phash": "cc91154efab38e2c",
+    "under_exposed_frac": 0.2339
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 100.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0004.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0004",
+    "sha256": "9c34ed26bb84217be395f46768aaf837bfe4f8e356ee80ec8b6d2dd6895160f5",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 80.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 369.4565,
+    "brightness_mean": 121.1952,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 7,
+    "faces_found": 7,
+    "hand_count_mode": 2,
+    "hands_visible_frac": 0.8125,
+    "motion_mean": 4.778,
+    "over_exposed_frac": 0.0463,
+    "phash": "c1ce11d30f2d3f91",
+    "under_exposed_frac": 0.1289
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 120.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0005.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0005",
+    "sha256": "a264c9ee755bca282bab059a621613e327dc63ed22f810857beb09a0c580b64c",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 100.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 2185.6925,
+    "brightness_mean": 56.6816,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 1,
+    "faces_found": 1,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.4375,
+    "motion_mean": 5.3546,
+    "over_exposed_frac": 0.0037,
+    "phash": "958546462fba5b2d",
+    "under_exposed_frac": 0.3222
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 140.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0006.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0006",
+    "sha256": "9f8f905db47b70363b162339bae8b7f4b59575fdb9dafa5a4f8e9b097826de26",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 120.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1305.2466,
+    "brightness_mean": 63.2358,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 4,
+    "faces_found": 4,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.25,
+    "motion_mean": 3.7457,
+    "over_exposed_frac": 0.0066,
+    "phash": "95916ad70b609f6a",
+    "under_exposed_frac": 0.3688
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 160.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0007.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0007",
+    "sha256": "78472f245e29eee2cf4a0f2baacbb0581475ae5e98460a3fa7cce6d2505beb98",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 140.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 359.7485,
+    "brightness_mean": 30.8,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 2,
+    "faces_found": 2,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 1.5121,
+    "over_exposed_frac": 0.0005,
+    "phash": "c1d03c0f43d16e3f",
+    "under_exposed_frac": 0.7375
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 180.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0008.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0008",
+    "sha256": "0b9ba9563cacec6656534a934c612c93aca243f7fdf775a2d32dee02932763cb",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 160.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 436.3681,
+    "brightness_mean": 69.9126,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 1,
+    "faces_found": 1,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 5.0226,
+    "over_exposed_frac": 0.0117,
+    "phash": "979152354e92abce",
+    "under_exposed_frac": 0.2641
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 200.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0009.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0009",
+    "sha256": "78e010fed7dac7534833e1d9071c223d9e3267b938d0329804bf052e0112806d",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 180.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 856.483,
+    "brightness_mean": 65.4447,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 7,
+    "faces_found": 7,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.125,
+    "motion_mean": 3.6983,
+    "over_exposed_frac": 0.0221,
+    "phash": "c19a16c12b977e0f",
+    "under_exposed_frac": 0.3699
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 220.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0010.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0010",
+    "sha256": "b99a963386dbb95637ccbc7d1ebddc26e7019f186991dfe98565175d0f4f4be3",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 200.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 3907.1053,
+    "brightness_mean": 46.2799,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 2,
+    "faces_found": 2,
+    "hand_count_mode": 1,
+    "hands_visible_frac": 0.6875,
+    "motion_mean": 5.2872,
+    "over_exposed_frac": 0.0012,
+    "phash": "9a65459a9ba58a5e",
+    "under_exposed_frac": 0.4253
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 240.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0011.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0011",
+    "sha256": "f48a9401fcef63449ddbf1def94ad3c13d3fa115afb3179d9d8dc77b380c4b89",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 220.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1281.0496,
+    "brightness_mean": 72.9879,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 4,
+    "faces_found": 4,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.4375,
+    "motion_mean": 5.817,
+    "over_exposed_frac": 0.0043,
+    "phash": "86914c0e3b6e73dc",
+    "under_exposed_frac": 0.2508
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 260.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0012.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0012",
+    "sha256": "ead365f0eb135b3ce7a49ef2bf9688c419e95c33ba5f24930a36e199224ead2a",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 240.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 1035.4115,
+    "brightness_mean": 17.9909,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 1,
+    "faces_found": 1,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.125,
+    "motion_mean": 0.5983,
+    "over_exposed_frac": 0.0008,
+    "phash": "c798106e2f619f9a",
+    "under_exposed_frac": 0.858
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 16,
+    "sampled_fps": 0.7537688442211056
+   },
+   "segment": {
+    "end_s": 280.0,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0013.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0013",
+    "sha256": "0ae8401c26e4a83b81e59e49a63854a256a788b4b8ccbd421472d051a92d6fd4",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 260.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 624.8379,
+    "brightness_mean": 43.881,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 2,
+    "faces_found": 2,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0625,
+    "motion_mean": 3.1484,
+    "over_exposed_frac": 0.0044,
+    "phash": "d0d006272333df9f",
+    "under_exposed_frac": 0.3712
+   }
+  },
+  {
+   "diagnostics": {
+    "analysis_scale": 1.0,
+    "clip_fps": 10.0,
+    "decodable": true,
+    "n_sampled": 4,
+    "sampled_fps": 10.0
+   },
+   "segment": {
+    "end_s": 280.4,
+    "path": "/home/parshu/projects/jadal-qa-wt/signals/data_runtime/indego_segs/User_1_2110_Organisation_480-6120d64f-0014.mp4",
+    "segment_id": "User_1_2110_Organisation_480-6120d64f-0014",
+    "sha256": "5a62fcf599f5f9b9de777190f754db758e35c41d57c0e6c7b810fc85d68abd64",
+    "site_id": "indego",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "start_s": 280.0,
+    "worker_id": "indego"
+   },
+   "signals": {
+    "blur_var": 912.6443,
+    "brightness_mean": 36.3233,
+    "decodable": true,
+    "dup_of": null,
+    "faces_blurred": 0,
+    "faces_found": 0,
+    "hand_count_mode": 0,
+    "hands_visible_frac": 0.0,
+    "motion_mean": 16.3833,
+    "over_exposed_frac": 0.0001,
+    "phash": "c19c38c30e1fcb6e",
+    "under_exposed_frac": 0.4071
+   }
+  }
+ ]
+}
