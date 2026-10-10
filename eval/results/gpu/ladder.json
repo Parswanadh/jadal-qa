@@ -2,11 +2,6 @@
  "rungs": [
   {
    "rung": "R0_cpu_baseline",
-   "hours_per_hour": 706.7,
-   "why": "starting point: everything on CPU, one window at a time"
-  },
-  {
-   "rung": "R0_cpu_baseline",
    "hours_per_hour": 22.2,
    "why": "starting point: everything on CPU, one window at a time"
   },
