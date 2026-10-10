@@ -54,8 +54,13 @@ carry little activity signal — expected). HGB on full 10k: hands AUROC 0.834
 but balAcc **0.528** (F1 0.982 — collapses to near-all-positive without class
 weights); labor HGB balAcc 0.539. HGB AUROC is real but its 0.5-threshold
 decisions are useless under imbalance: the honest head is balanced logreg.
-Out-of-domain (ego4d/epic_kitchens): PENDING extraction (shared-box
-contention); frameid-hash vs random agree within 0.01, bounding leakage.
+Out-of-domain (train ego10k -> test other domains, logreg, n=10k each):
+ego4d hands 0.718 [0.707, 0.730] (in-domain 0.816, -0.10), labor 0.672
+[0.661, 0.683] (in-domain 0.766, -0.09); epic_kitchens hands 0.615
+[0.596, 0.635], labor 0.594 [0.577, 0.610] — near chance. Frames carry no
+worker/video id so folds were random + frameid-hash (agree within 0.01);
+the OOD drop is the honest measure of near-duplicate leakage + domain shift
+(JPEG factory frames vs other domains; H.264 IndEgo windows shift further).
 
 Majority baselines: balAcc 0.500 (both); F1 0.782 hands (96% positive in FULL
 10k — subset oversampled negatives by design), 0.000 labor. 3-class hand_count
