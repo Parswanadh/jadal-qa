@@ -100,9 +100,9 @@ frozen swscale (Δp_pixel ≤ 0.048, n=6 control). Full file `/workspace/artifac
 | E8.01 | adopt (descriptive) | 1,546 Egocentric-10K windows re-scored: accept 296 (19.2%) / reject 83 (5.4%) / review 1,167 (75.5%); accept-share 95% CI [0.136,0.254] (58-clip bootstrap); profiles factory_1080p30 1,540 + default 6 (UNSEEN_REGIME); 5,761 ms/window. **Unlabelled — not a quality measure.** | 5,761 ms/window (p50 5,195, p95 9,371), A40 | 1080p/30 |
 
 ## Handover notes for the builder (read before merging)
-0. **State at the end of the wave (22:20 IST).** All 9 of my PRs are open, all my branches are pushed, none was
-   force-pushed, and none was merged by me. Mergeable: #82, #83, #87, #95, #113 (and #89/#90 were mergeable
-   before a later push made GitHub re-compute). #81/#88 were conflicting when this was written.
+0. **State at the end of the wave (22:22 IST).** All 9 of my PRs are OPEN and **MERGEABLE**; all my branches are
+   pushed; none was force-pushed; none was merged by me. The four that GitHub had flagged CONFLICTING
+   (#81, #88, #95, #113) were fixed with normal merge commits (item 2) and re-checked as MERGEABLE.
 1. **Conflict cause is duplication, not disagreement.** `main` (as of `e320c58`) now contains the ported files
    `eval/exp_fps/*`, `eval/exp_temporal/*`, `jadal/gpu/*`, `eval/gpu/*`, `eval/ensemble/*`, `jadal/ensemble/*`,
    `configs/ensemble_v1.json` — merged from #79, #84/#85 (the "save local work" recovery branches) and #96.
