@@ -1,0 +1,50 @@
+{
+ "verified_by": "lead-b (LB1)",
+ "ood": {
+  "n": 60,
+  "n_good": 51,
+  "n_bad": 9,
+  "label_source": "human-labelled Egocentric-10K windows (labels/ood_labels.json, 'latest')",
+  "protocol": "frozen IndEgo-calibrated cascade scores from caches/ensemble/ood_scores.json; AUROC of usable_prob vs human good/bad; window-bootstrap 95% CI (optimistic, windows within a clip are correlated)",
+  "auroc": 0.415,
+  "ci95_window_bootstrap": [
+   0.2069,
+   0.6295
+  ],
+  "rejected_good": 26,
+  "rejected_good_of": 51,
+  "rejected_good_share": 0.5098,
+  "rejected_bad": 3,
+  "rejected_bad_of": 9,
+  "balanced_accuracy_at_shipped_rule": 0.4118,
+  "claimed_reference": {
+   "auroc": 0.529,
+   "ci": [
+    0.32,
+    0.74
+   ],
+   "rejected_good": 21,
+   "rejected_bad": 5,
+   "balanced_accuracy": 0.51
+  }
+ },
+ "nested": {
+  "n": 150,
+  "protocol": "outer LOCO (7 clips); inner LOCO on 6 train clips picks C; Platt/isotonic + thresholds fit on inner-OOF train probs only; equal-weight probability average, no learned stacking",
+  "label_source": "human gold (single labeller)",
+  "keys": [
+   "C_grid",
+   "chosen_C",
+   "clips",
+   "coverage_curve",
+   "gates",
+   "label_source",
+   "labels_sha256",
+   "n",
+   "per_clip",
+   "per_reason",
+   "protocol",
+   "views"
+  ]
+ }
+}
