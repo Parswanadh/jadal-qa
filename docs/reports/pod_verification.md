@@ -36,6 +36,10 @@ Every number below is machine-written into a results JSON under `eval/results/po
 | 20 | pallet / pallet2 at chance for every model | 0.50 / 0.50 | **0.50 / 0.50** (26-feature view) | ✅ exact |
 | 21 | **evidence chain** — features reproducible from video | — | **all 150 windows, max abs diff 7.11e-15** | ✅ verified |
 | 22 | **nested AUROCs** recomputed from raw OOF probabilities | EG2 0.846 / px 0.792 / prob 0.834 / rank 0.844 | **0.8458 / 0.7916 / 0.8336 / 0.8440** | ✅ exact |
+| 23 | **receipts** = SHA-256 of canonical JSON, not signed; tamper fails | — | **hash stable across calls+processes, all 5 body fields tamper-detected, key order irrelevant, no signature field** | ✅ verified |
+| 24 | **determinism**: CPU feature path, identical quantised digest over 10 runs | — | **1 unique digest, spread 0.0, cross-process match** | ✅ verified |
+| 25 | **GPU feature kernels** vs the verified CPU reference | not previously measured | 22/26 features <1e-6; **7 move >1e-3** (rppg_pulse 0.57, radial_slope 0.24, dup_hash_mean 0.14) | ⚠️ measured, documented |
+| 26 | does the GPU path change the headline number? | — | **GPU 0.7998 vs CPU 0.8100**, paired Δ −0.0093 [−0.0304, +0.0149] | ⚠️ difference NOT established |
 
 **Tolerance used:** a claim counts as reproduced when the re-run matches to the precision at which the
 claim was published (3 d.p. for AUROC, 3 d.p. for clip-error) on the same protocol. All 20 core claims
