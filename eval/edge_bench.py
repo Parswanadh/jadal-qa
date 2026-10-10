@@ -311,7 +311,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--seg-seconds", type=float, default=10.0)
     ap.add_argument("--repeats", type=int, default=3)
     ap.add_argument("--clip-dir",
-                    default="/home/parshu/projects/awing/data/indego")
+                    default="/workspace/jadal_pod_bundle/data/indego")
     ap.add_argument("--worker", action="store_true",
                     help=argparse.SUPPRESS)  # internal: pinned worker mode
     ap.add_argument("--worker-cores", type=int, default=1)

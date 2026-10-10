@@ -14,7 +14,7 @@ supplied) to convert the review queue into QA hours. No Awign numbers are
 invented or assumed.
 
 Usage:
-    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/funnel_report.py \\
+    PYTHONNOUSERSITE=1 python3 eval/funnel_report.py \\
         --synthetic 1200 --seed 7 --allow-uncalibrated
     (records: JSON list of {signals, decisions, label, label_source}; or
      --synthetic N for deterministic synthetic fixtures, labelled synthetic)
