@@ -1,10 +1,10 @@
 {
  "bundle": "/workspace/jadal_pod_bundle",
  "command": "python3 eval/standard/run_all.py",
- "created_utc": "2026-10-10T15:23:49+00:00",
+ "created_utc": "2026-10-10T15:47:42+00:00",
  "device": "cpu-inference / NVIDIA A40",
  "experiment": "E9.01",
- "git_sha": "a1d9f316745b63410a88379d35bf899a18cddd30",
+ "git_sha": "a035aa661d8fe68988d1ba49c8c26542eb88b292",
  "honesty": {
   "ci": "clip-bootstrap CI is wide; window-bootstrap OOD CI is optimistic",
   "n": "150 windows / 7 clips / ~3 wearers, one labeller -> wide CIs",
@@ -30,6 +30,35 @@
    0.6271
   ],
   "e103_reference_protocol": "frozen IndEgo logistic trained on the E1.01 sweep 10fps features (shard_sweep), applied to the same OOD windows",
+  "feature_names": [
+   "temp_b0",
+   "temp_b1",
+   "temp_b2",
+   "temp_b3",
+   "frozen_frac",
+   "flicker_idx",
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy",
+   "pca_resid",
+   "pca_top1_share",
+   "luma_mean",
+   "luma_p05",
+   "luma_p50",
+   "luma_p95",
+   "dark_frac",
+   "bright_frac",
+   "motion_energy",
+   "global_shift",
+   "skin_frac",
+   "illum_r",
+   "illum_g",
+   "illum_b",
+   "rppg_pulse",
+   "dup_hash_mean",
+   "zncc_self"
+  ],
+  "feature_order_reordered": false,
   "frozen_pixel26_auroc": 0.5,
   "label_source": "human ood_labels.json (one labeller; out-of-domain, exploratory)",
   "n": 60,
@@ -72,5 +101,5 @@
    "protocol": "leave-one-clip-out over the 7 IndEgo clips"
   }
  },
- "wall_s": 35.8
+ "wall_s": 9.8
 }
