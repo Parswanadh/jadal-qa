@@ -131,4 +131,8 @@ SM clock mean **524 MHz** (p50 390, max 2550 — clocked down at idle), mem cloc
 p50 405 MHz, temp mean 60 °C (max 69), util mean 23%, VRAM ~1.4 GiB,
 **zero throttle rows**. The laptop limits (CPU ~97 °C, GPU 85–90 °C per human)
 did not bind here — idleness did. Sustained-clock behaviour for a saturating
-load lands with the e2e run when it completes.
+load lands with the e2e run when it completes. Observed 17:12–17:13 during
+another worker's saturating job: util 100%, power 72–96 W (draw >80 W proves
+the 124 W cap raise; `power.limit` reads N/A), SM 2130–2535 MHz, temp 84–88 °C
+with `sw_thermal_slowdown` flickering Active — i.e. sustained clocks sit
+~2.1–2.5 GHz under thermal limit, not the 2.5 GHz+ boost seen in microbursts.
