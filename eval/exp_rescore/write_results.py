@@ -110,8 +110,11 @@ JSON: **content-hashed, not signed**.
 - **Router:** `profiles/*.json` + `jadal/regimes/router.py::choose_profile` exist and were
   used; the router branch **has landed**, so no fallback recipe was needed and none was invented.
 - **Profile distribution:** {res['profile_distribution']} — every window is 1920x1080/30, so the
-  hires rule fires before the quality/motion rules; margins
-  min/p50 as in `run_summary` (`unseen_regime` windows: {res['router']['unseen_regime_windows']}).
+  hires rule fires before the quality/motion rules. The {res['router']['unseen_regime_windows']}
+  windows that fell out of the calibrated descriptor ranges went to `default` (widest abstain band)
+  as designed: 3 with `shift_mean` 245-642 (range [0,230], fast camera motion) and 3 with
+  `luma_mean` 0.66-0.67 (range [0.05,0.65], overexposed). Margins: min 0.000, p50 1.000.
+- `stage` is `"L1"` on every line (funnel vocabulary: L0 rules, L1 model heads, L2 verdict).
 - **Verdict rule** = the selected profile's operating point
   (`factory_1080p30`: score ≥0.75 accept, ≤0.25 reject, else review). The frozen band
   (score >0.5 accept / <0.4 reject) is reported as a secondary distribution
