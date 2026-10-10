@@ -115,8 +115,9 @@ Fixed all 7 Important findings, in owned files only:
   the loop sleeps 1 ms when idle, and input is buffered one byte at a time and
   split on newline, so a partial line can never stall HB/FLASH timing.
   Overlong lines (>256 B, no newline) are dropped.
-- **I-5** — new committed `tests/test_pico_protocol.py` (14 tests) imports the
-  pure helpers straight from `pico/main.py`: `flash_bits(0xDEADBEEF)` asserted
+- **I-5** — new committed `tests/test_pico_protocol.py` (13 tests: 6 bit-order,
+  3 LED mapping, 4 command routing) imports the pure helpers straight from
+  `pico/main.py`: `flash_bits(0xDEADBEEF)` asserted
   against a literal MSB-first bit list (plus roundtrip guard),
   `FLASH_BIT_MS == 100`, `led_levels` onboard+RGB mapping, and `_handle`
   routing (LED set/ignore/cancels-flash, FLASH 8-hex validation). Host tests
@@ -160,3 +161,43 @@ OK
 ```
 Stable across 5 repeated runs (each `OK`). Firmware `py_compile` passes and the
 stub-based logic smoke check still passes after the loop rewrite.
+
+## Fix round 2 (re-review of PR #10)
+
+One new Important item, fixed in owned files only:
+
+- **N-1** — the `DEFAULT.pico_port` fallback in `connect()` is now PING-probed
+  with `_probe(ser, probe_timeout)` before adoption. A mute fallback is closed
+  and `connect()` raises `PicoLinkError` instead of returning a link that would
+  write `LED`/`FLASH` to an unverified device. New test
+  `test_fallback_mute_port_raises` (fake mute port; asserts the raise, the
+  close, and that no handle leaks onto the link). Written first and watched
+  fail (`PicoLinkError not raised`), then fixed.
+
+Also: corrected the `test_pico_protocol.py` count to 13 (6 bit-order + 3 LED +
+4 routing; D-1), and tightened the latency-test offset assertion to the strict
+`abs(offset) < sync_error_bound_ms` the M-7 follow-up asked for (holds with
+~one-way-latency margin under the symmetric fake; D-2).
+
+No real serial hardware was touched: every test uses injected fakes/factories
+only (the plugged-in `/dev/ttyACM0` is unreadable to this user and is never
+opened — the fallback tests monkeypatch both the candidate list and the
+config default).
+
+Command and real output tail
+(`cd /home/parshu/projects/jadal-qa-wt/pico`):
+
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests -v 2>&1 | tail -20
+...
+test_unknown_led_ignored (test_pico_protocol.TestHandleCommands.test_unknown_led_ignored) ... ok
+test_onboard_levels (test_pico_protocol.TestLedMapping.test_onboard_levels) ... ok
+test_rgb_mapping (test_pico_protocol.TestLedMapping.test_rgb_mapping) ... ok
+test_unknown_colour_is_dark (test_pico_protocol.TestLedMapping.test_unknown_colour_is_dark) ... ok
+
+----------------------------------------------------------------------
+Ran 40 tests in 3.561s
+
+OK
+```
+Stable across 5 repeated runs (each `OK`).

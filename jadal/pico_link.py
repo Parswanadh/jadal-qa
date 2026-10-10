@@ -392,11 +392,24 @@ class PicoLink:
                 if candidates is not None:
                     raise  # explicit scan list: respect it strictly
                 # Last resort: the configured default port, so JADAL_PICO_PORT
-                # (read from jadal.config at import) is honoured.
+                # (read from jadal.config at import) is honoured — but only if
+                # it actually answers PING/PONG. An unverified fallback must
+                # never be adopted: later set_led/flash would write to
+                # whatever device happens to sit on that port.
                 default_port = _CONFIG_DEFAULT.pico_port
-                self.ser = self._open_wrapped(
+                fallback = self._open_wrapped(
                     default_port, _CONFIG_DEFAULT.pico_baud
                 )
+                if not self._probe(fallback, probe_timeout):
+                    try:
+                        fallback.close()
+                    except Exception:
+                        pass
+                    raise PicoLinkError(
+                        "no Pico found (scan empty and default port "
+                        f"{default_port!r} did not answer PING)"
+                    )
+                self.ser = fallback
                 used_port = default_port
             self._injected = False
         self._reset_state()

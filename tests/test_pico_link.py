@@ -239,8 +239,8 @@ class TestPicoLinkWithFake(unittest.TestCase):
 
     def test_estimate_offset_with_latency_rtt_and_bound(self):
         # Symmetric one-way latency L -> round trip ~2L; the recovered offset
-        # must stay inside the reported error bound (bound grows with the same
-        # reader delay that shifts the offset, so this holds by construction).
+        # must stay strictly inside the reported error bound (bound exceeds it
+        # by the full one-way latency L, so this holds with margin).
         L = 0.03
         link, ser = self._connect(latency_s=L, epoch_offset_ms=0.0)
         try:
@@ -248,7 +248,7 @@ class TestPicoLinkWithFake(unittest.TestCase):
             self.assertGreater(est["rtt_ms_min"], 0.0)
             self.assertLess(est["rtt_ms_median"], 500.0)
             self.assertLessEqual(est["sync_error_bound_ms"], est["rtt_ms_median"])
-            self.assertLessEqual(abs(est["offset_ms"]), est["sync_error_bound_ms"])
+            self.assertLess(abs(est["offset_ms"]), est["sync_error_bound_ms"])
         finally:
             link.disconnect()
 
@@ -319,6 +319,30 @@ class TestPicoLinkWithFake(unittest.TestCase):
                 )
             finally:
                 link.disconnect()
+        finally:
+            plmod._CONFIG_DEFAULT = saved_default
+            plmod._default_candidates = saved_cands
+
+    def test_fallback_mute_port_raises(self):
+        # N-1: the DEFAULT.pico_port fallback must be PING-probed too. A mute
+        # fallback must raise PicoLinkError (and be closed), never return a
+        # link that would write to an unverified device.
+        saved_default, saved_cands = plmod._CONFIG_DEFAULT, plmod._default_candidates
+        plmod._CONFIG_DEFAULT = SimpleNamespace(pico_port="MUTEFALLBACK", pico_baud=115200)
+        plmod._default_candidates = lambda include_usb=False: ["NOPE"]
+        try:
+            ports = {}
+
+            def factory(port, baud):
+                ser = _MuteSerial(port)
+                ports[port] = ser
+                return ser
+
+            link = PicoLink(open_serial=factory)
+            with self.assertRaises(PicoLinkError):
+                link.connect(probe_timeout=0.15)
+            self.assertFalse(ports["MUTEFALLBACK"].is_open)
+            self.assertIsNone(link.ser)
         finally:
             plmod._CONFIG_DEFAULT = saved_default
             plmod._default_candidates = saved_cands
