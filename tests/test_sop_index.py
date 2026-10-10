@@ -12,7 +12,6 @@ from __future__ import annotations
 
 import json
 import random
-import shutil
 import sys
 import tempfile
 import unittest
@@ -35,16 +34,19 @@ SAMPLE_SOP = REPO_ROOT / "sop" / "sop_garment_v1.md"
 
 
 class ScratchTestCase(unittest.TestCase):
-    """Base class giving each test a scratch directory inside the repo."""
+    """Base class giving each test a scratch directory inside the repo.
+
+    The directory is a TemporaryDirectory rooted at the repo's gitignored
+    data_runtime/. There is no /tmp fallback: if the base cannot be created
+    the test errors loudly instead of writing results outside the project.
+    """
 
     def setUp(self) -> None:
         base = REPO_ROOT / "data_runtime" / "test_scratch"
-        try:
-            base.mkdir(parents=True, exist_ok=True)
-            self.tmp = Path(tempfile.mkdtemp(dir=str(base)))
-        except OSError:
-            self.tmp = Path(tempfile.mkdtemp())
-        self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
+        base.mkdir(parents=True, exist_ok=True)
+        self._scratch = tempfile.TemporaryDirectory(dir=str(base))
+        self.addCleanup(self._scratch.cleanup)
+        self.tmp = Path(self._scratch.name)
 
     def write_sop(self, name: str, text: str) -> Path:
         path = self.tmp / name

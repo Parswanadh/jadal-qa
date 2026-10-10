@@ -19,17 +19,21 @@ Behaviour the build contract asks for:
   Rs 30 per 10,000 characters;
 - no request is ever longer than `--max-chars` (default 2500).
 
-Only `text`, `language_code`, `model` and `speaker` are sent: `pace` and
-`speech_sample_rate` are in the REST reference, but their SDK parameter names
-are unconfirmed, so they are left out rather than guessed. If the installed
-SDK does not accept `language_code`, the call is retried once with
-`target_language_code` and the choice is reported.
+Only `text`, `language_code`, `model` and `speaker` are sent. Per
+`docs/sarvam_reference.md`, TTS uses `language_code`; `target_language_code`
+belongs to Translate and is never sent here. `pace` and `speech_sample_rate`
+are in the REST reference, but their SDK parameter names are unconfirmed, so
+they are left out rather than guessed. Files are written atomically (temp file
+in the same folder, then `os.replace`), and a zero-byte or header-only wav
+counts as missing, so a crash never leaves a truncated file that is then
+skipped forever.
 
 NOT DONE
 --------
 - no wav file has been generated here: this environment has no `SARVAM_API_KEY`
-  and `sarvamai` is not installed, so only `--dry-run` and the pure functions
-  have been exercised;
+  and `sarvamai` is not installed, so only `--dry-run` and the offline paths
+  have been exercised -- the disk/skip/regenerate logic and the synthesis call
+  shape are covered by tests/test_voicebank.py with an injected fake client;
 - Sarvam documents no TTS determinism, so re-running may not reproduce
   byte-identical audio (fine for playback, but no hash of a wav is allowed in
   a receipt);
@@ -43,6 +47,7 @@ import base64
 import json
 import os
 import sys
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Sequence
@@ -55,6 +60,7 @@ DEFAULT_SPEAKER = "simran"
 DEFAULT_MAX_CHARS = 2500
 PRICE_INR_PER_10K_CHARS = 30.0
 BATCH_FILE_PREFIX = "BATCH_"
+MIN_WAV_BYTES = 44  # a bare WAV header; anything this small holds no audio
 
 V3_SPEAKERS = (
     "Shubh", "Aditya", "Ritu", "Priya", "Neha", "Rahul", "Pooja", "Rohan",
@@ -177,15 +183,47 @@ def build_jobs(
 
 
 def split_jobs(jobs: Sequence[Job], force: bool = False) -> tuple[list[Job], list[Job]]:
-    """(to generate, skipped because the file already exists)"""
+    """(to generate, skipped because a complete file already exists).
+
+    A zero-byte or header-only wav counts as missing, so a truncated download
+    is regenerated instead of skipped forever."""
     todo: list[Job] = []
     skipped: list[Job] = []
     for job in jobs:
-        if force or not job.out_path.exists():
+        if force or not is_complete_wav(job.out_path):
             todo.append(job)
         else:
             skipped.append(job)
     return todo, skipped
+
+
+def is_complete_wav(path: Path) -> bool:
+    """True only if the file exists and is bigger than a bare WAV header."""
+    try:
+        return path.stat().st_size > MIN_WAV_BYTES
+    except OSError:
+        return False
+
+
+def write_wav_atomic(path: Path, data: bytes) -> None:
+    """Write `data` to `path` atomically: temp file in the same folder, fsync,
+    then `os.replace`, so a crash can never leave a truncated `.wav` behind."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(
+        dir=str(path.parent), prefix=path.name + ".", suffix=".tmp"
+    )
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_name, path)
+    except BaseException:
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
 
 
 def check_max_chars(text: str, max_chars: int) -> None:
@@ -235,28 +273,24 @@ def synthesise(
     model: str = DEFAULT_MODEL,
     max_chars: int = DEFAULT_MAX_CHARS,
     client=None,
-) -> tuple[bytes, str]:
-    """Return (wav bytes, the language parameter name that worked)."""
+) -> bytes:
+    """Return the wav bytes for one request.
+
+    The language is always sent as `language_code`, per
+    docs/sarvam_reference.md. A TypeError from the SDK is not swallowed: it
+    surfaces so a signature mismatch is loud instead of retried under a
+    different parameter name.
+    """
     check_max_chars(text, max_chars)
     if client is None:
         client = make_client(api_key())
-    last_error: TypeError | None = None
-    for param_name in ("language_code", "target_language_code"):
-        try:
-            response = client.text_to_speech.convert(
-                text=text,
-                **{param_name: lang},
-                model=model,
-                speaker=speaker,
-            )
-        except TypeError as exc:
-            last_error = exc
-            continue
-        return audio_bytes(response), param_name
-    raise RuntimeError(
-        "client.text_to_speech.convert accepted neither `language_code` nor"
-        f" `target_language_code`: {last_error}"
+    response = client.text_to_speech.convert(
+        text=text,
+        language_code=lang,
+        model=model,
+        speaker=speaker,
     )
+    return audio_bytes(response)
 
 
 def format_plan(jobs: Sequence[Job], skipped: Sequence[Job]) -> str:
@@ -287,7 +321,7 @@ def resolve_speaker(speaker: str) -> str:
     return speaker
 
 
-def run(argv: Sequence[str] | None = None) -> int:
+def run(argv: Sequence[str] | None = None, client=None) -> int:
     parser = argparse.ArgumentParser(
         description="Generate voicebank wav files from messages.json with Sarvam Bulbul v3."
     )
@@ -320,11 +354,10 @@ def run(argv: Sequence[str] | None = None) -> int:
         print("nothing to do")
         return 0
 
-    client = make_client(api_key())
-    used_param = ""
+    if client is None:
+        client = make_client(api_key())
     for job in todo:
-        job.out_path.parent.mkdir(parents=True, exist_ok=True)
-        data, used_param = synthesise(
+        data = synthesise(
             job.text,
             job.lang,
             speaker=speaker,
@@ -332,9 +365,9 @@ def run(argv: Sequence[str] | None = None) -> int:
             max_chars=args.max_chars,
             client=client,
         )
-        job.out_path.write_bytes(data)
+        write_wav_atomic(job.out_path, data)
         print(f"wrote {job.out_path} ({len(data)} bytes)")
-    print(f"done: {len(todo)} files, language parameter was {used_param!r}")
+    print(f"done: {len(todo)} files")
     return 0
 
 

@@ -361,12 +361,12 @@ class SOPIndex:
         if not directory.is_dir():
             raise FileNotFoundError(f"SOP directory not found: {directory}")
         passages: list[Passage] = []
-        self_docs: list[SopDoc] = []
+        docs: list[SopDoc] = []
         for path in sorted(directory.glob("*.md")):
             doc = parse_sop_markdown(path.read_text(encoding="utf-8"), doc_id=path.stem)
-            self_docs.append(doc)
+            docs.append(doc)
             passages.extend(doc.passages)
-        return cls(passages, embedder=embedder, docs=self_docs)
+        return cls(passages, embedder=embedder, docs=docs)
 
     def __len__(self) -> int:
         return len(self.passages)
@@ -395,9 +395,11 @@ class SOPIndex:
 
     def _vectors_for(self, lang: str | None, embedder: Embedder) -> list[list[float]]:
         docs = self._candidates(lang)
+        # The cache holds a strong reference to the embedder alongside its
+        # vectors, so id(embedder) cannot be recycled while the entry lives.
         key = (lang.lower() if lang else None, id(embedder), embedder.dim)
         cached = self._vector_cache.get(key)
-        if cached is None or cached[0] is not embedder:
+        if cached is None:
             vectors = embedder.embed([p.text for p in docs])
             if len(vectors) != len(docs):
                 raise ValueError(
@@ -408,8 +410,8 @@ class SOPIndex:
                     raise ValueError(
                         f"embedder returned a bad vector (dim {len(vector)}, expected {embedder.dim})"
                     )
-            self._vector_cache[key] = (embedder, [list(v) for v in vectors])
-            cached = self._vector_cache[key]
+            cached = (embedder, [list(v) for v in vectors])
+            self._vector_cache[key] = cached
         return cached[1]
 
     def search(
@@ -500,7 +502,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--list", action="store_true", help="list passages instead of searching")
     args = parser.parse_args(argv)
 
-    index = SOPIndex.load(args.dir, embedder=make_embedder(args.embedder, model_name=args.model_name))
+    index = load_sop_index(args.dir, embedder=make_embedder(args.embedder, model_name=args.model_name))
     if args.list:
         payload = [p.to_dict() for p in index.passages]
     elif args.q:
