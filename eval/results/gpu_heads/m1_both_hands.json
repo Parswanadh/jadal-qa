@@ -1,0 +1,73 @@
+{
+ "auroc": 0.908123183531532,
+ "bal_acc": 0.8385575404631667,
+ "f1": 0.9745444977964876,
+ "n": 8000,
+ "n_pos": 7714,
+ "chosen": [
+  {
+   "fold": 0,
+   "hidden": 64,
+   "wd": 0.0001,
+   "lr": 0.05,
+   "seed": 0,
+   "class_weight": true,
+   "inner_auc": 0.9511622935261177
+  },
+  {
+   "fold": 1,
+   "hidden": 64,
+   "wd": 0.001,
+   "lr": 0.05,
+   "seed": 1,
+   "class_weight": true,
+   "inner_auc": 0.9699350530093702
+  },
+  {
+   "fold": 2,
+   "hidden": 64,
+   "wd": 0.001,
+   "lr": 0.05,
+   "seed": 0,
+   "class_weight": true,
+   "inner_auc": 0.9562136721720776
+  },
+  {
+   "fold": 3,
+   "hidden": 256,
+   "wd": 0.001,
+   "lr": 0.05,
+   "seed": 0,
+   "class_weight": false,
+   "inner_auc": 0.9627115875192871
+  },
+  {
+   "fold": 4,
+   "hidden": 256,
+   "wd": 0.001,
+   "lr": 0.05,
+   "seed": 0,
+   "class_weight": true,
+   "inner_auc": 0.9619340598742481
+  }
+ ],
+ "t_train_s": 210.3558030128479,
+ "n_heads_trained": 365,
+ "heads_per_s": 1.7351553642554225,
+ "feature": "both",
+ "target": "hands",
+ "label_source": "AI (EG2 worker)",
+ "protocol": "5-fold stratified CV, nested selection inside train folds",
+ "auroc_ci95": [
+  0.8862196867890523,
+  0.9299566169995357
+ ],
+ "wall_s": 220.90567660331726,
+ "vram_peak_GiB": 0.0,
+ "epochs": 20,
+ "seed": 0,
+ "single_logistic_auroc": 0.5055282739039545,
+ "delta_many_minus_single": 0.4025949096275775,
+ "single_logistic_balanced_auroc": 0.9591977895063194,
+ "delta_many_minus_balanced_single": -0.05107460597478741
+}

@@ -1,0 +1,288 @@
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+configs=36 feature=eg2 target=hands device=cpu
+N=8000 D=768 pos_rate=0.964 files=['eg2-768']
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+{
+ "auroc": 0.9483286677025333,
+ "auroc_ci95": [
+  0.9339759654480629,
+  0.9609241687479025
+ ],
+ "bal_acc": 0.8889182505334956,
+ "f1": 0.9617932418869187,
+ "single_logistic_auroc": 0.5152499496873363,
+ "delta_many_minus_single": 0.43307871801519704,
+ "n": 8000,
+ "n_pos": 7714,
+ "wall_s": 287.93827533721924,
+ "vram_peak_GiB": 0.0,
+ "heads_per_s": 1.415744885239875
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m1_eg2_hands.json
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+configs=36 feature=both target=hands device=cpu
+N=8000 D=821 pos_rate=0.964 files=['eg2-768+spec53']
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py:104: RuntimeWarning: overflow encountered in exp
+  s = 1 / (1 + np.exp(-lv[k]))
+{
+ "auroc": 0.908123183531532,
+ "auroc_ci95": [
+  0.8862196867890523,
+  0.9299566169995357
+ ],
+ "bal_acc": 0.8385575404631667,
+ "f1": 0.9745444977964876,
+ "single_logistic_auroc": 0.5055282739039545,
+ "delta_many_minus_single": 0.4025949096275775,
+ "n": 8000,
+ "n_pos": 7714,
+ "wall_s": 220.90567660331726,
+ "vram_peak_GiB": 0.0,
+ "heads_per_s": 1.7351553642554225
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m1_both_hands.json
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+frame-head: hidden=64 wd=0.0 cw=True inner_auc=0.7457 train_s=0.2
+scored 150 windows x 101 frames in 0.00s (0.0 ms/window)
+{
+ "auroc": 0.4084,
+ "auroc_ci95_clipboot": [
+  0.36076817558299035,
+  0.5771889400921659
+ ],
+ "bal_acc": 0.5,
+ "f1": 0.8,
+ "per_reason_recall": {
+  "DUPLICATE": {
+   "n": 6,
+   "recall_bad": 0.0
+  },
+  "HANDS_NOT_VISIBLE": {
+   "n": 14,
+   "recall_bad": 0.0
+  },
+  "NO_ACTIVE_WORK": {
+   "n": 23,
+   "recall_bad": 0.0
+  },
+  "None": {
+   "n": 100,
+   "recall_bad": 0.0
+  },
+  "TOO_DARK": {
+   "n": 6,
+   "recall_bad": 0.0
+  },
+  "UNDECODABLE": {
+   "n": 1,
+   "recall_bad": 0.0
+  }
+ },
+ "per_reason_heads": {
+  "HANDS_NOT_VISIBLE": {
+   "n_reason": 14,
+   "n_usable": 100,
+   "auroc_reason_vs_usable": 0.2142857142857143
+  },
+  "NO_ACTIVE_WORK": {
+   "n_reason": 23,
+   "n_usable": 100,
+   "auroc_reason_vs_usable": 0.5843478260869565
+  },
+  "TOO_DARK": {
+   "n_reason": 6,
+   "n_usable": 100,
+   "auroc_reason_vs_usable": 0.24333333333333337
+  },
+  "DUPLICATE": {
+   "n_reason": 6,
+   "n_usable": 100,
+   "auroc_reason_vs_usable": 0.10999999999999999
+  }
+ }
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m2_windows_work.json

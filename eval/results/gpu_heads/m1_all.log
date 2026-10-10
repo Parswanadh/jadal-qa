@@ -2,3 +2,13 @@
 === START feat=spec target=hands 2026-10-10T11:26:46Z ===
 === EXIT(143) feat=spec target=hands 2026-10-10T11:38:34Z ===
 === START feat=spec target=work 2026-10-10T11:38:34Z ===
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Traceback (most recent call last):
+  File "/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py", line 193, in <module>
+    main()
+  File "/home/parshu/projects/jadal-qa-wt/gpu-heads/eval/gpu_heads/run_m1.py", line 153, in main
+    from jadal.gpuheads.config import build_grid
+ModuleNotFoundError: No module named 'jadal'
+=== EXIT(1) feat=spec target=work 2026-10-10T11:45:43Z ===
+=== START feat=eg2 target=hands 2026-10-10T11:45:43Z ===

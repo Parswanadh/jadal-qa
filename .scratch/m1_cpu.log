@@ -1,0 +1,42 @@
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+configs=36 feature=spec target=hands device=cpu
+N=10000 D=53 pos_rate=0.964 files=['spec53']
+{
+ "auroc": 0.8236806441557478,
+ "auroc_ci95": [
+  0.8017582078611172,
+  0.8453090946744546
+ ],
+ "bal_acc": 0.7545998709092784,
+ "f1": 0.8766791582588642,
+ "single_logistic_auroc": 0.4958432266191093,
+ "delta_many_minus_single": 0.32783741753663853,
+ "n": 10000,
+ "n_pos": 9642,
+ "wall_s": 50.9639196395874,
+ "vram_peak_GiB": 0.0,
+ "heads_per_s": 8.062630503124216
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m1_spec_hands.json
+/home/parshu/envs/jadal/lib/python3.12/site-packages/torch/cuda/__init__.py:68: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+configs=36 feature=spec target=work device=cpu
+N=10000 D=53 pos_rate=0.917 files=['spec53']
+{
+ "auroc": 0.7700263093038553,
+ "auroc_ci95": [
+  0.7527850903511513,
+  0.786496594073105
+ ],
+ "bal_acc": 0.7042064798957255,
+ "f1": 0.8252445330509003,
+ "single_logistic_auroc": 0.49005238314258037,
+ "delta_many_minus_single": 0.2799739261612749,
+ "n": 10000,
+ "n_pos": 9166,
+ "wall_s": 51.925429821014404,
+ "vram_peak_GiB": 0.0,
+ "heads_per_s": 7.608096354821051
+}
+wrote /home/parshu/projects/jadal-qa-wt/gpu-heads/eval/results/gpu_heads/m1_spec_work.json
