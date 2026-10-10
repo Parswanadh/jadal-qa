@@ -16,7 +16,7 @@ Verified by the agent over USB serial:
 - PING/PONG round trip and clock-offset estimate.
 
 Not verified by the agent:
-- Physical LED output. The agent had no camera, so the G/A/R/OFF sequence and the FLASH pattern were not observed. The user reported that they saw the LED show on the board. No per-colour observation is recorded in this report.
+- Physical LED output. The agent had no camera, so the G/A/R/OFF sequence and the FLASH pattern were not observed. Whether the LED output looked as intended has not been independently confirmed in this report.
 - The onboard LED is a single colour. G, A and R are distinguishable only with an external RGB LED.
 
 ## Step 0 - access
