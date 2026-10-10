@@ -211,5 +211,235 @@ class FitTemperatureTest(unittest.TestCase):
             certify.fit_temperature(np.zeros((3, 2)), np.array([0, 1, 7]))
 
 
+class PickThresholdTest(unittest.TestCase):
+
+    @staticmethod
+    def _clean_set(n: int = 200) -> tuple[np.ndarray, np.ndarray]:
+        """Confidence increasing with correctness; everything at/above 0.5 is right."""
+        conf = np.linspace(0.01, 1.0, n)
+        correct = conf >= 0.5
+        return conf, correct
+
+    @staticmethod
+    def _admissible(conf, correct, target, delta, min_accepted):
+        """Independent re-derivation of the candidates that meet both constraints."""
+        rows = []
+        for t in np.unique(conf):
+            mask = conf >= t
+            accepted = int(mask.sum())
+            errors = int((mask & ~correct).sum())
+            if accepted < min_accepted:
+                continue
+            if certify.exact_binomial_upper(errors, accepted, delta) > target:
+                continue
+            rows.append((float(t), accepted, errors))
+        return rows
+
+    def test_returns_the_loosest_threshold_that_still_meets_target_and_min_accepted(self):
+        conf, correct = self._clean_set()
+        result = certify.pick_threshold(conf, correct, target_err=0.05)
+        admissible = self._admissible(conf, correct, 0.05, 0.1, 30)
+        self.assertGreater(len(admissible), 1)  # a real scan, not a single choice
+        best_threshold, best_accepted, best_errors = max(admissible, key=lambda r: r[1])
+        self.assertAlmostEqual(result["threshold"], best_threshold, places=12)
+        self.assertEqual(result["accepted"], best_accepted)
+        self.assertEqual(result["errors"], best_errors)
+        self.assertAlmostEqual(result["coverage"], best_accepted / 200.0, places=12)
+        self.assertAlmostEqual(
+            result["upper_bound"],
+            certify.exact_binomial_upper(best_errors, best_accepted, 0.1),
+            places=12,
+        )
+        self.assertLessEqual(result["upper_bound"], 0.05)
+        self.assertGreaterEqual(result["accepted"], 30)
+
+    def test_maximum_coverage_is_preferred_over_the_strictest_admissible_one(self):
+        conf, correct = self._clean_set()
+        result = certify.pick_threshold(conf, correct, target_err=0.05)
+        admissible = self._admissible(conf, correct, 0.05, 0.1, 30)
+        strictest = min(admissible, key=lambda r: r[1])
+        # the loosest admissible candidate accepts the most segments, so its
+        # threshold is the LOWEST of the admissible ones
+        self.assertGreater(result["accepted"], strictest[1])
+        self.assertLess(result["threshold"], strictest[0])
+        # accepting everything is NOT admissible here, so the answer is a real cut
+        everything = certify.exact_binomial_upper(int((~correct).sum()), 200, 0.1)
+        self.assertGreater(everything, 0.05)
+        self.assertLess(result["coverage"], 1.0)
+
+    def test_returns_none_when_the_target_cannot_be_met(self):
+        conf = np.linspace(0.01, 1.0, 200)
+        correct = conf < 0.5  # errors sit at the top of the confidence range
+        result = certify.pick_threshold(conf, correct, target_err=0.05)
+        self.assertIsNone(result["threshold"])
+        self.assertEqual(result["accepted"], 200)
+        self.assertEqual(result["errors"], 200 - int(correct.sum()))
+        self.assertEqual(result["coverage"], 1.0)
+        self.assertAlmostEqual(
+            result["upper_bound"],
+            certify.exact_binomial_upper(200 - int(correct.sum()), 200, 0.1),
+            places=12,
+        )
+        self.assertGreater(result["upper_bound"], 0.05)
+
+    def test_min_accepted_limits_coverage(self):
+        conf, correct = self._clean_set()
+        loose = certify.pick_threshold(conf, correct, target_err=0.5, min_accepted=30)
+        strict = certify.pick_threshold(
+            conf, correct, target_err=0.5, min_accepted=120
+        )
+        self.assertGreaterEqual(loose["accepted"], 30)
+        self.assertGreaterEqual(strict["accepted"], 120)
+        self.assertLessEqual(strict["accepted"], loose["accepted"])
+        for result, floor in ((loose, 30), (strict, 120)):
+            self.assertLessEqual(result["upper_bound"], 0.5)
+            self.assertGreaterEqual(result["accepted"], floor)
+
+    def test_min_accepted_larger_than_the_set_never_passes(self):
+        conf, correct = self._clean_set(10)
+        result = certify.pick_threshold(conf, correct, target_err=0.05)
+        self.assertIsNone(result["threshold"])
+        self.assertEqual(result["accepted"], 10)
+        self.assertEqual(result["errors"], 5)
+        self.assertEqual(result["coverage"], 1.0)
+        self.assertAlmostEqual(
+            result["upper_bound"], certify.exact_binomial_upper(5, 10, 0.1),
+            places=12,
+        )
+        self.assertGreater(result["upper_bound"], 0.05)
+
+    def test_delta_is_used_for_the_bound(self):
+        conf, correct = self._clean_set()
+        result = certify.pick_threshold(
+            conf, correct, target_err=0.05, delta=0.01, min_accepted=120
+        )
+        self.assertEqual(
+            result["upper_bound"],
+            certify.exact_binomial_upper(result["errors"], result["accepted"], 0.01),
+        )
+        self.assertGreaterEqual(result["accepted"], 120)
+        # a stricter delta can only shrink the admissible set
+        looser_delta = certify.pick_threshold(
+            conf, correct, target_err=0.05, delta=0.1, min_accepted=120
+        )
+        self.assertLessEqual(result["accepted"], looser_delta["accepted"])
+        self.assertLessEqual(
+            looser_delta["upper_bound"],
+            certify.exact_binomial_upper(
+                looser_delta["errors"], looser_delta["accepted"], 0.1
+            ),
+        )
+
+    def test_empty_input_returns_none(self):
+        result = certify.pick_threshold([], [], target_err=0.05)
+        self.assertIsNone(result["threshold"])
+        self.assertEqual(result["accepted"], 0)
+        self.assertEqual(result["errors"], 0)
+        self.assertEqual(result["coverage"], 0.0)
+        self.assertIsNone(result["upper_bound"])
+
+    def test_rejects_bad_arguments(self):
+        conf, correct = self._clean_set(10)
+        with self.assertRaises(ValueError):
+            certify.pick_threshold([0.1, 0.2], [True], target_err=0.05)
+        with self.assertRaises(ValueError):
+            certify.pick_threshold(conf, correct, target_err=0.0)
+        with self.assertRaises(ValueError):
+            certify.pick_threshold(conf, correct, target_err=0.05, delta=0.0)
+        with self.assertRaises(ValueError):
+            certify.pick_threshold(conf, correct, target_err=0.05, min_accepted=0)
+
+
+class RiskCoverageTest(unittest.TestCase):
+
+    def test_curve_grows_in_coverage_and_error(self):
+        rng = np.random.default_rng(4)
+        conf = np.round(rng.random(200), 4)
+        correct = rng.random(200) < conf
+        curve = certify.risk_coverage(conf, correct)
+        self.assertEqual(len(curve), len(np.unique(conf)))
+        coverages = [row["coverage"] for row in curve]
+        self.assertEqual(coverages, sorted(coverages))
+        for row in curve:
+            self.assertAlmostEqual(row["error"], round(row["error"], 4), places=12)
+            self.assertGreaterEqual(row["error"], 0.0)
+            self.assertLessEqual(row["error"], 1.0)
+            self.assertGreaterEqual(row["coverage"], 0.0)
+            self.assertLessEqual(row["coverage"], 1.0)
+
+    def test_a_confident_and_perfect_set_has_zero_error_above_the_cut(self):
+        conf = np.where(np.arange(20) < 10, 0.05, 0.95)
+        correct = np.arange(20) >= 10  # the confident half is the correct half
+        curve = certify.risk_coverage(conf, correct)
+        low, high = curve[0], curve[1]
+        self.assertAlmostEqual(low["coverage"], 0.5, places=12)
+        self.assertAlmostEqual(low["error"], 0.0, places=12)
+        self.assertAlmostEqual(high["coverage"], 1.0, places=12)
+        self.assertAlmostEqual(high["error"], 0.5, places=12)
+
+    def test_floats_are_rounded_to_four_decimals(self):
+        rng = np.random.default_rng(13)
+        conf = rng.random(50)
+        correct = rng.random(50) < 0.5
+        for row in certify.risk_coverage(conf, correct):
+            for key in ("threshold", "coverage", "error"):
+                self.assertAlmostEqual(row[key], round(row[key], 4), places=12)
+
+    def test_empty_input_gives_an_empty_curve(self):
+        self.assertEqual(certify.risk_coverage([], []), [])
+
+    def test_rejects_mismatched_input(self):
+        with self.assertRaises(ValueError):
+            certify.risk_coverage([0.1, 0.2], [True, False, True])
+
+
+class BatchRuleTest(unittest.TestCase):
+
+    @staticmethod
+    def _verdict(verdict: str) -> dict:
+        return {
+            "segment_id": "s1",
+            "verdict": verdict,
+            "reasons": [],
+            "answer_conf": 0.9,
+            "threshold": 0.5,
+        }
+
+    def test_accepts_when_rejections_are_at_or_below_k(self):
+        verdicts = [self._verdict("accept")] * 3 + [self._verdict("reject")]
+        self.assertEqual(certify.batch_rule(verdicts, 1), "accept")
+
+    def test_rejects_when_rejections_exceed_k(self):
+        verdicts = [self._verdict("accept")] * 3 + [self._verdict("reject")] * 2
+        self.assertEqual(certify.batch_rule(verdicts, 1), "reject")
+
+    def test_k_of_zero_rejects_on_the_first_rejection(self):
+        verdicts = [self._verdict("reject"), self._verdict("accept")]
+        self.assertEqual(certify.batch_rule(verdicts, 0), "reject")
+
+    def test_review_is_not_a_rejection(self):
+        verdicts = [self._verdict("review"), self._verdict("review"), self._verdict("accept")]
+        self.assertEqual(certify.batch_rule(verdicts, 1), "accept")
+
+    def test_empty_batch_is_accepted(self):
+        self.assertEqual(certify.batch_rule([], 1), "accept")
+
+    def test_accepts_a_batch_mapping_and_plain_verdict_strings(self):
+        batch = {
+            "batch_id": "b1",
+            "verdicts": [self._verdict("reject"), self._verdict("reject")],
+            "k": 1,
+        }
+        self.assertEqual(certify.batch_rule(batch, 1), "reject")
+        self.assertEqual(certify.batch_rule(["accept", "reject"], 1), "accept")
+        self.assertEqual(certify.batch_rule(["reject", "reject"], 1), "reject")
+
+    def test_unknown_verdict_or_bad_k_raises(self):
+        with self.assertRaises(ValueError):
+            certify.batch_rule([self._verdict("maybe")], 1)
+        with self.assertRaises(ValueError):
+            certify.batch_rule([self._verdict("accept")], -1)
+
+
 if __name__ == "__main__":
     unittest.main()
