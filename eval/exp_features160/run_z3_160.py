@@ -9,8 +9,8 @@ factory are correlated) with the window bootstrap kept for continuity.
 
 Inputs (all read-only, precomputed by the O/Z agents):
   * $JADAL_BUNDLE/labels/ood160_labels.json           (160 human labels)
-  * /workspace/wt/m-adapt160/.../inputs/z3_160.npz    (20 Z3 candidates, IndEgo+OOD160)
-  * /workspace/wt/m-fewshot160/.../ood160_pixel.npz   (26 pixel feats, OOD160, 10fps)
+  * $JADAL_POD_ROOT/wt/m-adapt160/.../inputs/z3_160.npz    (20 Z3 candidates, IndEgo+OOD160)
+  * $JADAL_POD_ROOT/wt/m-fewshot160/.../ood160_pixel.npz   (26 pixel feats, OOD160, 10fps)
   * $JADAL_BUNDLE/labels/manifest_gold.json + caches/gpu/features.json (IndEgo 150)
   * $JADAL_BUNDLE/caches/ensemble/ood_scores{,2}.json (frozen scores, 160)
 
@@ -30,13 +30,13 @@ from scipy.stats import rankdata
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(REPO, "eval", "results", "exp_features160")
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 Z3_160 = os.environ.get(
     "JADAL_Z3_160",
-    "/workspace/wt/m-adapt160/eval/results/exp_adapt160/inputs/z3_160.npz")
+    os.path.join(os.environ.get("JADAL_WT", "wt"), 'm-adapt160/eval/results/exp_adapt160/inputs/z3_160.npz'))
 PIXEL160 = os.environ.get(
     "JADAL_PIXEL160",
-    "/workspace/wt/m-fewshot160/eval/results/exp_fewshot/inputs/ood160_pixel.npz")
+    os.path.join(os.environ.get("JADAL_WT", "wt"), 'm-fewshot160/eval/results/exp_fewshot/inputs/ood160_pixel.npz'))
 DEV = "CPU (numpy/sklearn; decode done by the O/Z agents, no GPU here)"
 N_BOOT = 2000
 SEED = 0

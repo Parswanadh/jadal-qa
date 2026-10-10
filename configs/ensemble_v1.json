@@ -8,7 +8,7 @@
    "kind": "logistic_on_L2normed_mean_EmbeddingGemma2_frame_embeddings",
    "embedding_dim": 768,
    "frame_step_s": 0.5,
-   "embed_model_dir": "/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b",
+   "embed_model_dir": "/home/parshu/projects/awing/data/eg2",
    "normalize_embeddings": true,
    "max_soft_tokens": 140,
    "aggregation": "mean_over_frames_then_L2_normalise",
@@ -2496,7 +2496,7 @@
  "verdict_rule": "usable_prob>0.5->accept, <0.4->reject, in [0.4,0.6]->review",
  "full_oof_auroc_resubstitution_free": 0.8534,
  "code_git_sha": "4f431abaa2b446feab6c81a62ae563246abb2130",
- "embed_command": "OMP_NUM_THREADS=2 python3 /home/parshu/projects/jadal-qa-wt/frames10k/eval/frames10k/embed_segments.py --manifest /workspace/jadal_pod_bundle/labels/manifest_gold.json",
- "pixel_command": "OMP_NUM_THREADS=2 python3 eval/ensemble_score_windows.py --windows <json> --out <npz>",
+ "embed_command": "OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python /home/parshu/projects/jadal-qa-wt/frames10k/eval/frames10k/embed_segments.py --manifest /home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json",
+ "pixel_command": "OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/ensemble_score_windows.py --windows <json> --out <npz>",
  "eg2_cross_device_note": "EG2 GPU numerics are NOT claimed identical across devices"
 }

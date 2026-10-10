@@ -2,14 +2,14 @@
 
 Usage (from the repo root):
 
-    python3 -m eval.make_splits --report-only
-    python3 -m eval.make_splits
-    python3 -m eval.make_splits --help
+    /home/parshu/envs/jadal/bin/python -m eval.make_splits --report-only
+    /home/parshu/envs/jadal/bin/python -m eval.make_splits
+    /home/parshu/envs/jadal/bin/python -m eval.make_splits --help
 
 What it does
 ------------
 1. Reads the three Parquet files in the ego10k evaluation directory
-   (/workspace/jadal_pod_bundle/data/ego10k_eval by default) and prints the
+   (/home/parshu/projects/awing/data/ego10k_eval by default) and prints the
    dataset structure: per-file row counts and the label distributions
    (``hand_count`` and ``active_labor``) per ``source_dataset``.
 2. Streams the images in small batches (memory-safe: decode with PIL,
@@ -58,7 +58,7 @@ import imagehash
 import pyarrow.parquet as pq
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_DATA_DIR = Path("/workspace/jadal_pod_bundle/data/ego10k_eval")
+DEFAULT_DATA_DIR = Path("/home/parshu/projects/awing/data/ego10k_eval")
 PARQUET_FILES = ("ego4d.parquet", "egocentric_10k.parquet", "epic_kitchens.parquet")
 RESULTS_DIR = Path(__file__).resolve().parent / "results"
 

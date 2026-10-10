@@ -1,0 +1,275 @@
+{
+ "device": "RTX 4070 Laptop",
+ "torch": "2.14.1+cu130",
+ "gpu_name": "NVIDIA GeForce RTX 4070 Laptop GPU",
+ "regenerate": "flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock /home/parshu/envs/jadal/bin/python eval/gpu/microbench.py [--only memcpy,kernels|decode]",
+ "memcpy": {
+  "d2d_gbps": 79.04,
+  "d2d_ms_per_256mib": 3.396,
+  "h2d_pinned_gbps": 7.6,
+  "h2d_pageable_gbps": 6.05,
+  "d2h_pinned_gbps": 7.22,
+  "nbytes": 268435456,
+  "reps": 20
+ },
+ "decode": {
+  "configs": [
+   {
+    "decoder": "nvdec",
+    "scale": "160:90",
+    "concurrency": 1,
+    "wall_s": 0.58,
+    "bytes_per_proc": [
+     3240000
+    ],
+    "returncodes": [
+     0
+    ],
+    "frames_total": 150.0,
+    "frames_per_s": 256.5,
+    "video_s_per_wall_s": 25.65,
+    "failed": false,
+    "dec_util_max": 4.0,
+    "dec_util_mean": 2.0
+   },
+   {
+    "decoder": "nvdec",
+    "scale": "160:90",
+    "concurrency": 2,
+    "wall_s": 0.75,
+    "bytes_per_proc": [
+     3240000,
+     3240000
+    ],
+    "returncodes": [
+     0,
+     0
+    ],
+    "frames_total": 300.0,
+    "frames_per_s": 397.5,
+    "video_s_per_wall_s": 39.75,
+    "failed": false,
+    "dec_util_max": 0.0,
+    "dec_util_mean": 0.0
+   },
+   {
+    "decoder": "nvdec",
+    "scale": "160:90",
+    "concurrency": 4,
+    "wall_s": 6.48,
+    "bytes_per_proc": [
+     3240000,
+     3240000,
+     3240000,
+     3240000
+    ],
+    "returncodes": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "frames_total": 600.0,
+    "frames_per_s": 92.5,
+    "video_s_per_wall_s": 9.25,
+    "failed": false,
+    "dec_util_max": 40.0,
+    "dec_util_mean": 8.0
+   },
+   {
+    "decoder": "nvdec",
+    "scale": "160:90",
+    "concurrency": 8,
+    "wall_s": 5.31,
+    "bytes_per_proc": [
+     3240000,
+     3240000,
+     3240000,
+     3240000,
+     3240000,
+     3240000,
+     3240000,
+     3240000
+    ],
+    "returncodes": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "frames_total": 1200.0,
+    "frames_per_s": 225.9,
+    "video_s_per_wall_s": 22.59,
+    "failed": false,
+    "dec_util_max": 38.0,
+    "dec_util_mean": 13.4
+   },
+   {
+    "decoder": "cpu",
+    "scale": "160:90",
+    "concurrency": 1,
+    "wall_s": 0.21,
+    "frames_total": 150.0,
+    "frames_per_s": 709.9,
+    "video_s_per_wall_s": 70.99
+   },
+   {
+    "decoder": "cpu",
+    "scale": "160:90",
+    "concurrency": 4,
+    "wall_s": 0.56,
+    "frames_total": 600.0,
+    "frames_per_s": 1075.5,
+    "video_s_per_wall_s": 107.55
+   },
+   {
+    "decoder": "nvdec",
+    "scale": "320:180",
+    "concurrency": 1,
+    "wall_s": 0.42,
+    "bytes_per_proc": [
+     12960000
+    ],
+    "returncodes": [
+     0
+    ],
+    "frames_total": 150.0,
+    "frames_per_s": 354.9,
+    "video_s_per_wall_s": 35.49,
+    "failed": false,
+    "dec_util_max": 0.0,
+    "dec_util_mean": 0.0
+   },
+   {
+    "decoder": "nvdec",
+    "scale": "320:180",
+    "concurrency": 2,
+    "wall_s": 0.73,
+    "bytes_per_proc": [
+     12960000,
+     12960000
+    ],
+    "returncodes": [
+     0,
+     0
+    ],
+    "frames_total": 300.0,
+    "frames_per_s": 410.6,
+    "video_s_per_wall_s": 41.06,
+    "failed": false,
+    "dec_util_max": 70.0,
+    "dec_util_mean": 35.0
+   },
+   {
+    "decoder": "nvdec",
+    "scale": "320:180",
+    "concurrency": 4,
+    "wall_s": 1.37,
+    "bytes_per_proc": [
+     12960000,
+     12960000,
+     12960000,
+     12960000
+    ],
+    "returncodes": [
+     0,
+     0,
+     0,
+     0
+    ],
+    "frames_total": 600.0,
+    "frames_per_s": 438.3,
+    "video_s_per_wall_s": 43.83,
+    "failed": false,
+    "dec_util_max": 83.0,
+    "dec_util_mean": 27.7
+   },
+   {
+    "decoder": "nvdec",
+    "scale": "320:180",
+    "concurrency": 8,
+    "wall_s": 2.75,
+    "bytes_per_proc": [
+     12960000,
+     12960000,
+     12960000,
+     12960000,
+     12960000,
+     12960000,
+     12960000,
+     12960000
+    ],
+    "returncodes": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "frames_total": 1200.0,
+    "frames_per_s": 435.8,
+    "video_s_per_wall_s": 43.58,
+    "failed": false,
+    "dec_util_max": 34.0,
+    "dec_util_mean": 9.8
+   },
+   {
+    "decoder": "cpu",
+    "scale": "320:180",
+    "concurrency": 1,
+    "wall_s": 0.2,
+    "frames_total": 150.0,
+    "frames_per_s": 764.5,
+    "video_s_per_wall_s": 76.45
+   },
+   {
+    "decoder": "cpu",
+    "scale": "320:180",
+    "concurrency": 4,
+    "wall_s": 0.54,
+    "frames_total": 600.0,
+    "frames_per_s": 1120.8,
+    "video_s_per_wall_s": 112.08
+   }
+  ]
+ },
+ "kernels": {
+  "batch_8": {
+   "temporal_fft_ms_per_window": 0.356,
+   "spatial_fft_ms_per_window": 0.009,
+   "pca_residual_ms_per_window": 2.096,
+   "stats_ms_per_window": 0.902,
+   "motion_ms_per_window": 0.36,
+   "skin_ms_per_window": 0.026,
+   "dct_ms_per_window": 0.016,
+   "windows_per_s": 265.6
+  },
+  "batch_32": {
+   "temporal_fft_ms_per_window": 0.333,
+   "spatial_fft_ms_per_window": 0.003,
+   "pca_residual_ms_per_window": 0.628,
+   "stats_ms_per_window": 0.774,
+   "motion_ms_per_window": 0.354,
+   "skin_ms_per_window": 0.006,
+   "dct_ms_per_window": 0.004,
+   "windows_per_s": 475.7
+  },
+  "window": {
+   "H": 90,
+   "W": 160,
+   "T": 100,
+   "fps": 10,
+   "dtype": "fp16-in/fp32-math"
+  }
+ },
+ "peak_vram_mib": 1226.0,
+ "wall_s": 27.0,
+ "note": "NVDEC rows failed (rc=234, scale_cuda/hwdownload filter error in this ffmpeg build); see nvdec_probe.json. CPU rows valid."
+}
