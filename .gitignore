@@ -26,3 +26,6 @@ __pycache__/
 eval/results/scale/_proxy/
 eval/results/scale/download.log
 eval/results/scale/download_status.json
+eval/results/scale/manifest.log
+eval/results/scale/labelqueue.log
+eval/results/scale/capacity_real.log

@@ -1,0 +1,1485 @@
+{
+ "n_tars_ok": 47,
+ "n_tars_total": 47,
+ "n_clips": 58,
+ "results": [
+  {
+   "repo_path": "factory_061/workers/worker_007/factory061_worker007_part36.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_061/workers/worker_007/factory061_worker007_part36.tar",
+   "bytes": 599592960,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_061/worker_007/factory061_worker007_00036.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "1199.700000"
+       }
+      ],
+      "format": {
+       "duration": "1199.700000",
+       "size": "599589299"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_046/workers/worker_008/factory046_worker008_part56.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_046/workers/worker_008/factory046_worker008_part56.tar",
+   "bytes": 89948160,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_046/worker_008/factory046_worker008_00618.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.733333"
+       }
+      ],
+      "format": {
+       "duration": "179.733333",
+       "size": "89938537"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_026/workers/worker_005/factory026_worker005_part10.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_026/workers/worker_005/factory026_worker005_part10.tar",
+   "bytes": 89968640,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_026/worker_005/factory026_worker005_00111.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89956083"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_001/workers/worker_006/factory001_worker006_part08.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_001/workers/worker_006/factory001_worker006_part08.tar",
+   "bytes": 599633920,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "1199.866667"
+       }
+      ],
+      "format": {
+       "duration": "1199.866667",
+       "size": "599622489"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_060/workers/worker_008/factory060_worker008_part09.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_060/workers/worker_008/factory060_worker008_part09.tar",
+   "bytes": 90009600,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_060/worker_008/factory060_worker008_00099.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89999196"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_041/workers/worker_042/factory041_worker042_part07.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_041/workers/worker_042/factory041_worker042_part07.tar",
+   "bytes": 90091520,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_041/worker_042/factory041_worker042_00077.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90088326"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_033/workers/worker_009/factory033_worker009_part00.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_033/workers/worker_009/factory033_worker009_part00.tar",
+   "bytes": 89948160,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_033/worker_009/factory033_worker009_00000.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89942841"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_038/workers/worker_029/factory038_worker029_part02.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_038/workers/worker_029/factory038_worker029_part02.tar",
+   "bytes": 90091520,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_038/worker_029/factory038_worker029_00022.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.900000"
+       }
+      ],
+      "format": {
+       "duration": "179.900000",
+       "size": "90088706"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_020/workers/worker_002/factory020_worker002_part14.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_020/workers/worker_002/factory020_worker002_part14.tar",
+   "bytes": 270489600,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_020/worker_002/factory020_worker002_00157.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.700000"
+       }
+      ],
+      "format": {
+       "duration": "179.700000",
+       "size": "90101206"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_020/worker_002/factory020_worker002_00158.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.033333"
+       }
+      ],
+      "format": {
+       "duration": "180.033333",
+       "size": "90254051"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_020/worker_002/factory020_worker002_00159.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "90118964"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_023/workers/worker_003/factory023_worker003_part05.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_023/workers/worker_003/factory023_worker003_part05.tar",
+   "bytes": 90091520,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_023/worker_003/factory023_worker003_00055.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.900000"
+       }
+      ],
+      "format": {
+       "duration": "179.900000",
+       "size": "90084540"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_057/workers/worker_021/factory057_worker021_part14.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_057/workers/worker_021/factory057_worker021_part14.tar",
+   "bytes": 180060160,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_057/worker_021/factory057_worker021_00154.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "90024576"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_057/worker_021/factory057_worker021_00155.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "90023634"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_009/workers/worker_001/factory009_worker001_part07.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_009/workers/worker_001/factory009_worker001_part07.tar",
+   "bytes": 599623680,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_009/worker_001/factory009_worker001_00007.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "1199.766667"
+       }
+      ],
+      "format": {
+       "duration": "1199.766667",
+       "size": "599614527"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_053/workers/worker_038/factory053_worker038_part14.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_053/workers/worker_038/factory053_worker038_part14.tar",
+   "bytes": 89958400,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_053/worker_038/factory053_worker038_00154.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.733333"
+       }
+      ],
+      "format": {
+       "duration": "179.733333",
+       "size": "89949053"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_021/workers/worker_012/factory021_worker012_part10.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_021/workers/worker_012/factory021_worker012_part10.tar",
+   "bytes": 90040320,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_021/worker_012/factory021_worker012_00110.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "90036932"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_051/workers/worker_005/factory051_worker005_part15.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_051/workers/worker_005/factory051_worker005_part15.tar",
+   "bytes": 179937280,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00166.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.800000"
+       }
+      ],
+      "format": {
+       "duration": "179.800000",
+       "size": "89997925"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_051/worker_005/factory051_worker005_00167.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89928393"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_042/workers/worker_010/factory042_worker010_part05.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_042/workers/worker_010/factory042_worker010_part05.tar",
+   "bytes": 90204160,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_042/worker_010/factory042_worker010_00056.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90201258"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_079/workers/worker_023/factory079_worker023_part00.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_079/workers/worker_023/factory079_worker023_part00.tar",
+   "bytes": 90419200,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_079/worker_023/factory079_worker023_00000.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90416347"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_044/workers/worker_014/factory044_worker014_part05.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_044/workers/worker_014/factory044_worker014_part05.tar",
+   "bytes": 90214400,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_044/worker_014/factory044_worker014_00056.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.033333"
+       }
+      ],
+      "format": {
+       "duration": "180.033333",
+       "size": "90205193"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_054/workers/worker_002/factory054_worker002_part04.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_054/workers/worker_002/factory054_worker002_part04.tar",
+   "bytes": 90347520,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_054/worker_002/factory054_worker002_00045.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90340634"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_056/workers/worker_016/factory056_worker016_part14.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_056/workers/worker_016/factory056_worker016_part14.tar",
+   "bytes": 90091520,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_056/worker_016/factory056_worker016_00154.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "90079049"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_037/workers/worker_018/factory037_worker018_part11.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_037/workers/worker_018/factory037_worker018_part11.tar",
+   "bytes": 89978880,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_037/worker_018/factory037_worker018_00124.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89972862"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_076/workers/worker_061/factory076_worker061_part06.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_076/workers/worker_061/factory076_worker061_part06.tar",
+   "bytes": 90040320,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_076/worker_061/factory076_worker061_00066.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90037707"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_070/workers/worker_031/factory070_worker031_part06.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_070/workers/worker_031/factory070_worker031_part06.tar",
+   "bytes": 90101760,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_070/worker_031/factory070_worker031_00066.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.033333"
+       }
+      ],
+      "format": {
+       "duration": "180.033333",
+       "size": "90097903"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_036/workers/worker_007/factory036_worker007_part01.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_036/workers/worker_007/factory036_worker007_part01.tar",
+   "bytes": 89999360,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_036/worker_007/factory036_worker007_00011.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89988661"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_085/workers/worker_017/factory085_worker017_part00.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_085/workers/worker_017/factory085_worker017_part00.tar",
+   "bytes": 90449920,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_085/worker_017/factory085_worker017_00000.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.900000"
+       }
+      ],
+      "format": {
+       "duration": "179.900000",
+       "size": "90447090"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_029/workers/worker_002/factory029_worker002_part167.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_029/workers/worker_002/factory029_worker002_part167.tar",
+   "bytes": 90009600,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_029/worker_002/factory029_worker002_01846.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "90005869"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_024/workers/worker_005/factory024_worker005_part02.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_024/workers/worker_005/factory024_worker005_part02.tar",
+   "bytes": 270131200,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_024/worker_005/factory024_worker005_00022.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "90027432"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_024/worker_005/factory024_worker005_00023.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "90050731"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_024/worker_005/factory024_worker005_00024.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "90044276"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_068/workers/worker_014/factory068_worker014_part07.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_068/workers/worker_014/factory068_worker014_part07.tar",
+   "bytes": 90112000,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_068/worker_014/factory068_worker014_00077.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.100000"
+       }
+      ],
+      "format": {
+       "duration": "180.100000",
+       "size": "90106614"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_019/workers/worker_007/factory019_worker007_part03.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_019/workers/worker_007/factory019_worker007_part03.tar",
+   "bytes": 90060800,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_019/worker_007/factory019_worker007_00033.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.900000"
+       }
+      ],
+      "format": {
+       "duration": "179.900000",
+       "size": "90051266"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_028/workers/worker_001/factory028_worker001_part02.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_028/workers/worker_001/factory028_worker001_part02.tar",
+   "bytes": 180142080,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_028/worker_001/factory028_worker001_00022.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.733333"
+       }
+      ],
+      "format": {
+       "duration": "179.733333",
+       "size": "89950985"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_028/worker_001/factory028_worker001_00023.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.966667"
+       }
+      ],
+      "format": {
+       "duration": "179.966667",
+       "size": "90182311"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_035/workers/worker_014/factory035_worker014_part07.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_035/workers/worker_014/factory035_worker014_part07.tar",
+   "bytes": 90030080,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_035/worker_014/factory035_worker014_00077.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "90018685"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_013/workers/worker_008/factory013_worker008_part15.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_013/workers/worker_008/factory013_worker008_part15.tar",
+   "bytes": 89958400,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_013/worker_008/factory013_worker008_00166.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89949390"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_039/workers/worker_006/factory039_worker006_part92.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_039/workers/worker_006/factory039_worker006_part92.tar",
+   "bytes": 179937280,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_039/worker_006/factory039_worker006_01017.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89962015"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_039/worker_006/factory039_worker006_01018.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89962423"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_003/workers/worker_004/factory003_worker004_part03.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_003/workers/worker_004/factory003_worker004_part03.tar",
+   "bytes": 599613440,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_003/worker_004/factory003_worker004_00003.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "1199.733333"
+       }
+      ],
+      "format": {
+       "duration": "1199.733333",
+       "size": "599606098"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_062/workers/worker_014/factory062_worker014_part09.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_062/workers/worker_014/factory062_worker014_part09.tar",
+   "bytes": 90347520,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_062/worker_014/factory062_worker014_00099.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90344296"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_010/workers/worker_002/factory010_worker002_part05.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_010/workers/worker_002/factory010_worker002_part05.tar",
+   "bytes": 89999360,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_010/worker_002/factory010_worker002_00056.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89995389"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_014/workers/worker_041/factory014_worker041_part13.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_014/workers/worker_041/factory014_worker041_part13.tar",
+   "bytes": 89978880,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_014/worker_041/factory014_worker041_00143.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89970176"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_058/workers/worker_003/factory058_worker003_part11.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_058/workers/worker_003/factory058_worker003_part11.tar",
+   "bytes": 180101120,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_058/worker_003/factory058_worker003_00121.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.833333"
+       }
+      ],
+      "format": {
+       "duration": "179.833333",
+       "size": "89978344"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_058/worker_003/factory058_worker003_00122.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.833333"
+       }
+      ],
+      "format": {
+       "duration": "179.833333",
+       "size": "90113228"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_077/workers/worker_006/factory077_worker006_part05.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_077/workers/worker_006/factory077_worker006_part05.tar",
+   "bytes": 180336640,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_077/worker_006/factory077_worker006_00056.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.066667"
+       }
+      ],
+      "format": {
+       "duration": "180.066667",
+       "size": "90180974"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_077/worker_006/factory077_worker006_00057.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.033333"
+       }
+      ],
+      "format": {
+       "duration": "180.033333",
+       "size": "90145663"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_080/workers/worker_020/factory080_worker020_part06.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_080/workers/worker_020/factory080_worker020_part06.tar",
+   "bytes": 90112000,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_080/worker_020/factory080_worker020_00066.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90100876"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_016/workers/worker_002/factory016_worker002_part07.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_016/workers/worker_002/factory016_worker002_part07.tar",
+   "bytes": 264939520,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_016/worker_002/factory016_worker002_00008.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "529.600000"
+       }
+      ],
+      "format": {
+       "duration": "529.600000",
+       "size": "264928280"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_022/workers/worker_008/factory022_worker008_part14.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_022/workers/worker_008/factory022_worker008_part14.tar",
+   "bytes": 89989120,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_022/worker_008/factory022_worker008_00154.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89981293"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_073/workers/worker_014/factory073_worker014_part05.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_073/workers/worker_014/factory073_worker014_part05.tar",
+   "bytes": 90050560,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_073/worker_014/factory073_worker014_00055.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90044855"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_066/workers/worker_015/factory066_worker015_part08.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_066/workers/worker_015/factory066_worker015_part08.tar",
+   "bytes": 90306560,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_066/worker_015/factory066_worker015_00088.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90301035"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_069/workers/worker_004/factory069_worker004_part07.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_069/workers/worker_004/factory069_worker004_part07.tar",
+   "bytes": 180285440,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_069/worker_004/factory069_worker004_00077.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90135314"
+      }
+     }
+    },
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_069/worker_004/factory069_worker004_00078.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "180.000000"
+       }
+      ],
+      "format": {
+       "duration": "180.000000",
+       "size": "90138687"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_084/workers/worker_008/factory084_worker008_part03.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_084/workers/worker_008/factory084_worker008_part03.tar",
+   "bytes": 89989120,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_084/worker_008/factory084_worker008_00033.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "179.766667"
+       }
+      ],
+      "format": {
+       "duration": "179.766667",
+       "size": "89982485"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "repo_path": "factory_040/workers/worker_001/factory040_worker001_part26.tar",
+   "path": "/home/parshu/projects/awing/data/ego10k_scale/tars/factory_040/workers/worker_001/factory040_worker001_part26.tar",
+   "bytes": 585676800,
+   "attempts": 1,
+   "clips": [
+    {
+     "mp4": "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_040/worker_001/factory040_worker001_00026.mp4",
+     "ffprobe": {
+      "programs": [],
+      "streams": [
+       {
+        "codec_name": "hevc",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "30/1",
+        "duration": "1171.766667"
+       }
+      ],
+      "format": {
+       "duration": "1171.766667",
+       "size": "585666455"
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

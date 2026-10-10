@@ -16,6 +16,7 @@ import json
 import os
 import random
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 
 MAN = "eval/scale/manifest_scale.json"
 OUT = "eval/results/scale/label_queue_random.json"
@@ -64,10 +65,12 @@ def main():
         if not progressed:
             break
     assert len(order) == N, f"only {len(order)} windows available, need {N}"
+    seg_ids = [f"q{k:03d}_{w['id']}" for k, w in enumerate(order)]
+    with ThreadPoolExecutor(max_workers=4) as ex:  # <=4 cores per house rules
+        mp4s = list(ex.map(lambda a: transcode(*a),
+                           [(w["path"], w["start_s"], s) for w, s in zip(order, seg_ids)]))
     items = []
-    for k, w in enumerate(order):
-        seg_id = f"q{k:03d}_{w['id']}"
-        mp4 = transcode(w["path"], w["start_s"], seg_id)
+    for k, (w, seg_id, mp4) in enumerate(zip(order, seg_ids, mp4s)):
         items.append({
             "segment_id": seg_id, "clip": w["clip"], "path": mp4,
             "start_s": 0.0, "end_s": 10.0,

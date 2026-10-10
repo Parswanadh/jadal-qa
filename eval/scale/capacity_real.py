@@ -18,6 +18,8 @@ from datetime import datetime, timezone
 CLIPDIR = "/home/parshu/projects/awing/data/ego10k_scale/clips"
 OUT = "eval/results/scale/capacity_real1080p.json"
 LOCK = "/home/parshu/projects/jadal-qa-wt/tools/gpu.lock"
+SAMPLE_S = 120.0  # decode a 120 s sample per file (decode cost is uniform; full-file
+# decode of 1200 s clips would take ~10x longer with the same RTF)
 
 
 def run(cmd, timeout=1200):
@@ -39,13 +41,14 @@ def dur_of(probe):
 
 def cpu_decode(path, extra=(), label=""):
     cmd = ["taskset", "-c", "0", "ffmpeg", "-hide_banner", "-v", "error",
-           "-threads", "1", "-i", path, *extra, "-f", "null", "-"]
+           "-threads", "1", "-i", path, "-t", str(int(SAMPLE_S)),
+           *extra, "-f", "null", "-"]
     r, wall = run(cmd)
     if r.returncode != 0:
         return {"label": label, "error": r.stderr[-300:]}
-    d = dur_of(ffprobe(path))
+    d = min(dur_of(ffprobe(path)), SAMPLE_S)
     return {"label": label, "wall_s": round(wall, 2), "video_s": round(d, 2),
-            "rtf": round(d / wall, 2)}
+            "rtf": round(d / wall, 2), "sample_s": SAMPLE_S}
 
 
 def main():
@@ -87,14 +90,14 @@ def main():
     for path in mp4s:
         nv_lines.append(f"s=$(date +%s.%N); ffmpeg -hide_banner -v error "
                         f"-hwaccel cuda -hwaccel_output_format cuda -c:v hevc_cuvid "
-                        f"-i '{path}' -f null -; e=$(date +%s.%N); "
+                        f"-i '{path}' -t {int(SAMPLE_S)} -f null -; e=$(date +%s.%N); "
                         f"echo \"$(echo \"$e - $s\" | bc) {path}\"")
     r = subprocess.run(["flock", "-w", "3600", LOCK, "bash", "-c", "\n".join(nv_lines)],
                        capture_output=True, text=True, timeout=1800)
     for line in r.stdout.strip().splitlines():
         wall_s, path = line.split(" ", 1)
         wall_s = float(wall_s)
-        d = per_file[path]["video_s"]
+        d = min(per_file[path]["video_s"], SAMPLE_S)
         per_file[path]["full_1080p_nvdec"] = {
             "label": "full_1080p_nvdec", "wall_s": round(wall_s, 2),
             "video_s": d, "rtf": round(d / wall_s, 2)}
@@ -113,12 +116,13 @@ def main():
     disk_s = time.time() - t0
 
     src = mp4s[0]
-    t480 = "/tmp/scale_t480.mp4"
+    t480 = "eval/results/scale/_proxy/t480_sample.mp4"
     _, w1 = run(["taskset", "-c", "0", "ffmpeg", "-hide_banner", "-v", "error", "-y",
-                 "-threads", "1", "-i", src, "-vf", "scale=854:480",
+                 "-threads", "1", "-i", src, "-t", str(int(SAMPLE_S)),
+                 "-vf", "scale=854:480",
                  "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
                  "-an", t480])
-    d0 = per_file[src]["video_s"]
+    d0 = min(per_file[src]["video_s"], SAMPLE_S)
 
     gpu = subprocess.run(["nvidia-smi", "--query-gpu=name,driver_version,memory.total",
                           "--format=csv,noheader"], capture_output=True, text=True)
