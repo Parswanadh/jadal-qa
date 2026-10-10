@@ -1,6 +1,6 @@
 # STATUS — pod wave (lead agent)
 
-Updated: 2026-10-10 20:53 IST (15:23 UTC) · branch `pod/kit` (lead) · A40 pod
+Updated: 2026-10-10 21:12 IST (15:42 UTC) · branch `pod/kit` (lead) · A40 pod
 
 ## Environment (verified this session)
 - opencode v2.0.26; agents present: lead, experimenter, explorer, reviewer, tester, docs, infra.
@@ -27,11 +27,26 @@ Updated: 2026-10-10 20:53 IST (15:23 UTC) · branch `pod/kit` (lead) · A40 pod
 - GPU slot helper `tools/pod/gpu_run.sh`; artifact dirs under `/workspace/artifacts/`.
 
 ## Running
-- A1–A7 (headless workers, logs in `/workspace/logs/<name>.log`). At 20:52 IST all seven are writing files:
-  exp-mosaic 1, exp-fps-pod 10, exp-regimes-pod 12, exp-motion-cue 6, exp-domain-adapt 7, prwatch 7, pod-docs 12.
-- Lead tools added: `tools/pod/gpu_run.sh` (2 GPU slots), `tools/pod/union_registry.py`,
-  `tools/pod/collect_results.py` (reads result files; flags done-without-file).
-- `pod/base` reproduces the LOCO baseline 0.810 from the ported code (verified).
+- A1 exp-mosaic, A2 exp-fps-pod, A4 exp-motion-cue, A5 exp-domain-adapt; B1 exp-cost-model, B2 exp-rescore;
+  infra fix pass on `pod/prwatch` (reviewer findings I1/I2).
+- Done: A3 exp-regimes-pod, A6 prwatch (PR #81), A7 pod-docs (PR #82).
+
+## PRs open (mine)
+- #81 `pod/prwatch` — dispatcher + standard eval harness (`eval/standard/run_all.py` reproduces 0.810 / 0.848).
+  Reviewer verdict FAIL → I1 (triage/review agents were not registered in `.opencode/agents/`, so the always-on
+  tier would only post "_agent failed_") and I2 (always-on tier ran in the LIVE tree with `--auto` + edit/bash
+  allowed → the "read-only" claim was prompt-only). Fix pass running on the same branch.
+- #82 `docs/pod-docs` — env page (incl. the ~7.65-core cgroup quota correction), union registry tool, summary
+  skeleton. Reviewer FAIL → fixed here: cited the pod path for the 0.4-0.53 OOD figure (no in-repo file yet),
+  noted the summary table lags the registry, called out the RAM delta; removed the duplicate `union_registry.py`
+  from the lead branch so only the docs one ships.
+- #83 `feat/exp-regimes-pod` — E4.01-E4.04 (reviewer running).
+- #84/#85 `feat/exp-fps`, `feat/exp-temporal` — NOT ours: the human builder pushed branch-recovery commits at
+  21:03 IST ("save local work") with the same E1/E3 code that `pod/base` carries. Note the overlap.
+
+## Lead tools
+- `tools/pod/gpu_run.sh` (2 GPU slots), `tools/pod/collect_results.py` (reads result files; flags done-without-file).
+- `tools/pod/union_registry.py` — removed from the lead branch; canonical copy ships with PR #82.
 
 ## Next (batch B, after A reports)
 - E7 cost model; E8 re-score 1,546 Egocentric-10K windows into the PoC contract format (descriptive only);
