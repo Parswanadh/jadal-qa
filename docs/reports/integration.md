@@ -334,3 +334,80 @@ Hazard reproduced on pristine `origin/main` + signals (no round-2 code):
 the suite spews `moov atom not found` and hangs until the 150 s timeout
 kills it (exit 124) -- exactly the round-2 report's hazard; with this
 branch's fixes the same tree finishes in ~30 s.
+
+## Fix round 2 (rereview4)
+
+All four items fixed in owned files (`jadal/pipeline.py`,
+`jadal/service.py`, `jadal/stubs.py`, `scripts/gen_api_examples.py`,
+`docs/api_examples/`, `docs/API.md`, `tests/test_service.py`, this report).
+
+1. **Fail-closed thresholds** -- `thresholds_snapshot` raises the new
+   `pipeline.ThresholdsError` on a hash-mismatched (tampered/corrupt)
+   funnel thresholds file; only a missing file (nothing configured to
+   verify) or a missing funnel module keeps the documented Config-only
+   fallback. `run_batch` catches it per batch and closes review verdicts
+   with `evidence.check == "thresholds"` / value `"hash mismatch"` (never
+   an accept, never a silent fallback); the batch carries
+   `thresholds_error`, which `flush_site` records under `batch:<site>` in
+   `GET /ingest/errors`. `TestThresholdsFailClosed` covers tampered (raises
+   + review batch + recorded error), missing (Config-only, no raise) and
+   valid (enriched snapshot) files end to end through HTTP ingest.
+2. **Exact backoff** -- the flush schedule is now exactly 1, 2, 4, 8, 16 s
+   (`2**(failure-1)` after failures 1..5; `FLUSH_MAX_FAILURES=6` parks on
+   the 6th), matching the docs; `TestFlushCap` asserts the full sequence
+   `[1.0, 2.0, 4.0, 8.0, 16.0]` with a fake clock. A recovered site clears
+   its `batch:<site>` error (tested).
+3. **Fixtures for every endpoint** -- `scripts/gen_api_examples.py`
+   `build_examples()` exercises health, batches, batch_detail, receipt,
+   reverify, risk_coverage, sop_gaps, pico_status, ingest_errors and
+   batches_failed in stub mode with fixed clip bytes; committed under
+   `docs/api_examples/` (volatile timestamps dropped,
+   hashes/ids/impl-versions canonicalized to tokens with key presence and
+   list lengths pinned). `test_all_committed_examples_match_live_responses`
+   rebuilds all live and fails on any drift (`pico_status` pins shape only:
+   live Pico hardware on `/dev/ttyACM0` answers heartbeats, so its values
+   vary -- found while writing the test).
+4. **Signals trial green** -- fresh throwaway tree (no `data_runtime/`, no
+   models) merged with `origin/feat/signals`: first run showed their 20
+   `test_signals` errors (`mkdtemp(dir=data_runtime)` in a fresh checkout)
+   plus the known unowned funnel/democlips fresh-tree failures; polled
+   `git fetch` once and their fix `a731265` ("fresh-checkout tempdirs and
+   model skipUnless") had landed, merged it, full suite green (below). No
+   owned test/script writes under `data_runtime` without creating it first
+   (all use temp dirs; `demo.sh` mkdirs; verified by grep).
+
+Debugging note (worth keeping): the trial drift first failed on receipt
+`versions.signals_backend` even with `sys.modules` blocking active. Root
+cause: once the real `jadal.signals` is imported anywhere, the parent
+package keeps it as an attribute, and `from jadal import signals` (used by
+`impl_versions`) resolves through that attribute without consulting
+`sys.modules`. Fixed with `stubs.blocked_imports()` (clears both, restores
+both), used by the generator, the fake stacks and the blocked test, plus a
+regression test. Production code needs no change (no blocking there).
+
+Commands and REAL output tails:
+
+```sh
+$ timeout 150 make test
+# Ran 425 tests in 11.945s -- OK (skipped=3)
+# Ran 19 tests in 0.109s -- OK (web)
+
+$ timeout 150 python -m unittest tests.test_service tests.test_integration
+# Ran 86 tests in 5.270s -- OK (skipped=3)
+
+$ timeout 300 make demo
+# all receipts reverify MATCH (7/7, versions_match=True)
+# determinism: same clip 10x -> identical 2052f35308948842f...
+# determinism: alone vs batch-of-5 -> IDENTICAL receipt_sha256
+# batch latency: dock-to-batches wall time = 9.9s
+# demo OK
+
+$ # fresh signals trial (throwaway, removed after; signals @ a731265)
+$ python -m unittest discover -s tests
+# Ran 425 tests in 12.032s -- OK (skipped=3)
+$ python -m unittest discover -s web
+# Ran 19 tests in 0.127s -- OK
+```
+
+Owned 86/86 pass in both trees; the whole suite (425 + 19) is green both
+ways. No merge-gate blocker remains.
