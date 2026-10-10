@@ -1065,7 +1065,6 @@ function riskLegend() {
       '<span class="legend-item"><span class="legend-swatch"></span> error vs coverage</span>' +
       '<span class="legend-item"><span class="legend-swatch reject dashed"></span> error bound (exact binomial)</span>' +
       '<span class="legend-item"><span class="legend-swatch dashed"></span> target error</span>' +
-      '<span class="legend-item"><span class="legend-swatch"></span> higher coverage → left</span>' +
     '</div>');
 }
 
@@ -1109,7 +1108,7 @@ function riskChart(d) {
   }
   node('line', { x1: L, y1: T, x2: L, y2: T + ih, 'class': 'axis-line' });
   node('line', { x1: L, y1: T + ih, x2: L + iw, y2: T + ih, 'class': 'axis-line' });
-  node('text', { x: L + iw, y: T + ih + 18, 'text-anchor': 'end', 'class': 'label-t' }, 'coverage');
+  node('text', { x: L + iw / 2, y: T + ih + 18, 'text-anchor': 'middle', 'class': 'label-t' }, 'coverage');
   node('text', { x: L, y: T - 7, 'class': 'label-t' }, 'error');
 
   // area + curve
