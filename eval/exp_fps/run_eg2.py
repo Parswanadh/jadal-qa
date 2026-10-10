@@ -3,7 +3,10 @@
 F (150,21,768) fp16 at 0.5s spacing ~= 2fps. Subsample rows:
  2fps: all rows (counts-aware, recipe = ensemble_views_exploratory.py)
  1fps: rows ::2 ; 0.5fps: rows ::4
-LOCO C=0.01 + clip-bootstrap CI. Regen: jadal python eval/exp_fps/run_eg2.py
+Cache is the IndEgo human-segment set (ids g000..g149, IndEgo clips).
+LOCO C=0.01 + clip-bootstrap CI. No GPU, no re-embedding.
+Regen: PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/exp_fps/run_eg2.py
+(needs sweep shards from run_fps.py for the two-view block)
 """
 import json
 import os
@@ -12,13 +15,13 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
-from fps_lib import loco_proba, clip_bootstrap_ci, bal_acc
+from fps_lib import WT_ROOT, loco_proba, clip_bootstrap_ci, bal_acc
 
 from sklearn.metrics import roc_auc_score
 
 D = os.path.join(os.path.dirname(__file__), "..", "results", "exp_fps")
-z = np.load("/workspace/jadal_pod_bundle/caches/frames10k/segments.npz",
-            allow_pickle=True)
+z = np.load(os.path.join(WT_ROOT, "frames10k", "eval", "results", "frames10k",
+                         "human_segments", "segments.npz"), allow_pickle=True)
 ids = [str(i) for i in z["ids"]]
 clips = np.array([str(c) for c in z["clips"]])
 y = np.array(z["labels"]).astype(int)
@@ -81,7 +84,14 @@ res = {"experiment": "E1.02", "n": 150, "n_good": int(y.sum()),
        "protocol": "LOCO, L2-normalised mean embedding + StandardScaler + logistic C=0.01; CI=clip-bootstrap B=1000 seed0",
        "subsample_rule": "cached 0.5s-spacing rows; 2fps=all rows counts-aware, 1fps=rows ::2, 0.5fps=rows ::4; NO re-embed",
        "command": "eval/exp_fps/run_eg2.py",
-       "eg2_rows": rows, "two_view_prob_avg": ens_rows,
+       "eg2_rows": rows,
+       "claim_status": "descriptive only: no non-inferiority margin was pre-stated; "
+                       "CIs overlap across rows, so no fps setting is shown to be "
+                       "not worse than 2 fps",
+       "two_view_protocol": "mean of EG2 LOCO probability and pixel-view LOCO probability "
+                            "(26 features, C=0.3) at matching fps: 2fps<-pixel 2fps (step 5), "
+                            "1fps<-pixel 1fps (step 10); pixel sweep has no 0.5fps",
+       "two_view_prob_avg": ens_rows,
        "note_5_10fps": "pending GPU-lock re-embed (E1.02b)"}
 json.dump(res, open(os.path.join(D, "e1_02.json"), "w"), indent=1)
 for r in rows:
