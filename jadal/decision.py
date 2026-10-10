@@ -401,6 +401,7 @@ class Decider:
             "backbone": backbone,
             "heads": ",".join(parts),
             "heads_provenance": ",".join(provs) if provs else "missing",
+            "granularity": "per single frame",
             "step": "none" if sp is None else f"prototypes:{sp['sha256'][:16]}",
         }
 

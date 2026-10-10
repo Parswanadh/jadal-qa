@@ -28,16 +28,18 @@ NOT DONE:
 - Dev mode uses the first --dev-n frames round-robined across the three
   parquet files (NOT the fixed deduped manifests); its numbers are
   model-vs-model agreement on a convenience subset only.
-- One frame per segment here (parquet rows are frames); the Decider
-  mean-pools 4 frames per video segment at inference.
+- One frame per segment here (parquet rows are frames); the Decider embeds
+  each of its 4 sampled frames separately and averages per-frame logits.
 - STEP head is separate (IndEgo stretch goal).
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import io
 import json
 import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -122,40 +124,140 @@ def read_dev_rows(dev_n: int) -> list[dict]:
 
 
 def read_manifest_rows(manifest: Path) -> dict[str, list[dict]]:
-    """Read full train/calibration/test rows from a fixed splits manifest.
+    """Read rows for the MERGED splits manifest (frame_ids per split).
 
-    Supports manifests shaped as {"train": [...], "calibration": [...],
-    "test": [...]} where entries carry frame_id + file, or {"splits": {...}}.
-    Row pixels are re-read from the parquet files by frame_id.
+    Manifest shape: {"splits": {"train": {"frame_ids": [...]}, ...}} with
+    near-duplicate components kept whole (see eval harness). Labels + source
+    come from a metadata-only parquet scan (no images); image bytes are
+    fetched separately per split by fetch_split_rows (one at a time).
+    Returns {"rows": {split: [{frame_id, hand_count, active_labor, source}]},
+    "missing": {split: n_ids_not_found}}.
     """
     import pyarrow.parquet as pq
 
     spec = json.loads(manifest.read_text())
-    splits = spec.get("splits", spec)
-    by_id: dict[str, dict] = {}
+    groups = spec.get("splits", spec)
+    index: dict[str, dict] = {}
     for f in FILES:
+        source = Path(f).stem
+        pf = pq.ParquetFile(str(Path(DATA_DIR) / f))
+        for rg in range(pf.num_row_groups):
+            tbl = pf.read_row_groups([rg], columns=["frame_id", "hand_count", "active_labor"])
+            d = tbl.to_pydict()
+            for i in range(tbl.num_rows):
+                index[d["frame_id"][i]] = {
+                    "frame_id": d["frame_id"][i],
+                    "hand_count": int(d["hand_count"][i]),
+                    "active_labor": str(d["active_labor"][i]),
+                    "source": source,
+                }
+    rows: dict[str, list[dict]] = {}
+    missing: dict[str, int] = {}
+    for split in ("train", "calibration", "test"):
+        g = groups.get(split, {})
+        ids = g.get("frame_ids", g if isinstance(g, list) else [])
+        rows[split], miss = [], 0
+        for fid in ids:
+            if fid in index:
+                rows[split].append(index[fid])
+            else:
+                miss += 1
+        missing[split] = miss
+    return {"rows": rows, "missing": missing}
+
+
+SUBSAMPLE_SALT = "decider-subsample-v1"
+SUBSAMPLE_CAPS = {"train": 2000, "calibration": 500, "test": 500}  # per source
+
+
+def subsample_split(rows: list[dict], split: str, cap_per_source: int) -> list[dict]:
+    """Deterministic per-source cap: sha-order within source, take first cap."""
+    by_source: dict[str, list[dict]] = {}
+    for r in rows:
+        by_source.setdefault(r["source"], []).append(r)
+    out = []
+    for source in sorted(by_source):
+        ordered = sorted(by_source[source],
+                         key=lambda r: hashlib.sha256(
+                             f"{SUBSAMPLE_SALT}|{split}|{r['frame_id']}".encode()).hexdigest())
+        out.extend(ordered[:cap_per_source])
+    out.sort(key=lambda r: r["frame_id"])
+    return out
+
+
+def fetch_split_rows(wanted_ids: set[str]) -> list[dict]:
+    """Fetch image bytes for wanted frame_ids, one row at a time (small batches).
+
+    Never prints image bytes. Returns rows sorted by frame_id.
+    """
+    import pyarrow.parquet as pq
+
+    out: list[dict] = []
+    for f in FILES:
+        source = Path(f).stem
         pf = pq.ParquetFile(str(Path(DATA_DIR) / f))
         for rg in range(pf.num_row_groups):
             tbl = pf.read_row_groups([rg], columns=["frame_id", "image", "hand_count", "active_labor"])
             d = tbl.to_pydict()
             for i in range(tbl.num_rows):
-                by_id[d["frame_id"][i]] = {
-                    "frame_id": d["frame_id"][i],
-                    "bytes": bytes(d["image"][i]["bytes"]),
-                    "hand_count": int(d["hand_count"][i]),
-                    "active_labor": str(d["active_labor"][i]),
-                }
-    out: dict[str, list[dict]] = {}
-    for split in ("train", "calibration", "test"):
-        entries = splits.get(split, [])
-        rows = []
-        for e in entries:
-            fid = e.get("frame_id") if isinstance(e, dict) else e
-            if fid in by_id:
-                rows.append(by_id[fid])
-        rows.sort(key=lambda r: r["frame_id"])
-        out[split] = rows
+                if d["frame_id"][i] in wanted_ids:
+                    out.append({
+                        "frame_id": d["frame_id"][i],
+                        "bytes": bytes(d["image"][i]["bytes"]),
+                        "hand_count": int(d["hand_count"][i]),
+                        "active_labor": str(d["active_labor"][i]),
+                        "source": source,
+                    })
+    out.sort(key=lambda r: r["frame_id"])
     return out
+
+
+def codec_shift_check(model, rows: list[dict], cache_dir: Path, n: int = 100) -> dict:
+    """Codec-shift measurement (NOT an accuracy claim): embed the SAME n test
+    frames once JPEG-decoded (normal path) and once after an mp4 round-trip
+    (cv2.VideoWriter mp4v at original size, then re-read), report the cosine
+    similarity distribution between the two embeddings per frame."""
+    import cv2
+
+    sel = rows[:n]
+    sims: list[float] = []
+    for r in sel:
+        img = decision_mod.preprocess_pil(Image.open(io.BytesIO(r["bytes"])))
+        e_direct = _encode_frame(model, img)
+        raw = np.asarray(Image.open(io.BytesIO(r["bytes"])).convert("RGB"))
+        h, w = raw.shape[:2]
+        h2, w2 = h - (h % 2), w - (w % 2)  # mp4 needs even dims
+        raw = raw[:h2, :w2]
+        tmp = str(cache_dir / "_codec_tmp.mp4")
+        vw = cv2.VideoWriter(tmp, cv2.VideoWriter_fourcc(*"mp4v"), 10, (w2, h2))
+        try:
+            vw.write(cv2.cvtColor(raw, cv2.COLOR_RGB2BGR))
+        finally:
+            vw.release()
+        cap = cv2.VideoCapture(tmp)
+        try:
+            ok, back = cap.read()
+        finally:
+            cap.release()
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+        if not ok or back is None:
+            continue
+        img_rt = decision_mod.preprocess_bgr(back)
+        e_rt = _encode_frame(model, img_rt)
+        sims.append(float(e_direct @ e_rt / (np.linalg.norm(e_direct) * np.linalg.norm(e_rt))))
+    sims = np.asarray(sims, dtype=float)
+    return {
+        "n": int(len(sims)),
+        "note": ("codec-shift measurement only: cosine sim between JPEG-decoded and "
+                 "mp4-round-tripped embeddings of the same frames; not accuracy"),
+        "mean": round(float(sims.mean()), 4),
+        "min": round(float(sims.min()), 4),
+        "p5": round(float(np.percentile(sims, 5)), 4),
+        "p50": round(float(np.percentile(sims, 50)), 4),
+    }
 
 
 def _encode_frame(model, img) -> np.ndarray:
@@ -465,6 +567,22 @@ def cmd_step(args) -> int:
     return 0
 
 
+def _count_by_source(rows: list[dict]) -> dict:
+    out: dict[str, int] = {}
+    for r in rows:
+        out[r.get("source", "?")] = out.get(r.get("source", "?"), 0) + 1
+    return dict(sorted(out.items()))
+
+
+def _git_sha() -> str:
+    try:
+        import subprocess
+        return subprocess.run(["git", "rev-parse", "--short", "HEAD"],
+                              capture_output=True, text=True, timeout=10).stdout.strip()
+    except Exception:
+        return "unknown"
+
+
 def cmd_heads(args) -> int:
     """Hands/work heads (dev-subset or fixed-manifest mode).
 
@@ -486,12 +604,23 @@ def cmd_heads(args) -> int:
         splits = {"train": rows[:ntr], "calibration": rows[ntr:ntr + ncal], "test": rows[ntr + ncal:]}
         split_source = f"DEV_ONLY: first {args.dev_n} frames round-robined across 3 parquet files, sorted by frame_id, 60/20/20"
         provenance = decision_mod.DEV_PROVENANCE
+        n_per_split_per_source = {k: _count_by_source(v) for k, v in splits.items()}
     else:
         manifest = Path(args.splits)
-        splits = read_manifest_rows(manifest)
+        man = read_manifest_rows(manifest)
         msha = decision_mod.file_sha256(manifest)[:16]
         split_source = f"fixed manifest: {args.splits} (sha256:{msha})"
         provenance = f"full_splits:{msha}"
+        if man["missing"] != {"train": 0, "calibration": 0, "test": 0}:
+            print(f"WARNING manifest ids missing from parquet: {man['missing']}", flush=True)
+        splits = {}
+        n_per_split_per_source = {}
+        for split in ("train", "calibration", "test"):
+            full = man["rows"][split]
+            n_per_split_per_source[split] = {"manifest": _count_by_source(full)}
+            sub = subsample_split(full, split, SUBSAMPLE_CAPS[split])
+            n_per_split_per_source[split]["subsampled"] = _count_by_source(sub)
+            splits[split] = fetch_split_rows({r["frame_id"] for r in sub})
     print(f"train/cal/test: {[len(splits[k]) for k in ('train', 'calibration', 'test')]} ({split_source})", flush=True)
 
     # GPU only if the embedding cache misses (retrains are CPU-only).
@@ -511,10 +640,23 @@ def cmd_heads(args) -> int:
         "mode": "DEV_ONLY" if dev_mode else "full",
         "split_source": split_source,
         "provenance": provenance,
+        "n_per_split_per_source": n_per_split_per_source,
+        "subsample": None if dev_mode else {
+            "salt": SUBSAMPLE_SALT, "caps_per_source": SUBSAMPLE_CAPS,
+            "method": "sha-order within source, take first cap (deterministic)"},
+        "label_source": "gemini-2.5-flash (not human-checked)",
         "label_caveat": LABEL_CAVEAT,
         "label_caveat_long": LABEL_CAVEAT_LONG,
+        "granularity": "per single frame",
+        "granularity_note": ("heads trained/calibrated/evaluated on SINGLE frames; "
+                             "serving averages the per-frame logits of 4 frames, so these "
+                             "numbers describe per-frame performance, not Decider output; "
+                             "a labelled multi-frame check is not possible (no labels)"),
         "backbone": f"embeddinggemma2:budget={BUDGET}:bfloat16",
+        "backbone_id": decision_mod.backbone_id(decision_mod.EG2_DIR),
         "seed": SEED,
+        "git_sha": _git_sha(),
+        "command": " ".join(["python", "eval/train_heads.py"] + sys.argv[1:]),
         "heads": {},
     }
     for name, y, fname in (("hands_ok", y_hands, decision_mod.HANDS_HEAD),
@@ -548,6 +690,11 @@ def cmd_heads(args) -> int:
         }
         print(f"{name}: T={T_cal:.4f} cal_acc={cal['accuracy']} cal_ece={cal['ece']} "
               f"test_acc={tst['accuracy']} test_ece={tst['ece']} bound={held}", flush=True)
+
+    if not dev_mode:
+        # Codec-shift measurement on the first 100 TEST frames (label-free).
+        results["codec_shift"] = codec_shift_check(model, splits["test"], cache_dir, n=100)
+        print(f"codec_shift: {results['codec_shift']}", flush=True)
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

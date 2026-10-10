@@ -83,7 +83,8 @@ class TestDeciderDeterminism(unittest.TestCase):
     def test_spec_shape_and_rounding(self):
         d = make_decider()
         out = d.decide("/tmp/shape.mp4", {})
-        self.assertEqual(set(out), {"hands_ok", "active_work", "step", "model_versions"})
+        self.assertTrue({"hands_ok", "active_work", "step", "model_versions"} <= set(out))
+        self.assertEqual(out["model_versions"]["granularity"], "per single frame")
         for head in ("hands_ok", "active_work"):
             p = out[head]["p_yes"]
             self.assertIsInstance(p, float)

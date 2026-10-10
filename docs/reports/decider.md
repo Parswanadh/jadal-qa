@@ -149,20 +149,84 @@ CPU:  Ran 11 tests in 1.930s — OK (skipped=1)
 GPU (JADAL_TEST_GPU=1): Ran 11 tests in 39.270s — OK (C1 backbone test passed, cache disabled)
 ```
 
-### Gaps / NOT DONE
+## Fix round 2 (full-split retrain + disclosures)
 
-- Full-split retrain NOT DONE: the fixed manifests (PR #16, near-duplicate
-  component split) have not merged to `origin/main` (checked 2026-10-10;
-  fix exists only on `origin/feat/evalharness`, which must not be trusted).
-  One command once they land:
+Caveats first: **labels by gemini-2.5-flash, NOT human-checked** — all
+accuracy/ECE numbers are model-vs-model agreement. **Granularity: per single
+frame** (see N1). STEP numbers are not accuracy claims (N=5 / N=2).
+
+Retrain ran under `flock -w 1800 tools/gpu.lock` (repo-root lock file):
 
 ```bash
-PYTHONNOUSERSITE=1 PYTHONPATH=. /home/parshu/envs/jadal/bin/python eval/train_heads.py --splits eval/results/splits.json --out eval/results/decider_baseline.json
+flock -w 1800 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock env \
+  PYTHONNOUSERSITE=1 PYTHONPATH=. /home/parshu/envs/jadal/bin/python \
+  eval/train_heads.py --splits eval/results/splits.json \
+  --out eval/results/decider_baseline.json
 ```
 
-  (add `--splits eval/results/splits_cal.json` variant name as merged).
-  Heads retrained that way carry `full_splits:<sha>` provenance and load
-  without `JADAL_ALLOW_DEV_HEADS=1`.
-- No threshold certified on the dev calibration split (N=300, target_err
-  0.05) — expect change with the full calibration split.
-- STEP cross-clip 2/5 (N=5); proposals needing other owners: none.
+Manifest `eval/results/splits.json` (sha256:a315553177948a74, near-duplicate
+components kept whole): train 21001 (7001/7001/6999 per source),
+calibration 4501, test 4498. Deterministic sha-order subsample
+(salt `decider-subsample-v1`): train 2000/source (6000), calibration
+500/source (1500), test 500/source (1500). Heads trained on TRAIN only;
+temperature + threshold on CALIBRATION only (`jadal.certify`);
+metrics + exact-binomial bound on TEST only.
+
+Tables below were GENERATED from `eval/results/decider_baseline.json`
+(no hand-copied numbers):
+
+| head | split | n | acc | ECE | T |
+|---|---|---|---|---|---|
+| hands_ok | calibration | 1500 | 0.9467 | 0.0100 | 0.6237 |
+| hands_ok | test | 1500 | 0.9500 | 0.0097 | 0.6237 |
+| active_work | calibration | 1500 | 0.9200 | 0.0121 | 0.7245 |
+| active_work | test | 1500 | 0.9153 | 0.0160 | 0.7245 |
+
+| head | cal threshold | test accepted | test errors | error upper bound (1-delta, delta=0.1) |
+|---|---|---|---|---|
+| hands_ok | None | 0 | 0 | None |
+| active_work | None | 0 | 0 | None |
+
+No threshold certified at target_err 0.05 on N=1500 calibration (per-frame
+error ~5-8% is at the target boundary, so the Clopper-Pearson upper bound
+exceeds it) — bound fields are None, stated as-is.
+Heads now carry provenance `full_splits:a315553177948a74` (in
+`model_versions.heads_provenance`, replacing DEV_ONLY) and load without
+`JADAL_ALLOW_DEV_HEADS=1` (verified).
+
+### N1 — unit mismatch (disclosed)
+
+Heads are trained/calibrated on SINGLE frames but serving averages the
+per-frame logits of 4 frames: the accuracy/ECE/bound above are per-frame
+numbers. `model_versions` carries `granularity: per single frame` and the
+JSON carries `granularity` + `granularity_note`. A test-time multi-frame
+check from IndEgo segments is NOT possible (no labels there) — stated
+plainly instead of measured badly.
+
+### N2 — still-image vs MP4 domain gap (disclosed + measured)
+
+Training frames are parquet stills; serving frames are cv2 MP4 decodes.
+Cheap label-free measurement on the first 100 TEST frames (same frame,
+JPEG-decoded vs mp4 round-trip through cv2.VideoWriter mp4v, cosine sim of
+the two embeddings — codec shift only, NOT accuracy):
+
+```text
+codec_shift n=100: mean=0.9913 min=0.9762 p5=0.9844 p50=0.9923
+```
+
+Embeddings are near-identical (mean cos-sim 0.9913), so the codec gap looks
+small on this probe — but it is one probe, not a guarantee.
+
+### Tests (fix round 2)
+
+```text
+CPU:  Ran 11 tests — OK (skipped=1)
+GPU (JADAL_TEST_GPU=1, under flock): Ran 11 tests — OK
+```
+
+### Gaps / NOT DONE
+
+- No certified accept threshold yet (see bound table above).
+- STEP cross-clip 2/5 (N=5), LOO 1/2 (N=2); step T=1.0 edge fallback.
+- No Laya fusion (not required for this baseline).
+- Proposals needing other owners: none.
