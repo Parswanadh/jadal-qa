@@ -21,7 +21,12 @@ import subprocess
 import sys
 
 import numpy as np
-import pytest
+import unittest
+
+try:
+    import pytest
+except ImportError:  # these modules are pytest-style; `unittest discover` (the merge gate env) has no pytest
+    raise unittest.SkipTest("pytest not installed: run these with `python -m pytest tests/test_ood_frozen_guard.py`")
 
 REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 RUNNER = os.path.join(REPO_ROOT, "eval", "exp_ood", "run_ood_frozen.py")
