@@ -1,9 +1,9 @@
 {
   "backbone": "embeddinggemma2:budget=140:bfloat16",
-  "created_utc": "2026-10-10T06:20:13+00:00",
+  "created_utc": "2026-10-10T06:43:25+00:00",
   "cross_clip_detail": [
     {
-      "pred": "08_attach_power_connection",
+      "pred": "11_attach_zip_ties",
       "step": "08_attach_power_connection"
     },
     {
@@ -15,11 +15,11 @@
       "step": "12_plug_in"
     },
     {
-      "pred": "10_attach_wooden_plate",
+      "pred": "14_turn_on",
       "step": "13_attach_monitor"
     },
     {
-      "pred": "10_attach_wooden_plate",
+      "pred": "14_turn_on",
       "step": "14_turn_on"
     }
   ],
@@ -27,12 +27,23 @@
   "cross_clip_segment_accuracy": 0.4,
   "loo_n": 2,
   "loo_note": "only multi-segment steps are LOO-evaluable (13/14 train steps are singletons)",
-  "loo_train_clip_segment_accuracy": 1.0,
+  "loo_train_clip_segment_accuracy": 0.5,
   "mode": "step_prototypes",
   "proto_file": "decider_step_prototypes.npz",
-  "proto_sha256": "d8796254ceff0198973911f4c18fa83ea5f176d63e0488cd1c07c46c4960be83",
+  "proto_sha256": "dbf6b5ca8e480e5fe04bb44ec4f9128a60e0abe91a98cb0143055e27cec30e07",
   "seed": 1234,
-  "temperature": 0.02,
+  "temperature": 1.0,
+  "temperature_grid": [
+    0.005,
+    0.01,
+    0.02,
+    0.05,
+    0.1,
+    0.2,
+    0.5,
+    1.0
+  ],
+  "temperature_note": "edge_fallback_to_1(grid_best=0.005)",
   "test_clip": "User_1_412_2010_3_480.mp4",
   "train_clip": "User_15_410_0411_2_480.mp4",
   "train_segments": 15,

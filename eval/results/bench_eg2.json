@@ -1,40 +1,91 @@
 {
-  "created_utc": "2026-10-10T06:12:59+00:00",
+  "created_utc": "2026-10-10T06:38:56+00:00",
   "device": "NVIDIA GeForce RTX 4070 Laptop GPU",
+  "frames": [
+    {
+      "file": "ego4d.parquet",
+      "frame_id": "0011afa3-424a-4719-88a3-30fdf9eaa125",
+      "size": [
+        512,
+        288
+      ]
+    },
+    {
+      "file": "ego4d.parquet",
+      "frame_id": "001859e3-e7a9-4fd5-ba37-388c75974e64",
+      "size": [
+        512,
+        384
+      ]
+    },
+    {
+      "file": "egocentric_10k.parquet",
+      "frame_id": "00059401-1b67-4f87-a11e-236e81a0dfa4",
+      "size": [
+        512,
+        288
+      ]
+    },
+    {
+      "file": "egocentric_10k.parquet",
+      "frame_id": "0017a89b-d4c7-4d57-a180-1bc9fe037141",
+      "size": [
+        512,
+        288
+      ]
+    },
+    {
+      "file": "epic_kitchens.parquet",
+      "frame_id": "00016cd7-497c-4fa5-af39-84d289a3df7f",
+      "size": [
+        512,
+        288
+      ]
+    },
+    {
+      "file": "epic_kitchens.parquet",
+      "frame_id": "000962d6-f6b7-4d48-aa7b-22cd6ce2f5bb",
+      "size": [
+        512,
+        288
+      ]
+    }
+  ],
+  "frames_note": "real eval-parquet frames (first 2 frame_ids per file, sorted), preprocessing byte-identical to serving (jadal.decision.preprocess_pil); no labels used",
   "go_nogo_140": "GO",
   "go_nogo_threshold_s_per_frame": 1.0,
-  "median_s_per_frame_at_140": 0.0676,
+  "median_s_per_frame_at_140": 0.0623,
   "model_dir": "/home/parshu/projects/awing/data/eg2",
-  "notes": "Synthetic deterministic frames; image-only; bfloat16; batch size 1; per-call processing_kwargs image.max_soft_tokens sets the vision budget.",
+  "notes": "Real-frame image-only embeddings; bfloat16; batch size 1; per-call processing_kwargs image.max_soft_tokens sets the vision budget.",
   "per_budget": [
     {
       "batch1_vs_batch5_bit_equal": false,
-      "batch1_vs_batch5_max_abs_diff": 0.001953125,
+      "batch1_vs_batch5_max_abs_diff": 0.002685546875,
       "budget": 70,
-      "median_s_per_frame": 0.0561,
+      "median_s_per_frame": 0.057,
       "n_timed": 20,
       "n_warmup": 5,
-      "p95_s_per_frame": 0.0689,
+      "p95_s_per_frame": 0.1262,
       "peak_vram_mb_batch1": 1458.5
     },
     {
       "batch1_vs_batch5_bit_equal": false,
-      "batch1_vs_batch5_max_abs_diff": 0.0009765625,
+      "batch1_vs_batch5_max_abs_diff": 0.002899169921875,
       "budget": 140,
-      "median_s_per_frame": 0.0676,
+      "median_s_per_frame": 0.0623,
       "n_timed": 20,
       "n_warmup": 5,
-      "p95_s_per_frame": 0.1107,
+      "p95_s_per_frame": 0.0897,
       "peak_vram_mb_batch1": 1476.8
     },
     {
       "batch1_vs_batch5_bit_equal": false,
       "batch1_vs_batch5_max_abs_diff": 0.001953125,
       "budget": 280,
-      "median_s_per_frame": 0.0941,
+      "median_s_per_frame": 0.0929,
       "n_timed": 20,
       "n_warmup": 5,
-      "p95_s_per_frame": 0.1028,
+      "p95_s_per_frame": 0.0943,
       "peak_vram_mb_batch1": 1514.7
     }
   ],

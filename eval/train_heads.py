@@ -35,7 +35,6 @@ NOT DONE:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import io
 import json
 import os
@@ -53,8 +52,10 @@ DATA_DIR = "/home/parshu/projects/awing/data/ego10k_eval"
 FILES = ("ego4d.parquet", "egocentric_10k.parquet", "epic_kitchens.parquet")
 SEED = 1234
 BUDGET = 140
-THUMB = 512
 LABEL_CAVEAT = "labels by gemini-2.5-flash, not human-checked"
+LABEL_CAVEAT_LONG = ("hand_count / active_labor labels were produced by gemini-2.5-flash "
+                     "auto-labelling and were NOT human-checked: every accuracy / calibration "
+                     "number here is model-vs-model agreement, not ground-truth performance.")
 
 INDEGO_DIR = "/home/parshu/projects/awing/data/indego"
 INDEGO_CLIPS = {
@@ -67,7 +68,6 @@ INDEGO_CLIPS = {
         f"{INDEGO_DIR}/1_Assembly/annotated_keysteps_assembly_disassembly/AS_User_1_412_2010_3.json",
     ),
 }
-STEP_FRAMES_PER_SEG = 5
 STEP_TRAIN_CLIP = "User_15_410_0411_2_480.mp4"  # 15 segments / 14 steps
 STEP_TEST_CLIP = "User_1_412_2010_3_480.mp4"    # 5 segments (late steps)
 
@@ -158,29 +158,61 @@ def read_manifest_rows(manifest: Path) -> dict[str, list[dict]]:
     return out
 
 
+def _encode_frame(model, img) -> np.ndarray:
+    with torch.inference_mode():
+        e = model.encode(
+            img, batch_size=1, show_progress_bar=False,
+            convert_to_numpy=True, normalize_embeddings=True,
+            processing_kwargs={"image": {"max_soft_tokens": BUDGET}},
+        )
+    return np.asarray(e, dtype=np.float64).reshape(-1)
+
+
+def _cached_key(png_bytes: bytes) -> str:
+    return decision_mod.frame_cache_key(
+        png_bytes, backbone=decision_mod.backbone_id(decision_mod.EG2_DIR),
+        budget=BUDGET)
+
+
 def embed_rows(model, rows: list[dict], cache_dir: Path) -> np.ndarray:
+    """Embed rows with the SHARED serving preprocessing (no train/serve skew).
+
+    Preprocessing (thumbnail) is byte-identical to serving: the cache key is
+    computed over the preprocessed PNG bytes plus backbone id and budget, so a
+    cache hit returns exactly what serving would compute.
+    """
     cache_dir.mkdir(parents=True, exist_ok=True)
+    # preprocess everything first (CPU-only); keys known before any GPU use
+    items: list[tuple[str, Image.Image]] = []
+    for r in rows:
+        img = decision_mod.preprocess_pil(Image.open(io.BytesIO(r["bytes"])))
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        items.append((_cached_key(buf.getvalue()), img))
     embs: list[np.ndarray] = []
-    for k, r in enumerate(rows):
-        key = hashlib.sha256(r["bytes"]).hexdigest()
+    for k, (key, img) in enumerate(items):
         hit = cache_dir / f"{key}.npy"
         if hit.exists():
             embs.append(np.load(str(hit)))
             continue
-        img = Image.open(io.BytesIO(r["bytes"])).convert("RGB")
-        img.thumbnail((THUMB, THUMB), Image.BILINEAR)
-        with torch.inference_mode():
-            e = model.encode(
-                img, batch_size=1, show_progress_bar=False,
-                convert_to_numpy=True, normalize_embeddings=True,
-                processing_kwargs={"image": {"max_soft_tokens": BUDGET}},
-            )
-        e = np.asarray(e, dtype=np.float64).reshape(-1)
+        if model is None:
+            raise RuntimeError("embedding cache miss with model=None (GPU needed)")
+        e = _encode_frame(model, img)
         np.save(str(hit), e)
         embs.append(e)
         if (k + 1) % 200 == 0:
-            print(f"  embedded {k + 1}/{len(rows)}", flush=True)
+            print(f"  embedded {k + 1}/{len(items)}", flush=True)
     return np.stack(embs, axis=0)
+
+
+def cache_complete(rows: list[dict], cache_dir: Path) -> bool:
+    for r in rows:
+        img = decision_mod.preprocess_pil(Image.open(io.BytesIO(r["bytes"])))
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        if not (cache_dir / f"{_cached_key(buf.getvalue())}.npy").exists():
+            return False
+    return True
 
 
 def train_head(Xtr: np.ndarray, ytr: np.ndarray) -> tuple[np.ndarray, float]:
@@ -191,23 +223,40 @@ def train_head(Xtr: np.ndarray, ytr: np.ndarray) -> tuple[np.ndarray, float]:
     return clf.coef_.reshape(-1), float(clf.intercept_[0])
 
 
-def eval_head(coef, intercept, X, y, target_err=0.05, delta=0.1) -> dict:
-    logits = X @ coef + intercept
-    logits2 = np.stack([-logits / 2.0, logits / 2.0], axis=1)
-    T = certify_mod.fit_temperature(logits2, y)
-    probs = 1.0 / (1.0 + np.exp(-logits / T))
+def fit_temperature_binary(logits: np.ndarray, y: np.ndarray) -> float:
+    """Single temperature on 1-D logits (2-class wrapper, deterministic)."""
+    logits2 = np.stack([-np.asarray(logits, dtype=float) / 2.0,
+                        np.asarray(logits, dtype=float) / 2.0], axis=1)
+    return certify_mod.fit_temperature(logits2, np.asarray(y))
+
+
+def probs_with_T(coef, intercept, T: float, X: np.ndarray) -> np.ndarray:
+    logits = np.asarray(X, dtype=np.float64) @ np.asarray(coef, dtype=np.float64) + float(intercept)
+    return 1.0 / (1.0 + np.exp(-logits / float(T)))
+
+
+def metrics_with_T(coef, intercept, T: float, X: np.ndarray, y: np.ndarray,
+                   target_err=0.05, delta=0.1, pick=True) -> dict:
+    """Accuracy/ECE/confusion at a GIVEN temperature (never fits on this split)."""
+    y = np.asarray(y)
+    probs = probs_with_T(coef, intercept, T, X)
     pred = (probs >= 0.5).astype(int)
-    acc = float((pred == y).mean())
-    ece = certify_mod.ece(probs, y)
     conf = np.maximum(probs, 1.0 - probs)
-    correct = (pred == y)
-    pick = certify_mod.pick_threshold(conf, correct, target_err=target_err, delta=delta)
-    return {
-        "n": int(len(y)), "accuracy": round(acc, 4), "ece": round(float(ece), 4),
+    out = {
+        "n": int(len(y)),
+        "accuracy": round(float((pred == y).mean()), 4),
+        "ece": round(float(certify_mod.ece(probs, y)), 4),
         "temperature": round(float(T), 4),
-        "threshold_pick": {k: (round(float(v), 4) if isinstance(v, float) else v) for k, v in pick.items()},
         "probs_mean": round(float(probs.mean()), 4),
     }
+    if pick:
+        threshold = certify_mod.pick_threshold(conf, (pred == y), target_err=target_err, delta=delta)
+        out["threshold_pick"] = {k: (round(float(v), 4) if isinstance(v, float) else v)
+                                 for k, v in threshold.items()}
+    else:
+        out["conf"] = conf
+        out["pred"] = pred
+    return out
 
 
 def main() -> int:
@@ -245,8 +294,15 @@ def parse_via_segments(ann_path: str) -> list[dict]:
 
 
 def sample_segment_frames(clip_path: str, start_s: float, end_s: float,
-                          k: int = STEP_FRAMES_PER_SEG) -> list[np.ndarray]:
-    """Fixed-fraction BGR frames from [start_s, end_s] (OpenCV)."""
+                          n: int = decision_mod.N_FRAMES,
+                          fractions: tuple = decision_mod.FRAME_FRACTIONS) -> list[np.ndarray]:
+    """Same fixed-fraction sampling as serving: fractions of [start_s, end_s].
+
+    Serving samples fractions of the whole clip; training samples the same
+    fractions of each annotated step segment, with the same per-frame
+    preprocessing (decision_mod.preprocess_bgr) and the same segment pooling
+    (mean of frame embeddings, renormalised) — no sampling skew (I6).
+    """
     import cv2
 
     cap = cv2.VideoCapture(clip_path)
@@ -256,8 +312,8 @@ def sample_segment_frames(clip_path: str, start_s: float, end_s: float,
         fps = cap.get(cv2.CAP_PROP_FPS) or 10.0
         total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
         out = []
-        for i in range(k):
-            t = start_s + (end_s - start_s) * (i + 0.5) / k
+        for f in fractions[:n]:
+            t = start_s + (end_s - start_s) * f
             idx = min(max(int(t * fps), 0), max(total - 1, 0))
             cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
             ok, frame = cap.read()
@@ -269,33 +325,36 @@ def sample_segment_frames(clip_path: str, start_s: float, end_s: float,
 
 
 def embed_pil_frames(model, imgs: list[Image.Image], cache_dir: Path) -> np.ndarray:
+    """Embed preprocessed PIL frames (callers apply decision_mod.preprocess_* first)."""
     embs = []
     for img in imgs:
         buf = io.BytesIO()
         img.save(buf, format="PNG")
-        key = hashlib.sha256(buf.getvalue()).hexdigest()
+        key = _cached_key(buf.getvalue())
         hit = cache_dir / f"{key}.npy"
         if hit.exists():
             embs.append(np.load(str(hit)))
             continue
-        with torch.inference_mode():
-            e = model.encode(
-                img, batch_size=1, show_progress_bar=False,
-                convert_to_numpy=True, normalize_embeddings=True,
-                processing_kwargs={"image": {"max_soft_tokens": BUDGET}},
-            )
-        e = np.asarray(e, dtype=np.float64).reshape(-1)
+        if model is None:
+            raise RuntimeError("embedding cache miss with model=None (GPU needed)")
+        e = _encode_frame(model, img)
         np.save(str(hit), e)
         embs.append(e)
     return np.stack(embs, axis=0)
 
 
 def cmd_step(args) -> int:
-    """IndEgo ECU STEP head: prototypes on train clip, segment accuracy held-out."""
-    import cv2  # noqa: F401  (ensures the dependency is present)
+    """IndEgo ECU STEP head: prototypes on train clip, segment accuracy held-out.
 
+    Sampling/preprocessing/pooling are byte-identical to serving (I6); the
+    temperature grid is wide and falls back to T=1 with a note on edge
+    solutions. N is stated; no step-accuracy claims are made.
+    """
+    repo_root = Path(__file__).resolve().parent.parent
     heads_dir = Path(args.heads_dir)
-    cache_dir = Path("models/.embed_cache_indego")
+    if not heads_dir.is_absolute():
+        heads_dir = repo_root / heads_dir
+    cache_dir = repo_root / "models" / ".embed_cache_indego"
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     clips: dict[str, list[dict]] = {}
@@ -309,14 +368,13 @@ def cmd_step(args) -> int:
     test_segs = clips[STEP_TEST_CLIP]
 
     model = load_model()
-    from PIL import Image as PILImage
 
     def seg_embedding(seg: dict) -> np.ndarray:
+        # Same recipe as Decider.decide: per-frame shared preprocessing,
+        # mean-pool, renormalise.
         clip_path = INDEGO_CLIPS[seg["clip"]][0]
         frames = sample_segment_frames(clip_path, seg["start_s"], seg["end_s"])
-        imgs = [PILImage.fromarray(cv2.cvtColor(f, cv2.COLOR_BGR2RGB)) for f in frames]
-        for im in imgs:
-            im.thumbnail((THUMB, THUMB), PILImage.BILINEAR)
+        imgs = [decision_mod.preprocess_bgr(f) for f in frames]
         E = embed_pil_frames(model, imgs, cache_dir)
         m = E.mean(axis=0)
         return m / (np.linalg.norm(m) or 1.0)
@@ -334,10 +392,12 @@ def cmd_step(args) -> int:
         pred = [classes[int(i)] for i in sims.argmax(axis=1)]
         return float(np.mean([p == t for p, t in zip(pred, y)])), pred
 
-    # temperature: deterministic grid fit on TRAIN segments (NLL of softmax sims/T)
-    best_T, best_nll = 0.05, float("inf")
+    # temperature: deterministic grid fit on TRAIN segments (NLL of softmax sims/T).
+    # Wide grid; an edge solution falls back to T=1 with a note (no edge solutions kept).
+    T_GRID = (0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0)
+    best_T, best_nll = T_GRID[0], float("inf")
     str_sims = (Xtr @ proto.T)
-    for T in (0.02, 0.05, 0.1, 0.2):
+    for T in T_GRID:
         sc = str_sims / T
         sc = sc - sc.max(axis=1, keepdims=True)
         logp = sc - np.log(np.exp(sc).sum(axis=1, keepdims=True))
@@ -345,6 +405,9 @@ def cmd_step(args) -> int:
         nll = float(-logp[np.arange(len(ytr)), idx].mean())
         if nll < best_nll:
             best_T, best_nll = T, nll
+    t_note = "grid_best"
+    if best_T in (T_GRID[0], T_GRID[-1]):
+        best_T, t_note = 1.0, f"edge_fallback_to_1(grid_best={best_T})"
 
     cross_acc, cross_pred = accuracy(Xte, yte, proto, steps)
     # leave-one-segment-out within the train clip. Only segments whose step
@@ -368,7 +431,9 @@ def cmd_step(args) -> int:
 
     sha = decision_mod.save_step_prototypes(
         heads_dir / decision_mod.STEP_PROTO, steps=steps,
-        prototypes=proto, temperature=best_T)
+        prototypes=proto, temperature=best_T,
+        meta={"provenance": "indego_ecu", "temperature_note": t_note,
+              "sampling": f"n={decision_mod.N_FRAMES}:fractions={list(decision_mod.FRAME_FRACTIONS)}"})
     results = {
         "created_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "mode": "step_prototypes",
@@ -384,6 +449,8 @@ def cmd_step(args) -> int:
         "loo_n": loo_n,
         "loo_note": "only multi-segment steps are LOO-evaluable (13/14 train steps are singletons)",
         "temperature": best_T,
+        "temperature_note": t_note,
+        "temperature_grid": list(T_GRID),
         "proto_file": decision_mod.STEP_PROTO,
         "proto_sha256": sha,
         "backbone": f"embeddinggemma2:budget={BUDGET}:bfloat16",
@@ -399,8 +466,18 @@ def cmd_step(args) -> int:
 
 
 def cmd_heads(args) -> int:
-    """Hands/work heads (dev-subset or fixed-manifest mode)."""
+    """Hands/work heads (dev-subset or fixed-manifest mode).
+
+    Temperature is fitted on CALIBRATION only; TEST is untouched until the
+    final report below (I3). Threshold picked on calibration, bound on test.
+    """
+    repo_root = Path(__file__).resolve().parent.parent
     heads_dir = Path(args.heads_dir)
+    if not heads_dir.is_absolute():
+        heads_dir = repo_root / heads_dir
+    cache_dir = Path(args.cache_dir)
+    if not cache_dir.is_absolute():
+        cache_dir = repo_root / cache_dir
     dev_mode = args.splits is None
     if dev_mode:
         rows = read_dev_rows(args.dev_n)
@@ -408,13 +485,19 @@ def cmd_heads(args) -> int:
         ntr, ncal = int(0.6 * n), int(0.2 * n)
         splits = {"train": rows[:ntr], "calibration": rows[ntr:ntr + ncal], "test": rows[ntr + ncal:]}
         split_source = f"DEV_ONLY: first {args.dev_n} frames round-robined across 3 parquet files, sorted by frame_id, 60/20/20"
+        provenance = decision_mod.DEV_PROVENANCE
     else:
-        splits = read_manifest_rows(Path(args.splits))
-        split_source = f"fixed manifest: {args.splits}"
+        manifest = Path(args.splits)
+        splits = read_manifest_rows(manifest)
+        msha = decision_mod.file_sha256(manifest)[:16]
+        split_source = f"fixed manifest: {args.splits} (sha256:{msha})"
+        provenance = f"full_splits:{msha}"
     print(f"train/cal/test: {[len(splits[k]) for k in ('train', 'calibration', 'test')]} ({split_source})", flush=True)
 
-    model = load_model()
-    cache_dir = Path(args.cache_dir)
+    # GPU only if the embedding cache misses (retrains are CPU-only).
+    all_rows = splits["train"] + splits["calibration"] + splits["test"]
+    model = None if cache_complete(all_rows, cache_dir) else load_model()
+    print("embedding cache complete; no GPU needed" if model is None else "embedding cache miss; loading backbone", flush=True)
     X: dict[str, np.ndarray] = {}
     for split in ("train", "calibration", "test"):
         print(f"embedding {split} ({len(splits[split])} frames)...", flush=True)
@@ -427,7 +510,9 @@ def cmd_heads(args) -> int:
         "created_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "mode": "DEV_ONLY" if dev_mode else "full",
         "split_source": split_source,
+        "provenance": provenance,
         "label_caveat": LABEL_CAVEAT,
+        "label_caveat_long": LABEL_CAVEAT_LONG,
         "backbone": f"embeddinggemma2:budget={BUDGET}:bfloat16",
         "seed": SEED,
         "heads": {},
@@ -435,18 +520,16 @@ def cmd_heads(args) -> int:
     for name, y, fname in (("hands_ok", y_hands, decision_mod.HANDS_HEAD),
                            ("active_work", y_work, decision_mod.WORK_HEAD)):
         coef, b = train_head(X["train"], y["train"])
-        # temperature fit on CALIBRATION, metrics on CALIBRATION + held-out TEST
-        cal = eval_head(coef, b, X["calibration"], y["calibration"])
-        test = eval_head(coef, b, X["test"], y["test"])
-        # certified bound on TEST at the CALIBRATION-chosen threshold
+        # Temperature fitted on CALIBRATION ONLY; test split untouched.
+        T_cal = fit_temperature_binary(X["calibration"] @ coef + b, y["calibration"])
+        cal = metrics_with_T(coef, b, T_cal, X["calibration"], y["calibration"])
+        tst = metrics_with_T(coef, b, T_cal, X["test"], y["test"], pick=False)
+        conf_t, pred_t = tst.pop("conf"), tst.pop("pred")
+        # threshold chosen on CALIBRATION, bound estimated on held-out TEST.
         thr = cal["threshold_pick"]["threshold"]
-        logits_t = X["test"] @ coef + b
-        probs_t = 1.0 / (1.0 + np.exp(-logits_t / cal["temperature"]))
-        pred_t = (probs_t >= 0.5).astype(int)
         if thr is None:
             held = {"threshold": None, "accepted": 0, "errors": 0, "upper_bound": None}
         else:
-            conf_t = np.maximum(probs_t, 1.0 - probs_t)
             mask = conf_t >= thr
             errs = int((pred_t[mask] != y["test"][mask]).sum())
             acc_n = int(mask.sum())
@@ -454,15 +537,17 @@ def cmd_heads(args) -> int:
             held = {"threshold": round(float(thr), 4), "accepted": acc_n, "errors": errs,
                     "upper_bound": round(float(ub), 4) if ub is not None else None}
         sha = decision_mod.save_head(heads_dir / fname, coef=coef, intercept=b,
-                                     temperature=cal["temperature"],
-                                     meta={"backbone": [results["backbone"]]})
+                                     temperature=T_cal,
+                                     meta={"backbone": results["backbone"],
+                                           "provenance": provenance})
         results["heads"][name] = {
-            "calibration": cal, "test": test,
+            "calibration": cal, "test": tst,
             "held_out_bound_at_cal_threshold": held,
             "head_file": fname, "head_sha256": sha,
+            "provenance": provenance,
         }
-        print(f"{name}: cal_acc={cal['accuracy']} cal_ece={cal['ece']} "
-              f"test_acc={test['accuracy']} test_ece={test['ece']} bound={held}", flush=True)
+        print(f"{name}: T={T_cal:.4f} cal_acc={cal['accuracy']} cal_ece={cal['ece']} "
+              f"test_acc={tst['accuracy']} test_ece={tst['ece']} bound={held}", flush=True)
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
