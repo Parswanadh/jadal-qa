@@ -293,3 +293,22 @@ With the GPU reachable, three previously-blocked items became actionable and wer
 independent tracks: feature-extraction reproduction (§4.1, **done, 7.1e-15**), EG2 embedding-cache
 reproduction, and E1.02b denser sampling — each in its own worktree, each holding a GPU slot via
 `flock /workspace/state/gpu.slot{1,2}.lock`, none of them touching Lead A's branches.
+
+## 10. Companion verification tracks (same claim LB1, separate PRs)
+
+LB1 grew beyond the core reproduction because the first pass kept finding things worth checking. These
+ran as independent agents with their own worktrees and their own PRs, so each is reviewable on its own:
+
+| PR | track | headline result |
+|---|---|---|
+| #107 | LB2 re-check | fused 4 s 0.8736 at `C_eg2=0.003` vs 0.8734 at the published `C_eg2=0.01` → **C-insensitive (±0.0002)**, not a hyperparameter artefact |
+| #108 | OOD archaeology | **0.529 = PoC cascade** (reproduces exactly, 21/51 good); **0.415 = frozen `ensemble_v1`** (26/51 good) — two scorers, 29 attempts recorded |
+| #109 | merge gate | `main` green at test level (594 passed / 0 failed); `pod/base` has **4 genuine failures** invisible to `unittest discover`; `make test` cannot run on the pod |
+| #110 | submission audit | 154 claims: 132 ok, 12 contradicts (superseded by #104's fixes), 10 pending-as-result, **0 unsourced** |
+| #111 | triage fact-check | 26 TRUE / 2 FALSE / 4 UNVERIFIABLE against the LB5 report |
+| #123 | cascade + selective accuracy | **all four claims reproduced exactly** (cascade 3/75/27/45, bal.acc 0.8133, 8/75 and 8/30, selective 0.7400/0.8438/0.8051). Caveat raised: FACTS line 42 quotes the **exploratory fixed-C** curve while the **nested** pixel26 curve is 0.76/0.81/0.80 — the "exploratory, not yet nested" label is missing there |
+| #124 | rules + duplicates | **4 reproduced, 1 stale, 2 unverifiable.** The ~86-clean-fires arithmetic is exact (`UCB(0/84)=0.0508` fails, `UCB(0/86)=0.0497` passes); TOO_DARK 6/6 at 1 false alarm reproduced; **"6 real DUPLICATEs untested (in progress)" is stale — `m2.json` already tests them (recall@1 0.5, precision 0.0476)**; the 64-pair F1s and the "effective n 20–43" have no artifact on this pod. The degenerate rule list is confirmed (97/100 good rejected) and is *not* the shipped placeholder list |
+
+Two documentation corrections for the submission fall out of this: FACTS should label the
+selective-accuracy curve "exploratory, not nested", and the duplicate sentence should be updated now that
+the 6 real DUPLICATE labels have been tested. Neither changes a headline number.
