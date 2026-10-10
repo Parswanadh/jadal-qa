@@ -1,0 +1,136 @@
+{
+ "n_ood": 160,
+ "n_good_ood": 138,
+ "n_bad_ood": 22,
+ "n_factories": 47,
+ "n_indego": 150,
+ "label_source": {
+  "indego": "human (labels/manifest_gold.json, single labeller, n=150: 100 good / 50 bad)",
+  "ood": "human (labels/ood160_labels.json, single labeller, n=160: 138 good / 22 bad, 47 factories; merge q1=60 + q2=100)"
+ },
+ "protocol": {
+  "indego": "leave-one-clip-out (LOCO) over 7 IndEgo clips; clip-bootstrap CI (2000)",
+  "ood": "head fit on IndEgo (all 7 clips); OOD-160 evaluation only. FACTORY-GROUPED bootstrap CI (honest, n_boot=2000, seed=0); window bootstrap kept as the optimistic comparison. 10 fps-effective view for all 160 (q2 transcodes are natively 10 fps)."
+ },
+ "supersedes": {
+  "branch": "m/domain-adapt",
+  "pr": 121,
+  "n_ood": 60
+ },
+ "device": "CPU (numpy/sklearn); GPU not used",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_domain_adapt160/run_z1_160.py",
+ "experiment": "Z1.01_160",
+ "title": "Stable-feature selection for zero-shot OOD transfer (160)",
+ "features": {
+  "all26": [
+   "temp_b0",
+   "temp_b1",
+   "temp_b2",
+   "temp_b3",
+   "frozen_frac",
+   "flicker_idx",
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy",
+   "pca_resid",
+   "pca_top1_share",
+   "luma_mean",
+   "luma_p05",
+   "luma_p50",
+   "luma_p95",
+   "dark_frac",
+   "bright_frac",
+   "motion_energy",
+   "global_shift",
+   "skin_frac",
+   "illum_r",
+   "illum_g",
+   "illum_b",
+   "rppg_pulse",
+   "dup_hash_mean",
+   "zncc_self"
+  ],
+  "stable8": [
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy",
+   "luma_p05",
+   "global_shift",
+   "illum_r",
+   "illum_b",
+   "zncc_self"
+  ],
+  "sharpness3": [
+   "radial_slope",
+   "hf_ratio",
+   "dct_energy"
+  ]
+ },
+ "eg2_768_note": "EG2-768 window means are NOT recomputed for the q2=100 windows (needs a GPU EG2 embed); the old n=60 row (0.546) is unchanged and omitted from the 160 table.",
+ "caveat": "OOD n_bad=22, 47 factories (~1 window/factory); factory-grouped CI is the honest one, window bootstrap is optimistic. Sign-stable means IndEgo sign == OOD sign (E5.03), not a quality measure.",
+ "rows": [
+  {
+   "method": "FROZEN ensemble_v1 (PoC prior)",
+   "indego_auroc": 0.85,
+   "ood160_auroc": 0.5660408432147562,
+   "ood160_ci95_factory_grouped": [
+    0.4451111111111111,
+    0.673536557866847
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.43741392878221524,
+    0.6939664482699552
+   ],
+   "note": "no fitting; IndEgo in-domain ensemble baseline ~0.85 (nested LOCO)"
+  },
+  {
+   "method": "raw \u00b7 all-26 \u00b7 OOD=10fps",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood160_auroc": 0.5862977602108037,
+   "ood160_balacc": 0.5247035573122529,
+   "ood160_ci95_factory_grouped": [
+    0.47467543005517693,
+    0.7097563180875932
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.4653704044117647,
+    0.7034537099384531
+   ],
+   "note": "head trained on IndEgo (C by inner LOCO); zero-shot transfer"
+  },
+  {
+   "method": "raw \u00b7 stable-8 (sharpness/light) \u00b7 OOD=10fps",
+   "indego_auroc": 0.5188,
+   "indego_balacc": 0.45,
+   "ood160_auroc": 0.5961791831357048,
+   "ood160_balacc": 0.560935441370224,
+   "ood160_ci95_factory_grouped": [
+    0.4796704890479289,
+    0.7232576012447958
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.47729387689775016,
+    0.7107306971620211
+   ],
+   "note": "head trained on IndEgo (C by inner LOCO); zero-shot transfer"
+  },
+  {
+   "method": "raw \u00b7 sharpness-3 \u00b7 OOD=10fps",
+   "indego_auroc": 0.5784,
+   "indego_balacc": 0.605,
+   "ood160_auroc": 0.7078392621870883,
+   "ood160_balacc": 0.4927536231884058,
+   "ood160_ci95_factory_grouped": [
+    0.5882697163947165,
+    0.8227023281596453
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.60160656123289,
+    0.8102501584996387
+   ],
+   "note": "head trained on IndEgo (C by inner LOCO); zero-shot transfer"
+  }
+ ]
+}
