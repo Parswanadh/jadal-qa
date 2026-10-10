@@ -1,0 +1,25 @@
+{
+ "K": 2,
+ "assignment": {
+  "factory_010/worker_002/factory010_worker002_00056.mp4": 0,
+  "factory_013/worker_008/factory013_worker008_00166.mp4": 1,
+  "factory_014/worker_041/factory014_worker041_00143.mp4": 0,
+  "factory_019/worker_007/factory019_worker007_00033.mp4": 1,
+  "factory_020/worker_002/factory020_worker002_00157.mp4": 0,
+  "factory_020/worker_002/factory020_worker002_00159.mp4": 1
+ },
+ "clip_windows": {
+  "factory_010/worker_002/factory010_worker002_00056.mp4": 17,
+  "factory_013/worker_008/factory013_worker008_00166.mp4": 17,
+  "factory_014/worker_041/factory014_worker041_00143.mp4": 17,
+  "factory_019/worker_007/factory019_worker007_00033.mp4": 17,
+  "factory_020/worker_002/factory020_worker002_00157.mp4": 17,
+  "factory_020/worker_002/factory020_worker002_00159.mp4": 17
+ },
+ "loads_windows": [
+  51,
+  51
+ ],
+ "n_clips": 6,
+ "n_windows": 102
+}

@@ -1,0 +1,104 @@
+{
+ "baseline": {
+  "gpu_util_pct": 0.0,
+  "vram_used_mib": 2776.0
+ },
+ "device": "NVIDIA A40",
+ "embed_batch_sweep": [
+  {
+   "batch": 4,
+   "images_per_s": 12.62,
+   "ms": 7606.36,
+   "smi_delta_peak_mib": 35738.0,
+   "torch_peak_mib": 1770.5
+  },
+  {
+   "batch": 32,
+   "images_per_s": 13.08,
+   "ms": 7338.26,
+   "smi_delta_peak_mib": 5590.0,
+   "torch_peak_mib": 4041.7
+  },
+  {
+   "batch": 64,
+   "images_per_s": 12.87,
+   "ms": 7457.91,
+   "smi_delta_peak_mib": 7899.0,
+   "torch_peak_mib": 6144.4
+  },
+  {
+   "batch": 128,
+   "images_per_s": null,
+   "ms": null,
+   "smi_delta_peak_mib": null,
+   "torch_peak_mib": null
+  }
+ ],
+ "embed_concurrent_sweep": [
+  {
+   "B": 1,
+   "errors": [],
+   "gpu_util_pct_max": 100.0,
+   "gpu_util_pct_mean": 40.7,
+   "images_per_s": 5.08,
+   "n_ok": 1,
+   "per_worker_images_per_s": 5.08,
+   "torch_peak_mib_max": 4041.7,
+   "vram_delta_vs_base_mib": 5588.0,
+   "vram_peak_used_mib": 42376.0,
+   "wall_s": 18.91
+  },
+  {
+   "B": 2,
+   "errors": [],
+   "gpu_util_pct_max": 100.0,
+   "gpu_util_pct_mean": 41.5,
+   "images_per_s": 4.95,
+   "n_ok": 1,
+   "per_worker_images_per_s": 2.47,
+   "torch_peak_mib_max": 4041.7,
+   "vram_delta_vs_base_mib": 8892.0,
+   "vram_peak_used_mib": 45351.0,
+   "wall_s": 19.4
+  },
+  {
+   "B": 4,
+   "errors": [],
+   "gpu_util_pct_max": 100.0,
+   "gpu_util_pct_mean": 21.6,
+   "images_per_s": 0.0,
+   "n_ok": 0,
+   "per_worker_images_per_s": 0.0,
+   "torch_peak_mib_max": null,
+   "vram_delta_vs_base_mib": 9023.0,
+   "vram_peak_used_mib": 45482.0,
+   "wall_s": 14.25
+  },
+  {
+   "B": 8,
+   "errors": [],
+   "gpu_util_pct_max": 100.0,
+   "gpu_util_pct_mean": 71.4,
+   "images_per_s": 13.49,
+   "n_ok": 8,
+   "per_worker_images_per_s": 1.69,
+   "torch_peak_mib_max": 4041.7,
+   "vram_delta_vs_base_mib": 44042.0,
+   "vram_peak_used_mib": 44042.0,
+   "wall_s": 56.91
+  }
+ ],
+ "note": "VRAM deltas sampled via nvidia-smi (GPU shared with other pod jobs); torch_peak is per-process allocator peak",
+ "residency": {
+  "batch": 32,
+  "images_per_s": 14.5,
+  "ms": 6620.23,
+  "n_images": 96,
+  "pid": 3929766,
+  "smi_delta_load_mib": 1706.0,
+  "smi_delta_peak_mib": 5248.0,
+  "torch_peak_mib": 4041.7
+ },
+ "run_utc": "2026-10-10T19:27:19Z",
+ "total_vram_mib": 46068
+}

@@ -1,0 +1,6 @@
+[shard 0/7] subset=smallest6 n_items=102 mine=17 clip_windows=102
+[shard 0/7] windows=['s_dc432b99c758', 's_08cad8439b4a', 's_046e5f4a3b2d']...
+[shard 0/7] opts={'pixel_fps': 3.33, 'eg2_fps': 1.0, 'native_fps': 0.8, 'early_exit_s': 4.0, 'skip_mosaic': True}
+[shard 0/7]   10/17 ok=10 err=0 55s 0.182 win/s
+[shard 0/7]   17/17 ok=17 err=0 86s 0.197 win/s
+[shard 0/7] DONE wall=86.1s windows=17 err=0 digest=7ff43f0848d9b682

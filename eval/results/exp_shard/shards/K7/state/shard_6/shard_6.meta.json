@@ -1,0 +1,36 @@
+{
+ "assigned_clips": [],
+ "cpu_cores": 0.685,
+ "cpu_s": 0.0,
+ "errors": [],
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "manifest": "../../jadal_pod_bundle/queues/manifest_scale.json",
+ "max_rss_mb": 503.9,
+ "n_errors": 0,
+ "n_windows": 0,
+ "omp_threads": "4",
+ "optimizations": {
+  "early_exit_s": 4.0,
+  "eg2_fps": 1.0,
+  "native_fps": 0.8,
+  "pixel_fps": 3.33,
+  "skip_mosaic": true
+ },
+ "out": "eval/results/exp_shard/shards/K7/shard_6.jsonl",
+ "plan_K": 7,
+ "run_utc": "2026-10-10T19:23:37Z",
+ "shard_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+ "shard_index": 6,
+ "shards": 7,
+ "smi": [
+  {
+   "gpu_pct": 1.0,
+   "t": 1791660217.3135114,
+   "vram_mib": 4142.0
+  }
+ ],
+ "subset": "smallest6",
+ "verdict_distribution": {},
+ "wall_s": 0.0,
+ "windows_per_s": 0.0
+}

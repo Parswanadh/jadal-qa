@@ -1,0 +1,26 @@
+{
+ "combined_digest": "9b388f92c8099a743f94a15ae12f51c89e019e1b26a46bca4d651d6811c913e8",
+ "det_projection": "contract line minus latency_ms/receipt_sha256; row minus latency_ms/stage_wall/t_wall0/t_wall1/gpu/decode_compare",
+ "n_shards": 4,
+ "n_windows": 102,
+ "per_shard_digest": {
+  "0": "1de89a6893dcae1d21f4007da598d8cc357a7c484dc86435773759d6c0ffb7ab",
+  "1": "8d900ccd1c9635b56b4523991dc31c9f42e43bdb75df00c6b5a52e98c092ee8b",
+  "2": "f44e93985e53639db643b235e722841ddf36c5c0ce43dd0ecf7d0eeb8fd975d7",
+  "3": "2d677a232289f7c6e7a6d5db330743a314b0b57cd13097529869c805efb285a7"
+ },
+ "per_shard_integrity_ok": {
+  "0": true,
+  "1": true,
+  "2": true,
+  "3": true
+ },
+ "protocol": "combined = sha256 over sorted (window_id, sha256(canonical(det_projection(row)))); partition-independent",
+ "result_jsonl": "eval/results/exp_shard/shards/combined_K4.jsonl",
+ "subset": "smallest6",
+ "verdict_distribution": {
+  "accept": 61,
+  "reject": 1,
+  "review": 40
+ }
+}
