@@ -113,11 +113,12 @@ reference.
 
 ## 8. Factory 1080p30 HEVC (real video; `factory.json`)
 
-F1 SWEEP MEASURED 17:21 (5 complete files; all NVDEC byte counts exact):
-- CPU 1-core HEVC 1080p→160×90: **54.8 fps, RTF 1.83** (60 s video)
-- NVDEC hevc_cuvid + scale_cuda: ×1 **620 fps / RTF 20.7**; ×2 **729 / 24.3**;
-  ×4 **681 / 22.7** — **11–13× the single core**, saturates at 2 sessions
-  (1 NVDEC engine; ×4 adds overhead, no gain)
+F1 SWEEP MEASURED (5 complete files; all NVDEC byte counts exact; two runs):
+- CPU 1-core HEVC 1080p→160×90: **43–55 fps, RTF 1.4–1.8** (60 s video)
+- NVDEC hevc_cuvid + scale_cuda: ×1 **620–657 fps / RTF 21–22**;
+  ×2 **655–729 / 21.8–24.3**; ×4 **681–692 / 22.7–23.1** —
+  **~12–15× the single core**, flat across sessions (1 engine ≈ 650–730
+  small-frames/s; run-to-run ±10% under machine load)
 - Kernels T=300 fp16: B4 48 win/s (1.2 GiB); B8 49 (2.3 GiB);
   B16 **70 win/s = 702 h/h (4.58 GiB, at the 4.5 GiB cap)**; B32 OOM —
   honest caveat: only 665 MiB was free (a neighbour job held ~2.5 GiB), so
