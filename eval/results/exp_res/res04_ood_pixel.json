@@ -1,0 +1,48 @@
+{
+ "experiment": "RES.04",
+ "combo": "ood_resolution_pixel26",
+ "n": 60,
+ "n_good": 51,
+ "n_bad": 9,
+ "n_clips": 48,
+ "n_errors": 0,
+ "errors": [],
+ "label_source": "human (Egocentric-10K OOD, 51 good/9 bad)",
+ "protocol": "frozen pixel-26 head (logistic C=0.3 balanced, trained on 150 IndEgo gold); NVDEC 1080p HEVC window -> scale_cuda to 160x90 (native) or via 854x480 / 640x360 (one-pass downscale, no re-encode); ~10 fps; AUROC + window-bootstrap CI B=2000 seed0",
+ "conditions": {
+  "native1080p": {
+   "auroc": 0.427,
+   "ci95": [
+    0.248,
+    0.6111
+   ]
+  },
+  "480p": {
+   "auroc": 0.4248,
+   "ci95": [
+    0.25,
+    0.6119
+   ],
+   "delta_vs_native": -0.0022,
+   "delta_ci95": [
+    -0.026,
+    0.0186
+   ]
+  },
+  "360p": {
+   "auroc": 0.4401,
+   "ci95": [
+    0.2685,
+    0.6281
+   ],
+   "delta_vs_native": 0.0131,
+   "delta_ci95": [
+    -0.0339,
+    0.0585
+   ]
+  }
+ },
+ "note_eg2": "EG2 window-embedding view NOT recomputed (needs a GPU frame embedder on downscaled clips); pixel-26 only.",
+ "note_scale": "downscale done at decode time; isolates resolution effect from codec artifacts",
+ "command": "bash tools/pod/gpu_run.sh python3 eval/exp_res/run_ood_res.py"
+}
