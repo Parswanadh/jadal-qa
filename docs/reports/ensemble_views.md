@@ -139,7 +139,75 @@ as reference only. 12 labels were audit-flagged as possibly mislabelled
 (perpixel review_queue.json) — not adjusted here. Full-OOF 0.853 is
 resubstitution-optimistic (C picked on same OOF), not a claim.
 
-## 7. Regenerating commands (all with OMP_NUM_THREADS=2)
+## 8. EXPLORATORY: why the frozen ensemble fails OOD and what transfers
+
+Setup (all exploratory, n=60 OOD windows, 51 good / 9 bad; nothing frozen
+tuned; window-bootstrap CIs, optimistic): lean_10k frame heads (logistic on
+frozen EG2 embeddings, trained on 10,000 AI-labelled factory frames from the
+SAME Egocentric-10K dataset) applied to every 0.5 s frame of the 60 OOD
+windows (`eval/results/ensemble/ood_frames.npz`, 1200 frames), pooled per
+window (mean/max/p25/p75/frac>0.5/var). Pixel side: the same 26 features
+recomputed on CPU (`ood_pixel.npz`). Full numbers:
+`eval/results/ensemble/transfer_probe.json`.
+
+(a) In-domain frame heads DO transfer:
+
+| head | pool | OOD AUROC | 95% CI | IndEgo pooled ref |
+|---|---|---|---|---|
+| active_labor | mean | 0.863 | [0.71, 0.97] | 0.813 |
+| active_labor | frac>0.5 | 0.850 | [0.67, 0.97] | — |
+| hands_ok | mean | 0.752 | [0.54, 0.93] | 0.817 |
+
+The semantic direction learned from same-dataset factory frames carries over;
+the IndEgo-fitted operating points do not.
+
+(b) Sign table (feature | IndEgo pooled AUC | OOD oriented AUC | OOD free AUC
+| oriented CI | sign agrees?). Oriented = OOD AUC in the IndEgo direction.
+
+| feature | IndEgo | OOD oriented | OOD free | CI | agrees |
+|---|---|---|---|---|---|
+| head_work_mean | 0.813 | 0.863 | 0.863 | [0.71,0.97] | yes |
+| head_hands_mean | 0.817 | 0.752 | 0.752 | [0.54,0.93] | yes |
+| motion_energy | 0.308 | 0.309 | 0.691 | [0.51,0.84] | no |
+| skin_frac | 0.667 | 0.255 | 0.745 | [0.10,0.43] | no |
+| temp_b0 | 0.534 | 0.240 | 0.760 | [0.07,0.44] | no |
+| luma_mean/p50/p95 | ~0.51 | ~0.22–0.29 | 0.71–0.78 | [0.06,0.48] | no |
+| dct_energy | 0.631 | 0.702 | 0.702 | [0.53,0.86] | yes |
+| frozen_ens_prob | 0.834 | 0.415 | 0.585 | [0.22,0.65] | no |
+
+Pattern: the two semantic EG2 rows keep their sign; motion/skin/luma pixel
+features invert (e.g. in IndEgo more residual hand-region motion points one
+way, in OOD factories the other — same sign-inversion the harness saw across
+clips). Caveats: features with IndEgo AUC ≈ 0.5 (illum_r 0.49, flicker 0.50)
+carry no meaningful sign, so their "agreement" is vacuous; with n_bad=9 only
+head_work_mean's CI clearly excludes chance.
+
+(c) Leave-one-window-out feasibility (each window ≈ its own factory; UPPER
+BOUNDS — they use OOD labels): single best feature (head_work_mean, selected
+on the same 60) 0.80 [0.55,0.97]; frozen-ens-prob LOO 0.44; two-view LOO on
+frozen heads 0.468. Read: refitting just the fusion on ~100 more OOD labels
+cannot rescue the inverted views (0.44–0.47); the feasible path is the
+in-domain head features (~0.8), to be confirmed when the 100 extra labels land.
+
+## 9. Next round: 160-window re-evaluation (pending labels)
+
+`eval/ensemble/eval_ood.py` accepts `--labels2 <labels2.json> --scores2
+<ood_scores2.json>` and evaluates the merged 160 windows with the frozen model
+unchanged. Queue-2 scoring command (run once `labels2.json` exists; EG2 under
+the GPU lock, pixel features CPU-only):
+
+```
+/home/parshu/.local/bin/flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock \
+  /home/parshu/envs/jadal/bin/python eval/ensemble_embed_ood.py --queue <queue2.json> --out eval/results/ensemble/ood2_frames.npz
+OMP_NUM_THREADS=2 .../python eval/ensemble_score_windows.py --windows <queue2_as_windows.json> --out eval/results/ensemble/ood_scores2.json
+OMP_NUM_THREADS=2 .../python eval/ensemble/eval_ood.py --labels ood_labels/labels.json --labels2 ood_labels/labels2.json --scores2 eval/results/ensemble/ood_scores2.json
+```
+
+(`--queue/--out` flags do not exist yet — queue 2 had not appeared at push
+time; they will be added when `label_queue_random2.json` lands, or the queue
+path stays hardcoded with a one-line edit.)
+
+## 10. Regenerating commands (all with OMP_NUM_THREADS=2)
 
 - nested LOCO: `OMP_NUM_THREADS=2 PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/ensemble_nested_loco.py` -> `eval/results/ensemble/nested_loco.json`, `oof_probs.npz`
 - freeze: `OMP_NUM_THREADS=2 PYTHONNOUSERSITE=1 PYTHONPATH=. /home/parshu/envs/jadal/bin/python eval/freeze_ensemble.py` -> `configs/ensemble_v1.json` (+`.sha256`)
