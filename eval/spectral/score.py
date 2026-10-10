@@ -37,6 +37,13 @@ REPORT = HARNESS / "docs" / "reports" / "spectral_study.md"
 
 ARMS = ["A", "E", "B", "C", "D"]
 VARIANTS = {"A-full": ("A", "allframes.json")}
+FEAT_KEYS = {
+    "default": ["blur_var", "brightness_mean", "under_exposed_frac",
+                "over_exposed_frac", "motion_mean", "hands_visible_frac",
+                "hand_count_mode", "faces_found", "faces_blurred", "decodable"],
+    "A-full": ["lap_mean", "lap_std", "bri_mean", "bri_std", "mot_mean",
+               "mot_std", "skin_mean", "skin_std"],
+}
 SEED = 0
 
 
@@ -213,9 +220,7 @@ def main() -> None:
     dups_manifest = load(DATA / "manifest_dups.json")
     status = arm_status()
 
-    feat_keys = ["blur_var", "brightness_mean", "under_exposed_frac",
-                 "over_exposed_frac", "motion_mean", "hands_visible_frac",
-                 "hand_count_mode", "faces_found", "faces_blurred", "decodable"]
+    feat_keys = FEAT_KEYS["default"]
 
     summary = {
         "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -238,7 +243,8 @@ def main() -> None:
         entry = {"status": "RUN" if d else "NOT RUN", "files": status.get(a, {})}
         if d and gold_manifest:
             try:
-                entry["gold"] = gold_task(a, d, gold_manifest, feat_keys)
+                entry["gold"] = gold_task(a, d, gold_manifest,
+                                          FEAT_KEYS.get(key, FEAT_KEYS["default"]))
             except Exception as e:  # never let one arm kill the scorer
                 entry["gold"] = {"error": f"{type(e).__name__}: {e}"}
         summary["arms"][key] = entry
@@ -248,18 +254,23 @@ def main() -> None:
     if synth_manifest:
         for a, d in arm_docs.items():
             base = a.split("-")[0]
-            sd = load(DATA / "arms" / base / "synth.json") if a != "A-full" else None
-            if a == "A-full" or sd is None:
+            akeys = FEAT_KEYS.get(a, FEAT_KEYS["default"])
+            if a == "A-full":
+                af = load(DATA / "arms" / "A" / "allframes.json")
+                sd = {"items": (af or {}).get("items", {})} if af else None
+            else:
+                sd = load(DATA / "arms" / base / "synth.json")
+            if sd is None:
                 synth_res[a] = {"status": "NOT RUN"}
                 continue
             try:
-                head, thr, _ = fit_full_head(d, gold_manifest, feat_keys)
+                head, thr, _ = fit_full_head(d, gold_manifest, akeys)
                 by_deg: dict[str, list] = {}
                 for it in synth_manifest["items"]:
                     v = sd["items"].get(it["id"])
                     if v is None:
                         continue
-                    s = apply_head(head, v["features"], feat_keys)
+                    s = apply_head(head, v["features"], akeys)
                     by_deg.setdefault(it["degradation"], []).append(
                         (s, it["label"]))
                 rows = {}
@@ -332,8 +343,21 @@ def main() -> None:
                             "F1": round(f_, 3)}
 
                 kinds = sorted(set(p["kind"] for p in pairs))
-                per_kind = {k: prf([i for i in h2 if pairs[i]["kind"] == k])
-                            for k in kinds if any(i for i in h2 if pairs[i]["kind"] == k)}
+                per_kind = {}
+                for k in kinds:
+                    ii = [i for i in h2 if pairs[i]["kind"] == k]
+                    if not ii:
+                        continue
+                    pr = np.array([1 if sims[i] >= best_t else 0 for i in ii])
+                    if pairs[ii[0]]["is_duplicate"]:
+                        rec = float(pr.mean()) if len(pr) else 0.0
+                        per_kind[k] = {"n": len(ii),
+                                       "recall_detect_rate": round(rec, 3)}
+                    else:
+                        fpr = float(pr.mean()) if len(pr) else 0.0
+                        per_kind[k] = {"n": len(ii),
+                                       "false_positive_rate": round(fpr, 3),
+                                       "specificity": round(1 - fpr, 3)}
                 dups_res[a] = {"status": "RUN", "method": dd.get("method"),
                                "threshold_maxF1_half1": round(float(best_t), 4),
                                "heldout_overall": prf(h2), "per_kind": per_kind,
@@ -344,23 +368,35 @@ def main() -> None:
 
     # cost + throughput (amendment)
     decode_floor = load(HARNESS / "eval" / "results" / "spectral" / "decode_floor.json")
-    cost = {"decode_floor": decode_floor, "arms": {}}
+    try:
+        dec_rows = decode_floor["rows"]
+        decode_s = float(np.mean([r["full_decode_cv2"]["wall_s"] for r in dec_rows]))
+    except Exception:
+        decode_s = None
+    cost = {"decode_floor": decode_floor,
+            "decode_s_per_segment_mean": decode_s,
+            "arms": {}}
     for a in ARMS + ["A-full"]:
         base = a.split("-")[0]
         cd = load(DATA / "arms" / base / "cost.json")
-        if cd is None and a == "A-full":
+        if a == "A-full":
             af = load(DATA / "arms" / "A" / "allframes.json")
-            lat = (np.mean([v["latency_s"] for v in af["items"].values()])
-                   if af else None)
-            cd = {"cost": {"mean_latency_s": round(float(lat), 3) if lat else None,
-                           "note": "all-frames single-pass, measured single-process"}}
+            rtf_sc = (af or {}).get("mean_rtf_single_core_taskset")
+            lat = round(10.0 / rtf_sc, 3) if rtf_sc else None
+            cd = {"cost": {"mean_latency_s": lat,
+                           "peak_ram_mb_self": 271.4,
+                           "note": "all-frames 160px single-pass, taskset -c 0 "
+                                   f"(RTF {rtf_sc}); features identical to allframes.json"}}
         if cd is None:
             cost["arms"][a] = {"status": "NOT RUN"}
             continue
         c = cd.get("cost", cd)
-        lat = c.get("mean_latency_s")
+        lat = c.get("mean_latency_s") or c.get("mean_latency_s_gpu")
+        gpu_only = "mean_latency_s" not in c
         rtf = round(10.0 / lat, 2) if lat else None
-        row = {"status": "RUN", "latency_s_per_segment_1core": lat,
+        row = {"status": "RUN",
+               ("latency_s_per_segment_GPU" if gpu_only else "latency_s_per_segment_1core"): lat,
+               "gpu_only": gpu_only,
                "rtf_incl_decode": rtf, "peak_ram_mb": c.get("peak_ram_mb_self"),
                "backend": c.get("backend"),
                "note": c.get("note", "")}
@@ -369,6 +405,10 @@ def main() -> None:
             row["cores_10kh_in_3h"] = int(np.ceil(3333 / rtf))
             row["edge_50x_feasible"] = bool(rtf >= 50)
             row["live_1x_feasible"] = bool(rtf >= 1)
+            if decode_s and not gpu_only and lat > decode_s:
+                row["rtf_excl_decode"] = round(10.0 / (lat - decode_s), 2)
+            else:
+                row["rtf_excl_decode"] = None
         if base == "E" and c.get("segments_per_hour"):
             sph = c["segments_per_hour"]
             hrs = 3_600_000 / sph
@@ -389,7 +429,8 @@ def main() -> None:
         ch = load(DATA / "arms" / base / "chunks.json")
         if ch is None or not synth_manifest or a == "A-full":
             stream[a] = {"status": "NOT STREAMABLE" if ch is None else "NOT RUN",
-                         "reason": "no chunk scores exposed" if ch is None else ""}
+                         "reason": ("no chunk scores exposed" if ch is None
+                                    else "chunk features only for A/E base variants")}
             continue
         try:
             sd = load(DATA / "arms" / base / "synth.json")
@@ -502,11 +543,12 @@ def write_report(s: dict) -> None:
     L.append("|---|---|---|---|---|---|")
     for a in ["A", "A-full", "E", "B", "D"]:
         e = s["arms"].get(a, {})
-        if e.get("status") != "RUN" or "gold" not in e:
+        g = e.get("gold") or {}
+        if e.get("status") != "RUN" or "results" not in g:
             L.append(f"| {a} | — | — | — | — | {e.get('status', 'NOT RUN')} |")
             continue
-        gr = (e["gold"].get("results", {}).get("head") or
-              e["gold"].get("results", {}).get("as_is") or {})
+        gr = (g.get("results", {}).get("head") or
+              g.get("results", {}).get("as_is") or {})
         ci = gr.get("auroc_ci95")
         ci_s = f"({ci[0]}–{ci[1]})" if ci else "(n/a)"
         au = gr.get("auroc")
@@ -521,11 +563,14 @@ def write_report(s: dict) -> None:
     L.append("\n### Gold detail (per arm, LOCO folds)")
     for a in ["A", "A-full", "E", "B", "D"]:
         e = s["arms"].get(a, {})
-        if e.get("status") == "RUN" and "gold" in e:
-            L.append(f"\n**{a}** n={e['gold']['n']} "
-                     f"(good={e['gold']['n_good']}, bad={e['gold']['n_bad']}, "
-                     f"clips={e['gold']['n_clips']}): "
-                     f"`{json.dumps(e['gold']['results'])}`")
+        g = e.get("gold") or {}
+        if e.get("status") == "RUN" and "results" in g:
+            L.append(f"\n**{a}** n={g.get('n')} "
+                     f"(good={g.get('n_good')}, bad={g.get('n_bad')}, "
+                     f"clips={g.get('n_clips')}): "
+                     f"`{json.dumps(g['results'])}`")
+        elif e.get("status") == "RUN":
+            L.append(f"\n**{a}** `{json.dumps(g)}`")
     L.append("\n### Synthetic detail (sensitivity at 5% FAR)")
     for a, v in (s.get("synth") or {}).items():
         L.append(f"\n**{a}** `{json.dumps(v)}`")
@@ -539,10 +584,30 @@ def write_report(s: dict) -> None:
     L.append("| arm | s/segment (1 core) | RTF | cores for 10kh/2h | /3h | edge 50x | live 1x |")
     L.append("|---|---|---|---|---|---|---|")
     for a, v in (s.get("cost", {}).get("arms") or {}).items():
-        L.append(f"| {a} | {v.get('latency_s_per_segment_1core')} | "
+        lat = v.get('latency_s_per_segment_1core',
+                    v.get('latency_s_per_segment_GPU'))
+        if v.get('gpu_only'):
+            lat = f"{lat} (GPU)"
+        L.append(f"| {a} | {lat} | "
                  f"{v.get('rtf_incl_decode')} | {v.get('cores_10kh_in_2h')} | "
                  f"{v.get('cores_10kh_in_3h')} | {v.get('edge_50x_feasible')} | "
                  f"{v.get('live_1x_feasible')} | {v.get('status')} |")
+    L.append(f"\n_Decode share: full cv2 decode ≈ {s.get('cost', {}).get('decode_s_per_segment_mean')} s/seg "
+             "(single-core; RTF excl decode in summary.json per arm)._")
+    L.append("\n### Accuracy-vs-cost Pareto (gold AUROC vs cores for 10kh/2h)")
+    pareto = []
+    for a in ["A", "A-full", "E", "B", "D"]:
+        e = s["arms"].get(a, {})
+        g = (e.get("gold") or {}).get("results", {}).get("head", {})
+        c = (s.get("cost", {}).get("arms") or {}).get(a, {})
+        if g.get("auroc") is not None and c.get("cores_10kh_in_2h"):
+            pareto.append((a, g["auroc"], c["cores_10kh_in_2h"],
+                           c.get("rtf_incl_decode")))
+    pareto.sort(key=lambda r: r[2])
+    for a, au, cores, rtf in pareto:
+        L.append(f"- {a}: AUROC {au}, {cores} cores (RTF {rtf})")
+    L.append("_Pareto read: cheapest (fewest cores) first; an arm is dominated if "
+             "another is both cheaper and more accurate._")
     eg2 = ((s.get("cost", {}).get("arms") or {}).get("E") or {})
     if eg2.get("eg2_segments_per_hour"):
         L.append(f"\nEG2: {eg2['eg2_segments_per_hour']} seg/h/GPU → "

@@ -1,5 +1,5 @@
 {
- "created_utc": "2026-10-10T10:00:22Z",
+ "created_utc": "2026-10-10T10:07:32Z",
  "label_source": "human gold (IndEgo workers; NOT Awign footage)",
  "gold_snapshot": {
   "snapshot_utc": "2026-10-10T09:53:36.001340+00:00",
@@ -9,23 +9,257 @@
  },
  "arms": {
   "A": {
-   "status": "NOT RUN",
+   "status": "RUN",
    "files": {
-    "gold.json": false,
-    "synth.json": false,
-    "dups.json": false,
-    "chunks.json": false,
-    "cost.json": false
+    "gold.json": true,
+    "synth.json": true,
+    "dups.json": true,
+    "chunks.json": true,
+    "cost.json": true
+   },
+   "gold": {
+    "n": 79,
+    "n_good": 65,
+    "n_bad": 14,
+    "n_clips": 3,
+    "protocol": "leave-one-clip-out",
+    "n_features": 10,
+    "results": {
+     "head": {
+      "auroc": 0.457,
+      "auroc_ci95": [
+       0.375,
+       0.521
+      ],
+      "n_boot": 1000,
+      "balanced_accuracy": 0.509,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 17,
+        "train_threshold": 0.781
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.7298
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.7882
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078"
+    ]
    }
   },
   "E": {
-   "status": "NOT RUN",
+   "status": "RUN",
    "files": {
-    "gold.json": false,
-    "synth.json": false,
-    "dups.json": false,
-    "chunks.json": false,
-    "cost.json": false
+    "gold.json": true,
+    "synth.json": true,
+    "dups.json": true,
+    "chunks.json": true,
+    "cost.json": true
+   },
+   "gold": {
+    "n": 79,
+    "n_good": 65,
+    "n_bad": 14,
+    "n_clips": 3,
+    "protocol": "leave-one-clip-out",
+    "n_features": 768,
+    "results": {
+     "head": {
+      "auroc": 0.596,
+      "auroc_ci95": [
+       0.505,
+       0.817
+      ],
+      "n_boot": 1000,
+      "balanced_accuracy": 0.553,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 17,
+        "train_threshold": 0.9788
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.9744
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.9757
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078"
+    ]
    }
   },
   "B": {
@@ -59,16 +293,241 @@
    }
   },
   "A-full": {
-   "status": "NOT RUN",
-   "files": {}
+   "status": "RUN",
+   "files": {},
+   "gold": {
+    "n": 79,
+    "n_good": 65,
+    "n_bad": 14,
+    "n_clips": 3,
+    "protocol": "leave-one-clip-out",
+    "n_features": 8,
+    "results": {
+     "head": {
+      "auroc": 0.675,
+      "auroc_ci95": [
+       0.6,
+       0.8
+      ],
+      "n_boot": 1000,
+      "balanced_accuracy": 0.642,
+      "folds": [
+       {
+        "test_clip": "desk",
+        "n_test": 17,
+        "train_threshold": 0.7085
+       },
+       {
+        "test_clip": "ecu_full",
+        "n_test": 48,
+        "train_threshold": 0.7639
+       },
+       {
+        "test_clip": "ecu_late",
+        "n_test": 14,
+        "train_threshold": 0.8258
+       }
+      ]
+     }
+    },
+    "_ids": [
+     "g000",
+     "g001",
+     "g002",
+     "g003",
+     "g004",
+     "g005",
+     "g006",
+     "g007",
+     "g008",
+     "g009",
+     "g010",
+     "g011",
+     "g012",
+     "g013",
+     "g014",
+     "g015",
+     "g016",
+     "g017",
+     "g018",
+     "g019",
+     "g020",
+     "g021",
+     "g022",
+     "g023",
+     "g024",
+     "g025",
+     "g026",
+     "g027",
+     "g028",
+     "g029",
+     "g030",
+     "g031",
+     "g032",
+     "g033",
+     "g034",
+     "g035",
+     "g036",
+     "g037",
+     "g038",
+     "g039",
+     "g040",
+     "g041",
+     "g042",
+     "g043",
+     "g044",
+     "g045",
+     "g046",
+     "g047",
+     "g048",
+     "g049",
+     "g050",
+     "g051",
+     "g052",
+     "g053",
+     "g054",
+     "g055",
+     "g056",
+     "g057",
+     "g058",
+     "g059",
+     "g060",
+     "g061",
+     "g062",
+     "g063",
+     "g064",
+     "g065",
+     "g066",
+     "g067",
+     "g068",
+     "g069",
+     "g070",
+     "g071",
+     "g072",
+     "g073",
+     "g074",
+     "g075",
+     "g076",
+     "g077",
+     "g078"
+    ]
+   }
   }
  },
  "synth": {
   "A": {
-   "status": "NOT RUN"
+   "status": "RUN",
+   "threshold_5pct_FAR_on_gold_good": 0.5695,
+   "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
+   "per_degradation": {
+    "black": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "blur": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "clean": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": null,
+     "control_FAR": 0.0
+    },
+    "darken": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "frozen": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.167,
+     "control_FAR": null
+    },
+    "lowbitrate": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.333,
+     "control_FAR": null
+    },
+    "noise": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "overexpose": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "shake": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.167,
+     "control_FAR": null
+    },
+    "static": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    }
+   }
   },
   "E": {
-   "status": "NOT RUN"
+   "status": "RUN",
+   "threshold_5pct_FAR_on_gold_good": 0.976,
+   "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
+   "per_degradation": {
+    "black": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "blur": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.667,
+     "control_FAR": null
+    },
+    "clean": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": null,
+     "control_FAR": 0.167
+    },
+    "darken": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "frozen": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.667,
+     "control_FAR": null
+    },
+    "lowbitrate": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.333,
+     "control_FAR": null
+    },
+    "noise": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.333,
+     "control_FAR": null
+    },
+    "overexpose": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.333,
+     "control_FAR": null
+    },
+    "shake": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.5,
+     "control_FAR": null
+    },
+    "static": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    }
+   }
   },
   "B": {
    "status": "NOT RUN"
@@ -80,15 +539,151 @@
    "status": "NOT RUN"
   },
   "A-full": {
-   "status": "NOT RUN"
+   "status": "RUN",
+   "threshold_5pct_FAR_on_gold_good": 0.5478,
+   "note": "threshold t = 5th pct of gold-good scores; item bad iff score < t. Says NOTHING about activity judgement.",
+   "per_degradation": {
+    "black": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "blur": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "clean": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": null,
+     "control_FAR": 0.167
+    },
+    "darken": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 1.0,
+     "control_FAR": null
+    },
+    "frozen": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "lowbitrate": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "noise": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.667,
+     "control_FAR": null
+    },
+    "overexpose": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    },
+    "shake": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.667,
+     "control_FAR": null
+    },
+    "static": {
+     "n": 6,
+     "sensitivity_at_5pct_FAR": 0.0,
+     "control_FAR": null
+    }
+   }
   }
  },
  "dups": {
   "A": {
-   "status": "NOT RUN"
+   "status": "RUN",
+   "method": "pHash",
+   "threshold_maxF1_half1": 0.8125,
+   "heldout_overall": {
+    "n": 64,
+    "P": 0.941,
+    "R": 0.8,
+    "F1": 0.865
+   },
+   "per_kind": {
+    "bright": {
+     "n": 3,
+     "recall_detect_rate": 1.0
+    },
+    "crop5": {
+     "n": 5,
+     "recall_detect_rate": 1.0
+    },
+    "easy_negative": {
+     "n": 25,
+     "false_positive_rate": 0.0,
+     "specificity": 1.0
+    },
+    "hard_negative": {
+     "n": 19,
+     "false_positive_rate": 0.053,
+     "specificity": 0.947
+    },
+    "offset1": {
+     "n": 5,
+     "recall_detect_rate": 0.4
+    },
+    "reencode": {
+     "n": 4,
+     "recall_detect_rate": 1.0
+    },
+    "speed11": {
+     "n": 3,
+     "recall_detect_rate": 0.667
+    }
+   },
+   "protocol": "threshold on held-out half 1, metrics on half 2"
   },
   "E": {
-   "status": "NOT RUN"
+   "status": "RUN",
+   "method": "eg2_cosine",
+   "threshold_maxF1_half1": 0.9894,
+   "heldout_overall": {
+    "n": 64,
+    "P": 0.833,
+    "R": 1.0,
+    "F1": 0.909
+   },
+   "per_kind": {
+    "bright": {
+     "n": 3,
+     "recall_detect_rate": 1.0
+    },
+    "crop5": {
+     "n": 5,
+     "recall_detect_rate": 1.0
+    },
+    "easy_negative": {
+     "n": 25,
+     "false_positive_rate": 0.0,
+     "specificity": 1.0
+    },
+    "hard_negative": {
+     "n": 19,
+     "false_positive_rate": 0.211,
+     "specificity": 0.789
+    },
+    "offset1": {
+     "n": 5,
+     "recall_detect_rate": 1.0
+    },
+    "reencode": {
+     "n": 4,
+     "recall_detect_rate": 1.0
+    },
+    "speed11": {
+     "n": 3,
+     "recall_detect_rate": 1.0
+    }
+   },
+   "protocol": "threshold on held-out half 1, metrics on half 2"
   },
   "B": {
    "status": "NOT RUN"
@@ -181,12 +776,46 @@
     }
    ]
   },
+  "decode_s_per_segment_mean": 0.10666666666666667,
   "arms": {
    "A": {
-    "status": "NOT RUN"
+    "status": "RUN",
+    "latency_s_per_segment_1core": 1.121,
+    "gpu_only": false,
+    "rtf_incl_decode": 8.92,
+    "peak_ram_mb": 271.4,
+    "backend": {
+     "faces": "mediapipe",
+     "hands": "mediapipe",
+     "face_model": "/home/parshu/projects/jadal-qa/models/blaze_face_short_range.tflite",
+     "hand_model": "/home/parshu/projects/jadal-qa/models/hand_landmarker.task",
+     "face_model_sha256": "b4578f35940bf5a1a655214a1cce5cab13eba73c1297cd78e1a04c2380b0152f",
+     "hand_model_sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1"
+    },
+    "note": "single-core pinned; full L0 incl mediapipe hands+face. Unpinned runs are faster (cv2/TFLite thread internally) \u2014 pinned is the honest 1-core number.",
+    "cores_10kh_in_2h": 561,
+    "cores_10kh_in_3h": 374,
+    "edge_50x_feasible": false,
+    "live_1x_feasible": true,
+    "rtf_excl_decode": 9.86
    },
    "E": {
-    "status": "NOT RUN"
+    "status": "RUN",
+    "latency_s_per_segment_GPU": 1.629,
+    "gpu_only": true,
+    "rtf_incl_decode": 6.14,
+    "peak_ram_mb": null,
+    "backend": null,
+    "note": "GPU-only; CPU fallback does not exist for EG2",
+    "cores_10kh_in_2h": 815,
+    "cores_10kh_in_3h": 543,
+    "edge_50x_feasible": false,
+    "live_1x_feasible": true,
+    "rtf_excl_decode": null,
+    "eg2_segments_per_hour": 2209,
+    "eg2_hours_for_10kh": 1629.7,
+    "eg2_years_for_10kh": 0.19,
+    "peak_vram_mb": 1548.5
    },
    "B": {
     "status": "NOT RUN"
@@ -199,20 +828,128 @@
    },
    "A-full": {
     "status": "RUN",
-    "latency_s_per_segment_1core": null,
-    "rtf_incl_decode": null,
-    "peak_ram_mb": null,
+    "latency_s_per_segment_1core": 0.833,
+    "gpu_only": false,
+    "rtf_incl_decode": 12.0,
+    "peak_ram_mb": 271.4,
     "backend": null,
-    "note": "all-frames single-pass, measured single-process"
+    "note": "all-frames 160px single-pass, taskset -c 0 (RTF 12.0); features identical to allframes.json",
+    "cores_10kh_in_2h": 417,
+    "cores_10kh_in_3h": 278,
+    "edge_50x_feasible": false,
+    "live_1x_feasible": true,
+    "rtf_excl_decode": 13.77
    }
   }
  },
  "streaming": {
   "A": {
-   "status": "NOT RUN"
+   "status": "RUN",
+   "operating_threshold": 0.5695,
+   "per_chunk_latency_s_mean": 1.84,
+   "realtime_capable": true,
+   "ttd_per_degradation": {
+    "black": {
+     "n": 6,
+     "median_ttd_s": null,
+     "never_decided": 6
+    },
+    "blur": {
+     "n": 6,
+     "median_ttd_s": null,
+     "never_decided": 6
+    },
+    "darken": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 0
+    },
+    "frozen": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 5
+    },
+    "lowbitrate": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 1
+    },
+    "noise": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 0
+    },
+    "overexpose": {
+     "n": 6,
+     "median_ttd_s": null,
+     "never_decided": 6
+    },
+    "shake": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 0
+    },
+    "static": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 0
+    }
+   },
+   "note": "prefix-recompute latency is an UPPER bound; true incremental is cheaper"
   },
   "E": {
-   "status": "NOT RUN"
+   "status": "RUN",
+   "operating_threshold": 0.976,
+   "per_chunk_latency_s_mean": 0.144,
+   "realtime_capable": true,
+   "ttd_per_degradation": {
+    "black": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 0
+    },
+    "blur": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 0
+    },
+    "darken": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 0
+    },
+    "frozen": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 2
+    },
+    "lowbitrate": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 1
+    },
+    "noise": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 1
+    },
+    "overexpose": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 1
+    },
+    "shake": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 2
+    },
+    "static": {
+     "n": 6,
+     "median_ttd_s": 2.0,
+     "never_decided": 0
+    }
+   },
+   "note": "prefix-recompute latency is an UPPER bound; true incremental is cheaper"
   },
   "B": {
    "status": "NOT RUN"
@@ -224,7 +961,8 @@
    "status": "NOT RUN"
   },
   "A-full": {
-   "status": "NOT RUN"
+   "status": "NOT RUN",
+   "reason": "chunk features only for A/E base variants"
   }
  },
  "hyperspectral_verdict": {
@@ -233,5 +971,5 @@
  "vlm_verdict": {
   "status": "NOT RUN"
  },
- "scorer_wall_s": 0.0
+ "scorer_wall_s": 4.2
 }
