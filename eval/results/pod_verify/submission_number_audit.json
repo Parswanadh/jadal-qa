@@ -1,0 +1,1136 @@
+[
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "On 60 real Egocentric-10K windows with human labels (51 good / 9 bad)",
+  "number": "n=60; 51 good / 9 bad",
+  "source": "docs/FACTS.md 18:40; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "score AUROC 0.529 (95% CI 0.32–0.74, window bootstrap, optimistic)",
+  "number": "0.529 [0.32, 0.74]",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "it rejected 21 of 51 good windows (41%) and 5 of 9 bad windows",
+  "number": "21/51 (41%); 5/9",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "balanced accuracy 0.51",
+  "number": "0.51",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "the dashboard’s ~40% reject share on Egocentric-10K is mostly false rejects",
+  "number": "~40% reject share",
+  "source": "docs/FACTS.md 18:40; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok",
+  "note": "Direction confirmed by LB1 (false rejects are worse than published: 26/51)."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Corroborating registry entry: E6.03 ... AUROC 0.281 [0.145, 0.434] ... n=60/n_bad=9",
+  "number": "0.281 [0.145, 0.434]; n=60; n_bad=9",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E6.03 (done/drop)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "gives score AUROC 0.415 [0.207, 0.630], 26 of 51 good windows rejected, 3 of 9 bad, balanced accuracy 0.412 (p_eg2 0.586, p_pixel 0.342)",
+  "number": "0.415 [0.207, 0.630]; 26/51; 3/9; 0.412; 0.586; 0.342",
+  "source": "LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "contradicts",
+  "note": "SUPERSEDED FRAMING: LB1's first pass (16:10-16:13) conflated two scorers and was corrected at 16:18 (commit 0e4f7de). The individual numbers here (0.415 [0.207,0.630], 26/51, 3/9, 0.412; p_eg2 0.586, p_pixel 0.342) are correct FOR THE FROZEN two-view ensemble_v1 (caches/ensemble/ood_scores.json), but they are NOT a recomputation of the 0.529 claim: 0.529 is the PoC cascade and reproduces exactly. As written the note tells readers the pack's headline OOD number is wrong, which is now false. Rewrite as two separately attributed numbers."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "configs/frozen/ensemble_v1.prereg.json, PR #97",
+  "number": "PR #97",
+  "source": "gh pr view 97 -R Parswanadh/jadal-qa: OPEN, [B4] Stage frozen pre-registered OOD run (PENDING until labels land)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "150 ten-second windows from 7 IndEgo videos (480p, ~10 fps), one human labeller: 100 usable / 50 bad",
+  "number": "150; 7 clips; 480p; ~10 fps; 100/50",
+  "source": "docs/FACTS.md Data and ground truth",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "and only ~3 wearers appear in the file names",
+  "number": "~3 wearers",
+  "source": "docs/FACTS.md Data and ground truth",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "26 per-pixel features + logistic | 0.810 | [0.69, 0.89]",
+  "number": "0.810 [0.69, 0.89]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md (0.810 [0.694,0.889])",
+  "status": "ok",
+  "note": "Registry E1.01 records 0.809 for the 10 fps pixel view; both values are published and reproduced."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "EmbeddingGemma-2 window view (EG2) | 0.848 | [0.73, 0.91]",
+  "number": "0.848 [0.73, 0.91]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md (0.8480 [0.734,0.909])",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Probability average of the two views | 0.853 | [0.73, 0.92]",
+  "number": "0.853 [0.73, 0.92]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md (0.853 [0.731,0.922])",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "E1.01 (10 fps pixel view 0.809 [0.69, 0.89])",
+  "number": "0.809 [0.69, 0.89]",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E1.01; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md (0.8086 [0.6933,0.8895])",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "E1.02 (EG2 2 fps 0.848 [0.73, 0.91]; 1 fps 0.860; 0.5 fps 0.870 — fewer frames are not worse)",
+  "number": "0.848; 0.860; 0.870",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E1.02; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md (0.8480/0.8596/0.8702)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "EG2 | 0.846 (nested)",
+  "number": "0.846",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "pixel (26 features) | 0.792 (nested)",
+  "number": "0.792",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "probability average | 0.834 (nested)",
+  "number": "0.834",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "rank average | 0.844 (nested)",
+  "number": "0.844",
+  "source": "docs/FACTS.md 18:40; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md (rank-avg 0.856 is the raw/non-nested value)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Gates AUROC ≥ 0.85 and CI-low ≥ 0.72: NOT met.",
+  "number": "gates 0.85 / 0.72",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Weakest clip 0.606.",
+  "number": "0.606",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "The frozen, pre-registered ensemble (sha256 4da1068a78d5d150…) was registered before the out-of-domain labels were read",
+  "number": "sha256 4da1068a78d5d150…",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Frozen artifact sha256 recovered and verified byte-exactly from git blob 0ede3b83d93ce23dc5b68cd20fb7de0af703ad27 (LB1 frozen_blob_verification.json, independent of LB4). Live hazard: jadal.ensemble.scorer.load_config() raises on the default config path (path-remapped file) while the PoC loader skips the sha256 check."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "its out-of-domain score is pending.",
+  "number": "pending",
+  "source": "FACTS 18:40 (superseded); LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "contradicts",
+  "note": "Stale: the frozen ensemble_v1 OOD score has been computed (0.415 [0.207,0.630], exploratory, E4.03/LB1). What is pending is the confirmatory re-derivation from the recovered pre-registered artifact (configs/frozen/ensemble_v1.prereg.json, PR #97/LB4, staged PENDING until labels land). Quote the two OOD numbers separately (0.529 PoC cascade / 0.415 frozen ensemble_v1) and never merge them."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Deciding all 150 windows: balanced accuracy 0.74 (26 of 100 good windows wrongly rejected).",
+  "number": "0.74; 26/100",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok",
+  "note": "FACTS attributes the selective curve to the 26-feature + logistic view; the explainer does not name the view (minor attribution gap)."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Keeping the 80% most confident: 0.84 (15 of 80 good wrongly rejected; 88% of bad rejected).",
+  "number": "0.84; 15/80; 88%",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok",
+  "note": "Same view-attribution gap as above."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "50% most confident: 0.81.",
+  "number": "0.81",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "~0.8 AUROC is the honest ceiling so far",
+  "number": "~0.8",
+  "source": "docs/FACTS.md 17:40/18:25",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "no human labels on the 4.404 h / 1,546 windows on disk",
+  "number": "4.404 h; 1,546",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "not achievable at n=150: multiple-testing correction needs ~86 clean fires (certification split has 84)",
+  "number": "~86; 84",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "CPU feature path gives an identical quantised digest over 10 runs",
+  "number": "10 runs",
+  "source": "docs/FACTS.md Measured results",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "scored only on a stale 79-label snapshot (0.64–0.68, CI spans 0.5)",
+  "number": "79 labels; 0.64–0.68",
+  "source": "docs/FACTS.md Measured results",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "only 64 constructed pairs are measured (duplicates; 6 real human DUPLICATE labels)",
+  "number": "64 pairs; 6 labels",
+  "source": "docs/FACTS.md Measured results",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Same grid channels pooled over space score 0.790, above the spatial-grid ensemble (0.753) and global-only (0.724); adding spatial features is null or worse (−0.002, CI −0.077..+0.071)",
+  "number": "0.790; 0.753; 0.724; −0.002; CI −0.077..+0.071",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "LOCO AUROC 0.753 (0.65–0.81) vs 0.810 for the 26 per-pixel features; 0.351 on real windows",
+  "number": "0.753 [0.65,0.81]; 0.810; 0.351",
+  "source": "docs/FACTS.md 18:25",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "SmolVLM2-2.2B, n=79 labels / 14 bad: yes/no AUROC 0.57, probability AUROC 0.77 ... ~1.4 s per 10-s segment ≈ 58 days of GPU for 3.6 M segments",
+  "number": "0.57; 0.77; n=79; 14; 1.4 s; 58 days; 3.6 M",
+  "source": "docs/FACTS.md Direction",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Nominal 2.7% false-reject became 46% on held-out clips (intra-clip correlation 0.58, effective n ≈ 11)",
+  "number": "2.7%; 46%; 0.58; n≈11",
+  "source": "docs/FACTS.md 17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "At an equal 20-frame budget, uniform 0.787 [0.650, 0.866] beats motion-adaptive 0.762, keyframe 0.780, random 0.739 ... registry E1.04",
+  "number": "0.787 [0.650,0.866]; 0.762; 0.780; 0.739",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E1.04 — status running, no summary/results; FACTS 20:00 lists E1.04 as unfinished",
+  "status": "pending-as-result",
+  "note": "The numbers do exist in a worker result JSON (exp-fps-pod/eval/results/exp_fps/E1.04.json, mirrored in the branch-local registry), but E1.04 is running in the union registry of record and unfinished in FACTS.md. Either close E1.04 in the union registry or mark the arm in progress."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "IndEgo error 0.088 → 0.418; no OOD position effect, Mann-Whitney p=0.42, n_bad=9 thin",
+  "number": "0.088→0.418; p=0.42; n_bad=9",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E3.01/E3.02 (done)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Container match does not fix the content gap; frozen-ensemble OOD AUROC 0.415 (n=60, n_bad=9, exploratory) not improved. [source registry E4.03]",
+  "number": "0.415; n=60; n_bad=9",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E4.03 — status running, no summary; FACTS 20:00 lists E4.01–E4.04 as unfinished",
+  "status": "pending-as-result",
+  "note": "Number is corroborated by the LB1 recompute of the shipped score artifact (0.415 [0.207,0.630]); the E4.03 result JSON exists on exp-regimes-pod. Registry status must be closed or the claim moved to in-progress."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "full H.264 480p ≈ 90–100× real time; keyframe-only ≈ 200×",
+  "number": "90–100×; 200×",
+  "source": "docs/FACTS.md Measured results",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "one CPU core decodes 43–55 fps (RTF 1.4–1.8)",
+  "number": "43–55 fps; RTF 1.4–1.8",
+  "source": "docs/FACTS.md 17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "NVDEC 620–730 fps (RTF 21–24) and saturates at one engine",
+  "number": "620–730 fps; RTF 21–24",
+  "source": "docs/FACTS.md 17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "NVDEC is not faster than CPU decode for a single 480p stream (2,348 vs 2,820 fps)",
+  "number": "2,348; 2,820",
+  "source": "docs/FACTS.md Measured results",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "~700 video-hours per hour at 4.6 GiB (480p ladder; started from 22 h/h on one CPU core). An earlier 1,800–2,000 h/h figure was superseded",
+  "number": "~700 h/h; 4.6 GiB; 22 h/h; 1,800–2,000 h/h",
+  "source": "docs/FACTS.md 17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "all 1,546 windows across 58 clips / 4.404 h / 47 factories processed with descriptive verdicts; throughput so far is roughly 7× real time",
+  "number": "1,546; 58; 4.404 h; 47; ~7×",
+  "source": "docs/FACTS.md 17:40/17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "every 2nd window + 4 s early exit ≈ 0.20 of footage (≈ ×5). Compute accounting: every-2nd → ×1.9; every-2nd + 4 s exit → ≈ ×4.9; every-3rd + 4 s → ×7.2",
+  "number": "0.20; ×5; ×1.9; ×4.9; ×7.2",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E3.01/E3.04 (done)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Early exit saturates at 4–6 s (2 s 0.804, 4 s 0.860, 6 s 0.869, 8 s 0.857, full 10.5 s 0.848)",
+  "number": "0.804; 0.860; 0.869; 0.857; 0.848",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E3.03; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md (0.8038/0.8596/0.8694/0.8574/0.8480)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "10,000 h in 1–2 h = 5,000× aggregate real time (3,333× at 3 h) ... about 209 (T0) / 263 (T1) cores; moving 4.5–9 TB",
+  "number": "10,000 h; 5,000×; 3,333×; 209; 263; 4.5–9 TB",
+  "source": "docs/FACTS.md Measured results",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "RTX 4070 LAPTOP, 36 SMs / 4,608 CUDA cores, 8 GiB VRAM, ~256 GB/s theoretical bandwidth, PCIe 4.0 x8 (measured host→GPU 5.7–7.6 GB/s)",
+  "number": "36 SMs; 4,608; 8 GiB; ~256 GB/s; PCIe 4.0 x8; 5.7–7.6 GB/s",
+  "source": "docs/FACTS.md Measured results",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Shared across ~12 jobs through a 3-slot lock; power cap reads 124 W; thermally limited (CPU ~97 °C, GPU 85–90 °C under load)",
+  "number": "~12 jobs; 3-slot; 124 W; 97 °C; 85–90 °C",
+  "source": "docs/FACTS.md 17:40 and Measured results",
+  "status": "ok",
+  "note": "FACTS is internally inconsistent on power: line 26 says the limit is fixed at 80 W by firmware while 17:40 says the cap reads 124 W. The artifact quotes 124 W faithfully; FACTS should be reconciled."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "docs/FACTS.md ... sha256 77c7331b5e9ca8e8…",
+  "number": "sha256 77c7331b5e9ca8e8…",
+  "source": "jadal_pod_bundle/docs/FACTS.md",
+  "status": "ok",
+  "note": "Full hash verified: 77c7331b5e9ca8e8133c0bfa6217480d1b9f7b54f2f54289200f9e67bfc6dd41."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "34 entries (24 done / 10 running; verdicts 11 adopt, 8 drop, 6 maybe, 1 inconclusive, 8 none), including LB1",
+  "number": "34; 24; 10; 11/8/6/1/8",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify)",
+  "status": "contradicts",
+  "note": "Union registry at audit time (b/verify @ 0e4f7de, sha256 b828dd093122718fa9573094d3d7819996bac8e3a1ba3caa1454eb6fa6fc8f83, 36 lines / 36 ids): 28 done, 7 running, 1 pending (LB4); verdicts 10 adopt, 9 drop, 8 maybe, 2 inconclusive, 7 none. The artifact numbers match the branch-local 34-line copy (b-submission-docs:experiments/registry.jsonl), which has diverged from the union registry of record (E1.03/E1.04/E4.01-E4.04 done there, running in the union; LB4/LB5 absent there)."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "Independent verification ... 20/20 published quantitative claims reproduced exactly",
+  "number": "20/20",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) LB1 (done/adopt)",
+  "status": "ok",
+  "note": "Literal match to LB1 ('20/20 core claims reproduced EXACTLY'). Caveats the pack omits: LB1 reports TWO FINDINGS FAILED VERIFICATION (14/316 SHA256SUMS.txt mismatches incl. the frozen scorer config; plus the OOD attribution correction), and states the GPU feature-extraction half and the delivered OOD-labels half remain unverified. Recommend adding that clause where 20/20 appears."
+ },
+ {
+  "artifact": "docs/explainer.html",
+  "quote": "every number below is quoted from docs/FACTS.md or experiments/registry.jsonl",
+  "number": "meta-claim",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) + docs/FACTS.md",
+  "status": "ok",
+  "note": "True against the branch-local registry copy, but E1.04/E4.03 verdicts/numbers are absent from FACTS.md and from the union registry of record (running there). See the registry-divergence finding."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "On 60 real Egocentric-10K windows, human labels (51 good / 9 bad)",
+  "number": "n=60; 51/9",
+  "source": "docs/FACTS.md 18:40; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "| score AUROC | 0.529 (95% CI 0.32–0.74, optimistic) |",
+  "number": "0.529 [0.32, 0.74]",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "| good windows falsely rejected | 21 / 51 = 41% |",
+  "number": "21/51 (41%)",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "| bad windows rejected | 5 / 9 |",
+  "number": "5/9",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "| balanced accuracy | 0.51 |",
+  "number": "0.51",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "The dashboard’s ~40% reject share on Egocentric-10K is mostly false rejects ... Not a quality measure.",
+  "number": "~40%",
+  "source": "docs/FACTS.md 18:40; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Corroborated by REG E6.03 (frozen motion cue OOD AUROC 0.281 [0.145,0.434])",
+  "number": "0.281 [0.145, 0.434]",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E6.03 (done/drop)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Recompute from caches/ensemble/ood_scores.json + labels/ood_labels.json ... AUROC 0.415 [0.207, 0.630], 26/51 good rejected, 3/9 bad, bal-acc 0.412 ... (PR #97)",
+  "number": "0.415 [0.207,0.630]; 26/51; 3/9; 0.412; PR #97",
+  "source": "LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md + gh pr 97",
+  "status": "contradicts",
+  "note": "SUPERSEDED FRAMING: LB1's first pass (16:10-16:13) conflated two scorers and was corrected at 16:18 (commit 0e4f7de). The individual numbers here (0.415 [0.207,0.630], 26/51, 3/9, 0.412; p_eg2 0.586, p_pixel 0.342) are correct FOR THE FROZEN two-view ensemble_v1 (caches/ensemble/ood_scores.json), but they are NOT a recomputation of the 0.529 claim: 0.529 is the PoC cascade and reproduces exactly. As written the note tells readers the pack's headline OOD number is wrong, which is now false. Rewrite as two separately attributed numbers."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "150 ten-second IndEgo windows (7 clips, 480p ~10 fps), one human labeller, 100 usable / 50 bad",
+  "number": "150; 7; 480p; ~10 fps; 100/50",
+  "source": "docs/FACTS.md Data and ground truth",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "| 26 per-pixel features + logistic | 0.810 | [0.69, 0.89] |",
+  "number": "0.810 [0.69, 0.89]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "| EmbeddingGemma-2 window view | 0.848 | [0.73, 0.91] |",
+  "number": "0.848 [0.73, 0.91]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "| probability average | 0.853 | [0.73, 0.92] |",
+  "number": "0.853 [0.73, 0.92]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Selective accuracy: 0.74 deciding all 150 → 0.84 on the 80% most confident.",
+  "number": "0.74; 0.84",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok",
+  "note": "View not named; FACTS attributes the curve to the 26-feature + logistic view (LB1: pixel26 bal-acc 0.74). For the two-view ensemble LB1 gets 0.79 full / 0.831 at 80% — naming the view avoids ambiguity."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "~0.8 AUROC is the honest ceiling so far; accuracy is not yet high.",
+  "number": "~0.8",
+  "source": "docs/FACTS.md 17:40/18:25",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "EG2 0.846 / pixel 0.792 / probability average 0.834 / rank average 0.844 (nested)",
+  "number": "0.846; 0.792; 0.834; 0.844",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Gates AUROC ≥ 0.85 and CI-low ≥ 0.72: NOT met. Weakest clip 0.606.",
+  "number": "0.85; 0.72; 0.606",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "The frozen ensemble (sha256 4da1068a78d5d150…) was pre-registered before the OOD labels were read; its OOD score is pending.",
+  "number": "sha256 4da1068a78d5d150…; pending",
+  "source": "docs/FACTS.md 18:40 (superseded); LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "contradicts",
+  "note": "Stale: the frozen ensemble_v1 OOD score has been computed (0.415 [0.207,0.630], exploratory, E4.03/LB1). What is pending is the confirmatory re-derivation from the recovered pre-registered artifact (configs/frozen/ensemble_v1.prereg.json, PR #97/LB4, staged PENDING until labels land). Quote the two OOD numbers separately (0.529 PoC cascade / 0.415 frozen ensemble_v1) and never merge them."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Egocentric-10K accuracy — in progress (no human labels on the 1,546 windows)",
+  "number": "1,546",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Second OOD batch ood_labels2.json — not delivered → OOD stays n=60 / n_bad=9",
+  "number": "n=60; n_bad=9",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E5.04 (done/inconclusive, labels_missing=true)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Certified error bounds in progress: not achievable at n=150 (correction needs ~86 clean fires; certification split has 84)",
+  "number": "n=150; ~86; 84",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "480p decode ≈ 90–100× real time on one core; keyframe-only ≈ 200×.",
+  "number": "90–100×; 200×",
+  "source": "docs/FACTS.md Measured results",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Real 1080p/30 fps HEVC: one CPU core 43–55 fps (RTF 1.4–1.8); NVDEC 620–730 fps (RTF 21–24)",
+  "number": "43–55; 1.4–1.8; 620–730; 21–24",
+  "source": "docs/FACTS.md 17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "GPU kernels alone ≈ 700 video-hours per hour at 4.6 GiB (supersedes an earlier 1,800–2,000 h/h figure)",
+  "number": "~700; 4.6 GiB; 1,800–2,000",
+  "source": "docs/FACTS.md 17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "PoC run: all 1,546 windows (58 clips, 4.404 h, 47 factories) processed with descriptive verdicts; ~7× real time so far.",
+  "number": "1,546; 58; 4.404 h; 47; ~7×",
+  "source": "docs/FACTS.md 17:40/17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Adopted IndEgo policy: every 2nd window + 4 s exit ≈ 0.20 of footage (≈ ×5).",
+  "number": "0.20; ×5",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E3.04/E3.05 (done/adopt)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Space-pooled grid channels 0.790 > spatial-grid ensemble 0.753 > global-only 0.724.",
+  "number": "0.790; 0.753; 0.724",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Custom rhythm network — NEGATIVE. 0.753 (0.65–0.81) vs 0.810 ... 0.351 after training with synthetic negatives.",
+  "number": "0.753 [0.65,0.81]; 0.810; 0.351",
+  "source": "docs/FACTS.md 18:25",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Generic VLM — STOPPED ... AUROC 0.57/0.77 at n=79 (14 bad); ~58 days of GPU for 3.6 M segments.",
+  "number": "0.57; 0.77; n=79; 14; 58 days; 3.6 M",
+  "source": "docs/FACTS.md Direction",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Nominal 2.7% false-reject → 46% (effective n ≈ 11).",
+  "number": "2.7%; 46%; n≈11",
+  "source": "docs/FACTS.md 17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Frame selection dropped (uniform wins at equal budget, REG E1.04)",
+  "number": "verdict claim (no number)",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E1.04 — running, no summary; FACTS 20:00 unfinished",
+  "status": "pending-as-result",
+  "note": "Result JSON exists on a worker branch, but E1.04 is running in the union registry of record. Same issue as the explainer's E1.04 row."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "re-encoding to the IndEgo spec does not fix transfer (REG E4.03)",
+  "number": "verdict claim (no number)",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E4.03 — running, no summary; FACTS 20:00 unfinished",
+  "status": "pending-as-result",
+  "note": "Result JSON exists on exp-regimes-pod; union registry status must be closed or the claim marked in progress."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "domain adaptation (REG E5.02: ~12 OOD windows ≈ 0.7 exploratory)",
+  "number": "~12; ≈0.7",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E5.02 (done/maybe)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "experiments/registry.jsonl — merged append-only registry, 34 entries (24 done / 10 running)",
+  "number": "34; 24; 10",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify)",
+  "status": "contradicts",
+  "note": "Union registry at audit time (b/verify @ 0e4f7de, sha256 b828dd093122718fa9573094d3d7819996bac8e3a1ba3caa1454eb6fa6fc8f83, 36 lines / 36 ids): 28 done, 7 running, 1 pending (LB4); verdicts 10 adopt, 9 drop, 8 maybe, 2 inconclusive, 7 none. The artifact numbers match the branch-local 34-line copy (b-submission-docs:experiments/registry.jsonl), which has diverged from the union registry of record (E1.03/E1.04/E4.01-E4.04 done there, running in the union; LB4/LB5 absent there)."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "20/20 published quantitative claims reproduced exactly on an A40 pod, CPU-only",
+  "number": "20/20",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) LB1",
+  "status": "ok",
+  "note": "Literal match to LB1 ('20/20 core claims reproduced EXACTLY'). Caveats the pack omits: LB1 reports TWO FINDINGS FAILED VERIFICATION (14/316 SHA256SUMS.txt mismatches incl. the frozen scorer config; plus the OOD attribution correction), and states the GPU feature-extraction half and the delivered OOD-labels half remain unverified. Recommend adding that clause where 20/20 appears."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "Never claimed: transfer, certified bounds, Raspberry Pi, hyperspectral, signing, voice, Egocentric-10K accuracy.",
+  "number": "n/a (negative claim)",
+  "source": "FACTS Still NOT done/claimed",
+  "status": "ok",
+  "note": "Verified: no artifact claims OOD transfer or OOD accuracy; all PENDING items are labelled in-progress."
+ },
+ {
+  "artifact": "docs/deck/DECK.md",
+  "quote": "No number appears in this deck that is not in one of those two source files.",
+  "number": "meta-claim",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) + docs/FACTS.md",
+  "status": "ok",
+  "note": "True against the branch-local registry copy, but E1.04/E4.03 verdicts/numbers are absent from FACTS.md and from the union registry of record (running there). See the registry-divergence finding."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "On 60 human-labelled Egocentric-10K windows (51 good / 9 bad)",
+  "number": "n=60; 51/9",
+  "source": "docs/FACTS.md 18:40; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "score AUROC 0.529 (95% CI 0.32–0.74, optimistic)",
+  "number": "0.529 [0.32, 0.74]",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "21 of 51 good windows falsely rejected (41%) and 5 of 9 bad",
+  "number": "21/51 (41%); 5/9",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "balanced accuracy 0.51",
+  "number": "0.51",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "The dashboard’s ~40% reject share on that footage is therefore mostly false rejects from domain shift ... not a quality measure.",
+  "number": "~40%",
+  "source": "docs/FACTS.md 18:40; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "LB1 recompute: AUROC 0.415 [0.207, 0.630], 26/51 good rejected",
+  "number": "0.415 [0.207,0.630]; 26/51",
+  "source": "LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "contradicts",
+  "note": "SUPERSEDED FRAMING: LB1's first pass (16:10-16:13) conflated two scorers and was corrected at 16:18 (commit 0e4f7de). The individual numbers here (0.415 [0.207,0.630], 26/51, 3/9, 0.412; p_eg2 0.586, p_pixel 0.342) are correct FOR THE FROZEN two-view ensemble_v1 (caches/ensemble/ood_scores.json), but they are NOT a recomputation of the 0.529 claim: 0.529 is the PoC cascade and reproduces exactly. As written the note tells readers the pack's headline OOD number is wrong, which is now false. Rewrite as two separately attributed numbers."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "experiments/registry.jsonl (34 entries, rendered to docs/EXPERIMENTS.md)",
+  "number": "34",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify)",
+  "status": "contradicts",
+  "note": "Union registry at audit time (b/verify @ 0e4f7de, sha256 b828dd093122718fa9573094d3d7819996bac8e3a1ba3caa1454eb6fa6fc8f83, 36 lines / 36 ids): 28 done, 7 running, 1 pending (LB4); verdicts 10 adopt, 9 drop, 8 maybe, 2 inconclusive, 7 none. The artifact numbers match the branch-local 34-line copy (b-submission-docs:experiments/registry.jsonl), which has diverged from the union registry of record (E1.03/E1.04/E4.01-E4.04 done there, running in the union; LB4/LB5 absent there)."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "all 1,546 windows / 58 clips / 4.404 h / 47 factories of Egocentric-10K on disk",
+  "number": "1,546; 58; 4.404 h; 47",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "150 ten-second windows, 7 IndEgo clips, 480p ~10 fps, one human labeller (100 usable / 50 bad)",
+  "number": "150; 7; 480p; ~10 fps; 100/50",
+  "source": "docs/FACTS.md Data and ground truth",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "| 26 per-pixel features + logistic | 0.810 | [0.69, 0.89] |",
+  "number": "0.810 [0.69, 0.89]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "| EmbeddingGemma-2 window view (EG2) | 0.848 | [0.73, 0.91] |",
+  "number": "0.848 [0.73, 0.91]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "| Probability average of the two views | 0.853 | [0.73, 0.92] |",
+  "number": "0.853 [0.73, 0.92]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "Nested validation (C chosen by inner LOCO): EG2 0.846, pixel 0.792, prob-avg 0.834, rank-avg 0.844.",
+  "number": "0.846; 0.792; 0.834; 0.844",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "Gates AUROC ≥ 0.85 and CI-low ≥ 0.72: NOT met. Weakest clip 0.606.",
+  "number": "0.85; 0.72; 0.606",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "Selective accuracy: 0.74 deciding all 150 windows → 0.84 on the 80% most confident (26 of 100 good windows wrongly rejected at full coverage).",
+  "number": "0.74; 0.84; 26/100",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok",
+  "note": "View not named (FACTS: 26-feature + logistic)."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "~0.8 AUROC is the honest ceiling so far",
+  "number": "~0.8",
+  "source": "docs/FACTS.md 17:40/18:25",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "Independent verification ... 20/20 ... (0.810 / 0.8480 [0.734, 0.909] / 0.853 / 0.856), the E1.01 fps sweep, E3.01 clip-error 0.0486 [0.0189, 0.0872], E3.03 4 s 0.8596",
+  "number": "20/20; 0.810; 0.8480 [0.734,0.909]; 0.853; 0.856; 0.0486 [0.0189,0.0872]; 0.8596",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) LB1",
+  "status": "ok",
+  "note": "Literal match to LB1 ('20/20 core claims reproduced EXACTLY'). Caveats the pack omits: LB1 reports TWO FINDINGS FAILED VERIFICATION (14/316 SHA256SUMS.txt mismatches incl. the frozen scorer config; plus the OOD attribution correction), and states the GPU feature-extraction half and the delivered OOD-labels half remain unverified. Recommend adding that clause where 20/20 appears."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "60 random real Egocentric-10K windows ... 51 good / 9 bad (8 “no active work”, 1 shaky)",
+  "number": "60; 51/9; 8; 1",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "| score AUROC (shipped IndEgo-calibrated cascade) | 0.529 [0.32, 0.74] |",
+  "number": "0.529 [0.32, 0.74]",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "| good windows rejected | 21 / 51 = 41% |",
+  "number": "21/51 (41%)",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "| bad windows rejected | 5 / 9 |",
+  "number": "5/9",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "| balanced accuracy | 0.51 |",
+  "number": "0.51",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E6.03 frozen motion-cue direction AUROC 0.281 [0.145, 0.434]",
+  "number": "0.281 [0.145, 0.434]",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E6.03 (done/drop)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E4.03 frozen-ensemble AUROC 0.415 on the 480p/30 transcode",
+  "number": "0.415",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E4.03 — running, no summary; FACTS 20:00 unfinished",
+  "status": "pending-as-result",
+  "note": "E4.03 result JSON exists on exp-regimes-pod and the number agrees with the LB1 recompute; the union registry status is still running."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E1.03 frozen IndEgo logistic 0.36–0.55 across source fps",
+  "number": "0.36–0.55",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E1.03 — running, no summary; FACTS 20:00 unfinished",
+  "status": "pending-as-result",
+  "note": "Branch-local E1.03 result JSON has 0.3595/0.4314/0.5468/0.5512/0.5468 at 30/10/3/2/1 fps (range 0.36–0.55). Union registry still running."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "certified error bounds (not achievable at n=150: correction needs ~86 clean fires, certification split has 84)",
+  "number": "n=150; ~86; 84",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "second OOD batch labels/ood_labels2.json — not delivered (E5.04 records labels_missing=true, n=0), so OOD claims stay n=60 / n_bad=9",
+  "number": "n=0; n=60; n_bad=9",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E5.04 (done/inconclusive)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "34 entries: 24 done, 10 running. Verdicts: 11 adopt, 8 drop, 6 maybe, 1 inconclusive, 8 none yet.",
+  "number": "34; 24; 10; 11/8/6/1/8",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify)",
+  "status": "contradicts",
+  "note": "Union registry at audit time (b/verify @ 0e4f7de, sha256 b828dd093122718fa9573094d3d7819996bac8e3a1ba3caa1454eb6fa6fc8f83, 36 lines / 36 ids): 28 done, 7 running, 1 pending (LB4); verdicts 10 adopt, 9 drop, 8 maybe, 2 inconclusive, 7 none. The artifact numbers match the branch-local 34-line copy (b-submission-docs:experiments/registry.jsonl), which has diverged from the union registry of record (E1.03/E1.04/E4.01-E4.04 done there, running in the union; LB4/LB5 absent there)."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E1.01 fps sweep (10 fps 0.809; 3.33 fps within 0.02 at 34 vs 100 frames)",
+  "number": "0.809; 3.33 fps; 34; 100",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E1.01; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E1.02 EG2 0.848/0.860/0.870 at 2/1/0.5 fps (fewer frames not worse)",
+  "number": "0.848; 0.860; 0.870",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E1.02; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E3.01–E3.05 sampling policy adopted (every 2nd window + 4 s exit ≈ 0.20 footage, ×5; skip-the-start dropped)",
+  "number": "0.20; ×5",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E3.01–E3.05 (done/adopt)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E1.04 frame selection dropped (uniform wins at equal budget)",
+  "number": "verdict claim (no number)",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E1.04 — running; FACTS 20:00 unfinished",
+  "status": "pending-as-result",
+  "note": "See explainer E1.04 row."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E4.02 no regime split",
+  "number": "verdict claim (no number)",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E4.02 — running, no summary; FACTS 20:00 unfinished",
+  "status": "pending-as-result",
+  "note": "E4.02 result JSON exists on exp-regimes-pod (no regime split adopted); union registry still running."
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E4.03 re-encoding does not fix transfer",
+  "number": "verdict claim (no number)",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E4.03 — running; FACTS 20:00 unfinished",
+  "status": "pending-as-result"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E5.02 ~12-window OOD adaptation ≈ 0.7 exploratory",
+  "number": "~12; ≈0.7",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E5.02 (done/maybe)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "E7.01 A40 cost model",
+  "number": "n/a",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E7.01 (done/adopt)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "windows within a clip are correlated (effective n ≈ 20–43)",
+  "number": "n≈20–43",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/POC_STATUS.md",
+  "quote": "the pipeline was calibrated on 480p/10 fps IndEgo and does not transfer to 1080p/30 fps HEVC as shipped",
+  "number": "n/a (negative claim)",
+  "source": "docs/FACTS.md 17:40; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok",
+  "note": "Verified: no OOD transfer/accuracy claim anywhere in the pack."
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "experiments/registry.jsonl (34 entries, append-only, latest line per id wins → docs/EXPERIMENTS.md)",
+  "number": "34",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify)",
+  "status": "contradicts",
+  "note": "Union registry at audit time (b/verify @ 0e4f7de, sha256 b828dd093122718fa9573094d3d7819996bac8e3a1ba3caa1454eb6fa6fc8f83, 36 lines / 36 ids): 28 done, 7 running, 1 pending (LB4); verdicts 10 adopt, 9 drop, 8 maybe, 2 inconclusive, 7 none. The artifact numbers match the branch-local 34-line copy (b-submission-docs:experiments/registry.jsonl), which has diverged from the union registry of record (E1.03/E1.04/E4.01-E4.04 done there, running in the union; LB4/LB5 absent there)."
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "On 60 real Egocentric-10K windows with human labels (51 good / 9 bad, one labeller)",
+  "number": "n=60; 51/9",
+  "source": "docs/FACTS.md 18:40; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "score AUROC 0.529 [0.32, 0.74]",
+  "number": "0.529 [0.32, 0.74]",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "21/51 good windows rejected (41%) and 5/9 bad",
+  "number": "21/51 (41%); 5/9",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "balanced accuracy 0.51",
+  "number": "0.51",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok",
+  "note": "Reproduces exactly (LB1 correction, commit 0e4f7de, 16:18): this is the PoC cascade, verified against origin/main:eval/results/poc/ood_check_60.json -> AUROC 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513. Do NOT merge with the frozen ensemble_v1 figure (0.415 [0.207,0.630], 26/51 good, 3/9 bad)."
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "The dashboard’s ~40% reject share on that footage is mostly false rejects ... and is not a quality measure.",
+  "number": "~40%",
+  "source": "docs/FACTS.md 18:40; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "labels/ood_labels2.json is not delivered, so all OOD claims stay at n=60 / n_bad=9",
+  "number": "n=60; n_bad=9",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E5.04",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "corroborated by registry E6.03 (0.281 [0.145, 0.434])",
+  "number": "0.281 [0.145, 0.434]",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E6.03 (done/drop)",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "E4.03 (0.415), E1.03 (0.36–0.55)",
+  "number": "0.415; 0.36–0.55",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E4.03 and E1.03 — both running, no summaries; FACTS 20:00 unfinished",
+  "status": "pending-as-result",
+  "note": "Numbers exist in worker result JSONs (exp-regimes-pod, exp-fps-pod) but the union registry of record still lists both as running."
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "gives score AUROC 0.415 [0.207, 0.630], 26 of 51 good windows rejected, 3 of 9 bad, balanced accuracy 0.412 (p_eg2 0.586, p_pixel 0.342)",
+  "number": "0.415 [0.207,0.630]; 26/51; 3/9; 0.412; 0.586; 0.342",
+  "source": "LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "contradicts",
+  "note": "SUPERSEDED FRAMING: LB1's first pass (16:10-16:13) conflated two scorers and was corrected at 16:18 (commit 0e4f7de). The individual numbers here (0.415 [0.207,0.630], 26/51, 3/9, 0.412; p_eg2 0.586, p_pixel 0.342) are correct FOR THE FROZEN two-view ensemble_v1 (caches/ensemble/ood_scores.json), but they are NOT a recomputation of the 0.529 claim: 0.529 is the PoC cascade and reproduces exactly. As written the note tells readers the pack's headline OOD number is wrong, which is now false. Rewrite as two separately attributed numbers."
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| 26-feature pixel view, LOCO n=150 | AUROC 0.810 [0.69, 0.89] |",
+  "number": "0.810 [0.69, 0.89]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| EG2 window view, LOCO n=150 | AUROC 0.848 [0.73, 0.91] |",
+  "number": "0.848 [0.73, 0.91]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| Probability average of the two views | AUROC 0.853 [0.73, 0.92] |",
+  "number": "0.853 [0.73, 0.92]",
+  "source": "docs/FACTS.md 18:25; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| Nested validation (inner-LOCO C) | EG2 0.846, pixel 0.792, prob-avg 0.834, rank-avg 0.844 — gates ≥0.85 / CI-low ≥0.72 NOT met |",
+  "number": "0.846; 0.792; 0.834; 0.844; 0.85; 0.72",
+  "source": "docs/FACTS.md 18:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| Selective accuracy | 0.74 at full coverage → 0.84 on the 80% most confident |",
+  "number": "0.74; 0.84",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok",
+  "note": "View not named."
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| Sampling policy adopted (IndEgo) | every 2nd window + 4 s exit ≈ 0.20 footage (×5) |",
+  "number": "0.20; ×5",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E3.01–E3.05",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| Early exit | saturates at 4–6 s: 2 s 0.804, 4 s 0.860, 6 s 0.869, 8 s 0.857, full 0.848 |",
+  "number": "0.804; 0.860; 0.869; 0.857; 0.848",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E3.03; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| fps sweep (pixel view) | 10 fps 0.809; 3.33 fps within 0.02 using 34 vs 100 frames |",
+  "number": "0.809; 3.33; 34; 100",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E1.01; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| EG2 fewer frames | 2/1/0.5 fps 0.848/0.860/0.870 (fewer frames not worse) |",
+  "number": "0.848; 0.860; 0.870",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) E1.02; LB1 eval/results/pod_verify/ood_and_nested.json + docs/reports/pod_verification.md",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| PoC run on real footage | 1,546 windows, 58 clips, 4.404 h, 47 factories, descriptive verdicts |",
+  "number": "1,546; 58; 4.404 h; 47",
+  "source": "docs/FACTS.md 17:40/17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "| Kernel-only GPU speed | ~700 video-hours per hour at 4.6 GiB (supersedes 1,800–2,000) |",
+  "number": "~700; 4.6 GiB; 1,800–2,000",
+  "source": "docs/FACTS.md 17:50",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "Independent verification: 20/20 exact on the A40 pod (CPU-only re-runs; E1.02 re-implemented independently)",
+  "number": "20/20",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify) LB1",
+  "status": "ok",
+  "note": "Literal match to LB1 ('20/20 core claims reproduced EXACTLY'). Caveats the pack omits: LB1 reports TWO FINDINGS FAILED VERIFICATION (14/316 SHA256SUMS.txt mismatches incl. the frozen scorer config; plus the OOD attribution correction), and states the GPU feature-extraction half and the delivered OOD-labels half remain unverified. Recommend adding that clause where 20/20 appears."
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "Registry status: 24 done, 10 running.",
+  "number": "24; 10",
+  "source": "experiments/registry.jsonl (union, /workspace/wt/b-verify)",
+  "status": "contradicts",
+  "note": "Union registry at audit time (b/verify @ 0e4f7de, sha256 b828dd093122718fa9573094d3d7819996bac8e3a1ba3caa1454eb6fa6fc8f83, 36 lines / 36 ids): 28 done, 7 running, 1 pending (LB4); verdicts 10 adopt, 9 drop, 8 maybe, 2 inconclusive, 7 none. The artifact numbers match the branch-local 34-line copy (b-submission-docs:experiments/registry.jsonl), which has diverged from the union registry of record (E1.03/E1.04/E4.01-E4.04 done there, running in the union; LB4/LB5 absent there)."
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "Egocentric-10K (builddotai): 58 clips / 4.404 h / 47 factories / 1,546 windows on disk, 1080p HEVC 30 fps — no human labels",
+  "number": "58; 4.404 h; 47; 1,546; 1080p; 30 fps",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "Egocentric-10K-Evaluation frames: 10,000 single JPEGs with AI labels (not human)",
+  "number": "10,000; AI labels",
+  "source": "docs/FACTS.md Data and ground truth",
+  "status": "ok"
+ },
+ {
+  "artifact": "docs/SUBMISSION.md",
+  "quote": "certified error bounds (needs ~86 clean fires; split has 84)",
+  "number": "~86; 84",
+  "source": "docs/FACTS.md 17:40",
+  "status": "ok"
+ }
+]

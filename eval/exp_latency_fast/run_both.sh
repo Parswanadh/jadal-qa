@@ -3,7 +3,7 @@
 # policy run (stride 2). Both at full resources (7 workers, 6 GPU slots).
 set -u
 cd "$(dirname "$0")/../.."   # repo root (worktree)
-source /workspace/env.sh
+source "${JADAL_ENV:-env.sh}"
 export OMP_NUM_THREADS=1
 export JADAL_GPU_SLOTS="${JADAL_GPU_SLOTS:-6}"
 OUT=eval/results/exp_latency_fast

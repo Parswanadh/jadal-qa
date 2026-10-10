@@ -21,11 +21,11 @@ IN = os.environ.get("L3_IN", os.path.join(REPO, "eval", "results", "exp_latency_
 IMG = os.path.join(REPO, "docs", "experiments", "exp_latency_fast", "images")
 os.makedirs(IMG, exist_ok=True)
 
-REF_E8 = "/workspace/wt/exp-rescore/eval/results/exp_rescore/E8.01.json"
-REF_LINES = "/workspace/artifacts/windows_rescored.jsonl"
+REF_E8 = os.path.join(os.environ.get("JADAL_WT", "wt"), 'exp-rescore/eval/results/exp_rescore/E8.01.json')
+REF_LINES = os.path.join(os.environ.get("JADAL_ARTIFACTS", "artifacts"), 'windows_rescored.jsonl')
 BASELINE_PARTIAL = os.environ.get(
     "L3_BASELINE_PARTIAL",
-    "/workspace/wt/m-latency-full/eval/results/exp_latency_full/windows.jsonl.partial")
+    os.path.join(os.environ.get("JADAL_WT", "wt"), 'm-latency-full/eval/results/exp_latency_full/windows.jsonl.partial'))
 
 STAGES = ["io_probe", "decode", "pixel_features", "descriptors", "eg2_embed",
           "mosaic", "decision", "write"]
@@ -365,7 +365,7 @@ def main():
             "resources": {"workers": meta["workers"], "omp_threads": meta["omp_threads"],
                           "gpu_slots": os.environ.get("JADAL_GPU_SLOTS", "6")},
         },
-        "command": ("source /workspace/env.sh && export OMP_NUM_THREADS=1 "
+        "command": ("source "${JADAL_ENV:-env.sh}" && export OMP_NUM_THREADS=1 "
                     "JADAL_GPU_SLOTS=6 && bash tools/pod/gpu_run.sh python3 "
                     "eval/exp_latency_fast/run_fast.py --workers 7 --pixel-fps 3.33 "
                     "--eg2-fps 1 --early-exit-s 4 --skip-mosaic --no-compare "

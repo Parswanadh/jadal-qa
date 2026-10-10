@@ -8,7 +8,7 @@ spread of windows with **one** worker (no GPU queue) to recover the uncontended
 per-window per-stage cost, and separately times 4 s vs 10 s decode at 1 worker.
 
 Run (GPU slot held):
-  source /workspace/env.sh
+  source "${JADAL_ENV:-env.sh}"
   export OMP_NUM_THREADS=1 JADAL_GPU_SLOTS=6
   bash tools/pod/gpu_run.sh python3 eval/exp_latency_fast/probe_clean.py \
        --pixel-fps 3.33 --eg2-fps 1 --early-exit-s 4 --skip-mosaic --n 40

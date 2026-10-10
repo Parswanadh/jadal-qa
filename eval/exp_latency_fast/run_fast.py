@@ -38,7 +38,7 @@ Verdicts/score/features_digest are identical to E8.01 (same code path); only
 ``latency_ms`` carries more stages, so ``receipt_sha256`` differs (documented).
 
 Run (GPU slot held for the whole job):
-  source /workspace/env.sh
+  source "${JADAL_ENV:-env.sh}"
   export OMP_NUM_THREADS=1 JADAL_GPU_SLOTS=6
   bash tools/pod/gpu_run.sh python3 eval/exp_latency_fast/run_fast.py \
         --workers 7 --pixel-fps 3.33 --eg2-fps 1 --early-exit-s 4 \
@@ -71,7 +71,7 @@ from jadal.gpu.features import cpu_window_features  # noqa: E402
 from jadal.regimes.router import choose_profile  # noqa: E402
 from jadal.ensemble.scorer import ensemble_prob  # noqa: E402
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 MANIFEST = os.path.join(BUNDLE, "queues", "manifest_scale.json")
 OUTDIR = os.path.join(REPO, "eval", "results", "exp_latency_fast")
 W, H = 160, 90
@@ -85,7 +85,7 @@ _OPT = None  # adopted-optimization knobs, set per worker by init_worker()
 
 # the pod EG2 weights (E8.01 ran with the remapped pod path; a post-merge commit
 # reverted configs/ensemble_v1.json to the laptop path -> patch it in memory).
-POD_EG2 = ("/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2"
+POD_EG2 = (os.path.join(os.environ.get("JADAL_POD_ROOT", ""), '.cache/huggingface/hub/models--google--embeddinggemma-2')
            "/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b")
 
 smi_log = []

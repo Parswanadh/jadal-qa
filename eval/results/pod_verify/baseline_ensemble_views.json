@@ -1,0 +1,56 @@
+{
+ "experiment": "ensemble-views-exploratory",
+ "verified_by": "lead-b (LB1)",
+ "n": 150,
+ "n_clips": 7,
+ "n_bad": 50,
+ "label_source": "human gold IndEgo (labels/manifest_gold.json, READ-ONLY)",
+ "protocol": "LOCO; EG2 mean-embedding logistic C=0.01; 26 per-pixel feats logistic C=0.3; prob-average and rank-average of the two views; clip-bootstrap 95% CI",
+ "command": "OMP_NUM_THREADS=2 python3 tools/port/ensemble_views_exploratory.py",
+ "eg2_auroc": 0.848,
+ "eg2_ci95": [
+  0.734,
+  0.909
+ ],
+ "eg2_bal_acc": 0.77,
+ "pixel26_auroc": 0.81,
+ "pixel26_ci95": [
+  0.694,
+  0.889
+ ],
+ "pixel26_bal_acc": 0.74,
+ "prob_avg_auroc": 0.853,
+ "prob_avg_ci95": [
+  0.731,
+  0.922
+ ],
+ "prob_avg_bal_acc": 0.79,
+ "rank_avg_auroc": 0.856,
+ "rank_avg_ci95": [
+  0.722,
+  0.925
+ ],
+ "per_clip_prob_avg": {
+  "desk": 0.84,
+  "ecu_full": 0.98,
+  "ecu_late": 0.68,
+  "logistics4": 0.9,
+  "organise": 0.97,
+  "pallet": 0.59,
+  "pallet2": 0.75
+ },
+ "selective_prob_avg": {
+  "100%": 0.79,
+  "80%": 0.831,
+  "60%": 0.889,
+  "50%": 0.88
+ },
+ "claimed_reference": {
+  "eg2": 0.848,
+  "pixel26": 0.81,
+  "prob_avg": 0.853,
+  "rank_avg": 0.856
+ },
+ "reproduced": true,
+ "ts": "2026-10-10T15:59:46.162110Z"
+}
