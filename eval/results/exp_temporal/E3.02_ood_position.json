@@ -14,6 +14,7 @@
  "median_pos_good_s": 90.0,
  "median_posnorm_bad": 0.3888888888888889,
  "median_posnorm_good": 0.4444444444444444,
+ "logreg_skipped": false,
  "logreg_coef_posnorm": -0.31341825845286286,
  "logreg_intercept": -1.600409206097441,
  "command": "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_temporal/run_e3.py --out eval/results/exp_temporal"

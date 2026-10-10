@@ -74,15 +74,23 @@
   }
  },
  "strict_tolerance": {
-  "rule": "errL<=0.06 & 7/7 verdicts & delay<=1 window",
+  "rule": "errL<=tolerance & 7/7 verdicts & delay<=1 window",
+  "tolerance": 0.06,
   "pass_list": [
    "every-2"
+  ],
+  "selection": "The 0.06 tolerance was chosen after seeing the candidate policies' errors on the same 7 IndEgo clips (post hoc, not pre-registered). The every-2 error CI [0.019, 0.087] crosses 0.06, so the pass is marginal. Status: working policy on IndEgo, not validated (no held-out clips, no OOD validation).",
+  "every2_errL_ci": [
+   0.019,
+   0.087
   ]
  },
+ "adopted_policy": "every-2",
+ "status": "working policy on IndEgo, not validated",
  "decisions": [
-  "ADOPT IndEgo-like (480p/10fps assembly-logistics): probe every 2nd window (51% windows, clip-fraction err 0.049 [0.019,0.087], 7/7 verdicts, delay 0.3 windows) + early exit after 4 s observed (AUROC 0.860 vs 0.848 full). Combined ~0.20 footage processed (~0.9 h per 4.4 h, x5).",
+  "ADOPT on IndEgo (7 gold clips; working policy, not validated): probe every 2nd window (51% windows, clip-fraction err 0.049 [0.019,0.087], 7/7 verdicts, delay 0.3 windows) + early exit after 4 s observed (AUROC 0.860 vs 0.848 full). Combined ~0.20 footage processed (~0.9 h per 4.4 h, x5).",
   "BUDGET OPTION: every 3rd window (35%, err 0.117, 6/7 verdicts, delay 1.3 windows) only if half-cost is refused; every-4/6/8 miss bad stretches (miss_L up to 3/7).",
-  "DROP CUSUM-as-sampler: default (d=0.1,h=0.5) never fires on flat OOF streams (identical to every-4 grid); LOCO-tuned (mostly h=0.3) matches grid error (LOCO errM 0.214 vs every-4 0.209) at equal cost. Keep CUSUM only for physical-collapse early-reject (lab scope).",
+  "DROP CUSUM-as-sampler: default (d=0.1,h=0.5) never fires on flat OOF streams (identical to every-4 grid); LOCO-tuned (mostly h=0.3) matches grid error (LOCO errM 0.214 vs every-4 0.209) at equal cost. HYPOTHESIS (untested here): CUSUM could serve as a physical-collapse early-reject.",
   "DROP skip-first-M for IndEgo: err 0.088->0.418, verdicts fall to 5/7; start is the cleaner part.",
   "OOD Egocentric-10K factory: NO skip rule (MW p=0.42 raw/0.47 normalised, n_bad=9) and NO certified sparse policy \u2014 transfer fails (frozen models 0.4-0.53) so sampling policy is moot until the scorer works. Re-run position test at n_bad~24 (labels2).",
   "Sampling is NOT the bottleneck: model clip-fraction err 0.167 at FULL coverage, 4/7 verdicts. Fix the scorer (E5) before squeezing sampling further."
@@ -91,7 +99,8 @@
   "7 clips only: CIs span ~0.07-0.18 on errL; pallet2 n=6",
   "OOD position test n_bad=9: null result is absence of evidence, not evidence of absence",
   "gold windows are a sparse sample of each clip: 'full coverage' = all gold windows, not exhaustive video; true continuous-clip errors need dense labels",
-  "early-exit curve is IndEgo-only; OOD curve needs a working OOD scorer"
+  "early-exit curve is IndEgo-only; OOD curve needs a working OOD scorer",
+  "domain match (IndEgo vs other footage) is a hypothesis; no resolution or domain statistics are evidenced in this PR"
  ],
  "command": "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_temporal/run_e3.py --out eval/results/exp_temporal",
  "adopted_indego": "probe every 2nd window + 4 s early exit; budget option every 3rd; CUSUM-as-sampler dropped; no skip rule"
