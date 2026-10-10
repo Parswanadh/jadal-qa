@@ -348,9 +348,9 @@ def rule_list_loco(gm, feats):
     ybad = (y == 0).astype(int)
     P, N = ybad.sum(), (1 - ybad).sum()
     bal = float(decide[ybad == 1].mean() + (~decide[ybad == 0]).mean()) / 2
-    # score for AUROC: max rule-hit strength (bad side positive)
+    # score for AUROC: max rule-hit strength (HIGHER = more BAD)
     s = np.where(decide, 1 + np.abs(margins), -np.abs(margins))
-    a, ci = clip_bootstrap_ci(ybad, -s, clips)  # -s: higher = more usable
+    a, ci = clip_bootstrap_ci(ybad, s, clips)
     # per-reason recall (BAD reasons caught) + good kept
     rec = {}
     for r in sorted(set(x or "GOOD" for x in rea)):
@@ -386,7 +386,8 @@ def rule_list_loco(gm, feats):
                     "cp_upper_95": float(C.exact_binomial_upper(fr, n))}
     # determinism receipts: 10 repeats + thread settings
     det = determinism_check(feats, order, thr_trace)
-    return {"bal_acc": bal, "auroc_usable": a, "ci": ci,
+    return {"bal_acc": bal, "auroc": a, "ci": ci,
+            "auroc_note": "score higher = more BAD (rule-hit strength)",
             "per_reason": rec, "coverage_curve": cov_curve,
             "cp_bounds": cp, "thresholds_per_fold": thr_trace,
             "evidence": {i: e for i, e in zip(order, ev)},

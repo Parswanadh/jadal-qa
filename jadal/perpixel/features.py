@@ -16,7 +16,8 @@ from jadal.spectral import features as armB
 from jadal.perpixel import series as S
 
 
-def extract_row(video_path: str, start_s: float, end_s: float):
+def extract_row(video_path: str, start_s: float, end_s: float,
+                return_frames: bool = False):
     frames90, fps90 = S.decode_160x90(video_path, start_s, end_s)
     Smat = S.per_frame_series(frames90)          # (T,8) float64
     desc = S.describe_series(Smat, fps90)        # ~60 scalars
@@ -33,6 +34,8 @@ def extract_row(video_path: str, start_s: float, end_s: float):
                    + [gfeat[k] for k in gpu.FEATURE_NAMES]
                    + [desc[k] for k in sorted(desc.keys())], dtype=np.float64)
     meta = {"nframes90": int(frames90.shape[0]), "fps90": float(fps90)}
+    if return_frames:
+        return row, names, Smat.astype(np.float32), meta, frames90, fps90
     return row, names, Smat.astype(np.float32), meta
 
 
