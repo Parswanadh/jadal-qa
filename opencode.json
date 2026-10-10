@@ -1,0 +1,40 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "{env:JADAL_MODEL}",
+  "autoupdate": false,
+  "share": "disabled",
+  "instructions": ["AGENTS.md", "docs/pod/WORKFLOW.md"],
+  "permission": {
+    "edit": "allow",
+    "webfetch": "allow",
+    "skill": { "*": "allow" },
+    "task": { "*": "allow" },
+    "bash": {
+      "*": "allow",
+      "git push --force*": "deny",
+      "git push -f *": "deny",
+      "git push * --force*": "deny",
+      "git push origin main*": "deny",
+      "git push origin HEAD:main*": "deny",
+      "git push * main": "deny",
+      "git reset --hard origin/main*": "ask",
+      "git clean -fdx*": "ask",
+      "rm -rf /*": "deny",
+      "rm -rf ~*": "deny",
+      "rm -rf /workspace": "deny",
+      "rm -rf /workspace/*": "ask",
+      "sudo *": "deny",
+      "curl *|*sh*": "deny",
+      "wget *|*sh*": "deny",
+      "cat *token*": "deny",
+      "cat */.env*": "deny",
+      "printenv*": "deny",
+      "env": "deny",
+      "echo $HF_TOKEN*": "deny",
+      "echo $GH_TOKEN*": "deny",
+      "echo $AGENT_API_KEY*": "deny",
+      "pkill *": "deny",
+      "killall *": "deny"
+    }
+  }
+}
