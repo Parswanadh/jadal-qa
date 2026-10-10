@@ -1,0 +1,718 @@
+{
+ "device": "A40",
+ "sample_n": 8,
+ "cpu_n": 4,
+ "encoder": "nvenc",
+ "reps": 2,
+ "specs": [
+  {
+   "tag": "1080p30_hevc",
+   "w": 1920,
+   "h": 1080,
+   "fps": 30,
+   "codec": "hevc",
+   "crf": null,
+   "n": 8,
+   "size_bytes": {
+    "n": 8,
+    "mean_ms": 5868636.0,
+    "p50_ms": 5870448.5,
+    "p95_ms": 5923766.8
+   },
+   "bytes_per_frame": {
+    "n": 8,
+    "mean_ms": 19562.1,
+    "p50_ms": 19568.2,
+    "p95_ms": 19745.9
+   },
+   "bitrate_kbps": {
+    "n": 8,
+    "mean_ms": 4694.9,
+    "p50_ms": 4696.4,
+    "p95_ms": 4739.0
+   },
+   "nvdec_hwdownload": {
+    "n": 8,
+    "mean_ms": 1186.2,
+    "p50_ms": 904.0,
+    "p95_ms": 2337.1
+   },
+   "nvdec_no_download": {
+    "n": 8,
+    "mean_ms": 1021.6,
+    "p50_ms": 804.4,
+    "p95_ms": 2124.2
+   },
+   "cpu": {
+    "n": 4,
+    "mean_ms": 3622.2,
+    "p50_ms": 3637.1,
+    "p95_ms": 3997.7
+   },
+   "n_cpu": 4,
+   "cpu_over_nvdec_p50": 4.023,
+   "hwdownload_cost_p50_ms": 99.6,
+   "rows": [
+    {
+     "window_id": "s_4d769eb1e840",
+     "transcode_ms": 0.0,
+     "size_bytes": 5890754,
+     "nvdec_hwdownload_ms": 3039.0888520050794,
+     "nvdec_no_download_ms": 2779.207012965344,
+     "cpu_ms": 3922.526695067063,
+     "n_frames": 300,
+     "bytes_per_frame": 19635.8,
+     "bitrate_kbps": 4712.6
+    },
+    {
+     "window_id": "s_0b39377a261d",
+     "transcode_ms": 140.8,
+     "size_bytes": 5901270,
+     "nvdec_hwdownload_ms": 904.0160729782656,
+     "nvdec_no_download_ms": 817.0026500010863,
+     "cpu_ms": 4010.940015083179,
+     "n_frames": 300,
+     "bytes_per_frame": 19670.9,
+     "bitrate_kbps": 4721.0
+    },
+    {
+     "window_id": "s_96b0cc902e6a",
+     "transcode_ms": 0.1,
+     "size_bytes": 5934844,
+     "nvdec_hwdownload_ms": 1033.3321299403906,
+     "nvdec_no_download_ms": 907.6721300370991,
+     "cpu_ms": 3351.7316880170256,
+     "n_frames": 300,
+     "bytes_per_frame": 19782.8,
+     "bitrate_kbps": 4747.9
+    },
+    {
+     "window_id": "s_1eb2927c2d23",
+     "transcode_ms": 69.8,
+     "size_bytes": 5850143,
+     "nvdec_hwdownload_ms": 901.1448129313067,
+     "nvdec_no_download_ms": 621.0654539754614,
+     "cpu_ms": 3203.4694000612944,
+     "n_frames": 300,
+     "bytes_per_frame": 19500.5,
+     "bitrate_kbps": 4680.1
+    },
+    {
+     "window_id": "s_1a26944a211e",
+     "transcode_ms": 113.0,
+     "size_bytes": 5812067,
+     "nvdec_hwdownload_ms": 903.1606949865818,
+     "nvdec_no_download_ms": 721.0871870629489,
+     "n_frames": 300,
+     "bytes_per_frame": 19373.6,
+     "bitrate_kbps": 4649.7
+    },
+    {
+     "window_id": "s_11d0ba39104b",
+     "transcode_ms": 0.0,
+     "size_bytes": 5903195,
+     "nvdec_hwdownload_ms": 904.0133240632713,
+     "nvdec_no_download_ms": 639.3145320471376,
+     "n_frames": 300,
+     "bytes_per_frame": 19677.3,
+     "bitrate_kbps": 4722.6
+    },
+    {
+     "window_id": "s_e26eb3672779",
+     "transcode_ms": 137.8,
+     "size_bytes": 5839254,
+     "nvdec_hwdownload_ms": 899.93171102833,
+     "nvdec_no_download_ms": 895.9485460072756,
+     "n_frames": 300,
+     "bytes_per_frame": 19464.2,
+     "bitrate_kbps": 4671.4
+    },
+    {
+     "window_id": "s_aae9f0166f5e",
+     "transcode_ms": 0.1,
+     "size_bytes": 5817561,
+     "nvdec_hwdownload_ms": 905.3008829941973,
+     "nvdec_no_download_ms": 791.8498649960384,
+     "n_frames": 300,
+     "bytes_per_frame": 19391.9,
+     "bitrate_kbps": 4654.0
+    }
+   ],
+   "total_base_ms": 2589.0,
+   "total_gpu_ms": 1597.7,
+   "footage_h_per_wall_h_base": 3.862,
+   "footage_h_per_wall_h_gpu": 6.259,
+   "total_zerocopy_bound_ms": 1433.1,
+   "footage_h_per_wall_h_zerocopy_bound": 6.978
+  },
+  {
+   "tag": "1080p_h264_crf23",
+   "w": 1920,
+   "h": 1080,
+   "fps": 30,
+   "codec": "h264",
+   "crf": 23,
+   "n": 8,
+   "size_bytes": {
+    "n": 8,
+    "mean_ms": 16114721.9,
+    "p50_ms": 15770854.5,
+    "p95_ms": 18338414.9
+   },
+   "bytes_per_frame": {
+    "n": 8,
+    "mean_ms": 53715.8,
+    "p50_ms": 52569.6,
+    "p95_ms": 61128.1
+   },
+   "bitrate_kbps": {
+    "n": 8,
+    "mean_ms": 12891.8,
+    "p50_ms": 12616.6,
+    "p95_ms": 14670.7
+   },
+   "nvdec_hwdownload": {
+    "n": 8,
+    "mean_ms": 1107.4,
+    "p50_ms": 1104.5,
+    "p95_ms": 1305.8
+   },
+   "nvdec_no_download": {
+    "n": 8,
+    "mean_ms": 1109.3,
+    "p50_ms": 1040.9,
+    "p95_ms": 1311.1
+   },
+   "cpu": {
+    "n": 4,
+    "mean_ms": 3085.3,
+    "p50_ms": 3076.6,
+    "p95_ms": 3320.4
+   },
+   "n_cpu": 4,
+   "cpu_over_nvdec_p50": 2.786,
+   "hwdownload_cost_p50_ms": 63.6,
+   "rows": [
+    {
+     "window_id": "s_4d769eb1e840",
+     "transcode_ms": 1737.0,
+     "size_bytes": 18027022,
+     "nvdec_hwdownload_ms": 923.4677039785311,
+     "nvdec_no_download_ms": 1313.714856049046,
+     "cpu_ms": 2848.58319000341,
+     "n_frames": 300,
+     "bytes_per_frame": 60090.1,
+     "bitrate_kbps": 14421.6
+    },
+    {
+     "window_id": "s_0b39377a261d",
+     "transcode_ms": 1635.1,
+     "size_bytes": 17073483,
+     "nvdec_hwdownload_ms": 918.7828999711201,
+     "nvdec_no_download_ms": 1265.2043430134654,
+     "cpu_ms": 3212.755232001655,
+     "n_frames": 300,
+     "bytes_per_frame": 56911.6,
+     "bitrate_kbps": 13658.8
+    },
+    {
+     "window_id": "s_96b0cc902e6a",
+     "transcode_ms": 1701.3,
+     "size_bytes": 14395576,
+     "nvdec_hwdownload_ms": 1279.128335067071,
+     "nvdec_no_download_ms": 1011.5723769413307,
+     "cpu_ms": 3339.414816000499,
+     "n_frames": 300,
+     "bytes_per_frame": 47985.3,
+     "bitrate_kbps": 11516.5
+    },
+    {
+     "window_id": "s_1eb2927c2d23",
+     "transcode_ms": 1649.1,
+     "size_bytes": 15508531,
+     "nvdec_hwdownload_ms": 939.1667549498379,
+     "nvdec_no_download_ms": 1306.3395490171388,
+     "cpu_ms": 2940.542333992198,
+     "n_frames": 300,
+     "bytes_per_frame": 51695.1,
+     "bitrate_kbps": 12406.8
+    },
+    {
+     "window_id": "s_1a26944a211e",
+     "transcode_ms": 1738.7,
+     "size_bytes": 15996652,
+     "nvdec_hwdownload_ms": 1317.9361920338124,
+     "nvdec_no_download_ms": 1054.150035022758,
+     "n_frames": 300,
+     "bytes_per_frame": 53322.2,
+     "bitrate_kbps": 12797.3
+    },
+    {
+     "window_id": "s_11d0ba39104b",
+     "transcode_ms": 1692.4,
+     "size_bytes": 15545057,
+     "nvdec_hwdownload_ms": 1269.920218968764,
+     "nvdec_no_download_ms": 1027.629513060674,
+     "n_frames": 300,
+     "bytes_per_frame": 51816.9,
+     "bitrate_kbps": 12436.0
+    },
+    {
+     "window_id": "s_e26eb3672779",
+     "transcode_ms": 1524.1,
+     "size_bytes": 13865366,
+     "nvdec_hwdownload_ms": 1283.1320530967787,
+     "nvdec_no_download_ms": 969.7591420263052,
+     "n_frames": 300,
+     "bytes_per_frame": 46217.9,
+     "bitrate_kbps": 11092.3
+    },
+    {
+     "window_id": "s_aae9f0166f5e",
+     "transcode_ms": 1628.0,
+     "size_bytes": 18506088,
+     "nvdec_hwdownload_ms": 927.931044017896,
+     "nvdec_no_download_ms": 925.7491070311517,
+     "n_frames": 300,
+     "bytes_per_frame": 61687.0,
+     "bitrate_kbps": 14804.9
+    }
+   ],
+   "total_base_ms": 2510.2,
+   "total_gpu_ms": 1518.9,
+   "footage_h_per_wall_h_base": 3.984,
+   "footage_h_per_wall_h_gpu": 6.584,
+   "total_zerocopy_bound_ms": 1520.8,
+   "footage_h_per_wall_h_zerocopy_bound": 6.575
+  },
+  {
+   "tag": "480p_h264_crf23",
+   "w": 854,
+   "h": 480,
+   "fps": 30,
+   "codec": "h264",
+   "crf": 23,
+   "n": 8,
+   "size_bytes": {
+    "n": 8,
+    "mean_ms": 3988593.0,
+    "p50_ms": 3954615.0,
+    "p95_ms": 4501884.0
+   },
+   "bytes_per_frame": {
+    "n": 8,
+    "mean_ms": 13295.3,
+    "p50_ms": 13182.0,
+    "p95_ms": 15006.3
+   },
+   "bitrate_kbps": {
+    "n": 8,
+    "mean_ms": 3190.9,
+    "p50_ms": 3163.6,
+    "p95_ms": 3601.5
+   },
+   "nvdec_hwdownload": {
+    "n": 8,
+    "mean_ms": 672.9,
+    "p50_ms": 648.3,
+    "p95_ms": 774.4
+   },
+   "nvdec_no_download": {
+    "n": 8,
+    "mean_ms": 667.0,
+    "p50_ms": 649.2,
+    "p95_ms": 744.4
+   },
+   "cpu": {
+    "n": 4,
+    "mean_ms": 740.0,
+    "p50_ms": 744.7,
+    "p95_ms": 769.9
+   },
+   "n_cpu": 4,
+   "cpu_over_nvdec_p50": 1.149,
+   "hwdownload_cost_p50_ms": -0.9,
+   "rows": [
+    {
+     "window_id": "s_4d769eb1e840",
+     "transcode_ms": 1082.0,
+     "size_bytes": 4388409,
+     "nvdec_hwdownload_ms": 631.896101986058,
+     "nvdec_no_download_ms": 669.4289930164814,
+     "cpu_ms": 773.1683780439198,
+     "n_frames": 300,
+     "bytes_per_frame": 14628.0,
+     "bitrate_kbps": 3510.7
+    },
+    {
+     "window_id": "s_0b39377a261d",
+     "transcode_ms": 1130.4,
+     "size_bytes": 4310623,
+     "nvdec_hwdownload_ms": 651.6536150593311,
+     "nvdec_no_download_ms": 646.5977530460805,
+     "cpu_ms": 697.372135007754,
+     "n_frames": 300,
+     "bytes_per_frame": 14368.7,
+     "bitrate_kbps": 3448.5
+    },
+    {
+     "window_id": "s_96b0cc902e6a",
+     "transcode_ms": 901.9,
+     "size_bytes": 3692251,
+     "nvdec_hwdownload_ms": 639.1505349893123,
+     "nvdec_no_download_ms": 784.8434719489887,
+     "cpu_ms": 737.7660810016096,
+     "n_frames": 300,
+     "bytes_per_frame": 12307.5,
+     "bitrate_kbps": 2953.8
+    },
+    {
+     "window_id": "s_1eb2927c2d23",
+     "transcode_ms": 909.9,
+     "size_bytes": 3804718,
+     "nvdec_hwdownload_ms": 661.5751689532772,
+     "nvdec_no_download_ms": 658.5534050827846,
+     "cpu_ms": 751.5909919748083,
+     "n_frames": 300,
+     "bytes_per_frame": 12682.4,
+     "bitrate_kbps": 3043.8
+    },
+    {
+     "window_id": "s_1a26944a211e",
+     "transcode_ms": 1081.1,
+     "size_bytes": 4030300,
+     "nvdec_hwdownload_ms": 645.0411940459162,
+     "nvdec_no_download_ms": 642.3805570229888,
+     "n_frames": 300,
+     "bytes_per_frame": 13434.3,
+     "bitrate_kbps": 3224.2
+    },
+    {
+     "window_id": "s_11d0ba39104b",
+     "transcode_ms": 873.1,
+     "size_bytes": 3878930,
+     "nvdec_hwdownload_ms": 794.4223929662257,
+     "nvdec_no_download_ms": 638.635668088682,
+     "n_frames": 300,
+     "bytes_per_frame": 12929.8,
+     "bitrate_kbps": 3103.1
+    },
+    {
+     "window_id": "s_e26eb3672779",
+     "transcode_ms": 953.0,
+     "size_bytes": 3240527,
+     "nvdec_hwdownload_ms": 622.3762709414586,
+     "nvdec_no_download_ms": 651.7656419891864,
+     "n_frames": 300,
+     "bytes_per_frame": 10801.8,
+     "bitrate_kbps": 2592.4
+    },
+    {
+     "window_id": "s_aae9f0166f5e",
+     "transcode_ms": 889.9,
+     "size_bytes": 4562986,
+     "nvdec_hwdownload_ms": 737.3043260304257,
+     "nvdec_no_download_ms": 644.1433200379834,
+     "n_frames": 300,
+     "bytes_per_frame": 15210.0,
+     "bitrate_kbps": 3650.4
+    }
+   ],
+   "total_base_ms": 2075.7,
+   "total_gpu_ms": 1084.4,
+   "footage_h_per_wall_h_base": 4.818,
+   "footage_h_per_wall_h_gpu": 9.222,
+   "total_zerocopy_bound_ms": 1078.5,
+   "footage_h_per_wall_h_zerocopy_bound": 9.272
+  },
+  {
+   "tag": "360p_h264_crf28",
+   "w": 640,
+   "h": 360,
+   "fps": 30,
+   "codec": "h264",
+   "crf": 28,
+   "n": 8,
+   "size_bytes": {
+    "n": 8,
+    "mean_ms": 1334721.0,
+    "p50_ms": 1352718.5,
+    "p95_ms": 1488613.6
+   },
+   "bytes_per_frame": {
+    "n": 8,
+    "mean_ms": 4449.1,
+    "p50_ms": 4509.0,
+    "p95_ms": 4962.1
+   },
+   "bitrate_kbps": {
+    "n": 8,
+    "mean_ms": 1067.8,
+    "p50_ms": 1082.2,
+    "p95_ms": 1190.9
+   },
+   "nvdec_hwdownload": {
+    "n": 8,
+    "mean_ms": 720.8,
+    "p50_ms": 749.3,
+    "p95_ms": 776.6
+   },
+   "nvdec_no_download": {
+    "n": 8,
+    "mean_ms": 710.8,
+    "p50_ms": 699.0,
+    "p95_ms": 821.9
+   },
+   "cpu": {
+    "n": 4,
+    "mean_ms": 423.9,
+    "p50_ms": 300.0,
+    "p95_ms": 819.0
+   },
+   "n_cpu": 4,
+   "cpu_over_nvdec_p50": 0.4,
+   "hwdownload_cost_p50_ms": 50.3,
+   "rows": [
+    {
+     "window_id": "s_4d769eb1e840",
+     "transcode_ms": 1098.6,
+     "size_bytes": 1435475,
+     "nvdec_hwdownload_ms": 625.3179230261594,
+     "nvdec_no_download_ms": 764.3649319652468,
+     "cpu_ms": 304.0982879465446,
+     "n_frames": 300,
+     "bytes_per_frame": 4784.9,
+     "bitrate_kbps": 1148.4
+    },
+    {
+     "window_id": "s_0b39377a261d",
+     "transcode_ms": 892.1,
+     "size_bytes": 1457006,
+     "nvdec_hwdownload_ms": 754.5474019134417,
+     "nvdec_no_download_ms": 643.9542979933321,
+     "cpu_ms": 186.0475210705772,
+     "n_frames": 300,
+     "bytes_per_frame": 4856.7,
+     "bitrate_kbps": 1165.6
+    },
+    {
+     "window_id": "s_96b0cc902e6a",
+     "transcode_ms": 894.7,
+     "size_bytes": 1266333,
+     "nvdec_hwdownload_ms": 783.7321429979056,
+     "nvdec_no_download_ms": 638.7485440354794,
+     "cpu_ms": 295.829497044906,
+     "n_frames": 300,
+     "bytes_per_frame": 4221.1,
+     "bitrate_kbps": 1013.1
+    },
+    {
+     "window_id": "s_1eb2927c2d23",
+     "transcode_ms": 893.8,
+     "size_bytes": 1310005,
+     "nvdec_hwdownload_ms": 744.1436890512705,
+     "nvdec_no_download_ms": 852.8049399610609,
+     "cpu_ms": 909.80760299135,
+     "n_frames": 300,
+     "bytes_per_frame": 4366.7,
+     "bitrate_kbps": 1048.0
+    },
+    {
+     "window_id": "s_1a26944a211e",
+     "transcode_ms": 1337.4,
+     "size_bytes": 1395432,
+     "nvdec_hwdownload_ms": 763.400092953816,
+     "nvdec_no_download_ms": 630.8067400241271,
+     "n_frames": 300,
+     "bytes_per_frame": 4651.4,
+     "bitrate_kbps": 1116.3
+    },
+    {
+     "window_id": "s_11d0ba39104b",
+     "transcode_ms": 884.3,
+     "size_bytes": 1296173,
+     "nvdec_hwdownload_ms": 640.9716999623924,
+     "nvdec_no_download_ms": 642.9637679830194,
+     "n_frames": 300,
+     "bytes_per_frame": 4320.6,
+     "bitrate_kbps": 1036.9
+    },
+    {
+     "window_id": "s_e26eb3672779",
+     "transcode_ms": 1510.8,
+     "size_bytes": 1011711,
+     "nvdec_hwdownload_ms": 695.0101460097358,
+     "nvdec_no_download_ms": 758.7386959930882,
+     "n_frames": 300,
+     "bytes_per_frame": 3372.4,
+     "bitrate_kbps": 809.4
+    },
+    {
+     "window_id": "s_aae9f0166f5e",
+     "transcode_ms": 1203.8,
+     "size_bytes": 1505633,
+     "nvdec_hwdownload_ms": 759.2141859931871,
+     "nvdec_no_download_ms": 754.105283995159,
+     "n_frames": 300,
+     "bytes_per_frame": 5018.8,
+     "bitrate_kbps": 1204.5
+    }
+   ],
+   "total_base_ms": 2123.6,
+   "total_gpu_ms": 1132.3,
+   "footage_h_per_wall_h_base": 4.709,
+   "footage_h_per_wall_h_gpu": 8.832,
+   "total_zerocopy_bound_ms": 1122.3,
+   "footage_h_per_wall_h_zerocopy_bound": 8.91
+  },
+  {
+   "tag": "240p_h264_crf28",
+   "w": 426,
+   "h": 240,
+   "fps": 30,
+   "codec": "h264",
+   "crf": 28,
+   "n": 8,
+   "size_bytes": {
+    "n": 8,
+    "mean_ms": 658311.2,
+    "p50_ms": 676233.5,
+    "p95_ms": 729364.4
+   },
+   "bytes_per_frame": {
+    "n": 8,
+    "mean_ms": 2194.4,
+    "p50_ms": 2254.1,
+    "p95_ms": 2431.2
+   },
+   "bitrate_kbps": {
+    "n": 8,
+    "mean_ms": 526.6,
+    "p50_ms": 541.0,
+    "p95_ms": 583.5
+   },
+   "nvdec_hwdownload": {
+    "n": 8,
+    "mean_ms": 1704.3,
+    "p50_ms": 1689.5,
+    "p95_ms": 2228.7
+   },
+   "nvdec_no_download": {
+    "n": 8,
+    "mean_ms": 1637.7,
+    "p50_ms": 1667.4,
+    "p95_ms": 2164.9
+   },
+   "cpu": {
+    "n": 4,
+    "mean_ms": 668.5,
+    "p50_ms": 779.8,
+    "p95_ms": 903.5
+   },
+   "n_cpu": 4,
+   "cpu_over_nvdec_p50": 0.462,
+   "hwdownload_cost_p50_ms": 22.1,
+   "rows": [
+    {
+     "window_id": "s_4d769eb1e840",
+     "transcode_ms": 939.2,
+     "size_bytes": 695926,
+     "nvdec_hwdownload_ms": 745.2466239919886,
+     "nvdec_no_download_ms": 633.0695549258962,
+     "cpu_ms": 207.97654404304922,
+     "n_frames": 300,
+     "bytes_per_frame": 2319.8,
+     "bitrate_kbps": 556.7
+    },
+    {
+     "window_id": "s_0b39377a261d",
+     "transcode_ms": 3036.0,
+     "size_bytes": 713665,
+     "nvdec_hwdownload_ms": 1686.0284130088985,
+     "nvdec_no_download_ms": 1603.5424650181085,
+     "cpu_ms": 672.9610220063478,
+     "n_frames": 300,
+     "bytes_per_frame": 2378.9,
+     "bitrate_kbps": 570.9
+    },
+    {
+     "window_id": "s_96b0cc902e6a",
+     "transcode_ms": 2202.8,
+     "size_bytes": 631282,
+     "nvdec_hwdownload_ms": 1499.6529130730778,
+     "nvdec_no_download_ms": 1899.2544169304892,
+     "cpu_ms": 886.6932279197499,
+     "n_frames": 300,
+     "bytes_per_frame": 2104.3,
+     "bitrate_kbps": 505.0
+    },
+    {
+     "window_id": "s_1eb2927c2d23",
+     "transcode_ms": 2289.3,
+     "size_bytes": 663154,
+     "nvdec_hwdownload_ms": 1628.6159720038995,
+     "nvdec_no_download_ms": 2308.0137569922954,
+     "cpu_ms": 906.4264959888533,
+     "n_frames": 300,
+     "bytes_per_frame": 2210.5,
+     "bitrate_kbps": 530.5
+    },
+    {
+     "window_id": "s_1a26944a211e",
+     "transcode_ms": 2312.9,
+     "size_bytes": 689313,
+     "nvdec_hwdownload_ms": 2082.529552979395,
+     "nvdec_no_download_ms": 1731.2157060950994,
+     "n_frames": 300,
+     "bytes_per_frame": 2297.7,
+     "bitrate_kbps": 551.5
+    },
+    {
+     "window_id": "s_11d0ba39104b",
+     "transcode_ms": 2606.9,
+     "size_bytes": 640519,
+     "nvdec_hwdownload_ms": 1992.184562026523,
+     "nvdec_no_download_ms": 1592.371023958549,
+     "n_frames": 300,
+     "bytes_per_frame": 2135.1,
+     "bitrate_kbps": 512.4
+    },
+    {
+     "window_id": "s_e26eb3672779",
+     "transcode_ms": 2212.0,
+     "size_bytes": 494813,
+     "nvdec_hwdownload_ms": 2307.3777409736067,
+     "nvdec_no_download_ms": 1804.2403849540278,
+     "n_frames": 300,
+     "bytes_per_frame": 1649.4,
+     "bitrate_kbps": 395.9
+    },
+    {
+     "window_id": "s_aae9f0166f5e",
+     "transcode_ms": 2495.9,
+     "size_bytes": 737818,
+     "nvdec_hwdownload_ms": 1692.96311493963,
+     "nvdec_no_download_ms": 1530.2834529429674,
+     "n_frames": 300,
+     "bytes_per_frame": 2459.4,
+     "bitrate_kbps": 590.3
+    }
+   ],
+   "total_base_ms": 3107.1,
+   "total_gpu_ms": 2115.8,
+   "footage_h_per_wall_h_base": 3.218,
+   "footage_h_per_wall_h_gpu": 4.726,
+   "total_zerocopy_bound_ms": 2049.2,
+   "footage_h_per_wall_h_zerocopy_bound": 4.88
+  }
+ ],
+ "reference_stages": {
+  "feature_cpu_ms": 821.5735,
+  "eg2_cpu_ms": 581.2556666666667,
+  "feature_gpu_ms": 18.455500000000004,
+  "eg2_gpu_ms": 393.0924666666667,
+  "n": 30,
+  "gpu_mode": "upload"
+ },
+ "note": "feature/EG2 costs are resolution-invariant (pipeline works at 160x90 / 512x288); decode is the spec-dependent stage"
+}

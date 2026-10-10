@@ -1,0 +1,4216 @@
+{
+ "delta_ms": {
+  "mean": 746.62,
+  "n": 30,
+  "p50": 579.7,
+  "p95": 1901.67
+ },
+ "delta_ms_std": 1730.65,
+ "delta_note": "the mosaic build is the ONLY difference between the two passes, so the clean wall delta is the mosaic stage time; the two independent passes also give a noisier cross-check delta (run-to-run variance / pod contention)",
+ "delta_pct_of_on": 14.3,
+ "delta_stage_ms": {
+  "mean": 233.22,
+  "n": 30,
+  "p50": 227.46,
+  "p95": 302.0
+ },
+ "device": "A40",
+ "features_digest_mismatches": 0,
+ "id": "Z1.01",
+ "mosaic_ms": {
+  "mean": 233.22,
+  "n": 30,
+  "p50": 227.46,
+  "p95": 302.0
+ },
+ "n": 30,
+ "rows": [
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_001/worker_006/factory001_worker006_00008.mp4",
+    "factory": "factory_001",
+    "features_digest": "84fc613b44b2284d15f2c419109198981835c92d77c06f0560eb0fe59c56168c",
+    "latency_ms": {
+     "decision": 0.823,
+     "decode": 1391.429,
+     "descriptors": 684.838,
+     "eg2_embed": 660.727,
+     "io_probe": 2.881,
+     "mosaic": 0.0,
+     "pixel_features": 1386.563,
+     "total": 4127.28
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8569,
+    "p_g": 0.6935,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.7752,
+    "stage_wall": {
+     "decision": [
+      1791660042.3477025,
+      1791660042.3485265
+     ],
+     "decode": [
+      1791660038.2241313,
+      1791660039.6155622
+     ],
+     "descriptors": [
+      1791660041.0021307,
+      1791660041.68697
+     ],
+     "eg2_embed": [
+      1791660041.6869714,
+      1791660042.3476999
+     ],
+     "io_probe": [
+      1791660038.2212477,
+      1791660038.2241304
+     ],
+     "pixel_features": [
+      1791660039.6155636,
+      1791660041.0021296
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_4d769eb1e840"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_001/worker_006/factory001_worker006_00008.mp4",
+    "factory": "factory_001",
+    "features_digest": "84fc613b44b2284d15f2c419109198981835c92d77c06f0560eb0fe59c56168c",
+    "latency_ms": {
+     "decision": 0.91,
+     "decode": 1563.792,
+     "descriptors": 866.371,
+     "eg2_embed": 9553.95,
+     "io_probe": 4.246,
+     "mosaic": 215.194,
+     "pixel_features": 1092.681,
+     "total": 13313.528
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "b856936e90d83e9fa13b0780792870bc3989ec0c4ea7c9e29e46f694a463f8d6"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8569,
+    "p_g": 0.6935,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.7752,
+    "stage_wall": {
+     "decision": [
+      1791660038.2198732,
+      1791660038.220784
+     ],
+     "decode": [
+      1791660024.9115062,
+      1791660026.4752996
+     ],
+     "descriptors": [
+      1791660027.567985,
+      1791660028.434364
+     ],
+     "eg2_embed": [
+      1791660028.434367,
+      1791660037.9883204
+     ],
+     "io_probe": [
+      1791660024.9072576,
+      1791660024.911505
+     ],
+     "mosaic": [
+      1791660038.0046747,
+      1791660038.219872
+     ],
+     "pixel_features": [
+      1791660026.4753008,
+      1791660027.5679836
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_4d769eb1e840"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_009/worker_001/factory009_worker001_00007.mp4",
+    "factory": "factory_009",
+    "features_digest": "b6efc8aaad84a1a97c52cb798f0ea32de185e8e1f3a5543b28a5fd09b491bd9c",
+    "latency_ms": {
+     "decision": 0.921,
+     "decode": 2153.25,
+     "descriptors": 774.326,
+     "eg2_embed": 548.637,
+     "io_probe": 2.895,
+     "mosaic": 0.0,
+     "pixel_features": 1020.679,
+     "total": 4500.729
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7536,
+    "p_g": 0.0048,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3792,
+    "stage_wall": {
+     "decision": [
+      1791660050.946816,
+      1791660050.9477377
+     ],
+     "decode": [
+      1791660046.4499075,
+      1791660048.603159
+     ],
+     "descriptors": [
+      1791660049.6238418,
+      1791660050.3981693
+     ],
+     "eg2_embed": [
+      1791660050.39817,
+      1791660050.946812
+     ],
+     "io_probe": [
+      1791660046.4470103,
+      1791660046.449906
+     ],
+     "pixel_features": [
+      1791660048.6031609,
+      1791660049.623841
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_8092369a6dd1"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_009/worker_001/factory009_worker001_00007.mp4",
+    "factory": "factory_009",
+    "features_digest": "b6efc8aaad84a1a97c52cb798f0ea32de185e8e1f3a5543b28a5fd09b491bd9c",
+    "latency_ms": {
+     "decision": 0.813,
+     "decode": 1488.876,
+     "descriptors": 954.967,
+     "eg2_embed": 527.09,
+     "io_probe": 6.395,
+     "mosaic": 174.916,
+     "pixel_features": 938.817,
+     "total": 4091.903
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "dce33b7bce5d0ec4a618d1c6376f7ecce37507a990ea911059633378b7bc1d65"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7536,
+    "p_g": 0.0048,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3792,
+    "stage_wall": {
+     "decision": [
+      1791660046.4400592,
+      1791660046.4408724
+     ],
+     "decode": [
+      1791660042.3553672,
+      1791660043.8442442
+     ],
+     "descriptors": [
+      1791660044.7830648,
+      1791660045.7380328
+     ],
+     "eg2_embed": [
+      1791660045.7380333,
+      1791660046.265125
+     ],
+     "io_probe": [
+      1791660042.3489704,
+      1791660042.3553662
+     ],
+     "mosaic": [
+      1791660046.2651393,
+      1791660046.440058
+     ],
+     "pixel_features": [
+      1791660043.8442454,
+      1791660044.783064
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_8092369a6dd1"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.8,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_010/worker_002/factory010_worker002_00056.mp4",
+    "factory": "factory_010",
+    "features_digest": "c47f70a1d48c730f23285a7a296a217b480ae7159bb0ed86fed6405bb427bf20",
+    "latency_ms": {
+     "decision": 0.916,
+     "decode": 1264.844,
+     "descriptors": 818.082,
+     "eg2_embed": 614.269,
+     "io_probe": 2.542,
+     "mosaic": 0.0,
+     "pixel_features": 1021.886,
+     "total": 3722.553
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6825,
+    "p_g": 0.0006,
+    "profile": "default",
+    "reject_thr": 0.2,
+    "score": 0.3416,
+    "stage_wall": {
+     "decision": [
+      1791660059.0871186,
+      1791660059.088035
+     ],
+     "decode": [
+      1791660055.3680277,
+      1791660056.632873
+     ],
+     "descriptors": [
+      1791660057.6547618,
+      1791660058.4728456
+     ],
+     "eg2_embed": [
+      1791660058.472846,
+      1791660059.0871167
+     ],
+     "io_probe": [
+      1791660055.3654835,
+      1791660055.3680267
+     ],
+     "pixel_features": [
+      1791660056.6328743,
+      1791660057.654761
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_90380033f298"
+   },
+   "on": {
+    "accept_thr": 0.8,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_010/worker_002/factory010_worker002_00056.mp4",
+    "factory": "factory_010",
+    "features_digest": "c47f70a1d48c730f23285a7a296a217b480ae7159bb0ed86fed6405bb427bf20",
+    "latency_ms": {
+     "decision": 0.813,
+     "decode": 1756.731,
+     "descriptors": 926.79,
+     "eg2_embed": 543.064,
+     "io_probe": 2.638,
+     "mosaic": 182.807,
+     "pixel_features": 995.885,
+     "total": 4408.751
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "1989040c18889117bd0b0dbf7591b45f81c436ee4fe2893998e81784b5ad97f3"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6825,
+    "p_g": 0.0006,
+    "profile": "default",
+    "reject_thr": 0.2,
+    "score": 0.3416,
+    "stage_wall": {
+     "decision": [
+      1791660055.3602028,
+      1791660055.3610158
+     ],
+     "decode": [
+      1791660050.9549067,
+      1791660052.7116394
+     ],
+     "descriptors": [
+      1791660053.7075272,
+      1791660054.6343186
+     ],
+     "eg2_embed": [
+      1791660054.6343193,
+      1791660055.1773844
+     ],
+     "io_probe": [
+      1791660050.9522662,
+      1791660050.9549055
+     ],
+     "mosaic": [
+      1791660055.1773918,
+      1791660055.3602011
+     ],
+     "pixel_features": [
+      1791660052.7116404,
+      1791660053.7075264
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_90380033f298"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_014/worker_041/factory014_worker041_00143.mp4",
+    "factory": "factory_014",
+    "features_digest": "a7cfe12409a0ea723344d04637dc09d93cb55948e5bce6d718d1c4bf50c32aed",
+    "latency_ms": {
+     "decision": 0.935,
+     "decode": 1068.744,
+     "descriptors": 968.86,
+     "eg2_embed": 552.972,
+     "io_probe": 2.881,
+     "mosaic": 0.0,
+     "pixel_features": 1023.935,
+     "total": 3618.344
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8661,
+    "p_g": 0.9933,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.9297,
+    "stage_wall": {
+     "decision": [
+      1791660066.9586744,
+      1791660066.9596097
+     ],
+     "decode": [
+      1791660063.3441515,
+      1791660064.4128962
+     ],
+     "descriptors": [
+      1791660065.4368353,
+      1791660066.4056976
+     ],
+     "eg2_embed": [
+      1791660066.4056983,
+      1791660066.9586723
+     ],
+     "io_probe": [
+      1791660063.341267,
+      1791660063.3441498
+     ],
+     "pixel_features": [
+      1791660064.4128973,
+      1791660065.4368343
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_1f058ff76496"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_014/worker_041/factory014_worker041_00143.mp4",
+    "factory": "factory_014",
+    "features_digest": "a7cfe12409a0ea723344d04637dc09d93cb55948e5bce6d718d1c4bf50c32aed",
+    "latency_ms": {
+     "decision": 0.955,
+     "decode": 1464.586,
+     "descriptors": 882.062,
+     "eg2_embed": 584.09,
+     "io_probe": 1.59,
+     "mosaic": 251.146,
+     "pixel_features": 1060.808,
+     "total": 4245.258
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "85708738c8d0bd297211c89febfdd38a1e7854e35a5e15ea5a0da8bdd19fc209"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8661,
+    "p_g": 0.9933,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.9297,
+    "stage_wall": {
+     "decision": [
+      1791660063.3362656,
+      1791660063.3372211
+     ],
+     "decode": [
+      1791660059.0935557,
+      1791660060.558143
+     ],
+     "descriptors": [
+      1791660061.618954,
+      1791660062.501017
+     ],
+     "eg2_embed": [
+      1791660062.5010178,
+      1791660063.085109
+     ],
+     "io_probe": [
+      1791660059.091964,
+      1791660059.0935545
+     ],
+     "mosaic": [
+      1791660063.0851161,
+      1791660063.3362641
+     ],
+     "pixel_features": [
+      1791660060.558144,
+      1791660061.6189532
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_1f058ff76496"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_016/worker_002/factory016_worker002_00008.mp4",
+    "factory": "factory_016",
+    "features_digest": "6809b57f26dbb86f6920343e788939b23802affa04554dd1432b0ec4fdc7fbc9",
+    "latency_ms": {
+     "decision": 0.93,
+     "decode": 878.074,
+     "descriptors": 1034.885,
+     "eg2_embed": 586.51,
+     "io_probe": 2.232,
+     "mosaic": 0.0,
+     "pixel_features": 1185.772,
+     "total": 3688.417
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6383,
+    "p_g": 0.0003,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3193,
+    "stage_wall": {
+     "decision": [
+      1791660075.0564592,
+      1791660075.0573895
+     ],
+     "decode": [
+      1791660071.371208,
+      1791660072.249283
+     ],
+     "descriptors": [
+      1791660073.4350584,
+      1791660074.4699445
+     ],
+     "eg2_embed": [
+      1791660074.4699454,
+      1791660075.0564573
+     ],
+     "io_probe": [
+      1791660071.368974,
+      1791660071.3712072
+     ],
+     "pixel_features": [
+      1791660072.2492843,
+      1791660073.4350576
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_5d70a1283bad"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_016/worker_002/factory016_worker002_00008.mp4",
+    "factory": "factory_016",
+    "features_digest": "6809b57f26dbb86f6920343e788939b23802affa04554dd1432b0ec4fdc7fbc9",
+    "latency_ms": {
+     "decision": 0.979,
+     "decode": 1340.095,
+     "descriptors": 1002.887,
+     "eg2_embed": 682.975,
+     "io_probe": 5.031,
+     "mosaic": 208.545,
+     "pixel_features": 1159.67,
+     "total": 4400.214
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "d3f1f6d1ffd9334580f28f7e923a4812742c42f745b38d10ea8d4ec46fe6b0ce"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6383,
+    "p_g": 0.0003,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3193,
+    "stage_wall": {
+     "decision": [
+      1791660071.363185,
+      1791660071.364164
+     ],
+     "decode": [
+      1791660066.9689846,
+      1791660068.309081
+     ],
+     "descriptors": [
+      1791660069.4687543,
+      1791660070.4716465
+     ],
+     "eg2_embed": [
+      1791660070.4716475,
+      1791660071.154624
+     ],
+     "io_probe": [
+      1791660066.9639513,
+      1791660066.9689837
+     ],
+     "mosaic": [
+      1791660071.1546366,
+      1791660071.363184
+     ],
+     "pixel_features": [
+      1791660068.3090823,
+      1791660069.4687533
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_5d70a1283bad"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_020/worker_002/factory020_worker002_00157.mp4",
+    "factory": "factory_020",
+    "features_digest": "2185efa99bc1824c15a0a6cdf6af11221785d31a688e8361c8457204311042f3",
+    "latency_ms": {
+     "decision": 0.937,
+     "decode": 924.25,
+     "descriptors": 949.702,
+     "eg2_embed": 765.22,
+     "io_probe": 2.527,
+     "mosaic": 0.0,
+     "pixel_features": 1089.971,
+     "total": 3732.623
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.4113,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.2057,
+    "stage_wall": {
+     "decision": [
+      1791660082.646711,
+      1791660082.6476483
+     ],
+     "decode": [
+      1791660078.917556,
+      1791660079.841808
+     ],
+     "descriptors": [
+      1791660080.9317825,
+      1791660081.881486
+     ],
+     "eg2_embed": [
+      1791660081.881487,
+      1791660082.646709
+     ],
+     "io_probe": [
+      1791660078.9150264,
+      1791660078.9175549
+     ],
+     "pixel_features": [
+      1791660079.8418097,
+      1791660080.9317815
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "reject",
+    "window_id": "s_d61894812775"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_020/worker_002/factory020_worker002_00157.mp4",
+    "factory": "factory_020",
+    "features_digest": "2185efa99bc1824c15a0a6cdf6af11221785d31a688e8361c8457204311042f3",
+    "latency_ms": {
+     "decision": 0.961,
+     "decode": 1325.855,
+     "descriptors": 842.58,
+     "eg2_embed": 533.157,
+     "io_probe": 2.227,
+     "mosaic": 218.315,
+     "pixel_features": 925.362,
+     "total": 3848.48
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "d028142bf1924d4719b8253e9eef018b1bf9df37a0dd1bb6070fa2b606002802"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.4113,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.2057,
+    "stage_wall": {
+     "decision": [
+      1791660078.9093864,
+      1791660078.9103487
+     ],
+     "decode": [
+      1791660075.0640984,
+      1791660076.3899546
+     ],
+     "descriptors": [
+      1791660077.3153195,
+      1791660078.1579003
+     ],
+     "eg2_embed": [
+      1791660078.157901,
+      1791660078.69106
+     ],
+     "io_probe": [
+      1791660075.0618691,
+      1791660075.0640972
+     ],
+     "mosaic": [
+      1791660078.691068,
+      1791660078.9093852
+     ],
+     "pixel_features": [
+      1791660076.3899553,
+      1791660077.3153188
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "reject",
+    "window_id": "s_d61894812775"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_022/worker_008/factory022_worker008_00154.mp4",
+    "factory": "factory_022",
+    "features_digest": "df8befaba59e76505f18d74ee5c558b31295a3ce0446c08c80c76059b0ebac95",
+    "latency_ms": {
+     "decision": 0.952,
+     "decode": 1511.388,
+     "descriptors": 928.778,
+     "eg2_embed": 712.434,
+     "io_probe": 2.857,
+     "mosaic": 0.0,
+     "pixel_features": 1115.214,
+     "total": 4271.638
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7047,
+    "p_g": 1.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.8523,
+    "stage_wall": {
+     "decision": [
+      1791660091.2646906,
+      1791660091.2656434
+     ],
+     "decode": [
+      1791660086.9968655,
+      1791660088.5082557
+     ],
+     "descriptors": [
+      1791660089.623474,
+      1791660090.552253
+     ],
+     "eg2_embed": [
+      1791660090.5522537,
+      1791660091.264689
+     ],
+     "io_probe": [
+      1791660086.9940066,
+      1791660086.9968646
+     ],
+     "pixel_features": [
+      1791660088.508257,
+      1791660089.6234732
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_bc424bd5eaae"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_022/worker_008/factory022_worker008_00154.mp4",
+    "factory": "factory_022",
+    "features_digest": "df8befaba59e76505f18d74ee5c558b31295a3ce0446c08c80c76059b0ebac95",
+    "latency_ms": {
+     "decision": 1.021,
+     "decode": 1436.311,
+     "descriptors": 938.846,
+     "eg2_embed": 685.514,
+     "io_probe": 5.917,
+     "mosaic": 218.529,
+     "pixel_features": 1051.016,
+     "total": 4337.179
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "87267869e972c7514c9f677a8c4ffd69bb5af49ab87db720f0772a7955b2bcac"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7047,
+    "p_g": 1.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.8523,
+    "stage_wall": {
+     "decision": [
+      1791660086.9883995,
+      1791660086.9894216
+     ],
+     "decode": [
+      1791660082.6581628,
+      1791660084.0944748
+     ],
+     "descriptors": [
+      1791660085.1454942,
+      1791660086.0843413
+     ],
+     "eg2_embed": [
+      1791660086.0843418,
+      1791660086.7698576
+     ],
+     "io_probe": [
+      1791660082.6522439,
+      1791660082.6581619
+     ],
+     "mosaic": [
+      1791660086.769867,
+      1791660086.9883983
+     ],
+     "pixel_features": [
+      1791660084.0944762,
+      1791660085.1454935
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_bc424bd5eaae"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_023/worker_003/factory023_worker003_00055.mp4",
+    "factory": "factory_023",
+    "features_digest": "887460b93b3c317f70eb9b1ce71a2a0af6d52f9c36a7f7d796780437408e55e8",
+    "latency_ms": {
+     "decision": 0.923,
+     "decode": 1252.115,
+     "descriptors": 844.207,
+     "eg2_embed": 543.808,
+     "io_probe": 2.617,
+     "mosaic": 0.0,
+     "pixel_features": 1205.832,
+     "total": 3849.517
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.5894,
+    "p_g": 0.169,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3792,
+    "stage_wall": {
+     "decision": [
+      1791660099.2684536,
+      1791660099.2693775
+     ],
+     "decode": [
+      1791660095.4224808,
+      1791660096.674597
+     ],
+     "descriptors": [
+      1791660097.8804333,
+      1791660098.7246416
+     ],
+     "eg2_embed": [
+      1791660098.7246423,
+      1791660099.268452
+     ],
+     "io_probe": [
+      1791660095.4198618,
+      1791660095.4224799
+     ],
+     "pixel_features": [
+      1791660096.674599,
+      1791660097.8804326
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_5c341722b7f4"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_023/worker_003/factory023_worker003_00055.mp4",
+    "factory": "factory_023",
+    "features_digest": "887460b93b3c317f70eb9b1ce71a2a0af6d52f9c36a7f7d796780437408e55e8",
+    "latency_ms": {
+     "decision": 0.969,
+     "decode": 1476.326,
+     "descriptors": 833.815,
+     "eg2_embed": 543.952,
+     "io_probe": 6.406,
+     "mosaic": 229.379,
+     "pixel_features": 1054.708,
+     "total": 4145.591
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "76ab514e622697c684f57ab82b7746e933a4fdf0b16e92865cb35e2507e968cc"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.5894,
+    "p_g": 0.169,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3792,
+    "stage_wall": {
+     "decision": [
+      1791660095.4144049,
+      1791660095.415374
+     ],
+     "decode": [
+      1791660091.276197,
+      1791660092.7525237
+     ],
+     "descriptors": [
+      1791660093.8072355,
+      1791660094.6410546
+     ],
+     "eg2_embed": [
+      1791660094.6410556,
+      1791660095.185009
+     ],
+     "io_probe": [
+      1791660091.269784,
+      1791660091.2761958
+     ],
+     "mosaic": [
+      1791660095.1850224,
+      1791660095.4144037
+     ],
+     "pixel_features": [
+      1791660092.7525249,
+      1791660093.8072345
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_5c341722b7f4"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_026/worker_005/factory026_worker005_00111.mp4",
+    "factory": "factory_026",
+    "features_digest": "fcf0506b2adeae296e04f661391c30c6a9381845a9f2aecdf08bcf3642d12d52",
+    "latency_ms": {
+     "decision": 0.911,
+     "decode": 1038.273,
+     "descriptors": 954.628,
+     "eg2_embed": 604.362,
+     "io_probe": 2.451,
+     "mosaic": 0.0,
+     "pixel_features": 1160.613,
+     "total": 3761.25
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.4692,
+    "p_g": 0.0407,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.2549,
+    "stage_wall": {
+     "decision": [
+      1791660107.47346,
+      1791660107.4743707
+     ],
+     "decode": [
+      1791660103.7155747,
+      1791660104.7538493
+     ],
+     "descriptors": [
+      1791660105.914465,
+      1791660106.8690941
+     ],
+     "eg2_embed": [
+      1791660106.8690948,
+      1791660107.4734576
+     ],
+     "io_probe": [
+      1791660103.7131226,
+      1791660103.715574
+     ],
+     "pixel_features": [
+      1791660104.7538505,
+      1791660105.9144642
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_96b0cc902e6a"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_026/worker_005/factory026_worker005_00111.mp4",
+    "factory": "factory_026",
+    "features_digest": "fcf0506b2adeae296e04f661391c30c6a9381845a9f2aecdf08bcf3642d12d52",
+    "latency_ms": {
+     "decision": 0.948,
+     "decode": 1318.355,
+     "descriptors": 982.481,
+     "eg2_embed": 774.322,
+     "io_probe": 2.512,
+     "mosaic": 204.23,
+     "pixel_features": 1152.854,
+     "total": 4435.725
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "0a996cd326fee20f3fe0cdde3c6e67d36b4671c719dc7d1779c2830fa29888c7"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.4692,
+    "p_g": 0.0407,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.2549,
+    "stage_wall": {
+     "decision": [
+      1791660103.7075787,
+      1791660103.708527
+     ],
+     "decode": [
+      1791660099.2753174,
+      1791660100.5936742
+     ],
+     "descriptors": [
+      1791660101.7465312,
+      1791660102.7290137
+     ],
+     "eg2_embed": [
+      1791660102.7290142,
+      1791660103.5033383
+     ],
+     "io_probe": [
+      1791660099.2728035,
+      1791660099.2753162
+     ],
+     "mosaic": [
+      1791660103.5033457,
+      1791660103.7075777
+     ],
+     "pixel_features": [
+      1791660100.5936756,
+      1791660101.7465305
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_96b0cc902e6a"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_028/worker_001/factory028_worker001_00022.mp4",
+    "factory": "factory_028",
+    "features_digest": "b7b5a7b13244c516e2ceb5385556c6a3f4e334af53433fd78b44159ea9054029",
+    "latency_ms": {
+     "decision": 0.902,
+     "decode": 1602.544,
+     "descriptors": 1007.675,
+     "eg2_embed": 563.64,
+     "io_probe": 2.4,
+     "mosaic": 0.0,
+     "pixel_features": 1091.916,
+     "total": 4269.09
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.4995,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.2497,
+    "stage_wall": {
+     "decision": [
+      1791660115.5955698,
+      1791660115.5964727
+     ],
+     "decode": [
+      1791660111.329786,
+      1791660112.9323308
+     ],
+     "descriptors": [
+      1791660114.02425,
+      1791660115.0319262
+     ],
+     "eg2_embed": [
+      1791660115.031927,
+      1791660115.5955682
+     ],
+     "io_probe": [
+      1791660111.3273845,
+      1791660111.3297849
+     ],
+     "pixel_features": [
+      1791660112.932332,
+      1791660114.0242493
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "reject",
+    "window_id": "s_f6ceba915aa4"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_028/worker_001/factory028_worker001_00022.mp4",
+    "factory": "factory_028",
+    "features_digest": "b7b5a7b13244c516e2ceb5385556c6a3f4e334af53433fd78b44159ea9054029",
+    "latency_ms": {
+     "decision": 0.961,
+     "decode": 1006.054,
+     "descriptors": 898.951,
+     "eg2_embed": 679.487,
+     "io_probe": 7.28,
+     "mosaic": 214.133,
+     "pixel_features": 1037.806,
+     "total": 3844.695
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "58798c72ef97030ad3bb61f6c9918cc6742841aeaf18680b84a7735ecb401c8c"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.4995,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.2497,
+    "stage_wall": {
+     "decision": [
+      1791660111.3220234,
+      1791660111.3229847
+     ],
+     "decode": [
+      1791660107.485573,
+      1791660108.4916286
+     ],
+     "descriptors": [
+      1791660109.529438,
+      1791660110.42839
+     ],
+     "eg2_embed": [
+      1791660110.4283912,
+      1791660111.1078799
+     ],
+     "io_probe": [
+      1791660107.4782908,
+      1791660107.485572
+     ],
+     "mosaic": [
+      1791660111.1078868,
+      1791660111.3220222
+     ],
+     "pixel_features": [
+      1791660108.49163,
+      1791660109.529437
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "reject",
+    "window_id": "s_f6ceba915aa4"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_033/worker_009/factory033_worker009_00000.mp4",
+    "factory": "factory_033",
+    "features_digest": "4991b8a916072a6263f6600306e46308cca1bb3b6c1eb4fd10df24a8692bb16a",
+    "latency_ms": {
+     "decision": 0.931,
+     "decode": 1613.175,
+     "descriptors": 804.248,
+     "eg2_embed": 554.985,
+     "io_probe": 2.556,
+     "mosaic": 0.0,
+     "pixel_features": 1446.363,
+     "total": 4422.271
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8128,
+    "p_g": 0.9946,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.9037,
+    "stage_wall": {
+     "decision": [
+      1791660124.3261735,
+      1791660124.3271046
+     ],
+     "decode": [
+      1791660119.9073927,
+      1791660121.5205688
+     ],
+     "descriptors": [
+      1791660122.9669352,
+      1791660123.7711842
+     ],
+     "eg2_embed": [
+      1791660123.7711847,
+      1791660124.326171
+     ],
+     "io_probe": [
+      1791660119.9048345,
+      1791660119.9073918
+     ],
+     "pixel_features": [
+      1791660121.52057,
+      1791660122.9669342
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_66858a055709"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_033/worker_009/factory033_worker009_00000.mp4",
+    "factory": "factory_033",
+    "features_digest": "4991b8a916072a6263f6600306e46308cca1bb3b6c1eb4fd10df24a8692bb16a",
+    "latency_ms": {
+     "decision": 0.937,
+     "decode": 1392.656,
+     "descriptors": 1046.61,
+     "eg2_embed": 568.419,
+     "io_probe": 3.841,
+     "mosaic": 232.736,
+     "pixel_features": 1053.187,
+     "total": 4298.41
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "8cbbe74d4852a3067b76fa21feffc1890b93ce7b8ad890b900fa20b0f029bd0f"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8128,
+    "p_g": 0.9946,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.9037,
+    "stage_wall": {
+     "decision": [
+      1791660119.8994427,
+      1791660119.90038
+     ],
+     "decode": [
+      1791660115.6058147,
+      1791660116.998472
+     ],
+     "descriptors": [
+      1791660118.0516624,
+      1791660119.098274
+     ],
+     "eg2_embed": [
+      1791660119.0982747,
+      1791660119.6666954
+     ],
+     "io_probe": [
+      1791660115.6019711,
+      1791660115.6058137
+     ],
+     "mosaic": [
+      1791660119.6667025,
+      1791660119.8994417
+     ],
+     "pixel_features": [
+      1791660116.998473,
+      1791660118.0516615
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_66858a055709"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_035/worker_014/factory035_worker014_00077.mp4",
+    "factory": "factory_035",
+    "features_digest": "886eb851feb9701d324129847676b6ce56b8b72654b8e031ec4852f4c342b2c6",
+    "latency_ms": {
+     "decision": 0.941,
+     "decode": 1200.893,
+     "descriptors": 1037.714,
+     "eg2_embed": 759.315,
+     "io_probe": 7.102,
+     "mosaic": 0.0,
+     "pixel_features": 1212.98,
+     "total": 4218.957
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7068,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3534,
+    "stage_wall": {
+     "decision": [
+      1791660132.9896283,
+      1791660132.9905694
+     ],
+     "decode": [
+      1791660128.7787182,
+      1791660129.979612
+     ],
+     "descriptors": [
+      1791660131.1925952,
+      1791660132.23031
+     ],
+     "eg2_embed": [
+      1791660132.2303104,
+      1791660132.9896264
+     ],
+     "io_probe": [
+      1791660128.7716134,
+      1791660128.778717
+     ],
+     "pixel_features": [
+      1791660129.979613,
+      1791660131.1925945
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_6082233e2a06"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_035/worker_014/factory035_worker014_00077.mp4",
+    "factory": "factory_035",
+    "features_digest": "886eb851feb9701d324129847676b6ce56b8b72654b8e031ec4852f4c342b2c6",
+    "latency_ms": {
+     "decision": 0.959,
+     "decode": 1485.116,
+     "descriptors": 1050.136,
+     "eg2_embed": 560.795,
+     "io_probe": 3.988,
+     "mosaic": 231.353,
+     "pixel_features": 1102.731,
+     "total": 4435.101
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "08fd135f1433c38dcb146683cd33cecd3d63150e7fcb4e2bf4d9e02ad05d4c88"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7068,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3534,
+    "stage_wall": {
+     "decision": [
+      1791660128.7658727,
+      1791660128.7668319
+     ],
+     "decode": [
+      1791660124.3357222,
+      1791660125.8208392
+     ],
+     "descriptors": [
+      1791660126.9235728,
+      1791660127.97371
+     ],
+     "eg2_embed": [
+      1791660127.9737108,
+      1791660128.534507
+     ],
+     "io_probe": [
+      1791660124.331732,
+      1791660124.3357213
+     ],
+     "mosaic": [
+      1791660128.5345156,
+      1791660128.7658715
+     ],
+     "pixel_features": [
+      1791660125.8208401,
+      1791660126.923572
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_6082233e2a06"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_037/worker_018/factory037_worker018_00124.mp4",
+    "factory": "factory_037",
+    "features_digest": "179e8b25218f75df273353239dfa51520305660d1806a69aec06519dd1ccf55e",
+    "latency_ms": {
+     "decision": 0.785,
+     "decode": 2046.749,
+     "descriptors": 700.963,
+     "eg2_embed": 864.228,
+     "io_probe": 2.14,
+     "mosaic": 0.0,
+     "pixel_features": 1137.892,
+     "total": 4752.776
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8493,
+    "p_g": 1.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.9247,
+    "stage_wall": {
+     "decision": [
+      1791660143.4498472,
+      1791660143.4506323
+     ],
+     "decode": [
+      1791660138.7000034,
+      1791660140.7467544
+     ],
+     "descriptors": [
+      1791660141.8846526,
+      1791660142.585616
+     ],
+     "eg2_embed": [
+      1791660142.5856168,
+      1791660143.4498456
+     ],
+     "io_probe": [
+      1791660138.697858,
+      1791660138.7000008
+     ],
+     "pixel_features": [
+      1791660140.7467556,
+      1791660141.8846502
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_f460fa52988a"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_037/worker_018/factory037_worker018_00124.mp4",
+    "factory": "factory_037",
+    "features_digest": "179e8b25218f75df273353239dfa51520305660d1806a69aec06519dd1ccf55e",
+    "latency_ms": {
+     "decision": 0.949,
+     "decode": 2529.387,
+     "descriptors": 1016.529,
+     "eg2_embed": 617.015,
+     "io_probe": 2.843,
+     "mosaic": 207.63,
+     "pixel_features": 1323.596,
+     "total": 5697.971
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "2ed4656e0c43af08e14a01b9d3d39b68e7c5f49dd8bae63410cb4f2f4d17627c"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8493,
+    "p_g": 1.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.9247,
+    "stage_wall": {
+     "decision": [
+      1791660138.6922946,
+      1791660138.693244
+     ],
+     "decode": [
+      1791660132.998119,
+      1791660135.5275073
+     ],
+     "descriptors": [
+      1791660136.8511064,
+      1791660137.8676372
+     ],
+     "eg2_embed": [
+      1791660137.867638,
+      1791660138.4846537
+     ],
+     "io_probe": [
+      1791660132.9952745,
+      1791660132.9981182
+     ],
+     "mosaic": [
+      1791660138.4846618,
+      1791660138.6922936
+     ],
+     "pixel_features": [
+      1791660135.5275085,
+      1791660136.8511055
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_f460fa52988a"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_039/worker_006/factory039_worker006_01017.mp4",
+    "factory": "factory_039",
+    "features_digest": "a035c35ae54ba12ae2c71ba96126fdcb6f2c2eb9b49cccc8886674e113fd848b",
+    "latency_ms": {
+     "decision": 0.905,
+     "decode": 2315.327,
+     "descriptors": 720.876,
+     "eg2_embed": 728.964,
+     "io_probe": 2.631,
+     "mosaic": 0.0,
+     "pixel_features": 1210.707,
+     "total": 4979.426
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.778,
+    "p_g": 0.198,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.488,
+    "stage_wall": {
+     "decision": [
+      1791660153.9147034,
+      1791660153.9156094
+     ],
+     "decode": [
+      1791660148.938818,
+      1791660151.2541475
+     ],
+     "descriptors": [
+      1791660152.4648578,
+      1791660153.185735
+     ],
+     "eg2_embed": [
+      1791660153.1857357,
+      1791660153.9147015
+     ],
+     "io_probe": [
+      1791660148.936185,
+      1791660148.9388168
+     ],
+     "pixel_features": [
+      1791660151.2541487,
+      1791660152.464857
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_fa204778bc29"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_039/worker_006/factory039_worker006_01017.mp4",
+    "factory": "factory_039",
+    "features_digest": "a035c35ae54ba12ae2c71ba96126fdcb6f2c2eb9b49cccc8886674e113fd848b",
+    "latency_ms": {
+     "decision": 1.081,
+     "decode": 2588.101,
+     "descriptors": 753.338,
+     "eg2_embed": 628.436,
+     "io_probe": 4.384,
+     "mosaic": 274.176,
+     "pixel_features": 1225.805,
+     "total": 5475.364
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "437339eaebe090af52ee3b8fccc928db2c888e1e7dcc3569d175ef3f2e0e12e3"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.778,
+    "p_g": 0.198,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.488,
+    "stage_wall": {
+     "decision": [
+      1791660148.9293787,
+      1791660148.9304597
+     ],
+     "decode": [
+      1791660143.4594831,
+      1791660146.0475855
+     ],
+     "descriptors": [
+      1791660147.2733943,
+      1791660148.0267334
+     ],
+     "eg2_embed": [
+      1791660148.0267344,
+      1791660148.655175
+     ],
+     "io_probe": [
+      1791660143.4550972,
+      1791660143.4594822
+     ],
+     "mosaic": [
+      1791660148.6551979,
+      1791660148.9293776
+     ],
+     "pixel_features": [
+      1791660146.0475876,
+      1791660147.2733934
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_fa204778bc29"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_040/worker_001/factory040_worker001_00026.mp4",
+    "factory": "factory_040",
+    "features_digest": "0319e894964e11185c9a25f807f790bf696f06ad164d4fb00bc44dbaf0331275",
+    "latency_ms": {
+     "decision": 1.02,
+     "decode": 2261.533,
+     "descriptors": 782.012,
+     "eg2_embed": 615.031,
+     "io_probe": 2.871,
+     "mosaic": 0.0,
+     "pixel_features": 1358.927,
+     "total": 5021.415
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8174,
+    "p_g": 0.9955,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.9064,
+    "stage_wall": {
+     "decision": [
+      1791660164.6874201,
+      1791660164.6884403
+     ],
+     "decode": [
+      1791660159.6699002,
+      1791660161.931434
+     ],
+     "descriptors": [
+      1791660163.2903693,
+      1791660164.072382
+     ],
+     "eg2_embed": [
+      1791660164.0723827,
+      1791660164.6874158
+     ],
+     "io_probe": [
+      1791660159.6670272,
+      1791660159.6698992
+     ],
+     "pixel_features": [
+      1791660161.931435,
+      1791660163.2903686
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_4c25b8f129fb"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_040/worker_001/factory040_worker001_00026.mp4",
+    "factory": "factory_040",
+    "features_digest": "0319e894964e11185c9a25f807f790bf696f06ad164d4fb00bc44dbaf0331275",
+    "latency_ms": {
+     "decision": 1.097,
+     "decode": 2045.552,
+     "descriptors": 904.56,
+     "eg2_embed": 571.723,
+     "io_probe": 4.949,
+     "mosaic": 264.754,
+     "pixel_features": 1949.013,
+     "total": 5741.686
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "00ce491bf484205678b812a6177d087c59a2902fa89da9d62cb1f20fff4ecac8"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8174,
+    "p_g": 0.9955,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.9064,
+    "stage_wall": {
+     "decision": [
+      1791660159.6606634,
+      1791660159.6617606
+     ],
+     "decode": [
+      1791660153.9250264,
+      1791660155.9705799
+     ],
+     "descriptors": [
+      1791660157.9195957,
+      1791660158.824161
+     ],
+     "eg2_embed": [
+      1791660158.8241615,
+      1791660159.395889
+     ],
+     "io_probe": [
+      1791660153.9200752,
+      1791660153.925025
+     ],
+     "mosaic": [
+      1791660159.3959055,
+      1791660159.660662
+     ],
+     "pixel_features": [
+      1791660155.970581,
+      1791660157.9195948
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_4c25b8f129fb"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_042/worker_010/factory042_worker010_00056.mp4",
+    "factory": "factory_042",
+    "features_digest": "6db5ca99df0c2252b5fd3d96140ef7318bed3bcc8b882b3129708c9b5bc90681",
+    "latency_ms": {
+     "decision": 1.023,
+     "decode": 3565.808,
+     "descriptors": 1302.564,
+     "eg2_embed": 646.883,
+     "io_probe": 2.448,
+     "mosaic": 0.0,
+     "pixel_features": 886.876,
+     "total": 6405.624
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8151,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.4076,
+    "stage_wall": {
+     "decision": [
+      1791660176.0866823,
+      1791660176.0877066
+     ],
+     "decode": [
+      1791660169.6845345,
+      1791660173.250344
+     ],
+     "descriptors": [
+      1791660174.1372228,
+      1791660175.4397888
+     ],
+     "eg2_embed": [
+      1791660175.4397898,
+      1791660176.0866778
+     ],
+     "io_probe": [
+      1791660169.682084,
+      1791660169.6845326
+     ],
+     "pixel_features": [
+      1791660173.250345,
+      1791660174.1372218
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_c2b731ef752a"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_042/worker_010/factory042_worker010_00056.mp4",
+    "factory": "factory_042",
+    "features_digest": "6db5ca99df0c2252b5fd3d96140ef7318bed3bcc8b882b3129708c9b5bc90681",
+    "latency_ms": {
+     "decision": 1.017,
+     "decode": 2191.419,
+     "descriptors": 1016.437,
+     "eg2_embed": 615.335,
+     "io_probe": 2.589,
+     "mosaic": 255.044,
+     "pixel_features": 903.456,
+     "total": 4985.333
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "0087c25fda94ef6ebb61b8071ab43ca28691825bcd74db375740a6acca7e7232"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8151,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.4076,
+    "stage_wall": {
+     "decision": [
+      1791660169.6771545,
+      1791660169.6781719
+     ],
+     "decode": [
+      1791660164.69543,
+      1791660166.8868506
+     ],
+     "descriptors": [
+      1791660167.7903137,
+      1791660168.8067513
+     ],
+     "eg2_embed": [
+      1791660168.806752,
+      1791660169.4220884
+     ],
+     "io_probe": [
+      1791660164.6928399,
+      1791660164.695429
+     ],
+     "mosaic": [
+      1791660169.4221067,
+      1791660169.6771533
+     ],
+     "pixel_features": [
+      1791660166.8868518,
+      1791660167.790313
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_c2b731ef752a"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_044/worker_014/factory044_worker014_00056.mp4",
+    "factory": "factory_044",
+    "features_digest": "f0d24ef2688af64db47f134d14d778395e1aea14535b7be3192e3375d79feca5",
+    "latency_ms": {
+     "decision": 0.995,
+     "decode": 1350.068,
+     "descriptors": 687.552,
+     "eg2_embed": 661.624,
+     "io_probe": 3.351,
+     "mosaic": 0.0,
+     "pixel_features": 862.612,
+     "total": 3566.221
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7417,
+    "p_g": 0.0097,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3757,
+    "stage_wall": {
+     "decision": [
+      1791660184.473558,
+      1791660184.4745536
+     ],
+     "decode": [
+      1791660180.9116867,
+      1791660182.2617555
+     ],
+     "descriptors": [
+      1791660183.12437,
+      1791660183.8119233
+     ],
+     "eg2_embed": [
+      1791660183.811924,
+      1791660184.4735532
+     ],
+     "io_probe": [
+      1791660180.9083333,
+      1791660180.9116855
+     ],
+     "pixel_features": [
+      1791660182.2617564,
+      1791660183.1243694
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_0f731ed1be78"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_044/worker_014/factory044_worker014_00056.mp4",
+    "factory": "factory_044",
+    "features_digest": "f0d24ef2688af64db47f134d14d778395e1aea14535b7be3192e3375d79feca5",
+    "latency_ms": {
+     "decision": 1.076,
+     "decode": 2377.056,
+     "descriptors": 791.924,
+     "eg2_embed": 569.2,
+     "io_probe": 4.522,
+     "mosaic": 240.463,
+     "pixel_features": 828.397,
+     "total": 4812.679
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "ae8c1db7a8489407225985319e6429dfa2ac435cefa2e6f53a9dfabe96aefa05"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7417,
+    "p_g": 0.0097,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3757,
+    "stage_wall": {
+     "decision": [
+      1791660180.9031556,
+      1791660180.9042318
+     ],
+     "decode": [
+      1791660176.0960777,
+      1791660178.4731355
+     ],
+     "descriptors": [
+      1791660179.3015356,
+      1791660180.0934632
+     ],
+     "eg2_embed": [
+      1791660180.0934641,
+      1791660180.662669
+     ],
+     "io_probe": [
+      1791660176.0915532,
+      1791660176.0960765
+     ],
+     "mosaic": [
+      1791660180.6626894,
+      1791660180.9031541
+     ],
+     "pixel_features": [
+      1791660178.4731371,
+      1791660179.3015347
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_0f731ed1be78"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_051/worker_005/factory051_worker005_00166.mp4",
+    "factory": "factory_051",
+    "features_digest": "50ed40eee3906d54d0524690bce9b034c8dc13e6253d6a8244bf8df3f457201f",
+    "latency_ms": {
+     "decision": 0.845,
+     "decode": 979.171,
+     "descriptors": 661.895,
+     "eg2_embed": 579.788,
+     "io_probe": 2.731,
+     "mosaic": 0.0,
+     "pixel_features": 721.401,
+     "total": 2945.85
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6879,
+    "p_g": 0.9186,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.8033,
+    "stage_wall": {
+     "decision": [
+      1791660191.5933259,
+      1791660191.5941706
+     ],
+     "decode": [
+      1791660188.6510544,
+      1791660189.6302269
+     ],
+     "descriptors": [
+      1791660190.351631,
+      1791660191.013531
+     ],
+     "eg2_embed": [
+      1791660191.0135322,
+      1791660191.5933225
+     ],
+     "io_probe": [
+      1791660188.6483214,
+      1791660188.6510534
+     ],
+     "pixel_features": [
+      1791660189.630228,
+      1791660190.35163
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_5464a86afaf6"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_051/worker_005/factory051_worker005_00166.mp4",
+    "factory": "factory_051",
+    "features_digest": "50ed40eee3906d54d0524690bce9b034c8dc13e6253d6a8244bf8df3f457201f",
+    "latency_ms": {
+     "decision": 0.944,
+     "decode": 1537.962,
+     "descriptors": 960.511,
+     "eg2_embed": 677.554,
+     "io_probe": 2.656,
+     "mosaic": 183.676,
+     "pixel_features": 802.762,
+     "total": 4166.095
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "b30d738a9ecdf09ccb35f5e109ceebe3e9666b8a82b28d57a2322184c2370921"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6879,
+    "p_g": 0.9186,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.8033,
+    "stage_wall": {
+     "decision": [
+      1791660188.6432917,
+      1791660188.6442356
+     ],
+     "decode": [
+      1791660184.4807997,
+      1791660186.018763
+     ],
+     "descriptors": [
+      1791660186.8215284,
+      1791660187.78204
+     ],
+     "eg2_embed": [
+      1791660187.7820408,
+      1791660188.459597
+     ],
+     "io_probe": [
+      1791660184.4781423,
+      1791660184.4807987
+     ],
+     "mosaic": [
+      1791660188.4596102,
+      1791660188.6432903
+     ],
+     "pixel_features": [
+      1791660186.0187638,
+      1791660186.8215275
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "accept",
+    "window_id": "s_5464a86afaf6"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_054/worker_002/factory054_worker002_00045.mp4",
+    "factory": "factory_054",
+    "features_digest": "91ea4204b3e1f56267345538210e4fe920344b2d81ebaa088d048e325ace1244",
+    "latency_ms": {
+     "decision": 0.946,
+     "decode": 1508.473,
+     "descriptors": 780.185,
+     "eg2_embed": 557.467,
+     "io_probe": 2.434,
+     "mosaic": 0.0,
+     "pixel_features": 771.331,
+     "total": 3620.849
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6942,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3471,
+    "stage_wall": {
+     "decision": [
+      1791660198.7164414,
+      1791660198.7173872
+     ],
+     "decode": [
+      1791660195.098975,
+      1791660196.6074495
+     ],
+     "descriptors": [
+      1791660197.3787842,
+      1791660198.1589699
+     ],
+     "eg2_embed": [
+      1791660198.1589706,
+      1791660198.7164395
+     ],
+     "io_probe": [
+      1791660195.0965397,
+      1791660195.098974
+     ],
+     "pixel_features": [
+      1791660196.6074507,
+      1791660197.3787835
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_d66b64982479"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_054/worker_002/factory054_worker002_00045.mp4",
+    "factory": "factory_054",
+    "features_digest": "91ea4204b3e1f56267345538210e4fe920344b2d81ebaa088d048e325ace1244",
+    "latency_ms": {
+     "decision": 1.053,
+     "decode": 1207.256,
+     "descriptors": 745.128,
+     "eg2_embed": 567.635,
+     "io_probe": 4.025,
+     "mosaic": 225.547,
+     "pixel_features": 743.42,
+     "total": 3494.105
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "c270a7d9cc1a5577cf54ea71bdfdac3e39e926ebb007610a8b15d408b237d31f"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6942,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3471,
+    "stage_wall": {
+     "decision": [
+      1791660195.0912302,
+      1791660195.092284
+     ],
+     "decode": [
+      1791660191.6022072,
+      1791660192.8094642
+     ],
+     "descriptors": [
+      1791660193.5528867,
+      1791660194.2980165
+     ],
+     "eg2_embed": [
+      1791660194.2980173,
+      1791660194.865658
+     ],
+     "io_probe": [
+      1791660191.5981805,
+      1791660191.6022062
+     ],
+     "mosaic": [
+      1791660194.865679,
+      1791660195.0912292
+     ],
+     "pixel_features": [
+      1791660192.8094654,
+      1791660193.552886
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_d66b64982479"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_056/worker_016/factory056_worker016_00154.mp4",
+    "factory": "factory_056",
+    "features_digest": "8b9d725d57bfc930c1fb178dc3356225d0ea5da9186fae4cc57a68889912584e",
+    "latency_ms": {
+     "decision": 0.955,
+     "decode": 1805.568,
+     "descriptors": 704.98,
+     "eg2_embed": 624.105,
+     "io_probe": 2.513,
+     "mosaic": 0.0,
+     "pixel_features": 806.771,
+     "total": 3944.905
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7629,
+    "p_g": 0.5665,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.6647,
+    "stage_wall": {
+     "decision": [
+      1791660206.607633,
+      1791660206.6085885
+     ],
+     "decode": [
+      1791660202.6662004,
+      1791660204.471769
+     ],
+     "descriptors": [
+      1791660205.2785437,
+      1791660205.9835243
+     ],
+     "eg2_embed": [
+      1791660205.983525,
+      1791660206.6076314
+     ],
+     "io_probe": [
+      1791660202.6636853,
+      1791660202.666199
+     ],
+     "pixel_features": [
+      1791660204.47177,
+      1791660205.2785428
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_7bc332bccaab"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_056/worker_016/factory056_worker016_00154.mp4",
+    "factory": "factory_056",
+    "features_digest": "8b9d725d57bfc930c1fb178dc3356225d0ea5da9186fae4cc57a68889912584e",
+    "latency_ms": {
+     "decision": 0.96,
+     "decode": 1497.871,
+     "descriptors": 778.655,
+     "eg2_embed": 666.266,
+     "io_probe": 6.57,
+     "mosaic": 195.69,
+     "pixel_features": 791.45,
+     "total": 3937.494
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "a95b4a4defa0d124c8574657bf89d1bd51b6f5bed8d23e3f398af2cc4fffca2a"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7629,
+    "p_g": 0.5665,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.6647,
+    "stage_wall": {
+     "decision": [
+      1791660202.6587064,
+      1791660202.6596668
+     ],
+     "decode": [
+      1791660198.728749,
+      1791660200.226621
+     ],
+     "descriptors": [
+      1791660201.018074,
+      1791660201.796731
+     ],
+     "eg2_embed": [
+      1791660201.7967317,
+      1791660202.462999
+     ],
+     "io_probe": [
+      1791660198.722174,
+      1791660198.7287464
+     ],
+     "mosaic": [
+      1791660202.4630096,
+      1791660202.658705
+     ],
+     "pixel_features": [
+      1791660200.2266219,
+      1791660201.0180736
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_7bc332bccaab"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_058/worker_003/factory058_worker003_00121.mp4",
+    "factory": "factory_058",
+    "features_digest": "556bed344818bdb595d9360fe553ba778b5543a34418499c976e9a36b1b48d7d",
+    "latency_ms": {
+     "decision": 0.919,
+     "decode": 1259.337,
+     "descriptors": 738.471,
+     "eg2_embed": 642.476,
+     "io_probe": 2.229,
+     "mosaic": 0.0,
+     "pixel_features": 797.239,
+     "total": 3440.686
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.4923,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.2462,
+    "stage_wall": {
+     "decision": [
+      1791660214.4411118,
+      1791660214.4420319
+     ],
+     "decode": [
+      1791660211.0035784,
+      1791660212.262917
+     ],
+     "descriptors": [
+      1791660213.0601592,
+      1791660213.7986317
+     ],
+     "eg2_embed": [
+      1791660213.7986324,
+      1791660214.4411097
+     ],
+     "io_probe": [
+      1791660211.0013473,
+      1791660211.0035772
+     ],
+     "pixel_features": [
+      1791660212.2629185,
+      1791660213.0601587
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "reject",
+    "window_id": "s_fa4e2eb1bdff"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_058/worker_003/factory058_worker003_00121.mp4",
+    "factory": "factory_058",
+    "features_digest": "556bed344818bdb595d9360fe553ba778b5543a34418499c976e9a36b1b48d7d",
+    "latency_ms": {
+     "decision": 1.02,
+     "decode": 2007.265,
+     "descriptors": 790.51,
+     "eg2_embed": 545.85,
+     "io_probe": 12.3,
+     "mosaic": 207.825,
+     "pixel_features": 817.976,
+     "total": 4382.778
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "876c5b9d25e402f1b8169d14e39180af14cdb89cf960e189733e90436a950c4e"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.4923,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.2462,
+    "stage_wall": {
+     "decision": [
+      1791660210.9954917,
+      1791660210.9965131
+     ],
+     "decode": [
+      1791660206.6260383,
+      1791660208.6333048
+     ],
+     "descriptors": [
+      1791660209.4512844,
+      1791660210.241796
+     ],
+     "eg2_embed": [
+      1791660210.241797,
+      1791660210.7876487
+     ],
+     "io_probe": [
+      1791660206.6137362,
+      1791660206.6260376
+     ],
+     "mosaic": [
+      1791660210.7876627,
+      1791660210.9954906
+     ],
+     "pixel_features": [
+      1791660208.6333063,
+      1791660209.4512835
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "reject",
+    "window_id": "s_fa4e2eb1bdff"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_060/worker_008/factory060_worker008_00099.mp4",
+    "factory": "factory_060",
+    "features_digest": "0d4d00cdd857c0a3c776da7f0aa527536a0204b86e4f0770fbe0329db1621a26",
+    "latency_ms": {
+     "decision": 0.908,
+     "decode": 1903.009,
+     "descriptors": 1063.545,
+     "eg2_embed": 644.468,
+     "io_probe": 2.687,
+     "mosaic": 0.0,
+     "pixel_features": 1189.631,
+     "total": 4804.264
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.4927,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.2464,
+    "stage_wall": {
+     "decision": [
+      1791660224.018986,
+      1791660224.0198946
+     ],
+     "decode": [
+      1791660219.2183235,
+      1791660221.121333
+     ],
+     "descriptors": [
+      1791660222.3109672,
+      1791660223.374513
+     ],
+     "eg2_embed": [
+      1791660223.3745139,
+      1791660224.018984
+     ],
+     "io_probe": [
+      1791660219.2156312,
+      1791660219.2183204
+     ],
+     "pixel_features": [
+      1791660221.121334,
+      1791660222.3109665
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "reject",
+    "window_id": "s_11d0ba39104b"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_060/worker_008/factory060_worker008_00099.mp4",
+    "factory": "factory_060",
+    "features_digest": "0d4d00cdd857c0a3c776da7f0aa527536a0204b86e4f0770fbe0329db1621a26",
+    "latency_ms": {
+     "decision": 0.964,
+     "decode": 1936.043,
+     "descriptors": 845.425,
+     "eg2_embed": 670.209,
+     "io_probe": 3.088,
+     "mosaic": 383.576,
+     "pixel_features": 925.406,
+     "total": 4764.734
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "3a1e343ea02d71982d1ab90540025af6a259265364b159d680f72fae27315f16"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.4927,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.2464,
+    "stage_wall": {
+     "decision": [
+      1791660219.210033,
+      1791660219.2109976
+     ],
+     "decode": [
+      1791660214.4493546,
+      1791660216.3853993
+     ],
+     "descriptors": [
+      1791660217.3108084,
+      1791660218.1562343
+     ],
+     "eg2_embed": [
+      1791660218.1562347,
+      1791660218.8264449
+     ],
+     "io_probe": [
+      1791660214.4462645,
+      1791660214.4493532
+     ],
+     "mosaic": [
+      1791660218.826452,
+      1791660219.2100315
+     ],
+     "pixel_features": [
+      1791660216.3854,
+      1791660217.3108075
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "reject",
+    "window_id": "s_11d0ba39104b"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_062/worker_014/factory062_worker014_00099.mp4",
+    "factory": "factory_062",
+    "features_digest": "f9a0910f65f0309d1c16dbd384ecf7441d00cfd01bbc3cd4e026ee9b6fcc0a62",
+    "latency_ms": {
+     "decision": 0.918,
+     "decode": 2915.837,
+     "descriptors": 938.531,
+     "eg2_embed": 659.791,
+     "io_probe": 2.233,
+     "mosaic": 0.0,
+     "pixel_features": 1051.872,
+     "total": 5569.196
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6697,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3348,
+    "stage_wall": {
+     "decision": [
+      1791660234.276019,
+      1791660234.2769372
+     ],
+     "decode": [
+      1791660228.7099788,
+      1791660231.6258166
+     ],
+     "descriptors": [
+      1791660232.677692,
+      1791660233.6162238
+     ],
+     "eg2_embed": [
+      1791660233.6162248,
+      1791660234.2760172
+     ],
+     "io_probe": [
+      1791660228.7077432,
+      1791660228.7099776
+     ],
+     "pixel_features": [
+      1791660231.6258173,
+      1791660232.677691
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_df215c6829ee"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_062/worker_014/factory062_worker014_00099.mp4",
+    "factory": "factory_062",
+    "features_digest": "f9a0910f65f0309d1c16dbd384ecf7441d00cfd01bbc3cd4e026ee9b6fcc0a62",
+    "latency_ms": {
+     "decision": 1.02,
+     "decode": 1605.676,
+     "descriptors": 1068.677,
+     "eg2_embed": 622.149,
+     "io_probe": 4.237,
+     "mosaic": 271.813,
+     "pixel_features": 1079.077,
+     "total": 4652.671
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "4d6e58a45f33917368edd9e502c9f292a38a5bf008437a8aec34a37c5330fe37"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6697,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3348,
+    "stage_wall": {
+     "decision": [
+      1791660228.676127,
+      1791660228.6771472
+     ],
+     "decode": [
+      1791660224.028716,
+      1791660225.634393
+     ],
+     "descriptors": [
+      1791660226.7134736,
+      1791660227.7821522
+     ],
+     "eg2_embed": [
+      1791660227.782153,
+      1791660228.4043033
+     ],
+     "io_probe": [
+      1791660224.024477,
+      1791660224.0287147
+     ],
+     "mosaic": [
+      1791660228.4043102,
+      1791660228.6761258
+     ],
+     "pixel_features": [
+      1791660225.6343946,
+      1791660226.7134726
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_df215c6829ee"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_066/worker_015/factory066_worker015_00088.mp4",
+    "factory": "factory_066",
+    "features_digest": "884a183e8081953624ba28ba13aaa61c7430762862ea886375a3d309da0809ac",
+    "latency_ms": {
+     "decision": 0.917,
+     "decode": 3283.306,
+     "descriptors": 725.583,
+     "eg2_embed": 690.049,
+     "io_probe": 2.209,
+     "mosaic": 0.0,
+     "pixel_features": 819.339,
+     "total": 5521.416
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8528,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.4264,
+    "stage_wall": {
+     "decision": [
+      1791660246.4471648,
+      1791660246.4480817
+     ],
+     "decode": [
+      1791660240.9288776,
+      1791660244.2121854
+     ],
+     "descriptors": [
+      1791660245.0315275,
+      1791660245.7571118
+     ],
+     "eg2_embed": [
+      1791660245.7571125,
+      1791660246.4471626
+     ],
+     "io_probe": [
+      1791660240.926667,
+      1791660240.9288766
+     ],
+     "pixel_features": [
+      1791660244.2121866,
+      1791660245.0315263
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_079da0d6a7e9"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_066/worker_015/factory066_worker015_00088.mp4",
+    "factory": "factory_066",
+    "features_digest": "884a183e8081953624ba28ba13aaa61c7430762862ea886375a3d309da0809ac",
+    "latency_ms": {
+     "decision": 0.983,
+     "decode": 3550.637,
+     "descriptors": 1037.937,
+     "eg2_embed": 736.323,
+     "io_probe": 31.587,
+     "mosaic": 235.378,
+     "pixel_features": 1048.218,
+     "total": 6641.093
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "589b861eae0d02cccd0b27137e1646edca886d10670e5c37242657cfbbf7baae"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8528,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.4264,
+    "stage_wall": {
+     "decision": [
+      1791660240.921598,
+      1791660240.922581
+     ],
+     "decode": [
+      1791660234.3130815,
+      1791660237.8637207
+     ],
+     "descriptors": [
+      1791660238.911942,
+      1791660239.9498804
+     ],
+     "eg2_embed": [
+      1791660239.949881,
+      1791660240.6862056
+     ],
+     "io_probe": [
+      1791660234.281489,
+      1791660234.3130789
+     ],
+     "mosaic": [
+      1791660240.686212,
+      1791660240.9215968
+     ],
+     "pixel_features": [
+      1791660237.8637223,
+      1791660238.911941
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_079da0d6a7e9"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_069/worker_004/factory069_worker004_00077.mp4",
+    "factory": "factory_069",
+    "features_digest": "408ad1cd5d1e77905af2bc942f6d4758b975083354b55abc0a30227c04c2b40f",
+    "latency_ms": {
+     "decision": 0.933,
+     "decode": 3717.113,
+     "descriptors": 843.932,
+     "eg2_embed": 641.49,
+     "io_probe": 2.413,
+     "mosaic": 0.0,
+     "pixel_features": 743.168,
+     "total": 5949.063
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7053,
+    "p_g": 0.0002,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3527,
+    "stage_wall": {
+     "decision": [
+      1791660259.3661466,
+      1791660259.3670802
+     ],
+     "decode": [
+      1791660253.4204335,
+      1791660257.1375477
+     ],
+     "descriptors": [
+      1791660257.8807197,
+      1791660258.7246523
+     ],
+     "eg2_embed": [
+      1791660258.724653,
+      1791660259.3661447
+     ],
+     "io_probe": [
+      1791660253.418018,
+      1791660253.4204319
+     ],
+     "pixel_features": [
+      1791660257.1375492,
+      1791660257.880719
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_ce18279adf1d"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_069/worker_004/factory069_worker004_00077.mp4",
+    "factory": "factory_069",
+    "features_digest": "408ad1cd5d1e77905af2bc942f6d4758b975083354b55abc0a30227c04c2b40f",
+    "latency_ms": {
+     "decision": 0.964,
+     "decode": 4190.984,
+     "descriptors": 891.624,
+     "eg2_embed": 552.933,
+     "io_probe": 10.473,
+     "mosaic": 229.881,
+     "pixel_features": 1083.733,
+     "total": 6960.621
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "fb6403a9986d87c87a7d0b37bff562ceb5741f64745148c7091ea6dc34b51d2f"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7053,
+    "p_g": 0.0002,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.3527,
+    "stage_wall": {
+     "decision": [
+      1791660253.412325,
+      1791660253.4132895
+     ],
+     "decode": [
+      1791660246.4631453,
+      1791660250.65413
+     ],
+     "descriptors": [
+      1791660251.7378664,
+      1791660252.629492
+     ],
+     "eg2_embed": [
+      1791660252.6294928,
+      1791660253.1824276
+     ],
+     "io_probe": [
+      1791660246.4526696,
+      1791660246.4631438
+     ],
+     "mosaic": [
+      1791660253.1824355,
+      1791660253.4123235
+     ],
+     "pixel_features": [
+      1791660250.654131,
+      1791660251.7378657
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_ce18279adf1d"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_073/worker_014/factory073_worker014_00055.mp4",
+    "factory": "factory_073",
+    "features_digest": "ea475358f7e4822accb82fed773e8c01e2def534f7530ac9f0cd75d1e9190046",
+    "latency_ms": {
+     "decision": 0.949,
+     "decode": 3232.688,
+     "descriptors": 704.554,
+     "eg2_embed": 717.789,
+     "io_probe": 2.535,
+     "mosaic": 0.0,
+     "pixel_features": 784.593,
+     "total": 5443.123
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7927,
+    "p_g": 0.0859,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.4393,
+    "stage_wall": {
+     "decision": [
+      1791660271.8466985,
+      1791660271.8476481
+     ],
+     "decode": [
+      1791660266.4070635,
+      1791660269.6397538
+     ],
+     "descriptors": [
+      1791660270.4243503,
+      1791660271.1289055
+     ],
+     "eg2_embed": [
+      1791660271.1289062,
+      1791660271.8466964
+     ],
+     "io_probe": [
+      1791660266.4045277,
+      1791660266.4070623
+     ],
+     "pixel_features": [
+      1791660269.6397548,
+      1791660270.4243495
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_81570830b4be"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_073/worker_014/factory073_worker014_00055.mp4",
+    "factory": "factory_073",
+    "features_digest": "ea475358f7e4822accb82fed773e8c01e2def534f7530ac9f0cd75d1e9190046",
+    "latency_ms": {
+     "decision": 0.817,
+     "decode": 4476.004,
+     "descriptors": 693.901,
+     "eg2_embed": 583.587,
+     "io_probe": 2.802,
+     "mosaic": 324.764,
+     "pixel_features": 919.522,
+     "total": 7001.421
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "e39fc677263dabf6f4579c87832b706c092346260a603763115b34b90f13e957"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7927,
+    "p_g": 0.0859,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.4393,
+    "stage_wall": {
+     "decision": [
+      1791660266.3721485,
+      1791660266.3729653
+     ],
+     "decode": [
+      1791660259.3743536,
+      1791660263.850358
+     ],
+     "descriptors": [
+      1791660264.769883,
+      1791660265.463785
+     ],
+     "eg2_embed": [
+      1791660265.4637854,
+      1791660266.047374
+     ],
+     "io_probe": [
+      1791660259.371545,
+      1791660259.3743503
+     ],
+     "mosaic": [
+      1791660266.0473812,
+      1791660266.3721476
+     ],
+     "pixel_features": [
+      1791660263.850359,
+      1791660264.7698822
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_81570830b4be"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_076/worker_061/factory076_worker061_00066.mp4",
+    "factory": "factory_076",
+    "features_digest": "87bc97e85a9b1a3bd11e908b85e8350bac14fe658be64030619823d5b1e1fad5",
+    "latency_ms": {
+     "decision": 0.932,
+     "decode": 4511.659,
+     "descriptors": 1063.756,
+     "eg2_embed": 638.219,
+     "io_probe": 2.987,
+     "mosaic": 0.0,
+     "pixel_features": 806.061,
+     "total": 7023.629
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8293,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.4147,
+    "stage_wall": {
+     "decision": [
+      1791660287.1810544,
+      1791660287.1819868
+     ],
+     "decode": [
+      1791660280.1613486,
+      1791660284.6730087
+     ],
+     "descriptors": [
+      1791660285.4790738,
+      1791660286.5428312
+     ],
+     "eg2_embed": [
+      1791660286.542832,
+      1791660287.1810522
+     ],
+     "io_probe": [
+      1791660280.15836,
+      1791660280.1613476
+     ],
+     "pixel_features": [
+      1791660284.67301,
+      1791660285.479073
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_0f3f94da245c"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_076/worker_061/factory076_worker061_00066.mp4",
+    "factory": "factory_076",
+    "features_digest": "87bc97e85a9b1a3bd11e908b85e8350bac14fe658be64030619823d5b1e1fad5",
+    "latency_ms": {
+     "decision": 0.966,
+     "decode": 4596.089,
+     "descriptors": 1392.158,
+     "eg2_embed": 1079.044,
+     "io_probe": 39.97,
+     "mosaic": 249.201,
+     "pixel_features": 944.238,
+     "total": 8301.688
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "3ed7e435c05874ac84c8ad1fbaccf66c70086b7b430939365b5ae9cc48c09f4f"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8293,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.4147,
+    "stage_wall": {
+     "decision": [
+      1791660280.1530957,
+      1791660280.154062
+     ],
+     "decode": [
+      1791660271.8923478,
+      1791660276.4884381
+     ],
+     "descriptors": [
+      1791660277.43268,
+      1791660278.8248386
+     ],
+     "eg2_embed": [
+      1791660278.8248396,
+      1791660279.9038842
+     ],
+     "io_probe": [
+      1791660271.852375,
+      1791660271.8923469
+     ],
+     "mosaic": [
+      1791660279.9038918,
+      1791660280.1530948
+     ],
+     "pixel_features": [
+      1791660276.488439,
+      1791660277.4326787
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_0f3f94da245c"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_079/worker_023/factory079_worker023_00000.mp4",
+    "factory": "factory_079",
+    "features_digest": "0ca602b05751018fcae18ac43edfc4216842907a807657042341e2ddcca3f913",
+    "latency_ms": {
+     "decision": 0.941,
+     "decode": 3542.652,
+     "descriptors": 1144.059,
+     "eg2_embed": 853.68,
+     "io_probe": 2.514,
+     "mosaic": 0.0,
+     "pixel_features": 1218.057,
+     "total": 6761.918
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7539,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.377,
+    "stage_wall": {
+     "decision": [
+      1791660301.2656825,
+      1791660301.2666233
+     ],
+     "decode": [
+      1791660294.507223,
+      1791660298.0498772
+     ],
+     "descriptors": [
+      1791660299.267938,
+      1791660300.411998
+     ],
+     "eg2_embed": [
+      1791660300.4119987,
+      1791660301.2656798
+     ],
+     "io_probe": [
+      1791660294.5047069,
+      1791660294.5072215
+     ],
+     "pixel_features": [
+      1791660298.049879,
+      1791660299.267937
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_87c0dbed1d46"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_079/worker_023/factory079_worker023_00000.mp4",
+    "factory": "factory_079",
+    "features_digest": "0ca602b05751018fcae18ac43edfc4216842907a807657042341e2ddcca3f913",
+    "latency_ms": {
+     "decision": 1.017,
+     "decode": 4173.316,
+     "descriptors": 1142.68,
+     "eg2_embed": 574.591,
+     "io_probe": 12.015,
+     "mosaic": 217.754,
+     "pixel_features": 1172.998,
+     "total": 7294.404
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "3e55c56bc5d75607d53647ef93c04aeaeeca1164a3349f00db4fb7378b0205c7"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.7539,
+    "p_g": 0.0,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.377,
+    "stage_wall": {
+     "decision": [
+      1791660294.49936,
+      1791660294.5003781
+     ],
+     "decode": [
+      1791660287.2179933,
+      1791660291.3913105
+     ],
+     "descriptors": [
+      1791660292.5643115,
+      1791660293.7069921
+     ],
+     "eg2_embed": [
+      1791660293.7069929,
+      1791660294.2815883
+     ],
+     "io_probe": [
+      1791660287.205976,
+      1791660287.2179918
+     ],
+     "mosaic": [
+      1791660294.2816024,
+      1791660294.499359
+     ],
+     "pixel_features": [
+      1791660291.3913116,
+      1791660292.564311
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_87c0dbed1d46"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_080/worker_020/factory080_worker020_00066.mp4",
+    "factory": "factory_080",
+    "features_digest": "16fe3316288e9867631b50ba51c2373165f7d8f25e496560cefacf30d0e4591c",
+    "latency_ms": {
+     "decision": 0.931,
+     "decode": 1200.096,
+     "descriptors": 664.563,
+     "eg2_embed": 541.782,
+     "io_probe": 2.352,
+     "mosaic": 0.0,
+     "pixel_features": 724.644,
+     "total": 3134.382
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8557,
+    "p_g": 0.0024,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.429,
+    "stage_wall": {
+     "decision": [
+      1791660309.7261512,
+      1791660309.7270825
+     ],
+     "decode": [
+      1791660306.595056,
+      1791660307.7951536
+     ],
+     "descriptors": [
+      1791660308.5198014,
+      1791660309.184365
+     ],
+     "eg2_embed": [
+      1791660309.1843657,
+      1791660309.726149
+     ],
+     "io_probe": [
+      1791660306.5927024,
+      1791660306.595055
+     ],
+     "pixel_features": [
+      1791660307.7951555,
+      1791660308.5198007
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_c94cd4cdd38c"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_080/worker_020/factory080_worker020_00066.mp4",
+    "factory": "factory_080",
+    "features_digest": "16fe3316288e9867631b50ba51c2373165f7d8f25e496560cefacf30d0e4591c",
+    "latency_ms": {
+     "decision": 0.97,
+     "decode": 2734.175,
+     "descriptors": 780.975,
+     "eg2_embed": 553.004,
+     "io_probe": 2.403,
+     "mosaic": 230.983,
+     "pixel_features": 1014.46,
+     "total": 5316.992
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "0504a3d864bf6be6c9c84410a570c297b1a4bad136f47f91ea6a18c20e09ffe7"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.8557,
+    "p_g": 0.0024,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.429,
+    "stage_wall": {
+     "decision": [
+      1791660306.5872543,
+      1791660306.5882242
+     ],
+     "decode": [
+      1791660301.2736387,
+      1791660304.0078144
+     ],
+     "descriptors": [
+      1791660305.022278,
+      1791660305.8032544
+     ],
+     "eg2_embed": [
+      1791660305.803255,
+      1791660306.356261
+     ],
+     "io_probe": [
+      1791660301.271233,
+      1791660301.2736373
+     ],
+     "mosaic": [
+      1791660306.3562686,
+      1791660306.5872533
+     ],
+     "pixel_features": [
+      1791660304.0078156,
+      1791660305.022277
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_c94cd4cdd38c"
+   }
+  },
+  {
+   "off": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_085/worker_017/factory085_worker017_00000.mp4",
+    "factory": "factory_085",
+    "features_digest": "2c7a167f8a9d537457a23c9a4bed1a6c9f3356c413687a497440e1ac31e55f35",
+    "latency_ms": {
+     "decision": 0.903,
+     "decode": 1124.556,
+     "descriptors": 693.896,
+     "eg2_embed": 545.521,
+     "io_probe": 2.276,
+     "mosaic": 0.0,
+     "pixel_features": 840.766,
+     "total": 3207.931
+    },
+    "mosaic": {
+     "enabled": false
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6147,
+    "p_g": 0.0113,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.313,
+    "stage_wall": {
+     "decision": [
+      1791660316.185242,
+      1791660316.1861448
+     ],
+     "decode": [
+      1791660312.9804933,
+      1791660314.1050503
+     ],
+     "descriptors": [
+      1791660314.9458191,
+      1791660315.6397164
+     ],
+     "eg2_embed": [
+      1791660315.639717,
+      1791660316.18524
+     ],
+     "io_probe": [
+      1791660312.9782155,
+      1791660312.9804919
+     ],
+     "pixel_features": [
+      1791660314.105051,
+      1791660314.9458184
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_aae9f0166f5e"
+   },
+   "on": {
+    "accept_thr": 0.75,
+    "bytes": {
+     "eg2": 8847360,
+     "native": 49766400,
+     "pix": 12960000
+    },
+    "clip": "factory_085/worker_017/factory085_worker017_00000.mp4",
+    "factory": "factory_085",
+    "features_digest": "2c7a167f8a9d537457a23c9a4bed1a6c9f3356c413687a497440e1ac31e55f35",
+    "latency_ms": {
+     "decision": 0.968,
+     "decode": 868.281,
+     "descriptors": 796.966,
+     "eg2_embed": 554.404,
+     "io_probe": 2.891,
+     "mosaic": 217.255,
+     "pixel_features": 801.268,
+     "total": 3242.057
+    },
+    "mosaic": {
+     "builder_version": "mosaic-1.0.0",
+     "enabled": true,
+     "grid": [
+      2,
+      4
+     ],
+     "n": 8,
+     "sha256": "3cc781ccde6f44e75262791b548675fbddf716bb0cb688a82545fa6c0f68c157"
+    },
+    "n_frames": {
+     "eg2": 20,
+     "native": 8,
+     "pixel": 300
+    },
+    "p_e": 0.6147,
+    "p_g": 0.0113,
+    "profile": "factory_1080p30",
+    "reject_thr": 0.25,
+    "score": 0.313,
+    "stage_wall": {
+     "decision": [
+      1791660312.9725978,
+      1791660312.9735665
+     ],
+     "decode": [
+      1791660309.7344043,
+      1791660310.6026864
+     ],
+     "descriptors": [
+      1791660311.403958,
+      1791660312.2009254
+     ],
+     "eg2_embed": [
+      1791660312.2009263,
+      1791660312.7553318
+     ],
+     "io_probe": [
+      1791660309.7315109,
+      1791660309.734403
+     ],
+     "mosaic": [
+      1791660312.7553396,
+      1791660312.9725966
+     ],
+     "pixel_features": [
+      1791660310.6026878,
+      1791660311.4039574
+     ]
+    },
+    "start_s": 60.0,
+    "verdict": "review",
+    "window_id": "s_aae9f0166f5e"
+   }
+  }
+ ],
+ "score_mismatches": 0,
+ "title": "Mosaic stage ON vs OFF: wall-time delta + verdict identity",
+ "total_off_ms": {
+  "mean": 4475.84,
+  "n": 30,
+  "p50": 4244.02,
+  "p95": 6601.59
+ },
+ "total_on_ms": {
+  "mean": 5222.47,
+  "n": 30,
+  "p50": 4435.41,
+  "p95": 7848.41
+ },
+ "track": "zerocopy",
+ "verdict_disagreements": 0,
+ "verdicts_identical": true
+}

@@ -1,0 +1,223 @@
+{
+ "windows": [
+  {
+   "id": "s_4d769eb1e840",
+   "clip": "factory_001/worker_006/factory001_worker006_00008.mp4",
+   "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+   "start_s": 60.0,
+   "end_s": 70.0,
+   "factory": "factory_001",
+   "worker": "worker_006",
+   "duration_s": 1199.87,
+   "width": 1920,
+   "height": 1080,
+   "fps": 30.0,
+   "codec": "hevc",
+   "size_bytes": 599622489,
+   "window_id": "s_4d769eb1e840"
+  },
+  {
+   "id": "s_8092369a6dd1",
+   "clip": "factory_009/worker_001/factory009_worker001_00007.mp4",
+   "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_009/worker_001/factory009_worker001_00007.mp4",
+   "start_s": 60.0,
+   "end_s": 70.0,
+   "factory": "factory_009",
+   "worker": "worker_001",
+   "duration_s": 1199.77,
+   "width": 1920,
+   "height": 1080,
+   "fps": 30.0,
+   "codec": "hevc",
+   "size_bytes": 599614527,
+   "window_id": "s_8092369a6dd1"
+  },
+  {
+   "id": "s_90380033f298",
+   "clip": "factory_010/worker_002/factory010_worker002_00056.mp4",
+   "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_010/worker_002/factory010_worker002_00056.mp4",
+   "start_s": 60.0,
+   "end_s": 70.0,
+   "factory": "factory_010",
+   "worker": "worker_002",
+   "duration_s": 179.77,
+   "width": 1920,
+   "height": 1080,
+   "fps": 30.0,
+   "codec": "hevc",
+   "size_bytes": 89995389,
+   "window_id": "s_90380033f298"
+  },
+  {
+   "id": "s_1f058ff76496",
+   "clip": "factory_014/worker_041/factory014_worker041_00143.mp4",
+   "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_014/worker_041/factory014_worker041_00143.mp4",
+   "start_s": 60.0,
+   "end_s": 70.0,
+   "factory": "factory_014",
+   "worker": "worker_041",
+   "duration_s": 179.77,
+   "width": 1920,
+   "height": 1080,
+   "fps": 30.0,
+   "codec": "hevc",
+   "size_bytes": 89970176,
+   "window_id": "s_1f058ff76496"
+  },
+  {
+   "id": "s_5d70a1283bad",
+   "clip": "factory_016/worker_002/factory016_worker002_00008.mp4",
+   "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_016/worker_002/factory016_worker002_00008.mp4",
+   "start_s": 60.0,
+   "end_s": 70.0,
+   "factory": "factory_016",
+   "worker": "worker_002",
+   "duration_s": 529.6,
+   "width": 1920,
+   "height": 1080,
+   "fps": 30.0,
+   "codec": "hevc",
+   "size_bytes": 264928280,
+   "window_id": "s_5d70a1283bad"
+  },
+  {
+   "id": "s_d61894812775",
+   "clip": "factory_020/worker_002/factory020_worker002_00157.mp4",
+   "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_020/worker_002/factory020_worker002_00157.mp4",
+   "start_s": 60.0,
+   "end_s": 70.0,
+   "factory": "factory_020",
+   "worker": "worker_002",
+   "duration_s": 179.7,
+   "width": 1920,
+   "height": 1080,
+   "fps": 30.0,
+   "codec": "hevc",
+   "size_bytes": 90101206,
+   "window_id": "s_d61894812775"
+  },
+  {
+   "id": "s_bc424bd5eaae",
+   "clip": "factory_022/worker_008/factory022_worker008_00154.mp4",
+   "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_022/worker_008/factory022_worker008_00154.mp4",
+   "start_s": 60.0,
+   "end_s": 70.0,
+   "factory": "factory_022",
+   "worker": "worker_008",
+   "duration_s": 179.77,
+   "width": 1920,
+   "height": 1080,
+   "fps": 30.0,
+   "codec": "hevc",
+   "size_bytes": 89981293,
+   "window_id": "s_bc424bd5eaae"
+  },
+  {
+   "id": "s_5c341722b7f4",
+   "clip": "factory_023/worker_003/factory023_worker003_00055.mp4",
+   "path": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_023/worker_003/factory023_worker003_00055.mp4",
+   "start_s": 60.0,
+   "end_s": 70.0,
+   "factory": "factory_023",
+   "worker": "worker_003",
+   "duration_s": 179.9,
+   "width": 1920,
+   "height": 1080,
+   "fps": 30.0,
+   "codec": "hevc",
+   "size_bytes": 90084540,
+   "window_id": "s_5c341722b7f4"
+  }
+ ],
+ "arms": [],
+ "aggregate": {
+  "h264_480p_160x90": {
+   "codec": "h264",
+   "res": "480p_160x90",
+   "n": 8,
+   "cpu": {
+    "n": 8,
+    "mean_ms": 265.9,
+    "p50_ms": 227.7
+   },
+   "nvdec_hwdownload": {
+    "n": 8,
+    "mean_ms": 776.1,
+    "p50_ms": 705.2
+   },
+   "nvdec_no_download": {
+    "n": 8,
+    "mean_ms": 794.9,
+    "p50_ms": 696.0
+   },
+   "nvdec_speedup_over_cpu": 0.323,
+   "hwdownload_cost_p50_ms": 9.2
+  },
+  "h264_480p_native": {
+   "codec": "h264",
+   "res": "480p_native",
+   "n": 8,
+   "cpu": {
+    "n": 8,
+    "mean_ms": 233.9,
+    "p50_ms": 233.0
+   },
+   "nvdec_hwdownload": {
+    "n": 8,
+    "mean_ms": 768.0,
+    "p50_ms": 771.7
+   },
+   "nvdec_no_download": {
+    "n": 8,
+    "mean_ms": 773.1,
+    "p50_ms": 680.7
+   },
+   "nvdec_speedup_over_cpu": 0.302,
+   "hwdownload_cost_p50_ms": 91.0
+  },
+  "hevc_1080p_160x90": {
+   "codec": "hevc",
+   "res": "1080p_160x90",
+   "n": 8,
+   "cpu": {
+    "n": 8,
+    "mean_ms": 4179.7,
+    "p50_ms": 4067.1
+   },
+   "nvdec_hwdownload": {
+    "n": 8,
+    "mean_ms": 879.2,
+    "p50_ms": 832.0
+   },
+   "nvdec_no_download": {
+    "n": 8,
+    "mean_ms": 883.8,
+    "p50_ms": 847.3
+   },
+   "nvdec_speedup_over_cpu": 4.888,
+   "hwdownload_cost_p50_ms": -15.3
+  },
+  "hevc_1080p_native": {
+   "codec": "hevc",
+   "res": "1080p_native",
+   "n": 8,
+   "cpu": {
+    "n": 8,
+    "mean_ms": 3109.0,
+    "p50_ms": 3209.4
+   },
+   "nvdec_hwdownload": {
+    "n": 8,
+    "mean_ms": 4366.5,
+    "p50_ms": 4403.4
+   },
+   "nvdec_no_download": {
+    "n": 8,
+    "mean_ms": 866.3,
+    "p50_ms": 839.3
+   },
+   "nvdec_speedup_over_cpu": 0.729,
+   "hwdownload_cost_p50_ms": 3564.1
+  }
+ }
+}
