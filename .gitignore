@@ -21,3 +21,9 @@ __pycache__/
 # editor / os
 .DS_Store
 *.swp
+
+# PoC: regenerable fixture thumbnails (tests/make_poc_fixture.py)
+tests/fixtures/poc/thumbs/
+
+# local scratch (screenshots, chrome profiles)
+.scratch/
