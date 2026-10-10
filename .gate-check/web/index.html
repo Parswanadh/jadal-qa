@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jadal QA — segment dashboard</title>
+<meta name="description" content="Deterministic QA for crowd-captured head-camera video: batch decisions, re-verifiable receipts, risk/coverage and SOP gaps.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121316" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap topbar-row">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <span class="brand-name">Jadal QA</span>
+        <span class="brand-sub">segment QA · verifiable receipts</span>
+      </span>
+    </div>
+
+    <details class="sysdrawer" id="sys-drawer">
+      <summary class="sysdrawer-sum" aria-label="System status">
+        <span class="status-led" id="pico-led" data-led="off" aria-hidden="true"></span>
+        <span class="sysdrawer-label" id="pico-line">checking…</span>
+        <span class="sysdrawer-caret" aria-hidden="true">▾</span>
+      </summary>
+      <div class="sysdrawer-body" id="sys-body" aria-live="off"></div>
+    </details>
+  </div>
+
+  <nav class="tabs" aria-label="Dashboard screens">
+    <div class="wrap tabs-row" role="tablist">
+      <button class="tab" role="tab" id="tab-batches" aria-controls="view-batches" data-route="batches" aria-selected="true">
+        <span class="tab-name">Batches</span><span class="tab-hint">live list</span>
+      </button>
+      <button class="tab" role="tab" id="tab-queue" aria-controls="view-queue" data-route="queue" aria-selected="false" tabindex="-1">
+        <span class="tab-name">QA queue</span><span class="tab-hint">needs review</span>
+      </button>
+      <button class="tab" role="tab" id="tab-segment" aria-controls="view-segment" data-route="segment" aria-selected="false" tabindex="-1">
+        <span class="tab-name">Segment</span><span class="tab-hint">receipt &amp; re-verify</span>
+      </button>
+      <button class="tab" role="tab" id="tab-videos" aria-controls="view-videos" data-route="videos" aria-selected="false" tabindex="-1">
+        <span class="tab-name">Video search</span><span class="tab-hint">hub clips</span>
+      </button>
+      <button class="tab" role="tab" id="tab-insights" aria-controls="view-insights" data-route="insights" aria-selected="false" tabindex="-1">
+        <span class="tab-name">Insights</span><span class="tab-hint">risk &amp; gaps</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main" class="wrap">
+
+  <!-- ── Global filter bar: real <select>s + search, state lives in the URL hash ── -->
+  <form class="filterbar" id="filterbar" role="search" aria-label="Filter batches">
+    <div class="field">
+      <label class="field-label" for="f-site">Site</label>
+      <select id="f-site" name="site"><option value="">All sites</option></select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-worker">Worker</label>
+      <select id="f-worker" name="worker"><option value="">All workers</option></select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-batch">Batch</label>
+      <select id="f-batch" name="batch"><option value="">All batches</option></select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-verdict">Verdict</label>
+      <select id="f-verdict" name="verdict">
+        <option value="">All verdicts</option>
+        <option value="accept">accept</option>
+        <option value="reject">reject</option>
+        <option value="review">review</option>
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-reason">Reason</label>
+      <select id="f-reason" name="reason"><option value="">All reasons</option></select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="f-lang">Language</label>
+      <select id="f-lang" name="lang">
+        <option value="hi-IN">hi-IN</option>
+        <option value="kn-IN">kn-IN</option>
+        <option value="ta-IN">ta-IN</option>
+        <option value="te-IN">te-IN</option>
+        <option value="en-IN">en-IN</option>
+      </select>
+    </div>
+    <div class="field field-search">
+      <label class="field-label" for="f-q">Search</label>
+      <input id="f-q" name="q" type="search" placeholder="batch, segment, site…" autocomplete="off">
+    </div>
+    <div class="field field-go">
+      <button class="btn" type="submit">Apply</button>
+      <button class="btn btn-ghost" type="button" id="f-reset">Reset</button>
+    </div>
+  </form>
+
+  <!-- ── Screen 1: batches ─────────────────────────────────────────────── -->
+  <section class="view" id="view-batches" role="tabpanel" aria-labelledby="tab-batches" tabindex="0">
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Batches</h1>
+        <p class="view-sub" id="batches-sub">Every batch decision with its per-segment verdicts.</p>
+      </div>
+      <div class="view-actions">
+        <span class="pill pill-live" id="live-pill" hidden>live</span>
+        <span class="pill pill-mock" id="mock-pill" hidden>mock data</span>
+        <button class="btn" id="batches-refresh" type="button">Refresh</button>
+      </div>
+    </div>
+
+    <p class="micro meta-line" id="batches-meta" hidden></p>
+
+    <div id="batches-body" aria-live="polite" aria-busy="true"></div>
+  </section>
+
+  <!-- ── Screen 2: QA queue ──────────────────────────────────────────── -->
+  <section class="view" id="view-queue" role="tabpanel" aria-labelledby="tab-queue" tabindex="0" hidden>
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">QA queue</h1>
+        <p class="view-sub">Review-routed segments, highest priority first. “—” means no queue_priority from the API yet.</p>
+      </div>
+      <div class="view-actions">
+        <span class="pill pill-mock" id="queue-mock-pill" hidden>mock data</span>
+      </div>
+    </div>
+
+    <div class="field field-inline" id="queue-filter">
+      <label class="field-label" for="q-reason">Reason code</label>
+      <select id="q-reason" name="reason"><option value="">All reasons</option></select>
+    </div>
+
+    <p class="micro meta-line" id="queue-meta" hidden></p>
+
+    <div id="queue-body" aria-live="polite" aria-busy="true"></div>
+  </section>
+
+  <!-- ── Screen 2: segment ─────────────────────────────────────────────── -->
+  <section class="view" id="view-segment" role="tabpanel" aria-labelledby="tab-segment" tabindex="0" hidden>
+    <div class="view-head">
+      <div>
+        <a class="backlink" href="#/batches" id="segment-back">← All batches</a>
+        <h1 class="view-title" id="segment-title">Segment</h1>
+        <p class="view-sub" id="segment-sub">Receipt, signals, decisions and re-verification.</p>
+      </div>
+      <div class="view-actions" id="segment-actions"></div>
+    </div>
+
+    <div id="segment-body" aria-live="polite" aria-busy="true"></div>
+  </section>
+
+  <!-- ── Screen 4: video search (hub placeholder) ─────────────────────── -->
+  <section class="view" id="view-videos" role="tabpanel" aria-labelledby="tab-videos" tabindex="0" hidden>
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Video search</h1>
+        <p class="view-sub">Clip search over GET /hub/search. Mock mode shows placeholders — no footage ships with fixtures.</p>
+      </div>
+      <div class="view-actions">
+        <span class="pill pill-mock" id="videos-mock-pill" hidden>mock data</span>
+      </div>
+    </div>
+
+    <form class="filterbar" id="videos-form" role="search" aria-label="Search video hub">
+      <div class="field field-search">
+        <label class="field-label" for="v-q">Query</label>
+        <input id="v-q" name="q" type="search" placeholder="segment, site, reason…" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="field-label" for="v-site">Site</label>
+        <select id="v-site" name="site"><option value="">All sites</option></select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="v-verdict">Verdict</label>
+        <select id="v-verdict" name="verdict">
+          <option value="">All verdicts</option>
+          <option value="accept">accept</option>
+          <option value="reject">reject</option>
+          <option value="review">review</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label" for="v-reason">Reason</label>
+        <select id="v-reason" name="reason"><option value="">All reasons</option></select>
+      </div>
+      <div class="field field-go">
+        <button class="btn btn-primary" type="submit">Search</button>
+        <button class="btn btn-ghost" type="button" id="videos-reset">Reset</button>
+      </div>
+    </form>
+
+    <p class="micro meta-line" id="videos-meta" hidden></p>
+
+    <div id="videos-body" aria-live="polite" aria-busy="true"></div>
+  </section>
+
+  <!-- ── Screen 3: insights ────────────────────────────────────────────── -->
+  <section class="view" id="view-insights" role="tabpanel" aria-labelledby="tab-insights" tabindex="0" hidden>
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Insights</h1>
+        <p class="view-sub">Risk/coverage for the calibrated threshold and where the SOP leaks.</p>
+      </div>
+      <div class="view-actions">
+        <span class="pill pill-mock" id="insights-mock-pill" hidden>mock data</span>
+        <button class="btn" id="insights-refresh" type="button">Refresh</button>
+      </div>
+    </div>
+
+    <div class="field field-inline" id="head-field">
+      <label class="field-label" for="f-head">Head / model</label>
+      <select id="f-head" name="head"><option value="">aggregate</option></select>
+    </div>
+
+    <div id="insights-body" aria-live="polite" aria-busy="true"></div>
+  </section>
+
+  <footer class="foot">
+    <p id="foot-source">Loading data source…</p>
+    <p class="foot-note">Green, amber and red appear only on verdict chips and the Pico status light. Receipt hashes follow <code>docs/SPEC.md</code>.</p>
+  </footer>
+</main>
+
+<script src="api.js"></script>
+<script src="app.js" defer></script>
+</body>
+</html>

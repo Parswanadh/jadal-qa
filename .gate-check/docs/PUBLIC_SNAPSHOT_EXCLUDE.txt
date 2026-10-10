@@ -1,0 +1,7 @@
+# Paths excluded from any public snapshot (one glob per line; gitignore-style, relative to repo root).
+# Egocentric-10K-derived data: licensed for the PRIVATE repo only. Do not publish.
+eval/results/ensemble/ood_frames.npz
+eval/results/ensemble/ood_pixel.npz
+eval/results/ensemble/ood_scores*.json
+eval/results/ensemble/transfer_probe.json
+eval/results/ensemble/ood_heads.json
