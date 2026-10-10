@@ -1,0 +1,5 @@
+n=10000 hands>=1 frac=0.964 work=yes frac=0.917
+active_labor: AUROC=0.9107 [0.9006,0.9206] balacc=0.7406
+hands_ok: AUROC=0.9524 [0.9415,0.9628] balacc=0.7573
+wrote lean_8k outputs
+LEAN10K_DONE

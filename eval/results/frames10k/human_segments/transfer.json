@@ -1,0 +1,116 @@
+{
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "clips": [
+  "desk",
+  "ecu_full",
+  "ecu_late",
+  "logistics4",
+  "organise",
+  "pallet",
+  "pallet2"
+ ],
+ "label_source": "human (single labeller; manifest_gold snapshot)",
+ "protocol": "leave-one-clip-out CV; C in {0.01,0.1,1,10} via inner LOCO on train clips; class_weight=balanced",
+ "frame_heads_source": "AI labels (gemini-2.5-flash) on 10000 factory frames (lean C=1 heads)",
+ "pretrained_pooled": {
+  "oof_auroc": 0.7914,
+  "clip_boot_mean": 0.7812775932379443,
+  "clip_boot_ci95": [
+   0.6876061120543294,
+   0.8629464285714286
+  ],
+  "balacc": 0.735,
+  "acc": 0.7466666666666667,
+  "dim": 12,
+  "per_reason": {
+   "DUPLICATE": {
+    "auroc": 0.775,
+    "n_bad": 6
+   },
+   "HANDS_NOT_VISIBLE": {
+    "auroc": 0.8785714285714287,
+    "n_bad": 14
+   },
+   "NO_ACTIVE_WORK": {
+    "auroc": 0.7526086956521739,
+    "n_bad": 23
+   },
+   "TOO_DARK": {
+    "auroc": 0.7366666666666667,
+    "n_bad": 6
+   },
+   "UNDECODABLE": {
+    "auroc": 0.89,
+    "n_bad": 1
+   }
+  }
+ },
+ "human_only_embed": {
+  "oof_auroc": 0.8163999999999999,
+  "clip_boot_mean": 0.8075469017884666,
+  "clip_boot_ci95": [
+   0.7101190476190476,
+   0.892379679144385
+  ],
+  "balacc": 0.73,
+  "acc": 0.7533333333333333,
+  "dim": 768,
+  "per_reason": {
+   "DUPLICATE": {
+    "auroc": 0.835,
+    "n_bad": 6
+   },
+   "HANDS_NOT_VISIBLE": {
+    "auroc": 0.8571428571428572,
+    "n_bad": 14
+   },
+   "NO_ACTIVE_WORK": {
+    "auroc": 0.738695652173913,
+    "n_bad": 23
+   },
+   "TOO_DARK": {
+    "auroc": 0.9716666666666666,
+    "n_bad": 6
+   },
+   "UNDECODABLE": {
+    "auroc": 0.99,
+    "n_bad": 1
+   }
+  }
+ },
+ "combo": {
+  "oof_auroc": 0.8286,
+  "clip_boot_mean": 0.8187926420004277,
+  "clip_boot_ci95": [
+   0.7345238095238096,
+   0.8999999999999999
+  ],
+  "balacc": 0.755,
+  "acc": 0.7733333333333333,
+  "dim": 780,
+  "per_reason": {
+   "DUPLICATE": {
+    "auroc": 0.8383333333333333,
+    "n_bad": 6
+   },
+   "HANDS_NOT_VISIBLE": {
+    "auroc": 0.8764285714285714,
+    "n_bad": 14
+   },
+   "NO_ACTIVE_WORK": {
+    "auroc": 0.7543478260869565,
+    "n_bad": 23
+   },
+   "TOO_DARK": {
+    "auroc": 0.965,
+    "n_bad": 6
+   },
+   "UNDECODABLE": {
+    "auroc": 0.99,
+    "n_bad": 1
+   }
+  }
+ }
+}

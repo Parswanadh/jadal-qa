@@ -1,0 +1,8 @@
+segments=150 usable=100 bad=50 clips=[np.str_('desk'), np.str_('ecu_full'), np.str_('ecu_late'), np.str_('logistics4'), np.str_('organise'), np.str_('pallet'), np.str_('pallet2')] T=21 mean_frames=20.0
+pretrained_pooled: AUROC=0.808 (clip-boot 0.796 [0.699,0.862]) balacc=0.715 acc=0.727
+   per-reason: DUPLICATE=0.825(n=6), HANDS_NOT_VISIBLE=0.881(n=14), NO_ACTIVE_WORK=0.740(n=23), TOO_DARK=0.850(n=6), UNDECODABLE=0.970(n=1)
+human_only_embed: AUROC=0.816 (clip-boot 0.808 [0.710,0.892]) balacc=0.730 acc=0.753
+   per-reason: DUPLICATE=0.835(n=6), HANDS_NOT_VISIBLE=0.857(n=14), NO_ACTIVE_WORK=0.739(n=23), TOO_DARK=0.972(n=6), UNDECODABLE=0.990(n=1)
+combo: AUROC=0.817 (clip-boot 0.810 [0.716,0.863]) balacc=0.745 acc=0.767
+   per-reason: DUPLICATE=0.825(n=6), HANDS_NOT_VISIBLE=0.760(n=14), NO_ACTIVE_WORK=0.797(n=23), TOO_DARK=0.990(n=6), UNDECODABLE=0.980(n=1)
+wrote transfer.json

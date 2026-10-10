@@ -1,0 +1,314 @@
+/home/parshu/envs/jadal/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+.....................................................s...................................[calibration_report] restricted to split 'test': kept 60, dropped 60 frame_ids outside the split
+[calibration_report] restricted to split 'calibration': kept 60, dropped 60 frame_ids outside the split
+[calibration_report] select=/tmp/tmpqn9njee2/preds.json[calibration] n_sel=60 report=/tmp/tmpqn9njee2/preds.json[test] n=60 accuracy=0.6167 ece=0.1719 (jadal.certify) threshold=None (jadal.certify) applied_cov=0.0
+[calibration_report] wrote /tmp/tmpqn9njee2/cal.json and /tmp/tmpqn9njee2/cal.png
+...[calibration_report] restricted to split 'test': kept 1, dropped 3 frame_ids outside the split
+.............[make_splits] stage 1/3: scanning parquet metadata (no images decoded)
+
+=== dataset report (metadata only, no images decoded) ===
+data_dir: /tmp/tmpuqbdv09m/data
+file                        rows  sources                   hand_count            active_labor      
+----------------------------------------------------------------------------------------------------
+a.parquet                     34  ego:18,kit:16             0:8,1:14,2:12         no:14,yes:20      
+TOTAL                       34  distinct frame_ids: 34
+
+--- label distribution by source_dataset (rows) ---
+source_dataset           hand_count=0       hand_count=1       hand_count=2   active_labor=yes    active_labor=no               rows
+------------------------------------------------------------------------------------------------------------------------------------
+ego                                 4                  8                  6                 14                  4                 18
+kit                                 4                  6                  6                  6                 10                 16
+TOTAL                               8                 14                 12                 20                 14                 34
+
+[make_splits] stage 2/3: computing pHashes (streaming, images downscaled immediately)
+[make_splits]   a.parquet: 34 frames, 34 to decode, 0 from cache
+[make_splits]   hashed 34 frames in 0.0s
+[make_splits] stage 3/3: connected components + component-level stratified split
+[make_splits]   34 frames -> 33 components (1 multi-frame, largest 2, 9 pairs checked, max bucket 2)
+
+=== split report ===
+seed=1234 ratios={'train': 0.7, 'calibration': 0.15, 'test': 0.15} phash=imagehash-4.3.2/phash/gray64-lanczos-hash8
+rows in dataset: 34, 33 near-duplicate components (removed 1 frames in 1 multi-frame components, largest 2, hamming <= 4, no bucket cutoff)
+
+split            count  fraction  sources                                       hand_count          active_labor    
+----------------------------------------------------------------------------------------------------------------
+train               24    0.7059  ego:13,kit:11                                 0:6,1:10,2:8        no:10,yes:14    
+calibration          6    0.1765  ego:3,kit:3                                   0:2,1:2,2:2         no:3,yes:3      
+test                 4    0.1176  ego:2,kit:2                                   1:2,2:2             no:1,yes:3      
+
+[make_splits] wrote /tmp/tmpuqbdv09m/r1/splits.json (0.00 MB) in 0.0s total, peak RSS 701.2 MiB
+[make_splits] stage 1/3: scanning parquet metadata (no images decoded)
+
+=== dataset report (metadata only, no images decoded) ===
+data_dir: /tmp/tmpuqbdv09m/data
+file                        rows  sources                   hand_count            active_labor      
+----------------------------------------------------------------------------------------------------
+a.parquet                     34  ego:18,kit:16             0:8,1:14,2:12         no:14,yes:20      
+TOTAL                       34  distinct frame_ids: 34
+
+--- label distribution by source_dataset (rows) ---
+source_dataset           hand_count=0       hand_count=1       hand_count=2   active_labor=yes    active_labor=no               rows
+------------------------------------------------------------------------------------------------------------------------------------
+ego                                 4                  8                  6                 14                  4                 18
+kit                                 4                  6                  6                  6                 10                 16
+TOTAL                               8                 14                 12                 20                 14                 34
+
+[make_splits] stage 2/3: computing pHashes (streaming, images downscaled immediately)
+[make_splits]   a.parquet: 34 frames, 34 to decode, 0 from cache
+[make_splits]   hashed 34 frames in 0.0s
+[make_splits] stage 3/3: connected components + component-level stratified split
+[make_splits]   34 frames -> 33 components (1 multi-frame, largest 2, 9 pairs checked, max bucket 2)
+
+=== split report ===
+seed=1234 ratios={'train': 0.7, 'calibration': 0.15, 'test': 0.15} phash=imagehash-4.3.2/phash/gray64-lanczos-hash8
+rows in dataset: 34, 33 near-duplicate components (removed 1 frames in 1 multi-frame components, largest 2, hamming <= 4, no bucket cutoff)
+
+split            count  fraction  sources                                       hand_count          active_labor    
+----------------------------------------------------------------------------------------------------------------
+train               24    0.7059  ego:13,kit:11                                 0:6,1:10,2:8        no:10,yes:14    
+calibration          6    0.1765  ego:3,kit:3                                   0:2,1:2,2:2         no:3,yes:3      
+test                 4    0.1176  ego:2,kit:2                                   1:2,2:2             no:1,yes:3      
+
+[make_splits] wrote /tmp/tmpuqbdv09m/r2/splits.json (0.00 MB) in 0.0s total, peak RSS 701.6 MiB
+..........................................................................................................................ingest rejected: transient boom
+.ingest rejected: disk full
+.ingest failed for /tmp/tmpdz2uet73/bucket/poison.mp4: cannot decode
+watcher ingest of poison.mp4 failed (attempt 1): cannot decode
+.[mov,mp4,m4a,3gp,3g2,mj2 @ 0x722388001c80] moov atom not found
+segmenter yielded zero segments for /tmp/tmpznrrnvs4/bucket/garbage.mp4; using UNDECODABLE placeholder
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x722388001c80] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x722388001c80] moov atom not found
+.INFO: [environment.cc:36] Creating LiteRT environment with options
+INFO: [accelerator_registry.cc:54] RegisterAccelerator: ptr=0x72237c0037c0, name=GPU WebGPU
+INFO: [gpu_registry.cc:113] Statically linked GPU accelerator registered.
+INFO: [accelerator_registry.cc:54] RegisterAccelerator: ptr=0x72237c003b70, name=CpuAccelerator
+INFO: [cpu_registry.cc:75] XNNPACK CPU accelerator registered.
+INFO: [compiled_model.cc:829] Flatbuffer model initialized directly from incoming litert model.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+WARNING: Logging before InitGoogle() is written to STDERR
+W0000 00:00:1791632398.263612 3480929 inference_runner_litert.cc:1090] Input tensor memory is not aligned according to LiteRt's memory alignment requirements. Reallocating memory and copying data.
+W0000 00:00:1791632398.290329 3480954 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1791632398.307570 3480956 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.
+W0000 00:00:1791632398.323782 3480957 landmark_projection_calculator.cc:81] Using NORM_RECT without IMAGE_DIMENSIONS is only supported for the square ROI. Provide IMAGE_DIMENSIONS or use PROJECTION_MATRIX.
+...........[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c47223100] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c47223100] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c47223100] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c47223100] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c47223100] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c47223100] moov atom not found
+................................................usage: python -m unittest [-h] [--port PORT] [--fake] [--pause PAUSE]
+                          {verdict,demo,status,pattern} ...
+python -m unittest: error: --port is ignored with --fake (fake link always uses FAKE).
+.gold join: 2 labelled, 1 unlabeled skipped
+records=60 sources={'synthetic': 60} seed=7 bonferroni=True delta_per_rule=0.0125
+
+## source=synthetic (N=60, select=30 (0 clips), certify=30 (0 clips); n_segments=60, n_clips=0, n_wearers=unknown, n_labellers=0, label_source=synthetic, delta_per_rule=0.0125)
+| side | threshold | certify fired | certify errors | certify UCB | gate |
+|---|---|---|---|---|---|
+| accept | None | 0 | 0 | None | WRITTEN |
+| rule | threshold | disabled | certify fired | certify errors | certify UCB |
+|---|---|---|---|---|---|
+| blur_var_min | None | True | 0 | 0 | None |
+| brightness_min | None | True | 0 | 0 | None |
+| under_exposed_frac_max | None | True | 0 | 0 | None |
+| over_exposed_frac_max | None | True | 0 | 0 | None |
+| motion_max | None | True | 0 | 0 | None |
+| motion_min | None | True | 0 | 0 | None |
+| hands_visible_frac_min | None | True | 0 | 0 | None |
+| min_duration_s | None | True | 0 | 0 | None |
+DISABLED (blur_var_min): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (brightness_min): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (under_exposed_frac_max): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (over_exposed_frac_max): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (motion_max): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (motion_min): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (hands_visible_frac_min): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (min_duration_s): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+union CERTIFY (policy=evidence_reject, profile=default): rejected=0 errors=0 UCB=None (n_certify=30, n_segments=60, n_clips=0, n_wearers=unknown, n_labellers=0, label_source=synthetic)
+union_integrity_only CERTIFY (policy=integrity_only, profile=default): rejected=0 errors=0 UCB=None (n_certify=30, n_segments=60, n_clips=0, n_wearers=unknown, n_labellers=0, label_source=synthetic)
+wrote /tmp/tmpn9fdj0m1/cal.json
+(config file untouched: pass --write-config to update it)
+records=1200 sources={'synthetic': 1200} seed=7 bonferroni=True delta_per_rule=0.0125
+
+## source=synthetic (N=1200, select=600 (0 clips), certify=600 (0 clips); n_segments=1200, n_clips=0, n_wearers=unknown, n_labellers=0, label_source=synthetic, delta_per_rule=0.0125)
+| side | threshold | certify fired | certify errors | certify UCB | gate |
+|---|---|---|---|---|---|
+| accept | 0.4 | 364 | 9 | 0.0387 | WRITTEN |
+| rule | threshold | disabled | certify fired | certify errors | certify UCB |
+|---|---|---|---|---|---|
+| blur_var_min | None | True | 0 | 0 | None |
+| brightness_min | 80.1498 | False | 88 | 0 | 0.0486 |
+| under_exposed_frac_max | None | True | 0 | 0 | None |
+| over_exposed_frac_max | None | True | 0 | 0 | None |
+| motion_max | None | True | 0 | 0 | None |
+| motion_min | None | True | 0 | 0 | None |
+| hands_visible_frac_min | None | True | 0 | 0 | None |
+| min_duration_s | None | True | 0 | 0 | None |
+DISABLED (blur_var_min): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (under_exposed_frac_max): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (over_exposed_frac_max): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (motion_max): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (motion_min): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (hands_visible_frac_min): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+DISABLED (min_duration_s): no candidate certified on SELECT: the strictest candidate with support >= 86 already exceeds target_beta (or no candidate reaches support)
+union CERTIFY (policy=evidence_reject, profile=default): rejected=88 errors=0 UCB=0.0258 (n_certify=600, n_segments=1200, n_clips=0, n_wearers=unknown, n_labellers=0, label_source=synthetic)
+union_integrity_only CERTIFY (policy=integrity_only, profile=default): rejected=0 errors=0 UCB=None (n_certify=600, n_segments=1200, n_clips=0, n_wearers=unknown, n_labellers=0, label_source=synthetic)
+wrote /tmp/tmpl8x3lfkk/cal.json
+connected on FAKE
+waiting for first heartbeat (up to 2.5 s; the autodetect probe swallows the first HB)...
+heartbeat seen: link connected.
+verdict accept: FLASH FFFFFFFF (32 bits, 100 ms/bit, MSB first)
+LED OFF sent.
+.connected on FAKE
+waiting for first heartbeat (up to 2.5 s; the autodetect probe swallows the first HB)...
+heartbeat seen: link connected.
+ACCEPT   - solid on                FLASH FFFFFFFF
+REVIEW   - slow blink (400 ms)     FLASH F0F0F0F0
+REJECT   - fast blink (100 ms)     FLASH AAAAAAAA
+SOS      - ... --- ...             FLASH A87770A8
+HEARTBEAT- double pulse            FLASH D800D800
+COUNTDOWN- 1,2,3,4 pulses          FLASH 8A150AA0
+status: {'connected': True, 'last_hb_age_s': 0.30444707500282675, 'last_hb_led': 'OFF'}
+LED OFF sent.
+done - LED off
+.connected on FAKE
+error: pattern must be exactly 8 hex digits, got 'XYZ'
+LED OFF sent.
+.connected on FAKE
+waiting for first heartbeat (up to 2.5 s; the autodetect probe swallows the first HB)...
+heartbeat seen: link connected.
+FLASH F0F0F0F0 (32 bits, 100 ms/bit, MSB first)
+pattern sent; playing...
+LED OFF sent.
+done - LED off
+connected on FAKE
+waiting for first heartbeat (up to 2.5 s; the autodetect probe swallows the first HB)...
+heartbeat seen: link connected.
+FLASH ABCDEF01 (32 bits, 100 ms/bit, MSB first)
+pattern sent; playing...
+LED OFF sent.
+done - LED off
+.connected on FAKE
+waiting for first heartbeat (up to 2.5 s; the autodetect probe swallows the first HB)...
+heartbeat seen: link connected.
+status: {'connected': True, 'port': 'FAKE', 'last_hb_age_s': 0.00013736700202571228, 'last_hb_ticks_ms': 27831249, 'last_hb_led': 'OFF'}
+LED OFF sent.
+.connected on FAKE
+waiting for first heartbeat (up to 2.5 s; the autodetect probe swallows the first HB)...
+heartbeat seen: link connected.
+verdict accept: FLASH FFFFFFFF (32 bits, 100 ms/bit, MSB first)
+pattern sent; playing...
+LED OFF sent.
+done - LED off
+connected on FAKE
+waiting for first heartbeat (up to 2.5 s; the autodetect probe swallows the first HB)...
+heartbeat seen: link connected.
+verdict review: FLASH F0F0F0F0 (32 bits, 100 ms/bit, MSB first)
+pattern sent; playing...
+LED OFF sent.
+done - LED off
+connected on FAKE
+waiting for first heartbeat (up to 2.5 s; the autodetect probe swallows the first HB)...
+heartbeat seen: link connected.
+verdict reject: FLASH AAAAAAAA (32 bits, 100 ms/bit, MSB first)
+pattern sent; playing...
+LED OFF sent.
+done - LED off
+.usage: python -m unittest [-h] [--port PORT] [--fake] [--pause PAUSE]
+                          {verdict,demo,status,pattern} ...
+python -m unittest: error: argument --pause: --pause must be >= 0
+.connected on FAKE
+verdict accept: FLASH FFFFFFFF (32 bits, 100 ms/bit, MSB first)
+pattern sent; playing...
+LED OFF sent.
+warning: no heartbeat was seen; the board may not have played the pattern.
+.connected on FAKE
+status: {'connected': True, 'port': 'FAKE', 'last_hb_age_s': 0.00010107300113304518, 'last_hb_ticks_ms': 27831525, 'last_hb_led': 'OFF'}
+LED OFF sent.
+..connected on FAKE
+LED OFF sent.
+..............................................................................timeout flush for cap failed (attempt 1): disk full
+timeout flush for cap failed (attempt 2): disk full
+timeout flush for cap failed (attempt 3): disk full
+timeout flush for cap failed (attempt 4): disk full
+timeout flush for cap failed (attempt 5): disk full
+timeout flush for cap parked 2 segment(s) as failed after 6 attempts: disk full
+.timeout flush for sched failed (attempt 1): transient
+timeout flush for sched failed (attempt 2): transient
+timeout flush for sched failed (attempt 3): transient
+timeout flush for sched failed (attempt 4): transient
+timeout flush for sched failed (attempt 5): transient
+.timeout flush for heal failed (attempt 1): disk full once
+...s........................ingest failed for /tmp/tmpnu87u7m7/bucket/flaky.mp4: boom
+ingest rejected: boom
+........................s.thresholds verification failed (funnel thresholds file failed verification: thresholds file /tmp/tmpxjgdmz5a/bucket/tampered_thresholds.json fails hash verification: stored sha256='9a707f41b65a5ff3f453e15ff2660585d1b4723b98631a946b934bb32dd0dc8a' != computed '203dd1d1f04af5a590c6a70cab9fec0d4edd6787b9de793126d092a916283e2b'. Recompute with jadal.funnel.thresholds_hash after editing.); batch fails closed to review
+batch for closed closed fail-closed: funnel thresholds file failed verification: thresholds file /tmp/tmpxjgdmz5a/bucket/tampered_thresholds.json fails hash verification: stored sha256='9a707f41b65a5ff3f453e15ff2660585d1b4723b98631a946b934bb32dd0dc8a' != computed '203dd1d1f04af5a590c6a70cab9fec0d4edd6787b9de793126d092a916283e2b'. Recompute with jadal.funnel.thresholds_hash after editing.
+.thresholds verification failed (funnel thresholds file failed verification: thresholds file /tmp/tmpbjkxeckj/bucket/tampered_thresholds.json fails hash verification: stored sha256='9a707f41b65a5ff3f453e15ff2660585d1b4723b98631a946b934bb32dd0dc8a' != computed '203dd1d1f04af5a590c6a70cab9fec0d4edd6787b9de793126d092a916283e2b'. Recompute with jadal.funnel.thresholds_hash after editing.); batch fails closed to review
+batch for stale closed fail-closed: funnel thresholds file failed verification: thresholds file /tmp/tmpbjkxeckj/bucket/tampered_thresholds.json fails hash verification: stored sha256='9a707f41b65a5ff3f453e15ff2660585d1b4723b98631a946b934bb32dd0dc8a' != computed '203dd1d1f04af5a590c6a70cab9fec0d4edd6787b9de793126d092a916283e2b'. Recompute with jadal.funnel.thresholds_hash after editing.
+.funnel thresholds unavailable; Config-only snapshot
+...decoder failed for /tmp/tmpgewr24o_/bucket/garbage_0.mp4 (ValueError: moov atom not found); verdict UNDECODABLE
+decoder failed for /tmp/tmpgewr24o_/bucket/garbage_1.mp4 (ValueError: moov atom not found); verdict UNDECODABLE
+decoder failed for /tmp/tmpgewr24o_/bucket/garbage_2.mp4 (ValueError: moov atom not found); verdict UNDECODABLE
+decoder failed for /tmp/tmpgewr24o_/bucket/garbage_3.mp4 (ValueError: moov atom not found); verdict UNDECODABLE
+decoder failed for /tmp/tmpgewr24o_/bucket/garbage_4.mp4 (ValueError: moov atom not found); verdict UNDECODABLE
+.segmenter failed for /tmp/tmpeu7z_5ze/bucket/novideo.mp4 (moov atom not found); using UNDECODABLE placeholder
+.....ingest failed for /tmp/tmpi7_xhhwc/bucket/poison2.mp4: disk down
+watcher parked poison2.mp4 after 5 attempts: disk down
+.........................[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+.................................................[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+segmenter yielded zero segments for /tmp/tmpzkgxvcef/clip.mp4; using UNDECODABLE placeholder
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+.[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+segmenter yielded zero segments for /tmp/tmpxn8cp_xz/clip.mp4; using UNDECODABLE placeholder
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+.[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+segmenter yielded zero segments for /tmp/tmpihjjkeoc/clip.mp4; using UNDECODABLE placeholder
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+.[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+segmenter yielded zero segments for /tmp/tmpdtrerl1g/clip.mp4; using UNDECODABLE placeholder
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+.[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+segmenter yielded zero segments for /tmp/tmpzkkqwyr8/clip.mp4; using UNDECODABLE placeholder
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+.[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+segmenter yielded zero segments for /tmp/tmpow_77vf9/clip.mp4; using UNDECODABLE placeholder
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+.[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+segmenter yielded zero segments for /tmp/tmp5hy6mnne/clip.mp4; using UNDECODABLE placeholder
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+[mov,mp4,m4a,3gp,3g2,mj2 @ 0x616c476f8540] moov atom not found
+.................................
+----------------------------------------------------------------------
+Ran 559 tests in 67.582s
+
+OK (skipped=3)
+docking 2 clips from /tmp/tmplobzqgi2/src -> /tmp/tmplobzqgi2/bucket (delay 0.0s), posting to http://127.0.0.1:9
+copied a.mp4 -> /tmp/tmplobzqgi2/bucket/a.mp4
+  ingest failed for a.mp4: <urlopen error [Errno 111] Connection refused>
+copied b.mp4 -> /tmp/tmplobzqgi2/bucket/b.mp4
+  ingest failed for b.mp4: <urlopen error [Errno 111] Connection refused>
+dock run finished
