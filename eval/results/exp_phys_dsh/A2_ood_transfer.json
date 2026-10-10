@@ -1167,6 +1167,10 @@
    "recorded_Q4_01_ood160_logistic_oof_auroc": 0.566,
    "note": "the earlier corpus-level '99.55% reject' pathology is reproduced here by the naive z-score-literal variant (reject 0.9875), not by the raw frozen table on ood160 (reject 0.644)",
    "indego_in_sample_Q4_01": 0.8222
+  },
+  "regime_sources": {
+   "ood": "/workspace/jadal_pod_bundle/local_work/exp-regimes/eval/results/exp_regimes/desc_ood.jsonl (transcode rows preferred)",
+   "indego": "/workspace/jadal_pod_bundle/local_work/exp-regimes/eval/results/exp_regimes/desc_indego.jsonl exists; the in-domain regime analogue used here is one held-out IndEgo clip per fold (LOCO), because a clip is the natural homogeneous sub-domain and the LOCO protocol is the binding in-domain metric"
   }
  },
  "transfer_statement": {
@@ -1200,8 +1204,22 @@
   "fitting": "label-free: target statistics use X only; OOD labels never used for fitting",
   "determinism": "integer Q=4 comparisons, fixed constants, no RNG on the decision path"
  },
+ "cross_references": {
+  "concurrent_independent_requantile_rerun": {
+   "file": "eval/results/exp_phys_dsh/LEAD_subset_ood.json",
+   "all_rules_ood_raw_auroc": 0.4272,
+   "all_rules_ood_requantile_auroc": 0.5456,
+   "delta": 0.1184,
+   "note": "the same label-free re-quantile idea implemented independently in this worktree lands within 0.011 AUROC of variant (b) here (0.5456 vs 0.5560); their 'apriori scale subset' (BLUR/CODING_NOISE/DUPLICATE rule selection, not a normalisation variant) reaches 0.638 OOD"
+  },
+  "confirmatory_holdout_108": {
+   "file": "labels/round3/ood_labels3_108_with_factory.json (scored once by the lead)",
+   "reported_by_lead_commit": "8fb9ac8 - label-free re-quantile transfer mode scored 0.5166 on the one-shot hold-out (no transfer)",
+   "note": "consistent with the weak-transfer conclusion here; this experiment did NOT touch the 108 hold-out (no tuning, no thresholding, no scoring by us)"
+  }
+ },
  "limitations": [
-  "n_bad = 22 on OOD-160: every OOD AUROC has a wide CI; differences below ~0.05 are not resolvable.",
+  "n_bad = 22 on OOD-160: every OOD AUROC has a wide CI; differences below ~0.05 are not resolvable. The best variant (d, 0.576) is a best-of-7 selection evaluated on the same 22 bad windows, so its lead over (b) is not a real ordering - only the gap to the raw baseline (+0.12 to +0.15, paired CI excluding 0 for the rank/quantile variants) is supported.",
   "Window-bootstrap CIs are optimistic: windows are not independent (many share a source factory/batch and pairs share the same source video), so true sampling error is larger.",
   "Variants b/b2/c/d/e are TRANSDUCTIVE: they use the target domain's own unlabelled feature values (the whole target for b/b2/c/d). That is legitimate unlabelled domain adaptation, but it is not a purely inductive single-window decision: a deployed window must be scored against a bank of target statistics. Variant e (32-window calibration slice) quantifies how much of the effect survives with a small unlabelled slice.",
   "In-domain numbers for the raw table are in-sample (thresholds were derived on these 150 windows); only the LOCO variants are held-out, and their per-clip target domain is tiny (6-48 windows), so their quantile estimates are noisy.",
@@ -1221,5 +1239,114 @@
   "path": "eval/results/exp_phys/rule_table.json",
   "sha256": "2bc865339d74c43361a90ec7157a82d0aae84ec1753ae2bae1dd0fd847c278e1"
  },
- "runtime_s": 85.6
+ "inputs": {
+  "ood160_full.npz": {
+   "sha256": "dec944815b2a1cf4daab320c64ed17c19eb519138cc8e807ccaf10a52a079072",
+   "n": 160,
+   "n_features": 42
+  },
+  "indego_full.npz": {
+   "sha256": "13afccec9cb98bf1ecd8f14bdde9b4b3ae193b993e69484d3ec24d0a5e16de21",
+   "n": 150,
+   "n_features": 42
+  },
+  "note": "built by the lead from the frozen vendored kernels (eval/exp_phys_dsh/build_matrix.py / build_indego.py); 0 extraction failures"
+ },
+ "summary": {
+  "does_label_free_requantile_rescue_ood": {
+   "raw": {
+    "auroc": 0.4272,
+    "ci95": [
+     0.281,
+     0.5767
+    ]
+   },
+   "requantile": {
+    "auroc": 0.556,
+    "ci95": [
+     0.4341,
+     0.6695
+    ],
+    "paired_delta_vs_raw": {
+     "delta": 0.129,
+     "ci95": [
+      0.0138,
+      0.2475
+     ],
+     "p_delta_le_0": 0.012,
+     "of": "AUROC(b_requantile_target) - AUROC(a_raw_frozen), paired window bootstrap"
+    }
+   },
+   "regime_requantile_k2": {
+    "auroc": 0.5761,
+    "ci95": [
+     0.4484,
+     0.6913
+    ],
+    "paired_delta_vs_raw": {
+     "delta": 0.149,
+     "ci95": [
+      0.0047,
+      0.2918
+     ],
+     "p_delta_le_0": 0.022,
+     "of": "AUROC(d_regime_requantile) - AUROC(a_raw_frozen), paired window bootstrap"
+    }
+   },
+   "answer": "PARTIALLY: +0.12 to +0.15 AUROC over raw, paired-bootstrap CI excludes 0 for the rank/quantile variants, but the result (0.54-0.58) is only marginally above chance and no better than the 26-feature logistic OOD baseline (0.566, Q4.01). Not a rescue.",
+   "reject_everything_pathology": "raw rejects 64.4% of OOD-160 (and the naive z-score-literal reading rejects 98.8%); re-quantiling brings reject rate to 16-26%"
+  },
+  "cost_in_domain": {
+   "raw_in_sample": 0.823,
+   "requantile_all_150_as_target": 0.823,
+   "requantile_per_heldout_clip_loco": 0.7128,
+   "target_size_curve": {
+    "m16": {
+     "n_reps": 20,
+     "requantile_auroc_mean": 0.8471,
+     "raw_auroc_mean_same_subsets": 0.8204,
+     "delta_mean": 0.0267,
+     "requantile_auroc_min": 0.5256,
+     "requantile_auroc_max": 1.0
+    },
+    "m32": {
+     "n_reps": 20,
+     "requantile_auroc_mean": 0.8423,
+     "raw_auroc_mean_same_subsets": 0.84,
+     "delta_mean": 0.0023,
+     "requantile_auroc_min": 0.7247,
+     "requantile_auroc_max": 0.9071
+    },
+    "m64": {
+     "n_reps": 20,
+     "requantile_auroc_mean": 0.8283,
+     "raw_auroc_mean_same_subsets": 0.8264,
+     "delta_mean": 0.0019,
+     "requantile_auroc_min": 0.7284,
+     "requantile_auroc_max": 0.9131
+    },
+    "m150": {
+     "n_reps": 1,
+     "requantile_auroc_mean": 0.823,
+     "raw_auroc_mean_same_subsets": 0.823,
+     "delta_mean": 0.0,
+     "requantile_auroc_min": 0.823,
+     "requantile_auroc_max": 0.823
+    },
+    "clip_sizes_6_to_48": {
+     "requantile_auroc": 0.7128,
+     "raw_auroc": 0.823,
+     "note": "per-clip LOCO: each target domain is one IndEgo clip (6-48 windows)"
+    }
+   },
+   "answer": "ZERO when the target domain spans the pool (150 windows: identical to raw; 16-64 random windows: |delta| <= 0.03). The -0.11 drop in the per-clip LOCO is the cost of normalising inside ONE label-homogeneous clip, i.e. it removes the between-clip level component of the pooled AUROC, not a semantic cost of the transform."
+  },
+  "what_did_not_work": [
+   "per-domain z-score (c): +0.07 OOD AUROC, CI includes 0 - the first two moments do not capture the shift (distributions shift shape, not just location/scale)",
+   "naive z-score-literal (c1): 98.8% reject, AUROC 0.434 - the literal reading of 'apply frozen thresholds to target z-values' is broken by construction",
+   "regime z-score (d2): 0.470, no better than raw",
+   "in-domain per-clip normalisation: -0.09 to -0.12 pooled AUROC vs the frozen global table (because between-clip level differences are real in-domain signal)"
+  ]
+ },
+ "runtime_s": 94.0
 }
