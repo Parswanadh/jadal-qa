@@ -1,0 +1,199 @@
+{
+ "experiment": "A3.plan",
+ "title": "Concrete label plan toward 95% accuracy (honest)",
+ "verdict": "0.95 accuracy is NOT reachable with the current cached signals at any realistic label budget. The label-free adapted score already sits at the feature ceiling (pooled-160 0.78 AUROC -> 0.68 on the hold-out; BA ~0.65). Labels + per-factory calibration buy a few points and then plateau. To certify even a 0.20 error bound at 95%% confidence you must label ALL 85 factories; certifying 0.05 needs ~1365 factories.",
+ "phases": [
+  {
+   "phase": 1,
+   "goal": "certify a 0.20 error bound + cover all factories",
+   "factories": 85,
+   "windows_per_factory": 4,
+   "labels": 340,
+   "expected_error_BA": "~0.28-0.32 (plateau of the current family)",
+   "certifies": "marginal error <= 0.20 at 95% confidence (grid-union)"
+  },
+  {
+   "phase": 2,
+   "goal": "add per-factory calibration + a denser model",
+   "factories": 85,
+   "windows_per_factory": 8,
+   "labels": 680,
+   "expected_error_BA": "~0.25-0.30",
+   "certifies": "marginal error <= 0.15 at 95% confidence (needs 85 factories at 8/factory)"
+  },
+  {
+   "phase": 3,
+   "goal": "reach 0.90-0.95 accuracy \u2014 REQUIRES NEW SIGNALS, not labels",
+   "factories": ">=342 (0.90) / >=1365 (0.95) for certification",
+   "windows_per_factory": "n/a",
+   "labels": ">=342*4 / >=1365*4",
+   "expected_error_BA": "0.10 / 0.05 only if full-res + motion/hand signals + a larger model raise the ceiling; labels alone do not",
+   "certifies": "0.90 at 95% confidence with ~342 factories; 0.95 with ~1365"
+  }
+ ],
+ "priority_new_factories": [
+  "factory_017",
+  "factory_074",
+  "factory_002",
+  "factory_004",
+  "factory_006",
+  "factory_008",
+  "factory_007",
+  "factory_005",
+  "factory_082",
+  "factory_015",
+  "factory_065",
+  "factory_048",
+  "factory_064",
+  "factory_063",
+  "factory_034",
+  "factory_049",
+  "factory_043",
+  "factory_083",
+  "factory_067",
+  "factory_059"
+ ],
+ "new_factories_available": 38,
+ "selection_rule": "diversity/maximin over the 26 regime features + one window per new factory first (breadth), then fill to 4/factory; NOT by model uncertainty (Z4).",
+ "expected_curve": [
+  {
+   "k": 5,
+   "n_folds": 2,
+   "error_mean": 0.5797413793103449,
+   "error_std": 0.06400535519360985,
+   "accuracy_mean": 0.42025862068965514
+  },
+  {
+   "k": 10,
+   "n_folds": 3,
+   "error_mean": 0.4226190476190476,
+   "error_std": 0.14975887649296574,
+   "accuracy_mean": 0.5773809523809523
+  },
+  {
+   "k": 15,
+   "n_folds": 5,
+   "error_mean": 0.3921975916803503,
+   "error_std": 0.14627541886676335,
+   "accuracy_mean": 0.6078024083196497
+  },
+  {
+   "k": 20,
+   "n_folds": 5,
+   "error_mean": 0.43335249042145596,
+   "error_std": 0.1149343636237118,
+   "accuracy_mean": 0.566647509578544
+  },
+  {
+   "k": 30,
+   "n_folds": 5,
+   "error_mean": 0.43386334610472543,
+   "error_std": 0.09564423819630839,
+   "accuracy_mean": 0.5661366538952746
+  },
+  {
+   "k": 40,
+   "n_folds": 5,
+   "error_mean": 0.4088633461047254,
+   "error_std": 0.12653771433497069,
+   "accuracy_mean": 0.5911366538952746
+  },
+  {
+   "k": 60,
+   "n_folds": 5,
+   "error_mean": 0.3161320926838168,
+   "error_std": 0.1215223847194294,
+   "accuracy_mean": 0.6838679073161832
+  },
+  {
+   "k": 80,
+   "n_folds": 5,
+   "error_mean": 0.28295657726692214,
+   "error_std": 0.0942005978117177,
+   "accuracy_mean": 0.7170434227330779
+  },
+  {
+   "k": 120,
+   "n_folds": 5,
+   "error_mean": 0.3711558109833972,
+   "error_std": 0.11451939731391227,
+   "accuracy_mean": 0.6288441890166028
+  },
+  {
+   "k": 160,
+   "n_folds": 5,
+   "error_mean": 0.3065006385696041,
+   "error_std": 0.10657466660357114,
+   "accuracy_mean": 0.6934993614303959
+  }
+ ],
+ "per_factory_curve": [
+  {
+   "labels_per_factory": 0,
+   "mean_n_eval": 160,
+   "accuracy_mean": 0.6375,
+   "accuracy_std": 0.0,
+   "bal_acc_mean": 0.7325,
+   "bal_acc_std": 0.0,
+   "n_seeds": 40
+  },
+  {
+   "labels_per_factory": 1,
+   "mean_n_eval": 113,
+   "accuracy_mean": 0.5146,
+   "accuracy_std": 0.0718,
+   "bal_acc_mean": 0.5176,
+   "bal_acc_std": 0.079,
+   "n_seeds": 40
+  },
+  {
+   "labels_per_factory": 2,
+   "mean_n_eval": 73,
+   "accuracy_mean": 0.5134,
+   "accuracy_std": 0.0693,
+   "bal_acc_mean": 0.5067,
+   "bal_acc_std": 0.0882,
+   "n_seeds": 40
+  },
+  {
+   "labels_per_factory": 3,
+   "mean_n_eval": 51,
+   "accuracy_mean": 0.5863,
+   "accuracy_std": 0.1113,
+   "bal_acc_mean": 0.57,
+   "bal_acc_std": 0.0768,
+   "n_seeds": 40
+  },
+  {
+   "labels_per_factory": 4,
+   "mean_n_eval": 37,
+   "accuracy_mean": 0.6169,
+   "accuracy_std": 0.102,
+   "bal_acc_mean": 0.5446,
+   "bal_acc_std": 0.0897,
+   "n_seeds": 40
+  }
+ ],
+ "certification": {
+  "certify_error_0.20_at_95pct": {
+   "factories_grid_union": 86,
+   "factories_single": 38
+  },
+  "certify_error_0.10_at_95pct": {
+   "factories_grid_union": 342,
+   "factories_single": 150
+  },
+  "certify_error_0.05_at_95pct": {
+   "factories_grid_union": 1365,
+   "factories_single": 600
+  }
+ },
+ "references": {
+  "A1_new_signals": "full-res / motion-cue / new-features tracks (m/mosaic-res, m/new-features-160, m/exp-motion-cue) \u2014 the only route to a higher ceiling",
+  "A2_capacity": "m/acc-capacity \u2014 bigger models/heads; bounded by the cached feature set",
+  "N1": "adapted score near ceiling; label-using recipes plateau below it",
+  "C1": "pooled-160 0.781 does NOT replicate (hold-out 0.676); frozen ensemble 0.690"
+ },
+ "label_source": "human; never edit existing label files",
+ "git_sha": "f20013b"
+}

@@ -1,0 +1,448 @@
+{
+ "experiment": "A3.01",
+ "title": "Accuracy-vs-labels curve for the best current recipe, by strategy, extrapolated",
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "n_factories": 47,
+ "recipe": "best current recipe = frozen O4 adapted score (E5 stable-8 + Z3 transferable-6, per-domain z-score, IndEgo-signed mean) PLUS a logistic on [adapted, 26 per-pixel features] fit on k human labels. Reference = the label-free adapted score.",
+ "label_source": "human, single labeller (labels/ood160_labels.json; 138 good / 22 bad)",
+ "protocol": "factory-grouped StratifiedGroupKFold(5); within each fold acquire k labels from the training pool in strategy order, fit, score held-out factories; error = 1 - balanced accuracy @0.5. random averaged over 5 seeds/fold. Saturating fit error(k)=e_inf+a*exp(-k/tau); 300 fold-bootstrap resamples for CIs. Hold-out 108 scored once (no tuning) as an independent generalisation check.",
+ "device": "CPU (numpy/sklearn)",
+ "reference_label_free": {
+  "adapted_O4_error_BA": 0.2674571805006587,
+  "adapted_O4_auroc": 0.780961791831357,
+  "adapted_O4_error_CI": [
+   0.1698,
+   0.3715
+  ],
+  "adapted_O4_accuracy": 0.6375
+ },
+ "strategies": {
+  "random": {
+   "curve": [
+    {
+     "k": 5,
+     "n_folds": 5,
+     "error_mean": 0.45120894909688014,
+     "error_std": 0.10361434783059383,
+     "accuracy_mean": 0.5487910509031199
+    },
+    {
+     "k": 10,
+     "n_folds": 5,
+     "error_mean": 0.4356486194733321,
+     "error_std": 0.11669601356162601,
+     "accuracy_mean": 0.5643513805266679
+    },
+    {
+     "k": 15,
+     "n_folds": 5,
+     "error_mean": 0.4254629933710393,
+     "error_std": 0.11314032495215652,
+     "accuracy_mean": 0.5745370066289607
+    },
+    {
+     "k": 20,
+     "n_folds": 5,
+     "error_mean": 0.40055500821018064,
+     "error_std": 0.10280424132124068,
+     "accuracy_mean": 0.5994449917898194
+    },
+    {
+     "k": 30,
+     "n_folds": 5,
+     "error_mean": 0.35623444626892903,
+     "error_std": 0.092607408249692,
+     "accuracy_mean": 0.6437655537310709
+    },
+    {
+     "k": 40,
+     "n_folds": 5,
+     "error_mean": 0.3735626710454296,
+     "error_std": 0.0977706127837566,
+     "accuracy_mean": 0.6264373289545704
+    },
+    {
+     "k": 60,
+     "n_folds": 5,
+     "error_mean": 0.3720058383506659,
+     "error_std": 0.1066879730052773,
+     "accuracy_mean": 0.6279941616493341
+    },
+    {
+     "k": 80,
+     "n_folds": 5,
+     "error_mean": 0.3379903302317096,
+     "error_std": 0.12447042887246243,
+     "accuracy_mean": 0.6620096697682905
+    },
+    {
+     "k": 120,
+     "n_folds": 5,
+     "error_mean": 0.30901550811895645,
+     "error_std": 0.10398678118026067,
+     "accuracy_mean": 0.6909844918810435
+    },
+    {
+     "k": 160,
+     "n_folds": 5,
+     "error_mean": 0.3065006385696041,
+     "error_std": 0.10657466660357115,
+     "accuracy_mean": 0.6934993614303959
+    }
+   ]
+  },
+  "breadth_new_factories": {
+   "curve": [
+    {
+     "k": 5,
+     "n_folds": 4,
+     "error_mean": 0.5285714285714286,
+     "error_std": 0.15233444230680457,
+     "accuracy_mean": 0.4714285714285714
+    },
+    {
+     "k": 10,
+     "n_folds": 5,
+     "error_mean": 0.4598859697135559,
+     "error_std": 0.09770524908474901,
+     "accuracy_mean": 0.5401140302864441
+    },
+    {
+     "k": 15,
+     "n_folds": 5,
+     "error_mean": 0.4299407042510491,
+     "error_std": 0.21291085032418203,
+     "accuracy_mean": 0.570059295748951
+    },
+    {
+     "k": 20,
+     "n_folds": 5,
+     "error_mean": 0.3802417442072615,
+     "error_std": 0.19840817532754995,
+     "accuracy_mean": 0.6197582557927386
+    },
+    {
+     "k": 30,
+     "n_folds": 5,
+     "error_mean": 0.34050629447181163,
+     "error_std": 0.14473242115928528,
+     "accuracy_mean": 0.6594937055281884
+    },
+    {
+     "k": 40,
+     "n_folds": 5,
+     "error_mean": 0.35134373289545706,
+     "error_std": 0.12306837251071909,
+     "accuracy_mean": 0.6486562671045429
+    },
+    {
+     "k": 60,
+     "n_folds": 5,
+     "error_mean": 0.31632548804962596,
+     "error_std": 0.11584024747995189,
+     "accuracy_mean": 0.683674511950374
+    },
+    {
+     "k": 80,
+     "n_folds": 5,
+     "error_mean": 0.33060207991242474,
+     "error_std": 0.15572086678095026,
+     "accuracy_mean": 0.6693979200875753
+    },
+    {
+     "k": 120,
+     "n_folds": 5,
+     "error_mean": 0.33326491516146695,
+     "error_std": 0.10614037210132736,
+     "accuracy_mean": 0.666735084838533
+    },
+    {
+     "k": 160,
+     "n_folds": 5,
+     "error_mean": 0.3065006385696041,
+     "error_std": 0.10657466660357114,
+     "accuracy_mean": 0.6934993614303959
+    }
+   ]
+  },
+  "depth_existing_factories": {
+   "curve": [
+    {
+     "k": 5,
+     "n_folds": 4,
+     "error_mean": 0.3212301587301587,
+     "error_std": 0.21180985540025252,
+     "accuracy_mean": 0.6787698412698413
+    },
+    {
+     "k": 10,
+     "n_folds": 5,
+     "error_mean": 0.5630213464696224,
+     "error_std": 0.16547604326361923,
+     "accuracy_mean": 0.43697865353037757
+    },
+    {
+     "k": 15,
+     "n_folds": 5,
+     "error_mean": 0.3640038314176245,
+     "error_std": 0.18072708838579557,
+     "accuracy_mean": 0.6359961685823755
+    },
+    {
+     "k": 20,
+     "n_folds": 5,
+     "error_mean": 0.3749562123700055,
+     "error_std": 0.14251755380289072,
+     "accuracy_mean": 0.6250437876299946
+    },
+    {
+     "k": 30,
+     "n_folds": 5,
+     "error_mean": 0.46802773216566323,
+     "error_std": 0.16691897885621787,
+     "accuracy_mean": 0.5319722678343368
+    },
+    {
+     "k": 40,
+     "n_folds": 5,
+     "error_mean": 0.5681955847473089,
+     "error_std": 0.17241706044443025,
+     "accuracy_mean": 0.4318044152526911
+    },
+    {
+     "k": 60,
+     "n_folds": 5,
+     "error_mean": 0.41150155081189566,
+     "error_std": 0.23059133243220545,
+     "accuracy_mean": 0.5884984491881043
+    },
+    {
+     "k": 80,
+     "n_folds": 5,
+     "error_mean": 0.3609888706440431,
+     "error_std": 0.14260844770597342,
+     "accuracy_mean": 0.6390111293559568
+    },
+    {
+     "k": 120,
+     "n_folds": 5,
+     "error_mean": 0.31137748586024444,
+     "error_std": 0.14948257859715328,
+     "accuracy_mean": 0.6886225141397555
+    },
+    {
+     "k": 160,
+     "n_folds": 5,
+     "error_mean": 0.3065006385696041,
+     "error_std": 0.10657466660357114,
+     "accuracy_mean": 0.6934993614303959
+    }
+   ]
+  },
+  "diversity_maximin": {
+   "curve": [
+    {
+     "k": 5,
+     "n_folds": 2,
+     "error_mean": 0.5797413793103449,
+     "error_std": 0.06400535519360985,
+     "accuracy_mean": 0.42025862068965514
+    },
+    {
+     "k": 10,
+     "n_folds": 3,
+     "error_mean": 0.4226190476190476,
+     "error_std": 0.14975887649296574,
+     "accuracy_mean": 0.5773809523809523
+    },
+    {
+     "k": 15,
+     "n_folds": 5,
+     "error_mean": 0.3921975916803503,
+     "error_std": 0.14627541886676335,
+     "accuracy_mean": 0.6078024083196497
+    },
+    {
+     "k": 20,
+     "n_folds": 5,
+     "error_mean": 0.43335249042145596,
+     "error_std": 0.1149343636237118,
+     "accuracy_mean": 0.566647509578544
+    },
+    {
+     "k": 30,
+     "n_folds": 5,
+     "error_mean": 0.43386334610472543,
+     "error_std": 0.09564423819630839,
+     "accuracy_mean": 0.5661366538952746
+    },
+    {
+     "k": 40,
+     "n_folds": 5,
+     "error_mean": 0.4088633461047254,
+     "error_std": 0.12653771433497069,
+     "accuracy_mean": 0.5911366538952746
+    },
+    {
+     "k": 60,
+     "n_folds": 5,
+     "error_mean": 0.3161320926838168,
+     "error_std": 0.1215223847194294,
+     "accuracy_mean": 0.6838679073161832
+    },
+    {
+     "k": 80,
+     "n_folds": 5,
+     "error_mean": 0.28295657726692214,
+     "error_std": 0.0942005978117177,
+     "accuracy_mean": 0.7170434227330779
+    },
+    {
+     "k": 120,
+     "n_folds": 5,
+     "error_mean": 0.3711558109833972,
+     "error_std": 0.11451939731391227,
+     "accuracy_mean": 0.6288441890166028
+    },
+    {
+     "k": 160,
+     "n_folds": 5,
+     "error_mean": 0.3065006385696041,
+     "error_std": 0.10657466660357114,
+     "accuracy_mean": 0.6934993614303959
+    }
+   ]
+  }
+ },
+ "best_strategy": "diversity_maximin",
+ "saturating_fit": {
+  "e_inf": 0.32589590176725847,
+  "a": 0.25324615500852743,
+  "tau": 20.62064946689801,
+  "k_error_0.10": null,
+  "k_error_0.05": null,
+  "reachable_0.10": false,
+  "reachable_0.05": false
+ },
+ "saturating_fit_bootstrap_CI": {
+  "e_inf": [
+   0.0,
+   0.384
+  ],
+  "k_error_0.10": [
+   682.6,
+   1511.872
+  ],
+  "k_error_0.05": [
+   1023.805,
+   2183.061
+  ],
+  "n_boot": 300
+ },
+ "n4_continuity_26feat_logistic": {
+  "random": {
+   "5": [
+    0.4986,
+    0.1159
+   ],
+   "10": [
+    0.4364,
+    0.1241
+   ],
+   "15": [
+    0.4291,
+    0.1133
+   ],
+   "20": [
+    0.4227,
+    0.0851
+   ],
+   "30": [
+    0.3642,
+    0.0957
+   ],
+   "40": [
+    0.3825,
+    0.1143
+   ],
+   "60": [
+    0.3975,
+    0.0893
+   ],
+   "80": [
+    0.3381,
+    0.1206
+   ],
+   "120": [
+    0.338,
+    0.1115
+   ],
+   "160": [
+    0.3422,
+    0.1381
+   ]
+  },
+  "diversity_maximin": {
+   "5": [
+    0.476,
+    0.1853
+   ],
+   "10": [
+    0.5048,
+    0.1322
+   ],
+   "15": [
+    0.4185,
+    0.2037
+   ],
+   "20": [
+    0.4348,
+    0.1872
+   ],
+   "30": [
+    0.3806,
+    0.1515
+   ],
+   "40": [
+    0.3776,
+    0.1439
+   ],
+   "60": [
+    0.3149,
+    0.1712
+   ],
+   "80": [
+    0.2575,
+    0.1637
+   ],
+   "120": [
+    0.3587,
+    0.1333
+   ],
+   "160": [
+    0.3422,
+    0.1381
+   ]
+  }
+ },
+ "holdout_check": {
+  "n": 108,
+  "n_good": 92,
+  "n_bad": 16,
+  "n_factories": 44,
+  "adapted_O4_auroc": 0.676,
+  "adapted_O4_error_BA": 0.3519,
+  "adapted_O4_error_CI": [
+   0.2321,
+   0.4674
+  ],
+  "frozen_ensemble_auroc": 0.6895,
+  "frozen_ensemble_error_BA": 0.3601,
+  "label_fit_160_score_108_auroc": 0.6189,
+  "label_fit_160_score_108_error_BA": 0.3478
+ },
+ "headline": "The label-free adapted score is already near the ceiling of these cached features; extra labels buy little. Fitted asymptote e_inf=0.326 (95% CI [0.0, 0.384]): a 0.10 (90% acc) target is NOT within the model family and a 0.05 (95% acc) target is NOT within the model family. The pooled-160 curve does NOT replicate on the 108 hold-out (adapted 0.78->0.676 AUROC), so the honest ceiling is even lower.",
+ "git_sha": "f20013b"
+}

@@ -1,0 +1,52 @@
+{
+ "experiment": "A3.03",
+ "title": "Certification budget with the 85-factory corpus (error bound at 95% confidence)",
+ "protocol": "cluster-Hoeffding UCB on the marginal error/false-accept rate: UCB = Rhat + sqrt(ln(1/delta')/(2K)) <= r; K = exchangeable clusters (factories); delta'=delta (single pre-registered threshold) or delta/grid (union over the LTT 46-point threshold grid). Rhat=0.",
+ "confidence": 0.95,
+ "corpus": {
+  "K_factories_available_to_label": 85,
+  "K_factories_labelled_today": 47,
+  "n_windows_available": 9757
+ },
+ "budget_factories": {
+  "0.05": {
+   "single_threshold_K": 600,
+   "grid_union_K": 1365
+  },
+  "0.10": {
+   "single_threshold_K": 150,
+   "grid_union_K": 342
+  },
+  "0.15": {
+   "single_threshold_K": 67,
+   "grid_union_K": 152
+  },
+  "0.20": {
+   "single_threshold_K": 38,
+   "grid_union_K": 86
+  }
+ },
+ "certifiable_r_now": {
+  "K_85_grid_union": 0.2004,
+  "K_85_single_threshold": 0.1327,
+  "K_47_grid_union": 0.2694,
+  "K_47_single_threshold": 0.1785
+ },
+ "labels_needed": {
+  "certify_error_0.20_at_95pct": {
+   "factories_grid_union": 86,
+   "factories_single": 38
+  },
+  "certify_error_0.10_at_95pct": {
+   "factories_grid_union": 342,
+   "factories_single": 150
+  },
+  "certify_error_0.05_at_95pct": {
+   "factories_grid_union": 1365,
+   "factories_single": 600
+  }
+ },
+ "headline": "With the 85-factory corpus (label all 85) the tightest certifiable marginal error at 95% confidence is r~0.20 (grid-union) / 0.13 (single threshold). A 95%-accuracy claim (error<=0.05) would need ~1365 factories (grid-union) or ~600 (single) at 95% confidence; a 90% claim needs ~342 / ~150. The corpus is ~16x too small for a 0.05 bound.",
+ "note": "If the claim is window-level rather than factory-level the count is smaller (9757 windows) but anti-conservative under within-factory correlation; the factory is the honest exchangeable unit. To certify each factory at error 0.05 you would need ~1365 labels PER factory (grid-union).",
+ "git_sha": "f20013b"
+}
