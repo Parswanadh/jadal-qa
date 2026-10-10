@@ -1,0 +1,62 @@
+{
+ "experiment": "E1.02",
+ "verified_by": "lead-b (LB1, independent re-implementation)",
+ "n": 150,
+ "n_clips": 7,
+ "n_bad": 50,
+ "label_source": "human gold IndEgo windows (labels carried in segments.npz cache)",
+ "protocol": "LOCO logistic C=0.01 class_weight=balanced on L2-normalised mean of subsampled EG2 rows; clip-bootstrap 95% CI, 2000 resamples, seed 0",
+ "data": "/workspace/jadal_pod_bundle/caches/frames10k/segments.npz",
+ "cache_frames_total": 3005,
+ "rows": [
+  {
+   "fps": "2fps",
+   "step": 1,
+   "mean_frames_per_window": 20.03,
+   "auroc": 0.848,
+   "ci95": [
+    0.7187,
+    0.9123
+   ],
+   "bal_acc_at_0.5": 0.77,
+   "delta_vs_2fps": 0.0
+  },
+  {
+   "fps": "1fps",
+   "step": 2,
+   "mean_frames_per_window": 10.03,
+   "auroc": 0.8596,
+   "ci95": [
+    0.747,
+    0.9176
+   ],
+   "bal_acc_at_0.5": 0.77,
+   "delta_vs_2fps": 0.0116
+  },
+  {
+   "fps": "0.5fps",
+   "step": 4,
+   "mean_frames_per_window": 5.03,
+   "auroc": 0.8702,
+   "ci95": [
+    0.7562,
+    0.9271
+   ],
+   "bal_acc_at_0.5": 0.785,
+   "delta_vs_2fps": 0.0222
+  }
+ ],
+ "claimed_reference": {
+  "2fps": 0.848,
+  "1fps": 0.86,
+  "0.5fps": 0.87
+ },
+ "two_view_prob_average": {
+  "2fps": 0.8524,
+  "1fps": 0.8538,
+  "note": "probability average of EG2 view and 26-feature pixel view at matching fps, from run_eg2.py",
+  "claimed_reference": "0.852-0.854",
+  "reproduced": true
+ },
+ "independent_reimplementation": true
+}
