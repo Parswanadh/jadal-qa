@@ -28,15 +28,27 @@ sys.path.insert(0, HERE)
 import z3extract as E  # noqa: E402
 from run_adapt160 import FEATURE_NAMES26  # noqa: E402
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
-E8_JSONL = os.environ.get("JADAL_E8_JSONL", "/workspace/artifacts/windows_rescored.jsonl")
+# Pod paths from the environment only (no tracked defaults, review finding 6).
+BUNDLE = os.environ.get("JADAL_BUNDLE")
+E8_JSONL = os.environ.get("JADAL_E8_JSONL")
 OUT = os.path.join(REPO, "eval", "results", "exp_adapt160", "inputs")
-CLIPS = os.path.join(BUNDLE, "data", "ego10k_scale", "clips")
+
+
+def _require_env(name, value):
+    if not value:
+        raise SystemExit(
+            f"{name} is not set and no pod path is hard-coded; export it, e.g. "
+            f"export {name}=/path/on/pod")
+    return value
+
+
+def _clips_dir():
+    return os.path.join(_require_env("JADAL_BUNDLE", BUNDLE), "data", "ego10k_scale", "clips")
 
 
 def load_e8():
     recs = []
-    for line in open(E8_JSONL):
+    for line in open(_require_env("JADAL_E8_JSONL", E8_JSONL)):
         try:
             d = json.loads(line)
         except json.JSONDecodeError:
@@ -90,14 +102,15 @@ def main():
                 X26[k, j] = float(f[n])
 
     # decode Z3 candidates
-    uniq = {os.path.join(CLIPS, r["clip"]): (r["start_s"], r["end_s"]) for r in sample}
+    clips_dir = _clips_dir()
+    uniq = {os.path.join(clips_dir, r["clip"]): (r["start_s"], r["end_s"]) for r in sample}
     from concurrent.futures import ThreadPoolExecutor
     t0 = time.time()
     with ThreadPoolExecutor(max_workers=2) as ex:
         tables = dict(zip(uniq.keys(), ex.map(E.probe_full, uniq.keys())))
     print(f"probe {time.time()-t0:.1f}s", flush=True)
 
-    jobs = [(r["window_id"], os.path.join(CLIPS, r["clip"]), r["start_s"], r["end_s"])
+    jobs = [(r["window_id"], os.path.join(clips_dir, r["clip"]), r["start_s"], r["end_s"])
             for r in sample]
     with mp.Pool(args.jobs) as pool:
         rows = pool.map(decode_job, jobs, chunksize=2)
@@ -105,7 +118,7 @@ def main():
     errs = 0
     for r in rows:
         k = sid2k[r["id"]]
-        path = os.path.join(CLIPS, sample[k]["clip"])
+        path = os.path.join(clips_dir, sample[k]["clip"])
         ct = E.compression_from_table(tables.get(path), sample[k]["start_s"], sample[k]["end_s"])
         if ct is not None:
             r.update(ct)

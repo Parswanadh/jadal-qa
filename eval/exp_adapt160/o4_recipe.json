@@ -1,0 +1,17 @@
+{
+  "recipe_id": "O4.01-frozen",
+  "frozen_utc": "2026-10-10",
+  "features": {
+    "transferable6": ["ct_fsize_std", "mo_hand_motion_excess", "inv_clip_frac",
+                      "inv_laplacian_var", "inv_hist_entropy", "inv_dct_hf_lf"],
+    "stable8": ["radial_slope", "hf_ratio", "dct_energy", "luma_p05", "global_shift",
+                "illum_r", "illum_b", "zncc_self"],
+    "z1_sharp3": ["radial_slope", "hf_ratio", "dct_energy"]
+  },
+  "signs": "per-feature sign from the 150 IndEgo gold windows ONLY: +1 if IndEgo AUROC >= 0.5 else -1",
+  "zscore": "per-domain: subtract the target domain's own feature mean and divide by its own std; computed ONCE on the pooled 160 and sliced by batch (q1/q2 are slices, not per-batch z-scores); unsupervised (no labels); transductive",
+  "threshold": "0 for the z-score combos (the pooled signed-mean centre), 0.5 for probability scorers; no OOD threshold tuning",
+  "score": "equal-weight mean of (z-scored feature * IndEgo sign)",
+  "evaluation": "AUROC + balanced accuracy; factory-grouped bootstrap CI (honest, n_boot=2000, seed=0); window bootstrap optimistic",
+  "confirmatory_plan": "freeze this recipe BEFORE labelling the new 400-window set (queue 3, labels3.json); score it once, unchanged; that single number replaces the pooled-160 claim"
+}

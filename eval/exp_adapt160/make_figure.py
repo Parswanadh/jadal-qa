@@ -27,7 +27,15 @@ def main():
     ci = [b["ood_auroc_ci95_factory_grouped_honest"] for b in blocks]
     lo = [a - c[0] for a, c in zip(au, ci)]
     hi = [c[1] - a for a, c in zip(au, ci)]
-    colors = ["#2a6", "#2a6", "#a83", "#a83", "#777"]
+    colors = []
+    for b in blocks:
+        r = b["recipe"]
+        if r.startswith("(a)") or r.startswith("(b"):
+            colors.append("#2a6")
+        elif r.startswith("(c)"):
+            colors.append("#a83")
+        else:
+            colors.append("#777")
 
     os.makedirs(FIGS, exist_ok=True)
     fig, axes = plt.subplots(1, 3, figsize=(16, 4.8))
@@ -52,8 +60,8 @@ def main():
     ax.set_yticks(ys)
     ax.set_yticklabels([b["recipe"].split(" ")[0] for b in blocks], fontsize=8)
     ax.invert_yaxis()
-    ax.set_xlabel("OOD AUROC (per-batch z-score)")
-    ax.set_title("batch q1 vs q2")
+    ax.set_xlabel("OOD AUROC (slices of pooled per-domain z-score)")
+    ax.set_title("batch q1 vs q2 (slices, not per-batch z-scores)")
     ax.legend(fontsize=7)
 
     ax = axes[2]

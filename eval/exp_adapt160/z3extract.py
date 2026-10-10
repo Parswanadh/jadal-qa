@@ -23,7 +23,8 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, REPO)
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+# Pod path from the environment only (no tracked default, review finding 6).
+BUNDLE = os.environ.get("JADAL_BUNDLE")
 OUT = os.path.join(REPO, "eval", "results", "exp_features")
 os.makedirs(OUT, exist_ok=True)
 
@@ -231,6 +232,10 @@ def decode_job(job):
 
 
 def build_jobs():
+    if not BUNDLE:
+        raise SystemExit(
+            "JADAL_BUNDLE is not set and no pod path is hard-coded; export it, e.g. "
+            "export JADAL_BUNDLE=/path/on/pod")
     jobs = []
     gold = json.load(open(os.path.join(BUNDLE, "labels", "manifest_gold.json")))["items"]
     for it in gold:

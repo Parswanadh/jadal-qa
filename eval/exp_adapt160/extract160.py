@@ -33,17 +33,25 @@ sys.path.insert(0, REPO)
 sys.path.insert(0, HERE)
 import z3extract as E  # noqa: E402
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
-# frozen Z3 batch-q1 candidates (m/new-features). Override if the tree moves.
-Z3_CAND = os.environ.get(
-    "JADAL_Z3_CAND",
-    "/workspace/wt/m-new-features/eval/results/exp_features/candidates.npz")
+# Pod paths come from the environment only (no tracked defaults, review finding 6):
+# JADAL_BUNDLE = pod bundle; JADAL_Z3_CAND = frozen Z3 batch-q1 candidates.npz.
+BUNDLE = os.environ.get("JADAL_BUNDLE")
+Z3_CAND = os.environ.get("JADAL_Z3_CAND")
 OUT = os.path.join(REPO, "eval", "results", "exp_adapt160", "inputs")
 CAND = E.CAND
 
 
+def _require_env(name, value):
+    if not value:
+        raise SystemExit(
+            f"{name} is not set and no pod path is hard-coded; export it, e.g. "
+            f"export {name}=/path/on/pod")
+    return value
+
+
 def load_labels160():
-    d = json.load(open(os.path.join(BUNDLE, "labels", "ood160_labels.json")))
+    d = json.load(open(os.path.join(_require_env("JADAL_BUNDLE", BUNDLE),
+                                    "labels", "ood160_labels.json")))
     w = d["windows"]
     return {
         "ids": [x["segment_id"] for x in w],
@@ -74,7 +82,7 @@ def main():
     order = {sid: i for i, sid in enumerate(lab["ids"])}
 
     # ---- batch q1: reuse frozen Z3 candidates ----
-    z = np.load(Z3_CAND, allow_pickle=True)
+    z = np.load(_require_env("JADAL_Z3_CAND", Z3_CAND), allow_pickle=True)
     q1names = [str(x) for x in z["names"]]
     assert q1names == CAND, (q1names, CAND)
     q1ids = {str(i): k for k, i in enumerate(z["ood_ids"])}
@@ -88,7 +96,8 @@ def main():
     assert n1 == 60, f"expected 60 q1 windows, got {n1}"
 
     # ---- batch q2: compute with the same recipe ----
-    q2 = json.load(open(os.path.join(BUNDLE, "queues", "label_queue_random2.json")))["segments"]
+    bundle = _require_env("JADAL_BUNDLE", BUNDLE)
+    q2 = json.load(open(os.path.join(bundle, "queues", "label_queue_random2.json")))["segments"]
     segs = [s for s in q2 if s["segment_id"] in order]
     print(f"batch-q2 decoding {len(segs)} windows (probe + 160x90 decode + optical flow)", flush=True)
 
@@ -125,7 +134,7 @@ def main():
     # ---- IndEgo 150 (from the same frozen candidates) ----
     Xi = z["indego_X"].astype(float)
     yi = z["indego_y"].astype(int)
-    gold = json.load(open(os.path.join(BUNDLE, "labels", "manifest_gold.json")))["items"]
+    gold = json.load(open(os.path.join(bundle, "labels", "manifest_gold.json")))["items"]
     gorder = {it["id"]: it for it in gold}
     clips = [gorder[str(i)]["clip"] for i in z["indego_ids"]]
     assert Xi.shape[0] == 150, Xi.shape

@@ -38,12 +38,17 @@ REPO = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, REPO)
 sys.path.insert(0, HERE)
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+# Pod paths are taken from the environment ONLY — no pod paths are hard-coded in
+# tracked code (review finding 6). JADAL_BUNDLE = the pod bundle (labels/caches);
+# JADAL_PIXEL160 = the pixel-26 OOD input npz; JADAL_Z3_CAND is used by the
+# extractor. Unset values raise only when a loader is actually called, so the
+# module stays importable for tests.
+BUNDLE = os.environ.get("JADAL_BUNDLE")
+PIXEL160 = os.environ.get("JADAL_PIXEL160")
 OUT = os.path.join(REPO, "eval", "results", "exp_adapt160")
 INPUTS = os.path.join(OUT, "inputs")
-PIXEL160 = os.environ.get(
-    "JADAL_PIXEL160",
-    "/workspace/wt/m-fewshot160/eval/results/exp_fewshot/inputs/ood160_pixel.npz")
+RECIPE_JSON = os.path.join(HERE, "o4_recipe.json")
+RECIPE_SHA = os.path.join(HERE, "o4_recipe.sha256")
 N_BOOT = 2000
 SEED = 0
 DEV = "CPU (numpy/sklearn; ffmpeg/cv2 decode only, no GPU)"
@@ -52,6 +57,9 @@ Z3_SIX = ["ct_fsize_std", "mo_hand_motion_excess", "inv_clip_frac",
           "inv_laplacian_var", "inv_hist_entropy", "inv_dct_hf_lf"]
 STABLE8 = ["radial_slope", "hf_ratio", "dct_energy", "luma_p05", "global_shift",
            "illum_r", "illum_b", "zncc_self"]
+# review finding 3: global_shift is classified "flip" by the O4.02 table
+# (IndEgo 0.376 / OOD-160 0.509); recipe (b2) reports stable-8 without it.
+STABLE7 = [n for n in STABLE8 if n != "global_shift"]
 SHARP3 = ["radial_slope", "hf_ratio", "dct_energy"]
 FEATURE_NAMES26 = [
     "temp_b0", "temp_b1", "temp_b2", "temp_b3", "frozen_frac", "flicker_idx",
@@ -61,6 +69,21 @@ FEATURE_NAMES26 = [
     "rppg_pulse", "dup_hash_mean", "zncc_self"]
 C_GRID = (0.01, 0.1, 1.0, 10.0)
 
+# Bootstrap resample accounting (review finding 6): a resample is skipped when
+# it draws a single class (AUROC undefined). We report the totals in the result
+# JSON rather than dropping them silently.
+BOOT_STATS = {
+    "group_boot": {"used": 0, "skipped_single_class": 0},
+    "window_boot": {"used": 0, "skipped_single_class": 0},
+    "paired_group_boot": {"used": 0, "skipped_single_class": 0},
+}
+
+
+def reset_boot_stats():
+    for v in BOOT_STATS.values():
+        v["used"] = 0
+        v["skipped_single_class"] = 0
+
 
 def git_sha():
     try:
@@ -68,6 +91,27 @@ def git_sha():
                               text=True, cwd=REPO).stdout.strip()
     except Exception:
         return "unknown"
+
+
+def _require_env(name, value):
+    """Return an env-provided pod path or fail loudly (no tracked default)."""
+    if not value:
+        raise SystemExit(
+            f"{name} is not set and no pod path is hard-coded; export it, e.g. "
+            f"export {name}=/path/on/pod")
+    return value
+
+
+def canonical_json_sha256(obj):
+    """SHA-256 of canonical JSON (sorted keys, compact separators)."""
+    import hashlib
+    blob = json.dumps(obj, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(blob).hexdigest()
+
+
+def recipe_sha256(path=RECIPE_JSON):
+    """SHA-256 of the frozen O4 recipe config (canonical JSON)."""
+    return canonical_json_sha256(json.load(open(path)))
 
 
 # ---------------- metrics ----------------
@@ -112,8 +156,10 @@ def group_boot_ci(y, s, groups, fn, thr=None, n_boot=N_BOOT, seed=SEED):
         pick = rng.randint(0, len(idx_by), len(idx_by))
         idx = np.concatenate([idx_by[k] for k in pick])
         if len(np.unique(y[idx])) < 2:
+            BOOT_STATS["group_boot"]["skipped_single_class"] += 1
             continue
         vals.append(fn(y[idx], s[idx]) if thr is None else fn(y[idx], s[idx], thr))
+    BOOT_STATS["group_boot"]["used"] += len(vals)
     if not vals:
         return [None, None]
     return [round(float(np.percentile(vals, 2.5)), 4),
@@ -128,8 +174,10 @@ def window_boot_ci(y, s, fn, thr=None, n_boot=N_BOOT, seed=SEED):
     for _ in range(n_boot):
         idx = rng.randint(0, len(y), len(y))
         if len(np.unique(y[idx])) < 2:
+            BOOT_STATS["window_boot"]["skipped_single_class"] += 1
             continue
         vals.append(fn(y[idx], s[idx]) if thr is None else fn(y[idx], s[idx], thr))
+    BOOT_STATS["window_boot"]["used"] += len(vals)
     if not vals:
         return [None, None]
     return [round(float(np.percentile(vals, 2.5)), 4),
@@ -148,8 +196,10 @@ def paired_group_boot(y, s_a, s_b, groups, n_boot=N_BOOT, seed=SEED):
         pick = rng.randint(0, len(idx_by), len(idx_by))
         idx = np.concatenate([idx_by[k] for k in pick])
         if len(np.unique(y[idx])) < 2:
+            BOOT_STATS["paired_group_boot"]["skipped_single_class"] += 1
             continue
         diffs.append(fast_auc(y[idx], s_a[idx]) - fast_auc(y[idx], s_b[idx]))
+    BOOT_STATS["paired_group_boot"]["used"] += len(diffs)
     diffs = np.asarray(diffs)
     if len(diffs) == 0:
         return {}
@@ -163,7 +213,8 @@ def paired_group_boot(y, s_a, s_b, groups, n_boot=N_BOOT, seed=SEED):
 # ---------------- loaders ----------------
 
 def load_labels160():
-    d = json.load(open(os.path.join(BUNDLE, "labels", "ood160_labels.json")))
+    bundle = _require_env("JADAL_BUNDLE", BUNDLE)
+    d = json.load(open(os.path.join(bundle, "labels", "ood160_labels.json")))
     w = d["windows"]
     return {"ids": [x["segment_id"] for x in w],
             "y": np.asarray([1 if x["verdict"] == "good" else 0 for x in w], int),
@@ -182,26 +233,28 @@ def load_z3_160():
 
 
 def load_pixel160():
-    z = np.load(PIXEL160, allow_pickle=True)
+    z = np.load(_require_env("JADAL_PIXEL160", PIXEL160), allow_pickle=True)
     return {"ids": [str(x) for x in z["ids"]], "names": [str(x) for x in z["names"]],
             "X10": z["X10"].astype(float)}
 
 
 def load_gold():
-    m = json.load(open(os.path.join(BUNDLE, "labels", "manifest_gold.json")))
+    bundle = _require_env("JADAL_BUNDLE", BUNDLE)
+    m = json.load(open(os.path.join(bundle, "labels", "manifest_gold.json")))
     items = m["items"]
     ids = [it["id"] for it in items]
     clips = np.asarray([it["clip"] for it in items])
     y = np.asarray([int(it["label"]) for it in items])
-    fj = json.load(open(os.path.join(BUNDLE, "caches", "gpu", "features.json")))["windows"]
+    fj = json.load(open(os.path.join(bundle, "caches", "gpu", "features.json")))["windows"]
     X = np.asarray([[float(fj[i]["full"][n]) for n in FEATURE_NAMES26] for i in ids])
     return {"ids": ids, "clips": clips, "y": y, "X26": X}
 
 
 def load_frozen160(ids):
+    bundle = _require_env("JADAL_BUNDLE", BUNDLE)
     sc = {}
     for fn in ("ood_scores.json", "ood_scores2.json"):
-        d = json.load(open(os.path.join(BUNDLE, "caches", "ensemble", fn)))
+        d = json.load(open(os.path.join(bundle, "caches", "ensemble", fn)))
         for x in d["scores"]:
             if "error" not in x:
                 sc[x["id"]] = float(x["usable_prob"])
@@ -308,6 +361,7 @@ def batch_split(y, s, batch, groups, thr):
 
 
 def main():
+    reset_boot_stats()
     lab = load_labels160()
     z3 = load_z3_160()
     pix = load_pixel160()
@@ -360,6 +414,21 @@ def main():
                "indego_signs": {n: int(s) for n, s in zip(names14, sg_b)}}))
     blocks[-1]["ood_batch_split"] = batch_split(y, so_b, batch, fac, 0.0)
 
+    # (b2) E5 stable-8 WITHOUT global_shift (the flip feature) + Z3 transferable-6.
+    s7_idx = [FEATURE_NAMES26.index(n) for n in STABLE7]
+    X13o = np.hstack([X26o[:, s7_idx], X6o])
+    X13g = np.hstack([X26g[:, s7_idx], X6g])
+    si_b2, so_b2, au_b2, sg_b2 = combo_scores(X13g, X13o, yg)
+    names13 = STABLE7 + Z3_SIX
+    blocks.append(score_block(
+        "(b2) E5 stable-8 minus global_shift + Z3-6",
+        "per-domain z-score, IndEgo-signed, equal-weight mean",
+        y, so_b2, fac, 0.0, 13, names13, y_in=yg, s_in=si_b2,
+        extra={"indego_feature_auroc": {n: round(float(a), 4) for n, a in zip(names13, au_b2)},
+               "indego_signs": {n: int(s) for n, s in zip(names13, sg_b2)},
+               "dropped_vs_b": ["global_shift"]}))
+    blocks[-1]["ood_batch_split"] = batch_split(y, so_b2, batch, fac, 0.0)
+
     # (c) Z1 sharpness-3 head (trained on IndEgo)
     oof_s3, ood_s3 = z1_head(XS3g, yg, gold["clips"], XS3o)
     blocks.append(score_block(
@@ -382,7 +451,8 @@ def main():
         "(d) frozen ensemble_v1", "frozen two-view usable_prob (no fitting)", y, frozen,
         fac, 0.5, None, None,
         extra={"frozen_config_sha256": json.load(open(os.path.join(
-            BUNDLE, "caches", "ensemble", "ood_scores.json")))["config_sha256"],
+            _require_env("JADAL_BUNDLE", BUNDLE), "caches", "ensemble",
+            "ood_scores.json")))["config_sha256"],
             "missing_scores": frozen_missing}))
     blocks[-1]["ood_batch_split"] = batch_split(y, frozen, batch, fac, 0.5)
 
@@ -390,9 +460,18 @@ def main():
     gains = {}
     for nm, sc in (("(a) Z3 transferable-6", so_a),
                    ("(b) E5 stable-8 + Z3 transferable-6", so_b),
+                   ("(b2) E5 stable-8 minus global_shift + Z3-6", so_b2),
                    ("(c) Z1 sharpness-3 head", ood_s3),
                    ("(c2) sharpness-3 z-score", so_c2)):
         gains[nm] = paired_group_boot(y, sc, frozen, fac)
+
+    # Frozen recipe config + sha256 (review finding 7): verify the committed sidecar.
+    recipe_sha = recipe_sha256()
+    if os.path.exists(RECIPE_SHA):
+        recorded = open(RECIPE_SHA).read().split()[0]
+        if recorded != recipe_sha:
+            raise SystemExit(
+                f"frozen recipe sha256 mismatch: sidecar {recorded} != computed {recipe_sha}")
 
     o401 = {
         "experiment": "O4.01",
@@ -403,15 +482,32 @@ def main():
         "label_source": ("human (labels/ood160_labels.json; merge of ood_labels.json q1=60 "
                          "and ood_labels2.json q2=100, single labeller; 138 good / 22 bad, "
                          "47 factories)"),
-        "protocol": ("evaluation only. Per-domain z-score = target-domain mean/std "
-                     "(unsupervised); sign from the 150 IndEgo gold windows. "
-                     "Factory-grouped bootstrap CI (n_boot=2000, seed=0) is the honest CI; "
-                     "window bootstrap is optimistic (correlated within factory)."),
+        "protocol": ("evaluation only. Per-domain z-score = the target domain's own "
+                     "feature mean/std, computed ONCE on the pooled 160 and sliced by "
+                     "batch (q1/q2 are slices of the pooled score, NOT per-batch "
+                     "z-scores). It is unsupervised (no labels) but TRANSDUCTIVE: a new "
+                     "window cannot be scored without the rest of its batch. Sign from the "
+                     "150 IndEgo gold windows only. Factory-grouped bootstrap CI "
+                     "(n_boot=2000, seed=0) is the honest CI; window bootstrap is "
+                     "optimistic (correlated within factory)."),
         "threshold_rule": ("balanced accuracy at a fixed natural threshold: 0 for the "
-                           "z-score combos (symmetric signed mean), 0.5 for probability "
-                           "heads / frozen ensemble. No OOD threshold tuning."),
+                           "z-score combos (the POOLED signed-mean centre), 0.5 for "
+                           "probability heads / frozen ensemble. No OOD threshold tuning. "
+                           "Because 0 is the pooled mean, the z-score BA is NOT deployable "
+                           "without a batch-normalisation rule; treat it as descriptive."),
+        "selection_provenance": (
+            "q1 (the first 60) informed feature selection and the Z3.03 recipe, so the "
+            "pooled-160 headline is q1-contaminated; q2 (100 windows, 13 bad) is the only "
+            "clean hold-out and is NOT separable from chance on its own. O2.03 (m/fewshot160) "
+            "re-ran the sign table on all 160 labels and changed global_shift (stable -> flip) "
+            "and frozen_frac (flip -> stable); O4 kept the pre-O2.03 set, and (b2) reports "
+            "recipe (b) with global_shift dropped."),
+        "bootstrap_resamples": {k: dict(v) for k, v in BOOT_STATS.items()},
+        "frozen_recipe": {"path": os.path.relpath(RECIPE_JSON, REPO),
+                          "sha256": recipe_sha},
         "device": DEV, "git_sha": sha,
-        "command": ("OMP_NUM_THREADS=2 python3 eval/exp_adapt160/extract160.py && "
+        "command": ("export JADAL_BUNDLE=/path/on/pod JADAL_PIXEL160=/path/ood160_pixel.npz && "
+                    "OMP_NUM_THREADS=2 python3 eval/exp_adapt160/extract160.py && "
                     "OMP_NUM_THREADS=2 python3 eval/exp_adapt160/run_adapt160.py"),
         "gain_vs_frozen_paired_factory_grouped_bootstrap": gains,
         "blocks": blocks,
@@ -459,11 +555,15 @@ def main():
         ind = b.get("indego_auroc")
         print(f"{b['recipe']:38s}{b['ood_auroc']:>11.3f}{str(ci):>18}{b['ood_balacc']:>9.3f}"
               f"{(ind if ind is not None else float('nan')):>9.3f}")
-    print("\nq1 vs q2 (per-batch z-score for the combos):")
+    print("\nq1 vs q2 (slices of the pooled per-domain z-score for the combos):")
     for b in blocks:
         bs = b["ood_batch_split"]
         print(f"  {b['recipe']:38s} q1 {bs['q1']['auroc']:.3f} (n_bad={bs['q1']['n_bad']})"
               f"  q2 {bs['q2']['auroc']:.3f} (n_bad={bs['q2']['n_bad']})")
+    print(f"\nfrozen recipe sha256: {recipe_sha}")
+    print("bootstrap resamples: " + ", ".join(
+        f"{k} used={v['used']} skipped_single_class={v['skipped_single_class']}"
+        for k, v in BOOT_STATS.items()))
     print("\nper-feature (Z3 six | IndEgo | OOD160):")
     for r in rows6:
         print(f"  {r['feature']:24s} {r['indego_auroc']:>7.3f} {r['ood160_auroc']:>7.3f}  {r['class']}")

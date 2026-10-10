@@ -31,12 +31,17 @@ import run_adapt160 as R  # noqa: E402
 
 OUT = os.path.join(REPO, "eval", "results", "exp_adapt160")
 INPUTS = os.path.join(OUT, "inputs")
-E8_JSONL = os.environ.get("JADAL_E8_JSONL", "/workspace/artifacts/windows_rescored.jsonl")
+# Pod path from the environment only (no tracked default, review finding 6).
+E8_JSONL = os.environ.get("JADAL_E8_JSONL")
 W_BAND = 0.16
 C_GATE = 0.45
 
 
 def load_frozen_e8():
+    if not E8_JSONL:
+        raise SystemExit(
+            "JADAL_E8_JSONL is not set and no pod path is hard-coded; export it, e.g. "
+            "export JADAL_E8_JSONL=/path/windows_rescored.jsonl")
     sc = {}
     for line in open(E8_JSONL):
         try:
