@@ -146,3 +146,10 @@ Secrets are read from environment variables (`SARVAM_API_KEY`, `CF_API_TOKEN`, `
 ## Licences
 
 Licences and attributions are in [`docs/ATTRIBUTIONS.md`](docs/ATTRIBUTIONS.md).
+
+## Contributing and status
+
+- **How to contribute:** [`CONTRIBUTING.md`](CONTRIBUTING.md) covers setup, the test command, the pull request rules and how reviews run. Security reports go through [`SECURITY.md`](SECURITY.md).
+- **How experiments are run and logged:** [`docs/EXPERIMENTS_HOWTO.md`](docs/EXPERIMENTS_HOWTO.md). Every experiment has a registry line in [`experiments/`](experiments/README.md) that records its reason, outputs, data type and verdict, including negative results.
+- **Measured results:** cite only the files in [`docs/reports/`](docs/reports/) and the results JSON files in `eval/results/` on the same branch. Anything not in a file here is not a claim.
+- **Licences and third-party components:** [`LICENSE`](LICENSE) (the licence choice is pending an owner decision) and [`NOTICE`](NOTICE). Datasets are not redistributed.

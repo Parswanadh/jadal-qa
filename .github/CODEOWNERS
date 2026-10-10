@@ -1,0 +1,10 @@
+# Owners are requested for review automatically.
+# Protected files: changes need an approved issue and the maintainer's review.
+
+jadal/config.py          @Parswanadh
+jadal/__init__.py        @Parswanadh
+docs/SPEC.md             @Parswanadh
+docs/BASELINE.md         @Parswanadh
+tools/pod/**             @Parswanadh
+.github/**               @Parswanadh
+agents/**                @Parswanadh
