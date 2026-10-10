@@ -107,11 +107,25 @@ config (live-config drift does not affect it) and compares hashes.
 - `match: bool`, `expected/actual: str|null` (hex; `actual` is `null` when
   the segment file is gone), `diff: string[]` (dotted field paths, lists
   indexed; `["<segment file missing>"]` when the file is gone).
+- `version_match: bool` — stored receipt `config.versions` vs the running
+  code. `version_diff: string[]` — version keys that differ (e.g. after a
+  stubs → real-module upgrade, which also changes the hash). Real example:
+  `{"match": true, …, "version_match": true, "version_diff": []}`.
 - `404` unknown receipt, `409 {"detail": "segment row missing"}`.
+
+## GET /ingest/errors → {"errors": {path: message}}
+
+Last ingest error per clip path (watcher retries with exponential backoff:
+2^attempts s, capped at 30 s — a poison file never spins the poll loop).
+Real example: `{"errors": {"/…/data_runtime/bucket/poison.mp4":
+"RuntimeError: cannot decode"}}`. Empty object when nothing has failed.
 
 ## GET /stats/risk_coverage → RiskPoint[]
 
-Bare certify list, strictest threshold first, `[]` when no calibration rows:
+Bare certify list, strictest threshold first. Sources in order: (1) `calibration`
+rows in SQLite, (2) `eval/results/calibration.json` (`risk_coverage` key,
+validated row-by-row) when the eval module has produced it. `[]` means **no
+measured data** — never fabricated points.
 
 ```json
 [{"threshold": 0.9, "coverage": 0.8, "error": 0.05}]
@@ -122,14 +136,15 @@ No bound/threshold metadata is returned today (see "Missing" §2).
 
 ## GET /stats/sop_gaps → SopGap[]
 
-`[]` until `sop/` merges. Documented row shape (minimum):
+Real reason-code counts over stored batch verdicts (until `sop/` merges, when
+its module takes over). Sorted by count desc, then code.
 
 ```json
-[{"reason_code": "BLUR", "count": 3}]
+[{"reason_code": "BLUR", "count": 3, "share": 0.15}]
 ```
 
-`reason_code: str` (SPEC code) + `count: int` required; `sop_section: str`
-and `share: float` are optional extras when available.
+`reason_code: str` (SPEC code) + `count: int` required; `share: float` =
+count / total stored verdicts. `[]` when no batches exist yet.
 
 ## GET /sop/search?q=&lang= → {"results": []}
 
