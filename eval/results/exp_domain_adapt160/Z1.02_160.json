@@ -1,0 +1,183 @@
+{
+ "n_ood": 160,
+ "n_good_ood": 138,
+ "n_bad_ood": 22,
+ "n_factories": 47,
+ "n_indego": 150,
+ "label_source": {
+  "indego": "human (labels/manifest_gold.json, single labeller, n=150: 100 good / 50 bad)",
+  "ood": "human (labels/ood160_labels.json, single labeller, n=160: 138 good / 22 bad, 47 factories; merge q1=60 + q2=100)"
+ },
+ "protocol": {
+  "indego": "leave-one-clip-out (LOCO) over 7 IndEgo clips; clip-bootstrap CI (2000)",
+  "ood": "head fit on IndEgo (all 7 clips); OOD-160 evaluation only. FACTORY-GROUPED bootstrap CI (honest, n_boot=2000, seed=0); window bootstrap kept as the optimistic comparison. 10 fps-effective view for all 160 (q2 transcodes are natively 10 fps)."
+ },
+ "supersedes": {
+  "branch": "m/domain-adapt",
+  "pr": 121,
+  "n_ood": 60
+ },
+ "device": "CPU (numpy/sklearn); GPU not used",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_domain_adapt160/run_z1_160.py",
+ "experiment": "Z1.02_160",
+ "title": "Unsupervised alignment + per-clip normalisation (160)",
+ "alignment": {
+  "methods": [
+   "raw",
+   "domain_std",
+   "domain_whiten (ZCA per domain)",
+   "coral_s2t",
+   "coral_t2s"
+  ],
+  "no_labels_used": true,
+  "target_distribution": "unlabelled OOD-160 features (160)"
+ },
+ "caveat": "OOD n_bad=22 exploratory. Per-clip norm fitted on IndEgo clips; OOD has ~1 window/factory so per-factory norm is degenerate -> OOD block normalised globally. Native-30fps view not recomputed for q2.",
+ "rows": [
+  {
+   "method": "raw \u00b7 OOD=10fps",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood160_auroc": 0.5862977602108037,
+   "ood160_balacc": 0.5247035573122529,
+   "ood160_ci95_factory_grouped": [
+    0.47467543005517693,
+    0.7097563180875932
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.4653704044117647,
+    0.7034537099384531
+   ],
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-160"
+  },
+  {
+   "method": "domain_std \u00b7 OOD=10fps",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood160_auroc": 0.4528985507246377,
+   "ood160_balacc": 0.4980237154150198,
+   "ood160_ci95_factory_grouped": [
+    0.3289024582188645,
+    0.5818272587627425
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.320816786975697,
+    0.5811638327205882
+   ],
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-160"
+  },
+  {
+   "method": "domain_whiten \u00b7 OOD=10fps",
+   "indego_auroc": 0.7509999999999999,
+   "indego_balacc": 0.72,
+   "ood160_auroc": 0.522068511198946,
+   "ood160_balacc": 0.5806982872200264,
+   "ood160_ci95_factory_grouped": [
+    0.4090883554647599,
+    0.6384959350381489
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.39160012637867647,
+    0.6525264781859931
+   ],
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-160"
+  },
+  {
+   "method": "coral_s2t \u00b7 OOD=10fps",
+   "indego_auroc": 0.5996,
+   "indego_balacc": 0.565,
+   "ood160_auroc": 0.4407114624505929,
+   "ood160_balacc": 0.43083003952569165,
+   "ood160_ci95_factory_grouped": [
+    0.34544913419913414,
+    0.528659169550173
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.325117509787492,
+    0.5616033592435193
+   ],
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-160"
+  },
+  {
+   "method": "coral_t2s \u00b7 OOD=10fps",
+   "indego_auroc": 0.7744000000000001,
+   "indego_balacc": 0.765,
+   "ood160_auroc": 0.4934123847167325,
+   "ood160_balacc": 0.4897891963109354,
+   "ood160_ci95_factory_grouped": [
+    0.40943696596786483,
+    0.5802533365786378
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.37802709148727986,
+    0.6101202849279584
+   ],
+   "note": "unsupervised alignment (no OOD labels); CORAL target = unlabelled OOD-160"
+  },
+  {
+   "method": "perclip_z \u00b7 OOD=10fps (global target norm)",
+   "indego_auroc": 0.5878,
+   "indego_balacc": 0.5700000000000001,
+   "ood160_auroc": 0.36363636363636365,
+   "ood160_balacc": 0.4153491436100132,
+   "ood160_ci95_factory_grouped": [
+    0.23926848370927317,
+    0.4630186097427476
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.24503478360169004,
+    0.49609441972486423
+   ],
+   "note": "IndEgo z/rank-normed within each clip (pallet/pallet2 shift removed); OOD block normalised globally (~1 window/factory)"
+  },
+  {
+   "method": "perclip_rank \u00b7 OOD=10fps (global target norm)",
+   "indego_auroc": 0.5262,
+   "indego_balacc": 0.5349999999999999,
+   "ood160_auroc": 0.4614624505928854,
+   "ood160_balacc": 0.4199604743083004,
+   "ood160_ci95_factory_grouped": [
+    0.35768596044169393,
+    0.5747227726696258
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.3514107142857143,
+    0.577781127684333
+   ],
+   "note": "IndEgo z/rank-normed within each clip (pallet/pallet2 shift removed); OOD block normalised globally (~1 window/factory)"
+  },
+  {
+   "method": "stable8+domain_whiten \u00b7 OOD=10fps",
+   "indego_auroc": 0.5852,
+   "indego_balacc": 0.475,
+   "ood160_auroc": 0.5760869565217391,
+   "ood160_balacc": 0.6096837944664031,
+   "ood160_ci95_factory_grouped": [
+    0.46755430092059846,
+    0.6948018462394852
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.4539894998287084,
+    0.6953583994708995
+   ],
+   "note": "sign-stable features + unsupervised alignment"
+  },
+  {
+   "method": "stable8+coral_s2t \u00b7 OOD=10fps",
+   "indego_auroc": 0.5630000000000001,
+   "indego_balacc": 0.5349999999999999,
+   "ood160_auroc": 0.6241765480895917,
+   "ood160_balacc": 0.5411725955204216,
+   "ood160_ci95_factory_grouped": [
+    0.4964795246456792,
+    0.7403963414634146
+   ],
+   "ood160_ci95_window_optimistic": [
+    0.48710492849879644,
+    0.746180311150216
+   ],
+   "note": "sign-stable features + unsupervised alignment"
+  }
+ ]
+}

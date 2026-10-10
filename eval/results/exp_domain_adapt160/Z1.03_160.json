@@ -1,0 +1,163 @@
+{
+ "n_ood": 160,
+ "n_good_ood": 138,
+ "n_bad_ood": 22,
+ "n_factories": 47,
+ "n_indego": 150,
+ "label_source": {
+  "indego": "human (labels/manifest_gold.json, single labeller, n=150: 100 good / 50 bad)",
+  "ood": "human (labels/ood160_labels.json, single labeller, n=160: 138 good / 22 bad, 47 factories; merge q1=60 + q2=100)"
+ },
+ "protocol": {
+  "indego": "leave-one-clip-out (LOCO) over 7 IndEgo clips; clip-bootstrap CI (2000)",
+  "ood": "head fit on IndEgo (all 7 clips); OOD-160 evaluation only. FACTORY-GROUPED bootstrap CI (honest, n_boot=2000, seed=0); window bootstrap kept as the optimistic comparison. 10 fps-effective view for all 160 (q2 transcodes are natively 10 fps)."
+ },
+ "supersedes": {
+  "branch": "m/domain-adapt",
+  "pr": 121,
+  "n_ood": 60
+ },
+ "device": "CPU (numpy/sklearn); GPU not used",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_domain_adapt160/run_z1_160.py",
+ "experiment": "Z1.03_160",
+ "title": "Few-shot calibration curve + honest self-training (160)",
+ "fewshot_protocol": "factory-grouped: whole factories are either train or test; k = sampled labelled windows; C by inner grouped CV; test = all remaining factories; POST-HOC (fits on OOD labels)",
+ "self_train_protocol": "head trained on IndEgo; pseudo-label high-confidence unlabelled Ego10K corpus windows (E8, n=1546); add once with weight 0.5; evaluate on OOD-160 (no OOD labels used)",
+ "fewshot_curve": [
+  {
+   "k": 5,
+   "view": "10fps",
+   "repeats": 30,
+   "auroc_mean": 0.5230701947505426,
+   "auroc_std": 0.16950820823641438,
+   "frac_gt_0.6": 0.43333333333333335,
+   "n_train_mean": 9.0,
+   "min_n_bad_train": 1,
+   "class_weight": "balanced"
+  },
+  {
+   "k": 12,
+   "view": "10fps",
+   "repeats": 44,
+   "auroc_mean": 0.5889109057351374,
+   "auroc_std": 0.1652369398309901,
+   "frac_gt_0.6": 0.6136363636363636,
+   "n_train_mean": 14.386363636363637,
+   "min_n_bad_train": 1,
+   "class_weight": "balanced"
+  },
+  {
+   "k": 24,
+   "view": "10fps",
+   "repeats": 56,
+   "auroc_mean": 0.6298828105993495,
+   "auroc_std": 0.13057952665573347,
+   "frac_gt_0.6": 0.6607142857142857,
+   "n_train_mean": 27.5,
+   "min_n_bad_train": 1,
+   "class_weight": "balanced"
+  },
+  {
+   "k": 48,
+   "view": "10fps",
+   "repeats": 60,
+   "auroc_mean": 0.663770868272216,
+   "auroc_std": 0.08312098610723058,
+   "frac_gt_0.6": 0.7666666666666667,
+   "n_train_mean": 50.03333333333333,
+   "min_n_bad_train": 3,
+   "class_weight": "balanced"
+  },
+  {
+   "k": 80,
+   "view": "10fps",
+   "repeats": 60,
+   "auroc_mean": 0.6534320965653141,
+   "auroc_std": 0.091356988158219,
+   "frac_gt_0.6": 0.7166666666666667,
+   "n_train_mean": 81.91666666666667,
+   "min_n_bad_train": 4,
+   "class_weight": "balanced"
+  }
+ ],
+ "self_training": [
+  {
+   "method": "self-train\u00b7raw",
+   "tau": 0.8,
+   "view": "10fps",
+   "n_pseudo": 1520,
+   "pseudo_pos": 191,
+   "ood160_auroc": 0.5754281949934124,
+   "ood160_balacc": 0.5573122529644269,
+   "ood160_ci95_factory_grouped": [
+    0.46516476141373914,
+    0.6953101526246656
+   ],
+   "source_head_ood160_auroc": 0.5862977602108037,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5"
+  },
+  {
+   "method": "self-train\u00b7raw",
+   "tau": 0.9,
+   "view": "10fps",
+   "n_pseudo": 1487,
+   "pseudo_pos": 174,
+   "ood160_auroc": 0.5737812911725956,
+   "ood160_balacc": 0.5573122529644269,
+   "ood160_ci95_factory_grouped": [
+    0.4626252052545156,
+    0.6930384661569867
+   ],
+   "source_head_ood160_auroc": 0.5862977602108037,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5"
+  },
+  {
+   "method": "self-train\u00b7domain_std",
+   "tau": 0.8,
+   "view": "10fps",
+   "n_pseudo": 1034,
+   "pseudo_pos": 598,
+   "ood160_auroc": 0.5685111989459816,
+   "ood160_balacc": 0.5612648221343873,
+   "ood160_ci95_factory_grouped": [
+    0.4268270347538641,
+    0.7000135501355014
+   ],
+   "source_head_ood160_auroc": 0.5247035573122529,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5"
+  },
+  {
+   "method": "self-train\u00b7domain_std",
+   "tau": 0.9,
+   "view": "10fps",
+   "n_pseudo": 779,
+   "pseudo_pos": 456,
+   "ood160_auroc": 0.5474308300395256,
+   "ood160_balacc": 0.5503952569169961,
+   "ood160_ci95_factory_grouped": [
+    0.4028482142857142,
+    0.6815222872053524
+   ],
+   "source_head_ood160_auroc": 0.5247035573122529,
+   "note": "pseudo-labels from Ego10K corpus (no human labels); weighted 0.5"
+  }
+ ],
+ "recommendation": {
+  "best_zero_shot": {
+   "method": "raw \u00b7 sharpness-3 \u00b7 OOD=10fps",
+   "ood160_auroc": 0.7078392621870883,
+   "ood160_ci95_factory_grouped": [
+    0.5882697163947165,
+    0.8227023281596453
+   ]
+  },
+  "best_fewshot": {
+   "k": 48,
+   "view": "10fps",
+   "ood160_auroc_mean": 0.663770868272216,
+   "ood160_auroc_std": 0.08312098610723058
+  }
+ },
+ "caveat": "n_bad=22, 47 factories (~1 window/factory): few-shot and OOD estimates are exploratory. The few-shot curve is POST-HOC; self-training uses no OOD labels."
+}
