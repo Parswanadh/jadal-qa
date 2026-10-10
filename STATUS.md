@@ -1,6 +1,6 @@
 # STATUS — pod wave (lead agent)
 
-Updated: 2026-10-10 20:45 IST (15:15 UTC) · branch `pod/kit` (lead) · A40 pod
+Updated: 2026-10-10 20:53 IST (15:23 UTC) · branch `pod/kit` (lead) · A40 pod
 
 ## Environment (verified this session)
 - opencode v2.0.26; agents present: lead, experimenter, explorer, reviewer, tester, docs, infra.
@@ -27,7 +27,11 @@ Updated: 2026-10-10 20:45 IST (15:15 UTC) · branch `pod/kit` (lead) · A40 pod
 - GPU slot helper `tools/pod/gpu_run.sh`; artifact dirs under `/workspace/artifacts/`.
 
 ## Running
-- A1–A6 (headless workers, logs in `/workspace/logs/<name>.log`); A7 docs.
+- A1–A7 (headless workers, logs in `/workspace/logs/<name>.log`). At 20:52 IST all seven are writing files:
+  exp-mosaic 1, exp-fps-pod 10, exp-regimes-pod 12, exp-motion-cue 6, exp-domain-adapt 7, prwatch 7, pod-docs 12.
+- Lead tools added: `tools/pod/gpu_run.sh` (2 GPU slots), `tools/pod/union_registry.py`,
+  `tools/pod/collect_results.py` (reads result files; flags done-without-file).
+- `pod/base` reproduces the LOCO baseline 0.810 from the ported code (verified).
 
 ## Next (batch B, after A reports)
 - E7 cost model; E8 re-score 1,546 Egocentric-10K windows into the PoC contract format (descriptive only);
