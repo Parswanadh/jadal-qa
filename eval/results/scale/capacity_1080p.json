@@ -1,0 +1,183 @@
+{
+ "generated_utc": "2026-10-10T10:39:31.127436+00:00",
+ "device_class": "laptop workstation (x86-64, RTX 4070) \u2014 NOT a Pi; Pi-class numbers are NOT claimed here",
+ "machine": {
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "cpu_count": 22,
+  "mem": "MemTotal:       15865800 kB",
+  "cpu_model": [
+   "model name\t: Intel(R) Core(TM) Ultra 7 155H"
+  ],
+  "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU, 595.99.02, 8188 MiB",
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+ },
+ "proxy_note": "1080p30 H.265 @3.5 Mb/s proxies (publisher bitrate); CPU/NVDEC RTF transfers by res/codec/bitrate; real-corpus sizes/durations NOT measured (download blocked).",
+ "per_file": {
+  "proxy_synth_motion": {
+   "path": "eval/results/scale/_proxy/proxy_synth_motion.mp4",
+   "proxy": true,
+   "ffprobe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "hevc",
+      "width": 1920,
+      "height": 1080,
+      "r_frame_rate": "30/1",
+      "avg_frame_rate": "30/1",
+      "duration": "60.000000",
+      "bit_rate": "3513230"
+     }
+    ],
+    "format": {
+     "duration": "60.000000",
+     "size": "26373399",
+     "bit_rate": "3516453"
+    }
+   },
+   "full_1080p_cpu1": {
+    "label": "full_1080p_cpu1",
+    "wall_s": 11.64,
+    "video_s": 60.0,
+    "rtf": 5.15
+   },
+   "scaled_854x480_cpu1": {
+    "label": "scaled_854x480_cpu1",
+    "wall_s": 15.26,
+    "video_s": 60.0,
+    "rtf": 3.93
+   },
+   "scaled_160x90_cpu1": {
+    "label": "scaled_160x90_cpu1",
+    "wall_s": 14.0,
+    "video_s": 60.0,
+    "rtf": 4.28
+   },
+   "full_1080p_nvdec": {
+    "label": "full_1080p_nvdec",
+    "wall_s": 105.63,
+    "video_s": 60.0,
+    "rtf": 0.57
+   }
+  },
+  "proxy_indego_assembly": {
+   "path": "eval/results/scale/_proxy/proxy_indego_assembly.mp4",
+   "proxy": true,
+   "ffprobe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "hevc",
+      "width": 1920,
+      "height": 1080,
+      "r_frame_rate": "30/1",
+      "avg_frame_rate": "30/1",
+      "duration": "60.000000",
+      "bit_rate": "3539409"
+     },
+     {
+      "codec_name": "aac",
+      "r_frame_rate": "0/0",
+      "avg_frame_rate": "0/0",
+      "duration": "60.000000",
+      "bit_rate": "130076"
+     }
+    ],
+    "format": {
+     "duration": "60.000000",
+     "size": "27691255",
+     "bit_rate": "3692167"
+    }
+   },
+   "full_1080p_cpu1": {
+    "label": "full_1080p_cpu1",
+    "wall_s": 12.1,
+    "video_s": 60.0,
+    "rtf": 4.96
+   },
+   "scaled_854x480_cpu1": {
+    "label": "scaled_854x480_cpu1",
+    "wall_s": 15.6,
+    "video_s": 60.0,
+    "rtf": 3.85
+   },
+   "scaled_160x90_cpu1": {
+    "label": "scaled_160x90_cpu1",
+    "wall_s": 12.47,
+    "video_s": 60.0,
+    "rtf": 4.81
+   },
+   "full_1080p_nvdec": {
+    "label": "full_1080p_nvdec",
+    "wall_s": 492.12,
+    "video_s": 60.0,
+    "rtf": 0.12
+   }
+  },
+  "proxy_indego_pallet": {
+   "path": "eval/results/scale/_proxy/proxy_indego_pallet.mp4",
+   "proxy": true,
+   "ffprobe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "hevc",
+      "width": 1920,
+      "height": 1080,
+      "r_frame_rate": "30/1",
+      "avg_frame_rate": "30/1",
+      "duration": "60.000000",
+      "bit_rate": "3458232"
+     },
+     {
+      "codec_name": "aac",
+      "r_frame_rate": "0/0",
+      "avg_frame_rate": "0/0",
+      "duration": "60.000000",
+      "bit_rate": "128263"
+     }
+    ],
+    "format": {
+     "duration": "60.000000",
+     "size": "27008602",
+     "bit_rate": "3601146"
+    }
+   },
+   "full_1080p_cpu1": {
+    "label": "full_1080p_cpu1",
+    "wall_s": 10.27,
+    "video_s": 60.0,
+    "rtf": 5.84
+   },
+   "scaled_854x480_cpu1": {
+    "label": "scaled_854x480_cpu1",
+    "wall_s": 12.64,
+    "video_s": 60.0,
+    "rtf": 4.75
+   },
+   "scaled_160x90_cpu1": {
+    "label": "scaled_160x90_cpu1",
+    "wall_s": 11.98,
+    "video_s": 60.0,
+    "rtf": 5.01
+   },
+   "full_1080p_nvdec": {
+    "label": "full_1080p_nvdec",
+    "wall_s": 144.32,
+    "video_s": 60.0,
+    "rtf": 0.42
+   }
+  }
+ },
+ "disk_read": {
+  "MB": 100.7,
+  "wall_s": 0.03,
+  "MB_s": 2964.0
+ },
+ "transcode_to_480p_h264": {
+  "single_core_wall_s": 21.4,
+  "single_core_rtf": 2.8,
+  "4way_parallel_wall_s": 11.4,
+  "4way_parallel_rtf": 21.0
+ }
+}

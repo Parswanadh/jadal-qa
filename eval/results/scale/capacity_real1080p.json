@@ -1,0 +1,167 @@
+{
+ "generated_utc": "2026-10-10T11:39:35.198275+00:00",
+ "device_class": "laptop workstation (x86-64, RTX 4070) \u2014 NOT a Pi; Pi-class numbers are NOT claimed here",
+ "machine": {
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "cpu_count": 22,
+  "mem": "MemTotal:       15865800 kB",
+  "cpu_model": [
+   "model name\t: Intel(R) Core(TM) Ultra 7 155H"
+  ],
+  "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU, 595.99.02, 8188 MiB"
+ },
+ "codec_note": "real Egocentric-10K files per ffprobe below (publisher declares H.265/1080p30)",
+ "per_file": {
+  "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4": {
+   "ffprobe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "hevc",
+      "width": 1920,
+      "height": 1080,
+      "avg_frame_rate": "30/1",
+      "duration": "1199.866667"
+     }
+    ],
+    "format": {
+     "duration": "1199.866667",
+     "size": "571146240",
+     "bit_rate": "3803148"
+    }
+   },
+   "video_s": 1199.87,
+   "full_1080p_cpu1": {
+    "label": "full_1080p_cpu1",
+    "wall_s": 51.84,
+    "video_s": 120.0,
+    "rtf": 2.31,
+    "sample_s": 120.0
+   },
+   "scaled_854x480_cpu1": {
+    "label": "scaled_854x480_cpu1",
+    "wall_s": 67.75,
+    "video_s": 120.0,
+    "rtf": 1.77,
+    "sample_s": 120.0
+   },
+   "scaled_160x90_cpu1": {
+    "label": "scaled_160x90_cpu1",
+    "wall_s": 72.62,
+    "video_s": 120.0,
+    "rtf": 1.65,
+    "sample_s": 120.0
+   },
+   "full_1080p_nvdec": {
+    "label": "full_1080p_nvdec",
+    "wall_s": 2.38,
+    "video_s": 120.0,
+    "rtf": 50.38
+   }
+  },
+  "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_026/worker_005/factory026_worker005_00111.mp4": {
+   "ffprobe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "hevc",
+      "width": 1920,
+      "height": 1080,
+      "avg_frame_rate": "30/1",
+      "duration": "179.766667"
+     }
+    ],
+    "format": {
+     "duration": "179.766667",
+     "size": "89956083",
+     "bit_rate": "4003237"
+    }
+   },
+   "video_s": 179.77,
+   "full_1080p_cpu1": {
+    "label": "full_1080p_cpu1",
+    "wall_s": 57.08,
+    "video_s": 120.0,
+    "rtf": 2.1,
+    "sample_s": 120.0
+   },
+   "scaled_854x480_cpu1": {
+    "label": "scaled_854x480_cpu1",
+    "wall_s": 59.51,
+    "video_s": 120.0,
+    "rtf": 2.02,
+    "sample_s": 120.0
+   },
+   "scaled_160x90_cpu1": {
+    "label": "scaled_160x90_cpu1",
+    "wall_s": 59.61,
+    "video_s": 120.0,
+    "rtf": 2.01,
+    "sample_s": 120.0
+   },
+   "full_1080p_nvdec": {
+    "label": "full_1080p_nvdec",
+    "wall_s": 2.34,
+    "video_s": 120.0,
+    "rtf": 51.29
+   }
+  },
+  "/home/parshu/projects/awing/data/ego10k_scale/clips/factory_046/worker_008/factory046_worker008_00618.mp4": {
+   "ffprobe": {
+    "programs": [],
+    "streams": [
+     {
+      "codec_name": "hevc",
+      "width": 1920,
+      "height": 1080,
+      "avg_frame_rate": "30/1",
+      "duration": "179.733333"
+     }
+    ],
+    "format": {
+     "duration": "179.733333",
+     "size": "89938537",
+     "bit_rate": "4003198"
+    }
+   },
+   "video_s": 179.73,
+   "full_1080p_cpu1": {
+    "label": "full_1080p_cpu1",
+    "wall_s": 103.95,
+    "video_s": 120.0,
+    "rtf": 1.15,
+    "sample_s": 120.0
+   },
+   "scaled_854x480_cpu1": {
+    "label": "scaled_854x480_cpu1",
+    "wall_s": 149.91,
+    "video_s": 120.0,
+    "rtf": 0.8,
+    "sample_s": 120.0
+   },
+   "scaled_160x90_cpu1": {
+    "label": "scaled_160x90_cpu1",
+    "wall_s": 127.03,
+    "video_s": 120.0,
+    "rtf": 0.94,
+    "sample_s": 120.0
+   },
+   "full_1080p_nvdec": {
+    "label": "full_1080p_nvdec",
+    "wall_s": 2.07,
+    "video_s": 120.0,
+    "rtf": 57.94
+   }
+  }
+ },
+ "disk_read": {
+  "MB": 779.5,
+  "wall_s": 6.75,
+  "MB_s": 115.5
+ },
+ "transcode_to_480p_h264_1core": {
+  "wall_s": 122.7,
+  "video_s": 120.0,
+  "rtf": 0.98
+ }
+}
