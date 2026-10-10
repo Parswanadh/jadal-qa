@@ -67,13 +67,24 @@ ADOPTED = {
         "early_exit": "E3.03",
         "pixel_view": "E1.01",
         "eg2_view": "E1.02",
-        "fusion_and_thresholds": "caches/ensemble/ensemble_v1.json",
+        "fusion_and_thresholds": "configs/frozen/ensemble_v1.prereg.json (sha256 4da1068a…)",
         "cost": "E3.04",
     },
 }
 
 DEFAULT_BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
-FROZEN_ENSEMBLE_REL = "caches/ensemble/ensemble_v1.json"
+
+# --- pre-registered frozen model (fail closed) -----------------------------
+# The copies of ensemble_v1.json that lived on disk were path-remapped AFTER the
+# freeze (embed_command / pixel_command / embed_model_dir) and no longer hash to
+# the recorded value.  The byte-exact recovered file is
+# configs/frozen/ensemble_v1.prereg.json (git blob 0ede3b83... @ b21e3af),
+# recovered by LB4 (PR #97).  We verify its sha256 on every load and refuse to
+# fall back to the remapped configs/ensemble_v1.json.
+FROZEN_PREREG_SHA256 = "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31"
+FROZEN_PREREG_REL = os.path.join("configs", "frozen", "ensemble_v1.prereg.json")
+LEGACY_REMAPPED_REL = os.path.join("configs", "ensemble_v1.json")  # NOT pre-registered
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # label/threshold constants of the frozen artifact (read back and asserted)
 FROZEN_EXPECTED = {
@@ -184,11 +195,56 @@ def cost_ratio(key: str = "every_2_4s_speedup") -> float:
     return float(ADOPTED["cost"][key])
 
 
-def load_frozen_ensemble(bundle: str | None = None) -> dict:
-    """Load the frozen ensemble constants (read-only, no secrets)."""
+def sha256_file(path: str) -> str:
+    """Hex sha256 of a file (used to pin the pre-registered model)."""
+    import hashlib
+
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def resolve_frozen_prereg(bundle: str | None = None, path: str | None = None) -> str:
+    """Locate the byte-exact pre-registered config; never fall back to the remapped copy.
+
+    Order: explicit ``path`` -> repo ``configs/frozen/ensemble_v1.prereg.json``
+    -> bundle ``configs/frozen/ensemble_v1.prereg.json``.  If none exists we
+    raise instead of silently loading the path-remapped ``configs/ensemble_v1.json``.
+    """
+    if path is not None:
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"frozen ensemble not found: {path}")
+        return path
     bundle = DEFAULT_BUNDLE if bundle is None else bundle
-    path = os.path.join(bundle, FROZEN_ENSEMBLE_REL)
-    with open(path, "r", encoding="utf-8") as fh:
+    for cand in (os.path.join(_REPO_ROOT, FROZEN_PREREG_REL),
+                 os.path.join(bundle, FROZEN_PREREG_REL)):
+        if os.path.exists(cand):
+            return cand
+    raise FileNotFoundError(
+        "pre-registered frozen ensemble not found in "
+        f"{os.path.join(_REPO_ROOT, FROZEN_PREREG_REL)!r} or "
+        f"{os.path.join(bundle, FROZEN_PREREG_REL)!r}; refusing to fall back to "
+        f"the path-remapped {LEGACY_REMAPPED_REL!r} (wrong failure direction for a "
+        "frozen model). Recover it from b/ood-ready (PR #97) or pass path=.")
+
+
+def load_frozen_ensemble(bundle: str | None = None, path: str | None = None,
+                         expected_sha256: str | None = FROZEN_PREREG_SHA256) -> dict:
+    """Load the pre-registered frozen ensemble constants, verifying sha256 first.
+
+    Fails closed: a hash mismatch or a missing file raises.  Pass
+    ``expected_sha256=None`` only for an explicit non-frozen override.
+    """
+    resolved = resolve_frozen_prereg(bundle, path)
+    if expected_sha256 is not None:
+        digest = sha256_file(resolved)
+        if digest != expected_sha256:
+            raise ValueError(
+                f"frozen ensemble sha256 mismatch: {digest} != {expected_sha256} "
+                f"({resolved}); refusing to use a file that is not the pre-registered model")
+    with open(resolved, "r", encoding="utf-8") as fh:
         ens = json.load(fh)
     if ens.get("name") != FROZEN_EXPECTED["name"]:
         raise ValueError(f"frozen ensemble mismatch: name={ens.get('name')!r}")
@@ -220,6 +276,8 @@ def policy_fingerprint() -> dict:
         "clip_bad_fraction_threshold": ADOPTED["clip_bad_fraction_threshold"],
         "descriptive_only": ADOPTED["descriptive_only"],
         "status": ADOPTED["status"],
+        "frozen_ensemble_sha256": FROZEN_PREREG_SHA256,
+        "frozen_ensemble_path": FROZEN_PREREG_REL,
         "cost": dict(ADOPTED["cost"]),
         "provenance": dict(ADOPTED["provenance"]),
     }

@@ -281,6 +281,16 @@ def main() -> int:
         "policy_label": POLICY_LABEL,
         "device": "CPU only (torch.cuda not used; cached features)",
         "deterministic": True,
+        "frozen_ensemble_sha256_verified": policy.FROZEN_PREREG_SHA256,
+        "frozen_ensemble_path": policy.FROZEN_PREREG_REL,
+        "independent_verification": {
+            "source": "LB4 independent verification, PR #98",
+            "result": "REPRODUCED: fused 4 s AUROC 0.8736 at C_eg2=0.003 vs 0.8734 at the published C_eg2=0.01; paired clip-bootstrap delta -0.0002, CI [-0.0133, +0.0095]; C-insensitive (+/-0.0002)",
+        },
+        "framing": {
+            "do_not_read_as_improvement": "fused_4s AUROC is NOT comparable to the published 0.848: that is a full-window inner-OOF number (the same table gives 0.8514 at C=0.003), not a like-for-like 4 s-LOCO comparator",
+            "c_sensitivity": "C-insensitive (+/-0.0002) per independent verification PR #98",
+        },
         "generated_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "git_sha": _sh(["git", "rev-parse", "HEAD"]),
         "metrics": metrics,

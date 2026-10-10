@@ -107,6 +107,31 @@ def test_frozen_ensemble_loads_and_dims_match():
     assert len(ens["views"]["pixel"]["coef"]) == 26
     assert len(ens["views"]["eg2"]["coef"]) == 768
     assert list(ens["fusion"]["weights"]) == [0.5, 0.5]
+    # default resolution must be the byte-exact pre-registered file, not the
+    # path-remapped configs/ensemble_v1.json
+    resolved = policy.resolve_frozen_prereg(BUNDLE)
+    assert resolved.endswith(policy.FROZEN_PREREG_REL)
+    assert policy.sha256_file(resolved) == policy.FROZEN_PREREG_SHA256
+
+
+def test_frozen_ensemble_fails_closed_on_tampered_bytes(tmp_path):
+    src = os.path.join(REPO_ROOT, policy.FROZEN_PREREG_REL)
+    if not os.path.exists(src):
+        pytest.skip("pre-registered frozen file not present")
+    data = open(src, "rb").read()
+    tampered = data.replace(b'"ensemble_v1"', b'"ensemble_vX"')
+    assert tampered != data  # the replacement really happened
+    bad = tmp_path / "ensemble_v1.prereg.json"
+    bad.write_bytes(tampered)
+    with pytest.raises(ValueError, match="sha256 mismatch"):
+        policy.load_frozen_ensemble(path=str(bad))
+
+
+def test_frozen_ensemble_missing_file_raises_and_never_falls_back(tmp_path):
+    with pytest.raises(FileNotFoundError, match="frozen ensemble not found"):
+        policy.load_frozen_ensemble(path=str(tmp_path / "nope.json"))
+    with pytest.raises(FileNotFoundError, match="refusing to fall back"):
+        policy.resolve_frozen_prereg(bundle=str(tmp_path / "empty_bundle"))
 
 
 @needs_bundle
