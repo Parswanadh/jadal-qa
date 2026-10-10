@@ -47,13 +47,43 @@ class KeyHandlingTest(unittest.TestCase):
                             mac_mod.mac_for(HASH, key=b"other"))
 
     def test_key_never_read_from_a_repo_file(self) -> None:
-        # The module exposes no file-based key loading at all: the only
-        # inputs are the explicit argument and the env var.
+        # Source-level guarantee (not a name check): the module must not
+        # open/read any file and must import nothing beyond stdlib hmac/os.
+        # The only key inputs are the explicit argument and the env var.
+        import ast
+        from pathlib import Path
+        source = Path(mac_mod.__file__).read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        opened = [n for n in ast.walk(tree)
+                  if isinstance(n, ast.Call)
+                  and ((isinstance(n.func, ast.Name) and n.func.id == "open")
+                       or (isinstance(n.func, ast.Attribute)
+                           and n.func.attr in ("open", "read", "read_text",
+                                               "read_bytes")))]
+        self.assertEqual(opened, [])
+        imports = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                imports.update(a.name.split(".")[0] for a in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                imports.add(node.module.split(".")[0])
+        self.assertLessEqual(imports, {"hmac", "os", "__future__"})
         os.environ.pop(mac_mod.MAC_KEY_ENV, None)
         self.assertIsNone(mac_mod.load_key())
-        names = [n for n in dir(mac_mod) if not n.startswith("__")
-                 and ("file" in n.lower() or "path" in n.lower())]
-        self.assertEqual(names, [])
+
+    def test_whitespace_only_explicit_key_counts_as_missing(self) -> None:
+        self.assertIsNone(mac_mod.load_key(explicit="   "))
+        self.assertIsNone(mac_mod.load_key(explicit=b"   "))
+        self.assertIsNone(mac_mod.load_key(explicit=""))
+        with self.assertRaises(mac_mod.MacKeyMissing):
+            mac_mod.require_key(explicit="  ")
+
+    def test_explicit_key_bytes_used_verbatim(self) -> None:
+        # Surrounding spaces are part of the key (not stripped); only
+        # all-whitespace/empty counts as missing.
+        self.assertEqual(mac_mod.load_key(explicit=" ab "), b" ab ")
+        self.assertNotEqual(mac_mod.mac_for(HASH, key=b" ab "),
+                            mac_mod.mac_for(HASH, key=b"ab"))
 
 
 class MacTest(unittest.TestCase):

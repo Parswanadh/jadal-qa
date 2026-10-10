@@ -76,29 +76,21 @@ def build_parser() -> argparse.ArgumentParser:
 HASHED_EXCLUDED = frozenset({"receipt_sha256", "receipt_id", "created_utc"})
 
 
-def _diff_bodies(old, new, prefix: str = "") -> list[str]:
+def _stored_vs_fresh_diff(stored: dict, fresh: dict) -> list[str]:
     """Dotted field paths where two stripped bodies differ (sorted).
 
-    Local differ with the same path conventions as
-    ``jadal.receipts.verify_receipt`` (``a.b``, ``a[0].b``); used to compare
-    the stored file body against the fresh pipeline output captured during
-    ``--rerun``, which ``reverify_receipt`` itself does not return.
+    Reuses ``jadal.receipts._diff_paths`` so path conventions (``a.b``,
+    ``a[0].b``) cannot drift from the receipt module; degrades to [] when
+    the helper is unavailable or the payloads are unusable.
     """
-    from collections.abc import Mapping
-    paths: list[str] = []
-    if isinstance(old, Mapping) and isinstance(new, Mapping):
-        for key in sorted(set(old.keys()) | set(new.keys())):
-            path = f"{prefix}.{key}" if prefix else str(key)
-            if key not in old or key not in new:
-                paths.append(path)
-            else:
-                paths.extend(_diff_bodies(old[key], new[key], path))
-    elif isinstance(old, list) and isinstance(new, list) and len(old) == len(new):
-        for i, (left, right) in enumerate(zip(old, new)):
-            paths.extend(_diff_bodies(left, right, f"{prefix}[{i}]"))
-    elif old != new:
-        paths.append(prefix)
-    return paths
+    try:
+        from jadal.receipts import _diff_paths
+    except ImportError:
+        return []
+    try:
+        return sorted(_diff_paths(_strip(stored), _strip(fresh)))
+    except Exception:
+        return []
 
 
 def _strip(receipt: dict) -> dict:
@@ -197,7 +189,14 @@ def check_mac(receipt: dict, mac_hex: str | None) -> dict:
     if not isinstance(stored_hash, str):
         return {"checked": True, "ok": False,
                 "reason": "receipt has no receipt_sha256 to authenticate"}
-    ok = mac_mod.verify_mac(stored_hash, mac_hex)
+    try:
+        ok = mac_mod.verify_mac(stored_hash, mac_hex)
+    except ValueError:
+        # Edited receipt whose stored hash is not 64-hex (exactly the
+        # adversarial input this tool exists to handle): a clean MISMATCH,
+        # never a traceback. The hash check already FAILs, so exit stays 1.
+        return {"checked": True, "ok": False,
+                "reason": "receipt hash malformed — cannot authenticate"}
     return {"checked": True, "ok": bool(ok),
             "reason": "match" if ok else "MISMATCH"}
 
@@ -254,22 +253,19 @@ def check_rerun(receipt: dict, clip_path: str) -> dict:
     receipts_mod.verify_receipt = _spy  # type: ignore[assignment]
     try:
         result = pipeline_mod.reverify_receipt(receipt, segment, Config())
-    except RuntimeError as exc:
-        # e.g. "no L0 signals implementation ... JADAL_USE_STUBS is not '1'"
+    except Exception as exc:
+        # ANY failure here means "cannot re-run" (exit 3): a missing
+        # implementation, a malformed receipt block, or a refactored
+        # pipeline raising KeyError/TypeError/.... Narrowness buys nothing;
+        # a traceback would also collide with exit 1 ("mismatch").
         raise _CannotRerun(f"cannot re-run: {exc}") from exc
-    except (OSError, ValueError) as exc:
-        raise _CannotRerun(f"re-run failed: {exc}") from exc
     finally:
         receipts_mod.verify_receipt = orig_verify  # type: ignore[assignment]
     if not isinstance(result, dict) or "match" not in result:
         raise _CannotRerun("re-run returned an unusable result; refusing to guess")
     field_diff: list[str] = []
     if isinstance(captured.get("fresh"), dict):
-        try:
-            field_diff = sorted(_diff_bodies(
-                _strip(receipt), _strip(captured["fresh"])))
-        except Exception:
-            field_diff = []
+        field_diff = _stored_vs_fresh_diff(receipt, captured["fresh"])
     return {
         "checked": True,
         "ok": bool(result.get("match")) and not field_diff,

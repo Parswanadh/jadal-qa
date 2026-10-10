@@ -36,12 +36,21 @@ def load_key(explicit: bytes | str | None = None) -> bytes | None:
     """Return the MAC key bytes, or ``None`` when no key is configured.
 
     Precedence: explicit argument first, then ``JADAL_RECEIPT_KEY``.
-    An empty/whitespace-only env value counts as missing.
+    Explicit keys are used verbatim (no stripping of the key bytes),
+    except that an empty / whitespace-only explicit value counts as
+    missing — exactly like an empty / whitespace-only env value.
     """
     if explicit is not None:
         if isinstance(explicit, str):
-            explicit = explicit.encode("utf-8")
-        return bytes(explicit)
+            if not explicit.strip():
+                return None
+            return explicit.encode("utf-8")
+        key_bytes = bytes(explicit)
+        try:
+            text = key_bytes.decode("utf-8")
+        except ValueError:
+            return key_bytes  # non-text bytes are always a real key
+        return key_bytes if text.strip() else None
     raw = os.environ.get(MAC_KEY_ENV)
     if raw is None or not raw.strip():
         return None

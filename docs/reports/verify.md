@@ -108,3 +108,45 @@ exit=2
   real-weights re-run measured in this worktree (real L0/L1 not merged).
 - G5: A receipt with a missing `receipt_id` is treated as id-OK (matches
   `verify_receipt` semantics); a missing `receipt_sha256` is a mismatch.
+
+## Fix round 1 (review of PR #44; all Critical/Important + Minors fixed)
+
+Review verdict was SPEC: FAIL / CHANGES NEEDED with 2 Important + 3 Minor
+findings, all in owned files. No finding was rejected as wrong; the two
+reviewer probes were reproduced by new regression tests and now pass.
+
+- Important 1 (`--mac` + malformed stored hash → uncaught `ValueError`
+  traceback, exit-1 conflation): `check_mac` now catches `ValueError` from
+  `verify_mac` and reports `mac: MISMATCH (receipt hash malformed — cannot
+  authenticate)`; overall stays exit 1 via the hash check, no traceback.
+  Regression test `test_mac_with_malformed_stored_hash_is_clean_mismatch`.
+- Important 2 (`--rerun` errors outside `(RuntimeError, OSError,
+  ValueError)` escaped as traceback): `check_rerun` now wraps the
+  `reverify_receipt` call in `except Exception → _CannotRerun` (exit 3).
+  Regression test `test_unexpected_pipeline_error_is_exit_3_not_traceback`
+  (`KeyError` from a mocked pipeline → exit 3, no traceback).
+- Minor 1 (tautological key-isolation test): replaced the attribute-name
+  check with an AST source assertion — no `open(`/file-read calls and
+  imports ⊆ {hmac, os, __future__} in `jadal/receipt_mac.py`.
+- Minor 2 (duplicated differ): deleted local `_diff_bodies`; stored-vs-fresh
+  diff now reuses `jadal.receipts._diff_paths` (graceful [] fallback).
+- Minor 3 (explicit-vs-env whitespace inconsistency): whitespace-only/empty
+  explicit keys now count as missing like the env var; non-empty explicit
+  keys are used byte-verbatim (documented in `load_key`); tests pin both.
+
+Real outputs (ran 2026-10-10, this worktree, after `git merge origin/main`):
+
+```
+Ran 38 tests in 2.333s
+OK
+```
+
+```
+Ran 360 tests in 9.859s
+OK
+```
+
+Changed files in this round (owned only, `git diff --stat HEAD`):
+`jadal/receipt_mac.py`, `scripts/verify_receipt.py`,
+`tests/test_receipt_mac.py`, `tests/test_verify_cli.py`. No other worker's
+files, `config.py`, `__init__.py`, or `SPEC.md` touched.

@@ -203,6 +203,20 @@ class MacCliTest(_EnvCase):
         self.assertEqual(code, 1, out)
         self.assertIn("mac: MISMATCH", out)
 
+    def test_mac_with_malformed_stored_hash_is_clean_mismatch(self) -> None:
+        # Review Important 1: an edited receipt whose stored hash is not
+        # 64-hex must NOT escape as a traceback (which would also exit 1,
+        # colliding with "mismatch"). Clean exit 1 with the reason named.
+        os.environ["JADAL_RECEIPT_KEY"] = "unit-test-key"
+        receipt = _direct_fixture()
+        receipt["receipt_sha256"] = "xyz-not-hex"
+        code, out, err = run_cli(
+            [self.write_receipt(receipt), "--mac", "ab" * 32])
+        self.assertEqual(code, 1, out)
+        self.assertNotIn("Traceback", err)
+        self.assertIn("mac: MISMATCH", out)
+        self.assertIn("malformed", out)
+
     def test_mac_requested_without_key_is_exit_2(self) -> None:
         receipt = _direct_fixture()
         code, _, err = run_cli(
@@ -309,6 +323,20 @@ class RerunTest(_EnvCase):
             code, _, err = run_cli([path, "--clip", self.clip, "--rerun"])
         self.assertEqual(code, 3, err)
         self.assertIn("cannot re-run", err)
+
+    def test_unexpected_pipeline_error_is_exit_3_not_traceback(self) -> None:
+        # Review Important 2: ANY reverify failure (KeyError/TypeError/...)
+        # means "cannot re-run" — a traceback would exit 1, colliding with
+        # "mismatch".
+        from jadal import pipeline as pipeline_mod
+        path = self.write_receipt(copy.deepcopy(self.fixture))
+        with mock.patch.object(
+                pipeline_mod, "reverify_receipt",
+                side_effect=KeyError("refactored-internals")):
+            code, _, err = run_cli([path, "--clip", self.clip, "--rerun"])
+        self.assertEqual(code, 3, err)
+        self.assertIn("cannot re-run", err)
+        self.assertNotIn("Traceback", err)
 
 
 if __name__ == "__main__":
