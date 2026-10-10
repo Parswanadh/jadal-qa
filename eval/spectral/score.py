@@ -824,6 +824,11 @@ def synth_deg(it):
 
 def find_verdict(keywords, arm):
     """Look for the other workers' verdict reports; else NOT RUN."""
+    if arm == "D":
+        return {"status": "STOPPED by human decision (too probabilistic)",
+                "interim": "D-SmolVLM2-2.2B-Instruct 8-frame zero-shot: "
+                           "harness LOCO as-is numbers in summary arms table",
+                "note": "do not wait for D; see arms table STOPPED row"}
     cands = [
         HARNESS / "docs" / "reports" / "spectral_study.md",
         DATA / f"verdict_arm{arm}.md",
@@ -836,9 +841,12 @@ def find_verdict(keywords, arm):
         if c.exists() and c != REPORT:
             try:
                 txt = c.read_text()
-                if any(k.lower() in txt.lower() for k in keywords):
+                low = txt.lower()
+                hit = next((k for k in keywords if k.lower() in low), None)
+                if hit is not None:
+                    i = low.index(hit.lower())
                     return {"status": "FOUND", "path": str(c),
-                            "excerpt": txt[:1500]}
+                            "excerpt": txt[max(0, i - 200):i + 1300]}
             except Exception:
                 pass
     dd = load(DATA / "arms" / arm / "gold.json")
