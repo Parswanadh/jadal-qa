@@ -1,0 +1,5 @@
+/workspace/wt/m-phys-ready/tools/phys/vendor/features_phys.py:89: RuntimeWarning: invalid value encountered in sqrt
+  snr = float(np.median([m / np.sqrt(a * m + b) for m in m2]))
+/workspace/wt/m-phys-ready/tools/phys/vendor/features_phys.py:89: RuntimeWarning: invalid value encountered in sqrt
+  snr = float(np.median([m / np.sqrt(a * m + b) for m in m2]))
+n=160 features=42 errors=0 in 99.5s
