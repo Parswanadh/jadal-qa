@@ -1,0 +1,51 @@
+{
+  "label_sources": {
+    "synthetic": 1200
+  },
+  "n": 1200,
+  "per_source": {
+    "synthetic": {
+      "defect_among_accepted": {
+        "accepted": 0,
+        "bad_among_accepted": 0,
+        "upper_bound": null
+      },
+      "enrichment": {
+        "defect_rate_queue": 0.0,
+        "defect_rate_unfiltered": 0.4075,
+        "lift": null
+      },
+      "false_reject": {
+        "good_among_rejected": 0,
+        "rejected": 489,
+        "upper_bound": 0.0047
+      },
+      "n": 1200,
+      "n_labelled": 1200,
+      "qa_workload_reduction": 0.4075,
+      "review_share": 0.5925,
+      "split": {
+        "accept": 0,
+        "reject": 489,
+        "review": 711
+      },
+      "split_pct": {
+        "accept": 0.0,
+        "reject": 40.75,
+        "review": 59.25
+      }
+    }
+  },
+  "provenance": "synthetic-fixtures",
+  "split": {
+    "accept": 0,
+    "reject": 489,
+    "review": 711
+  },
+  "split_pct": {
+    "accept": 0.0,
+    "reject": 40.75,
+    "review": 59.25
+  },
+  "thresholds_version": "funnel-v1-placeholder"
+}
