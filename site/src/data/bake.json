@@ -329,8 +329,8 @@
       }
     },
     {
-      "id": "s1_threshold",
-      "label": "S1 operating threshold",
+      "id": "s1_legacy_threshold",
+      "label": "legacy threshold field in S1 receipts (never decides a verdict)",
       "value": 0.6,
       "display": "0.6",
       "source": {
@@ -442,7 +442,7 @@
     "source": {
       "file": "README.md",
       "literal": "\"window_id\": \"f069_w004_c00077_t0000\"",
-      "line": 89
+      "line": 92
     }
   },
   "e101": {
