@@ -1,0 +1,1155 @@
+{
+  "threshold_hamming": 4,
+  "removed": [
+    {
+      "frame_id": "fb6d3d46-d676-46c8-9169-ed87c99cf3f8",
+      "kept_frame_id": "4b786b9f-077c-400f-93ad-349af6ead339",
+      "hamming": 0
+    },
+    {
+      "frame_id": "e64c606d-3f92-4ac7-ac66-39b5e1340bc4",
+      "kept_frame_id": "cccc32a5-a15d-4aa1-ad62-ca90a62d30fb",
+      "hamming": 4
+    },
+    {
+      "frame_id": "85628cdb-7e60-452f-9fdd-5c11a5895610",
+      "kept_frame_id": "362e7ed3-f78b-42cb-9ffc-80e5c4b1ef27",
+      "hamming": 4
+    },
+    {
+      "frame_id": "699b4090-7569-4ad5-8d42-2c35bee23a93",
+      "kept_frame_id": "526df88d-a6c1-44ab-8b85-3e62ef89f018",
+      "hamming": 0
+    },
+    {
+      "frame_id": "6b676fa5-7955-4041-a7ab-288f857ae81d",
+      "kept_frame_id": "526df88d-a6c1-44ab-8b85-3e62ef89f018",
+      "hamming": 2
+    },
+    {
+      "frame_id": "90555c71-42fd-4125-b074-a7f51c5609e3",
+      "kept_frame_id": "1475f843-849c-4d95-9b85-08b71de7a2c8",
+      "hamming": 0
+    },
+    {
+      "frame_id": "e6744b77-ade5-4b1b-b4ef-44b4ae345677",
+      "kept_frame_id": "1475f843-849c-4d95-9b85-08b71de7a2c8",
+      "hamming": 4
+    },
+    {
+      "frame_id": "d56713e2-10eb-41bd-a8b0-4bb0afdcf377",
+      "kept_frame_id": "48d4d814-9807-40ba-ab4b-42cadc05539f",
+      "hamming": 4
+    },
+    {
+      "frame_id": "fc39074a-25a3-462a-8bf8-1a5330447e65",
+      "kept_frame_id": "48d4d814-9807-40ba-ab4b-42cadc05539f",
+      "hamming": 2
+    },
+    {
+      "frame_id": "d94b962a-1c87-4b38-a649-271816cd1be3",
+      "kept_frame_id": "8e6f471d-f1a9-48c1-b7ad-e6530b16ff1c",
+      "hamming": 4
+    },
+    {
+      "frame_id": "f21bd5b7-1a89-4493-a4ac-85c3b1326a1f",
+      "kept_frame_id": "0afe4a88-3a3e-4cf8-ade1-9bd1f0f04664",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f44ea140-a38c-419f-8a72-563e43a6da98",
+      "kept_frame_id": "122a4641-9669-4d93-8056-2f1b1d70dad3",
+      "hamming": 4
+    },
+    {
+      "frame_id": "ee9d9285-e4a3-4fae-aa35-cd6dd39371cf",
+      "kept_frame_id": "2d97347e-efab-4299-8252-270cbec24839",
+      "hamming": 4
+    },
+    {
+      "frame_id": "f46e382c-2073-49e4-b68e-4fe8826af692",
+      "kept_frame_id": "ea49372a-ed94-4bb4-93f5-45603a37c095",
+      "hamming": 2
+    },
+    {
+      "frame_id": "a0318949-f55b-427f-8f17-6d53e95f8061",
+      "kept_frame_id": "4704226b-b8d2-4252-9cad-aa05444174bf",
+      "hamming": 4
+    },
+    {
+      "frame_id": "d623c570-017f-4f2f-aee0-a545347d26a5",
+      "kept_frame_id": "06140f6f-539a-4620-a200-4286045e3ee6",
+      "hamming": 4
+    },
+    {
+      "frame_id": "36ab1547-2ecd-461d-aaed-20e63ed4f3f2",
+      "kept_frame_id": "24f617f8-5f68-4c10-895e-3b101ba4e41e",
+      "hamming": 4
+    },
+    {
+      "frame_id": "96a0f235-c740-42b7-ac1f-5d5cde3a8e95",
+      "kept_frame_id": "153bbd51-a98b-4417-983f-1ec0a88d07d5",
+      "hamming": 4
+    },
+    {
+      "frame_id": "6ac91282-0000-4fde-bcc5-bcc6d62cc123",
+      "kept_frame_id": "60955b14-9504-4fc3-b4ac-3891075a4395",
+      "hamming": 4
+    },
+    {
+      "frame_id": "658ee6ee-7452-40d7-bf96-a4816468d57e",
+      "kept_frame_id": "45e4a16b-c09e-47bf-938e-88049af22cb5",
+      "hamming": 0
+    },
+    {
+      "frame_id": "9703d437-24ab-408f-8456-7cb2e361350c",
+      "kept_frame_id": "48f47cb2-16e3-4e02-81e9-e46d19cb4c53",
+      "hamming": 0
+    },
+    {
+      "frame_id": "b5da115c-7b8b-44e9-8b63-3a69113a8979",
+      "kept_frame_id": "1ab4731c-0687-457c-814d-0e6d61821c2a",
+      "hamming": 2
+    },
+    {
+      "frame_id": "f9100aad-e289-44ce-ab86-1683b7a85b6f",
+      "kept_frame_id": "b4348c05-45e7-4ead-8b33-f44fd3c778e6",
+      "hamming": 0
+    },
+    {
+      "frame_id": "cdeb31d6-d8b2-49de-93ff-8563dbc823af",
+      "kept_frame_id": "4cd926b0-d97a-49a7-bc3f-a9aebf91da97",
+      "hamming": 4
+    },
+    {
+      "frame_id": "f37e2ae4-5220-49c2-b1b2-dd8081cb84d2",
+      "kept_frame_id": "ea6f68c1-c8c1-496d-a550-32b6dace733f",
+      "hamming": 0
+    },
+    {
+      "frame_id": "61e49531-8424-409e-b90e-5644e10a50cb",
+      "kept_frame_id": "09d002f8-568e-4a93-a78f-88b89ed5fe04",
+      "hamming": 0
+    },
+    {
+      "frame_id": "d7348793-7863-4c1e-940e-e35bfdb2620f",
+      "kept_frame_id": "5f1a631c-e529-474f-8a62-1f0627b5ad0f",
+      "hamming": 0
+    },
+    {
+      "frame_id": "956ba227-5d1a-4720-8bc5-a1b02e5afbad",
+      "kept_frame_id": "4e868930-7768-4598-a49c-ab66bca381f4",
+      "hamming": 0
+    },
+    {
+      "frame_id": "79b7f08f-f930-4365-948d-1057f1a1c528",
+      "kept_frame_id": "091af745-75aa-49d9-bc28-5132314cede7",
+      "hamming": 0
+    },
+    {
+      "frame_id": "fe9e444d-7eb6-4a85-a1aa-e0d0e262b206",
+      "kept_frame_id": "e0512dd6-700e-4058-b691-bac2148ee6cc",
+      "hamming": 0
+    },
+    {
+      "frame_id": "1b317107-6426-43d5-a68f-62b3b7671b4a",
+      "kept_frame_id": "1749bd31-1a22-4d74-8857-e842fe4c5630",
+      "hamming": 2
+    },
+    {
+      "frame_id": "86e4eefd-3214-482a-b857-6d0f3e9057a2",
+      "kept_frame_id": "1749bd31-1a22-4d74-8857-e842fe4c5630",
+      "hamming": 0
+    },
+    {
+      "frame_id": "89feada4-a9b2-47fd-b422-03bb0a439585",
+      "kept_frame_id": "2366ae8d-0281-486f-a3db-8372d3c56bcf",
+      "hamming": 0
+    },
+    {
+      "frame_id": "eb84758e-134b-4dcb-ac1b-423772124815",
+      "kept_frame_id": "e89375e5-2524-4faa-89e4-35bd1e31877e",
+      "hamming": 0
+    },
+    {
+      "frame_id": "85711a27-4517-4024-901f-bea1ad54c69f",
+      "kept_frame_id": "1fed12b7-c93a-4709-8662-80c6df1af771",
+      "hamming": 0
+    },
+    {
+      "frame_id": "d6bc28e7-b8bc-487e-a98b-0bd4ce56f5d9",
+      "kept_frame_id": "a6ae69f9-cc94-43e4-a0a4-d8608ea15b36",
+      "hamming": 4
+    },
+    {
+      "frame_id": "92967480-1b1c-46e7-ae7a-25af706ccbce",
+      "kept_frame_id": "2d1ef393-ad74-466f-8924-de4c6e060a4b",
+      "hamming": 4
+    },
+    {
+      "frame_id": "a984c577-aeb7-44be-88e0-3b15ce368e7b",
+      "kept_frame_id": "1e42b3c2-8a6a-4c3d-8fdc-0a94fc92d581",
+      "hamming": 0
+    },
+    {
+      "frame_id": "da0020ca-ed52-42a5-a842-2c8899dc8fe4",
+      "kept_frame_id": "900f56b6-bcea-4e2b-858d-f85023de3154",
+      "hamming": 0
+    },
+    {
+      "frame_id": "d88e1777-e06d-4d33-93e5-14aecb9e5feb",
+      "kept_frame_id": "6f20cd07-9229-4111-b265-8ec75fe2822c",
+      "hamming": 0
+    },
+    {
+      "frame_id": "8a2694d1-6d88-414e-b53c-58e6f0413608",
+      "kept_frame_id": "110bebfe-2145-4408-8118-c187e11fea41",
+      "hamming": 2
+    },
+    {
+      "frame_id": "f645ca9d-fb1a-48a0-a0e3-cf2083dc0c86",
+      "kept_frame_id": "110bebfe-2145-4408-8118-c187e11fea41",
+      "hamming": 2
+    },
+    {
+      "frame_id": "c37b309f-e948-4852-9860-d8b2ab3ac8ff",
+      "kept_frame_id": "4258c8be-ce7c-49bc-8c46-41ea9601d940",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f4469775-ad04-47ef-a6da-43ece5eb5d61",
+      "kept_frame_id": "30682dab-569a-4a86-92ae-e6c93a80e4f9",
+      "hamming": 4
+    },
+    {
+      "frame_id": "f11c6b2d-5172-4035-a210-cc787a175016",
+      "kept_frame_id": "b57f08b9-dc09-4d0d-b9a7-836cc1e90e79",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ac122512-c9eb-4455-b536-c30f2075f0a2",
+      "kept_frame_id": "0d143cb4-6f47-414a-87ca-2260e6975d67",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c39f4c43-2de4-4ab4-b364-eb73a64a9bf9",
+      "kept_frame_id": "bb467775-3990-4cb9-88f1-8f1217942abb",
+      "hamming": 0
+    },
+    {
+      "frame_id": "954be599-bc8a-473a-b37e-62ca8b572bbe",
+      "kept_frame_id": "2de730a7-09c0-452b-9f25-22791701b4bc",
+      "hamming": 0
+    },
+    {
+      "frame_id": "bb804c64-518c-48a8-8570-da886a3ea47c",
+      "kept_frame_id": "23db4b5c-df39-4775-aec5-2402f8e3d82c",
+      "hamming": 0
+    },
+    {
+      "frame_id": "7d8b69a0-9f4c-4507-b6ae-d346ae821faa",
+      "kept_frame_id": "1fe35ed3-06ef-4cc1-86ac-6285b4bfd5b3",
+      "hamming": 0
+    },
+    {
+      "frame_id": "8d839346-12de-46b3-9330-39caff36781c",
+      "kept_frame_id": "6f53a9fb-beb3-4d1c-92b0-0ff2f0538e37",
+      "hamming": 4
+    },
+    {
+      "frame_id": "464bb126-39e9-4895-9bed-52fa661e10ee",
+      "kept_frame_id": "37472aef-f751-4659-bd01-97b635a8557a",
+      "hamming": 2
+    },
+    {
+      "frame_id": "bedeb10b-dbdc-4a3b-8fdb-2aa19e29267c",
+      "kept_frame_id": "b8180804-e4d5-4ecd-84e3-599b06085f3c",
+      "hamming": 0
+    },
+    {
+      "frame_id": "6fa4138b-0010-40b8-8403-6fc061a43633",
+      "kept_frame_id": "5bf7ec2f-a365-46f6-a456-74554932988d",
+      "hamming": 4
+    },
+    {
+      "frame_id": "eccf724e-ae99-4d7a-8c1a-b04e4fcb0ae2",
+      "kept_frame_id": "41e8a11e-250d-4282-a318-37d76b9f4a40",
+      "hamming": 0
+    },
+    {
+      "frame_id": "88a7fab5-33be-4a33-bcdc-5b0df28bad32",
+      "kept_frame_id": "6dbac314-6496-4ed2-89ae-2ebddb55c4ac",
+      "hamming": 0
+    },
+    {
+      "frame_id": "5b2d03a8-05fe-40c3-af3f-7b761b86c1de",
+      "kept_frame_id": "0fd38d74-890d-4d12-b285-233b5458e836",
+      "hamming": 4
+    },
+    {
+      "frame_id": "5ab0aae3-8cc3-4462-b0ae-87e6accdce1d",
+      "kept_frame_id": "0da83b05-9059-432c-8346-a4d88224d831",
+      "hamming": 0
+    },
+    {
+      "frame_id": "563b966f-7ecc-4a6e-8269-26da86c11134",
+      "kept_frame_id": "2044337f-4000-4d1f-b848-bc2cc2254bed",
+      "hamming": 0
+    },
+    {
+      "frame_id": "df8f4ef8-934b-4b53-92b6-68df33e62513",
+      "kept_frame_id": "355dab1b-f1d8-410c-8a90-08ffd1c46bc0",
+      "hamming": 0
+    },
+    {
+      "frame_id": "8b7ffc83-aad6-427f-832b-7add0167ceec",
+      "kept_frame_id": "5b6dd904-5ae4-4a7d-ab27-d6ff0e65307c",
+      "hamming": 2
+    },
+    {
+      "frame_id": "d3c64f23-9c90-497d-9af2-4395a8dc8481",
+      "kept_frame_id": "2a512222-c760-4824-bb71-9bb69253cf23",
+      "hamming": 4
+    },
+    {
+      "frame_id": "ef82eeef-b2d9-4ef4-8edc-47460e0d3e4c",
+      "kept_frame_id": "2a512222-c760-4824-bb71-9bb69253cf23",
+      "hamming": 8
+    },
+    {
+      "frame_id": "9f2e3c15-91e6-4296-9a51-7e0ba75e214b",
+      "kept_frame_id": "7f4aa282-9f35-4506-9f86-3bd3a52f5162",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c1fbc876-06fb-4eab-aae2-0d62566c02e6",
+      "kept_frame_id": "7668129f-8bb0-4b04-a399-03e622ef144a",
+      "hamming": 0
+    },
+    {
+      "frame_id": "1ed9f1af-0aa5-4c92-9de8-768418d4fda7",
+      "kept_frame_id": "000962d6-f6b7-4d48-aa7b-22cd6ce2f5bb",
+      "hamming": 4
+    },
+    {
+      "frame_id": "8b009531-7bdc-4c84-a099-b8f4db61442a",
+      "kept_frame_id": "24465ef5-728c-433e-82e1-d284186a0147",
+      "hamming": 0
+    },
+    {
+      "frame_id": "bdaad2fa-870d-4c73-98ac-e4d60c45238d",
+      "kept_frame_id": "b9e18c2c-23c9-4ee0-8fda-8f553965bd8a",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a45ad3e8-572d-4577-949c-3c83e6c4acf2",
+      "kept_frame_id": "4fc2c4fa-1249-4990-a499-dbb34ccd5afc",
+      "hamming": 4
+    },
+    {
+      "frame_id": "c746941f-a61b-42fc-9fe2-b4ab664eb465",
+      "kept_frame_id": "b5d434d5-d636-4202-8ec7-75a8c68b0d01",
+      "hamming": 0
+    },
+    {
+      "frame_id": "4d103607-5368-4e17-aac5-8db3e9cf6739",
+      "kept_frame_id": "4b56b2eb-f9d3-4064-9cf8-d798890a206c",
+      "hamming": 2
+    },
+    {
+      "frame_id": "8d9bf918-19a1-47e0-82ef-905e6951dfa9",
+      "kept_frame_id": "7df89eeb-38f9-4723-a813-832855149aa3",
+      "hamming": 0
+    },
+    {
+      "frame_id": "6aa7f7ec-7e41-433c-8108-69204fd06aab",
+      "kept_frame_id": "28a6b943-506a-4a16-a226-deb0ced08dbf",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a9e7f10f-b01a-4b39-8c95-73f67ee18045",
+      "kept_frame_id": "0f9a2e32-613c-413f-a5a2-b1be945c6950",
+      "hamming": 0
+    },
+    {
+      "frame_id": "6344e83f-01cc-4436-a1ba-6f2f60f0b2c2",
+      "kept_frame_id": "5b3a6aca-bae4-4b37-82c4-c618e3a5f45d",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f38851ae-06fb-4f6a-8462-3f9b9e860c66",
+      "kept_frame_id": "d9634bbe-f53a-4527-a9ef-dbc6eb48d3fe",
+      "hamming": 4
+    },
+    {
+      "frame_id": "d72a60cb-e3df-426f-8577-a9a125e68dec",
+      "kept_frame_id": "c9514f3e-b8b6-4f68-a6ee-1a707a0f7bef",
+      "hamming": 0
+    },
+    {
+      "frame_id": "5b9e6c7f-fc61-474d-843b-d501b5348589",
+      "kept_frame_id": "3e6122bf-83d9-46ab-81e6-681fd5cdb96e",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ff99867a-4e1c-4c96-976a-c75eec9d6074",
+      "kept_frame_id": "af572dd7-de50-47a1-9a4e-e13db88eff15",
+      "hamming": 0
+    },
+    {
+      "frame_id": "8df2f1e1-2888-4057-9171-8122bcfdc124",
+      "kept_frame_id": "3e423cc4-d7e9-4f5b-977a-0f08e28b23cc",
+      "hamming": 0
+    },
+    {
+      "frame_id": "53edea00-cf69-47c1-9160-fca337035f62",
+      "kept_frame_id": "152ff13d-45ac-48a3-b324-f7000b405c41",
+      "hamming": 0
+    },
+    {
+      "frame_id": "5366b8e3-07f1-4dfc-b77b-2833492a2280",
+      "kept_frame_id": "0c409936-8ef1-47b2-aa4b-bc01dfe5e964",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a37cebd6-70cd-4167-bf19-78ff50b80e94",
+      "kept_frame_id": "216aaf1f-fa33-4fc0-93cb-444ab9b29ac8",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f9b5ea02-85d0-431e-88e3-bdb8ad5b12c5",
+      "kept_frame_id": "aa8fb45c-d5fa-402b-81ba-59b1ecbd9bb3",
+      "hamming": 0
+    },
+    {
+      "frame_id": "fa5f8bd0-2ba7-47c1-b388-05af9820051c",
+      "kept_frame_id": "e1c8fb1d-35bb-4c89-ab4a-ad4e640ebbc1",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c2d27735-362b-46e9-a364-d8e2c6e56b98",
+      "kept_frame_id": "46d07b0d-1371-4e3c-8493-f0604ac8c698",
+      "hamming": 2
+    },
+    {
+      "frame_id": "fbed9020-d70c-4787-a2d4-178e3dda1655",
+      "kept_frame_id": "258e0751-65f4-4f2b-b83e-45889c74dfcd",
+      "hamming": 0
+    },
+    {
+      "frame_id": "e76a9ce0-3631-40ac-b7fb-44ea455abd7f",
+      "kept_frame_id": "c757da83-c5a5-404d-9c6d-3683a128a9f6",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c5085528-d048-4bb1-9938-5622b3039356",
+      "kept_frame_id": "3812fc00-7f28-401d-a0ba-7741a1f8281e",
+      "hamming": 0
+    },
+    {
+      "frame_id": "407632c4-6a50-4c35-a419-349cf3f35ddc",
+      "kept_frame_id": "0071ad83-9014-4a3e-82df-37b3b43faf75",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c4045b0b-e038-4451-9356-40b438c3a88d",
+      "kept_frame_id": "6ea78fa9-e95e-416d-937a-c675e45998aa",
+      "hamming": 0
+    },
+    {
+      "frame_id": "88f526c2-9936-4584-8d66-bb55837a7e8c",
+      "kept_frame_id": "1acc5ea1-bc16-458e-a566-6c7c6977a293",
+      "hamming": 4
+    },
+    {
+      "frame_id": "ccf172c3-c922-4c92-923f-1cca88a6935b",
+      "kept_frame_id": "a83eb045-c9c1-4135-90c5-cad15eeba9dc",
+      "hamming": 0
+    },
+    {
+      "frame_id": "2641c2ab-39e4-4e97-8ce3-186b1a83ef82",
+      "kept_frame_id": "1a79159e-fb8d-41a7-83c2-81947c00a07b",
+      "hamming": 4
+    },
+    {
+      "frame_id": "7298efb7-70b6-4f8d-ab2d-d74e4f6bd6d9",
+      "kept_frame_id": "461aea1c-ea7e-46cd-a36e-2cd579d2a51a",
+      "hamming": 0
+    },
+    {
+      "frame_id": "bfc719e3-0513-4285-9806-826b3289ab68",
+      "kept_frame_id": "48f41dab-cd5a-4411-8e2d-c0a595aa32f3",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a0c96cd5-29f8-4b56-922c-d35434ebcea9",
+      "kept_frame_id": "279f3591-ce74-4b0d-8bf8-6afbe9b6a05c",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f84224a1-ae05-4a7b-be49-8749b9d81659",
+      "kept_frame_id": "279f3591-ce74-4b0d-8bf8-6afbe9b6a05c",
+      "hamming": 4
+    },
+    {
+      "frame_id": "f43c4b86-2a97-4dc5-865b-540ace3be8dc",
+      "kept_frame_id": "b4b539d9-a292-4c91-b0b5-4fda9c6f8145",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ceb20181-1bb9-4792-a449-b593363fb7ef",
+      "kept_frame_id": "7ed55389-3870-47ce-8d5a-555371db5801",
+      "hamming": 0
+    },
+    {
+      "frame_id": "37095b0d-1332-4f7e-a3a1-7c22357a531e",
+      "kept_frame_id": "2576dd89-8429-49dc-8e91-f1abc55e6228",
+      "hamming": 0
+    },
+    {
+      "frame_id": "619c294e-f8eb-4286-967f-fd88aa15a95a",
+      "kept_frame_id": "1ab7efb4-4f06-4487-b161-c3b60d2e1600",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a1b66d28-3a4d-4cdc-a32f-6b166fe88f55",
+      "kept_frame_id": "a01f437d-457f-4ff0-ad27-ee5ff30e58f8",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ff0ee3da-1241-41bc-9157-53e08d477ad0",
+      "kept_frame_id": "d6c82136-80d4-48ee-bdb2-acd1e83e3248",
+      "hamming": 0
+    },
+    {
+      "frame_id": "e90d71ef-013a-4a0e-a711-4d399a7f95f8",
+      "kept_frame_id": "a0152052-9af2-4167-91a5-46794ef51b4c",
+      "hamming": 2
+    },
+    {
+      "frame_id": "a9d0b200-f000-4162-9b4f-1fc1a4f375b6",
+      "kept_frame_id": "2f2a38b9-f3e1-4cb6-ad65-a5dd6b340a2b",
+      "hamming": 0
+    },
+    {
+      "frame_id": "b97a9b47-7916-43d8-ba68-9c58397385f9",
+      "kept_frame_id": "6f229763-0606-4a5f-be82-8a6e4063e932",
+      "hamming": 2
+    },
+    {
+      "frame_id": "f4100196-9fa7-4fc6-b9d6-4d7a00e002c0",
+      "kept_frame_id": "e6038cb2-56e9-461e-a6fb-64c3854ea1bc",
+      "hamming": 4
+    },
+    {
+      "frame_id": "11b9421f-0506-4e7c-b71a-5b764c5e91b8",
+      "kept_frame_id": "08be69f7-8eb2-4ca1-8f38-953b3fde33fd",
+      "hamming": 0
+    },
+    {
+      "frame_id": "d97bf055-eb00-4e4e-a376-612bb01fef7b",
+      "kept_frame_id": "7736dc39-2875-4c55-95ed-83074b3ece74",
+      "hamming": 0
+    },
+    {
+      "frame_id": "5c8b6a61-241c-458e-b046-4f2d97c918a8",
+      "kept_frame_id": "082ef7b1-2eca-467d-bb66-af89f3387652",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c8f217a0-bbdf-434d-ab6f-34433d5b60de",
+      "kept_frame_id": "3e9b2db8-2a82-45ee-ac01-531cc9e615c1",
+      "hamming": 0
+    },
+    {
+      "frame_id": "d87e0bef-2e38-4f5e-bbb8-6294a15c1634",
+      "kept_frame_id": "42884cdd-ff4d-449f-9e58-e4644388b676",
+      "hamming": 0
+    },
+    {
+      "frame_id": "4d66e141-69d7-4d72-ba9d-11a49e91833f",
+      "kept_frame_id": "2bbfecdc-58db-4d42-9004-11a6c1d656b4",
+      "hamming": 0
+    },
+    {
+      "frame_id": "965817c7-49ec-4a95-95b0-6cf0084112d8",
+      "kept_frame_id": "3b559db1-0090-470c-b33a-fbb44c39874d",
+      "hamming": 0
+    },
+    {
+      "frame_id": "3cb51bb4-c19e-406c-9d2f-88da66e7fe25",
+      "kept_frame_id": "03a6fb53-b9bf-4f18-89a4-427768af7b70",
+      "hamming": 0
+    },
+    {
+      "frame_id": "cfb22b37-93ff-4d4c-b3bd-b52be81091c2",
+      "kept_frame_id": "0c426bf8-6212-4c90-8276-bd9912a309f8",
+      "hamming": 0
+    },
+    {
+      "frame_id": "b0dcc94b-bd62-43aa-9236-83e7b88be9e4",
+      "kept_frame_id": "2f3a4f41-84c0-4943-a1e2-7c36253e13e3",
+      "hamming": 0
+    },
+    {
+      "frame_id": "879975c2-b349-4b50-ac85-116be5a04fdb",
+      "kept_frame_id": "696867b2-dde2-400a-9aea-b2f17c9211d4",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f9b8a140-5b38-4ae4-a6dd-6030ce80673d",
+      "kept_frame_id": "6fe0c898-c094-4e16-a6c5-33ce615026b6",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ff89e139-4210-46c4-95e1-942882b1ebeb",
+      "kept_frame_id": "a0f1d59c-4534-4b62-9e85-b20d078da813",
+      "hamming": 2
+    },
+    {
+      "frame_id": "8e5133da-4ffd-4941-8a97-c181df2c6814",
+      "kept_frame_id": "446b2eff-65d2-4f5c-93bd-f97b09450b45",
+      "hamming": 0
+    },
+    {
+      "frame_id": "2ec8d488-0ba8-419e-acc5-25b2fa74d0ac",
+      "kept_frame_id": "1c0efc21-6ba6-4844-a6c1-420c4eda916c",
+      "hamming": 0
+    },
+    {
+      "frame_id": "d1be37a0-d04f-48da-b170-0334a4379837",
+      "kept_frame_id": "1c0efc21-6ba6-4844-a6c1-420c4eda916c",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f622e20b-b24f-4f90-9e6b-e60632fc13ab",
+      "kept_frame_id": "e841aca3-5b17-446d-9407-365143e588b5",
+      "hamming": 0
+    },
+    {
+      "frame_id": "72c57a60-dbf6-4497-b31c-c09befb4885a",
+      "kept_frame_id": "3b0fbf6b-e020-41ff-a93a-23e872abc2e8",
+      "hamming": 4
+    },
+    {
+      "frame_id": "5bcf8130-a543-43f9-85f4-d7093f110f5f",
+      "kept_frame_id": "2950c745-91b2-40fd-b087-e4c4c5f75b62",
+      "hamming": 0
+    },
+    {
+      "frame_id": "fa7a872b-e66e-41c1-9f58-f9edf3bc77e2",
+      "kept_frame_id": "4d6b4b1a-178e-4672-a818-533d93bbf32d",
+      "hamming": 4
+    },
+    {
+      "frame_id": "a7b04d26-6fc1-41fd-9af4-8080badb0204",
+      "kept_frame_id": "6e555b17-71db-425d-abcd-8a94fd5431d9",
+      "hamming": 0
+    },
+    {
+      "frame_id": "e5706624-e648-47dc-bd80-28c42997a0a3",
+      "kept_frame_id": "8e8aabf4-9afb-4063-8233-1edf82b0edfd",
+      "hamming": 4
+    },
+    {
+      "frame_id": "6068dad8-6f36-448d-876d-cd173df31f67",
+      "kept_frame_id": "362cf129-5969-4579-89f8-b9cfb051794f",
+      "hamming": 0
+    },
+    {
+      "frame_id": "4019a0bb-a0c3-49b7-ab02-072a7562e6cf",
+      "kept_frame_id": "1794e79a-a343-4f77-a5ea-20ecbd3b119b",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c650b03d-793e-4334-892b-360df6b85c59",
+      "kept_frame_id": "be6ff5ae-2df5-48de-9e26-fc8118b9bada",
+      "hamming": 0
+    },
+    {
+      "frame_id": "bb81b0bb-a792-4fce-8de9-6ad5212d958c",
+      "kept_frame_id": "34f223db-775b-40fa-8821-0f124e0d0615",
+      "hamming": 2
+    },
+    {
+      "frame_id": "f2dddd59-6a9b-46c5-95e3-9c80ba707fdd",
+      "kept_frame_id": "f1cc6e91-eb42-4f4f-8a8c-520fc69ba504",
+      "hamming": 0
+    },
+    {
+      "frame_id": "859bf8be-5fcb-4db9-bd27-89bdb4aa2cb6",
+      "kept_frame_id": "2c7775cc-b9fb-4eb0-81b4-a627834f6513",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f9398e9b-493a-4e5a-8792-0cf94fac4430",
+      "kept_frame_id": "0c3f5189-ea09-439d-aa5c-c60818851a3a",
+      "hamming": 4
+    },
+    {
+      "frame_id": "e49f93b4-cd3c-45b0-b888-30c569684b5e",
+      "kept_frame_id": "7436ac11-367a-4c71-a987-a122041f3caf",
+      "hamming": 0
+    },
+    {
+      "frame_id": "edc8452c-e04d-4581-95e2-d6af64d13bd2",
+      "kept_frame_id": "9372549e-10e6-429f-b00c-cf190659baa5",
+      "hamming": 4
+    },
+    {
+      "frame_id": "77632c92-b438-4dcc-b960-f02d057e4093",
+      "kept_frame_id": "7231a336-4045-4ae8-8a01-a6e8be96f41b",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a40e0878-bd6c-4e13-ada5-b69790968aae",
+      "kept_frame_id": "0a1b54d7-520e-4a47-a122-9559ac240620",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a3b5d217-45c5-4615-8807-45145a882fe6",
+      "kept_frame_id": "3af5f546-f8bb-4fbb-a5af-d2193fbc8620",
+      "hamming": 0
+    },
+    {
+      "frame_id": "e9fb89b3-d9f8-4b16-bdfe-a88b886efa5d",
+      "kept_frame_id": "3443ed94-8a70-4920-a9ce-13472ba9ef57",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f9a38ba3-6a5c-4edd-af1b-be54907fb760",
+      "kept_frame_id": "a1eb7b20-2edb-4d58-8ce7-d0b58ecc563d",
+      "hamming": 0
+    },
+    {
+      "frame_id": "4884c1cc-3d8c-41c5-a885-191889748dee",
+      "kept_frame_id": "32717c1d-7516-4f8b-9c49-b19d9a2c0764",
+      "hamming": 0
+    },
+    {
+      "frame_id": "6c0ce3ac-bc2b-434f-824a-8102a234391b",
+      "kept_frame_id": "595fc5e0-1c4b-400a-ac1e-757fca1cbe07",
+      "hamming": 4
+    },
+    {
+      "frame_id": "c5317022-e3d1-4a08-b769-bd3d3c5dd845",
+      "kept_frame_id": "0601f27f-701d-4650-9b04-901e0630bb12",
+      "hamming": 0
+    },
+    {
+      "frame_id": "9f032ffb-98f9-447b-8150-d57142cf39c0",
+      "kept_frame_id": "1a7e4556-690a-4004-b58c-2865ce8d5a69",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c7f3c536-3ed5-4ae2-8f8a-94cd64d4f984",
+      "kept_frame_id": "9a29e091-3f26-415b-b96c-edc4a88050b2",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ea486f13-8e6a-44a8-aba5-cb8fdd9379df",
+      "kept_frame_id": "7c1082e5-4fad-41cf-9a08-f675823a7239",
+      "hamming": 4
+    },
+    {
+      "frame_id": "98919d14-44e7-4e71-b9af-b83337d5ee60",
+      "kept_frame_id": "4149c191-c7aa-4f82-b4a0-db783b8e56c6",
+      "hamming": 0
+    },
+    {
+      "frame_id": "e4cb9a79-c464-4a21-bf2b-523212f15596",
+      "kept_frame_id": "06d72800-0c8e-4a97-9d3e-6715c4dd7161",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c514021f-6c15-4ded-be1f-27abb85e7050",
+      "kept_frame_id": "1c2c7868-2513-47cf-bce8-649be5b5f5f4",
+      "hamming": 0
+    },
+    {
+      "frame_id": "cfdc0c45-4eae-44b8-9eba-30750d1f50cd",
+      "kept_frame_id": "1c2c7868-2513-47cf-bce8-649be5b5f5f4",
+      "hamming": 0
+    },
+    {
+      "frame_id": "59d0317a-cb6c-40c2-9ce4-77fc8ce178a9",
+      "kept_frame_id": "3a552f12-8991-4ed7-9e60-9837f2acd5a2",
+      "hamming": 4
+    },
+    {
+      "frame_id": "472ad716-81e0-49e6-a8f8-f7e4128126f6",
+      "kept_frame_id": "1755977e-8521-4fd5-a9ba-fe1623f90497",
+      "hamming": 0
+    },
+    {
+      "frame_id": "fdb4dbac-24d2-4542-9d48-89d743c6f1cd",
+      "kept_frame_id": "da1111f1-4e2d-4f2d-97e2-29adbf4a8bae",
+      "hamming": 0
+    },
+    {
+      "frame_id": "8667ee32-8081-4f8a-a25c-08a220e30ad2",
+      "kept_frame_id": "5475c48c-32b4-455c-b94a-2e119203ccde",
+      "hamming": 0
+    },
+    {
+      "frame_id": "80acb63a-8d03-4068-8828-294d4ed342d2",
+      "kept_frame_id": "130879eb-a961-4f2c-8827-bb2b47ede8f2",
+      "hamming": 0
+    },
+    {
+      "frame_id": "aed817bf-95ff-41e5-87c4-73b31848e1b5",
+      "kept_frame_id": "78d6a2bf-6ea2-435b-bb00-6420ee4e13d7",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f9c47c1d-1b19-4fcd-90ae-8815449daf03",
+      "kept_frame_id": "eecaa594-3ed7-4d52-9491-b04c8c53c323",
+      "hamming": 0
+    },
+    {
+      "frame_id": "e201367f-ecf6-4bda-9585-d2eacf770c6b",
+      "kept_frame_id": "23ecec6d-dc58-4b14-9e54-ddbc7386f30a",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f1c347e2-b5bd-45c1-883d-713f459037e4",
+      "kept_frame_id": "0903745f-b0fe-455a-a465-03db90f24208",
+      "hamming": 0
+    },
+    {
+      "frame_id": "b11d69f2-07d8-4125-94a5-3d3d2532b631",
+      "kept_frame_id": "0edc7711-0aaa-4f6f-9440-4878b6bea911",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a1375ac8-dfa2-4b30-8fef-77800751aad3",
+      "kept_frame_id": "911b67fa-d8a4-450d-9156-75f684545e2d",
+      "hamming": 0
+    },
+    {
+      "frame_id": "d2a27666-afb4-4c0e-b854-ff4e2cc4be1b",
+      "kept_frame_id": "1126a527-2354-4a67-9fa9-59662f60d391",
+      "hamming": 0
+    },
+    {
+      "frame_id": "4f592a28-88dc-4b74-b479-6624e5f332fd",
+      "kept_frame_id": "365e3012-a0f3-458a-b6e2-e8894ea06474",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ff524473-c6c8-4855-9622-02cb9be6c51b",
+      "kept_frame_id": "25ca6350-2fc7-4892-9c5d-cced84b82272",
+      "hamming": 0
+    },
+    {
+      "frame_id": "d194adf3-d6c4-48b9-9149-0bb6a4e19802",
+      "kept_frame_id": "15e5d890-368d-4153-95ec-97d24497ab22",
+      "hamming": 0
+    },
+    {
+      "frame_id": "b1f7f6f5-98f7-4733-8ba3-8ee38e40b2b8",
+      "kept_frame_id": "8cab8ca4-e910-403a-8a8b-2037f7c7c6a6",
+      "hamming": 4
+    },
+    {
+      "frame_id": "85c216e2-b6ab-4222-84cc-abc88cf42ecc",
+      "kept_frame_id": "563ab4d3-bfcf-41d8-98d6-93ed5594cf3e",
+      "hamming": 4
+    },
+    {
+      "frame_id": "ede1a650-fa29-4c55-9962-ba7868f509b4",
+      "kept_frame_id": "da0b14b7-8ab9-4a12-a9b6-ae02ea857f99",
+      "hamming": 0
+    },
+    {
+      "frame_id": "cda99cde-d4d6-4748-b08b-e6f2c1389eeb",
+      "kept_frame_id": "61f446d5-f308-42d6-b103-b7a462c2e556",
+      "hamming": 4
+    },
+    {
+      "frame_id": "ee246f69-13e0-4ee4-9aca-a0efa5bf8c82",
+      "kept_frame_id": "56c5307a-7f1c-43b8-b8e1-17b24a0251d6",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a528c98b-57a0-4d0f-90ef-0cb748eb126b",
+      "kept_frame_id": "099b78bf-eb37-40b7-9d02-4611ef12a709",
+      "hamming": 4
+    },
+    {
+      "frame_id": "9ff976eb-fa3a-49b8-a52e-423a063c51b5",
+      "kept_frame_id": "537c0392-65ee-4425-94d8-4d0e45545ca3",
+      "hamming": 2
+    },
+    {
+      "frame_id": "c851e0c8-4c96-4232-8703-eb9f574e049f",
+      "kept_frame_id": "2e9092ec-7dee-4cb2-9207-8b5990cc6012",
+      "hamming": 2
+    },
+    {
+      "frame_id": "f6ee85ec-814e-4ff4-ab46-d3b8b0d4650e",
+      "kept_frame_id": "f685b911-4ced-4b5e-afe9-630661b5b818",
+      "hamming": 4
+    },
+    {
+      "frame_id": "df98e28c-cd33-475d-bfce-e674d279bbb4",
+      "kept_frame_id": "39f1ce4f-97a8-4008-bdd0-33264efc5ea4",
+      "hamming": 0
+    },
+    {
+      "frame_id": "9243a965-773a-4f54-a441-fcdd9ffd76e5",
+      "kept_frame_id": "12466da1-cf73-4dba-b3fa-755e579f53e6",
+      "hamming": 0
+    },
+    {
+      "frame_id": "fe3c9205-fa3e-48fb-92d6-c7786e2d7933",
+      "kept_frame_id": "69f1555f-ec38-4b98-a338-6feaee51c6df",
+      "hamming": 0
+    },
+    {
+      "frame_id": "3fefa7e8-86a7-449f-a761-91eabe34086b",
+      "kept_frame_id": "133d62f0-b362-48b5-9496-40bf3cc08fa5",
+      "hamming": 0
+    },
+    {
+      "frame_id": "cc5b3251-9896-442d-92bc-3ffc9ece0760",
+      "kept_frame_id": "11e28d36-eb0d-4841-b377-5357e4b0525d",
+      "hamming": 0
+    },
+    {
+      "frame_id": "6b2cd019-4cdf-46f0-be47-afe3724975df",
+      "kept_frame_id": "50f52cfa-cbf3-469c-a475-87616c4e6b96",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a369255a-a660-4da9-9978-1ac637e608d0",
+      "kept_frame_id": "4fe20c24-b54b-4443-8e9d-0a95ca39588f",
+      "hamming": 0
+    },
+    {
+      "frame_id": "abe4c80f-31e9-484d-8237-c833d59081eb",
+      "kept_frame_id": "6d643b7f-4fd7-4b6b-b8f7-a24e4741f421",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c866a6a6-3198-4f91-bebb-375c233498e0",
+      "kept_frame_id": "44c2ccbd-d4fe-4439-a35a-06134dc6b68b",
+      "hamming": 4
+    },
+    {
+      "frame_id": "aef61ba7-930c-4759-9a5c-c8dd601a28b1",
+      "kept_frame_id": "704c45bf-f240-481f-b3ed-e865ebaec526",
+      "hamming": 0
+    },
+    {
+      "frame_id": "0ae74732-ee7c-403e-a566-269f4495925a",
+      "kept_frame_id": "02b060a8-aca0-406f-84b3-2620219857ab",
+      "hamming": 0
+    },
+    {
+      "frame_id": "57fdf040-4b31-4b06-968a-6cdfab05cd3e",
+      "kept_frame_id": "1a70b1c4-65eb-40dd-b2dd-f767df99d2af",
+      "hamming": 4
+    },
+    {
+      "frame_id": "f25153e8-7ba4-481d-9c62-7d59180082ff",
+      "kept_frame_id": "67375823-f416-480a-86c5-09ee9af46de9",
+      "hamming": 0
+    },
+    {
+      "frame_id": "e734806f-ef21-4abd-9108-ad519af7de28",
+      "kept_frame_id": "d2d56f89-3149-489c-b7e9-bd68a7c84e29",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f23cf0e5-1a89-4c79-82f1-32ab2df48de7",
+      "kept_frame_id": "9c2edb0c-dbbc-4cf7-b342-4c3bf7598517",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ff6508ec-f397-4407-9b12-abc81ab4ef78",
+      "kept_frame_id": "45b6b5de-d56c-45e8-874c-ac50e7efa019",
+      "hamming": 0
+    },
+    {
+      "frame_id": "cbb76d7c-d64c-4ad8-8920-cbab21e9f74c",
+      "kept_frame_id": "03c18f95-f2e5-4008-b32c-4740798330db",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c8a911c8-5b83-49d6-8a33-bbae3ede6326",
+      "kept_frame_id": "a525d16f-6247-4bad-b485-8aa2581cbdb4",
+      "hamming": 4
+    },
+    {
+      "frame_id": "98d43966-4171-4cdb-b5cd-7ecd932135b4",
+      "kept_frame_id": "0bcef11f-33cd-48c9-a63b-67b4cdfd769e",
+      "hamming": 2
+    },
+    {
+      "frame_id": "96f1e820-71f7-4802-abda-6b817f79cbef",
+      "kept_frame_id": "0c7b42ad-7cfb-4042-8fc3-9e4edb2585f9",
+      "hamming": 0
+    },
+    {
+      "frame_id": "7029cf7a-c451-407e-a446-c259447502e5",
+      "kept_frame_id": "6d8972d4-96c0-472a-b2a9-c75ae7c24e24",
+      "hamming": 0
+    },
+    {
+      "frame_id": "dae3df86-40f6-467e-9902-375b2c7feb9d",
+      "kept_frame_id": "38f6605b-abb6-442f-a58d-74c32d21e827",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a73d948c-99db-4012-94ae-6b79e14204fb",
+      "kept_frame_id": "2aef42a6-fe94-4d9e-ac30-38050a11b6f8",
+      "hamming": 4
+    },
+    {
+      "frame_id": "d3798499-80ec-4dfd-8704-840563fda0eb",
+      "kept_frame_id": "a84aa0f1-a461-4c98-b376-9edd5d0ea36d",
+      "hamming": 2
+    },
+    {
+      "frame_id": "efcfe811-b38b-4fcb-994a-83234ae556bb",
+      "kept_frame_id": "a3e58bb5-d092-4c59-9c43-8ed6cded829e",
+      "hamming": 4
+    },
+    {
+      "frame_id": "4d596225-990c-4d44-b83c-d470c36ef04c",
+      "kept_frame_id": "31deccc3-437c-4f14-ab10-6c584e38c3e4",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ef372657-eeb5-41c5-a5c9-82332f8100a1",
+      "kept_frame_id": "ab751c8a-aee8-4d7d-b117-41a42216e361",
+      "hamming": 4
+    },
+    {
+      "frame_id": "2e89dd68-397d-496b-9755-e6ceb2fa7444",
+      "kept_frame_id": "12a15e31-60ac-4dc9-9fec-d99a99733ffd",
+      "hamming": 0
+    },
+    {
+      "frame_id": "d60de6e2-c489-457d-952d-f235e1f8fc50",
+      "kept_frame_id": "0079a6d8-ba97-4c47-a7a9-da0522d71486",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f8ca329f-f6ef-465e-b6cb-f5fbeda171c5",
+      "kept_frame_id": "e03597d3-e446-4ca6-a33e-385ff2723967",
+      "hamming": 2
+    },
+    {
+      "frame_id": "cbc55d9b-85b7-4e8f-b334-91f4c6dc3a7f",
+      "kept_frame_id": "0012bc66-eaf3-4d05-9639-221fe0f9715c",
+      "hamming": 0
+    },
+    {
+      "frame_id": "d0ea65f0-c842-4c67-9f13-6aa78cfa1689",
+      "kept_frame_id": "8fc896aa-1a8b-4a39-94b0-cd8d8182d88a",
+      "hamming": 4
+    },
+    {
+      "frame_id": "de7c95d2-a1e5-4ccb-8830-204341464535",
+      "kept_frame_id": "a9dc8eda-27fd-426d-8266-6b4e5f13ef21",
+      "hamming": 0
+    },
+    {
+      "frame_id": "778199a0-fa66-468d-bf45-51c880073de8",
+      "kept_frame_id": "22e167c2-d356-4065-a1d0-6f3820786ad4",
+      "hamming": 0
+    },
+    {
+      "frame_id": "a196da95-de99-44c3-a869-3a8f8f988e6a",
+      "kept_frame_id": "481e640c-a214-4d17-b806-e6a9d01ff7ac",
+      "hamming": 0
+    },
+    {
+      "frame_id": "4547ba4a-0c50-4196-8925-d8d2baf0dd5c",
+      "kept_frame_id": "0bedc274-e2ea-4920-9aa9-0b2bf4286779",
+      "hamming": 0
+    },
+    {
+      "frame_id": "6252f12c-6a14-4442-8057-1e66027a7f05",
+      "kept_frame_id": "42b0620d-676d-4c2e-b120-9060f80ddfc6",
+      "hamming": 0
+    },
+    {
+      "frame_id": "5b8bd22d-41d3-475a-ba11-30cede24ce67",
+      "kept_frame_id": "440887d6-425b-489b-b31c-8a434ef838c3",
+      "hamming": 0
+    },
+    {
+      "frame_id": "89b8da7a-73be-48b0-8318-ee28f30f7d48",
+      "kept_frame_id": "53cd8591-a062-44f5-99cf-dae60bfb77c0",
+      "hamming": 0
+    },
+    {
+      "frame_id": "dd40d679-5450-4fb3-a287-cfcc1da2ba94",
+      "kept_frame_id": "3e38d924-a9e4-43ba-82b5-c89c882351f8",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c12765f4-e870-41d1-8780-771688457818",
+      "kept_frame_id": "2afbc165-50c5-4fd4-8ace-982ca4e78cdb",
+      "hamming": 0
+    },
+    {
+      "frame_id": "357eff60-c7ce-4696-b1f6-7e317d015157",
+      "kept_frame_id": "34d2d8b5-783a-46f5-ae21-4ba761fa1f00",
+      "hamming": 0
+    },
+    {
+      "frame_id": "f2b4c1eb-c7bb-437a-af2d-5a492e877ffd",
+      "kept_frame_id": "4684b20d-8f14-4b3a-832e-fd52adb309ed",
+      "hamming": 0
+    },
+    {
+      "frame_id": "6c706267-fd23-46af-8783-e9d0214ee2d2",
+      "kept_frame_id": "25fba817-c4d7-4dde-964f-920f017ca219",
+      "hamming": 2
+    },
+    {
+      "frame_id": "6c095d3c-044c-4a2b-99c8-4c83c909017a",
+      "kept_frame_id": "3d92feb0-de1f-46b1-a43a-451af1f93997",
+      "hamming": 0
+    },
+    {
+      "frame_id": "b596626c-6a29-4863-8ac2-49d067460870",
+      "kept_frame_id": "82d0b3e0-8094-448e-821b-d1ac4fcd92f4",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ee433ddd-e627-4180-8339-9fb595343460",
+      "kept_frame_id": "1484deb8-b42c-48fb-977e-9caffdff4a1a",
+      "hamming": 0
+    },
+    {
+      "frame_id": "8e62000d-9af3-4046-a502-907d6adbed07",
+      "kept_frame_id": "7828b012-3ad7-4b31-a063-b3a84ed5f5bf",
+      "hamming": 0
+    },
+    {
+      "frame_id": "fad5d753-1646-4ddc-a3e0-32c000356a10",
+      "kept_frame_id": "abef8e6c-dce4-4735-8769-e18257386d30",
+      "hamming": 0
+    },
+    {
+      "frame_id": "c21eea1e-34ce-438a-ad15-3bc31be98a3d",
+      "kept_frame_id": "6a4f2edf-fb24-4948-820a-3bb6e3be2b86",
+      "hamming": 0
+    },
+    {
+      "frame_id": "bfe54a8b-f411-489a-a649-5dc9d2c4109c",
+      "kept_frame_id": "6a1a22af-3524-428b-81ec-4feb8146a7dc",
+      "hamming": 0
+    },
+    {
+      "frame_id": "ecbb65f8-38a5-4d21-afc7-afd2d7b04f3d",
+      "kept_frame_id": "0763f661-6d5b-45e7-a659-b3c3eb002c92",
+      "hamming": 4
+    }
+  ]
+}
