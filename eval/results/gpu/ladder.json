@@ -26,6 +26,34 @@
     "B32": 25.0
    },
    "why": "CPU ffmpeg decode (RTF~100) + H2D + batched kernels: NVDEC per-session overhead avoided at tiny frames"
+  },
+  {
+   "rung": "F1_factory_sweep",
+   "cpu_1core_hevc_rtf": 1.83,
+   "nvdec_rtf": {
+    "x1": 20.67,
+    "x2": 24.31,
+    "x4": 22.7
+   },
+   "kernels_hph": {
+    "B4": [
+     482.0,
+     1222.0
+    ],
+    "B8": [
+     490.0,
+     2326.0
+    ],
+    "B16": [
+     701.9,
+     4576.0
+    ],
+    "B32": [
+     null,
+     null
+    ]
+   },
+   "why": "1080p30 HEVC reality: CPU-1core vs NVDEC sessions; batch/VRAM ceiling at T=300"
   }
  ]
 }

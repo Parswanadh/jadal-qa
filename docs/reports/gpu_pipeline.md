@@ -111,7 +111,19 @@ GPU digest ≠ CPU digest — expected (fp16/fp32 vs float64). GPU numerics are 
 identical across devices or vs CPU float64; the Pi path keeps the CPU
 reference.
 
-## 8. Factory 1080p30 HEVC (real video; `factory.json`, RUNNING)
+## 8. Factory 1080p30 HEVC (real video; `factory.json`)
+
+F1 SWEEP MEASURED 17:21 (5 complete files; all NVDEC byte counts exact):
+- CPU 1-core HEVC 1080p→160×90: **54.8 fps, RTF 1.83** (60 s video)
+- NVDEC hevc_cuvid + scale_cuda: ×1 **620 fps / RTF 20.7**; ×2 **729 / 24.3**;
+  ×4 **681 / 22.7** — **11–13× the single core**, saturates at 2 sessions
+  (1 NVDEC engine; ×4 adds overhead, no gain)
+- Kernels T=300 fp16: B4 48 win/s (1.2 GiB); B8 49 (2.3 GiB);
+  B16 **70 win/s = 702 h/h (4.58 GiB, at the 4.5 GiB cap)**; B32 OOM —
+  honest caveat: only 665 MiB was free (a neighbour job held ~2.5 GiB), so
+  B32's ceiling is contaminated, not a clean alone-on-GPU number
+- End-to-end ceiling estimate: decode-bound ≈ **24 h/h** (NVDEC 729 fps =
+  24 video-s/s; kernels allow ~700). F2 12-min sustain (queued) measures it.
 
 Corpus: `ego10k_scale/clips/factory_*/worker_*/*.mp4` (20-min 1920×1080 HEVC
 30 fps; complete files only, downloader still running; 37/47 shards at
