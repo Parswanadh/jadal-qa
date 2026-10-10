@@ -35,6 +35,19 @@ OUT = os.path.join(ROOT, "eval", "results", "pod_verify", "gpu_kernel_parity.jso
 W, H = 160, 90
 
 
+
+def pod_path(p):
+    """The bundle manifest was restored to its pristine (source-machine) copy at 17:19Z;
+    its paths do not resolve on the pod. Remap in memory only - the file is READ-ONLY."""
+    if os.path.exists(p):
+        return p
+    for a, b in (("/home/parshu/projects/awing/data/", "/workspace/jadal_pod_bundle/data/"),
+                 ("/home/parshu/projects/jadal-qa-wt/spectral_data/", "/workspace/jadal_pod_bundle/labels/"),
+                 ("/home/parshu/projects/jadal-qa-wt/", "/workspace/jadal_pod_bundle/")):
+        if p.startswith(a) and os.path.exists(b + p[len(a):]):
+            return b + p[len(a):]
+    return p
+
 def luma_of(rgb):
     return 0.299 * rgb[..., 0] + 0.587 * rgb[..., 1] + 0.114 * rgb[..., 2]
 
@@ -68,7 +81,7 @@ def main():
     # decode the picked windows
     lums, rgbs, meta = [], [], []
     for it in picked:
-        rgb, fps = decode_window(it["path"], it.get("start_s", 0.0),
+        rgb, fps = decode_window(pod_path(it["path"]), it.get("start_s", 0.0),
                                  round(it["end_s"] - it["start_s"], 2), W, H, "rgb24")
         lums.append(luma_of(rgb).astype(np.float32))
         rgbs.append(rgb.astype(np.float32))
