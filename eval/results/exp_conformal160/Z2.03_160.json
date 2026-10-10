@@ -1,0 +1,218 @@
+{
+ "n_ood": 160,
+ "n_good_ood": 138,
+ "n_bad_ood": 22,
+ "n_factories": 47,
+ "n_indego": 150,
+ "label_source": "human (IndEgo manifest_gold n=150 + Egocentric-10K ood160_labels.json n=160: 138 good / 22 bad, 47 factories)",
+ "supersedes": {
+  "branch": "m/conformal",
+  "pr": 126,
+  "n_ood": 60
+ },
+ "device": "CPU only, seed 7",
+ "git_sha": "see git",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_conformal160/run_z2_160.py",
+ "experiment": "Z2.03_160",
+ "title": "Risk control (IndEgo) + frozen review-vs-error frontier on OOD-160",
+ "protocol": "CRC/LTT on IndEgo is unchanged from PR #126 (K=7 clips). The OOD frontier sweeps an a-priori band / coverage gate on the frozen score and reports factory-grouped BA among decided windows; no OOD threshold is fitted.",
+ "recommended_indego_operating_point_applied_ood": {
+  "coverage_target": 0.85,
+  "q_indego": 0.4452,
+  "review_share_ood160": 0.1125,
+  "coverage_ood160": 0.5563,
+  "false_accept_marginal_ood160": 0.0437
+ },
+ "ood160_frozen_review_error_frontier": {
+  "band_sweep": [
+   {
+    "band_half_width_w": 0.0,
+    "review_share_160": 0.0,
+    "n_decided": 160,
+    "ood_ba_among_decided": 0.5464,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4426,
+     0.6569
+    ]
+   },
+   {
+    "band_half_width_w": 0.02,
+    "review_share_160": 0.0375,
+    "n_decided": 154,
+    "ood_ba_among_decided": 0.5426,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4256,
+     0.6593
+    ]
+   },
+   {
+    "band_half_width_w": 0.04,
+    "review_share_160": 0.0687,
+    "n_decided": 149,
+    "ood_ba_among_decided": 0.5653,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4399,
+     0.6914
+    ]
+   },
+   {
+    "band_half_width_w": 0.06,
+    "review_share_160": 0.125,
+    "n_decided": 140,
+    "ood_ba_among_decided": 0.538,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.3994,
+     0.6786
+    ]
+   },
+   {
+    "band_half_width_w": 0.08,
+    "review_share_160": 0.1875,
+    "n_decided": 130,
+    "ood_ba_among_decided": 0.5356,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.3777,
+     0.6868
+    ]
+   },
+   {
+    "band_half_width_w": 0.1,
+    "review_share_160": 0.2625,
+    "n_decided": 118,
+    "ood_ba_among_decided": 0.524,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.3747,
+     0.6826
+    ]
+   },
+   {
+    "band_half_width_w": 0.12,
+    "review_share_160": 0.3125,
+    "n_decided": 110,
+    "ood_ba_among_decided": 0.5365,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.3853,
+     0.6957
+    ]
+   },
+   {
+    "band_half_width_w": 0.14,
+    "review_share_160": 0.3875,
+    "n_decided": 98,
+    "ood_ba_among_decided": 0.5425,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.3746,
+     0.7103
+    ]
+   },
+   {
+    "band_half_width_w": 0.16,
+    "review_share_160": 0.45,
+    "n_decided": 88,
+    "ood_ba_among_decided": 0.5774,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4034,
+     0.7421
+    ]
+   },
+   {
+    "band_half_width_w": 0.18,
+    "review_share_160": 0.525,
+    "n_decided": 76,
+    "ood_ba_among_decided": 0.6119,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4242,
+     0.8143
+    ]
+   },
+   {
+    "band_half_width_w": 0.2,
+    "review_share_160": 0.575,
+    "n_decided": 68,
+    "ood_ba_among_decided": 0.6138,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4137,
+     0.8157
+    ]
+   },
+   {
+    "band_half_width_w": 0.25,
+    "review_share_160": 0.6438,
+    "n_decided": 57,
+    "ood_ba_among_decided": 0.6029,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4337,
+     0.7838
+    ]
+   },
+   {
+    "band_half_width_w": 0.3,
+    "review_share_160": 0.75,
+    "n_decided": 40,
+    "ood_ba_among_decided": 0.4861,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4483,
+     0.5
+    ]
+   }
+  ],
+  "coverage_gating": [
+   {
+    "coverage_c": 1.0,
+    "review_share_160": 0.0,
+    "n_decided": 160,
+    "ood_ba_among_decided": 0.5464,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4426,
+     0.6569
+    ]
+   },
+   {
+    "coverage_c": 0.8,
+    "review_share_160": 0.2,
+    "n_decided": 128,
+    "ood_ba_among_decided": 0.5402,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.3833,
+     0.6917
+    ]
+   },
+   {
+    "coverage_c": 0.6,
+    "review_share_160": 0.4,
+    "n_decided": 96,
+    "ood_ba_among_decided": 0.55,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.3875,
+     0.7088
+    ]
+   },
+   {
+    "coverage_c": 0.5,
+    "review_share_160": 0.5,
+    "n_decided": 80,
+    "ood_ba_among_decided": 0.5833,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4036,
+     0.7473
+    ]
+   },
+   {
+    "coverage_c": 0.4,
+    "review_share_160": 0.6,
+    "n_decided": 64,
+    "ood_ba_among_decided": 0.5939,
+    "ood_ba_among_decided_ci95_factory_grouped": [
+     0.4071,
+     0.796
+    ]
+   }
+  ]
+ },
+ "ood160_frozen_auroc": 0.566,
+ "ood160_frozen_auroc_ci95_factory_grouped": [
+  0.4125,
+  0.7042
+ ],
+ "conclusion": "the frozen score's review-vs-error frontier on the 160 is not better than chance: no review reduction buys OOD accuracy (grouped CIs include 0.5)."
+}
