@@ -52,7 +52,7 @@
  "experiment": "E2.05",
  "variant": "single middle frame",
  "n_frames": 1,
- "fps_used": 0.9,
+ "fps_used": 0.1,
  "embed_passes": 1,
  "vs_mosaic_N9": -0.0008,
  "vs_meanframes_N9": -0.0678,

@@ -36,11 +36,12 @@
  },
  "experiment": "E2.01",
  "variant": "mosaic embedding",
- "tile_px_sweep": [
+ "tile_px_sweep_planned": [
   112,
   160,
   224
  ],
+ "tile_px_used": 224,
  "results": {
   "N4": {
    "tag": "mosaic_N4",

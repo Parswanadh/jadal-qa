@@ -10,14 +10,17 @@ labelled regimes.
   (LOCO), logistic C=0.01 on L2-normalised features, **clip-bootstrap 95% CI** (B=1000, seed 0).
 - **Out-of-domain**: 60 human-labelled Egocentric-10K windows, 51 good / **9 bad** (say it every
   time); logistic **frozen on all IndEgo**, scored OOD; CI by **window bootstrap (optimistic**,
-  ~1 window/factory). OOD n_bad=9 ⇒ exploratory.
+  47 factories over 60 windows (~1.3 windows/factory). OOD n_bad=9 ⇒ exploratory.
 - Embedding: `google/embeddinggemma-2` from the local HF cache (offline), thumbnail 512 BILINEAR,
   normalize, `max_soft_tokens=140`, batch 64, bf16. Device **A40** (VRAM peak 3967 MB).
 - Frame rule (all datasets): `t_i=(i+0.5)*10/N`, `src_frame_index=round(t_i*native_fps)`
   (IndEgo 480×480@10fps; Egocentric-10K label windows 854×480@30fps).
-- Baselines in-repo: cached EG2 window-embedding logistic 0.848 [0.73,0.91]; 26 per-pixel feats ~0.81.
+- Baselines in-repo: cached EG2 window-embedding logistic 0.848 [0.73,0.91] (reproduced here as the
+  mean-of-frames control); 26 per-pixel features 0.81 — **single observed run** of
+  `tools/port/baseline_logistic_loco.py`, not a logged experiment / results JSON.
 - Regen: `bash tools/pod/gpu_run.sh python3 eval/exp_mosaic/run_variants.py` (cwd=worktree).
-  Results: `eval/results/exp_mosaic/E2.0{1..7}.json`. Tests: `tests/test_mosaic_build.py` (10 pass).
+  Results: `eval/results/exp_mosaic/E2.0{1..7}.json`. Tests: `tests/test_mosaic_build.py` (15 pass;
+  collected by `python3 -m unittest discover -s tests -p 'test_mosaic_build.py'`).
 
 ## E2.01/E2.02 — mosaic vs mean-of-frames, matched frames (N = spec grids + fps{1,2,3,5,10}×10s)
 | N (fps_used) | mosaic IndEgo | mean-of-frames IndEgo | Δ | mosaic OOD | mean OOD |
@@ -37,6 +40,11 @@ The mean-of-frames control reproduces the cached EG2 reference (0.848 → 0.852�
 is **below** it on almost every N (deltas −0.001 … −0.214); the only N within 0.02 in-domain
 (N=30) has OOD 0.155 (worse than chance). Accuracy falls with N: 10×10 tiles at 224 px are crushed
 to ~50 px each by the 512-px preprocessor.
+
+**The IndEgo CIs overlap at every N** — e.g. N=9 mosaic [0.64,0.86] vs mean-of-frames [0.75,0.91]
+— so there is **no significant separation**. The "drop" verdict is the *E2 point rule* (within 0.02
+AUROC of mean-of-frames on BOTH regimes) applied to a *consistent* direction (mosaic below the
+control at every N) plus the OOD collapse at N=30, not a statistically significant difference.
 
 ## E2.03–E2.07 — structure controls
 | variant | IndEgo AUROC [CI95] | OOD | vs mosaic N9 | vs mean N9 |
@@ -61,16 +69,24 @@ is inconsistent / often worse on OOD (0.155–0.638 vs 0.420–0.627); the one i
 deterministic PNG + sidecar is a compact reviewer-facing record of what the verdict saw. The
 `mean-of-frames` EG2 baseline stays the model input (E2.02 `adopt`, control).
 
+**Scope note (receipt integration NOT in this PR).** The mosaic spec says the receipt should hash
+the mosaic bytes + sidecar. **Nothing here wires that in**: this PR only builds the PNG + sidecar
+and runs the E2 evaluation. The dashboard/receipt integration is prospective and not implemented.
+
 ## Cost (measured, A40)
 Full 210-window sweep: decode 873 ms/window, build 1628 ms/window (all 10 mosaics + variants),
 embed 5409 ms/window; 1 embedding pass for the mosaic vs N for the control (≤1/4 for N≥4); VRAM
-peak 3967 MB. Per-mosaic PNG (N=9, 224 px) is ~0.3 MB.
+peak 3967 MB. Per-mosaic PNG (N=9, 224 px) measured on the 210 reference artefacts: mean 590 KB,
+range 349–743 KB (`python3 -c "import glob,os; s=[os.path.getsize(p) for p in glob.glob('/workspace/artifacts/mosaics/*.png')]; print(len(s), min(s), max(s))"`);
+this is a filesystem measurement of the artefacts, not a logged experiment.
 
 ## Artefacts
 `/workspace/artifacts/mosaics/` — 210 windows × (`<id>.png` + `<id>.json` sidecar), reference N=9,
 tile 224, outside git. Sidecar keys: `window_id, source, grid, tile_px, fps_used, tiles
-[{index,t_s,src_frame_index,x,y,w,h}], mosaic_sha256, builder_version`. PNG is byte-identical
-across repeat builds (test).
+[{index,t_s,src_frame_index,x,y,w,h}], mosaic_sha256, builder_version, font{file,size}`. PNG is
+byte-identical across repeat builds (test). The `font` field records the font file actually used
+(falls back to `PIL:load_default`), so a PNG-hash mismatch across environments is explainable:
+identical pixels need the identical `(font file, size)`.
 
 ## Honesty / not done
 One human labeller, 7 clips, ~3 wearers (effective n ≈ 11–43); OOD n_bad=9 (exploratory, optimistic
