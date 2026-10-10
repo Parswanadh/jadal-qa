@@ -48,7 +48,7 @@ from tools.phys import extract_features as EX  # noqa: E402  (decode + Q5 kernel
 from tools.phys.vendor import features_full as FF  # noqa: E402
 from tools.phys.vendor import features_phys as FP  # noqa: E402
 
-DATA = os.environ.get("JADAL_DATA", "/workspace/jadal_pod_bundle")
+DATA = os.environ.get("JADAL_DATA", "jadal_pod_bundle")
 OUT = os.path.join(ROOT, "eval", "results", "exp_phys")
 IMGDIR = os.path.join(ROOT, "docs", "experiments", "exp_phys_indego", "images")
 REPORT = os.path.join(ROOT, "docs", "reports", "exp_phys_indego.md")
@@ -59,7 +59,7 @@ SEED = 0
 Q6_RUN = "Q6.01"
 
 LAPTOP_PREFIX = "/home/parshu/projects/awing/data/"
-POD_PREFIX = "/workspace/jadal_pod_bundle/data/"
+POD_PREFIX = os.path.join(os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle"), 'data/')
 
 
 def remap(path: str) -> str:

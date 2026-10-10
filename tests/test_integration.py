@@ -474,5 +474,135 @@ class TestRealSignalsTrial(IntegrationCase):
         self.assertIn("UNDECODABLE", verdict["reasons"])
 
 
+def _clean_receipt() -> dict:
+    import json as _json
+    backend = _json.dumps({"faces": "mediapipe", "hands": "mediapipe"})
+    return {
+        "signals": {"decodable": True},
+        "decisions": {"model_versions": {
+            "heads": "hands_ok=3d9b5c0b8da0ea9e,active_work=260657b5a9bb0dd8",
+            "frames_decoded": "4"}},
+        "config": {"versions": {
+            "signals": "jadal.signals", "decision": "jadal.decision",
+            "segmenter": "jadal.segmenter", "funnel": "jadal.funnel",
+            "signals_backend": backend}},
+    }
+
+
+class TestReceiptProblems(IntegrationCase):
+    """pipeline.receipt_problems flags stubs/silent fallbacks (issue #55).
+
+    Crafted receipts only: no models, no GPU, no network.
+    """
+
+    def test_clean_real_receipt_has_no_problems(self) -> None:
+        self.assertEqual(pipeline.receipt_problems(_clean_receipt()), [])
+
+    def test_stub_implementations_are_problems(self) -> None:
+        import copy
+        for stage in ("signals", "decision", "segmenter"):
+            receipt = _clean_receipt()
+            receipt["config"]["versions"][stage] = f"stubs.{stage}"
+            problems = pipeline.receipt_problems(receipt)
+            self.assertTrue(problems, stage)
+            self.assertTrue(any("stub" in p for p in problems), problems)
+        receipt = _clean_receipt()
+        receipt["config"]["versions"]["funnel"] = "missing"
+        self.assertTrue(pipeline.receipt_problems(receipt))
+
+    def test_proxy_backend_is_a_problem(self) -> None:
+        import copy
+        import json as _json
+        receipt = _clean_receipt()
+        versions = receipt["config"]["versions"]
+        versions["signals_backend"] = _json.dumps(
+            {"faces": "proxy", "hands": "proxy"})
+        problems = pipeline.receipt_problems(receipt)
+        self.assertTrue(any("mediapipe" in p for p in problems), problems)
+
+    def test_backend_versions_spelling_passes(self) -> None:
+        # impl_versions prefers signals.backend_versions(), which spells the
+        # keys faces_backend/hands_backend (backend_info uses faces/hands).
+        import json as _json
+        receipt = _clean_receipt()
+        receipt["config"]["versions"]["signals_backend"] = _json.dumps(
+            {"faces_backend": "mediapipe", "hands_backend": "mediapipe"})
+        self.assertEqual(pipeline.receipt_problems(receipt), [])
+
+    def test_missing_heads_and_zero_frames_are_problems(self) -> None:
+        receipt = _clean_receipt()
+        receipt["decisions"]["model_versions"]["heads"] = (
+            "hands_ok=missing,active_work=missing")
+        self.assertTrue(any("heads" in p
+                            for p in pipeline.receipt_problems(receipt)))
+        receipt = _clean_receipt()
+        receipt["decisions"]["model_versions"]["frames_decoded"] = "0"
+        self.assertTrue(pipeline.receipt_problems(receipt))
+
+    def test_live_stub_receipt_fails_and_live_real_block_passes(self) -> None:
+        # End to end through run_batch on forced stubs: the demo's no-stub
+        # assertion must fire on a stub receipt. The stage modules are
+        # blocked so impl_versions reports the stub tags (in this worktree
+        # the real modules are importable, which alone would name them
+        # real even though stub callables produced the numbers).
+        segs = pipeline.process_clip(self.fake_clip("stubfail.mp4"), "w", "s",
+                                     self.cfg)
+        blocked = ("jadal.signals", "jadal.decision", "jadal.segmenter")
+        with stubs.blocked_imports(*blocked):
+            _, receipts = pipeline.run_batch(segs, self.cfg)
+            self.assertTrue(pipeline.receipt_problems(receipts[0]))
+
+    def test_missing_versions_block_is_a_problem(self) -> None:
+        self.assertTrue(pipeline.receipt_problems({}))
+
+
+class TestVersionsBlock(IntegrationCase):
+    """config.versions carries the B2 provenance keys (issue #55)."""
+
+    def test_required_keys_present(self) -> None:
+        versions = pipeline.impl_versions(self.cfg)
+        for key in ("python", "platform", "arch", "device",
+                    "torch_version", "opencv_version", "mediapipe_version",
+                    "transformers_version", "numpy_version",
+                    "signals", "decision", "segmenter", "funnel",
+                    "certify", "receipts"):
+            self.assertIn(key, versions, key)
+        self.assertIn(versions["device"], ("cpu", "cuda"))
+        for key in ("signals_git_sha", "decision_git_sha", "segmenter_git_sha",
+                    "funnel_git_sha", "certify_git_sha", "receipts_git_sha"):
+            if key in versions:
+                self.assertRegex(versions[key], r"^[0-9a-f]{40}$", key)
+
+    def test_model_tokens_present_when_files_exist(self) -> None:
+        from jadal.config import ROOT
+        versions = pipeline.impl_versions(self.cfg)
+        for key, rel in (("face_detector_task",
+                           "models/blaze_face_short_range.tflite"),
+                          ("hand_landmarker_task",
+                           "models/hand_landmarker.task")):
+            if (ROOT / rel).is_file():
+                self.assertIn(key, versions)
+                self.assertIn(":sha256:", versions[key])
+            else:
+                self.skipTest(f"{rel} absent: models-dependent key unchecked")
+
+
+class TestDeciderCache(IntegrationCase):
+    """One Decider instance per (class, decimals): no EG2 reload per batch."""
+
+    def test_same_class_returns_same_instance(self) -> None:
+        first = pipeline._get_decider(stubs.StubDecider, self.cfg)
+        second = pipeline._get_decider(stubs.StubDecider, self.cfg)
+        self.assertIs(first, second)
+
+    def test_distinct_class_gets_distinct_instance(self) -> None:
+        class OtherDecider(stubs.StubDecider):
+            pass
+
+        self.assertIsNot(
+            pipeline._get_decider(stubs.StubDecider, self.cfg),
+            pipeline._get_decider(OtherDecider, self.cfg))
+
+
 if __name__ == "__main__":
     unittest.main()

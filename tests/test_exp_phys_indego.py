@@ -20,7 +20,7 @@ from tools.phys import model as M  # noqa: E402
 import phys_rules as PR  # noqa: E402
 
 RULES = os.path.join(ROOT, "tools", "phys", "rules.json")
-BUNDLE = os.environ.get("JADAL_DATA", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_DATA", "jadal_pod_bundle")
 GOLD = os.path.join(BUNDLE, "caches", "perpixel", "gold.npz")
 FEATS = os.path.join(BUNDLE, "caches", "gpu", "features.json")
 PHYS = os.path.join(BUNDLE, "caches", "perpixel", "physics_feats.npz")
