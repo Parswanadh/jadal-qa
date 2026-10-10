@@ -21,3 +21,10 @@ __pycache__/
 # editor / os
 .DS_Store
 *.swp
+
+# pod
+artifacts/
+*.mp4
+*.npz
+*.npy
+.scratch/
