@@ -1,0 +1,566 @@
+{
+ "experiment": "O4.02",
+ "title": "Per-feature IndEgo vs OOD-160 transfer",
+ "n_ood": 160,
+ "n_bad_ood": 22,
+ "label_source": "human (labels/ood160_labels.json; merge of ood_labels.json q1=60 and ood_labels2.json q2=100, single labeller; 138 good / 22 bad, 47 factories)",
+ "protocol": "evaluation only. Per-domain z-score = target-domain mean/std (unsupervised); sign from the 150 IndEgo gold windows. Factory-grouped bootstrap CI (n_boot=2000, seed=0) is the honest CI; window bootstrap is optimistic (correlated within factory).",
+ "device": "CPU (numpy/sklearn; ffmpeg/cv2 decode only, no GPU)",
+ "git_sha": "f20013b677ab3e25b930d7ed23bac572dbb78134",
+ "z3_six": [
+  {
+   "feature": "ct_fsize_std",
+   "indego_auroc": 0.6202,
+   "indego_ci95": [
+    0.4134,
+    0.7537
+   ],
+   "ood160_auroc": 0.6495,
+   "ood160_ci95_factory_grouped": [
+    0.4619,
+    0.8183
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "mo_hand_motion_excess",
+   "indego_auroc": 0.6492,
+   "indego_ci95": [
+    0.5809,
+    0.7197
+   ],
+   "ood160_auroc": 0.6077,
+   "ood160_ci95_factory_grouped": [
+    0.481,
+    0.7456
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "inv_clip_frac",
+   "indego_auroc": 0.6564,
+   "indego_ci95": [
+    0.4636,
+    0.7518
+   ],
+   "ood160_auroc": 0.6614,
+   "ood160_ci95_factory_grouped": [
+    0.4508,
+    0.8594
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "inv_laplacian_var",
+   "indego_auroc": 0.6412,
+   "indego_ci95": [
+    0.4365,
+    0.7626
+   ],
+   "ood160_auroc": 0.7177,
+   "ood160_ci95_factory_grouped": [
+    0.5655,
+    0.8519
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "inv_hist_entropy",
+   "indego_auroc": 0.5342,
+   "indego_ci95": [
+    0.3445,
+    0.7133
+   ],
+   "ood160_auroc": 0.7141,
+   "ood160_ci95_factory_grouped": [
+    0.5581,
+    0.8456
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "inv_dct_hf_lf",
+   "indego_auroc": 0.31,
+   "indego_ci95": [
+    0.2308,
+    0.4564
+   ],
+   "ood160_auroc": 0.2437,
+   "ood160_ci95_factory_grouped": [
+    0.1174,
+    0.3886
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable",
+   "class": "stable"
+  }
+ ],
+ "stable8": [
+  {
+   "feature": "radial_slope",
+   "indego_auroc": 0.6334,
+   "indego_ci95": [
+    0.5502,
+    0.7428
+   ],
+   "ood160_auroc": 0.6347,
+   "ood160_ci95_factory_grouped": [
+    0.4798,
+    0.7809
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "hf_ratio",
+   "indego_auroc": 0.6182,
+   "indego_ci95": [
+    0.517,
+    0.7519
+   ],
+   "ood160_auroc": 0.6574,
+   "ood160_ci95_factory_grouped": [
+    0.5048,
+    0.7987
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "dct_energy",
+   "indego_auroc": 0.6306,
+   "indego_ci95": [
+    0.5193,
+    0.7051
+   ],
+   "ood160_auroc": 0.6996,
+   "ood160_ci95_factory_grouped": [
+    0.5549,
+    0.8307
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "luma_p05",
+   "indego_auroc": 0.3924,
+   "indego_ci95": [
+    0.2531,
+    0.6753
+   ],
+   "ood160_auroc": 0.442,
+   "ood160_ci95_factory_grouped": [
+    0.2764,
+    0.5884
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "global_shift",
+   "indego_auroc": 0.3761,
+   "indego_ci95": [
+    0.28,
+    0.4841
+   ],
+   "ood160_auroc": 0.5091,
+   "ood160_ci95_factory_grouped": [
+    0.3839,
+    0.6476
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "illum_r",
+   "indego_auroc": 0.4898,
+   "indego_ci95": [
+    0.322,
+    0.6977
+   ],
+   "ood160_auroc": 0.2549,
+   "ood160_ci95_factory_grouped": [
+    0.1399,
+    0.3806
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "illum_b",
+   "indego_auroc": 0.5278,
+   "indego_ci95": [
+    0.3427,
+    0.6495
+   ],
+   "ood160_auroc": 0.6864,
+   "ood160_ci95_factory_grouped": [
+    0.5423,
+    0.8158
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "zncc_self",
+   "indego_auroc": 0.5738,
+   "indego_ci95": [
+    0.412,
+    0.6996
+   ],
+   "ood160_auroc": 0.5175,
+   "ood160_ci95_factory_grouped": [
+    0.4085,
+    0.63
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  }
+ ],
+ "z3_all20": [
+  {
+   "feature": "ct_bitrate",
+   "indego_auroc": 0.3762,
+   "indego_ci95": [
+    0.1894,
+    0.6081
+   ],
+   "ood160_auroc": 0.609,
+   "ood160_ci95_factory_grouped": [
+    0.4847,
+    0.7257
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "ct_fsize_mean",
+   "indego_auroc": 0.3762,
+   "indego_ci95": [
+    0.1894,
+    0.6081
+   ],
+   "ood160_auroc": 0.6482,
+   "ood160_ci95_factory_grouped": [
+    0.5263,
+    0.7674
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "ct_fsize_cv",
+   "indego_auroc": 0.7318,
+   "indego_ci95": [
+    0.5404,
+    0.8203
+   ],
+   "ood160_auroc": 0.4802,
+   "ood160_ci95_factory_grouped": [
+    0.33,
+    0.6245
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "low-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "ct_iframe_ratio",
+   "indego_auroc": 0.4794,
+   "indego_ci95": [
+    0.4123,
+    0.5298
+   ],
+   "ood160_auroc": 0.5366,
+   "ood160_ci95_factory_grouped": [
+    0.3888,
+    0.6769
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable",
+   "class": "chance"
+  },
+  {
+   "feature": "ct_fsize_entropy",
+   "indego_auroc": 0.2638,
+   "indego_ci95": [
+    0.1885,
+    0.4451
+   ],
+   "ood160_auroc": 0.4888,
+   "ood160_ci95_factory_grouped": [
+    0.3729,
+    0.6166
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "ct_iframe_frac",
+   "indego_auroc": 0.3505,
+   "indego_ci95": [
+    0.3129,
+    0.4315
+   ],
+   "ood160_auroc": 0.4727,
+   "ood160_ci95_factory_grouped": [
+    0.3317,
+    0.6136
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "ct_fsize_std",
+   "indego_auroc": 0.6202,
+   "indego_ci95": [
+    0.4134,
+    0.7537
+   ],
+   "ood160_auroc": 0.6495,
+   "ood160_ci95_factory_grouped": [
+    0.4619,
+    0.8183
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "mo_trans_resid",
+   "indego_auroc": 0.3012,
+   "indego_ci95": [
+    0.1589,
+    0.5234
+   ],
+   "ood160_auroc": 0.666,
+   "ood160_ci95_factory_grouped": [
+    0.5422,
+    0.7909
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "mo_affine_resid",
+   "indego_auroc": 0.3222,
+   "indego_ci95": [
+    0.167,
+    0.5483
+   ],
+   "ood160_auroc": 0.7269,
+   "ood160_ci95_factory_grouped": [
+    0.6138,
+    0.8328
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "mo_affine_gain",
+   "indego_auroc": 0.3042,
+   "indego_ci95": [
+    0.1882,
+    0.4628
+   ],
+   "ood160_auroc": 0.4931,
+   "ood160_ci95_factory_grouped": [
+    0.37,
+    0.6497
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "mo_hand_trans_resid",
+   "indego_auroc": 0.453,
+   "indego_ci95": [
+    0.3311,
+    0.5974
+   ],
+   "ood160_auroc": 0.695,
+   "ood160_ci95_factory_grouped": [
+    0.5818,
+    0.817
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "mo_hand_affine_resid",
+   "indego_auroc": 0.4798,
+   "indego_ci95": [
+    0.3605,
+    0.6284
+   ],
+   "ood160_auroc": 0.7437,
+   "ood160_ci95_factory_grouped": [
+    0.6572,
+    0.8315
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "mo_hand_motion_excess",
+   "indego_auroc": 0.6492,
+   "indego_ci95": [
+    0.5809,
+    0.7197
+   ],
+   "ood160_auroc": 0.6077,
+   "ood160_ci95_factory_grouped": [
+    0.481,
+    0.7456
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "mo_motion_frac",
+   "indego_auroc": 0.3082,
+   "indego_ci95": [
+    0.1632,
+    0.5221
+   ],
+   "ood160_auroc": 0.6462,
+   "ood160_ci95_factory_grouped": [
+    0.5243,
+    0.7783
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "inv_dct_hf_lf",
+   "indego_auroc": 0.31,
+   "indego_ci95": [
+    0.2308,
+    0.4564
+   ],
+   "ood160_auroc": 0.2437,
+   "ood160_ci95_factory_grouped": [
+    0.1174,
+    0.3886
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "low-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "inv_noise_snr",
+   "indego_auroc": 0.5054,
+   "indego_ci95": [
+    0.3955,
+    0.6646
+   ],
+   "ood160_auroc": 0.3416,
+   "ood160_ci95_factory_grouped": [
+    0.1709,
+    0.5461
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "low-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "inv_clip_frac",
+   "indego_auroc": 0.6564,
+   "indego_ci95": [
+    0.4636,
+    0.7518
+   ],
+   "ood160_auroc": 0.6614,
+   "ood160_ci95_factory_grouped": [
+    0.4508,
+    0.8594
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "inv_hist_entropy",
+   "indego_auroc": 0.5342,
+   "indego_ci95": [
+    0.3445,
+    0.7133
+   ],
+   "ood160_auroc": 0.7141,
+   "ood160_ci95_factory_grouped": [
+    0.5581,
+    0.8456
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  },
+  {
+   "feature": "inv_dhash_dist",
+   "indego_auroc": 0.2023,
+   "indego_ci95": [
+    0.1251,
+    0.368
+   ],
+   "ood160_auroc": 0.5262,
+   "ood160_ci95_factory_grouped": [
+    0.3749,
+    0.6888
+   ],
+   "indego_sign": "low-usable",
+   "ood_sign": "high-usable",
+   "class": "flip"
+  },
+  {
+   "feature": "inv_laplacian_var",
+   "indego_auroc": 0.6412,
+   "indego_ci95": [
+    0.4365,
+    0.7626
+   ],
+   "ood160_auroc": 0.7177,
+   "ood160_ci95_factory_grouped": [
+    0.5655,
+    0.8519
+   ],
+   "indego_sign": "high-usable",
+   "ood_sign": "high-usable",
+   "class": "stable"
+  }
+ ],
+ "z3_all20_class_counts": {
+  "flip": 10,
+  "chance": 1,
+  "stable": 9
+ },
+ "note": "OOD-160 CI is factory-grouped (honest); IndEgo CI is clip-bootstrap (7 clips). Class rule: chance iff both |AUROC-0.5|<0.05, else stable/flip by side (E5.03 rule)."
+}
