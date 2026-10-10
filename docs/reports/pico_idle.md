@@ -222,7 +222,7 @@ Ran 584 tests in 26.859s
 OK (skipped=8)
 ```
 
-(`tests/test_pico_idle.py` now 32 tests; `test_pico_protocol.py` /
+(`tests/test_pico_idle.py` now 31 tests; `test_pico_protocol.py` /
 `test_pico_link.py` untouched and green. The 584 total vs 329 in round 0 is
 the `origin/main` merge, not this diff.)
 
@@ -258,6 +258,67 @@ Shipped without a fresh on-board boot test: mitigated by `py_compile` +
 CPython import-freedom test + 32 unit tests (incl. stub-driven `_idle_step`
 failure paths); the refactor preserves the round-0 call sequence
 (begin→write…/end) and adds only guards. Not claimed otherwise.
+
+## Fix round 2 (re-review of PR #45 — minors fixed, hardware still blocked)
+
+Review: `/home/parshu/projects/jadal-qa-wt/reviews/pr45-review.md`
+(re-review after round 1: code fixes verified on host, 584 green, no
+protected files touched; 1 Important carried, 3 Minors).
+
+### Minor #1 — test overcount (32 claimed, 31 actual): CONFIRMED, FIXED
+
+`grep -c "def test_" tests/test_pico_idle.py` → `31`. Report corrected to
+31. (`unittest tests.test_pico_idle` alone runs 31; the "44" below is idle
+31 + protocol 13.)
+
+### Minor #2 — README missing non-W qualifier: FIXED
+
+Title, intro line, and hardware line now read "RP2040 non-W tested; Pico W /
+RP2350 not tested", matching `pico/main.py`.
+
+### Minor #3 — `mpremote run` note was misleading: FIXED
+
+The `run` line now states plainly that run-mode is host-protocol-only and
+does NOT exercise attract mode unless `:idle.py` is already deployed on the
+board.
+
+### Important #1 — fix image not on board: STILL BLOCKED, exact state
+
+Attempted this round, all flock-held (`tools/pico.lock`, committed round 1):
+
+- Port was held by a sibling `unittest discover` (PID 2923123, cwd
+  `integration3/.scratch/fresh-clone`, no flock); waited ~70 s for exit,
+  `fuser` then free. Device node unchanged (`/dev/ttyACM0`, no
+  re-enumeration since round 1), `lsusb` still `2e8a:0005 MicroPython Board
+  in FS mode` — enumeration healthy.
+- 6 s passive pyserial read → `lines=0` (no HB). Fresh `mpremote …
+  exec "print('R2-ALIVE-CHECK')"` (Sat Oct 10 11:11:04 UTC) → same
+  `TransportError: could not enter raw repl` as round 1.
+- Conclusion unchanged: on-board runtime hung/silent for hours across both
+  rounds; the fix-round-1 image is still NOT on the board (round-0 image in
+  flash, boot state unknown). Recovery needs a physical power-cycle — a
+  user action this agent cannot perform — followed by upload + sha256 +
+  reset + 26 s HB-IDLE/PING capture in a later session. The reviewer's
+  "visually confirm breathing/tour" is additionally impossible from here
+  (no camera on the bench); the closest achievable proof remains the HB
+  IDLE diagnostic plus on-board `tour_phase` exec output.
+
+### Verification (real outputs)
+
+```
+$ grep -c "def test_" tests/test_pico_idle.py
+31
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_pico_idle tests.test_pico_protocol 2>&1 | tail -3
+Ran 44 tests in 0.055s
+OK
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 584 tests in 101.179s
+OK (skipped=8)
+```
+
+No firmware-code change in round 2 (docs/report only), so the round-1
+`py_compile`/unit-test evidence stands; suite re-run above confirms the
+merge base is still green.
 
 ## NOT claimed
 

@@ -1,6 +1,6 @@
-# Raspberry Pi Pico (RP2040 tested) status-LED module
+# Raspberry Pi Pico (RP2040 non-W tested; Pico W / RP2350 not tested) status-LED module
 
-Firmware for a Raspberry Pi Pico (RP2040 tested; RP2350 not tested) that drives a status LED, plus the
+Firmware for a Raspberry Pi Pico (RP2040 non-W tested; Pico W / RP2350 not tested) that drives a status LED, plus the
 host-side Python link in [`jadal/pico_link.py`](../../jadal/pico_link.py).
 USB serial only — **no Wi-Fi**. Protocol is defined in
 [`docs/SPEC.md`](../../docs/SPEC.md) at **115200 baud, newline-terminated ASCII**.
@@ -41,7 +41,7 @@ breathes and tours verdicts on its own.
 
 ## Hardware
 
-- Raspberry Pi Pico (RP2040 tested) running **MicroPython**.
+- Raspberry Pi Pico (RP2040 non-W tested; Pico W / RP2350 not tested) running **MicroPython**.
 - Onboard LED (GP25) is always used and is visible to the camera.
 - Optional **external RGB LED**: wire three GPIOs and set `RGB_PINS = (r, g, b)`
   at the top of `main.py`. Colour mapping: `G` = green, `A` = red+green (amber),
@@ -71,7 +71,7 @@ breathes and tours verdicts on its own.
    the firmware boots but attract mode stays off with no error):
 
    ```bash
-   mpremote run pico/main.py          # quick test run (Ctrl-C to stop; idle.py must be next to main.py)
+   mpremote run pico/main.py          # quick test run (Ctrl-C to stop; host-protocol only — run-mode does NOT exercise attract mode unless :idle.py is already on the board, so deploy :idle.py first to test the animation)
    # deploy persistently:
    mpremote fs cp pico/main.py :main.py
    mpremote fs cp pico/idle.py :idle.py
