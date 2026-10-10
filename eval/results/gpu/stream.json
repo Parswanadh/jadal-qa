@@ -1,0 +1,113 @@
+{
+ "device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
+ "regenerate": "/home/parshu/envs/jadal/bin/python eval/gpu/stream.py",
+ "loco_verify": {
+  "auc": 0.7928,
+  "auc_ci95": [
+   0.6968272738809048,
+   0.8597536491480874
+  ],
+  "n": 150,
+  "note": "independent head; corroborates eval/results/gpu/cascade.json"
+ },
+ "threshold": 0.6,
+ "margin": 0.25,
+ "time_to_first_reject": {
+  "gold:DUPLICATE": {
+   "n": 6,
+   "n_rejected": 6,
+   "median_chunks": 1.5,
+   "median_s": 3.0
+  },
+  "gold:HANDS_NOT_VISIBLE": {
+   "n": 14,
+   "n_rejected": 12,
+   "median_chunks": 1.5,
+   "median_s": 3.0
+  },
+  "gold:NO_ACTIVE_WORK": {
+   "n": 23,
+   "n_rejected": 16,
+   "median_chunks": 2.0,
+   "median_s": 4.0
+  },
+  "gold:TOO_DARK": {
+   "n": 6,
+   "n_rejected": 6,
+   "median_chunks": 1.0,
+   "median_s": 2.0
+  },
+  "gold:UNDECODABLE": {
+   "n": 1,
+   "n_rejected": 1,
+   "median_chunks": 3.0,
+   "median_s": 6.0
+  },
+  "synth:black": {
+   "n": 6,
+   "n_rejected": 6,
+   "median_chunks": 1.0,
+   "median_s": 2.0
+  },
+  "synth:blur": {
+   "n": 6,
+   "n_rejected": 6,
+   "median_chunks": 1.0,
+   "median_s": 2.0
+  },
+  "synth:clean": {
+   "n": 6,
+   "n_rejected": 1,
+   "median_chunks": 1.0,
+   "median_s": 2.0
+  },
+  "synth:darken": {
+   "n": 6,
+   "n_rejected": 6,
+   "median_chunks": 1.0,
+   "median_s": 2.0
+  },
+  "synth:frozen": {
+   "n": 6,
+   "n_rejected": 6,
+   "median_chunks": 1.0,
+   "median_s": 2.0
+  },
+  "synth:lowbitrate": {
+   "n": 6,
+   "n_rejected": 4,
+   "median_chunks": 1.5,
+   "median_s": 3.0
+  },
+  "synth:noise": {
+   "n": 6,
+   "n_rejected": 6,
+   "median_chunks": 1.0,
+   "median_s": 2.0
+  },
+  "synth:overexpose": {
+   "n": 6,
+   "n_rejected": 6,
+   "median_chunks": 1.0,
+   "median_s": 2.0
+  },
+  "synth:shake": {
+   "n": 6,
+   "n_rejected": 5,
+   "median_chunks": 2.0,
+   "median_s": 4.0
+  },
+  "synth:static": {
+   "n": 6,
+   "n_rejected": 6,
+   "median_chunks": 1.0,
+   "median_s": 2.0
+  }
+ },
+ "chunk_latency_s": {
+  "mean": 0.13843205186688767,
+  "max": 0.2650882140005706,
+  "n": 15,
+  "realtime_capable": true
+ }
+}
