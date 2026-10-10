@@ -1,7 +1,0 @@
-{
-  "connected": true,
-  "port": "/dev/ttyACM0",
-  "last_hb_age_s": 0.9,
-  "last_hb_ticks_ms": 1486220,
-  "last_hb_led": "A"
-}

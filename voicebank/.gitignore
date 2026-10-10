@@ -1,6 +1,0 @@
-# Generated audio: regenerate with `python voicebank/gen_voicebank.py`
-# (needs SARVAM_API_KEY in the environment). Remove these lines if the
-# generated wavs should be committed on purpose.
-*.wav
-__pycache__/
-*.pyc
