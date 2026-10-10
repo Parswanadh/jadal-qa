@@ -681,8 +681,21 @@ def partial_recommendation(s: dict) -> str:
         if g.get("auroc") is not None:
             flag = " (PROVISIONAL filename)" if e.get("provisional") else ""
             bits.append(f"{a}: AUROC {g['auroc']} CI {g.get('auroc_ci95')}{flag}")
-    return ("Partial (arms B-final/D pending): " + "; ".join(bits) + "." if bits
-            else "No arms scored yet.")
+    out = ("Partial (arms B-final/D pending): " + "; ".join(bits) + "." if bits
+           else "No arms scored yet.")
+    prov = [a for a, e in s["arms"].items() if e.get("provisional")]
+    if prov:
+        asis = {a: (s["arms"][a].get("gold") or {}).get("results", {}).get("as_is", {}).get("auroc")
+                for a in prov}
+        out += (f" CAVEAT on {', '.join(prov)}: as-is scores {asis} were NOT fitted under LOCO "
+                "and may be tuned in-sample (optimistic); the LOCO-clean head on the same "
+                "features scores lower — treat the head number as the honest one until arm B "
+                "publishes its final protocol.")
+    out += (" Arm A at chance (CI spans 0.5) means the 16-frame MediaPipe baseline carries "
+            "no usable-activity signal on current labels; A-full (whole-video cheap signals) "
+            "leads but its synth profile (catches darken only) shows it keys on activity/motion, "
+            "not capture quality.")
+    return out
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # Spectral study — harness-scored comparison
 
-_Generated 2026-10-10T10:08:37Z by eval/spectral/score.py. Every number below comes from eval/results/spectral/summary.json._
+_Generated 2026-10-10T10:09:57Z by eval/spectral/score.py. Every number below comes from eval/results/spectral/summary.json._
 
 ## Question
 
@@ -122,7 +122,7 @@ EG2: 2209 seg/h/GPU → 1629.7 GPU-h (0.19 GPU-years) for 10,000 h = 3.6M segmen
 
 _TBD once arms B and D report; current partial read below._
 
-Partial (arms B-final/D pending): A: AUROC 0.457 CI [0.375, 0.521]; E: AUROC 0.596 CI [0.505, 0.817]; B-T0: AUROC 0.43 CI [0.359, 0.683] (PROVISIONAL filename); B-T1: AUROC 0.481 CI [0.41, 0.667] (PROVISIONAL filename); A-full: AUROC 0.675 CI [0.6, 0.8].
+Partial (arms B-final/D pending): A: AUROC 0.457 CI [0.375, 0.521]; E: AUROC 0.596 CI [0.505, 0.817]; B-T0: AUROC 0.43 CI [0.359, 0.683] (PROVISIONAL filename); B-T1: AUROC 0.481 CI [0.41, 0.667] (PROVISIONAL filename); A-full: AUROC 0.675 CI [0.6, 0.8]. CAVEAT on B-T0, B-T1: as-is scores {'B-T0': 0.637, 'B-T1': 0.678} were NOT fitted under LOCO and may be tuned in-sample (optimistic); the LOCO-clean head on the same features scores lower — treat the head number as the honest one until arm B publishes its final protocol. Arm A at chance (CI spans 0.5) means the 16-frame MediaPipe baseline carries no usable-activity signal on current labels; A-full (whole-video cheap signals) leads but its synth profile (catches darken only) shows it keys on activity/motion, not capture quality.
 
 ## Limitations
 

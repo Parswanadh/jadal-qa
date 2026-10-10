@@ -1,5 +1,5 @@
 {
- "created_utc": "2026-10-10T10:08:37Z",
+ "created_utc": "2026-10-10T10:09:57Z",
  "label_source": "human gold (IndEgo workers; NOT Awign footage)",
  "gold_snapshot": {
   "snapshot_utc": "2026-10-10T09:53:36.001340+00:00",
@@ -1411,5 +1411,5 @@
  "vlm_verdict": {
   "status": "NOT RUN"
  },
- "scorer_wall_s": 12.1
+ "scorer_wall_s": 10.3
 }
