@@ -51,6 +51,11 @@ shipped IndEgo-calibrated cascade is **at chance**:
 
 <sub>Source: FACTS “UPDATE 18:40 IST — OUT-OF-DOMAIN RESULT”; REG `E6.03`.</sub>
 
+<sub>**Verification note (LB1, `b/verify`):** 0.529 does **not** reproduce from the shipped artifacts.
+Recompute from `caches/ensemble/ood_scores.json` + `labels/ood_labels.json` (same 51 good / 9 bad):
+AUROC **0.415 [0.207, 0.630]**, **26/51** good rejected, 3/9 bad, bal-acc 0.412. Qualitative finding
+confirmed, **worse than published**; FACTS number pending re-derivation (PR #97).</sub>
+
 <!-- Source: FACTS “UPDATE 18:40 IST — OUT-OF-DOMAIN RESULT”. Corroborated by REG E6.03 (frozen motion cue OOD AUROC 0.281 [0.145,0.434]). -->
 
 ---

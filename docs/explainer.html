@@ -57,6 +57,15 @@ every number below is quoted from <code>docs/FACTS.md</code> or <code>experiment
   <p class="src">Source: <code>docs/FACTS.md</code>, “UPDATE 2026-10-10 18:40 IST — corrections”, bullet
   “OUT-OF-DOMAIN RESULT”. Corroborating registry entry: <code>E6.03</code> (motion cue frozen out of domain,
   AUROC 0.281 [0.145, 0.434] — worse than chance, exploratory, n=60/n_bad=9).</p>
+  <p><strong>Verification note (LEAD B, claim LB1,</strong> <code>b/verify</code><strong>):</strong> the
+  published 0.529 does <strong>not</strong> reproduce from the artifacts shipped in this bundle. Recomputing
+  from <code>caches/ensemble/ood_scores.json</code> joined to <code>labels/ood_labels.json</code> (same
+  51 good / 9 bad label set) gives score AUROC <strong>0.415 [0.207, 0.630]</strong>, <strong>26 of 51</strong>
+  good windows rejected, 3 of 9 bad, balanced accuracy 0.412 (<code>p_eg2</code> 0.586,
+  <code>p_pixel</code> 0.342). The qualitative finding — at chance with heavy false rejects — is confirmed
+  and is <strong>worse than published</strong>. The 0.529 figure is quoted from FACTS.md and is pending
+  re-derivation from the recovered frozen artifact (<code>configs/frozen/ensemble_v1.prereg.json</code>,
+  PR #97).</p>
 </div>
 
 <h2>1 · What it is, and what decides</h2>
