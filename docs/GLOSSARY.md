@@ -55,7 +55,7 @@ gold) and **out-of-domain** (Egocentric-10K 1080p/30 fps HEVC).
 | **EG2 / EmbeddingGemma-2 window embedding** | `google/embeddinggemma-2` image embedding of a window's frames, averaged into one window vector; the strongest in-domain view (~0.85 LOCO). | E1.02, E2.02 (`docs/reports/exp_fps.md`, `docs/reports/exp_mosaic.md`) |
 | **pixel-26 / 26 per-pixel features** | 26 deterministic features (noise, sharpness, exposure, spatial/temporal spectrum, motion, etc.) computed on decoded pixels; the second view (~0.81). | E1.01, E4.02, E5.03 (`eval/gpu/features.py`) |
 | **per-pixel view** | The model that consumes the 26 per-pixel features; complement to the EG2 view. | E1.01; LB2 (fused view) |
-| **two-view ensemble / prob-average** | Equal-weight average of the EG2 and pixel-26 probabilities; the frozen production scorer `ensemble_v1`. | E2.02, E5.00; LB2 fused 4 s 0.874 |
+| **two-view ensemble / prob-average** | Equal-weight average of the EG2 and pixel-26 probabilities; the frozen production scorer `ensemble_v1`. Switching to **rank-average** is a free upgrade (Y3.02). | E2.02, E5.00; LB2 fused 4 s 0.874; Y3.02 |
 | **sign inversion** | A feature or clip whose good/bad direction flips between regimes or clips (e.g. `motion_energy`, clip `pallet`), so a frozen direction scores below chance. | E6.02, E5.03, E6.03 |
 | **ego-motion magnitude** | Mean phase-correlation shift between frames — how much the wearer is moving; the strongest *motion* scalar, oriented AUROC 0.805 on IndEgo. | E6.01 (`eval/results/exp_motion_cue/E6.01.json`) |
 
@@ -65,9 +65,21 @@ gold) and **out-of-domain** (Egocentric-10K 1080p/30 fps HEVC).
 |---|---|---|
 | **mosaic** | One image built by tiling N frames sampled across a window, embedded once instead of N times. | E2.01 (`docs/reports/exp_mosaic.md`) |
 | **tile** | One frame placed into a mosaic cell. | E2.01 |
-| **canvas** | The full mosaic image surface (rows x cols x tile_px); used as the "equal-canvas" size control. | E2.01 / X3 `MR` (`eval/exp_mosaic_res/run_res.py`) |
-| **sidecar** | The JSON written next to a mosaic PNG recording `grid`, `tile_px`, per-tile `t_s`/`src_frame_index`, and `mosaic_sha256`. | `docs/reports/exp_mosaic.md` (artefacts) |
-| **timestamped tile** | A tile with `t=X.Xs` burned into its top-right corner; tested (E2.04) to be **not load-bearing**. | E2.04 |
+| **tile px** | The edge length of one mosaic tile in pixels (224/160/112/96/64 in MR.01). Tiles of 112-160 px keep accuracy and are ~36% cheaper; <96 px degrades (0.762 at 96, 0.736 at 64). | X3 `MR.01` (`docs/reports/exp_mosaic_res.md`) |
+| **canvas** | The full mosaic image surface (rows x cols x tile_px), the deterministic CPU cost proxy. The X3 equal-canvas duel holds canvas ~462-465k px while changing tile size (3x3/224 px 0.785 vs 4x4/168 px 0.845). | E2.01 / X3 `MR` (`eval/exp_mosaic_res/run_res.py`) |
+| **sidecar** | The JSON written next to a mosaic PNG recording `grid`, `tile_px`, per-tile `t_s`/`src_frame_index`, and `mosaic_sha256`. | `docs/reports/exp_mosaic.md`; X3 `MR` (`docs/experiments/exp_mosaic_res/images/index.json`) |
+| **timestamped tile** | A tile with `t=X.Xs` burned into its top-right corner; tested (E2.04) to be **not load-bearing** in a 3x3/224 px mosaic, but MR.03 measures **+0.021** when timestamps are on. | E2.04; X3 `MR.03` |
+
+## Review, abstain & fusion (Y-track)
+
+| Term | Definition | Where used |
+|---|---|---|
+| **abstain band** | The interval of scores around a decision threshold that returns REVIEW (uncertain) instead of accept/reject. Y1.01 sweeps a symmetric half-width `w` on the raw score: `w=0.16` (band `[0.34,0.66]`) cuts review to 53.4% at gold BA 0.846. The frozen E8.01 profile band is `[0.25,0.75]`. | Y1.01 (`docs/reports/exp_review_band.md`); `profiles/*.json` |
+| **review share** | Fraction of windows the policy sends to REVIEW rather than accept/reject. Descriptive on unlabelled windows: E8.01 frozen band 75.5% (1,167/1,546); Y1 raw band `w=0.16` -> 53.4%; Y2 gating + stage-0 -> 54.0%. | E8.01; Y1.01; Y2.02 |
+| **cost-margin gating** | Selective classification: decide the top-`coverage` fraction of windows with the largest distance from the cost-optimal threshold `p* = C_fa/(C_fa+C_fr)`, and review the rest. Symmetric 1:1 cost adopted; asymmetric 2:1 / 5:1 rejected. | Y2.01 (`eval/exp_review/run_y2.py`) |
+| **coverage** | In cost-margin gating, the fraction of windows that receive an ACCEPT/REJECT decision (the remainder are REVIEWed). Y2 uses coverage 0.45 -> review 55.0%. | Y2.01 |
+| **rank-average fusion** | Combining views by averaging their per-window **ranks** rather than probabilities. A free win for the existing two views: AUROC 0.834 -> 0.844 and profile-band review mass 0.653 -> 0.607, with no new inference. | Y3.02 (`docs/reports/exp_review_score.md`) |
+| **LOW_MARGIN_PROFILE_REVIEW** | The verdict code the frozen profile emits for a window whose score falls inside the profile's abstain band (`factory_1080p30`: accept >=0.75 / reject <=0.25). It is the source of the E8.01 75.5% review share - the `[0.25,0.75]` band, not `[0.4,0.6]` (0.296). | Y3 honesty note; E8.01; `jadal/poc_stream/policy.py` |
 
 ## Regimes, profiles & policy
 
@@ -100,10 +112,21 @@ gold) and **out-of-domain** (Egocentric-10K 1080p/30 fps HEVC).
 | **funnel S0 / S1 / S2** | Three-stage pipeline: **S0** early exact rules (dark/blocked/frozen) at tiny resolution; **S1** whole-video per-pixel scoring; **S2** heavier tools (MediaPipe hands, EG2) only on uncertain windows. | `docs/ARCHITECTURE.md` §Stage 0/1/2; `docs/reports/funnel.md` |
 | **verdict ACCEPT / REJECT / REVIEW** | Per-window decision from the frozen rule: score > 0.5 accept, < 0.4 reject, else review/uncertain. | E8.01, LB2 (`jadal/poc_stream/policy.py`) |
 | **NVDEC** | NVIDIA hardware video decoder; on this pod it saturates at one engine and is faster than CPU on 1080p HEVC but slower on 480p. | E7.01 (`docs/reports/cost_model.md`); FACTS.md |
-| **CRF** | Constant-Rate-Factor (x264 quality knob, lower = better); swept in the resolution/compression experiment. | `RES` (`eval/exp_res/run_res.py`) |
+| **CRF** | Constant-Rate-Factor (x264 quality knob, lower = better). RES.02: CRF28 (ΔAUROC −0.014) at 57% of CRF23 bytes and CRF33 (Δ −0.015) at 36% both stay inside the 0.02 budget, so CRF is a bytes lever, not a compute lever. | `RES` (`eval/exp_res/run_res.py`; `docs/reports/exp_res.md`) |
 | **bitrate** | Encoded bits per second; a deterministic regime descriptor, not a finding. | E4.01 |
 | **cost model (hours of video per wall-hour)** | Throughput unit: footage-hours processed per wall-clock hour; per-profile 0.51-15.22 on the pod A40, every-2nd+4 s exit x3.88 vs full sampling. | E7.01 (`eval/results/exp_cost/E7.01.json`) |
 | **telemetry** | The 1 Hz GPU/pod CSV (`logs/gpu_telemetry.csv`: power, utilisation, clocks, temperatures) joined to benchmark windows via `eval/gpu/telemetry.py::window_stats()`. | `docs/reports/gpu_pipeline.md` §7; `eval/gpu/e2e.py` |
+
+## Follow-up experiment ids (X-track and Y-track)
+
+| Term | Definition | Where used |
+|---|---|---|
+| **RES (X1)** | Resolution + compression sweep (480/360/240/180/120p, H.264 CRF 18-33) on IndEgo gold plus OOD resolution sensitivity; best shipping point **360p@CRF28** (0.8036, 257 KiB). | `m/res`, PR #117; `docs/reports/exp_res.md` |
+| **SKIP (X2)** | Non-contiguous section sampling: can sections be dropped anywhere (middle/end/evenly)? Answer **no** - uniform-every-2 stays the best cell. | `m/skip`, PR #114; `docs/reports/exp_skip.md` |
+| **MR (X3)** | Low-res/dense mosaic tiles (64-224 px, 2x2-6x6, equal-canvas duel); adopts the small-tile geometry for a mosaic pipeline but keeps the E2 verdict. | `m/mosaic-res`, PR #119; `docs/reports/exp_mosaic_res.md` |
+| **Y1.01** | Review reduction by an abstain-band + calibration sweep; raw `w=0.16` -> 53.4% review, calibration a negative. | `m/review-band`, PR #118; `docs/reports/exp_review_band.md` |
+| **Y2.01 / Y2.02** | Decision-theoretic cost-margin gating (Y2.01) + deterministic stage-0 overlay (Y2.02); 75.5% -> 54.0% review at gold BA 0.837. | `m/review-gate`, PR #116; `docs/reports/exp_review_gate.md` |
+| **Y3.01 / Y3.02** | Cached-view inventory + two-view baseline reproduction (Y3.01); fusion / view-stacking sweep (Y3.02) - rank-average is a free win, more views is a clean negative. | `m/review-score`, PR #120; `docs/reports/exp_review_score.md` |
 
 ---
 
