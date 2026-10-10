@@ -62,8 +62,12 @@ def main():
     rea = [str(r) for r in z["reasons"]]
     zt = np.load(os.path.join(RES, "theory_feats.npz"), allow_pickle=True)
     tids = [str(i) for i in zt["ids"]]
-    tmap = {i: np.asarray(zt["F"][j], dtype=np.float64) / 1e4
-            for j, i in enumerate(tids)}
+    def _trow(j):
+        r = zt["F"][j]
+        if isinstance(r, dict):
+            return np.array([r[k] for k in T.THEORY_FEATURES]) / 1e4
+        return np.asarray(r, dtype=np.float64)
+    tmap = {i: _trow(j) for j, i in enumerate(tids)}
     zp = np.load(os.path.join(RES, "physics_feats.npz"), allow_pickle=True)
     pids = [str(i) for i in zp["ids"]]
     pmap = {i: np.asarray(zp["X"][j], dtype=np.float64)

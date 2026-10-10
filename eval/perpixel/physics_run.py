@@ -153,8 +153,13 @@ def main():
         zmap = {i: z["X"][j].astype(np.float64) for j, i in enumerate(zids)}
         zt = np.load(os.path.join(RES, "theory_feats.npz"), allow_pickle=True)
         tids = [str(i) for i in zt["ids"]]
-        tmap = {i: np.asarray(zt["F"][j], dtype=np.float64) / 1e4
-                for j, i in enumerate(tids)}
+        from jadal.perpixel import theory as _T
+        def _trow(j):
+            r = zt["F"][j]
+            if isinstance(r, dict):
+                return np.array([r[k] for k in _T.THEORY_FEATURES]) / 1e4
+            return np.asarray(r, dtype=np.float64)
+        tmap = {i: _trow(j) for j, i in enumerate(tids)}
         Xc = np.array([np.concatenate([zmap[i], tmap[i], PX[j]])
                        for j, i in enumerate(order)])
         _, ac, cc = loco_lr(Xc[m2], ya, ca, "combined activity")

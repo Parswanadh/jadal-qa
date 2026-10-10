@@ -76,12 +76,16 @@ def noise_model(Y: np.ndarray):
     return a, b, float(10 * np.log10(max(snr, 1e-12)))
 
 
-def frame_bytes(path: str, start_s: float, end_s: float):
-    """Spec 2: decode-free per-frame packet sizes in [start,end)."""
+def frame_bytes(path: str, start_s: float, end_s: float, fps_hint: float = 10.0):
+    """Spec 2: decode-free per-frame packet sizes in [start,end).
+
+    Uses -read_intervals (input -ss returns no packets on this build).
+    """
+    n_exp = max(1, int(round((end_s - start_s) * fps_hint)) + 60)
     p = subprocess.run(
-        ["ffprobe", "-v", "error", "-ss", str(max(0.0, start_s - 1.0)),
-         "-i", path, "-select_streams", "v:0", "-show_packets",
-         "-show_entries", "packet=size,pts_time,flags", "-of", "json"],
+        ["ffprobe", "-v", "error", "-show_packets", "-select_streams", "v:0",
+         "-read_intervals", f"{start_s}%+{n_exp}",
+         "-show_entries", "packet=size,pts_time,flags", "-of", "json", path],
         capture_output=True, timeout=120)
     pkts = json.loads(p.stdout or b"{}").get("packets", [])
     sizes, keys = [], []
@@ -131,13 +135,19 @@ def extract_physics(frames90: np.ndarray, fps: float, path: str,
     samp = np.linspace(0, T - 1, min(T, 12)).astype(int)
     A, B, S = [], [], []
     TEN, TENN, MAD, FRZ = [], [], [], []
+    from jadal.perpixel import theory as _T
+    sig_floor = float(np.median([_T.immerkaer_sigma(Y[i]) for i in samp]))
+    if not np.isfinite(sig_floor) or sig_floor <= 0:
+        sig_floor = 1.0
     for i in samp:
         y = Y[i]
         a, b, s = noise_model(y)
         A.append(a)
         B.append(b)
         S.append(s)
-        sig2 = (b if np.isfinite(b) else 1.0) + 1e-12
+        # spec-1 blocks rarely fire at 160x90 (recorded NaN per spec);
+        # normalisation uses the Immerkaer floor (same resolution, robust).
+        sig2 = sig_floor ** 2 + 1e-12
         h, w = y.shape
         roi = y[h // 4:3 * h // 4, w // 4:3 * w // 4]
         gx = cv2.Sobel(roi, cv2.CV_64F, 1, 0)
@@ -150,7 +160,7 @@ def extract_physics(frames90: np.ndarray, fps: float, path: str,
             m = float(d[~clip[i] & ~clip[i - 1]].mean()
                       if (~clip[i] & ~clip[i - 1]).any() else d.mean())
             MAD.append(m)
-            FRZ.append(1.0 if (np.isfinite(b) and m < 0.5 * np.sqrt(b)) else 0.0)
+            FRZ.append(1.0 if m < 0.5 * sig_floor else 0.0)
     a = float(np.nanmedian(A)) if np.isfinite(A).any() else float("nan")
     b = float(np.nanmedian(B)) if np.isfinite(B).any() else float("nan")
     snr = float(np.nanmedian(S)) if np.isfinite(S).any() else float("nan")
