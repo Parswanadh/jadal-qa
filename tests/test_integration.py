@@ -418,6 +418,16 @@ class TestRealSignalsTrial(IntegrationCase):
 
     force_stubs = False
 
+    def setUp(self) -> None:
+        super().setUp()
+        # Only the real decoder (signals) is under test here. The real L1
+        # Decider loads EG2 onto CUDA, which OOMs whenever other jobs hold the
+        # shared GPU, so the decider stage is stubbed (no GPU use by default).
+        patcher = mock.patch.object(pipeline, "_decider_class",
+                                    new=lambda: stubs.StubDecider)
+        patcher.start()
+        self._stage_patches.append(patcher)
+
     def _write_mp4(self, name: str) -> str:
         import cv2
         import numpy as np
