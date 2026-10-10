@@ -111,8 +111,16 @@ GPU digest ≠ CPU digest — expected (fp16/fp32 vs float64). GPU numerics are 
 identical across devices or vs CPU float64; the Pi path keeps the CPU
 reference.
 
+## 8. Factory 1080p30 HEVC (real video; `factory.json`, RUNNING)
+
+Corpus: `ego10k_scale/clips/factory_*/worker_*/*.mp4` (20-min 1920×1080 HEVC
+30 fps; complete files only, downloader still running; 37/47 shards at
+16:55). F1 sweep = CPU-1core HEVC baseline vs NVDEC 1/2/4 sessions +
+batch/VRAM sweep at T=300 (proc ≤4.5 GiB); F2 = ≥12-min sustained end-to-end
+(NVDEC → GPU convert → kernels → S0 exact + S1 exploratory). Numbers land here
+when the lock frees (queued 16:57 behind harness EG2 job).
+
 ## 7. Telemetry (1 Hz, `logs/gpu_telemetry.csv`; columns: timestamp, power.draw,
-power.limit, clocks.sm, clocks.mem, temp, util, mem.used, 4 throttle reasons)
 
 R3a window (≈16:19–16:26 IST, n=394 rows): power mean **9.9 W** (max 33.9),
 SM clock mean **524 MHz** (p50 390, max 2550 — clocked down at idle), mem clock
