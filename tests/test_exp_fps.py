@@ -358,3 +358,18 @@ def test_results_jsons_carry_provenance_and_experiment_fields():
         assert d["experiment"] == exp, name
         assert d.get("device") and d.get("command") and d.get("git_sha"), name
         assert d["git_sha"] != "unknown", name
+
+
+# --- pod: make bare module-level `test_*` functions visible to `unittest discover` ---
+# `unittest` collects only TestCase subclasses; the functions above were written pytest-style and were
+# therefore silently skipped by `python -m unittest discover -s tests`. This hook adapts them.
+def load_tests(loader, tests, pattern):  # noqa: D103
+    import unittest as _u
+
+    class _ModuleTests(_u.TestCase):
+        pass
+
+    for _name, _fn in sorted(list(globals().items())):
+        if _name.startswith("test_") and callable(_fn):
+            setattr(_ModuleTests, _name, staticmethod(_fn))
+    return _u.TestSuite([loader.loadTestsFromTestCase(_ModuleTests)])
