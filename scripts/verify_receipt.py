@@ -24,10 +24,15 @@ malformed receipt, MAC requested but no key); 3 when a re-run was requested
 but cannot run (real pipeline modules unavailable) — the tool fails clearly
 instead of faking a result.
 
-A hash check proves the receipt was NOT EDITED; it does NOT prove the
-verdict was right. Re-verifying a VERDICT needs the clip, the pinned
-weights and the pinned stack (``--clip PATH --rerun``), and even then it
-only proves the receipt reproduces on this stack — not ground truth.
+A hash check proves SELF-CONSISTENCY (it catches naive edits and
+corruption); it does NOT prove the receipt was not deliberately forged —
+the hash is public and recomputable, so an edit followed by a rewritten
+``receipt_sha256``/``receipt_id`` passes the offline check. Forgery
+detection needs the MAC sidecar (``--mac``) or a pipeline re-run
+(``--clip PATH --rerun``). A hash check also does NOT prove the verdict
+was right. Re-verifying a VERDICT needs the clip, the pinned weights and
+the pinned stack (``--clip PATH --rerun``), and even then it only proves
+the receipt reproduces on this stack — not ground truth.
 """
 from __future__ import annotations
 
@@ -43,10 +48,16 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 HELP_EPILOG = (
     "What this proves (read carefully): a hash check proves the receipt "
-    "file was not edited after it was written. It does NOT prove the "
-    "verdict was right. Re-verifying a VERDICT needs the clip, the pinned "
-    "weights and the pinned stack (--clip PATH --rerun), and even a MATCH "
-    "only shows the receipt reproduces on this stack — not ground truth."
+    "is SELF-CONSISTENT — it catches naive edits and corruption. It does "
+    "NOT prove the receipt was not deliberately forged (the hash is "
+    "public, so an edit plus a rewritten hash passes offline; use --mac "
+    "or --clip PATH --rerun for forgery detection), and it does NOT prove "
+    "the verdict was right. Re-verifying a VERDICT needs the clip, the "
+    "pinned weights and the pinned stack (--clip PATH --rerun), and even "
+    "a MATCH only shows the receipt reproduces on this stack — not ground "
+    "truth. Offline field naming is limited to envelope paths "
+    "(receipt_sha256, receipt_id); exact content paths need "
+    "--clip PATH --rerun."
 )
 
 
@@ -73,7 +84,13 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-HASHED_EXCLUDED = frozenset({"receipt_sha256", "receipt_id", "created_utc"})
+try:
+    # Reuse the receipt module's volatile-key set so a future 4th excluded
+    # key cannot cause spurious diffs; fall back to a copy if the import
+    # fails (run() then exits 2 on the receipts import anyway).
+    from jadal.receipts import HASHED_EXCLUDED
+except ImportError:  # pragma: no cover - jadal.receipts ships with the CLI
+    HASHED_EXCLUDED = frozenset({"receipt_sha256", "receipt_id", "created_utc"})
 
 
 def _stored_vs_fresh_diff(stored: dict, fresh: dict) -> list[str]:
@@ -143,12 +160,20 @@ def _rederive(receipt: dict, receipts_mod) -> dict:
 
 
 def check_hash(receipt: dict, receipts_mod) -> dict:
-    """Offline hash + id check; names envelope paths on mismatch."""
+    """Offline hash + id check; names envelope paths on mismatch.
+
+    A missing ``receipt_id`` is a FAIL (never a silent OK): the id is
+    redundant with the hash for tamper-evidence, but a verifier must not
+    print OK for a check it did not perform. This is deliberately stricter
+    than ``jadal.receipts.verify_receipt``, which treats a missing id as
+    consistent.
+    """
     actual = receipts_mod.receipt_hash(receipt)
     stored_hash = receipt.get("receipt_sha256")
     stored_id = receipt.get("receipt_id")
+    id_present = "receipt_id" in receipt
     hash_ok = stored_hash == actual
-    id_ok = stored_id is None or stored_id == actual[:16]
+    id_ok = id_present and stored_id == actual[:16]
     diff: list[str] = []
     if not (hash_ok and id_ok):
         try:
@@ -162,12 +187,15 @@ def check_hash(receipt: dict, receipts_mod) -> dict:
                 diff.append("receipt_sha256")
             if "receipt_id" in receipt and stored_id != actual[:16]:
                 diff.append("receipt_id")
+        if not id_present and "receipt_id" not in diff:
+            diff.append("receipt_id")
         diff = sorted(set(diff))
     return {
         "checked": True,
         "ok": bool(hash_ok and id_ok),
         "hash_ok": bool(hash_ok),
         "id_ok": bool(id_ok),
+        "id_present": bool(id_present),
         "expected": stored_hash,
         "actual": actual,
         "stored_id": stored_id,
@@ -336,7 +364,10 @@ def render_text(report: dict) -> str:
     else:
         if not h["hash_ok"]:
             lines.append(f"hash: MISMATCH stored={h['expected']} recomputed={h['actual']}")
-        if not h["id_ok"]:
+        if not h["id_present"]:
+            lines.append(f"id: not present (expected={h['actual'][:16]}, "
+                         f"first 16 of recomputed hash)")
+        elif not h["id_ok"]:
             lines.append(f"id: MISMATCH stored={h['stored_id']} "
                          f"expected={h['actual'][:16]} (first 16 of recomputed hash)")
         if h["diff"]:

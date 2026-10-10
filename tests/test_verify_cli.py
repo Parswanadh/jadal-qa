@@ -147,6 +147,42 @@ class OfflineCheckTest(_EnvCase):
         self.assertEqual(code, 1, out)
         self.assertIn("receipt_id", out)
 
+    def test_missing_id_fails_instead_of_silent_ok(self) -> None:
+        # Review Important 2: no OK for a check that was not performed.
+        receipt = _direct_fixture()
+        del receipt["receipt_id"]
+        code, out, _ = run_cli([self.write_receipt(receipt)])
+        self.assertEqual(code, 1, out)
+        self.assertIn("not present", out)
+        self.assertNotIn("id: OK", out)
+        code, json_out, _ = run_cli(
+            [self.write_receipt(receipt, "noid.json"), "--json"])
+        self.assertEqual(code, 1)
+        report = json.loads(json_out)
+        self.assertFalse(report["hash"]["id_present"])
+        self.assertIn("receipt_id", report["hash"]["diff"])
+
+    def test_rehash_forgery_passes_offline_but_mac_catches_it(self) -> None:
+        # Review Important 1, pinned honestly: the hash is public, so an
+        # edit + rewritten hash/id passes the OFFLINE check (exit 0). The
+        # MAC sidecar made before the edit catches it (exit 1).
+        import copy
+        from jadal import receipt_mac as mac_mod
+        from jadal import receipts as receipts_mod
+        os.environ["JADAL_RECEIPT_KEY"] = "unit-test-key"
+        receipt = _direct_fixture()
+        honest_mac = mac_mod.mac_for(receipt["receipt_sha256"])
+        forged = copy.deepcopy(receipt)
+        forged["verdict"] = dict(receipt["verdict"], verdict="reject")
+        forged["receipt_sha256"] = receipts_mod.receipt_hash(forged)
+        forged["receipt_id"] = forged["receipt_sha256"][:16]
+        code, out, _ = run_cli([self.write_receipt(forged, "forged.json")])
+        self.assertEqual(code, 0, out)  # documented limit, not a pass lie
+        code, out, _ = run_cli([self.write_receipt(forged, "forged.json"),
+                                "--mac", honest_mac])
+        self.assertEqual(code, 1, out)
+        self.assertIn("mac: MISMATCH", out)
+
     def test_unreadable_receipt_is_exit_2(self) -> None:
         code, _, err = run_cli([str(self.tmp / "missing.json")])
         self.assertEqual(code, 2)
@@ -170,8 +206,19 @@ class OfflineCheckTest(_EnvCase):
             with self.assertRaises(SystemExit):
                 CLI.main(["--help"])
         text = out.getvalue()
-        self.assertIn("not edited", text)
+        # Review Important 1: the headline claim must not exceed what the
+        # code proves — self-consistency, not unforgeability.
+        self.assertIn("CONSISTENT", text)  # "SELF-CONSISTENT", may wrap
+        self.assertIn("forgery", text)
         self.assertIn("does NOT prove the verdict was right", text)
+        self.assertIn("envelope paths", text)
+        self.assertNotIn("not edited", text)
+
+    def test_exclusion_set_matches_receipts_module(self) -> None:
+        # Review Minor 2: the volatile-key set must not drift from receipts.
+        from jadal import receipts as receipts_mod
+        self.assertEqual(set(CLI.HASHED_EXCLUDED),
+                         set(receipts_mod.HASHED_EXCLUDED))
 
 
 class MacCliTest(_EnvCase):

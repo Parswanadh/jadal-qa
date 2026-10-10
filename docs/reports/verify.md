@@ -24,16 +24,23 @@
   2 usage (bad args, unreadable/malformed receipt, MAC requested but
   `JADAL_RECEIPT_KEY` unset); 3 re-run requested but the real pipeline is
   unavailable (fails clearly, never fakes). `--help` and this report state:
-  a hash check proves the receipt was not edited, NOT that the verdict was
+  a hash check proves SELF-CONSISTENCY (catches naive edits/corruption),
+  NOT unforgeability — the hash is public, so an edit plus a rewritten
+  hash/id passes the offline check (use `--mac` or `--clip PATH --rerun`
+  for forgery detection) — and NOT that the verdict was
   right — re-verifying a VERDICT needs the clip, the pinned weights and
   the pinned stack, and even a MATCH only shows the receipt reproduces on
-  this stack, not ground truth.
-- `tests/test_receipt_mac.py`, `tests/test_verify_cli.py` — 34 tests:
+  this stack, not ground truth. Offline field naming covers envelope paths
+  only (`receipt_sha256`, `receipt_id`); exact content paths need
+  `--clip PATH --rerun`.
+- `tests/test_receipt_mac.py`, `tests/test_verify_cli.py` — 41 tests:
   fixtures via `jadal.receipts.make_receipt` (offline) and via the stub
   pipeline (`JADAL_USE_STUBS=1`) for `--rerun`; tamper each of 6 content
-  fields → exit 1 with the path named; wrong id; MAC good/bad/missing-key;
-  stub `--rerun` MATCH; exit 3 on unavailable pipeline (mocked
-  `RuntimeError`); unreadable/malformed JSON → exit 2.
+  fields → exit 1 with the path named; wrong/missing id; MAC good/bad/
+  missing-key/malformed-hash; rehash-forgery limit pinned (offline exit 0,
+  MAC exit 1); stub `--rerun` MATCH; exit 3 on unavailable pipeline
+  (`RuntimeError` and unexpected `KeyError`); unreadable/malformed
+  JSON → exit 2.
 
 ## How to run
 
@@ -106,8 +113,67 @@ exit=2
 - G3: Single active MAC key only; no rotation/multi-key ring.
 - G4: `--rerun` smoke-tested on stubs only (`JADAL_USE_STUBS=1`); no
   real-weights re-run measured in this worktree (real L0/L1 not merged).
-- G5: A receipt with a missing `receipt_id` is treated as id-OK (matches
-  `verify_receipt` semantics); a missing `receipt_sha256` is a mismatch.
+- G5: A receipt with a missing `receipt_id` is a CLI FAIL (exit 1,
+  `id: not present (expected=…)`), deliberately stricter than
+  `jadal.receipts.verify_receipt`, which treats a missing id as
+  consistent. Rationale: the id is redundant with the hash for
+  tamper-evidence, but a verifier must not print OK for a check it did
+  not perform. A missing `receipt_sha256` is likewise a mismatch.
+
+## Fix round 2 (review of PR #44; all Critical/Important + Minors fixed)
+
+Review verdict was again SPEC: FAIL / CHANGES NEEDED with 2 Important +
+3 Minor findings, all in owned files. No finding was rejected as wrong.
+
+- Important 1 ("NOT EDITED" claim falsified by edit+rehash forgery):
+  every occurrence reworded — module docstring, `--help` epilog, and this
+  report now say SELF-CONSISTENCY, not unforgeability: the hash is public,
+  so an edit plus a rewritten hash/id passes offline; forgery detection
+  needs `--mac` or `--clip PATH --rerun`. Pinned by
+  `test_rehash_forgery_passes_offline_but_mac_catches_it` (forged+rehashed
+  receipt exits 0 offline — the documented limit — and exit 1 with the
+  pre-edit MAC) and the updated `test_help_states_what_a_hash_check_proves`
+  (asserts CONSISTENT/forgery/envelope-paths wording, asserts "not edited"
+  is gone).
+- Important 2 (missing `receipt_id` silently PASSED as "id: OK"): `check_hash`
+  now requires id presence (`id_ok = id_present and …`), prints
+  `id: not present (expected=…)`, names `receipt_id` in the diff, and exits
+  1. Choice documented in G5 above (exit 1, no flag — a missing id is never
+  legitimate: `make_receipt` always writes one). Regression test
+  `test_missing_id_fails_instead_of_silent_ok` (text + `--json`).
+- Minor 1 (offline envelope-only naming vs issue paren): `--help` epilog now
+  states "Offline field naming is limited to envelope paths
+  (receipt_sha256, receipt_id); exact content paths need
+  `--clip PATH --rerun`" (the mismatch note already redirected there).
+- Minor 2 (duplicated exclusion set): CLI now does
+  `from jadal.receipts import HASHED_EXCLUDED` with a same-value fallback;
+  pinned by `test_exclusion_set_matches_receipts_module`.
+- Minor 3 (monkeypatched `verify_receipt` spy; fix marked optional):
+  kept deliberately, not ignored. Recomputing the fresh receipt directly in
+  the CLI would duplicate the pipeline-owned stored-config replay logic
+  (`reverify_receipt` replays the stored block verbatim, rebuilds thresholds
+  from the stored verdict, re-seeds from the replayed config) — a second
+  copy of another worker's semantics that would rot. The spy is read-only,
+  restored in `finally`, single-threaded CLI, and degrades to an empty
+  `field_diff` if the pipeline stops using `verify_receipt`.
+
+Real outputs (ran 2026-10-10, this worktree, `Already up to date` with main):
+
+```
+Ran 41 tests in 2.100s
+OK
+```
+
+Full suite (command as specified in the task):
+
+```
+Ran 363 tests in 9.726s
+OK
+```
+
+Changed files in this round (owned only): `scripts/verify_receipt.py`,
+`tests/test_verify_cli.py`, `docs/reports/verify.md`. No other worker's
+files, `config.py`, `__init__.py`, or `SPEC.md` touched.
 
 ## Fix round 1 (review of PR #44; all Critical/Important + Minors fixed)
 
