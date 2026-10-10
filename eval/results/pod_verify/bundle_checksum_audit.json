@@ -1,0 +1,108 @@
+{
+ "audit": "SHA256SUMS.txt vs on-disk bytes",
+ "bundle": "/workspace/jadal_pod_bundle",
+ "n_ok": 302,
+ "n_mismatch": 14,
+ "n_missing": 4,
+ "mismatches": [
+  {
+   "path": "./caches/ensemble/ensemble_v1.json",
+   "recorded": "4da1068a78d5d15021f4e167d6aa24fd2e0bb08aa88f83c83c2f167cc086fe31",
+   "computed": "cf7fd7d34df2c3ca654c730d518b5aa6c341f6476b41fb3e4d29326b3c18004b",
+   "size": 65333,
+   "mtime": "2026-10-10T14:38:36.176622Z"
+  },
+  {
+   "path": "./caches/frames10k/egocentric_10k_frame_embeddings/meta.json",
+   "recorded": "67d016d5994c989d94b3fd84e7b5ec2a479c4a59b2185fb213956c5961e834c6",
+   "computed": "f839d0d5171fec409a7df7673bc28ee31ea191f7c874dfc32f32dfde2eec4415",
+   "size": 523,
+   "mtime": "2026-10-10T14:38:36.190914Z"
+  },
+  {
+   "path": "./docs/registry_snapshot.jsonl",
+   "recorded": "d8be0322535d1e00196874a269ffde67d31a716d43045f0dcc3fbfd1a3d15559",
+   "computed": "daab7df0ba11bc667ccfb64aa93944df6f239fc3bf06075dead2d91129088643",
+   "size": 13026,
+   "mtime": "2026-10-10T14:38:36.295653Z"
+  },
+  {
+   "path": "./labels/manifest_gold.json",
+   "recorded": "44c7217b839accf0b44133e141a9f1e5bbfb7e02950b0ff7cd1443a34a19a301",
+   "computed": "b1524455f61a49625e93bc0ee1c47b840c149f6635e80ac04ab787a126a5b033",
+   "size": 36053,
+   "mtime": "2026-10-10T14:38:36.213185Z"
+  },
+  {
+   "path": "./local_work/exp-regimes/eval/results/exp_regimes/desc_indego.jsonl",
+   "recorded": "7a398109a2148096d411575d1b44cd8bf247232486a3b9f8af2b1479277977ba",
+   "computed": "02de908b3439ab533f47985c8199acb0e6c62a5107e3eb885473c14eae6016bd",
+   "size": 127858,
+   "mtime": "2026-10-10T14:38:36.302275Z"
+  },
+  {
+   "path": "./local_work/exp-regimes/eval/results/exp_regimes/desc_ood.jsonl",
+   "recorded": "02802b5e95cf9ce8a724762b553226ecaf00b351c3d580bc5d6fd04fb6f4d1a8",
+   "computed": "f3dee10a75fe1f976d25295dd75b66d86ad1617f70f7aaa0886fb95ea3c66f6f",
+   "size": 496350,
+   "mtime": "2026-10-10T14:38:36.310824Z"
+  },
+  {
+   "path": "./opencode_kit/tools/pod/bootstrap.sh",
+   "recorded": "3c761c8d9ccd8d88cabf7273723191736326233e6f36e363fd1032ee65a88691",
+   "computed": "6d3a1f6896ce8f1dbc99b32d7a3a438133465e38ee33f241ded5e9b0500599fa",
+   "size": 4355,
+   "mtime": "2026-10-10T14:36:14.275249Z"
+  },
+  {
+   "path": "./queues/label_queue_random2.json",
+   "recorded": "207da9d62ef7a77a5f20c25b373a06627bbde6e0b4dc23dc17c61f8d5f3f32a1",
+   "computed": "b651f90c588b419ada6698b0c5c042b6e05650e6b05a425a608dd25a997791a2",
+   "size": 48474,
+   "mtime": "2026-10-10T14:38:36.273031Z"
+  },
+  {
+   "path": "./queues/label_queue_random.json",
+   "recorded": "a0a2bee0bf266e40bf244a081d281f9b9f6784ceb762d21132ab17365db5b0fd",
+   "computed": "d6373ed3598c44614d7aaf36a0c01822dd903a60f18ac641ad32fbadf442f1c1",
+   "size": 29465,
+   "mtime": "2026-10-10T14:38:36.266901Z"
+  },
+  {
+   "path": "./queues/manifest_scale.json",
+   "recorded": "7bcdb624c508cb92db091035645f482f5e7e32aab64f5c32542cbf79e55ad313",
+   "computed": "5e3785be8b00f21d50527882a10ed44f50bd1f6081e1c8f21f4bdb9a5d17bf97",
+   "size": 686349,
+   "mtime": "2026-10-10T14:38:36.287369Z"
+  },
+  {
+   "path": "./scripts/baseline_logistic_loco.py",
+   "recorded": "138e072545d2650f0c95bc82eb67bd045a710b1a7bdf0e418f1e645dc55852c0",
+   "computed": "44ef04d32878b4ed38f0e210672e61699e1960fabc232aba425179665293b371",
+   "size": 2660,
+   "mtime": "2026-10-10T14:41:14.580726Z"
+  },
+  {
+   "path": "./scripts/dl_small.py",
+   "recorded": "5de8afea76608dddf587a5a60c27891150d9a2871b77ce8d649e6a392b99f73f",
+   "computed": "d828d47b1aa710c17cae021ca22656320bd44d16263a90469ee48aef716b2cfc",
+   "size": 4597,
+   "mtime": "2026-10-10T14:41:14.599529Z"
+  },
+  {
+   "path": "./scripts/ensemble_views_exploratory.py",
+   "recorded": "763ffc895a12d736c9ecc0d0704fe18debe4296078d6c7862d52996da6c17f65",
+   "computed": "bfa59b749c57a67dc8cf2d371aa0df536868a7bba7a1181aec298cf9c099baf4",
+   "size": 2864,
+   "mtime": "2026-10-10T14:41:14.579137Z"
+  },
+  {
+   "path": "./SHA256SUMS.txt",
+   "recorded": "dd453cb0e2833740541e61cd6606836f9602ad0437c9fc9d779eb5556705f583",
+   "computed": "9fa0a806b4e8c37bb9003f151c5414469e1cfbbbd33efe0db6c214a0a0bc275c",
+   "size": 38120,
+   "mtime": "2026-10-10T14:38:24.770021Z"
+  }
+ ],
+ "ts": "2026-10-10T16:02:27.043612Z"
+}

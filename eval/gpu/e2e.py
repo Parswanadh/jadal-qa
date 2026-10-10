@@ -3,7 +3,7 @@
 >= 120 ten-second windows (>= 20 video-minutes) round-robin over the 7 clips.
 Run under lock (needs GPU for the batched kernels):
   flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock \
-    python3 eval/gpu/e2e.py [nwin] [batch]
+    /home/parshu/envs/jadal/bin/python eval/gpu/e2e.py [nwin] [batch]
 Writes eval/results/gpu/e2e.json (incl. start/end timestamps for telemetry join).
 Telemetry join needs no lock: eval/gpu/telemetry.py window_stats().
 """
@@ -15,7 +15,7 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", ".."))
 OUT = os.path.join(HERE, "..", "results", "gpu", "e2e.json")
-GOLD = "/workspace/jadal_pod_bundle/labels/manifest_gold.json"
+GOLD = "/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"
 FEATS = os.path.join(HERE, "..", "results", "gpu", "features.json")
 
 W, H = 160, 90
@@ -127,7 +127,7 @@ def main(nwin=120, B=8):
     res = {
         "device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
         "regenerate": ("flock -w 3600 /home/parshu/projects/jadal-qa-wt/tools/gpu.lock "
-                       "python3 eval/gpu/e2e.py"),
+                       "/home/parshu/envs/jadal/bin/python eval/gpu/e2e.py"),
         "nwin": done, "video_min": round(done * 10 / 60, 1),
         "padded_windows": padded,
         "corpus": "round-robin 10-s windows over 7 IndEgo clips (content repeats; decode cost realistic)",

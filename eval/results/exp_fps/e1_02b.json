@@ -1,0 +1,196 @@
+{
+ "experiment": "E1.02b",
+ "claim": "LB1-E1.02b",
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold, single labeller, read-only snapshot)",
+ "protocol": "LOCO over 7 IndEgo clips; L2-normalised window mean of per-frame L2-normalised EG2 embeddings; StandardScaler fit on the train fold; LogisticRegression(C=0.01, class_weight='balanced'). CI and deltas: clip bootstrap B=2000 seed 0, ONE shared resample set for all rows (paired by construction).",
+ "device": "NVIDIA A40 44.4 GiB (torch 2.8.0+cu128, bfloat16)",
+ "sampling": "one decode+embed pass at native 10 fps (100 frames/window); 5 fps and 2 fps are exact row subsamples ::2 and ::5 of the same pass",
+ "eg2": {
+  "revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "model_sha256": "197a32965d4b1105faf060417baa899e193fb73cd401f42ec9295234d5553d79",
+  "snapshot_dir": "/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "max_soft_tokens": 140,
+  "normalize_embeddings": true
+ },
+ "manifest": {
+  "path": "/workspace/jadal_pod_bundle/labels/manifest_gold.json",
+  "file_sha256_at_scoring": "44c7217b839accf0b44133e141a9f1e5bbfb7e02950b0ff7cd1443a34a19a301",
+  "labels_sha256_field": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+  "labels_sha256_field_read_by_the_embed_run": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+  "ids_clips_labels_identical": true,
+  "paths_note": "the pristine manifest carries source-machine paths; the pod paths are obtained by remapping '/home/parshu/projects/awing/data/' -> '/workspace/jadal_pod_bundle/data/' in memory only (150/150 resolve)"
+ },
+ "embedding_caches": {
+  "dense10_fps_this_work": "/workspace/cache_e1_02b/dense10.npz",
+  "published_2fps": "/workspace/jadal_pod_bundle/caches/frames10k/segments.npz",
+  "git": "not committed (large binary); regenerate with eval/exp_fps/embed_dense_eg2.py"
+ },
+ "pipeline_validation": {
+  "decode": "sequential native frames at index ::5 are pixel-identical to the published per-sample POS_MSEC seek decode (6/6 windows incl. the five 21-frame windows re-checked, max abs diff 0)",
+  "per_frame_cosine_vs_cached_2fps": {
+   "mean": 0.994651,
+   "min": 0.965754
+  },
+  "window_mean_cosine_vs_cached_2fps": 0.999584,
+  "note": "same frames, independent embedding pass: residual is bf16/batching numerics; its AUROC effect is the 2fps_subsample - 2fps_cached row"
+ },
+ "rows": [
+  {
+   "density": "2fps_cached",
+   "fps": 2.0,
+   "source": "published E1.02 cache (segments.npz)",
+   "frames_per_window": 20.0,
+   "auroc": 0.848,
+   "bal_acc": 0.77,
+   "ci95": [
+    0.7334,
+    0.9099
+   ]
+  },
+  {
+   "density": "2fps_subsample",
+   "fps": 2.0,
+   "source": "dense pass (this work)",
+   "frames_per_window": 20.0,
+   "auroc": 0.8468,
+   "bal_acc": 0.765,
+   "ci95": [
+    0.7328,
+    0.909
+   ]
+  },
+  {
+   "density": "5fps",
+   "fps": 5.0,
+   "source": "dense pass (this work)",
+   "frames_per_window": 50.0,
+   "auroc": 0.8486,
+   "bal_acc": 0.765,
+   "ci95": [
+    0.7426,
+    0.9097
+   ]
+  },
+  {
+   "density": "10fps",
+   "fps": 10.0,
+   "source": "dense pass (this work)",
+   "frames_per_window": 100.0,
+   "auroc": 0.8478,
+   "bal_acc": 0.765,
+   "ci95": [
+    0.739,
+    0.9096
+   ]
+  }
+ ],
+ "paired_deltas": [
+  {
+   "comparison": "5fps - 2fps_cached",
+   "delta": 0.0006,
+   "ci95": [
+    -0.0051,
+    0.014
+   ],
+   "frac_boot_gt_0": 0.665,
+   "p_two_sided": 0.67,
+   "established": false
+  },
+  {
+   "comparison": "10fps - 2fps_cached",
+   "delta": -0.0002,
+   "ci95": [
+    -0.0082,
+    0.0127
+   ],
+   "frac_boot_gt_0": 0.5825,
+   "p_two_sided": 0.835,
+   "established": false
+  },
+  {
+   "comparison": "2fps_subsample - 2fps_cached",
+   "delta": -0.0012,
+   "ci95": [
+    -0.0048,
+    0.0049
+   ],
+   "frac_boot_gt_0": 0.311,
+   "p_two_sided": 0.622,
+   "established": false
+  },
+  {
+   "comparison": "5fps - 2fps_subsample",
+   "delta": 0.0018,
+   "ci95": [
+    -0.0045,
+    0.0151
+   ],
+   "frac_boot_gt_0": 0.7235,
+   "p_two_sided": 0.553,
+   "established": false
+  },
+  {
+   "comparison": "10fps - 2fps_subsample",
+   "delta": 0.001,
+   "ci95": [
+    -0.0073,
+    0.0127
+   ],
+   "frac_boot_gt_0": 0.6625,
+   "p_two_sided": 0.675,
+   "established": false
+  },
+  {
+   "comparison": "10fps - 5fps",
+   "delta": -0.0008,
+   "ci95": [
+    -0.0069,
+    0.0024
+   ],
+   "frac_boot_gt_0": 0.2755,
+   "p_two_sided": 0.551,
+   "established": false
+  }
+ ],
+ "measured_cost": {
+  "basis": "measured on NVIDIA A40, batch 16: 26.9 frames/s encode, decode 5.2 ms/frame, VRAM peak 2.17 GB",
+  "per_window": [
+   {
+    "density": "2fps_subsample",
+    "fps": 2.0,
+    "frames": 20,
+    "decode_s": 0.105,
+    "embed_s": 0.742,
+    "total_s": 0.847,
+    "x_vs_2fps": 1.0
+   },
+   {
+    "density": "5fps",
+    "fps": 5.0,
+    "frames": 50,
+    "decode_s": 0.262,
+    "embed_s": 1.855,
+    "total_s": 2.117,
+    "x_vs_2fps": 2.5
+   },
+   {
+    "density": "10fps",
+    "fps": 10.0,
+    "frames": 100,
+    "decode_s": 0.524,
+    "embed_s": 3.711,
+    "total_s": 4.234,
+    "x_vs_2fps": 5.0
+   }
+  ]
+ },
+ "verdict": "drop",
+ "verdict_rule": "adopt if a denser row is ESTABLISHED better than the same-pass 2 fps control (paired clip-bootstrap CI excluding 0); drop if one is established worse, or if nothing is established while denser sampling costs strictly more and the best point delta is below the 0.005 practical-significance bar; maybe if mixed; inconclusive otherwise",
+ "statistical_read": "the density effect is NOT established at any density: every paired CI includes 0, and the 2fps_subsample - 2fps_cached row shows that re-embedding the SAME frames moves the AUROC by a comparable amount",
+ "decision": "keep the 2 fps EG2 view; do not pay 2.5x/5x the embedding cost for a denser view - no gain is established and the point estimates are inside the pipeline-noise floor",
+ "claim_status": "no non-inferiority margin was pre-stated; every claim below rests on the paired clip-bootstrap CI over 7 clips (small: wide CIs)",
+ "command": "eval/exp_fps/embed_dense_eg2.py (GPU) then eval/exp_fps/run_e1_02b.py"
+}

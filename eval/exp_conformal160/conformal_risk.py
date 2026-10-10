@@ -31,8 +31,8 @@ from collections import OrderedDict
 
 import numpy as np
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
-ART = os.environ.get("JADAL_ARTIFACTS", "/workspace/artifacts")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
+ART = os.environ.get("JADAL_ARTIFACTS", "artifacts")
 OUT = os.environ.get("Z2_OUT", "eval/results/exp_conformal")
 FIG = os.environ.get("Z2_FIG", "docs/experiments/exp_conformal/images")
 SEED = 7
