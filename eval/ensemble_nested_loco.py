@@ -241,10 +241,15 @@ def main():
     res["gates"]["no_clip<0.60"] = bool(minclip >= 0.60)
     res["gates"]["min_clip_auroc"] = float(minclip)
 
-    outdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results", "ensemble")
+    outdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "ensemble")
     os.makedirs(outdir, exist_ok=True)
     with open(os.path.join(outdir, "nested_loco.json"), "w") as f:
         json.dump(res, f, indent=1)
+    np.savez(os.path.join(outdir, "oof_probs.npz"), ids=np.asarray(ids),
+             y=y, clip=clip, reason=reason,
+             p_eg2=pe, p_pixel=pg, p_ens=ensp,
+             p_platt=pe_cal, p_isotonic=ie_cal,
+             verdict_5pct=thr05, verdict_10pct=thr10)
     print(f"n={n} clips={len(clips)}")
     for tag, v in res["views"].items():
         if "auroc" in v:
