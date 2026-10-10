@@ -13,7 +13,7 @@ to pick, per data regime.
 | `run_ood.py` | E1.03: sweep the **original 1080p/30 fps HEVC sources** of the OOD queues at {30,15,10,5,3,2,1} |
 | `run_eg2.py` | E1.02: EmbeddingGemma-2 view, cached 0.5 s embeddings subsampled (no re-embed) |
 | `merge_e1_01.py` / `merge_e1_04.py` / `merge_ood.py` | merge shards -> `eval/results/exp_fps/*.json` |
-| `pareto.py` | accuracy-vs-cost Pareto rows per regime (clean cost = min over repeats) |
+| `pareto.py` | accuracy-vs-cost Pareto rows per regime; clean cost = min over `--reps` x `--benches`, and `clean_vs_shard_ratio` (shard mean / clean min per regime+stage) |
 | `run_all.sh` | full regeneration, 6 processes at a time, `OMP_NUM_THREADS=1` |
 
 ## Protocol
@@ -30,7 +30,8 @@ to pick, per data regime.
 
 ```bash
 export JADAL_BUNDLE=/workspace/jadal_pod_bundle OMP_NUM_THREADS=1
-bash eval/exp_fps/run_all.sh          # ~20 min on the A40 pod, 6 procs
+bash eval/exp_fps/run_all.sh          # ~20 min on the A40 pod, 6 procs; ends with
+                                      # pareto.py --reps 3 --benches 3 (the command in pareto.json)
 ```
 
 Shards (`shard_*.json`, `ood*_shard_*.json`) are intermediates written into

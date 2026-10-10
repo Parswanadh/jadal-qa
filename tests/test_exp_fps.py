@@ -4,6 +4,7 @@ No network, no GPU, <30 s. Run: python3 -m pytest tests/test_exp_fps.py -q
 """
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -182,3 +183,178 @@ def test_ood_labels_are_human_51_9():
     assert len(lab) == 60
     bad = sum(1 for v in lab.values() if v["verdict"] == "bad")
     assert bad == 9
+
+
+# ---------- docs must trace to the results JSONs (PR #88 review F1-F6) ----------
+
+RDIR = fps_lib.RESULTS
+DOC = os.path.join(ROOT, "docs", "reports", "exp_fps_pod.md")
+REGISTRY = os.path.join(ROOT, "experiments", "registry.jsonl")
+
+
+def _res(name):
+    return json.load(open(os.path.join(RDIR, name)))
+
+
+def _latest_registry():
+    """registry.jsonl is append-only; the latest line per id wins (as in exp.py)."""
+    d = {}
+    for line in open(REGISTRY):
+        if line.strip():
+            e = json.loads(line)
+            d.setdefault(e["id"], {}).update(e)
+    return d
+
+
+def test_registry_latest_lines_cite_results_json():
+    """F1/F2: the live registry cost numbers must exist in the results JSONs."""
+    reg = _latest_registry()
+    pareto, e103, e104 = _res("pareto.json"), _res("E1.03.json"), _res("E1.04.json")
+    c_ood = pareto["clean_bench_ood"]["30"]
+    c_ind = pareto["clean_bench_indego"]["2"]
+    cost103, cost104 = reg["E1.03"]["cost"], reg["E1.04"]["cost"]
+    assert f'{c_ood["decode_ms"]:.1f}' in cost103            # clean OOD decode ms/win
+    assert f'{c_ood["feat_ms"]:.1f}' in cost103              # clean OOD feat ms/win @30fps
+    assert f'{e103["decode_ms_mean_300f"]:.1f}' in cost103   # loaded shard run
+    assert f'{c_ind["decode_ms"]:.1f}' in cost104            # clean in-domain decode
+    assert f'{c_ind["feat_ms"]:.1f}' in cost104              # clean 20-frame feature cost
+    assert f'{e104["decode_ms_mean"]:.1f}' in cost104        # loaded shard run
+    assert f'{pareto["clean_vs_shard_ratio"]["range"][0]:.2f}x' in cost103
+
+
+def _retracted_only(txt, needle):
+    """`needle` may only appear on lines that mark it as retracted/superseded."""
+    ctx = re.compile(r"F\d|retract|unsupported|supersed|earlier revision|removed|no results JSON|not in this repo")
+    bad = [l.strip() for l in txt.splitlines() if needle in l and not ctx.search(l)]
+    assert not bad, (needle, bad)
+
+
+def test_registry_summaries_quote_results_json():
+    """F3/F7: the numbers inside the live summaries come from the result files."""
+    reg = _latest_registry()
+    e103, e104 = _res("E1.03.json"), _res("E1.04.json")
+    s103, s104 = reg["E1.03"]["summary"], reg["E1.04"]["summary"]
+    pf = e103["per_feature_signed_auroc"]
+    assert f'{pf["1"]["rppg_pulse"]:.4f}' in s103            # 0.5000 (not 0.2854)
+    assert f'{pf["2"]["rppg_pulse"]:.4f}' in s103            # 0.2854 stated as the 2fps value
+    for r in e103["frozen_rows"]:
+        if r["fps"] in (30, 1):
+            assert f'{r["frozen_auroc"]:.4f}' in s103
+    rows = {r["strategy"]: r for r in e104["rows"]}
+    for arm in ("uniform20", "motion20"):
+        for b in rows[arm]["ci95"]:
+            assert f"{b:.3f}" in s104, (arm, b)
+    # F7 sanity note: both CI widths stated, to bootstrap rounding
+    m = re.search(r"\(width ([\d.]+) vs ([\d.]+)\)", s104)
+    assert m, "CI-width sanity note missing from the E1.04 verdict"
+    w = {a: r["ci95"][1] - r["ci95"][0] for a, r in rows.items()}
+    assert float(m.group(1)) == pytest.approx(w["motion20"], abs=0.001)
+    assert float(m.group(2)) == pytest.approx(w["uniform20"], abs=0.001)
+
+
+def test_report_per_feature_table_matches_e1_03():
+    """F3: every cell of the report's per-feature table equals E1.03.json."""
+    pf = _res("E1.03.json")["per_feature_signed_auroc"]
+    n = 0
+    for line in open(DOC):
+        if not line.startswith("| `"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) < 5 or cells[0].strip("`") not in pf["30"]:
+            continue
+        name = cells[0].strip("`")
+        for col, fps in ((1, "30"), (2, "10"), (3, "1")):
+            assert float(cells[col].strip("*")) == pf[fps][name], (name, fps)
+        v = [pf[f][name] for f in ("30", "15", "10", "5", "3", "2", "1")]
+        assert float(cells[4].strip("*")) == pytest.approx(round(max(v) - min(v), 4)), name
+        n += 1
+    assert n >= 12, n
+
+
+def test_report_cost_tables_match_pareto():
+    """F1/F2/F5: the clean cost numbers quoted in the report are in pareto.json."""
+    txt = open(DOC).read()
+    pareto = _res("pareto.json")
+    c_ind = pareto["clean_bench_indego"]["2"]
+    c_ood30 = pareto["clean_bench_ood"]["30"]
+    assert f'{c_ind["decode_ms"]:.0f}' in txt          # 112 ms/win in-domain
+    assert f'{c_ind["feat_ms"]:.0f}' in txt            # 54 (53.7) ms/win at 20 frames
+    assert f'{c_ood30["decode_ms"]:.0f}' in txt        # 2900 ms/win OOD
+    assert f'{c_ood30["feat_ms"]:.0f}' in txt          # 843 ms/win OOD at 30 fps
+    _retracted_only(txt, "decode 129 ms")              # F2 stale value, retracted
+    _retracted_only(txt, "same to 4 dp")               # unsupported laptop claim, retracted
+    for k, v in pareto["feat_fit"].items():
+        assert f'{v["slope_ms_per_frame"]:.2f}' in txt, k
+
+
+def test_report_has_no_unsupported_shard_multiplier():
+    """F5: the shard/clean multiplier is read from the JSON, not typed by hand."""
+    txt = open(DOC).read()
+    pareto = _res("pareto.json")
+    lo, hi = pareto["clean_vs_shard_ratio"]["range"]
+    assert f"{lo:.1f}\u2013{hi:.1f}\u00d7" in txt      # e.g. 2.2-8.0x
+    assert "2-4x" not in txt
+    assert "2-4x" not in pareto["cost_note"]
+    # the old, unsupported wording may only survive where it is retracted (F5)
+    _retracted_only(txt, "2\u20134\u00d7")
+    assert "clean_vs_shard_ratio" in txt              # points at the JSON block
+    for k in ("ood_decode", "e104_decode", "indego_decode"):
+        v = pareto["clean_vs_shard_ratio"][k]
+        assert f"{v:.2f}\u00d7" in txt, k
+
+
+def test_report_states_motion_energy_is_not_comparable_across_fps():
+    """F4: the mean |frame diff| caveat is stated next to the fps table."""
+    txt = open(DOC).read()
+    fc = _res("e1_01.json")["fps_comparability"]
+    assert any("motion_energy" in x for x in fc["NOT_comparable_across_fps"])
+    assert "motion_energy" in txt
+    assert "NOT comparable across fps" in txt
+    assert "mean |frame diff|" in txt
+    assert "fps_comparability" in txt
+
+
+def test_run_all_regenerates_the_committed_pareto_command():
+    """F6: one command (run_all.sh) reproduces the committed pareto.json bench."""
+    pareto = _res("pareto.json")
+    sh = open(os.path.join(SRC_DIR, "run_all.sh")).read()
+    spread = pareto["bench_spread"]
+    assert f'--benches {spread["n_bench_runs"]}' in sh
+    assert f'--benches {spread["n_bench_runs"]}' in pareto["command"]
+    assert f'--reps {spread["n_reps_each"]}' in pareto["command"]
+    assert "pareto.py --reps 3 --benches 3" in sh
+
+
+def test_clean_vs_shard_ratio_is_recomputable_from_the_results():
+    """F5: pareto.json's ratio block is arithmetic on the other results files."""
+    pareto = _res("pareto.json")
+    e101, e103, e104 = _res("e1_01.json"), _res("E1.03.json"), _res("E1.04.json")
+    r = pareto["clean_vs_shard_ratio"]
+    ci, co = pareto["clean_bench_indego"], pareto["clean_bench_ood"]
+    arm = e104["cost"]["feat_ms_per_window_by_arm"]
+    want = {
+        "indego_decode": e101["rows"][0]["decode_ms_mean"] / ci["10"]["decode_ms"],
+        "indego_feat_10fps": e101["rows"][0]["feat_ms_mean"] / ci["10"]["feat_ms"],
+        "indego_feat_1fps": e101["rows"][-1]["feat_ms_mean"] / ci["1"]["feat_ms"],
+        "ood_decode": e103["decode_ms_mean_300f"] / co["30"]["decode_ms"],
+        "ood_feat_30fps": e103["frozen_rows"][0]["feat_ms_mean"] / co["30"]["feat_ms"],
+        "ood_feat_1fps": e103["frozen_rows"][-1]["feat_ms_mean"] / co["1"]["feat_ms"],
+        "e104_decode": e104["decode_ms_mean"] / ci["2"]["decode_ms"],
+        "e104_feat_uniform20": arm["uniform20"] / ci["2"]["feat_ms"],
+        "e104_feat_keyframe": arm["keyframe"] / ci["2"]["feat_ms"],
+    }
+    for k, v in want.items():
+        assert r[k] == pytest.approx(round(v, 2), abs=0.011), k
+    vals = sorted(round(v, 2) for v in want.values())
+    assert r["range"] == [vals[0], vals[-1]]
+
+
+def test_results_jsons_carry_provenance_and_experiment_fields():
+    """Every committed results JSON: experiment id, device, command, git_sha."""
+    for name, exp in (("E1.03.json", "E1.03"), ("E1.04.json", "E1.04"),
+                      ("e1_01.json", "E1.01"), ("e1_02.json", "E1.02"),
+                      ("pareto.json", "E1.cost")):
+        d = _res(name)
+        assert d["experiment"] == exp, name
+        assert d.get("device") and d.get("command") and d.get("git_sha"), name
+        assert d["git_sha"] != "unknown", name
