@@ -106,6 +106,16 @@ def git_sha() -> str | None:
         return None
 
 
+def git_branch() -> str | None:
+    try:
+        out = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                             capture_output=True, text=True, cwd=ROOT,
+                             timeout=15)
+        return out.stdout.strip() or None
+    except Exception:
+        return None
+
+
 def cpu_model() -> str | None:
     try:
         with open("/proc/cpuinfo") as fh:
@@ -129,6 +139,40 @@ def clip_durations(clips: list[Path]) -> dict[str, float]:
     return durs
 
 
+def make_seg_id(clip_path: str, start_s: float, seg_seconds: float) -> str:
+    """Deterministic cache key: stem + sha1(full source path) + start + length.
+
+    Pure/hermetic. Two different clips sharing a stem, or two runs with
+    different --seg-seconds, never collide (Important 2 fix).
+    """
+    digest = hashlib.sha1(str(clip_path).encode("utf-8")).hexdigest()[:8]
+    stem = Path(clip_path).stem
+    return f"{stem}-{digest}-{start_s:08.3f}-{seg_seconds:g}s"
+
+
+def parse_core_list(spec: str) -> list[int]:
+    """Expand a taskset-style core spec to a sorted CPU list. Pure/hermetic.
+
+    Accepts "0", "0-3", "0,2", "0-1,3". Raises ValueError on garbage.
+    """
+    cpus: list[int] = []
+    for part in spec.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            lo_s, hi_s = part.split("-", 1)
+            lo, hi = int(lo_s), int(hi_s)
+            if lo > hi:
+                raise ValueError(f"bad core range: {part!r}")
+            cpus.extend(range(lo, hi + 1))
+        else:
+            cpus.append(int(part))
+    if not cpus:
+        raise ValueError(f"empty core spec: {spec!r}")
+    return sorted(set(cpus))
+
+
 def select_segments(clip_dir: Path, n: int, seg_seconds: float) -> list[dict]:
     """Deterministic segment selection: clips sorted, fixed fractional offsets."""
     clips = sorted(clip_dir.rglob("*_480.mp4"))
@@ -148,28 +192,48 @@ def select_segments(clip_dir: Path, n: int, seg_seconds: float) -> list[dict]:
             frac = (i / (per - 1)) if per > 1 else 0.0
             start = round(span * frac, 3)
             segs.append({"clip": str(clip), "start_s": start,
-                         "seg_id": f"{clip.stem}-{start:08.3f}"})
+                         "seg_id": make_seg_id(str(clip), start, seg_seconds)})
             if len(segs) >= n:
                 return segs
     return segs
 
 
+def cached_frames(path: Path) -> int | None:
+    """Frame count of a cached segment file, or None when unreadable."""
+    import cv2
+    cap = cv2.VideoCapture(str(path))
+    if not cap.isOpened():
+        return None
+    try:
+        return int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    finally:
+        cap.release()
+
+
 def extract_segments(segs: list[dict], seg_seconds: float) -> list[Path]:
-    """Extract 10 s windows with cv2 (deterministic: same file reused by all repeats)."""
+    """Extract fixed-length windows with cv2, reusing only verified cache hits.
+
+    A cached file is reused only when its frame count equals the frames this
+    run needs; otherwise it is re-extracted. A short extraction (got != need,
+    e.g. the source ends early) fails loudly instead of benchmarking a
+    wrong-length file.
+    """
     import cv2
     SEG_DIR.mkdir(parents=True, exist_ok=True)
     paths: list[Path] = []
     for s in segs:
         out = SEG_DIR / f"{s['seg_id']}.mp4"
-        if out.is_file():
+        cap0 = cv2.VideoCapture(s["clip"])
+        fps = float(cap0.get(cv2.CAP_PROP_FPS)) or 10.0
+        need = int(round(seg_seconds * fps))
+        cap0.release()
+        if out.is_file() and cached_frames(out) == need:
             paths.append(out)
             continue
         cap = cv2.VideoCapture(s["clip"])
-        fps = float(cap.get(cv2.CAP_PROP_FPS)) or 10.0
         w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         cap.set(cv2.CAP_PROP_POS_MSEC, s["start_s"] * 1000.0)
-        need = int(round(seg_seconds * fps))
         writer = cv2.VideoWriter(str(out),
                                  cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
         got = 0
@@ -181,8 +245,11 @@ def extract_segments(segs: list[dict], seg_seconds: float) -> list[Path]:
             got += 1
         cap.release()
         writer.release()
-        if got == 0:
-            raise SystemExit(f"SKIP: could not extract {s['seg_id']}")
+        if got != need:
+            raise SystemExit(
+                f"FAIL: extracted {got}/{need} frames for {s['seg_id']} "
+                f"(source {s['clip']} @ {s['start_s']}s); refusing to "
+                f"benchmark a wrong-length file.")
         paths.append(out)
     return paths
 
@@ -236,7 +303,10 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Edge throughput benchmark (B9).")
     ap.add_argument("--device-label", default="x86-laptop-proxy")
     ap.add_argument("--cores", default="0,0-3",
-                    help="Comma-separated taskset core lists, e.g. '0,0-3'.")
+                    help="Comma-separated taskset core specs, e.g. '0,0-3'. "
+                         "Each item is one pinned worker (contiguous ranges "
+                         "like 0-3; non-contiguous CPU sets are not "
+                         "expressible here by design).")
     ap.add_argument("--segments", type=int, default=30)
     ap.add_argument("--seg-seconds", type=float, default=10.0)
     ap.add_argument("--repeats", type=int, default=3)
@@ -281,9 +351,11 @@ def main(argv: list[str] | None = None) -> int:
     ncpu = os.cpu_count() or 1
     worker_results: dict[str, dict] = {}
     for cfg in core_cfgs:
-        cores = [c for c in cfg.replace("-", " ").split()]
-        n_cores = (int(cores[-1]) - int(cores[0]) + 1) if len(cores) == 2 \
-            else len(cores)
+        try:
+            n_cores = len(parse_core_list(cfg))
+        except ValueError as e:
+            print(f"bad --cores spec {cfg!r}: {e}", file=sys.stderr)
+            return 2
         n_cores = max(1, min(n_cores, ncpu))
         env = dict(os.environ)
         env["OMP_NUM_THREADS"] = env["OPENBLAS_NUM_THREADS"] = \
@@ -348,6 +420,7 @@ def main(argv: list[str] | None = None) -> int:
         "opencv": cv2.__version__,
         "numpy": numpy.__version__,
         "git_sha": git_sha(),
+        "git_branch": git_branch(),
         "seg_seconds": args.seg_seconds,
         "n_segments": len(seg_paths),
         "segment_ids": [s["seg_id"] for s in segs],

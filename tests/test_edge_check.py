@@ -37,7 +37,7 @@ class ForbiddenDetectorTest(unittest.TestCase):
     def test_each_forbidden_exact(self):
         for mod in ["torch", "torchvision", "sentence_transformers",
                     "transformers", "sklearn", "pandas", "matplotlib",
-                    "fastapi", "uvicorn"]:
+                    "fastapi", "uvicorn", "onnxruntime", "tensorflow"]:
             with self.subTest(mod=mod):
                 self.assertEqual(edge_check.check_forbidden([mod, "cv2"]), [mod])
 
@@ -122,6 +122,46 @@ class CheckSchemaTest(unittest.TestCase):
     def test_non_dict_rejected(self):
         self.assertTrue(edge_check.validate_result([]))
 
+    def test_runtime_forbidden_field(self):
+        good = self._valid()
+        good["runtime_forbidden_found"] = []
+        self.assertEqual(edge_check.validate_result(good), [])
+        bad = self._valid()
+        bad["runtime_forbidden_found"] = "torch"
+        self.assertTrue(any("runtime_forbidden" in e
+                            for e in edge_check.validate_result(bad)))
+
+    def test_runtime_probe_modules_detect_lazy_torch(self):
+        # Important 1: a lazy `import torch` at call time must fail the gate
+        # even when the import-time module list is clean.
+        self.assertEqual(edge_check.check_forbidden(["jadal.signals", "cv2"]), [])
+        self.assertEqual(
+            edge_check.check_forbidden(
+                ["jadal.signals", "cv2", "torch", "torch._C"]),
+            ["torch"])
+
+
+    def test_process_child_emits_modules(self):
+        # Important 1 wiring: the call-time probe child must export
+        # sys.modules so main() can forbid-gate lazy imports.
+        self.assertIn('"modules"', edge_check._PROCESS_CHILD)
+
+
+class OverwriteRuleTest(unittest.TestCase):
+    def test_measured_result_protected(self):
+        old = {"process_probe": {"peak_rss_MB": 1.0}}
+        self.assertFalse(edge_check.should_overwrite(old, False, False))
+
+    def test_force_allows(self):
+        old = {"process_probe": {"peak_rss_MB": 1.0}}
+        self.assertTrue(edge_check.should_overwrite(old, False, True))
+
+    def test_new_measurements_overwrite_stub(self):
+        self.assertTrue(edge_check.should_overwrite({"process_probe": None},
+                                                    True, False))
+        self.assertTrue(edge_check.should_overwrite(None, False, False))
+        self.assertTrue(edge_check.should_overwrite("garbage", False, False))
+
 
 class BenchSchemaTest(unittest.TestCase):
     def _valid(self):
@@ -160,6 +200,31 @@ class BenchSchemaTest(unittest.TestCase):
         c["route"] = dict(b["route"], verdict="accept")
         self.assertNotEqual(edge_bench.hash_route_output(a),
                             edge_bench.hash_route_output(c))
+
+
+class BenchHelpersTest(unittest.TestCase):
+    def test_parse_core_list(self):
+        self.assertEqual(edge_bench.parse_core_list("0"), [0])
+        self.assertEqual(edge_bench.parse_core_list("0-3"), [0, 1, 2, 3])
+        self.assertEqual(edge_bench.parse_core_list("0,2"), [0, 2])
+        self.assertEqual(edge_bench.parse_core_list("0-1,3"), [0, 1, 3])
+
+    def test_parse_core_list_garbage(self):
+        for bad in ["", "x", "3-1", "0-"]:
+            with self.subTest(bad=bad):
+                self.assertRaises(ValueError,
+                                  edge_bench.parse_core_list, bad)
+
+    def test_seg_id_keys_path_and_length(self):
+        # Important 2: same stem from different dirs, or different
+        # --seg-seconds, must never share a cache file.
+        a = edge_bench.make_seg_id("/d1/clip_480.mp4", 60.0, 10.0)
+        b = edge_bench.make_seg_id("/d2/clip_480.mp4", 60.0, 10.0)
+        c = edge_bench.make_seg_id("/d1/clip_480.mp4", 60.0, 5.0)
+        d = edge_bench.make_seg_id("/d1/clip_480.mp4", 60.0, 10.0)
+        self.assertNotEqual(a, b)
+        self.assertNotEqual(a, c)
+        self.assertEqual(a, d)
 
 
 if __name__ == "__main__":

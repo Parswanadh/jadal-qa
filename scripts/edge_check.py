@@ -30,9 +30,10 @@ Every number in the output JSON carries the proxy disclaimer: the benchmark
 here runs on THIS x86 laptop, which is NOT a Raspberry Pi. Never claim
 "runs on a Pi" without a run with ``--device-label`` on real hardware.
 
-Exit codes: 0 = pass (no forbidden import; skips, if any, are explained in
-the JSON), 1 = FAIL (forbidden import found), 2 = environment problem
-(no clip available AND requested, python missing, ...).
+Exit codes: 0 = pass (no forbidden import at import time OR at call time;
+skips, if any, are explained in the JSON), 1 = FAIL (forbidden import found),
+2 = skipped/not-measured (`--require-probes` with probes skipped, or refusal
+to overwrite a measured result with a probe-skipped one without `--force`).
 """
 
 from __future__ import annotations
@@ -66,6 +67,8 @@ FORBIDDEN_EXACT = frozenset({
     "matplotlib",
     "fastapi",
     "uvicorn",
+    "onnxruntime",
+    "tensorflow",
 })
 # Prefixes catching CUDA libraries (nvidia wheels, cupy, triton, ...).
 FORBIDDEN_PREFIXES = ("cuda", "cublas", "cudnn", "cufft", "curand",
@@ -124,6 +127,9 @@ def validate_result(obj: dict) -> list[str]:
         errors.append("disclaimer must contain the proxy-hardware label")
     if not isinstance(obj.get("forbidden_found", None), list):
         errors.append("forbidden_found must be a list")
+    if "runtime_forbidden_found" in obj and not isinstance(
+            obj["runtime_forbidden_found"], list):
+        errors.append("runtime_forbidden_found must be a list")
     if not isinstance(obj.get("heavy_present", None), dict):
         errors.append("heavy_present must be a dict")
     return errors
@@ -198,7 +204,8 @@ dt = time.time() - t0
 peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0
 print(json.dumps({{"segment": str(OUT), "frames_written": n, "fps": fps,
                    "compute_signals_s": round(dt, 3), "peak_rss_MB": round(peak, 1),
-                   "signals": sig, "backend_info": S.backend_info()}}))
+                   "signals": sig, "backend_info": S.backend_info(),
+                   "modules": sorted(sys.modules.keys())}}))
 """
 
 
@@ -222,6 +229,27 @@ def find_clip(clip_dir: Path) -> Path | None:
     return None
 
 
+def should_overwrite(old: dict | None, new_has_probes: bool,
+                     force: bool) -> bool:
+    """Pure overwrite rule (Minor 5): never clobber measured probes with a
+    probe-skipped result unless --force. Hermetic/pure."""
+    if force or new_has_probes:
+        return True
+    if not isinstance(old, dict):
+        return True
+    return not bool(old.get("process_probe"))
+
+
+def git_branch() -> str | None:
+    try:
+        out = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                             capture_output=True, text=True, cwd=ROOT,
+                             timeout=15)
+        return out.stdout.strip() or None
+    except Exception:
+        return None
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Edge-tier import audit (B9).")
     ap.add_argument("--device-label", default="x86-laptop-proxy")
@@ -231,6 +259,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--seg-seconds", type=float, default=10.0)
     ap.add_argument("--out", default=None,
                     help="Result JSON path (default eval/results/edge_check_<label>.json).")
+    ap.add_argument("--require-probes", action="store_true",
+                    help="Exit 2 when any probe is skipped (for the B9 gate: "
+                         "a PASS must have measured, not just audited).")
+    ap.add_argument("--force", action="store_true",
+                    help="Allow overwriting a result that contains measurements "
+                         "with one where the probes were skipped.")
     args = ap.parse_args(argv)
 
     audit = _run_child(
@@ -245,9 +279,11 @@ def main(argv: list[str] | None = None) -> int:
         "machine": platform.machine(),
         "python": platform.python_version(),
         "git_sha": git_sha(),
+        "git_branch": git_branch(),
         "edge_modules_imported": audit["imported"],
         "edge_modules_missing": audit["missing"],
         "forbidden_found": forbidden,
+        "runtime_forbidden_found": [],
         "heavy_present": audit["heavy_present"],
         "heavy_versions": audit["heavy_versions"],
         "import_time_s": audit["import_time_s"],
@@ -274,6 +310,10 @@ def main(argv: list[str] | None = None) -> int:
                 BLOCK="", seg=str(clip), out=str(seg_path),
                 seconds=args.seg_seconds))
             result["process_probe"] = probe
+            # Important 1 fix: the forbidden gate also covers modules pulled
+            # in LAZILY at call time (compute_signals runs in this child).
+            result["runtime_forbidden_found"] = check_forbidden(
+                probe.get("modules", []))
             try:
                 blocked = _run_child(_PROCESS_CHILD.format(
                     BLOCK="sys.modules['mediapipe'] = None",
@@ -285,6 +325,9 @@ def main(argv: list[str] | None = None) -> int:
                         blocked["backend_info"].get("faces") == "proxy"
                         and blocked["backend_info"].get("hands") == "proxy"),
                 }
+                result["runtime_forbidden_found"] = sorted(set(
+                    result["runtime_forbidden_found"])
+                    | set(check_forbidden(blocked.get("modules", []))))
             except ChildError as e:
                 result["mediapipe_blocked_probe"] = {
                     "mediapipe_blocked": True, "fallback_works": False,
@@ -297,7 +340,6 @@ def main(argv: list[str] | None = None) -> int:
     out_path = Path(args.out) if args.out else (
         RESULTS_DIR / f"edge_check_{args.device_label}.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
 
     print(f"device_label: {args.device_label}")
     print(f"disclaimer: {DISCLAIMER}")
@@ -306,6 +348,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"import_time_s: {audit['import_time_s']}")
     print(f"heavy_present: {audit['heavy_present']}")
     print(f"forbidden_found: {forbidden or 'none'}")
+    print(f"runtime_forbidden_found: "
+          f"{result['runtime_forbidden_found'] or 'none'}")
     if result["process_probe"]:
         p = result["process_probe"]
         print(f"probe: compute_signals_s={p['compute_signals_s']} "
@@ -316,13 +360,30 @@ def main(argv: list[str] | None = None) -> int:
               f"backend={b.get('backend_info')}")
     for s in result["skipped"]:
         print(f"SKIPPED: {s}")
-    print(f"wrote: {out_path}")
     if errors:
         print(f"SCHEMA ERRORS: {errors}", file=sys.stderr)
         return 1
-    if forbidden:
-        print(f"FAIL: forbidden modules imported: {forbidden}", file=sys.stderr)
+    if forbidden or result["runtime_forbidden_found"]:
+        print(f"FAIL: forbidden modules imported: import-time={forbidden} "
+              f"runtime={result['runtime_forbidden_found']}", file=sys.stderr)
         return 1
+    if not args.force:
+        try:
+            old = json.loads(out_path.read_text()) if out_path.is_file() else None
+        except Exception:
+            old = None
+        if not should_overwrite(old, result["process_probe"] is not None,
+                                args.force):
+            print(f"NOT OVERWRITTEN: {out_path} already contains measured "
+                  f"probes; re-run with --force to replace with this "
+                  f"probe-skipped result.", file=sys.stderr)
+            return 2
+    out_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    print(f"wrote: {out_path}")
+    if args.require_probes and result["skipped"]:
+        print("SKIP: --require-probes set and probes were skipped.",
+              file=sys.stderr)
+        return 2
     print("PASS: no forbidden import on the edge path.")
     return 0
 

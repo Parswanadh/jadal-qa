@@ -106,3 +106,66 @@ run only. Copy the Pi JSONs back to replace the proxy files.
 - The committed `eval/results/edge_*.json` files were measured in the
   throwaway signals worktree; re-run both scripts after `feat/signals`
   merges to refresh them on `main`.
+
+## Fix round 1 (review of PR #48)
+
+Every Critical/Important finding fixed in owned files; Minors fixed except
+Minor 3, which is unfixable until `feat/signals` merges (proven below, not
+ignored). No protected files touched (`git status --short` shows only the 7
+owned paths).
+
+- Important 1 (lazy call-time imports escaped the gate): `_PROCESS_CHILD`
+  now emits `"modules": sorted(sys.modules.keys())` AFTER `compute_signals`
+  runs, and `main()` runs `check_forbidden()` on it into
+  `runtime_forbidden_found`, FAILing (exit 1) on any hit — same gate as
+  import time. Pinned by `test_runtime_probe_modules_detect_lazy_torch`
+  (clean import-time list passes, same list + `torch` fails) and
+  `test_process_child_emits_modules`. Live full-path re-run still needs
+  signals (absent here), so this round's evidence is the unit tests (real
+  output: `Ran 28 tests ... OK`, below).
+- Important 2 (cache keyed on stem+start only): new pure
+  `make_seg_id()` keys the cache on stem + sha1(full source path) + start +
+  seg_seconds; `extract_segments()` reuses a cached file only when its frame
+  count equals the needed frames, and FAILs loudly on `got != need`
+  (previously only `got == 0` failed). Pinned by `test_seg_id_keys_path_and_length`.
+- Minor 4 (exit-code semantics): new `--require-probes` (exit 2 when any
+  probe skipped — matches `edge_bench.py`'s SKIP exit 2). Real run on this
+  branch (signals absent): `--require-probes --out
+  data_runtime/edge_tmp/req_probe.json` → wrote the skip-path JSON, `exit=2`.
+- Minor 5 (default run clobbered the measured JSON): new pure
+  `should_overwrite()` + `--force`; a probe-skipped result never replaces a
+  result containing `process_probe`. Real run: default `edge_check.py` on
+  this branch → `NOT OVERWRITTEN: ... already contains measured probes ...
+  --force ...`, `exit=2`, and `git status --short eval/results/` shows the
+  committed file untouched. (The reviewer's restore-via-checkout incident
+  cannot recur.)
+- Minor 6 (contiguous-range assumption): new pure `parse_core_list()`
+  (`0`→1, `0-3`→4 CPUs) replaces the first..last arithmetic; `--help`
+  documents that non-contiguous sets are not expressible. Pinned by
+  `test_parse_core_list` + `test_parse_core_list_garbage`.
+- Minor 3 (throwaway-worktree provenance): PROVEN unfixable on this branch —
+  `jadal.signals` is still absent (`missing: ['jadal.segmenter',
+  'jadal.signals']` in the real run above), so no full-path re-run is
+  possible here. Mitigations committed: both scripts now record `git_branch`
+  in every result they write (seen live: `"branch": "feat/edge"` in the
+  skip-path JSON), and the committed full-path JSONs are untouched. The
+  original NOT DONE stands: re-run both scripts on `main` after
+  `feat/signals` merges and recommit.
+- Non-finding suggestion adopted: `onnxruntime` + `tensorflow` added to the
+  forbidden list (`test_each_forbidden_exact` covers all 11 names).
+
+Real verification outputs (this round, x86 laptop proxy hardware):
+
+```
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest tests.test_edge_check
+Ran 28 tests in 0.001s
+OK
+$ PYTHONNOUSERSITE=1 timeout 250 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'
+Ran 419 tests in 10.622s
+OK
+$ PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python scripts/edge_check.py   # skip path
+forbidden_found: none
+runtime_forbidden_found: none
+SKIPPED: jadal.signals/jadal.segmenter absent (branch origin/feat/signals, PR #12, not yet on main): ...
+default-exit=2   # refuses to clobber the measured JSON (Minor 5)
+```
