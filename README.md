@@ -29,7 +29,8 @@ unusable: dark, blocked, frozen, duplicated, hands out of view, nothing happenin
 Jadal QA is a deterministic funnel that marks each 10-second window
 **accept / reject / review**, with a content-hashed receipt. S0 rejects carry
 per-rule `{feature, value, op, threshold}`; S1 rejects carry the head score
-`s1_score` against the 0.6 threshold (all 702 PoC rejects are `S1_UNUSABLE`).
+`s1_score` against the S1 decision bands (reject at <= 0.25, accept at >= 0.75,
+review between) (all 702 PoC rejects are `S1_UNUSABLE`).
 
 | At a glance | Scope |
 |---|---|
@@ -56,7 +57,7 @@ clip/factory correlation, so they are optimistic.
 - Hand-checking every 10-second window does not scale across dozens of factories.
 - Jadal rejects with checkable evidence: S0 rejects carry `{feature, value, op,
   threshold}` per firing rule; S1 rejects carry the head score `s1_score`
-  against the 0.6 threshold.
+  against the S1 decision bands (reject at <= 0.25, accept at >= 0.75).
 - When the scorer fails out of domain, the table says so. That honesty is the point.
 
 ## How the funnel decides
@@ -68,8 +69,10 @@ clip/factory correlation, so they are optimistic.
 - **S1 whole-window head**: 26 per-pixel spectral + temporal features, small
   logistic head retrained deterministically in-process from a recorded recipe
   on the 150 IndEgo windows (no frozen-coefficient file in the repo; the head
-  sha256 is stored in each receipt), operating point threshold 0.6, margin
-  0.25. S1 rejects carry `{feature: s1_score, value, op, threshold}` only.
+  sha256 is stored in each receipt), review margin 0.25: decision bands are
+  reject at <= 0.25, accept at >= 0.75, review (S2) between. S1 rejects carry
+  `{feature: s1_score, value, op, threshold}` only; the `threshold` field is a
+  legacy constant that never decides a verdict.
   No generic VLM in
   the core; EmbeddingGemma 2 is an optional helper for hub search and frame heads.
 - **S2 review queue**: `|p − 0.5| < 0.25` goes to review (176 windows in the PoC run,
@@ -81,8 +84,8 @@ clip/factory correlation, so they are optimistic.
 
 An excerpt of a real record from the 1,587-window PoC run (`poc_data/windows.jsonl`, produced by
 `scripts/poc_run.py`; the file is local and not in this repo). In that run S0 fired 0 times,
-so all 702 rejects are stage-S1 `S1_UNUSABLE`, whose evidence is the `s1_score` against
-the 0.6 threshold (not a per-feature explanation):
+so all 702 rejects are stage-S1 `S1_UNUSABLE`, whose evidence is the `s1_score`
+(not a per-feature explanation):
 
 ```json
 {
@@ -97,6 +100,8 @@ the 0.6 threshold (not a per-feature explanation):
   "receipt_sha256": "ca3ae717…"
 }
 ```
+
+The receipt's evidence field lists the legacy threshold 0.6; the effective rule is: score <= 0.25 reject, >= 0.75 accept, between those review (S2).
 
 `receipt_sha256` is the SHA-256 of the canonical JSON. Re-verify by re-running the
 recorded pipeline version on the original clip and comparing hashes. Receipts are
@@ -116,7 +121,7 @@ Factory transfer is the open problem, and the repo is organised to attack it.
 | 60-window precursor (ensemble / PoC) | 60 windows (51 good / 9 bad) | 0.415 [0.210, 0.647] / 0.529 [0.316, 0.728] | exploratory (`n_bad=9 < 10`), superseded by the 160-window rows |
 | Ensemble prob-average, IndEgo | 150 windows, 7 clips, nested LOCO | **0.834 [0.715, 0.914]** | measured, exploratory (one labeller); pre-registered gates NOT met (AUROC >= 0.85, CI-low >= 0.72) |
 | EG2 view / pixel view, IndEgo | same 150 | 0.846 [0.728, 0.913] / 0.792 [0.666, 0.882] | measured |
-| S1 head (retrained in-process, recipe-recorded), IndEgo | same 150 | 0.802 [0.710, 0.870], thr 0.6 | measured |
+| S1 head (retrained in-process, recipe-recorded), IndEgo | same 150 | 0.802 [0.710, 0.870], decision bands 0.25 / 0.75 | measured |
 | Per-pixel conv1d / HGB / physics-LR | same 150 | 0.782 / 0.758 / 0.715 | measured |
 | PoC run reject share | 1,587 windows, 4.404 h, unlabelled | 702 rejected (44.2%) | descriptive, not accuracy |
 | 3.33 fps vs 10 fps (26 feats) | IndEgo 150 | 0.807 vs 0.809 | descriptive, CIs ~±0.1 |

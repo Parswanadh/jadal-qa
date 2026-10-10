@@ -29,9 +29,10 @@ content-hashed, not signed. RGB only (3 bands) — hyperspectral is NOT claimed.
    (LOCO was reporting-only). No frozen-coefficient file exists in the repo, so
    the head is retrained deterministically in-process; sha256 of the canonical
    coefficient/scaler/threshold JSON is recorded per window
-   (`versions.head_sha256`). Operating point: threshold 0.6 (Youden on LOCO
-   out-of-fold p), margin 0.25 → |p−0.5|<0.25 is `review`/stage **S2** (handed
-   on; heavy tier NOT run in the PoC).
+   (`versions.head_sha256`). Decision bands: `reject` when p <= 0.25, `accept`
+   when p >= 0.75; |p−0.5|<0.25 is `review`/stage **S2** (handed on; heavy tier
+   NOT run in the PoC). A legacy `threshold` field (0.6, Youden on LOCO
+   out-of-fold p) is recorded in receipts but never decides a verdict.
 4. **Receipt:** `receipt_sha256 = sha256(canonical({window_id, verdict, reasons,
    features_digest, versions}))`; `features_digest` over 4-dp features.
    Re-verify: `scripts/poc_run.py --verify WINDOW_ID` re-decodes the clip
@@ -61,7 +62,8 @@ from CPU decode, so it is NOT mixed into one run. VRAM peak via nvidia-smi.
   and wall-clock not included; the dashboard tile shows the same value)
 - decode_path: cpu-sequential for all windows; no GPU memory used by the batch
 - head: full fit on the 150 IndEgo gold windows, `head_sha256=d59955b5…`,
-  threshold 0.6, margin 0.25 (`versions` in each window record)
+  review margin 0.25, decision bands reject <= 0.25 / accept >= 0.75
+  (`versions` in each window record)
 
 Re-verify: `scripts/poc_run.py --verify <WINDOW_ID>` recomputes one window and
 compares its receipt. Five sampled windows reproduced their stored receipt in the
@@ -90,8 +92,8 @@ measurement.
 
 The IndEgo head rejects most of this footage. The cause is operating-point
 transfer: the head was calibrated on 480p/10 fps IndEgo, and this input is
-1080p/30 fps HEVC. The out-of-domain check above shows the 0.6 threshold does not
-transfer without labelled calibration. Brightness statistics (luma_mean and
+1080p/30 fps HEVC. The out-of-domain check above shows the S1 decision bands
+(reject <= 0.25, accept >= 0.75) do not transfer without labelled calibration. Brightness statistics (luma_mean and
 similar) that suggest why are observations from the run notes and are not in a
 committed results file.
 
