@@ -14,6 +14,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import threading
 import time
 import unittest
 from pathlib import Path
@@ -72,8 +73,40 @@ class StubsEnvMixin:
         stubs.clear_test_overrides()
 
 
+def recv_json_with_timeout(ws, timeout: float = 10.0):
+    """Receive one websocket JSON message with a bounded wait.
+
+    Starlette's TestClient receive has no timeout knob, so the wait runs in a
+    daemon thread: when nothing arrives within ``timeout`` this raises
+    ``TimeoutError`` with a clear message instead of hanging forever.
+    """
+    box: dict = {}
+
+    def _recv() -> None:
+        try:
+            box["msg"] = ws.receive_json()
+        except Exception as exc:  # noqa: BLE001 -- ferried to the caller
+            box["err"] = exc
+
+    worker = threading.Thread(target=_recv, daemon=True)
+    worker.start()
+    worker.join(timeout)
+    if worker.is_alive():
+        raise TimeoutError(
+            f"no websocket message arrived within {timeout:.1f}s: "
+            "the expected batch event was never pushed")
+    if "err" in box:
+        raise box["err"]
+    return box.get("msg")
+
+
 class BucketCase(StubsEnvMixin, unittest.TestCase):
-    """Temp runtime dir; fake clips are written INSIDE the bucket (C1)."""
+    """Temp runtime dir; fake clips are written INSIDE the bucket (C1).
+
+    Every test here runs on injected stub callables (plus JADAL_USE_STUBS=1),
+    so results never depend on whether the real jadal.signals / jadal.decision
+    / jadal.segmenter modules happen to be importable.
+    """
 
     def setUp(self) -> None:
         import tempfile
@@ -90,8 +123,20 @@ class BucketCase(StubsEnvMixin, unittest.TestCase):
             voicebank_dir=tmp / "voicebank",
         )
         self.cfg.bucket_dir.mkdir(parents=True, exist_ok=True)
+        self._stage_patches = [
+            mock.patch.object(pipeline, "_compute_signals_fn",
+                              new=lambda: stubs.stub_compute_signals),
+            mock.patch.object(pipeline, "_decider_class",
+                              new=lambda: stubs.StubDecider),
+            mock.patch.object(pipeline, "_split_clip_fn",
+                              new=lambda: stubs.stub_split_clip),
+        ]
+        for patcher in self._stage_patches:
+            patcher.start()
 
     def tearDown(self) -> None:
+        for patcher in reversed(getattr(self, "_stage_patches", [])):
+            patcher.stop()
         self._stubs_off()
         self._tmp.cleanup()
 
@@ -147,12 +192,20 @@ class TestStubsAndStore(BucketCase):
                 or importlib.util.find_spec("jadal.decision") is not None
                 or importlib.util.find_spec("jadal.segmenter") is not None):
             self.skipTest("real L0/L1 modules present")
-        with mock.patch.dict(os.environ):
-            os.environ.pop("JADAL_USE_STUBS", None)
-            seg = {"segment_id": "s", "site_id": "x", "path": "/nope",
-                   "sha256": "ab"}
-            with self.assertRaises(RuntimeError):
-                pipeline.run_batch([seg], self.cfg)
+        # the class-level stub injection must be lifted for this check: it
+        # proves the bare resolvers refuse to run without the flag.
+        for patcher in self._stage_patches:
+            patcher.stop()
+        try:
+            with mock.patch.dict(os.environ):
+                os.environ.pop("JADAL_USE_STUBS", None)
+                seg = {"segment_id": "s", "site_id": "x", "path": "/nope",
+                       "sha256": "ab"}
+                with self.assertRaises(RuntimeError):
+                    pipeline.run_batch([seg], self.cfg)
+        finally:
+            for patcher in self._stage_patches:
+                patcher.start()
 
     def test_test_overrides_require_flag(self) -> None:
         with mock.patch.dict(os.environ):
@@ -532,8 +585,8 @@ class TestServiceAcceptance(BucketCase):
             with c.websocket_connect("/ws") as ws:
                 self.ingest_n(c, 5, site="wsgen")
                 event = None
-                for _ in range(5):
-                    msg = ws.receive_json()
+                for _ in range(6):
+                    msg = recv_json_with_timeout(ws, timeout=5.0)
                     if msg.get("type") == "batch":
                         event = msg
                         break
@@ -647,6 +700,394 @@ class TestDockSim(unittest.TestCase):
             leftovers = [p.name for p in bucket.iterdir()
                          if p.suffix == ".part" or p.name.startswith(".")]
             self.assertEqual(leftovers, [])
+
+
+class TestStubIndependence(BucketCase):
+    """The suite behaves identically with and without jadal.signals importable.
+
+    A fake jadal.signals/decison/segmenter stack whose entry points RAISE on
+    any call is installed: with the class-level stub injection active, no
+    verdict may change and the fake decoder must never run.
+    """
+
+    def _install_raising_stack(self):
+        import sys
+        import types
+        calls = {"signals": 0, "segmenter": 0}
+        fake_sig = types.ModuleType("jadal.signals")
+
+        def _boom(path, config=None):
+            calls["signals"] += 1
+            raise AssertionError("real decoder must not run under forced stubs")
+
+        fake_sig.compute_signals = _boom
+        fake_dec = types.ModuleType("jadal.decision")
+        fake_dec.Decider = stubs.StubDecider
+        fake_seg = types.ModuleType("jadal.segmenter")
+
+        def _seg_boom(path, seconds, out_dir):
+            calls["segmenter"] += 1
+            raise AssertionError("real segmenter must not run under forced stubs")
+
+        fake_seg.split_clip = _seg_boom
+        names = ("jadal.signals", "jadal.decision", "jadal.segmenter")
+        old = {name: sys.modules.get(name) for name in names}
+        sys.modules["jadal.signals"] = fake_sig
+        sys.modules["jadal.decision"] = fake_dec
+        sys.modules["jadal.segmenter"] = fake_seg
+
+        def _restore():
+            for name in names:
+                if old[name] is None:
+                    sys.modules.pop(name, None)
+                else:
+                    sys.modules[name] = old[name]
+
+        self.addCleanup(_restore)
+        return calls
+
+    def _ingest_five(self, client, prefix, site):
+        paths = [self.fake_clip(f"{prefix}_{i}.mp4") for i in range(5)]
+        last = None
+        for path in paths:
+            response = client.post("/ingest/event", json={
+                "path": path, "worker_id": "w", "site_id": site})
+            self.assertEqual(response.status_code, 200, response.text)
+            last = response.json()
+        self.assertIsNotNone(last["batch"])
+        return [(v["verdict"], tuple(v["reasons"]))
+                for v in last["batch"]["verdicts"]]
+
+    def test_verdicts_identical_with_and_without_fake_signals(self) -> None:
+        store_mod.init_db(self.cfg.db_path)
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        with TestClient(app) as client:
+            plain = self._ingest_five(client, "plain", "indep-a")
+            calls = self._install_raising_stack()
+            faked = self._ingest_five(client, "faked", "indep-b")
+        self.assertEqual(plain, faked)
+        self.assertEqual(calls, {"signals": 0, "segmenter": 0})
+
+
+class TestUndecodablePath(BucketCase):
+    """Decoder failure -> UNDECODABLE reject + normal batch, never a hang."""
+
+    def _client(self):
+        store_mod.init_db(self.cfg.db_path)
+        return TestClient(create_app(self.cfg, batch_max_age_s=30.0,
+                                     watch_bucket=False))
+
+    def test_decoder_raise_yields_undecodable_reject_batch(self) -> None:
+        def _moov(path, config=None):
+            raise ValueError("moov atom not found")
+
+        with self._client() as client:
+            paths = [self.fake_clip(f"garbage_{i}.mp4") for i in range(5)]
+            with mock.patch.object(pipeline, "_compute_signals_fn",
+                                   new=lambda: _moov):
+                last = None
+                for path in paths:
+                    response = client.post("/ingest/event", json={
+                        "path": path, "worker_id": "w", "site_id": "undec"})
+                    self.assertEqual(response.status_code, 200, response.text)
+                    last = response.json()
+            batch = last["batch"]
+            self.assertIsNotNone(batch, "batch must close normally")
+            self.assertEqual(batch["n"], 5)
+            for verdict in batch["verdicts"]:
+                self.assertEqual(verdict["verdict"], "reject")
+                self.assertIn("UNDECODABLE", verdict["reasons"])
+
+    def test_transient_io_retries_are_capped_then_raise(self) -> None:
+        calls = {"n": 0}
+
+        def _io(path, config=None):
+            calls["n"] += 1
+            raise OSError("disk hiccup")
+
+        with mock.patch.object(pipeline, "_compute_signals_fn",
+                               new=lambda: _io):
+            segs = pipeline.process_clip(self.fake_clip("io.mp4"),
+                                         "w", "s", self.cfg)
+            with self.assertRaises(OSError):
+                pipeline.run_batch(segs, self.cfg)
+        self.assertEqual(calls["n"], pipeline._SIGNAL_IO_RETRIES)
+
+    def test_segmenter_failure_yields_placeholder_segment(self) -> None:
+        def _split(path, seconds, out_dir):
+            raise ValueError("moov atom not found")
+
+        with mock.patch.object(pipeline, "_split_clip_fn", new=lambda: _split):
+            segs = pipeline.process_clip(self.fake_clip("novideo.mp4"),
+                                         "w", "s", self.cfg)
+        self.assertEqual(len(segs), 1)
+        self.assertEqual(segs[0]["start_s"], 0.0)
+        self.assertEqual(segs[0]["site_id"], "s")
+        batch, _ = pipeline.run_batch(segs, self.cfg)
+        self.assertEqual(batch["n"], 1)
+
+    def test_segmenter_oserror_propagates_for_retry(self) -> None:
+        def _split(path, seconds, out_dir):
+            raise OSError("transient disk error")
+
+        with mock.patch.object(pipeline, "_split_clip_fn", new=lambda: _split):
+            with self.assertRaises(OSError):
+                pipeline.process_clip(self.fake_clip("io2.mp4"),
+                                      "w", "s", self.cfg)
+
+
+class TestFunnelSeam(BucketCase):
+    """The pipeline calls jadal.funnel.route when importable, else inline."""
+
+    def _install_fake_funnel(self, route_fn):
+        import sys
+        import types
+        mod = types.ModuleType("jadal.funnel")
+        mod.route = route_fn
+        old = sys.modules.get("jadal.funnel")
+        sys.modules["jadal.funnel"] = mod
+
+        def _restore():
+            if old is None:
+                sys.modules.pop("jadal.funnel", None)
+            else:
+                sys.modules["jadal.funnel"] = old
+
+        self.addCleanup(_restore)
+        return mod
+
+    def test_fake_funnel_decides_with_evidence_in_hash(self) -> None:
+        seen: dict = {}
+
+        def _route(signals, decisions, thresholds):
+            seen["keys"] = (isinstance(signals, dict),
+                            isinstance(decisions, dict),
+                            isinstance(thresholds, dict))
+            return {
+                "verdict": "reject",
+                "reasons": ["BLUR"],
+                "evidence": [{"check": "blur_var", "value": 5.0,
+                              "op": ">=", "threshold": 60.0, "code": "BLUR"}],
+                "answer_conf": 0.2,
+                "queue_priority": 0.9,
+            }
+
+        self._install_fake_funnel(_route)
+        segs = pipeline.process_clip(self.fake_clip("f.mp4"), "w", "s",
+                                     self.cfg)
+        batch, receipts = pipeline.run_batch(segs, self.cfg)
+        self.assertEqual(seen["keys"], (True, True, True))
+        verdict = batch["verdicts"][0]
+        self.assertEqual(verdict["verdict"], "reject")
+        self.assertEqual(verdict["reasons"], ["BLUR"])
+        self.assertEqual(verdict["evidence"],
+                         [{"check": "blur_var", "value": 5.0,
+                           "op": ">=", "threshold": 60.0, "code": "BLUR"}])
+        # evidence is included in the hash only when present: strip it and
+        # the digest must change.
+        stripped = dict(receipts[0])
+        stripped["verdict"] = {k: v for k, v in verdict.items()
+                               if k != "evidence"}
+        self.assertNotEqual(receipts_mod.receipt_hash(receipts[0]),
+                            receipts_mod.receipt_hash(stripped))
+        result = pipeline.reverify_receipt(receipts[0], dict(segs[0]),
+                                           self.cfg)
+        self.assertTrue(result["match"])
+
+    def test_inline_path_has_no_evidence_key(self) -> None:
+        if importlib.util.find_spec("jadal.funnel") is not None:
+            self.skipTest("real jadal.funnel present")
+        self.assertIsNone(pipeline._funnel_route_fn())
+        segs = pipeline.process_clip(self.fake_clip("g.mp4"), "w", "s",
+                                     self.cfg)
+        batch, _ = pipeline.run_batch(segs, self.cfg)
+        self.assertEqual(batch["verdicts"][0]["verdict"], "accept")
+        self.assertNotIn("evidence", batch["verdicts"][0])
+
+
+class TestRiskCoverageHeads(BucketCase):
+    """Per-head /stats/risk_coverage entries from real measurement files."""
+
+    def _results_dir(self, files: dict) -> Path:
+        import tempfile
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        out = Path(tmp.name)
+        for name, payload in files.items():
+            (out / name).write_text(json.dumps(payload), encoding="utf-8")
+        return out
+
+    def _decider_fixture(self) -> dict:
+        return {"heads": {
+            "hands_ok": {
+                "calibration": {
+                    "n": 300,
+                    "threshold_pick": {"threshold": None, "accepted": 300,
+                                       "errors": 34, "upper_bound": 0.1404,
+                                       "coverage": 1.0},
+                },
+                "test": {"n": 300},
+                "provenance": "DEV_ONLY",
+                "label_caveat": "labels by gemini-2.5-flash, not human-checked",
+            },
+            "step": {
+                "calibration": {
+                    "n": 200,
+                    "threshold_pick": {"threshold": 0.9, "accepted": 150,
+                                       "errors": 2, "upper_bound": 0.04,
+                                       "coverage": 0.75},
+                },
+                "test": {"n": 200},
+                "label_caveat": "human gold labels v1",
+            },
+        }}
+
+    def _funnel_fixture(self) -> dict:
+        return {
+            "accept": {
+                "threshold": 0.4,
+                "calib_certified": {"accepted": 364, "errors": 8,
+                                    "upper_bound": 0.0355, "coverage": 0.6067},
+                "n_calib": 600,
+            },
+            "meta": {
+                "n_calib": 600, "n_heldout": 600,
+                "provenance": "synthetic-fixtures",
+                "targets": {"target_alpha": 0.05, "target_beta": 0.05,
+                            "delta": 0.1, "min_accepted": 30},
+            },
+            "reject_rules": {},
+        }
+
+    def test_decider_heads_null_means_not_certified(self) -> None:
+        out = self._results_dir({"decider_baseline.json": self._decider_fixture()})
+        entries = pipeline.risk_coverage_report(config=self.cfg, results_dir=out)
+        by_head = {e["head"]: e for e in entries}
+        hands = by_head["hands_ok"]
+        self.assertIn("chosen_threshold", hands)
+        self.assertIsNone(hands["chosen_threshold"])  # measured, NOT certified
+        self.assertEqual(hands["upper_bound"], 0.1404)
+        self.assertEqual(hands["label_source"], "gemini")
+        self.assertEqual(hands["n_calibration"], 300)
+        self.assertEqual(hands["n_test"], 300)
+        step = by_head["step"]
+        self.assertEqual(step["chosen_threshold"], 0.9)
+        self.assertEqual(step["label_source"], "human_gold")
+
+    def test_funnel_accept_entry(self) -> None:
+        out = self._results_dir({"funnel_calibration.json": self._funnel_fixture()})
+        entries = pipeline.risk_coverage_report(config=self.cfg, results_dir=out)
+        by_head = {e["head"]: e for e in entries}
+        accept = by_head["accept"]
+        self.assertEqual(accept["chosen_threshold"], 0.4)
+        self.assertEqual(accept["upper_bound"], 0.0355)
+        self.assertEqual(accept["target_err"], 0.05)
+        self.assertEqual(accept["delta"], 0.1)
+        self.assertEqual(accept["n_calibration"], 600)
+        self.assertEqual(accept["n_test"], 600)
+        self.assertEqual(accept["label_source"], "synthetic")
+
+    def test_empty_without_measured_data(self) -> None:
+        out = self._results_dir({})
+        self.assertEqual(
+            pipeline.risk_coverage_report(config=self.cfg, results_dir=out), [])
+        bad = self._results_dir({"decider_baseline.json": {"heads": "nope"},
+                                 "funnel_calibration.json": [1, 2]})
+        self.assertEqual(
+            pipeline.risk_coverage_report(config=self.cfg, results_dir=bad), [])
+
+    def test_endpoint_serves_report(self) -> None:
+        store_mod.init_db(self.cfg.db_path)
+        out = self._results_dir({"funnel_calibration.json": self._funnel_fixture()})
+        with mock.patch.dict(os.environ, {"JADAL_EVAL_RESULTS_DIR": str(out)}):
+            app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+            with TestClient(app) as client:
+                response = client.get("/stats/risk_coverage")
+        self.assertEqual(response.status_code, 200)
+        by_head = {e["head"]: e for e in response.json()}
+        self.assertEqual(by_head["accept"]["chosen_threshold"], 0.4)
+        self.assertEqual(by_head["accept"]["label_source"], "synthetic")
+
+
+class TestHubMount(BucketCase):
+    """The optional /hub router mounts iff jadal.hub_api.router exists."""
+
+    def test_hub_absent_by_default(self) -> None:
+        if importlib.util.find_spec("jadal.hub_api") is not None:
+            self.skipTest("real jadal.hub_api present")
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        paths = [route.path for route in app.routes
+                 if hasattr(route, "path")]
+        self.assertFalse(any(p.startswith("/hub") for p in paths))
+
+    def test_fake_hub_router_mounts(self) -> None:
+        import sys
+        import types
+        from fastapi import APIRouter
+        mod = types.ModuleType("jadal.hub_api")
+        router = APIRouter(prefix="/hub")
+
+        @router.get("/ping")
+        def ping() -> dict:
+            return {"pong": True}
+
+        mod.router = router
+        old = sys.modules.get("jadal.hub_api")
+        sys.modules["jadal.hub_api"] = mod
+        try:
+            app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        finally:
+            if old is None:
+                sys.modules.pop("jadal.hub_api", None)
+            else:
+                sys.modules["jadal.hub_api"] = old
+        with TestClient(app) as client:
+            response = client.get("/hub/ping")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"pong": True})
+
+
+class TestWsTimeout(BucketCase):
+    """A missing batch event fails fast with a clear message, never hangs."""
+
+    def test_silent_server_fails_fast(self) -> None:
+        store_mod.init_db(self.cfg.db_path)
+        app = create_app(self.cfg, batch_max_age_s=30.0, watch_bucket=False)
+        with TestClient(app) as client:
+            with client.websocket_connect("/ws") as ws:
+                hello = recv_json_with_timeout(ws, timeout=5.0)
+                self.assertEqual(hello.get("type"), "hello")
+                with self.assertRaises(TimeoutError) as ctx:
+                    recv_json_with_timeout(ws, timeout=1.0)
+                self.assertIn("within 1.0s", str(ctx.exception))
+
+
+class TestWatcherCap(BucketCase):
+    """Watcher retries are capped: a poison file is parked, not spun on."""
+
+    def test_poison_is_parked_after_max_attempts(self) -> None:
+        from jadal import service as service_mod
+        app = create_app(self.cfg, batch_max_age_s=60.0, watch_bucket=True,
+                         watch_poll_s=0.05)
+        svc = app.state.service
+        bad = self.cfg.bucket_dir / "poison2.mp4"
+        bad.write_bytes(b"poison-bytes")
+
+        def _down(path, worker_id, site_id, config):
+            raise OSError("disk down")
+
+        with mock.patch.object(service_mod.pipeline, "process_clip",
+                               side_effect=_down):
+            svc._watch_backoff["poison2.mp4"] = {
+                "attempts": service_mod.WATCH_MAX_ATTEMPTS - 1,
+                "next_ts": 0.0,
+            }
+            svc._watch_bucket_tick()  # records the stability fingerprint
+            svc._watch_bucket_tick()  # ingest attempt -> cap reached -> parked
+        self.assertIn("poison2.mp4", svc._done_files)
+        self.assertNotIn("poison2.mp4", svc._watch_backoff)
+        key = str(Path(os.path.realpath(bad)))
+        self.assertIn("gave up", svc._errors.get(key, ""))
 
 
 if __name__ == "__main__":

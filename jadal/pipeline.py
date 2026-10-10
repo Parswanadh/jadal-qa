@@ -667,12 +667,16 @@ def _find_eval_file(results_dir: Path, stem: str) -> Path | None:
 
 
 def _label_source(*texts: Any) -> str | None:
-    """Provenance text -> 'gemini' | 'human_gold' | 'synthetic' (None unknown)."""
+    """Provenance text -> 'gemini' | 'human_gold' | 'synthetic' (None unknown).
+
+    An explicit auto-labeller mention wins: "labels by gemini-2.5-flash, not
+    human-checked" is gemini labels, not human gold.
+    """
     blob = " ".join(t for t in texts if isinstance(t, str)).lower()
-    if "human" in blob:
-        return "human_gold"
     if "gemini" in blob:
         return "gemini"
+    if "human" in blob:
+        return "human_gold"
     if "synthetic" in blob:
         return "synthetic"
     return None
