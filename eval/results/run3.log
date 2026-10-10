@@ -19,21 +19,3 @@ TOTAL                            4588               7978              17434     
 
 [make_splits] stage 2/3: computing pHashes (streaming, images downscaled immediately)
 [make_splits]   ego4d.parquet: 10000 frames, 0 to decode, 10000 from cache
-[make_splits]   egocentric_10k.parquet: 10000 frames, 0 to decode, 10000 from cache
-[make_splits]   epic_kitchens.parquet: 10000 frames, 0 to decode, 10000 from cache
-[make_splits]   hashed 30000 frames in 21.4s
-[make_splits] stage 3/3: dedup + stratified split
-[make_splits]   kept 29770, removed 230 near-duplicates (221 groups, 11303820 pairs checked)
-Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "/home/parshu/projects/jadal-qa-wt/evalharness/eval/make_splits.py", line 631, in <module>
-    sys.exit(main())
-             ^^^^^^
-  File "/home/parshu/projects/jadal-qa-wt/evalharness/eval/make_splits.py", line 609, in main
-    manifest = build_manifest(
-               ^^^^^^^^^^^^^^^
-  File "/home/parshu/projects/jadal-qa-wt/evalharness/eval/make_splits.py", line 485, in build_manifest
-    per_split = split_distribution(records, assignment["assignment"])
-                                            ~~~~~~~~~~^^^^^^^^^^^^^^
-KeyError: 'assignment'
