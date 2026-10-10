@@ -84,6 +84,27 @@
     "auroc": 0.1996,
     "orientation_free": 0.8004
    }
+  },
+  "pooled_control_no_layout": {
+   "auroc": 0.7902,
+   "ci": {
+    "lo": 0.6006846014315129,
+    "hi": 0.8981571447507951,
+    "n_boot": 2000,
+    "median": 0.7853052628155087
+   },
+   "n": 150,
+   "n_features": 12,
+   "per_clip": {
+    "desk": 0.6875,
+    "ecu_full": 0.9069767441860465,
+    "ecu_late": 0.625,
+    "logistics4": 0.7857142857142857,
+    "organise": 0.9111111111111111,
+    "pallet": 0.25757575757575757,
+    "pallet2": 0.75
+   },
+   "note": "DECISIVE CONTROL: identical grid channels with the spatial axis summed away (mean and std over time x cells per channel). No layout information."
   }
  }
 }

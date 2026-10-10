@@ -357,3 +357,52 @@ rule here dominates the raw baseline. **The live lead is per-clip sign
 calibration, not a new feature** -- and it cannot be tuned on the held-out clip,
 so it needs either more clips or a label-free sign decision rule that this
 sample (7 clips) cannot validate.
+
+## CORRECTION 2: the spatial LAYOUT carries no information beyond pooling
+
+Found by the `ablations` track and **reproduced here on this code path**
+(`eval/rhythm/evaluate.py --baselines`, `eval/results/rhythm/baselines.json`).
+The decisive control uses the SAME grid channels with the spatial axis summed
+away (mean and std over time x cells per channel), so it is like-for-like:
+
+| feature set | d | AUROC (95% CI) |
+|---|---|---|
+| pooled control, no layout | 12 | **0.790 (0.60-0.90)** |
+| global channels only (8 ch, mean/std/p10/p90) | 32 | 0.724 (0.59-0.80) |
+| **rhythm ensemble (this model, spatial grid)** | - | **0.753 (0.65-0.81)** |
+
+The learned spatial network scores **0.753**, which is BELOW the
+12-feature pooled control at
+**0.790** that has no layout information at all.
+
+The `ablations` track measured the same thing with hand-built summaries:
+`sp_cellmax - poolmean_only = -0.0018 [-0.077, +0.071]`, and adding spatial
+features on top of pooled features was null or significantly WORSE
+(`sp_flatmap` -0.062, `sp_motionconc` -0.023). Their size-matched check found a
+5-feature *global-only* subset reaching 0.830.
+
+**Conclusion: the grid's value was that it introduced `flow_mag`/`flow_coh` as
+channels, not that it localised anything. Spatial localisation is a dead end for
+this task at this sample size.** The earlier claim in this report that "the
+representation contains a real spatial signal (the cellmax result)" was based on
+comparing spatial features against a WEAKER global-only bank, not against the
+correct pooled control. That claim is withdrawn.
+
+## CORRECTION 3: pallet does NOT reproduce as "chance" on the 26-feature baseline
+
+The handover states pallet 0.50 / pallet2 0.50 (chance). Independently
+reproduced here for the 26 GPU per-pixel features: **pallet 0.500, pallet2 0.500**
+-- so those handover numbers DO reproduce for that feature set.
+
+The `ablations` track reports pallet **0.2879** and pallet2 **0.7500** for their
+pooled grid-channel control. These are not contradictory: they are DIFFERENT
+representations. pallet sits at chance on the 26 per-pixel features and below
+chance on pooled grid channels, while pallet2 is at chance on the former and
+above chance on the latter. The lesson is that "pallet is hard" is
+representation-dependent, and quoting a single per-clip number without naming the
+representation is meaningless.
+
+The `ablations` track also tested and FALSIFIED the reason-mix explanation: pallet
+is 45% NO_ACTIVE_WORK vs 48.6% elsewhere (Fisher p=0.758), and HANDS_NOT_VISIBLE
+is the third-EASIEST reason (0.852) yet pallet scores far below the other five
+clips. **pallet is a clip-level (scene/wearer) shift, not a reason-level effect.**

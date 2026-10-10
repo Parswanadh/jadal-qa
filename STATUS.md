@@ -19,6 +19,22 @@ organise 0.856, **pallet 0.515, pallet2 0.500** (chance).
 **Outcome: documented negative result.** Did not reach AUROC >= 0.85 / CI lower
 bound >= 0.72 / no clip below 0.60. Does not beat the 0.810 logistic baseline.
 
+## CORRECTION 2: the spatial LAYOUT carries nothing beyond pooling (reproduced here)
+The decisive control = same grid channels with the spatial axis summed away.
+  pooled control (no layout, 12 feats)  AUROC 0.790
+  rhythm ensemble (spatial grid)        AUROC 0.753   <-- BELOW the control
+  global channels only                  AUROC 0.724
+`ablations` track: sp_cellmax - poolmean_only = -0.0018 [-0.077,+0.071]; adding
+spatial features on top was null or WORSE. The grid's value was introducing
+flow_mag/flow_coh as channels, not localisation. Spatial localisation is a dead
+end at n=150. The earlier "spatial signal is real" claim is WITHDRAWN.
+
+## CORRECTION 3: pallet "chance" is representation-dependent
+26 GPU per-pixel features: pallet 0.500, pallet2 0.500 (handover REPRODUCES).
+Pooled grid channels: pallet 0.2879, pallet2 0.7500. Different representations,
+not a contradiction. Reason-mix does NOT explain it (pallet 45% NO_ACTIVE_WORK vs
+48.6%, Fisher p=0.758) -> pallet is a clip-level scene/wearer shift.
+
 ## CORRECTION to the interpretation (found by the rhythm_analysis track, confirmed independently)
 Every residual-motion MAGNITUDE scalar is INVERTED on the real windows:
 `flow_top_mean` signed AUROC 0.196 (orientation-free 0.804), `flow_mean` 0.197,

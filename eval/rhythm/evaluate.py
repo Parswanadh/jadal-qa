@@ -171,6 +171,35 @@ def baseline_flow_act(G=6, tag="main"):
     return np.nan_to_num(np.array(feats, float)), np.array(y), np.array(clip), ids
 
 
+def baseline_pooled_control(G=6, tag="main"):
+    """DECISIVE CONTROL: same grid channels with the spatial axis summed away.
+
+    Per grid channel, the mean and std over (time x all cells). This uses exactly
+    the same channels as the spatial summaries but has no layout information, so
+    spatial-vs-pooled is a like-for-like comparison. Motivated by the
+    `ablations` track, which found sp_cellmax - poolmean_only = -0.0018.
+    """
+    from jadal.rhythm import features as F
+    cache = CACHE.parent / tag
+    items = json.load(open(GOLD))["items"]
+    rows, y, clip, ids = [], [], [], []
+    for it in items:
+        c = F.load_cache(cache, it["id"], G)
+        if c is None:
+            continue
+        X = c["X"]
+        flat = X.reshape(X.shape[0], -1, X.shape[-1])   # (T, cells, C)
+        feats = []
+        for ch in range(flat.shape[-1]):
+            v = flat[:, :, ch]
+            feats += [float(v.mean()), float(v.std())]
+        rows.append(feats)
+        y.append(int(it["label"]))
+        clip.append(it["clip"])
+        ids.append(it["id"])
+    return np.nan_to_num(np.asarray(rows, float)), np.array(y), np.array(clip), ids
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--folds", default=None)
@@ -223,6 +252,17 @@ def main() -> int:
             a = auroc(y3, Xf[:, j])
             single[nm] = {"auroc": a, "orientation_free": max(a, 1 - a)}
         out["results"]["flow_single_features"] = single
+
+        Xp, y4, clip4, ids4 = baseline_pooled_control(tag=args.tag)
+        pp = _loco_logistic(Xp, y4, clip4)
+        out["results"]["pooled_control_no_layout"] = {
+            "auroc": auroc(y4, pp), "ci": cluster_bootstrap_ci(y4, pp, clip4), "n": int(len(y4)),
+            "n_features": Xp.shape[1],
+            "per_clip": {c: auroc(y4[clip4 == c], pp[clip4 == c]) for c in sorted(set(clip4))},
+            "note": "DECISIVE CONTROL: identical grid channels with the spatial axis summed "
+                    "away (mean and std over time x cells per channel). No layout information.",
+        }
+        print("pooled_control_no_layout", round(out["results"]["pooled_control_no_layout"]["auroc"], 3), flush=True)
 
     if args.folds:
         d = json.load(open(args.folds))
