@@ -9,7 +9,9 @@ index rule, cpu_window_features with TRUE fps. Eval vs human OOD labels:
 CI = window bootstrap (note: ~1 window/factory so ≈ factory bootstrap).
 n_bad=9 -> wide CI, reported.
 
-Regen: jadal python eval/exp_fps/run_ood.py --shard {0,1}/2, merge_ood.py
+PARTIAL (E1.03): shard outputs are NOT committed (local only, see .gitignore).
+Regen: PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python \
+  eval/exp_fps/run_ood.py --shard {0,1}/2; then eval/exp_fps/merge_ood.py
 """
 import argparse
 import json
@@ -19,11 +21,11 @@ import sys
 import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
-from fps_lib import decode_window, gpu_features, subsample_idx
+from fps_lib import WT_ROOT, decode_window, gpu_features, subsample_idx
 
 D = os.path.join(os.path.dirname(__file__), "..", "results", "exp_fps")
-Q = "/workspace/jadal_pod_bundle/queues/label_queue_random.json"
-LAB = "/workspace/jadal_pod_bundle/labels/ood_labels.json"
+Q = os.path.join(WT_ROOT, "scale-data", "eval", "results", "scale", "label_queue_random.json")
+LAB = os.path.join(WT_ROOT, "ood_labels", "labels.json")
 OOD_STEPS = {30: 1, 15: 2, 10: 3, 5: 6, 3: 10, 2: 15, 1: 30}
 
 

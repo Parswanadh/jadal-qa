@@ -1,0 +1,462 @@
+{
+ "exploratory": true,
+ "label": "uses OOD human labels; nothing frozen tuned",
+ "n": 60,
+ "n_good": 51,
+ "n_bad": 9,
+ "frame_heads": {
+  "active_labor": {
+   "mean": {
+    "auroc": 0.8627450980392157,
+    "ci95": [
+     0.716013071895425,
+     0.9735687499999999
+    ]
+   },
+   "max": {
+    "auroc": 0.7124183006535948,
+    "ci95": [
+     0.4519980769230769,
+     0.924743892828999
+    ]
+   },
+   "p25": {
+    "auroc": 0.8518518518518519,
+    "ci95": [
+     0.7163375,
+     0.9569073475785298
+    ]
+   },
+   "p75": {
+    "auroc": 0.7450980392156863,
+    "ci95": [
+     0.5185185185185185,
+     0.9423121521335807
+    ]
+   },
+   "frac>0.5": {
+    "auroc": 0.8496732026143791,
+    "ci95": [
+     0.6734627184207017,
+     0.96875
+    ]
+   },
+   "var": {
+    "auroc": 0.1808278867102397,
+    "ci95": [
+     0.061715797430083146,
+     0.3420615468409586
+    ]
+   }
+  },
+  "hands_ok": {
+   "mean": {
+    "auroc": 0.7516339869281046,
+    "ci95": [
+     0.5259019230769231,
+     0.9345454545454546
+    ]
+   },
+   "max": {
+    "auroc": 0.5686274509803921,
+    "ci95": [
+     0.2870008680555556,
+     0.8305390319426335
+    ]
+   },
+   "p25": {
+    "auroc": 0.6797385620915032,
+    "ci95": [
+     0.4203897124887691,
+     0.9017021388315186
+    ]
+   },
+   "p75": {
+    "auroc": 0.6666666666666667,
+    "ci95": [
+     0.37395,
+     0.9598765432098765
+    ]
+   },
+   "frac>0.5": {
+    "auroc": 0.6938997821350763,
+    "ci95": [
+     0.4868943250377074,
+     0.8922287061994606
+    ]
+   },
+   "var": {
+    "auroc": 0.2440087145969499,
+    "ci95": [
+     0.0752572762059369,
+     0.4501541288899779
+    ]
+   }
+  }
+ },
+ "frame_heads_gold_pooled_ref": {
+  "active_labor": {
+   "mean": 0.8130000000000002,
+   "max": 0.749,
+   "p25": 0.7948,
+   "p75": 0.7924,
+   "frac>0.5": 0.7982,
+   "var": 0.2258
+  },
+  "hands_ok": {
+   "mean": 0.8172,
+   "max": 0.7234,
+   "p25": 0.7813999999999999,
+   "p75": 0.757,
+   "frac>0.5": 0.7936999999999999,
+   "var": 0.1978
+  }
+ },
+ "sign_table": [
+  {
+   "feature": "head_work_mean",
+   "indego_pooled_auc": 0.813,
+   "ood_oriented_auc": 0.863,
+   "ood_free_auc": 0.863,
+   "ood_ci95_oriented": [
+    0.714,
+    0.972
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "illum_r",
+   "indego_pooled_auc": 0.49,
+   "ood_oriented_auc": 0.828,
+   "ood_free_auc": 0.828,
+   "ood_ci95_oriented": [
+    0.696,
+    0.94
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "luma_p50",
+   "indego_pooled_auc": 0.517,
+   "ood_oriented_auc": 0.222,
+   "ood_free_auc": 0.778,
+   "ood_ci95_oriented": [
+    0.059,
+    0.389
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "illum_b",
+   "indego_pooled_auc": 0.528,
+   "ood_oriented_auc": 0.76,
+   "ood_free_auc": 0.76,
+   "ood_ci95_oriented": [
+    0.602,
+    0.9
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "temp_b0",
+   "indego_pooled_auc": 0.534,
+   "ood_oriented_auc": 0.24,
+   "ood_free_auc": 0.76,
+   "ood_ci95_oriented": [
+    0.065,
+    0.439
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "head_hands_mean",
+   "indego_pooled_auc": 0.817,
+   "ood_oriented_auc": 0.752,
+   "ood_free_auc": 0.752,
+   "ood_ci95_oriented": [
+    0.539,
+    0.926
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "skin_frac",
+   "indego_pooled_auc": 0.667,
+   "ood_oriented_auc": 0.255,
+   "ood_free_auc": 0.745,
+   "ood_ci95_oriented": [
+    0.103,
+    0.43
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "rppg_pulse",
+   "indego_pooled_auc": 0.47,
+   "ood_oriented_auc": 0.275,
+   "ood_free_auc": 0.725,
+   "ood_ci95_oriented": [
+    0.092,
+    0.485
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "luma_p95",
+   "indego_pooled_auc": 0.499,
+   "ood_oriented_auc": 0.277,
+   "ood_free_auc": 0.723,
+   "ood_ci95_oriented": [
+    0.107,
+    0.476
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "luma_mean",
+   "indego_pooled_auc": 0.509,
+   "ood_oriented_auc": 0.294,
+   "ood_free_auc": 0.706,
+   "ood_ci95_oriented": [
+    0.114,
+    0.48
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "dct_energy",
+   "indego_pooled_auc": 0.631,
+   "ood_oriented_auc": 0.702,
+   "ood_free_auc": 0.702,
+   "ood_ci95_oriented": [
+    0.527,
+    0.855
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "flicker_idx",
+   "indego_pooled_auc": 0.5,
+   "ood_oriented_auc": 0.702,
+   "ood_free_auc": 0.702,
+   "ood_ci95_oriented": [
+    0.542,
+    0.84
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "temp_b2",
+   "indego_pooled_auc": 0.287,
+   "ood_oriented_auc": 0.298,
+   "ood_free_auc": 0.702,
+   "ood_ci95_oriented": [
+    0.154,
+    0.474
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "illum_g",
+   "indego_pooled_auc": 0.401,
+   "ood_oriented_auc": 0.303,
+   "ood_free_auc": 0.697,
+   "ood_ci95_oriented": [
+    0.146,
+    0.46
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "hf_ratio",
+   "indego_pooled_auc": 0.618,
+   "ood_oriented_auc": 0.693,
+   "ood_free_auc": 0.693,
+   "ood_ci95_oriented": [
+    0.438,
+    0.898
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "pca_resid",
+   "indego_pooled_auc": 0.449,
+   "ood_oriented_auc": 0.307,
+   "ood_free_auc": 0.693,
+   "ood_ci95_oriented": [
+    0.078,
+    0.594
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "motion_energy",
+   "indego_pooled_auc": 0.308,
+   "ood_oriented_auc": 0.309,
+   "ood_free_auc": 0.691,
+   "ood_ci95_oriented": [
+    0.159,
+    0.488
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "bright_frac",
+   "indego_pooled_auc": 0.371,
+   "ood_oriented_auc": 0.325,
+   "ood_free_auc": 0.675,
+   "ood_ci95_oriented": [
+    0.094,
+    0.593
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "pca_top1_share",
+   "indego_pooled_auc": 0.539,
+   "ood_oriented_auc": 0.346,
+   "ood_free_auc": 0.654,
+   "ood_ci95_oriented": [
+    0.099,
+    0.621
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "radial_slope",
+   "indego_pooled_auc": 0.633,
+   "ood_oriented_auc": 0.645,
+   "ood_free_auc": 0.645,
+   "ood_ci95_oriented": [
+    0.407,
+    0.849
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "temp_b3",
+   "indego_pooled_auc": 0.5,
+   "ood_oriented_auc": 0.625,
+   "ood_free_auc": 0.625,
+   "ood_ci95_oriented": [
+    0.44,
+    0.783
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "frozen_ens_prob",
+   "indego_pooled_auc": 0.834,
+   "ood_oriented_auc": 0.415,
+   "ood_free_auc": 0.585,
+   "ood_ci95_oriented": [
+    0.215,
+    0.648
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "temp_b1",
+   "indego_pooled_auc": 0.337,
+   "ood_oriented_auc": 0.425,
+   "ood_free_auc": 0.575,
+   "ood_ci95_oriented": [
+    0.25,
+    0.604
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "dark_frac",
+   "indego_pooled_auc": 0.48,
+   "ood_oriented_auc": 0.551,
+   "ood_free_auc": 0.551,
+   "ood_ci95_oriented": [
+    0.315,
+    0.791
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "global_shift",
+   "indego_pooled_auc": 0.376,
+   "ood_oriented_auc": 0.539,
+   "ood_free_auc": 0.539,
+   "ood_ci95_oriented": [
+    0.315,
+    0.742
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "zncc_self",
+   "indego_pooled_auc": 0.574,
+   "ood_oriented_auc": 0.538,
+   "ood_free_auc": 0.538,
+   "ood_ci95_oriented": [
+    0.288,
+    0.793
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "luma_p05",
+   "indego_pooled_auc": 0.392,
+   "ood_oriented_auc": 0.523,
+   "ood_free_auc": 0.523,
+   "ood_ci95_oriented": [
+    0.306,
+    0.735
+   ],
+   "sign_agrees": true
+  },
+  {
+   "feature": "frozen_frac",
+   "indego_pooled_auc": 0.624,
+   "ood_oriented_auc": 0.488,
+   "ood_free_auc": 0.512,
+   "ood_ci95_oriented": [
+    0.37,
+    0.567
+   ],
+   "sign_agrees": false
+  },
+  {
+   "feature": "dup_hash_mean",
+   "indego_pooled_auc": 0.5,
+   "ood_oriented_auc": 0.5,
+   "ood_free_auc": 0.5,
+   "ood_ci95_oriented": [
+    0.5,
+    0.5
+   ],
+   "sign_agrees": false
+  }
+ ],
+ "lowo": {
+  "single_best:head_work_mean": {
+   "auroc": 0.8,
+   "ci95": [
+    0.547,
+    0.968
+   ],
+   "note": "UPPER BOUND: model selected/fit with OOD labels"
+  },
+  "frozen_ens_prob": {
+   "auroc": 0.44,
+   "ci95": [
+    0.22,
+    0.664
+   ],
+   "note": "UPPER BOUND: model selected/fit with OOD labels"
+  },
+  "two_view_frozen_heads_LOWO": {
+   "auroc": 0.468,
+   "ci95": [
+    0.276,
+    0.663
+   ],
+   "note": "heads frozen (IndEgo); only 2-param logistic uses OOD labels LOO"
+  }
+ }
+}
