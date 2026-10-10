@@ -1,6 +1,6 @@
 # STATUS — pod wave (lead agent)
 
-Updated: 2026-10-10 22:05 IST (16:35 UTC) · branch `pod/kit` (lead) · A40 pod
+Updated: 2026-10-10 22:25 IST (16:55 UTC) · branch `pod/kit` (lead) · A40 pod
 
 ## Environment (verified this session)
 - opencode v2.0.26; agents present: lead, experimenter, explorer, reviewer, tester, docs, infra.
@@ -100,25 +100,28 @@ frozen swscale (Δp_pixel ≤ 0.048, n=6 control). Full file `/workspace/artifac
 | E8.01 | adopt (descriptive) | 1,546 Egocentric-10K windows re-scored: accept 296 (19.2%) / reject 83 (5.4%) / review 1,167 (75.5%); accept-share 95% CI [0.136,0.254] (58-clip bootstrap); profiles factory_1080p30 1,540 + default 6 (UNSEEN_REGIME); 5,761 ms/window. **Unlabelled — not a quality measure.** | 5,761 ms/window (p50 5,195, p95 9,371), A40 | 1080p/30 |
 
 ## Handover notes for the builder (read before merging)
-1. **Conflict cause is duplication, not disagreement.** `main` (as of `e320c58`, 21:49 IST) now contains the
-   ported files `eval/exp_fps/*`, `eval/exp_temporal/*`, `jadal/gpu/*`, `eval/gpu/*`, `eval/ensemble/*`,
-   `jadal/ensemble/*`, `configs/ensemble_v1.json` — merged from #79 (`feat/ensemble-views`), #84/#85
-   (the "save local work" recovery branches) and #96. My branches (`feat/exp-mosaic`, `feat/exp-fps-pod`,
-   `feat/exp-rescore`, `pod/prwatch`) also contain those files (via the shared base `pod/base`), so GitHub
-   reports add/add conflicts on ~25 paths for #81, #88, #95, #113 (and #82 is being re-evaluated).
-   #83, #87, #89, #90 have already been rebased by someone and are MERGEABLE.
-2. **Resolution recipe** (normal merge commit, never force-push): `git merge origin/main` on the branch, then for
-   the inherited duplicated paths take ONE side consistently — the `pod/base`/branch side is the version the
-   reviewers and the tester actually exercised on this pod (paths resolved from `JADAL_BUNDLE`, `unittest`-clean),
-   while the merged recovery copies are untested here. Keep the branch's own new files
-   (`jadal/mosaic/*`, `jadal/regimes/*`, `profiles/*`, `eval/exp_mosaic/*`, `eval/exp_rescore/*`,
-   `eval/standard/*`, `tools/pod/pr_watcher.py`, `eval/results/exp_*`) — they do not conflict.
-   `.gitignore` and `configs/ensemble_v1.json` are the only two files worth a hand-merge rather than a
-   side-pick.
-3. **Do not merge my PRs for me** — I did not merge any, and none of my branches was force-pushed. The 4
-   conflicting branches are clean and pushed; the conflict exists only at merge time.
+0. **State at the end of the wave (22:20 IST).** All 9 of my PRs are open, all my branches are pushed, none was
+   force-pushed, and none was merged by me. Mergeable: #82, #83, #87, #95, #113 (and #89/#90 were mergeable
+   before a later push made GitHub re-compute). #81/#88 were conflicting when this was written.
+1. **Conflict cause is duplication, not disagreement.** `main` (as of `e320c58`) now contains the ported files
+   `eval/exp_fps/*`, `eval/exp_temporal/*`, `jadal/gpu/*`, `eval/gpu/*`, `eval/ensemble/*`, `jadal/ensemble/*`,
+   `configs/ensemble_v1.json` — merged from #79, #84/#85 (the "save local work" recovery branches) and #96.
+   My branches also contain those files (via the shared base `pod/base`), so GitHub reports add/add conflicts on
+   ~25-29 paths.
+2. **Resolution that worked** (normal merge commits, never force-push): `git merge -X ours --no-ff origin/main`
+   on the branch, then `git checkout origin/main -- .gitignore configs/ensemble_v1.json` (the only two files
+   worth taking from main), run the branch's tests, commit, push. Applied to `feat/exp-mosaic`,
+   `feat/exp-fps-pod`, `feat/exp-rescore` and `pod/prwatch`.
+3. **Repo-wide test trap (found twice by reviewers):** `python -m unittest discover -s tests` — the only runner
+   this repo uses — collects only `TestCase` subclasses, so pytest-style test files silently contribute 0 tests.
+   Affected and now fixed: `test_exp_regimes_router.py`, `test_mosaic_build.py` (converted to `TestCase`) and
+   `test_exp_fps.py`, `test_exp_motion_cue.py`, `test_exp_rescore.py`, `test_exp_cost.py` (given a
+   `load_tests` hook via `tools/pod/add_load_tests.py`, which shims pytest's `monkeypatch` and `tmp_path`).
+   Verified: 26 + 8 + 11 + 7 + 15 + 13 tests now run and pass under `unittest discover`.
 4. `labels/ood_labels2.json` never arrived, so every OOD claim in this wave is n=60 / n_bad=9 (exploratory).
-   E5.04 and E8.01 are the two ids that change the moment those 100 human labels land.
+   E5.04 and E8.01 change the moment those 100 human labels land.
+5. Hygiene: `exp-motion-cue` has two untracked `.npz` intermediates (`eval/results/exp_motion_cue/cue_*_npz`)
+   that must NOT be committed (data); `.gitignore` there does not cover them yet.
 
 ## Facts worth carrying into the docs
 - `nproc` prints 4 only because coreutils honours `OMP_NUM_THREADS=4` from `/workspace/env.sh`; the cgroup
