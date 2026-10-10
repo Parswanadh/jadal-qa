@@ -1,0 +1,22 @@
+{
+ "id": "Y2.recommend",
+ "config": {
+  "gating_coverage": 0.45,
+  "review_share_target": 0.55,
+  "cost_ratio_fa_fr": 1,
+  "stage0": true,
+  "temperature": false
+ },
+ "gold_ba_raw": 0.8371,
+ "gold_ba_loco_cal": 0.7812,
+ "gold_ba_ci": [
+  0.6454,
+  0.9365
+ ],
+ "ood_ba_eval_only": 0.4955,
+ "rescored_review_share_gating": 0.55,
+ "rescored_review_share_stage0": 0.5401,
+ "note": "residual OOD reliability ~chance; see Y2.01/02.",
+ "generated_utc": "2026-10-10T16:47:31Z",
+ "command": "python3 eval/exp_review/run_y2.py"
+}
