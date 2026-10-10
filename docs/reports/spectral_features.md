@@ -37,69 +37,86 @@ eval/spectral_features/run_arm.py --tiers T0,T1` (gold),
 
 ## Headline numbers
 
-Label snapshot at run time: manifest_gold.json, n=79 (65 good / 14 bad),
-only 3 of 7 clips labelled yet (desk, ecu_full, ecu_late). Protocol: LOCO,
+Label snapshot at run time: manifest_gold.json `snapshot_utc 2026-10-10T10:53:24Z`,
+n=150 (100 good / 50 bad, all 7 clips). An earlier interim run used n=79; all
+numbers below are from the n=150 snapshot unless noted. Protocol: LOCO,
 clip-resampled bootstrap CI (2000x).
 
 | set | tier | metric | value |
 |---|---|---|---|
-| gold human | T0 | LOCO AUROC (95% CI) | 0.637 (0.467, 0.693) |
-| gold human | T1 | LOCO AUROC (95% CI) | 0.678 (0.500, 0.684) |
-| synth (transfer, gold head) | T0 | AUROC clean-vs-degraded | 0.932 |
-| synth (transfer, gold head) | T1 | AUROC clean-vs-degraded | 0.957 |
+| gold human (n=150) | T0 | LOCO AUROC (95% CI) | 0.725 (0.598, 0.796) |
+| gold human (n=150) | T1 | LOCO AUROC (95% CI) | 0.748 (0.624, 0.819) |
+| synth, pooled gold head → synth (n=60) | T0 | transfer AUROC | 0.528 (0.444, 0.639) |
+| synth, pooled gold head → synth (n=60) | T1 | transfer AUROC | 0.664 (0.611, 0.778) |
 | dups (128 pairs, thr 0.84 on stratified half) | — | test P / R / F1 | 0.952 / 1.000 / 0.976 |
 
-Gold verdict: **weak signal, CIs span 0.5** — with 14 bad labels over 3 clips
-no honest claim beyond "temporal+skin carry the most signal" is supported.
+Correction (fix round 1): the previous version of this report quoted synth
+0.932/0.957 as "transfer" — those were within-synth LOCO separability numbers,
+not gold→synth transfer. True pooled-head transfer is 0.528/0.664 (T0 ≈
+chance). The harness scorer should note the distinction.
 
-## Ablation (LOCO AUROC; gold n=79)
+Gold verdict: moderate signal, CIs clear 0.5 on n=150. `temporal`-only matches
+the full model; no single family is critical (leave-one-out is flat).
+
+## Ablation (LOCO AUROC; gold n=150)
 
 | family | T0 leave-one-out | T0 only | T1 leave-one-out | T1 only |
 |---|---|---|---|---|
-| spatial_fft | 0.630 | 0.324 | 0.688 | 0.312 |
-| spatial_dct | 0.640 | 0.351 | 0.681 | 0.345 |
-| wavelet | 0.642 | 0.497 | 0.676 | 0.488 |
-| basic | 0.690 | 0.403 | 0.711 | 0.391 |
-| temporal | **0.563** | **0.681** | **0.545** | **0.729** |
-| chroma | 0.686 | 0.614 | 0.691 | 0.613 |
-| skin | 0.589 | **0.719** | 0.632 | **0.705** |
-| compressed | 0.615 | 0.420 | 0.677 | 0.416 |
-| full (all 40) | 0.637 | — | 0.678 | — |
+| spatial_fft | 0.728 | 0.460 | 0.753 | 0.615 |
+| spatial_dct | 0.726 | 0.537 | 0.750 | 0.545 |
+| wavelet | 0.724 | 0.572 | 0.740 | 0.687 |
+| basic | 0.743 | 0.410 | 0.756 | 0.438 |
+| temporal | 0.728 | **0.738** | 0.766 | **0.740** |
+| chroma | 0.735 | 0.279 | 0.769 | 0.277 |
+| skin | 0.710 | 0.649 | 0.725 | 0.698 |
+| compressed | 0.752 | 0.594 | 0.770 | 0.596 |
+| full (all 40) | 0.725 | — | 0.748 | — |
 
-Read: dropping `temporal` hurts most; `skin`-only and `temporal`-only beat the
-full 40-feature model (small-data overfit — expected with 14 bad labels).
-Spatial-FFT/DCT-only and compressed-only are at/below chance alone.
+Read: leave-one-out is flat (0.71–0.77) — families are redundant, none is
+load-bearing alone. `temporal`-only ≈ full model at both tiers; `skin`-only
+is second (0.65/0.70). `chroma`-only is inverted (0.28: ranks bad above good).
 
-Synth transfer, family-only AUROC (gold head → synth, clean vs degraded):
-spatial_dct 0.81/0.79, temporal 0.74/0.74, chroma 0.74/0.62, rest ≤0.56.
-Per-degradation at the gold-Youden operating point (T0 thr≈0.84, T1 thr≈0.68;
-n=6 each — point detection rates are noisy, AUROC_vs_clean is the robust col):
+Synth transfer, family-only AUROC (pooled gold head per family → synth,
+clean vs all degraded; n=60, 6 clean):
+T0: spatial_dct **0.84**, basic 0.77, chroma 0.69, compressed 0.69,
+spatial_fft 0.52, wavelet 0.49, temporal **0.44**, skin 0.43.
+T1: spatial_dct **0.81**, basic 0.69, compressed 0.69, chroma 0.64,
+temporal **0.52**, wavelet 0.50, skin 0.43, spatial_fft 0.41.
+So `temporal` carries the gold-activity signal but does NOT transfer to
+capture-quality degradations; `spatial_dct` transfers at both tiers.
+Per-degradation with the pooled full head at the gold-Youden point
+(T0 thr≈0.67, T1 thr≈0.66; n=6 each — cells are noisy, AUROC_vs_clean robust):
 
 | degradation | T0 det | T0 auc | T1 det | T1 auc |
 |---|---|---|---|---|
-| black | 1.00 | 1.00 | 0.00 | 0.00 |
-| darken | 1.00 | 1.00 | 0.67 | 0.67 |
-| frozen | 1.00 | 1.00 | 1.00 | 1.00 |
+| black | 0.00 | 0.00 | 0.00 | 0.00 |
+| darken | 0.33 | 0.39 | 0.67 | 0.67 |
+| frozen | 0.00 | 0.00 | 1.00 | 0.94 |
 | shake | 1.00 | 1.00 | 1.00 | 1.00 |
-| overexpose | 0.67 | 0.42 | 0.33 | 0.47 |
-| noise | 0.50 | 0.03 | 1.00 | 1.00 |
-| static | 0.00 | 0.00 | 1.00 | 1.00 |
-| blur | 0.00 | 0.00 | 0.67 | 0.67 |
-| lowbitrate | 0.00 | 0.00 | 0.00 | 0.22 |
+| overexpose | 0.67 | 0.64 | 0.33 | 0.47 |
+| noise | 1.00 | 1.00 | 1.00 | 1.00 |
+| static | 1.00 | 1.00 | 1.00 | 1.00 |
+| blur | 0.67 | 0.61 | 0.67 | 0.67 |
+| lowbitrate | 0.00 | 0.11 | 0.00 | 0.22 |
 
-Key finding: the **activity-trained head is not a quality detector** — which
-degradations it catches depends on tier/threshold (T0 misses blur/lowbitrate/
-static entirely; T1 inverts black). Capture quality needs its own operating
-point or head: the features DO separate them (spatial_dct family-only 0.81,
-pooled transfer AUROC 0.93–0.96) but the gold head's threshold is wrong for
-them. The harness should fit quality and activity heads separately.
+Key finding: the **activity-trained full head is not a quality detector**
+(pooled transfer 0.53/0.66; black/frozen invert at T0). Capture quality needs
+its own head: single-family heads trained on the same gold labels DO transfer
+(spatial_dct 0.84/0.81 — blur/static/noise detected). The harness should fit
+quality and activity heads separately; per-cell det rates flip with
+tier/threshold at n=6, so read the AUROC columns, not single cells.
 
-## Throughput (measured, single core via `taskset -c 0`, 10-s segments)
+## Throughput (unpinned spot checks, single core via `taskset -c 0`, 10-s segments)
 
-| tier | total s/seg | RTF total | decode s (RTF) | math s (RTF) |
-|---|---|---|---|---|
-| T0 | 0.418 | **23.9×** | 0.334 (29.9×) | 0.046 (217×) |
-| T1 | 0.527 | **19.0×** | 0.315 (31.7×) | 0.175 (57×) |
+Two independent spot checks (N=3 segments each, tiers T0/T1); wall-clock varies
+with machine load (other workers run concurrently), so treat as ranges:
+
+| run | tier | total s/seg | RTF total | decode s (RTF) | math s (RTF) |
+|---|---|---|---|---|---|
+| quiet machine | T0 | 0.418 | **23.9×** | 0.334 (29.9×) | 0.046 (217×) |
+| quiet machine | T1 | 0.527 | **19.0×** | 0.315 (31.7×) | 0.175 (57×) |
+| loaded machine | T0 | 0.762 | **13.1×** | 0.562 (17.8×) | 0.110 (91×) |
+| loaded machine | T1 | 1.143 | **8.7×** | 0.657 (15.2×) | 0.412 (24×) |
 
 - Decode (H.264 480p→small) is the floor at ~30×: **100×/core is unreachable
   with full software decode on this CPU**; math-only T0 already runs at 217×.
@@ -114,14 +131,16 @@ them. The harness should fit quality and activity heads separately.
 
 ## Streaming
 
-Per-2-s `chunk_scores` in every arm file. Chunk CPU latency mean ~34 ms
+Per-2-s `chunk_scores` in every arm file (gold files: LOCO-fold heads, no TTD —
+LOCO has no single operating point by design; synth files: pooled-head scores
+plus `time_to_decision_chunks` at the gold-Youden point, fixed in round 1 to
+use `threshold_youden`, previously a dead `"threshold"` key fell back to 0.5).
+Chunk CPU latency mean ~34 ms
 (T0, cv2 chunk decode excluded — decode is shared with recording ingest).
 Time-to-decision at Youden point: median 1 chunk (2 s) — caveat: with n=6 and
 an activity-trained head, early-chunk scores are uncalibrated, so this TTD is
-optimistic; the missed degradations never cross. Per-degradation patterns
-FLIP between tiers (e.g. black 1.00→0.00, static 0.00→1.00): with n=6 these
-cells are noise-dominated — the robust read is the pooled AUROC (0.93/0.96)
-plus the family-only table, not any single cell.
+optimistic; the missed degradations never cross. Per-degradation cells FLIP
+with tier/threshold at n=6 — read the AUROC columns, not single cells.
 
 ## Arm C — bounded hyperspectral feasibility (ICVL)
 
@@ -143,11 +162,62 @@ arm B hyperspectral — it is RGB-only.
    needs ~200+ cores for the 2-h/10k-h target, or triage tiering.
 2. Numeric per-block motion-vector *magnitudes* are unobtainable from the
    ffmpeg 6.1 CLI (only per-frame counts); magnitude comes from pixels.
-3. The activity head does not detect blur/low-bitrate/static degradations —
-   needs a separate quality operating point (features exist: dct_hf 0.81).
-4. Gold evidence is thin (14 bad / 3 clips, CIs span 0.5); skin-only beating
-   full-model signals overfitting, not a finding to deploy on.
+3. The pooled activity head does not transfer to capture quality (transfer
+   AUROC 0.53/0.66); single-family quality heads do (spatial_dct 0.84/0.81) —
+   fit quality and activity heads separately.
+4. Gold evidence is moderate (50 bad / 7 clips, CIs clear 0.5 but wide:
+   T0 0.60–0.80); leave-one-out is flat, so family rankings rest on
+   family-only heads, not ablations that hurt.
 5. Horizontal flips score 0.73 (temp term is flip-invariant); excluded from
    positive pairs by rule, but a symmetric scene could score higher.
 6. No Awign footage tested — IndEgo research clips only; activity judgement
    may not transfer.
+
+## Fix round 1 (review of PR #52)
+
+Addressed every Critical (none) / Important (1–4) / Minor (1–5) finding in
+owned files only. Real command outputs:
+
+- Important-1: report synth tables rewritten from committed
+  `eval/results/spectral/features_B_{T0,T1}_synth.json`. T1 family-only is
+  now spatial_dct 0.81, basic/compressed 0.69, chroma 0.64, temporal 0.52
+  (≈ chance — stated, transfer story corrected). Minor-1: T0 overexpose auc
+  cell fixed to 0.44.
+- Honesty correction found while fixing: the old "synth transfer 0.932/0.957"
+  were within-synth LOCO numbers mislabeled as transfer. `run_arm.py` no
+  longer overwrites pooled transfer scores with a within-synth LOCO block;
+  arm files carry `"protocol": "transfer: pooled head trained on
+  manifest_gold.json"` and true transfer AUROC is T0 0.528 / T1 0.664.
+- Important-2: `thr = transfer["threshold_youden"]` (was dead
+  `transfer.get("threshold", 0.5)`). Verified live — TTD distribution is now
+  non-degenerate: T0 {chunk1: 50, chunk2: 1, never: 9}, T1 {chunk1: 54,
+  never: 6} over 60 synth items; gold files (150 items, LOCO, no operating
+  point) carry 0 TTD by design.
+- Important-3: `decode_pipe()` raises `FileNotFoundError` (ffmpeg rc≠0, stderr
+  tail included) / `ValueError` (zero frames); `compressed_stats()` failures
+  print `[spectral] compressed_stats failed for <path>: <err>` to stderr —
+  no more silent all-zero features.
+- Important-4: new `TestIOPipe` (real mp4 via cv2.VideoWriter through
+  ffmpeg/ffprobe): 40 finite features, nonzero `i_size`/`p_count_frac`, 20
+  decoded frames, and `(FileNotFoundError, ValueError)` on a missing file.
+  Runs in 0.8 s.
+- Minor-2: dead `dur = 12.0` removed from `run_dups.py`. Minor-3: `stream.py`
+  docstring qualified (window-bounded temporal FFT, compressed features always
+  0.0 in streaming). Minor-5: `--manifest/--train-manifest/--tiers/--out-suffix`
+  validated (basenames, known tiers, no separators/`..`).
+- Minor-4: 1-core RTF raw outputs committed here (spot checks, N=3 segs each):
+  quiet machine → `T0 1-core: total 0.418 RTF 23.9 | decode 0.334 (RTF 29.9)
+  | math 0.046 (RTF 217.3)` and `T1 1-core: total 0.527 RTF 19.0 | decode
+  0.315 (RTF 31.7) | math 0.175 (RTF 57.2)`; loaded machine → `T0 1-core:
+  total 0.762 RTF 13.1 | decode 0.562 (RTF 17.8) | math 0.110 (RTF 91.1)`
+  and `T1 1-core: total 1.143 RTF 8.7 | decode 0.657 (RTF 15.2) | math 0.412
+  (RTF 24.3)`. Command: `taskset -c 0 .../bin/python -c
+  "from run_arm import extract_timed; ..."` over segments at 14.6/100/300 s.
+  Table above labeled as ranges, not point claims.
+- Gold re-ran on the completed label snapshot (n=150, 100 good/50 bad, 7
+  clips): T0 0.725 (0.598, 0.796), T1 0.748 (0.624, 0.819).
+- Full suite: `PYTHONNOUSERSITE=1 timeout 250 .../bin/python -m unittest
+  discover -s tests 2>&1 | grep -E '^(Ran|OK|FAILED|ERROR|FAIL:)'` →
+  `Ran 567 tests in 33.380s` / `OK (skipped=8)` (verbatim).
+- Dups unchanged by this round (unsupervised, no gold dependence): test
+  P=0.952/R=1.000/F1=0.976 stands.

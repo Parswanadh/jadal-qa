@@ -4,7 +4,11 @@ SpectralStream is fed 2-second chunks (BGR uint8 frames at any resolution,
 in order) and returns the running feature vector after each chunk, using
 only past chunks. Memory is O(window): a ring buffer of small gray frames
 (default last 100 frames = 10 s at 10 fps) plus scalar accumulators.
-Matches batch extract() on the same frames up to the window boundary.
+While the stream length stays within the window it returns the same
+non-compressed features as batch extract() on the same frames; beyond the
+window the temporal FFT covers only the last `window_frames` frames, and the
+six compressed-domain features (mv_per_frame, *_size*, p_count_frac) are
+always 0.0 here because they need an ffmpeg pass over the segment.
 """
 
 from __future__ import annotations

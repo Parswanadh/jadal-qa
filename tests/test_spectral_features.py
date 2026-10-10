@@ -1,12 +1,14 @@
 """Focused unit tests for arm B spectral features (synthetic only, <30 s)."""
 
 import os
+import tempfile
 import unittest
 
 import cv2
 import numpy as np
 
-from jadal.spectral.features import ALL_FEATURES, FAMILIES, FrameAccumulator
+from jadal.spectral.features import (ALL_FEATURES, FAMILIES, compressed_stats,
+                                     decode_pipe, extract, FrameAccumulator)
 from jadal.spectral.stream import SpectralStream
 
 
@@ -83,6 +85,47 @@ class TestAccumulator(unittest.TestCase):
             self.assertTrue(np.isfinite(v2[k]), k)
         # running vector changes as more evidence arrives
         self.assertFalse(all(v1[k] == v2[k] for k in v1))
+
+
+class TestIOPipe(unittest.TestCase):
+    """End-to-end I/O: real mp4 through ffmpeg/ffprobe (Important-4)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.mp4 = os.path.join(cls.tmp.name, "io.mp4")
+        frames = _synth_frames(n=20, size=64, seed=11)
+        vw = cv2.VideoWriter(cls.mp4, cv2.VideoWriter_fourcc(*"mp4v"),
+                             10, (64, 64))
+        for f in frames:
+            vw.write(cv2.cvtColor(np.ascontiguousarray(f),
+                                  cv2.COLOR_RGB2BGR))
+        vw.release()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def test_extract_40_finite_features(self):
+        feats = extract(self.mp4, 0.0, 2.0, tier="T0")
+        self.assertEqual(set(feats), set(ALL_FEATURES))
+        for k, v in feats.items():
+            self.assertTrue(np.isfinite(v), k)
+
+    def test_compressed_stats_nonzero_on_valid_file(self):
+        cs = compressed_stats(self.mp4, 0.0, 2.0)
+        self.assertGreater(cs["i_size"], 0.0)
+        self.assertGreater(cs["p_count_frac"], 0.0)
+        frames, mv = decode_pipe(self.mp4, 0.0, 2.0, 64)
+        self.assertEqual(frames.shape[0], 20)
+        self.assertGreaterEqual(mv, 0.0)
+
+    def test_missing_file_raises_not_silent_zeros(self):
+        bad = os.path.join(self.tmp.name, "nope.mp4")
+        with self.assertRaises((FileNotFoundError, ValueError)):
+            extract(bad, 0.0, 2.0, tier="T0")
+        with self.assertRaises((FileNotFoundError, ValueError)):
+            decode_pipe(bad, 0.0, 2.0, 64)
 
 
 if __name__ == "__main__":
