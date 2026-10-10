@@ -1,0 +1,51 @@
+Jadal QA
+Copyright 2026 Jadal QA contributors
+
+This product includes or depends on the third-party components and datasets
+listed below. None of them is redistributed in this repository: no dataset
+frames or videos, no model weights and no binaries are committed. Models are
+downloaded by the user into the git-ignored `models/` directory.
+
+The licence column is the licence stated in docs/ATTRIBUTIONS.md where that
+file states one. Those statements are marked there as not yet verified
+against each source. Anything not stated there is marked TO VERIFY. Before a
+public release, the owner must check each entry against its source.
+
+Dataset: IndEgo
+  Owner: Fraunhofer IPK (https://huggingface.co/datasets/FraunhoferIPK/IndEgo)
+  Licence: CC BY 4.0, as stated in docs/ATTRIBUTIONS.md (unverified there).
+  Use: small demo clips and step labels, for local demo only. Not redistributed.
+
+Dataset: Egocentric-10K
+  Owner: builddotai
+  Licence: licence: see source; TO VERIFY by the owner.
+  Use: egocentric video used for proof-of-concept runs. Not redistributed.
+
+Dataset: Egocentric-10K-Evaluation (labels and evaluation split)
+  Owner: builddotai
+  Licence: Apache-2.0, as stated in docs/ATTRIBUTIONS.md (unverified there).
+  Use: evaluation split and calibration source. Gated shards are not
+  redistributed. Labels are AI-generated (see docs/ATTRIBUTIONS.md) and
+  their redistribution terms are unchecked.
+
+Model: EmbeddingGemma 2
+  Owner: Google
+  Licence: Apache-2.0 per Google's announcement, as stated in
+  docs/ATTRIBUTIONS.md (unverified there). Gemma weights may fall under the
+  Gemma Terms; check the model card.
+  Use: optional helper (hub search, de-duplication, frame heads). Weights not
+  committed.
+
+Models: MediaPipe task files (hand_landmarker.task, blaze_face_short_range.tflite)
+  Owner: Google
+  Licence: licence: see source; TO VERIFY by the owner.
+  Use: hand and face detection. Downloaded into `models/`, not redistributed.
+
+Library: OpenCV
+  Owner: OpenCV project
+  Licence: licence: see source; TO VERIFY by the owner.
+  Use: video decoding and image processing.
+
+Other dependencies (NumPy, SciPy, FastAPI, Uvicorn, Pillow, imagehash,
+pyserial, sarvamai SDK and others) are listed, with their status, in
+docs/ATTRIBUTIONS.md. Their licences have not been audited.
