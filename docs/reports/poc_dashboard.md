@@ -39,7 +39,7 @@ frames are licensed; see `docs/screens/README.md`.
   the Re-verify button sits below the fold of this capture)
 - `poc_live.png`, `poc_live_1280.png` (`#/live`): show the note "Replay: a real
   clip, with a scripted blackout injected at t=12 s (not from the footage)."
-- `poc_about_1280.png` (`#/about`): the claims table, which links to the
+- `poc_about_1280.png` (1280x1500, `#/about`): the claims table and the evidence-file line, which point to the
   evidence files in `docs/POC_STATUS.md`.
 
 Screens of the dashboard:
