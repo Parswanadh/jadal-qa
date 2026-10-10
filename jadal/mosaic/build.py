@@ -74,10 +74,26 @@ def _resample_area():
     return getattr(Image.Resampling, "INTER_AREA", Image.Resampling(3))
 
 
+def font_file() -> str:
+    """Path of the font actually used (or a sentinel for the PIL default).
+
+    Recorded in every sidecar so a PNG-hash mismatch across environments is
+    explainable: identical pixels require the identical ``(file, size)``.
+    """
+    if os.path.exists(FONT_PATH):
+        return FONT_PATH
+    return "PIL:load_default"
+
+
 def _load_font():
     if os.path.exists(FONT_PATH):
         return ImageFont.truetype(FONT_PATH, FONT_SIZE)
     return ImageFont.load_default(size=FONT_SIZE)
+
+
+def ts_text(t_s: float) -> str:
+    """Canonical timestamp string burned into each tile: ``t=X.Xs``."""
+    return f"t={float(t_s):.1f}s"
 
 
 def letterbox_tile(rgb: np.ndarray, tile_px: int) -> Image.Image:
@@ -96,7 +112,7 @@ def letterbox_tile(rgb: np.ndarray, tile_px: int) -> Image.Image:
 
 def _draw_timestamp(tile: Image.Image, t_s: float, font) -> None:
     """White ``t=X.Xs`` on a dark semi-transparent box, top-right of the tile."""
-    text = f"t={t_s:.1f}s"
+    text = ts_text(t_s)
     overlay = Image.new("RGBA", tile.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(overlay)
     x0, y0, x1, y1 = d.textbbox((0, 0), text, font=font)
@@ -160,6 +176,7 @@ def build_mosaic(frames, times_s, src_frame_indices, grid, tile_px, *,
         "tiles": tiles,
         "mosaic_sha256": "",
         "builder_version": BUILDER_VERSION,
+        "font": {"file": font_file(), "size": FONT_SIZE},
     }
     return canvas, sidecar
 

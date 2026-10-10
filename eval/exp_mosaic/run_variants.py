@@ -394,7 +394,8 @@ def main():
 
     # ---- E2.01 mosaic ----
     e201 = dict(base, experiment="E2.01", variant="mosaic embedding",
-                tile_px_sweep=[112, 160, 224], results={})
+                tile_px_sweep_planned=[112, 160, 224], tile_px_used=TILE_PX,
+                results={})
     for n in N_SET:
         r = results[f"mosaic_N{n}"]
         r = dict(r, n_frames=n, fps_used=n / WINDOW_S,
@@ -422,10 +423,11 @@ def main():
                "E2.07": ("pooled_stats", "pooled per-tile stats")}
     for eid, (tag, desc) in singles.items():
         r = dict(results[tag], experiment=eid, variant=desc, n_frames=REF_N,
-                 fps_used=REF_N / WINDOW_S,
                  embed_passes=(REF_N if tag in ("pooled_stats",) else 1))
         if tag == "single_middle":
             r["n_frames"] = 1
+        # fps_used is derived from the number of tiles actually built
+        r["fps_used"] = r["n_frames"] / WINDOW_S
         # paired comparison vs mosaic N=9 and mean-of-frames N=9
         r["vs_mosaic_N9"] = round(r["indego"]["auroc"] -
                                   results[f"mosaic_N{REF_N}"]["indego"]["auroc"], 4)
