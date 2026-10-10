@@ -102,8 +102,35 @@ res = {"experiment": "E1.04", "n": len(y), "n_good": int(y.sum()),
        "git_sha": git_sha(),
        "rows": rows, "overlap_vs_uniform20": ov,
        "score_spearman_vs_uniform20": rk, "keyframe_info": kf_info}
+
+# C1 (PR #88 review): a keyframe arm that falls back to uniform for EVERY window
+# is not a keyframe selection -> mark it INVALID and withhold its AUROC/CI so it
+# can never be read as a result.
+if kf_info.get("n_windows") and \
+        kf_info["n_windows_iframes_lt_budget"] == kf_info["n_windows"]:
+    reason = ("every window has fewer than the 20-frame budget of I-frames "
+              f"(mean {kf_info['mean_iframes_in_window']:.2f} I-frames/window; "
+              f"{kf_info['n_windows_iframes_lt_budget']}/{kf_info['n_windows']} windows), "
+              "so the arm is padded back to uniform and is not a keyframe selection; "
+              "its AUROC/CI are withheld")
+    res["invalid_arms"] = {"keyframe": {"reason": reason, "diagnostic": {
+        "mean_iframes_in_window": kf_info["mean_iframes_in_window"],
+        "n_windows_iframes_lt_budget": kf_info["n_windows_iframes_lt_budget"],
+        "n_windows": kf_info["n_windows"],
+        "overlap_vs_uniform20": ov.get("keyframe")}}}
+    for r in rows:
+        if r["strategy"] == "keyframe":
+            r["invalid"] = True
+            r["invalid_reason"] = reason
+            r["withheld"] = {"auroc": r.pop("auroc"), "ci95": r.pop("ci95"),
+                             "bal_acc": r.pop("bal_acc"),
+                             "delta_vs_uniform20": r.pop("delta_vs_uniform20")}
+
 json.dump(res, open(os.path.join(D, "E1.04.json"), "w"), indent=1)
 for r in rows:
+    if "auroc" not in r:
+        print(f"{r['strategy']:>10} INVALID (AUROC withheld)")
+        continue
     print(f"{r['strategy']:>10} AUROC {r['auroc']:.4f} [{r['ci95'][0]:.3f},{r['ci95'][1]:.3f}] "
           f"bal {r['bal_acc']:.3f} d={r['delta_vs_uniform20']:+.4f} "
           f"nfr {r['n_frames_mean']} feat {r['feat_ms_mean']:.0f}ms")

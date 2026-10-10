@@ -10,7 +10,7 @@
   0.8657
  ],
  "ci95_note": "ci95 = uniform20 clip-bootstrap CI95 (the reference arm); per-arm CI95 in rows[]",
- "budget": "20 frames/window (~2fps at 10fps native); uniform=arange(0,T,5); motion=top-19 mean|inter-frame diff| + frame0 anchor; random=seed0; keyframe=I-frame pts_time via ffprobe mapped to 10fps grid, padded with uniform when <20 I-frames",
+ "budget": "20 frames/window (~2fps at 10fps native); uniform=arange(0,T,5); motion=top-19 mean|inter-frame diff| + frame0 anchor; random=seed0; keyframe=I-frame pts_time via ffprobe mapped to 10fps grid, padded with uniform when <20 I-frames; keyframe arm is INVALID (always padded to uniform) and its numbers are withheld",
  "cost": {
   "frames_per_window": 20,
   "decode_ms_per_window": 568.8,
@@ -74,16 +74,20 @@
   {
    "strategy": "keyframe",
    "frames": 20,
-   "auroc": 0.7798,
-   "ci95": [
-    0.6622,
-    0.8352
-   ],
-   "bal_acc": 0.735,
    "n_frames_mean": 20.0,
    "feat_ms_mean": 167.0,
    "feat_ms_per_frame": 8.35,
-   "delta_vs_uniform20": -0.0068
+   "invalid": true,
+   "invalid_reason": "every window has fewer than the 20-frame budget of I-frames (mean 1.23 I-frames/window; 150/150 windows), so the arm is padded back to uniform and is not a keyframe selection; its AUROC/CI are withheld",
+   "withheld": {
+    "auroc": 0.7798,
+    "ci95": [
+     0.6622,
+     0.8352
+    ],
+    "bal_acc": 0.735,
+    "delta_vs_uniform20": -0.0068
+   }
   }
  ],
  "overlap_vs_uniform20": {
@@ -118,5 +122,20 @@
   "mean_iframes_in_window": 1.23,
   "n_windows_iframes_lt_budget": 150,
   "n_windows": 150
+ },
+ "invalid_arms": {
+  "keyframe": {
+   "reason": "every window has fewer than the 20-frame budget of I-frames (mean 1.23 I-frames/window; 150/150 windows), so the arm is padded back to uniform and is not a keyframe selection; its AUROC/CI are withheld",
+   "diagnostic": {
+    "mean_iframes_in_window": 1.23,
+    "n_windows_iframes_lt_budget": 150,
+    "n_windows": 150,
+    "overlap_vs_uniform20": {
+     "mean_jaccard_vs_uniform20": 0.9244,
+     "mean_frames_shared": 19.18,
+     "n_windows_identical_to_uniform": 63
+    }
+   }
+  }
  }
 }

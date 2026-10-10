@@ -13,7 +13,7 @@ import numpy as np
 # keep one process = one core (pod rule: <=75% of cores, no oversubscription)
 cv2.setNumThreads(int(os.environ.get("JADAL_CV_THREADS", "1")))
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "")
 MANIFEST = os.path.join(BUNDLE, "labels", "manifest_gold.json")
 QUEUE1 = os.path.join(BUNDLE, "queues", "label_queue_random.json")
 QUEUE2 = os.path.join(BUNDLE, "queues", "label_queue_random2.json")

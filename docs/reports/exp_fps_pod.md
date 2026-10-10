@@ -18,7 +18,9 @@ Two regimes are kept separate everywhere:
 
 1. **E1.04 (new): no frame-selection strategy beats uniform sampling** at an equal
    20-frame budget (n=150 LOCO). Uniform 0.7866 [0.650, 0.866]; motion-adaptive
-   0.7620, keyframe-only 0.7798, seeded random 0.7386 — all CI95 overlap.
+   0.7620, seeded random 0.7386 (all CI95 overlap with uniform). The keyframe-only
+   arm is **INVALID** — every window falls back to uniform padding, so its numbers
+   are **withheld** (not a result).
 2. **E1.03 (new): the IndEgo-trained pixel model does not transfer to
    Egocentric-10K at any fps** (frozen AUROC 0.36–0.55, every CI95 includes 0.5).
    Individual *spatial* features still separate good/bad OOD windows
@@ -158,7 +160,7 @@ frames, so the arms differ only in which 20 are fed to the features.
 |---|---|---|---|---|---|
 | **uniform-20** (`arange(0,T,5)`) | **0.7866** | [0.650, 0.866] | 0.725 | — | 220 |
 | motion-adaptive (top-19 \|Δframe\| + frame 0) | 0.7620 | [0.675, 0.802] | 0.675 | −0.0246 | 174 |
-| keyframe-only (I-frames + uniform padding) | 0.7798 | [0.662, 0.835] | 0.735 | −0.0068 | 167 |
+| keyframe-only (I-frames + uniform padding) | **INVALID — withheld** | — | — | — | 167 |
 | seeded random (seed 0) | 0.7386 | [0.586, 0.805] | 0.685 | −0.0480 | 176 |
 
 Per-window overlap with uniform-20 and label-free score correlation:
@@ -171,10 +173,12 @@ Per-window overlap with uniform-20 and label-free score correlation:
 
 **Conclusion: no selection strategy beats uniform at equal cost.** Motion-adaptive
 picks genuinely different frames (Jaccard 0.13, score ρ 0.73) and is *worse*
-(−0.025). At 10 fps IndEgo a 10 s window contains a mean of **1.23 I-frames**, and
-**150 / 150 windows have fewer than 20**, so the keyframe arm is always padded back to
-uniform (that is why its Jaccard is 0.92); it cannot fill the budget on its own.
-Uniform-20 is exactly the E1.01 2 fps row (0.7866), an internal consistency check.
+(−0.025); seeded random is also worse (−0.048). At 10 fps IndEgo a 10 s window
+contains a mean of **1.23 I-frames**, and **150 / 150 windows have fewer than 20**,
+so the keyframe-only arm is **always padded back to uniform** (that is why its
+Jaccard is 0.92) — it cannot fill the budget on its own, so it is **not a keyframe
+selection and is marked INVALID**; its AUROC is withheld. Uniform-20 is exactly the
+E1.01 2 fps row (0.7866), an internal consistency check.
 
 **Sanity note on the CI widths:** motion-adaptive's clip-bootstrap CI is ~40 % narrower
 than uniform-20's at the same n, clips and protocol (width 0.127 [0.675, 0.802] vs
@@ -188,7 +192,11 @@ keyframe AUROC **identical** to uniform (0.7866, same CI). Cause: the arm asked
 ffprobe for `frame=pkt_pts_time,pict_type`, and in ffprobe 6.1 `pkt_pts_time` is
 empty, so no I-frames were ever found and the arm silently degenerated to uniform.
 Fixed (use `pts_time`, plus `-skip_frame nokey -read_intervals` — 43 s → 0.6 s per
-window); the corrected numbers are above. No past registry line was edited.
+window); the corrected numbers are above. No past registry line was edited. **The
+ffprobe fix removed the empty `pkt_pts_time` but the arm is still effectively
+uniform** (mean 1.23 I-frames vs a 20-frame budget, 150/150 windows padded), so the
+keyframe-only arm remains **INVALID and its AUROC/CI are withheld** (C1, PR #88
+review).
 
 ## Cost / Pareto (`eval/results/exp_fps/pareto.json`)
 
@@ -215,7 +223,7 @@ and 8.01× (E1.01), features 3.11–5.75×). An earlier revision of this report 
 | 2 fps / uniform-20 | 20 | 0.7866 | 112 | 54 | 166 |
 | 1 fps | 10 | 0.7736 | 112 | 32 | 144 |
 | motion-20 | 20 | 0.7620 | 112 | 54 | 166 |
-| keyframe | 20 | 0.7798 | 112 | 54 | 166 |
+| keyframe | 20 | **INVALID (withheld)** | 112 | 54 | 166 |
 | random-20 | 20 | 0.7386 | 112 | 54 | 166 |
 
 Pareto front: 10 fps, 3.33 fps, 2 fps, 1 fps and uniform-20.
@@ -245,6 +253,7 @@ In IndEgo (480p H.264, 10 fps) decode is 112 ms and the feature stage dominates 
    prior-art decision.
 2. **Frame selection: dropped.** Uniform sampling stays (E1.04, verdict `drop`). No arm
    beats uniform, no arm reduces decode, and motion-adaptive is worse at equal cost.
+   The keyframe arm is INVALID (always padded to uniform) and is not counted.
 3. **OOD fps: not decidable from this experiment** (E1.03, verdict `maybe`). The IndEgo
    model does not transfer at any fps, so no fps can be justified on accuracy. What is
    supported: the frozen *ranking* is stable below 10 fps (ρ ≥ 0.98 for 5 vs 1), so a
@@ -270,7 +279,7 @@ In IndEgo (480p H.264, 10 fps) decode is 112 ms and the feature stage dominates 
 ## Regenerate
 
 ```bash
-export JADAL_BUNDLE=/workspace/jadal_pod_bundle OMP_NUM_THREADS=1
+export JADAL_BUNDLE=/path/to/jadal_bundle OMP_NUM_THREADS=1
 bash eval/exp_fps/run_all.sh                 # shards -> merged JSONs -> pareto.json (~25 min, 6 procs)
 python3 -m pytest tests/test_exp_fps.py -q   # 26 tests, no network, <30 s
 ```

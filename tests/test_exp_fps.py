@@ -247,9 +247,24 @@ def test_registry_summaries_quote_results_json():
     # F7 sanity note: both CI widths stated, to bootstrap rounding
     m = re.search(r"\(width ([\d.]+) vs ([\d.]+)\)", s104)
     assert m, "CI-width sanity note missing from the E1.04 verdict"
-    w = {a: r["ci95"][1] - r["ci95"][0] for a, r in rows.items()}
+    w = {a: r["ci95"][1] - r["ci95"][0] for a, r in rows.items() if "ci95" in r}
     assert float(m.group(1)) == pytest.approx(w["motion20"], abs=0.001)
     assert float(m.group(2)) == pytest.approx(w["uniform20"], abs=0.001)
+
+
+def test_keyframe_arm_is_invalid_and_withheld():
+    """C1: a keyframe arm that pads every window back to uniform must not report AUROC."""
+    d = _res("E1.04.json")
+    ki = d["keyframe_info"]
+    row = {r["strategy"]: r for r in d["rows"]}["keyframe"]
+    if ki["n_windows_iframes_lt_budget"] > 0:
+        assert row.get("invalid") is True
+        assert "auroc" not in row and "ci95" not in row and "bal_acc" not in row
+        assert row["withheld"]["auroc"] == pytest.approx(0.7798, abs=1e-4)
+        assert d["invalid_arms"]["keyframe"]["reason"]
+        doc = open(DOC).read()
+        assert "keyframe-only 0.7798" not in doc
+        assert "INVALID" in doc
 
 
 def test_report_per_feature_table_matches_e1_03():

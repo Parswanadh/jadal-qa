@@ -3,10 +3,10 @@
 # One process = ~1 core; 6 processes at a time (pod rule: <=75% of cores).
 # usage: bash eval/exp_fps/run_all.sh          (from the repo root)
 set -euo pipefail
-export JADAL_BUNDLE=${JADAL_BUNDLE:-/workspace/jadal_pod_bundle}
+export JADAL_BUNDLE="${JADAL_BUNDLE:?JADAL_BUNDLE is not set}"
 export OMP_NUM_THREADS=1
 cd "$(dirname "$0")/../.."
-LOG=${LOG:-/workspace/logs/exp_fps}
+LOG=${LOG:-/tmp/opencode/exp_fps}
 mkdir -p "$LOG" eval/results/exp_fps
 
 echo "== E1.01 sweep shards (IndEgo 480p in-domain, 150 human windows)"
