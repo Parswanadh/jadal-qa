@@ -422,6 +422,7 @@ def apply_to_config(result: dict, source: str, path: Path,
         "accept_certify": src_res["accept"]["certify"],
         "union_certify": src_res["union"],
         "union_integrity_only_certify": src_res.get("union_integrity_only"),
+        "union_autonomous_certify": src_res.get("union_autonomous"),
         "provenance": src_res.get("provenance"),
         "human_provenance": human_prov or None,
         "disabled_rules": disabled,
@@ -487,9 +488,10 @@ def markdown_tables(result: dict) -> str:
                              f"rule — {entry.get('reason')}")
             elif entry["disabled"]:
                 lines.append(f"DISABLED ({key}): {entry.get('reason')}")
-        for key in ("union", "union_integrity_only"):
+        for key in ("union", "union_integrity_only", "union_autonomous"):
             block = src["union"] if key == "union" else src.get(
-                "union_integrity_only", {})
+                "union_integrity_only" if key == "union_integrity_only"
+                else "union_autonomous", {})
             if not block:
                 continue
             uprov = block.get("provenance", {})
