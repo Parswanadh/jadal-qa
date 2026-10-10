@@ -149,20 +149,20 @@ def main():
     # --- combined: M1 121 + theory 18 + physics 16 (needs theory_feats.npz)
     try:
         z = np.load(os.path.join(RES, "gold.npz"), allow_pickle=True)
-    zids = [str(i) for i in z["ids"]]
-    zmap = {i: z["X"][j].astype(np.float64) for j, i in enumerate(zids)}
-    zt = np.load(os.path.join(RES, "theory_feats.npz"), allow_pickle=True)
-    tids = [str(i) for i in zt["ids"]]
-    tmap = {i: np.asarray(zt["F"][j], dtype=np.float64) / 1e4
-            for j, i in enumerate(tids)}
-    Xc = np.array([np.concatenate([zmap[i], tmap[i], PX[j]])
-                   for j, i in enumerate(order)])
-    _, ac, cc = loco_lr(Xc[m2], ya, ca, "combined activity")
-    out["activity"]["m1+theory+physics"] = {"auroc": ac, "ci": cc}
-    Xth = np.array([np.concatenate([tmap[i], PX[j]])
-                    for j, i in enumerate(order)])
-    _, ath, cth = loco_lr(Xth[m2], ya, ca, "theory+physics activity")
-    out["activity"]["theory+physics"] = {"auroc": ath, "ci": cth}
+        zids = [str(i) for i in z["ids"]]
+        zmap = {i: z["X"][j].astype(np.float64) for j, i in enumerate(zids)}
+        zt = np.load(os.path.join(RES, "theory_feats.npz"), allow_pickle=True)
+        tids = [str(i) for i in zt["ids"]]
+        tmap = {i: np.asarray(zt["F"][j], dtype=np.float64) / 1e4
+                for j, i in enumerate(tids)}
+        Xc = np.array([np.concatenate([zmap[i], tmap[i], PX[j]])
+                       for j, i in enumerate(order)])
+        _, ac, cc = loco_lr(Xc[m2], ya, ca, "combined activity")
+        out["activity"]["m1+theory+physics"] = {"auroc": ac, "ci": cc}
+        Xth = np.array([np.concatenate([tmap[i], PX[j]])
+                       for j, i in enumerate(order)])
+        _, ath, cth = loco_lr(Xth[m2], ya, ca, "theory+physics activity")
+        out["activity"]["theory+physics"] = {"auroc": ath, "ci": cth}
     except FileNotFoundError:
         out["activity"]["combined_note"] = "theory_feats.npz not ready; rerun"
     # --- per-feature single LOCO AUROC (ablation table; sign noted)
