@@ -1,0 +1,43 @@
+{
+  "created_utc": "2026-10-10T06:12:59+00:00",
+  "device": "NVIDIA GeForce RTX 4070 Laptop GPU",
+  "go_nogo_140": "GO",
+  "go_nogo_threshold_s_per_frame": 1.0,
+  "median_s_per_frame_at_140": 0.0676,
+  "model_dir": "/home/parshu/projects/awing/data/eg2",
+  "notes": "Synthetic deterministic frames; image-only; bfloat16; batch size 1; per-call processing_kwargs image.max_soft_tokens sets the vision budget.",
+  "per_budget": [
+    {
+      "batch1_vs_batch5_bit_equal": false,
+      "batch1_vs_batch5_max_abs_diff": 0.001953125,
+      "budget": 70,
+      "median_s_per_frame": 0.0561,
+      "n_timed": 20,
+      "n_warmup": 5,
+      "p95_s_per_frame": 0.0689,
+      "peak_vram_mb_batch1": 1458.5
+    },
+    {
+      "batch1_vs_batch5_bit_equal": false,
+      "batch1_vs_batch5_max_abs_diff": 0.0009765625,
+      "budget": 140,
+      "median_s_per_frame": 0.0676,
+      "n_timed": 20,
+      "n_warmup": 5,
+      "p95_s_per_frame": 0.1107,
+      "peak_vram_mb_batch1": 1476.8
+    },
+    {
+      "batch1_vs_batch5_bit_equal": false,
+      "batch1_vs_batch5_max_abs_diff": 0.001953125,
+      "budget": 280,
+      "median_s_per_frame": 0.0941,
+      "n_timed": 20,
+      "n_warmup": 5,
+      "p95_s_per_frame": 0.1028,
+      "peak_vram_mb_batch1": 1514.7
+    }
+  ],
+  "seed": 1234,
+  "torch_dtype": "torch.bfloat16"
+}
