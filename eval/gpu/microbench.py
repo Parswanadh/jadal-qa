@@ -153,7 +153,7 @@ def bench_decode():
     dur = 15  # seconds of video per process (keeps one lock hold short)
     for scale in ["160:90", "320:180"]:
         w, h = (int(x) for x in scale.split(":"))
-        frame_bytes = w * h  # gray
+        frame_bytes = w * h * 3 // 2  # NV12 (chain B, proven in nvdec_probe.json)
         # GPU path
         for conc in [1, 2, 4, 8]:
             sampler = DecSampler()
@@ -166,8 +166,8 @@ def bench_decode():
                     "ffmpeg", "-hide_banner", "-v", "error", "-nostdin",
                     "-hwaccel", "cuda", "-hwaccel_output_format", "cuda",
                     "-ss", str(off), "-t", str(dur), "-i", clips[i % len(clips)],
-                    "-vf", f"scale_cuda={scale},hwdownload,format=gray",
-                    "-f", "rawvideo", "-pix_fmt", "gray", "pipe:1",
+                    "-vf", f"scale_cuda={scale}:format=nv12,hwdownload,format=nv12",
+                    "-f", "rawvideo", "-pix_fmt", "nv12", "pipe:1",
                 ]
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE, stdin=subprocess.DEVNULL)
@@ -243,7 +243,7 @@ def bench_decode():
                 p.wait()
                 totals.append(tot)
             wall = time.perf_counter() - t0
-            frames = sum(totals) / frame_bytes
+            frames = sum(totals) / (w * h)  # CPU rows are gray
             out["configs"].append({
                 "decoder": "cpu", "scale": scale, "concurrency": conc,
                 "wall_s": round(wall, 2),

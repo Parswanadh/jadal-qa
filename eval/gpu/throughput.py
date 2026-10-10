@@ -186,12 +186,13 @@ def nvdec_reader(path, off, q, stop_ev, scale="160:90"):
     cmd = ["ffmpeg", "-hide_banner", "-v", "error", "-nostdin",
            "-hwaccel", "cuda", "-hwaccel_output_format", "cuda",
            "-ss", str(off), "-i", path,
-           "-vf", f"scale_cuda={scale},hwdownload,format=rgb24",
-           "-f", "rawvideo", "-pix_fmt", "rgb24", "pipe:1"]
+           "-vf", f"scale_cuda={scale}:format=nv12,hwdownload,format=nv12",
+           "-f", "rawvideo", "-pix_fmt", "nv12", "pipe:1"]
     import numpy as np
+    from eval.gpu.decode import nv12_to_rgb
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                          stdin=subprocess.DEVNULL)
-    fs = W * H * 3
+    fs = W * H * 3 // 2
     buf = b""
     win = []
     try:
@@ -201,12 +202,13 @@ def nvdec_reader(path, off, q, stop_ev, scale="160:90"):
                 break
             buf += ch
             while len(buf) >= fs and not stop_ev.is_set():
-                fr = np.frombuffer(buf[:fs], dtype=np.uint8).reshape(H, W, 3)
+                f = np.frombuffer(buf[:fs], dtype=np.uint8)
                 buf = buf[fs:]
-                win.append(fr)
+                win.append(nv12_to_rgb(f[:W * H].reshape(H, W),
+                                       f[W * H:].reshape(H // 2, W // 2, 2)))
                 if len(win) == WIN_FRAMES:
                     try:
-                        q.put(np.stack(win).astype(np.float32) / 255.0, timeout=5)
+                        q.put(np.stack(win).astype(np.float32), timeout=5)
                     except queue.Full:
                         pass
                     win = []
