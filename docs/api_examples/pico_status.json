@@ -1,7 +1,7 @@
 {
- "connected": true,
- "last_hb_age_s": 1.1625276419981674,
- "last_hb_led": "IDLE",
- "last_hb_ticks_ms": 635386,
+ "connected": false,
+ "last_hb_age_s": null,
+ "last_hb_led": null,
+ "last_hb_ticks_ms": null,
  "port": "/dev/ttyACM0"
 }
