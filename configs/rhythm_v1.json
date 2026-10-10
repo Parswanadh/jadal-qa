@@ -1,0 +1,44 @@
+{
+ "pipeline_version": "rhythm_v1",
+ "G": 6,
+ "ego_compensate": true,
+ "grid_channels": [
+  "res_mean",
+  "res_p90",
+  "skin_frac",
+  "tvar",
+  "flow_mag",
+  "flow_coh"
+ ],
+ "global_channels": [
+  "luma_mean",
+  "lap_var",
+  "diff_e",
+  "skin_frac",
+  "shift_px",
+  "under_frac",
+  "over_frac",
+  "dct_hf"
+ ],
+ "feature_layout": "per grid channel: [cell_mean, cell_std, cell_max, concentration]; per global channel: [mean, std, p10, p90]",
+ "n_features": 56,
+ "weights": "configs/rhythm_v1.npz",
+ "accept_threshold": 0.65,
+ "reject_threshold": 0.35,
+ "loco_auroc_estimate": 0.7588,
+ "loco_protocol": "leave-one-clip-out over 7 clips, logistic C=0.3, class-balanced",
+ "label_source": "human gold, 150 windows, 7 clips, one labeller",
+ "certified": false,
+ "certification_note": "Not certified. n=150 with clip dependence cannot support an error bound. loco_auroc_estimate is an observed value, not a guarantee.",
+ "known_failures": {
+  "pallet": "AUROC about 0.5 (chance)",
+  "pallet2": "AUROC about 0.5 (chance)",
+  "ecu_late": "AUROC about 0.63"
+ },
+ "tripwires": {
+  "luma_mean_min": 0.1,
+  "under_frac_max": 0.7,
+  "over_frac_max": 0.35,
+  "frozen_frac_max": 0.95
+ }
+}

@@ -1,0 +1,170 @@
+{
+ "label_source": "human gold, 150 windows, 7 clips, one labeller",
+ "protocol": "LOCO pooled, clip-bootstrap 95% CI 2000, K=32, top-M=16, 4 epochs, no synthetic negatives",
+ "note": "All rows share identical settings except the named ablation, so they are directly comparable to each other. The 25-epoch headline run is NOT comparable to these.",
+ "ablations": {
+  "control_4ep": {
+   "auroc": 0.7988,
+   "ci": {
+    "lo": 0.702513305890538,
+    "hi": 0.8474516352289488,
+    "n_boot": 2000,
+    "median": 0.7852713178294574
+   },
+   "n": 150,
+   "per_clip": {
+    "desk": 0.702,
+    "ecu_full": 0.73,
+    "ecu_late": 0.625,
+    "logistics4": 0.762,
+    "organise": 0.844,
+    "pallet": 0.53,
+    "pallet2": 0.5
+   }
+  },
+  "no_augmentation": {
+   "auroc": 0.7716,
+   "ci": {
+    "lo": 0.6626571897211591,
+    "hi": 0.829597215794034,
+    "n_boot": 2000,
+    "median": 0.7597577154028767
+   },
+   "n": 150,
+   "per_clip": {
+    "desk": 0.697,
+    "ecu_full": 0.73,
+    "ecu_late": 0.625,
+    "logistics4": 0.762,
+    "organise": 0.844,
+    "pallet": 0.53,
+    "pallet2": 0.5
+   }
+  },
+  "single_member": {
+   "auroc": 0.7833,
+   "ci": {
+    "lo": 0.6489266547406082,
+    "hi": 0.8312354312354312,
+    "n_boot": 2000,
+    "median": 0.7752812317392304
+   },
+   "n": 150,
+   "per_clip": {
+    "desk": 0.697,
+    "ecu_full": 0.73,
+    "ecu_late": 0.625,
+    "logistics4": 0.762,
+    "organise": 0.856,
+    "pallet": 0.515,
+    "pallet2": 0.5
+   }
+  },
+  "single_no_aug": {
+   "auroc": 0.7677,
+   "ci": {
+    "lo": 0.638033840464498,
+    "hi": 0.8180046567476805,
+    "n_boot": 2000,
+    "median": 0.7650974025974026
+   },
+   "n": 150,
+   "per_clip": {
+    "desk": 0.69,
+    "ecu_full": 0.735,
+    "ecu_late": 0.625,
+    "logistics4": 0.762,
+    "organise": 0.856,
+    "pallet": 0.515,
+    "pallet2": 0.5
+   }
+  },
+  "no_ego_motion": {
+   "auroc": 0.7936,
+   "ci": {
+    "lo": 0.6929240864939871,
+    "hi": 0.8445461479786422,
+    "n_boot": 2000,
+    "median": 0.7802758575714099
+   },
+   "n": 150,
+   "per_clip": {
+    "desk": 0.697,
+    "ecu_full": 0.73,
+    "ecu_late": 0.625,
+    "logistics4": 0.762,
+    "organise": 0.844,
+    "pallet": 0.53,
+    "pallet2": 0.5
+   }
+  },
+  "no_skin_channel": {
+   "auroc": 0.7953,
+   "ci": {
+    "lo": 0.6946699964081563,
+    "hi": 0.8451704545454546,
+    "n_boot": 2000,
+    "median": 0.7832817337461301
+   },
+   "n": 150,
+   "per_clip": {
+    "desk": 0.702,
+    "ecu_full": 0.73,
+    "ecu_late": 0.625,
+    "logistics4": 0.762,
+    "organise": 0.844,
+    "pallet": 0.53,
+    "pallet2": 0.5
+   }
+  },
+  "G=4": {
+   "auroc": 0.7846,
+   "ci": {
+    "lo": 0.6825226314484127,
+    "hi": 0.8367959949937421,
+    "n_boot": 2000,
+    "median": 0.7732021862799174
+   },
+   "n": 150,
+   "per_clip": {
+    "desk": 0.702,
+    "ecu_full": 0.73,
+    "ecu_late": 0.625,
+    "logistics4": 0.762,
+    "organise": 0.844,
+    "pallet": 0.53,
+    "pallet2": 0.5
+   }
+  },
+  "G=8": {
+   "auroc": 0.7904,
+   "ci": {
+    "lo": 0.6742653856644211,
+    "hi": 0.8462686567164179,
+    "n_boot": 2000,
+    "median": 0.7787915466700057
+   },
+   "n": 150,
+   "per_clip": {
+    "desk": 0.697,
+    "ecu_full": 0.73,
+    "ecu_late": 0.625,
+    "logistics4": 0.762,
+    "organise": 0.856,
+    "pallet": 0.53,
+    "pallet2": 0.5
+   }
+  }
+ },
+ "reference_headline_25ep": {
+  "auroc": 0.7526,
+  "ci": {
+   "lo": 0.6514285714285715,
+   "hi": 0.8128205128205128,
+   "n_boot": 2000,
+   "median": 0.7413253568971447
+  },
+  "n": 150,
+  "note": "25 epochs, not comparable to the 4-epoch ablation matrix"
+ }
+}
