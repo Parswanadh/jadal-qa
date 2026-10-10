@@ -1,0 +1,30 @@
+[
+ {
+  "window": [
+   14.6,
+   24.6
+  ],
+  "decisions": [
+   "GOOD",
+   "GOOD",
+   "GOOD"
+  ],
+  "identical": true,
+  "digest": "85b435ff884dd5d6",
+  "prob": 0.6715
+ },
+ {
+  "window": [
+   0.0,
+   10.0
+  ],
+  "decisions": [
+   "GOOD",
+   "GOOD",
+   "GOOD"
+  ],
+  "identical": true,
+  "digest": "0e9c1bf8424d7d8d",
+  "prob": 0.8799
+ }
+]

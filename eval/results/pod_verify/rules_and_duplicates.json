@@ -1,0 +1,286 @@
+{
+  "claims": [
+    {
+      "artifact": "eval/results/funnel_gold_calibration.json",
+      "command": "OMP_NUM_THREADS=2 python3 eval/verify/pod_rules_duplicates.py",
+      "id": "LB1-rules-C1a",
+      "notes": "86 = ceil(ln(0.0125)/ln(0.95)); UCB(0/84)@0.0125=0.0508>0.05 so the 3-clip/84-window CERTIFY half cannot certify; UCB(0/86)=0.0497<=0.05. Independent rerun reproduces the artifact's n_select/n_certify/groups/support_floor and all-8-rules-disabled.",
+      "protocol": "floor = ceil(ln(delta/m)/ln(1-beta)) in jadal/funnel.py:1216-1217 with delta=0.1, m=len(REJECT_RULES)=8, beta=0.05; exact one-sided CP UCB(0/n)=1-delta^(1/n); split by funnel._split_select_certify(records, 1234)",
+      "published": {
+        "certify_split": 84,
+        "required_clean_fires": 86
+      },
+      "recomputed": {
+        "accept_candidate": null,
+        "all_reject_rules_disabled": true,
+        "delta_per_rule": 0.0125,
+        "m_rules": 8,
+        "matches_artifact": {
+          "accept_candidate_none": true,
+          "certify_groups": true,
+          "n_certify": true,
+          "n_select": true,
+          "rules_disabled": true,
+          "select_groups": true,
+          "support_floor": true,
+          "union_autonomous": true
+        },
+        "n_certify": 84,
+        "support_floor": 86,
+        "ucb_zero_of_84_at_delta_0.0125": 0.05083,
+        "ucb_zero_of_86_at_delta_0.0125": 0.04968
+      },
+      "text": "Funnel calibration on the real signals: with 150 labels NO L0 rule can be statistically certified (the multiple-testing correction needs ~86 clean fires; the certification split has 84).",
+      "verdict": "REPRODUCED"
+    },
+    {
+      "artifact": "eval/results/funnel_gold_descriptive.json",
+      "command": "OMP_NUM_THREADS=2 python3 eval/verify/pod_rules_duplicates.py",
+      "id": "LB1-rules-C1b",
+      "notes": "6/6 TOO_DARK windows fire; 1 of 100 good windows fires (plus 1 HANDS_NOT_VISIBLE, 1 NO_ACTIVE_WORK, i.e. the false alarm count is over good windows). Matches the artifact's rule_fired_x_gold row exactly.",
+      "protocol": "apply shipped placeholder TOO_DARK rules (brightness_mean<40.0 or under_exposed_frac>0.35) to the 150 cached SIGNALS; good/bad from gold_labels_snapshot",
+      "published": {
+        "false_alarms": 1,
+        "too_dark_recall": "6/6"
+      },
+      "recomputed": {
+        "fires_by_gold_reason": {
+          "GOOD": 1,
+          "HANDS_NOT_VISIBLE": 1,
+          "NO_ACTIVE_WORK": 1,
+          "TOO_DARK": 6
+        },
+        "good_false_alarms": 1,
+        "matches_artifact": true,
+        "too_dark_recall": "6/6"
+      },
+      "text": "Descriptively TOO_DARK catches 6/6 at 1 false alarm.",
+      "verdict": "REPRODUCED"
+    },
+    {
+      "artifact": "none on this pod (source: legacy_models.md L1.08 -> /home/parshu/projects/jadal-qa-wt/spectral-harness/docs/reports/spectral_study.md, absent)",
+      "command": "n/a (no pair manifest / per-detector scores present)",
+      "id": "LB1-rules-C2a",
+      "notes": "F1s are internally consistent with the published P/R (2PR/(P+R): 0.947/0.909/0.865 all follow) but the underlying pairs are NOT on this pod: manifest_dups.json, spectral_data/arms/B|E|A/*.json and spectral_study.md are all absent; no script here reproduces these three numbers.",
+      "protocol": "would need the constructed-pair manifest and the three detectors' held-out scores; the repo's own 128-pair spectral rerun (L1.09) reports P 0.952/R 1.0/F1 0.976, which the snapshot itself marks as not directly comparable",
+      "published": {
+        "eg2": {
+          "F1": 0.909,
+          "P": 0.833,
+          "R": 1.0
+        },
+        "phash": {
+          "F1": 0.865,
+          "P": 0.941,
+          "R": 0.8
+        },
+        "spectral": {
+          "F1": 0.947,
+          "P": 1.0,
+          "R": 0.9
+        }
+      },
+      "recomputed": {
+        "constructed_pair_manifest_on_pod": {
+          "bounded_search_maxdepth5": [],
+          "pairs_key_in_pod_labels_manifest": false
+        },
+        "f1_from_published_PR": {
+          "eg2": 0.9089,
+          "phash": 0.8648,
+          "spectral": 0.9474
+        },
+        "pair_level_scores": null
+      },
+      "text": "Duplicates (64 constructed pairs, held-out half): spectral signature F1 0.947, EmbeddingGemma-2 cosine 0.909, pHash 0.865 (small n: differences not established).",
+      "verdict": "CANNOT VERIFY"
+    },
+    {
+      "artifact": "eval/results/perpixel/m2.json (human section); docs/reports/perpixel_accuracy.md; eval/results/perpixel/dup_sigs.json (signatures)",
+      "command": "OMP_NUM_THREADS=2 python3 eval/verify/pod_rules_duplicates.py",
+      "id": "LB1-rules-C2b",
+      "notes": "The claim is STALE: the 6 human DUPLICATE labels have been tested. Independent recompute matches m2.json exactly: recall@1=recall@3=0.5, precision of top matches=0.0476, 63/150 windows above the constructed threshold (over-flagging). NN pairs for the 6 are listed in the JSON.",
+      "protocol": "recompute all 150x149 pairwise similarities from the cached signatures with jadal.spectral.dup.similarity, threshold 0.8410791366906474 taken from m2.json's constructed-pair split; NN1/top3 per window; the 6 DUPLICATE windows are g072/g077/g088/g089/g090/g149",
+      "published": {
+        "status": "untested / in progress"
+      },
+      "recomputed": {
+        "dup_ids": [
+          "g072",
+          "g077",
+          "g088",
+          "g089",
+          "g090",
+          "g149"
+        ],
+        "matches_artifact": true,
+        "n_flagged": 63,
+        "nn_pairs": {
+          "g072": {
+            "clip": "desk",
+            "id": "g070",
+            "reason": "",
+            "sim": 0.8969059002284315
+          },
+          "g077": {
+            "clip": "desk",
+            "id": "g076",
+            "reason": "",
+            "sim": 0.8546343744630945
+          },
+          "g088": {
+            "clip": "logistics4",
+            "id": "g146",
+            "reason": "",
+            "sim": 0.8585376613681766
+          },
+          "g089": {
+            "clip": "logistics4",
+            "id": "g144",
+            "reason": "",
+            "sim": 0.801102001682327
+          },
+          "g090": {
+            "clip": "organise",
+            "id": "g121",
+            "reason": "",
+            "sim": 0.8069226251990598
+          },
+          "g149": {
+            "clip": "logistics4",
+            "id": "g144",
+            "reason": "",
+            "sim": 0.7959205569673171
+          }
+        },
+        "precision_top": 0.047619047619047616,
+        "recall_at1": 0.5,
+        "recall_at3": 0.5
+      },
+      "text": "Not yet tested on the 6 real human DUPLICATE labels (in progress).",
+      "verdict": "NOT REPRODUCED"
+    },
+    {
+      "artifact": "jadal/funnel.py:1216-1217; tests/test_funnel_round2.py:308 (86), :318 (45); docs/reports/funnel.md:460; docs/pod/SYNC_UPDATE_2026-10-10_2145.md:33 (K=4, 59)",
+      "command": "python3 -c \"import math; f=lambda d,b: math.ceil(math.log(d)/math.log(1-b)); print(f(0.0125,0.05), f(0.05,0.05))\"",
+      "id": "LB1-rules-C3a",
+      "notes": "Both figures follow from the same formula: 86 at delta_rule=0.0125, 59 at family delta=0.05 with fixed-sequence testing. CAVEAT: the shipped defaults use delta=0.1, whose fixed-sequence opt-out floor is 45 (asserted in tests/test_funnel_round2.py:318), not 59; 59 matches the out-of-repo research4 note (K=4, docs/pod/SYNC_UPDATE...md:33). No artifact in this repo computes 59 (docs/reports/claims_poc.md I1 records it as unbacked and deleted from README).",
+      "protocol": "floor = ceil(ln(delta_rule)/ln(1-beta)), beta=0.05; 86 needs delta_rule=0.0125 (=0.1/8 or 0.05/4); 59 needs fixed-sequence delta=0.05",
+      "published": {
+        "bonferroni_clean_windows": 86,
+        "fixed_sequence_clean_windows": 59
+      },
+      "recomputed": {
+        "family_delta0.05_bonferroni_m4": 86,
+        "family_delta0.05_fixed_sequence": 59,
+        "shipped_bonferroni_delta0.1_m8": 86,
+        "shipped_fixed_sequence_delta0.1": 45
+      },
+      "text": "Certified error bounds: not achievable at n=150: the multiple-testing correction needs ~86 clean windows (59 with fixed-sequence testing alone).",
+      "verdict": "REPRODUCED"
+    },
+    {
+      "artifact": "none: grep for effective sample / n_eff / design effect / ICC finds no computation; provenance is the out-of-repo 'research4 risk-control note' (docs/pod/SYNC_UPDATE_2026-10-10_2145.md:33)",
+      "command": "grep -rn 'effective sample|n_eff|design effect|ICC' ...",
+      "id": "LB1-rules-C3b",
+      "notes": "No computation exists in-repo (claims_poc.md I1 lists '20-43' among fragments with no backing). The pod's own sync note gives a DIFFERENT range, ~11-43, from the research4 note. My labelled cross-check lands at n_eff(bad rate) and n_eff(TOO_DARK rate) reported in the JSON; it is a plausibility check only.",
+      "protocol": "published protocol not stated on the pod; my independent check is NOT it: one-way-ANOVA ICC over 7 clip clusters on the binary outcome, n_eff=n/(1+(mbar-1)ICC)",
+      "published": {
+        "effective_sample_size_range": "20-43"
+      },
+      "recomputed": {
+        "in_repo_computation": null,
+        "independent_design_effect_estimate": {
+          "bad_rate": {
+            "design_effect": 4.83,
+            "icc": 0.1876,
+            "n_eff": 31.0
+          },
+          "too_dark_rate": {
+            "design_effect": 3.68,
+            "icc": 0.1313,
+            "n_eff": 40.7
+          }
+        }
+      },
+      "text": "the independence assumption fails because windows within a clip are correlated (effective sample size ~20-43).",
+      "verdict": "CANNOT VERIFY"
+    },
+    {
+      "artifact": "eval/results/perpixel/rulelist.json; eval/results/perpixel/theory.json rule_list; eval/perpixel/rules_fix.py docstring; docs/reports/perpixel_accuracy.md",
+      "command": "OMP_NUM_THREADS=2 python3 eval/verify/pod_rules_duplicates.py (reruns rules_fix.main() into a temp dir with manifest_gold rebuilt from gold.npz)",
+      "id": "LB1-rules-C4",
+      "notes": "Evidence is recorded and the rerun is bit-identical: sens 1.0, frr_good 0.97 (97/100 good windows rejected), bal_acc 0.515, GOOD kept 0.03. The pre-fix objective (unconstrained Youden) kept 0.0 good (rules_fix.py docstring; theory.json rule_list bal_acc 0.47, AUROC 0.589). STILL TRUE OF THE SHIPPED LIST? The shipped configs/funnel_thresholds.json is version 'funnel-v1-placeholder', status placeholder, hard_reject_policy integrity_only, and the round-2 calibration DISABLES all 8 tunable reject rules; under evidence_reject the shipped thresholds descriptively reject 12/100 good windows (not 'nearly everything'). So the degenerate list is correctly recorded as tried and rejected, and it is not what ships.",
+      "protocol": "deterministic per-rule thresholds, FRR cap 0.15, nested LOCO over the 7 clips on the quality task (TOO_DARK+UNDECODABLE vs good)",
+      "published": {
+        "behaviour": "degenerate, rejects nearly everything",
+        "status": "rejected"
+      },
+      "recomputed": {
+        "active_rules": [
+          "blur",
+          "lowent",
+          "madfroz",
+          "pbytes",
+          "ten"
+        ],
+        "loco": {
+          "bal_acc": 0.515,
+          "beats_trivial": true,
+          "frr_good": 0.97,
+          "per_reason": {
+            "GOOD": {
+              "kept": 0.03,
+              "n": 100,
+              "recall_bad": null
+            },
+            "TOO_DARK": {
+              "kept": null,
+              "n": 6,
+              "recall_bad": 1.0
+            },
+            "UNDECODABLE": {
+              "kept": null,
+              "n": 1,
+              "recall_bad": 1.0
+            }
+          },
+          "sens": 1.0
+        },
+        "rerun_error": null,
+        "rerun_identical": true
+      },
+      "text": "The deterministic threshold rule list tried so far is degenerate (rejects nearly everything) and was rejected.",
+      "verdict": "REPRODUCED"
+    }
+  ],
+  "meta": {
+    "claims_source": "/workspace/jadal_pod_bundle/docs/FACTS.md (lines 22, 23, 41, 46)",
+    "cpu_only": true,
+    "generated_utc": "2026-10-10T17:32:16.551381+00:00",
+    "inputs": [
+      "eval/results/gold_l0_signals.json",
+      "eval/results/perpixel/gold.npz",
+      "eval/results/perpixel/dup_sigs.json",
+      "eval/results/perpixel/m2.json",
+      "eval/results/perpixel/rulelist.json",
+      "eval/results/funnel_gold_calibration.json",
+      "eval/results/funnel_gold_descriptive.json",
+      "configs/funnel_thresholds.json"
+    ],
+    "inputs_readonly": [
+      "/workspace/jadal_pod_bundle/**",
+      "other /workspace/wt/* worktrees"
+    ],
+    "pod_manifest_cross_check": {
+      "clips_match": true,
+      "ids_match": true,
+      "labels_match": true,
+      "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+      "path": "/workspace/jadal_pod_bundle/labels/manifest_gold.json",
+      "reasons_match": true
+    },
+    "repo_sha": "e320c58",
+    "task": "LB1-rules verification (deterministic rules + duplicates)"
+  }
+}

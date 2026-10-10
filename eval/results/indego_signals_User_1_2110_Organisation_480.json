@@ -8,7 +8,7 @@
   "mediapipe_version": "1.1.0",
   "opencv_version": "5.0.0"
  },
- "clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+ "clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
  "seg_seconds": 20.0,
  "segments": [
   {
@@ -25,7 +25,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0000",
     "sha256": "6f1a2899491ab3c0aecb0a59ed0501bc6d3f69c1617cec6a750c11812d58e3aa",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 0.0,
     "worker_id": "indego"
    },
@@ -58,7 +58,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0001",
     "sha256": "e17209b5833c5c21d43161f2dbecd8e1f0aad57b7931e04c2e955680d79a8b3b",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 20.0,
     "worker_id": "indego"
    },
@@ -91,7 +91,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0002",
     "sha256": "37416080a5f7e5324e40173aa7b47d4125e663731e61bdb9e3039ffca96bc52d",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 40.0,
     "worker_id": "indego"
    },
@@ -124,7 +124,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0003",
     "sha256": "b53aeb6eb6301088ad97f42f530623521c47164c29f616c61686ddd2a9dd6866",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 60.0,
     "worker_id": "indego"
    },
@@ -157,7 +157,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0004",
     "sha256": "9c34ed26bb84217be395f46768aaf837bfe4f8e356ee80ec8b6d2dd6895160f5",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 80.0,
     "worker_id": "indego"
    },
@@ -190,7 +190,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0005",
     "sha256": "a264c9ee755bca282bab059a621613e327dc63ed22f810857beb09a0c580b64c",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 100.0,
     "worker_id": "indego"
    },
@@ -223,7 +223,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0006",
     "sha256": "9f8f905db47b70363b162339bae8b7f4b59575fdb9dafa5a4f8e9b097826de26",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 120.0,
     "worker_id": "indego"
    },
@@ -256,7 +256,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0007",
     "sha256": "78472f245e29eee2cf4a0f2baacbb0581475ae5e98460a3fa7cce6d2505beb98",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 140.0,
     "worker_id": "indego"
    },
@@ -289,7 +289,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0008",
     "sha256": "0b9ba9563cacec6656534a934c612c93aca243f7fdf775a2d32dee02932763cb",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 160.0,
     "worker_id": "indego"
    },
@@ -322,7 +322,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0009",
     "sha256": "78e010fed7dac7534833e1d9071c223d9e3267b938d0329804bf052e0112806d",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 180.0,
     "worker_id": "indego"
    },
@@ -355,7 +355,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0010",
     "sha256": "b99a963386dbb95637ccbc7d1ebddc26e7019f186991dfe98565175d0f4f4be3",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 200.0,
     "worker_id": "indego"
    },
@@ -388,7 +388,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0011",
     "sha256": "f48a9401fcef63449ddbf1def94ad3c13d3fa115afb3179d9d8dc77b380c4b89",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 220.0,
     "worker_id": "indego"
    },
@@ -421,7 +421,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0012",
     "sha256": "ead365f0eb135b3ce7a49ef2bf9688c419e95c33ba5f24930a36e199224ead2a",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 240.0,
     "worker_id": "indego"
    },
@@ -454,7 +454,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0013",
     "sha256": "0ae8401c26e4a83b81e59e49a63854a256a788b4b8ccbd421472d051a92d6fd4",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 260.0,
     "worker_id": "indego"
    },
@@ -487,7 +487,7 @@
     "segment_id": "User_1_2110_Organisation_480-6120d64f-0014",
     "sha256": "5a62fcf599f5f9b9de777190f754db758e35c41d57c0e6c7b810fc85d68abd64",
     "site_id": "indego",
-    "source_clip": "/workspace/jadal_pod_bundle/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "source_clip": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
     "start_s": 280.0,
     "worker_id": "indego"
    },
