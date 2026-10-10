@@ -1,0 +1,104 @@
+{
+  "device_label": "x86-laptop-proxy",
+  "disclaimer": "x86 laptop cores as a proxy, NOT measured on a Raspberry Pi. Never claim 'runs on a Pi' without a run with --device-label on real hardware.",
+  "edge_modules_imported": [
+    "jadal.segmenter",
+    "jadal.signals",
+    "jadal.funnel",
+    "jadal.certify",
+    "jadal.receipts",
+    "jadal.config"
+  ],
+  "edge_modules_missing": [],
+  "forbidden_found": [],
+  "git_sha": "740830f",
+  "heavy_present": {
+    "PIL": true,
+    "cv2": true,
+    "imagehash": true,
+    "mediapipe": false,
+    "numpy": true,
+    "scipy": true
+  },
+  "heavy_versions": {
+    "PIL": "12.3.0",
+    "cv2": "5.0.0",
+    "imagehash": "4.3.2",
+    "mediapipe": null,
+    "numpy": "2.5.2",
+    "scipy": "1.18.1"
+  },
+  "import_time_s": 0.556,
+  "machine": "x86_64",
+  "mediapipe_blocked_probe": {
+    "backend_info": {
+      "face_model": null,
+      "face_model_sha256": null,
+      "faces": "proxy",
+      "hand_model": null,
+      "hand_model_sha256": null,
+      "hands": "proxy"
+    },
+    "compute_signals_s": 0.739,
+    "fallback_works": true,
+    "fps": 10.0,
+    "frames_written": 100,
+    "mediapipe_blocked": true,
+    "peak_rss_MB": 133.5,
+    "segment": "/home/parshu/projects/jadal-qa-wt/tmp-sigtest/data_runtime/edge_tmp/edge_check_seg.mp4",
+    "signals": {
+      "blur_var": 929.9466,
+      "brightness_mean": 74.5042,
+      "decodable": true,
+      "dup_of": null,
+      "faces_blurred": 7,
+      "faces_found": 7,
+      "hand_count_mode": 2,
+      "hands_visible_frac": 1.0,
+      "motion_mean": 9.2359,
+      "over_exposed_frac": 0.0018,
+      "phash": "9592444d7bae8e33",
+      "under_exposed_frac": 0.2217
+    }
+  },
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+  "process_probe": {
+    "backend_info": {
+      "face_model": null,
+      "face_model_sha256": null,
+      "faces": "proxy",
+      "hand_model": null,
+      "hand_model_sha256": null,
+      "hands": "proxy"
+    },
+    "compute_signals_s": 0.748,
+    "fps": 10.0,
+    "frames_written": 100,
+    "peak_rss_MB": 133.4,
+    "segment": "/home/parshu/projects/jadal-qa-wt/tmp-sigtest/data_runtime/edge_tmp/edge_check_seg.mp4",
+    "signals": {
+      "blur_var": 929.9466,
+      "brightness_mean": 74.5042,
+      "decodable": true,
+      "dup_of": null,
+      "faces_blurred": 7,
+      "faces_found": 7,
+      "hand_count_mode": 2,
+      "hands_visible_frac": 1.0,
+      "motion_mean": 9.2359,
+      "over_exposed_frac": 0.0018,
+      "phash": "9592444d7bae8e33",
+      "under_exposed_frac": 0.2217
+    }
+  },
+  "python": "3.12.15",
+  "signals_backend": {
+    "face_model": null,
+    "face_model_sha256": null,
+    "faces": "proxy",
+    "hand_model": null,
+    "hand_model_sha256": null,
+    "hands": "proxy"
+  },
+  "skipped": []
+}
