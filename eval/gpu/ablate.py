@@ -11,7 +11,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 FEATS = os.path.join(HERE, "..", "results", "gpu", "features.json")
 OUT = os.path.join(HERE, "..", "results", "gpu", "ablation.json")
-GOLD = "/workspace/jadal_pod_bundle/labels/manifest_gold.json"
+GOLD = "/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"
 
 GROUPS = {
     "full_26": None,
@@ -67,7 +67,7 @@ def main():
                                             float(np.percentile(boots, 97.5))],
                        "n_feats": len(cols)}
     res = {"device": "RTX 4070 Laptop, NOT a Pi, NOT a datacenter GPU",
-           "regenerate": "python3 eval/gpu/ablate.py",
+           "regenerate": "/home/parshu/envs/jadal/bin/python eval/gpu/ablate.py",
            "n": len(ids), "protocol": "leave-one-clip-out, clip-bootstrap CI (200)",
            "verdict": ("inverse-PCA residual and illumination rows are ablated honestly; "
                        "no hyperspectral claim (metamerism limit, see rgb_to_spectral.md)."),

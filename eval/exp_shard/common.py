@@ -25,7 +25,7 @@ from collections import Counter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "jadal_pod_bundle")
 MANIFEST = os.path.join(BUNDLE, "queues", "manifest_scale.json")
 SHARD_ROOT = os.path.join(REPO, "eval", "results", "exp_shard")
 SHARD_DIR = os.path.join(SHARD_ROOT, "shards")

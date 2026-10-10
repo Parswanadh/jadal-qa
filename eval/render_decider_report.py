@@ -6,7 +6,7 @@ of this script, never hand-copied.
 
 Usage (from repo root)::
 
-    PYTHONNOUSERSITE=1 python3 eval/render_decider_report.py \
+    PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python eval/render_decider_report.py \
         [--baseline eval/results/decider_baseline.json] [--bench eval/results/bench_eg2.json]
 
 Prints markdown: head metrics table, bound table, codec-shift line, bench line.

@@ -1,0 +1,86 @@
+{
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold manifest, one labeller)",
+ "protocol": "in-domain LOCO over 7 IndEgo clips, logistic C=0.01 on L2-normalised features, clip-bootstrap CI B=1000 seed0; OOD = logistic frozen on all IndEgo, window bootstrap (optimistic, 1 window/factory), n_bad=9 exploratory",
+ "device": "A40",
+ "command": "bash tools/pod/gpu_run.sh python3 eval/exp_mosaic/run_variants.py",
+ "git_sha": "e8942b3",
+ "ood": {
+  "n": 60,
+  "n_good": 51,
+  "n_bad": 9,
+  "auroc": 0.4444,
+  "ci95": [
+   0.2801,
+   0.6167
+  ]
+ },
+ "cost": {
+  "decode_ms": 183312.5,
+  "build_ms": 341963.7,
+  "embed_ms": 1135857.4,
+  "frames_decoded": 33000,
+  "n_windows": 210
+ },
+ "vram_peak_mb": 3967.0,
+ "sample_rule": "t_i=(i+0.5)*10/N; src_frame_index=round(t_i*native_fps)",
+ "tile_px": 224,
+ "window_s": 10.0,
+ "cached_eg2_reference": {
+  "auroc": 0.848,
+  "ci95": [
+   0.7344,
+   0.9087
+  ],
+  "n": 150,
+  "note": "cached 0.5s-spacing EG2 window mean, 2fps recipe"
+ },
+ "tag": "no_ts",
+ "indego": {
+  "n": 150,
+  "n_good": 100,
+  "n_bad": 50,
+  "auroc": 0.8096,
+  "ci95": [
+   0.6766,
+   0.8821
+  ],
+  "bal_acc": 0.725
+ },
+ "experiment": "E2.04",
+ "variant": "no timestamps",
+ "n_frames": 9,
+ "fps_used": 0.9,
+ "embed_passes": 1,
+ "vs_mosaic_N9": 0.0248,
+ "vs_meanframes_N9": -0.0422,
+ "ci95": [
+  0.6766,
+  0.8821
+ ],
+ "headline": {
+  "indego": {
+   "n": 150,
+   "n_good": 100,
+   "n_bad": 50,
+   "auroc": 0.8096,
+   "ci95": [
+    0.6766,
+    0.8821
+   ],
+   "bal_acc": 0.725
+  },
+  "ood": {
+   "n": 60,
+   "n_good": 51,
+   "n_bad": 9,
+   "auroc": 0.4444,
+   "ci95": [
+    0.2801,
+    0.6167
+   ]
+  }
+ }
+}

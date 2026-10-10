@@ -94,7 +94,7 @@ def worker(args):
 
 
 def run_e8_pod_eg2():
-    return ("/workspace/.cache/huggingface/hub/models--google--embeddinggemma-2"
+    return (os.path.join(os.environ.get("JADAL_POD_ROOT", ""), '.cache/huggingface/hub/models--google--embeddinggemma-2')
             "/snapshots/914f7f89142e33e77833254d9c9b90c3cef7303b")
 
 
