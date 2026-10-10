@@ -131,12 +131,22 @@ def build_examples() -> dict:
                         assert last["batch"] is not None
                         batch_id = last["batch"]["batch_id"]
                         detail = client.get(f"/batches/{batch_id}").json()
-                        receipt_id = detail["receipt_ids"][0]
+                        # receipt_ids come back sorted by receipt_id, and the
+                        # receipt hash covers config.versions (whose keys grow
+                        # as provenance improves), so [0] is NOT a stable
+                        # pick: fetch all and take the smallest segment_id,
+                        # which depends only on the fixed clip bytes.
+                        candidates = [client.get(f"/receipts/{rid}").json()
+                                      for rid in detail["receipt_ids"]]
+                        receipt = sorted(
+                            candidates,
+                            key=lambda r: r["verdict"]["segment_id"])[0]
+                        receipt_id = receipt["receipt_id"]
                         out = {
                             "health": client.get("/health").json(),
                             "batches": client.get("/batches").json(),
                             "batch_detail": detail,
-                            "receipt": client.get(f"/receipts/{receipt_id}").json(),
+                            "receipt": receipt,
                             "reverify": client.post(
                                 f"/receipts/{receipt_id}/reverify").json(),
                             "risk_coverage": client.get(
