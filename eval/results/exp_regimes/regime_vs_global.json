@@ -1,0 +1,552 @@
+{
+ "feat26": {
+  "global_loco_auroc": 0.712,
+  "global_loco_auroc_ci95": [
+   0.6339,
+   0.8112
+  ],
+  "regimes": {
+   "sharpness_lo": {
+    "n": 50,
+    "n_bad": 28,
+    "n_clips": 6,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "ecu_late",
+     "logistics4",
+     "pallet"
+    ],
+    "regime_model_loco_auroc": 0.724,
+    "regime_model_ci95": [
+     0.4778,
+     0.8416
+    ],
+    "global_model_on_regime_auroc": 0.6883,
+    "global_on_regime_ci95": [
+     0.375,
+     0.8667
+    ],
+    "delta": 0.0357,
+    "delta_ci95": [
+     -0.221,
+     0.3056
+    ],
+    "adopt_split": false
+   },
+   "sharpness_mid": {
+    "n": 50,
+    "n_bad": 10,
+    "n_clips": 6,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "ecu_late",
+     "organise",
+     "pallet"
+    ],
+    "regime_model_loco_auroc": 0.5425,
+    "regime_model_ci95": [
+     0.1778,
+     0.7342
+    ],
+    "global_model_on_regime_auroc": 0.605,
+    "global_on_regime_ci95": [
+     0.4286,
+     0.9182
+    ],
+    "delta": -0.0625,
+    "delta_ci95": [
+     -0.4444,
+     0.0693
+    ],
+    "adopt_split": false
+   },
+   "sharpness_hi": {
+    "n": 50,
+    "n_bad": 12,
+    "n_clips": 7,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "ecu_late",
+     "organise",
+     "pallet2"
+    ],
+    "regime_model_loco_auroc": 0.7325,
+    "regime_model_ci95": [
+     0.5325,
+     0.9366
+    ],
+    "global_model_on_regime_auroc": 0.6382,
+    "global_on_regime_ci95": [
+     0.5702,
+     0.8421
+    ],
+    "delta": 0.0943,
+    "delta_ci95": [
+     -0.1667,
+     0.2792
+    ],
+    "adopt_split": false
+   },
+   "lighting_lo": {
+    "n": 50,
+    "n_bad": 18,
+    "n_clips": 6,
+    "clips_with_both_classes": [
+     "ecu_full",
+     "ecu_late",
+     "organise",
+     "pallet"
+    ],
+    "regime_model_loco_auroc": 0.7882,
+    "regime_model_ci95": [
+     0.4036,
+     0.9373
+    ],
+    "global_model_on_regime_auroc": 0.6632,
+    "global_on_regime_ci95": [
+     0.4993,
+     0.8832
+    ],
+    "delta": 0.125,
+    "delta_ci95": [
+     -0.1,
+     0.3487
+    ],
+    "adopt_split": false
+   },
+   "lighting_mid": {
+    "n": 50,
+    "n_bad": 10,
+    "n_clips": 6,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "logistics4",
+     "organise"
+    ],
+    "regime_model_loco_auroc": 0.755,
+    "regime_model_ci95": [
+     0.5833,
+     0.9152
+    ],
+    "global_model_on_regime_auroc": 0.8925,
+    "global_on_regime_ci95": [
+     0.6562,
+     0.941
+    ],
+    "delta": -0.1375,
+    "delta_ci95": [
+     -0.2585,
+     0.0136
+    ],
+    "adopt_split": false
+   },
+   "lighting_hi": {
+    "n": 50,
+    "n_bad": 22,
+    "n_clips": 6,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "organise",
+     "pallet",
+     "pallet2"
+    ],
+    "regime_model_loco_auroc": 0.6834,
+    "regime_model_ci95": [
+     0.4208,
+     0.8431
+    ],
+    "global_model_on_regime_auroc": 0.7175,
+    "global_on_regime_ci95": [
+     0.5494,
+     0.9348
+    ],
+    "delta": -0.0341,
+    "delta_ci95": [
+     -0.2445,
+     0.0784
+    ],
+    "adopt_split": false
+   },
+   "motion_lo": {
+    "n": 50,
+    "n_bad": 4,
+    "n_clips": 7,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_late",
+     "pallet",
+     "pallet2"
+    ],
+    "regime_model_loco_auroc": 0.3641,
+    "regime_model_ci95": [
+     0.0471,
+     0.814
+    ],
+    "global_model_on_regime_auroc": 0.3696,
+    "global_on_regime_ci95": [
+     0.0148,
+     0.8316
+    ],
+    "delta": -0.0054,
+    "delta_ci95": [
+     -0.5333,
+     0.6562
+    ],
+    "adopt_split": false
+   },
+   "motion_mid": {
+    "n": 50,
+    "n_bad": 16,
+    "n_clips": 7,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "ecu_late",
+     "logistics4",
+     "organise",
+     "pallet"
+    ],
+    "regime_model_loco_auroc": 0.5588,
+    "regime_model_ci95": [
+     0.4074,
+     0.7046
+    ],
+    "global_model_on_regime_auroc": 0.6728,
+    "global_on_regime_ci95": [
+     0.4802,
+     0.8112
+    ],
+    "delta": -0.114,
+    "delta_ci95": [
+     -0.2753,
+     0.0513
+    ],
+    "adopt_split": false
+   },
+   "motion_hi": {
+    "n": 50,
+    "n_bad": 30,
+    "n_clips": 7,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_late",
+     "logistics4",
+     "organise",
+     "pallet",
+     "pallet2"
+    ],
+    "regime_model_loco_auroc": 0.5,
+    "regime_model_ci95": [
+     0.3583,
+     0.6572
+    ],
+    "global_model_on_regime_auroc": 0.57,
+    "global_on_regime_ci95": [
+     0.4955,
+     0.7546
+    ],
+    "delta": -0.07,
+    "delta_ci95": [
+     -0.2912,
+     0.1216
+    ],
+    "adopt_split": false
+   }
+  },
+  "tercile_cuts": {
+   "sharpness": [
+    2007.6646,
+    2886.6265
+   ],
+   "lighting": [
+    0.2763,
+    0.3197
+   ],
+   "motion": [
+    15.1818,
+    28.083
+   ]
+  }
+ },
+ "eg2": {
+  "global_loco_auroc": 0.848,
+  "global_loco_auroc_ci95": [
+   0.7187,
+   0.9123
+  ],
+  "regimes": {
+   "sharpness_lo": {
+    "n": 50,
+    "n_bad": 28,
+    "n_clips": 6,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "ecu_late",
+     "logistics4",
+     "pallet"
+    ],
+    "regime_model_loco_auroc": 0.7435,
+    "regime_model_ci95": [
+     0.6385,
+     0.9082
+    ],
+    "global_model_on_regime_auroc": 0.836,
+    "global_on_regime_ci95": [
+     0.7037,
+     0.9179
+    ],
+    "delta": -0.0925,
+    "delta_ci95": [
+     -0.1351,
+     0.0194
+    ],
+    "adopt_split": false
+   },
+   "sharpness_mid": {
+    "n": 50,
+    "n_bad": 10,
+    "n_clips": 6,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "ecu_late",
+     "organise",
+     "pallet"
+    ],
+    "regime_model_loco_auroc": 0.695,
+    "regime_model_ci95": [
+     0.3819,
+     0.7632
+    ],
+    "global_model_on_regime_auroc": 0.7575,
+    "global_on_regime_ci95": [
+     0.4667,
+     0.8456
+    ],
+    "delta": -0.0625,
+    "delta_ci95": [
+     -0.2063,
+     -0.0069
+    ],
+    "adopt_split": false
+   },
+   "sharpness_hi": {
+    "n": 50,
+    "n_bad": 12,
+    "n_clips": 7,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "ecu_late",
+     "organise",
+     "pallet2"
+    ],
+    "regime_model_loco_auroc": 0.8224,
+    "regime_model_ci95": [
+     0.5438,
+     0.976
+    ],
+    "global_model_on_regime_auroc": 0.8728,
+    "global_on_regime_ci95": [
+     0.6317,
+     0.9826
+    ],
+    "delta": -0.0504,
+    "delta_ci95": [
+     -0.1543,
+     0.0516
+    ],
+    "adopt_split": false
+   },
+   "lighting_lo": {
+    "n": 50,
+    "n_bad": 18,
+    "n_clips": 6,
+    "clips_with_both_classes": [
+     "ecu_full",
+     "ecu_late",
+     "organise",
+     "pallet"
+    ],
+    "regime_model_loco_auroc": 0.8142,
+    "regime_model_ci95": [
+     0.5141,
+     0.8671
+    ],
+    "global_model_on_regime_auroc": 0.8785,
+    "global_on_regime_ci95": [
+     0.6298,
+     0.9556
+    ],
+    "delta": -0.0642,
+    "delta_ci95": [
+     -0.2946,
+     0.0501
+    ],
+    "adopt_split": false
+   },
+   "lighting_mid": {
+    "n": 50,
+    "n_bad": 10,
+    "n_clips": 6,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "logistics4",
+     "organise"
+    ],
+    "regime_model_loco_auroc": 0.5775,
+    "regime_model_ci95": [
+     0.4104,
+     0.8969
+    ],
+    "global_model_on_regime_auroc": 0.8975,
+    "global_on_regime_ci95": [
+     0.5498,
+     0.9596
+    ],
+    "delta": -0.32,
+    "delta_ci95": [
+     -0.4732,
+     0.1905
+    ],
+    "adopt_split": false
+   },
+   "lighting_hi": {
+    "n": 50,
+    "n_bad": 22,
+    "n_clips": 6,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "organise",
+     "pallet",
+     "pallet2"
+    ],
+    "regime_model_loco_auroc": 0.7094,
+    "regime_model_ci95": [
+     0.5,
+     0.8519
+    ],
+    "global_model_on_regime_auroc": 0.7532,
+    "global_on_regime_ci95": [
+     0.475,
+     0.8875
+    ],
+    "delta": -0.0438,
+    "delta_ci95": [
+     -0.1034,
+     0.0235
+    ],
+    "adopt_split": false
+   },
+   "motion_lo": {
+    "n": 50,
+    "n_bad": 4,
+    "n_clips": 7,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_late",
+     "pallet",
+     "pallet2"
+    ],
+    "regime_model_loco_auroc": 0.4511,
+    "regime_model_ci95": [
+     0.0829,
+     0.7465
+    ],
+    "global_model_on_regime_auroc": 0.6359,
+    "global_on_regime_ci95": [
+     0.3056,
+     0.9118
+    ],
+    "delta": -0.1848,
+    "delta_ci95": [
+     -0.3333,
+     0.0918
+    ],
+    "adopt_split": false
+   },
+   "motion_mid": {
+    "n": 50,
+    "n_bad": 16,
+    "n_clips": 7,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_full",
+     "ecu_late",
+     "logistics4",
+     "organise",
+     "pallet"
+    ],
+    "regime_model_loco_auroc": 0.7702,
+    "regime_model_ci95": [
+     0.6444,
+     0.8954
+    ],
+    "global_model_on_regime_auroc": 0.7868,
+    "global_on_regime_ci95": [
+     0.6798,
+     0.8814
+    ],
+    "delta": -0.0165,
+    "delta_ci95": [
+     -0.1133,
+     0.0507
+    ],
+    "adopt_split": false
+   },
+   "motion_hi": {
+    "n": 50,
+    "n_bad": 30,
+    "n_clips": 7,
+    "clips_with_both_classes": [
+     "desk",
+     "ecu_late",
+     "logistics4",
+     "organise",
+     "pallet",
+     "pallet2"
+    ],
+    "regime_model_loco_auroc": 0.7617,
+    "regime_model_ci95": [
+     0.6268,
+     0.8968
+    ],
+    "global_model_on_regime_auroc": 0.8233,
+    "global_on_regime_ci95": [
+     0.685,
+     0.9398
+    ],
+    "delta": -0.0617,
+    "delta_ci95": [
+     -0.1074,
+     0.0
+    ],
+    "adopt_split": false
+   }
+  },
+  "tercile_cuts": {
+   "sharpness": [
+    2007.6646,
+    2886.6265
+   ],
+   "lighting": [
+    0.2763,
+    0.3197
+   ],
+   "motion": [
+    15.1818,
+    28.083
+   ]
+  }
+ },
+ "cmd": "nested LOCO: regime models trained only on train-clip windows of that regime; CI = 2000x clip bootstrap",
+ "protocol": "leave-one-clip-out over the 7 IndEgo clips, 150 human windows"
+}

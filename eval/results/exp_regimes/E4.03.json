@@ -1,0 +1,297 @@
+{
+ "id": "E4.03",
+ "track": "E4",
+ "title": "Domain-gap control: re-encode OOD sources to the IndEgo spec (480x480/10)",
+ "verdict": "drop",
+ "n": 60,
+ "n_reencoded": 60,
+ "label_source": "human (60 OOD-60 windows, 9 bad)",
+ "protocol": "paired descriptors across 1080p/30 HEVC source, 854x480/30 H.264 transcode, and a new 480x480/10 H.264 re-encode; frozen-ensemble ood_scores.json baseline audit",
+ "ci95": "n/a \u2014 paired deterministic descriptors; OOD AUROC is exploratory (n_bad=9)",
+ "device": "CPU (pod); no GPU used",
+ "cost": "60 windows re-encoded with ffmpeg (libx264); CPU",
+ "command": "python3 eval/exp_regimes/reencode_spec.py --out eval/results/exp_regimes/desc_ood_reenc.jsonl && python3 eval/exp_regimes/analyze_regimes.py --part gap",
+ "git_sha": "458e679889528bc2c2a672bd1c81b31d6ed399a6",
+ "frozen_ensemble_on_ood": {
+  "n": 60,
+  "n_bad": 9,
+  "auroc": 0.415,
+  "mean_p_good": 0.488,
+  "mean_p_bad": 0.5416,
+  "note": "baseline ood_scores.json used 300 pixel frames/20 EG2 frames per 10 s window; scores are on the queue-1 480p/30fps transcode; the re-encode to the IndEgo spec was NOT re-scored (frozen model pipeline unavailable) \u2014 this is a baseline audit only"
+ },
+ "matching_experiment": {
+  "n_reencoded": 60,
+  "spec": "480x480, 10 fps, H.264 (IndEgo spec)",
+  "content_separators": [
+   {
+    "descriptor": "sharp_lapvar",
+    "indego_median": 2400.5426,
+    "d_ind_vs_ood_src_1080p30": -0.0618,
+    "d_ind_vs_ood_tc_480p30": -1.6636,
+    "d_ind_vs_ood_reenc_480x480p10": -3.0507
+   },
+   {
+    "descriptor": "sharp_norm",
+    "indego_median": 8209.0984,
+    "d_ind_vs_ood_src_1080p30": 0.6085,
+    "d_ind_vs_ood_tc_480p30": -0.9718,
+    "d_ind_vs_ood_reenc_480x480p10": -2.8415
+   },
+   {
+    "descriptor": "noise_sigma",
+    "indego_median": 0.0039,
+    "d_ind_vs_ood_src_1080p30": 0.9857,
+    "d_ind_vs_ood_tc_480p30": -0.8923,
+    "d_ind_vs_ood_reenc_480x480p10": -0.9693
+   },
+   {
+    "descriptor": "edge_density",
+    "indego_median": 0.1233,
+    "d_ind_vs_ood_src_1080p30": 0.2476,
+    "d_ind_vs_ood_tc_480p30": -1.347,
+    "d_ind_vs_ood_reenc_480x480p10": -0.9215
+   },
+   {
+    "descriptor": "luma_mean",
+    "indego_median": 0.2917,
+    "d_ind_vs_ood_src_1080p30": -2.5669,
+    "d_ind_vs_ood_tc_480p30": -2.584,
+    "d_ind_vs_ood_reenc_480x480p10": 0.4892
+   },
+   {
+    "descriptor": "luma_p05",
+    "indego_median": 0.0206,
+    "d_ind_vs_ood_src_1080p30": -1.3447,
+    "d_ind_vs_ood_tc_480p30": -1.3974,
+    "d_ind_vs_ood_reenc_480x480p10": 5.0211
+   },
+   {
+    "descriptor": "luma_p50",
+    "indego_median": 0.2836,
+    "d_ind_vs_ood_src_1080p30": -1.7153,
+    "d_ind_vs_ood_tc_480p30": -1.7429,
+    "d_ind_vs_ood_reenc_480x480p10": 1.9524
+   },
+   {
+    "descriptor": "luma_p95",
+    "indego_median": 0.6529,
+    "d_ind_vs_ood_src_1080p30": -2.5432,
+    "d_ind_vs_ood_tc_480p30": -2.5317,
+    "d_ind_vs_ood_reenc_480x480p10": -2.1483
+   },
+   {
+    "descriptor": "dark_frac",
+    "indego_median": 0.1548,
+    "d_ind_vs_ood_src_1080p30": 1.0192,
+    "d_ind_vs_ood_tc_480p30": 1.0454,
+    "d_ind_vs_ood_reenc_480x480p10": -3.0083
+   },
+   {
+    "descriptor": "bright_frac",
+    "indego_median": 0.002,
+    "d_ind_vs_ood_src_1080p30": -2.6493,
+    "d_ind_vs_ood_tc_480p30": -2.6103,
+    "d_ind_vs_ood_reenc_480x480p10": -1.8524
+   },
+   {
+    "descriptor": "clip_frac",
+    "indego_median": 0.1705,
+    "d_ind_vs_ood_src_1080p30": -0.0431,
+    "d_ind_vs_ood_tc_480p30": -0.0035,
+    "d_ind_vs_ood_reenc_480x480p10": -3.5282
+   },
+   {
+    "descriptor": "blockiness",
+    "indego_median": 1.0419,
+    "d_ind_vs_ood_src_1080p30": -0.2596,
+    "d_ind_vs_ood_tc_480p30": 0.0838,
+    "d_ind_vs_ood_reenc_480x480p10": -2.0295
+   },
+   {
+    "descriptor": "chroma_spread",
+    "indego_median": 13.5956,
+    "d_ind_vs_ood_src_1080p30": -3.192,
+    "d_ind_vs_ood_tc_480p30": -3.1231,
+    "d_ind_vs_ood_reenc_480x480p10": -2.3858
+   },
+   {
+    "descriptor": "shift_mean",
+    "indego_median": 19.5395,
+    "d_ind_vs_ood_src_1080p30": 0.4597,
+    "d_ind_vs_ood_tc_480p30": 0.5301,
+    "d_ind_vs_ood_reenc_480x480p10": 0.6706
+   },
+   {
+    "descriptor": "shift_max",
+    "indego_median": 50.8677,
+    "d_ind_vs_ood_src_1080p30": 0.2248,
+    "d_ind_vs_ood_tc_480p30": 0.2559,
+    "d_ind_vs_ood_reenc_480x480p10": 0.341
+   },
+   {
+    "descriptor": "static_frac",
+    "indego_median": 0.0,
+    "d_ind_vs_ood_src_1080p30": -0.4589,
+    "d_ind_vs_ood_tc_480p30": -0.5997,
+    "d_ind_vs_ood_reenc_480x480p10": -0.6964
+   },
+   {
+    "descriptor": "temp_energy",
+    "indego_median": 0.1194,
+    "d_ind_vs_ood_src_1080p30": -2.3742,
+    "d_ind_vs_ood_tc_480p30": -2.3088,
+    "d_ind_vs_ood_reenc_480x480p10": -0.1172
+   },
+   {
+    "descriptor": "dup_frac",
+    "indego_median": 0.0,
+    "d_ind_vs_ood_src_1080p30": 0.0,
+    "d_ind_vs_ood_tc_480p30": 0.0,
+    "d_ind_vs_ood_reenc_480x480p10": 0.0
+   }
+  ],
+  "content_descriptors_with_smaller_IndEgo_gap_after_reencode": "6/18",
+  "note": "descriptor gap IndEgo-vs-OOD before/after re-encoding only; frozen ensemble scores were not recomputed on the re-encoded clips"
+ },
+ "transcode_vs_source": [
+  {
+   "descriptor": "static_frac",
+   "transcode_median": 0.1429,
+   "source_median": 0.0,
+   "median_ratio_src_over_tc": 0.0
+  },
+  {
+   "descriptor": "dup_frac",
+   "transcode_median": 0.0,
+   "source_median": 0.0,
+   "median_ratio_src_over_tc": 0.0
+  },
+  {
+   "descriptor": "sharp_lapvar",
+   "transcode_median": 6138.1928,
+   "source_median": 1888.8273,
+   "median_ratio_src_over_tc": 0.308
+  },
+  {
+   "descriptor": "sharp_norm",
+   "transcode_median": 12680.337,
+   "source_median": 4259.3688,
+   "median_ratio_src_over_tc": 0.336
+  },
+  {
+   "descriptor": "bitrate_kbps",
+   "transcode_median": 1754.2,
+   "source_median": 4004.45,
+   "median_ratio_src_over_tc": 2.283
+  },
+  {
+   "descriptor": "bytes_per_frame",
+   "transcode_median": 7309.25,
+   "source_median": 16685.2,
+   "median_ratio_src_over_tc": 2.283
+  },
+  {
+   "descriptor": "height",
+   "transcode_median": 480.0,
+   "source_median": 1080.0,
+   "median_ratio_src_over_tc": 2.25
+  },
+  {
+   "descriptor": "width",
+   "transcode_median": 854.0,
+   "source_median": 1920.0,
+   "median_ratio_src_over_tc": 2.248
+  },
+  {
+   "descriptor": "noise_sigma",
+   "transcode_median": 0.0046,
+   "source_median": 0.0025,
+   "median_ratio_src_over_tc": 0.544
+  },
+  {
+   "descriptor": "edge_density",
+   "transcode_median": 0.177,
+   "source_median": 0.1073,
+   "median_ratio_src_over_tc": 0.606
+  },
+  {
+   "descriptor": "shift_mean",
+   "transcode_median": 14.6002,
+   "source_median": 15.869,
+   "median_ratio_src_over_tc": 1.087
+  },
+  {
+   "descriptor": "shift_max",
+   "transcode_median": 43.9573,
+   "source_median": 46.3941,
+   "median_ratio_src_over_tc": 1.055
+  },
+  {
+   "descriptor": "dark_frac",
+   "transcode_median": 0.0705,
+   "source_median": 0.0735,
+   "median_ratio_src_over_tc": 1.043
+  },
+  {
+   "descriptor": "luma_p05",
+   "transcode_median": 0.0485,
+   "source_median": 0.0466,
+   "median_ratio_src_over_tc": 0.96
+  },
+  {
+   "descriptor": "blockiness",
+   "transcode_median": 1.0519,
+   "source_median": 1.0747,
+   "median_ratio_src_over_tc": 1.022
+  },
+  {
+   "descriptor": "clip_frac",
+   "transcode_median": 0.1993,
+   "source_median": 0.2034,
+   "median_ratio_src_over_tc": 1.021
+  },
+  {
+   "descriptor": "chroma_spread",
+   "transcode_median": 36.1529,
+   "source_median": 36.724,
+   "median_ratio_src_over_tc": 1.016
+  },
+  {
+   "descriptor": "bright_frac",
+   "transcode_median": 0.1074,
+   "source_median": 0.1086,
+   "median_ratio_src_over_tc": 1.011
+  },
+  {
+   "descriptor": "temp_energy",
+   "transcode_median": 0.2097,
+   "source_median": 0.2118,
+   "median_ratio_src_over_tc": 1.01
+  },
+  {
+   "descriptor": "luma_p50",
+   "transcode_median": 0.4081,
+   "source_median": 0.4044,
+   "median_ratio_src_over_tc": 0.991
+  },
+  {
+   "descriptor": "luma_mean",
+   "transcode_median": 0.4726,
+   "source_median": 0.4717,
+   "median_ratio_src_over_tc": 0.998
+  },
+  {
+   "descriptor": "luma_p95",
+   "transcode_median": 0.9949,
+   "source_median": 0.9971,
+   "median_ratio_src_over_tc": 1.002
+  },
+  {
+   "descriptor": "fps",
+   "transcode_median": 30.0,
+   "source_median": 30.0,
+   "median_ratio_src_over_tc": 1.0
+  }
+ ]
+}

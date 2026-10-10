@@ -1,0 +1,9 @@
+{
+ "k": 6,
+ "status": "input_missing",
+ "reason": "caches/ensemble/ood_frames.npz absent from the trimmed bundle; OOD-60 EG2 cluster assignment cannot be recomputed here. Partial result carried forward is NOT used as a headline number.",
+ "indego_hist": null,
+ "ood60_hist": null,
+ "sym_chi2": null,
+ "cmd": "n/a \u2014 input caches/ensemble/ood_frames.npz missing"
+}

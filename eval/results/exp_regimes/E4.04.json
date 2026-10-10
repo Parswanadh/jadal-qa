@@ -1,0 +1,36 @@
+{
+ "id": "E4.04",
+ "track": "E4",
+ "title": "Profiles product layer: schema + 5 profiles + deterministic router",
+ "verdict": "adopt",
+ "n": 13,
+ "n_note": "n = unit tests executed (unittest discover of tests/test_exp_regimes_router.py); router itself is deterministic over any descriptor dict",
+ "label_source": "n/a \u2014 synthetic descriptors + E4.01 ranges",
+ "protocol": "unit tests on synthetic descriptors; determinism; UNSEEN_REGIME fallback (incl. out-of-range clip_frac/temp_energy); profile schema conformance",
+ "ci95": "n/a \u2014 deterministic router",
+ "device": "CPU (pod); no GPU used",
+ "cost": "13 unit tests < 0.5 s, no video, no network",
+ "command": "python3 eval/exp_regimes/make_results.py",
+ "test_command": "python3 -m pytest tests/test_exp_regimes_router.py -q",
+ "git_sha": "458e679889528bc2c2a672bd1c81b31d6ed399a6",
+ "tests_run_line": "Ran 13 tests ... OK",
+ "tests_passed": 13,
+ "tests_total": 13,
+ "profiles": [
+  "blurry_lowlight",
+  "clear_stationary",
+  "default",
+  "factory_1080p30",
+  "walking_logistics"
+ ],
+ "router": "jadal/regimes/router.py::choose_profile -> {profile, margin, reasons, unseen_regime}",
+ "receipt_fields": [
+  "profile",
+  "router_margin",
+  "router_reasons",
+  "unseen_regime",
+  "descriptors_sha"
+ ],
+ "receipt_wired": false,
+ "receipt_note": "receipt_fragment() returns a helper dict only; it is NOT yet wired into the product QA receipt builder"
+}
