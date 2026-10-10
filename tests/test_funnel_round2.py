@@ -561,6 +561,38 @@ class TestWriteConfigGating(unittest.TestCase):
             self.assertIn("human provenance not established",
                           config["calibration"]["note"])
 
+    def test_vacuous_result_stays_provisional(self):
+        # Fix round 1 (PR #59 review, Important 1): a result that certifies
+        # NOTHING (accept null, every rule disabled, union fired 0) must
+        # not stamp 'calibrated' — vacuous bound satisfaction is not a
+        # certificate. Identical signals for good/bad force every rule
+        # disabled; decisions None forces accept null.
+        from eval.calibrate_funnel import apply_to_config
+        records = []
+        for i in range(60):
+            records.append(_mk_record(150.0, "good", source="human_gold",
+                                       group=f"h{i % 8}"))
+        for i in range(60):
+            records.append(_mk_record(150.0, "bad", source="human_gold",
+                                       group=f"h{i % 8}"))
+        result = funnel.calibrate_two_sided(records, {"seed": 5})
+        src = result["per_source"]["human_gold"]
+        self.assertIsNone(src["accept"]["threshold"])
+        self.assertTrue(all(e["disabled"]
+                            for e in src["reject_rules"].values()))
+        self.assertEqual(src["union"]["fired"], 0)
+        result["meta"]["human_provenance"] = {
+            "ok": True, "schema": "gold-labels-v1",
+            "file": "eval/gold/labels.json", "sha256": "0" * 64,
+            "labellers": "unknown", "n_entries": 120,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._tmp_config(tmp)
+            config = apply_to_config(result, "human_gold", path)
+            self.assertEqual(config["calibration"]["status"], "provisional")
+            self.assertIn("no threshold certified",
+                          config["calibration"]["note"])
+
 
 class TestStrictDecodable(unittest.TestCase):
     """Fix round 1, Critical 1: decodable is strictly boolean."""
