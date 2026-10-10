@@ -9,7 +9,13 @@ Sampling policy for long video: which windows must be processed?
   L (label oracle: isolates sampling error) and M (model: end-to-end).
 - Clip verdict threshold: bad-fraction ≥ 0.30. CIs: clip bootstrap (2000). CUSUM tuned with LOCO.
 - OOD: 60 labelled Egocentric-10K windows (51 good / 9 bad); labels2 not yet present.
-- Regen: `PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_temporal/run_e3.py --out eval/results/exp_temporal` (cwd = worktree). Results: `eval/results/exp_temporal/E3.0{1..5}*.json`. Tests: `tests/test_exp_temporal_e3.py` (5 pass).
+- Regen (one command, from the repo root; writes E3.01-E3.04 and then E3.05 via `write_e305.py`):
+  `PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_temporal/run_e3.py --out eval/results/exp_temporal`.
+  Single step for E3.05 only: add `--only e305`. Results: `eval/results/exp_temporal/E3.0{1..5}*.json`.
+- Environment: `JADAL_WT_ROOT` = directory holding the untracked sibling data (`spectral_data/`, `ensemble-views/`,
+  `frames10k/`, `scale-data/`, `ood_labels/`). Default: the parent of this repo if it holds `spectral_data/`, else this repo's root.
+  The sibling data is not in git, so the script is **not runnable from a clean clone**.
+- Tests: `tests/test_exp_temporal_e3.py` (committed-JSON checks plus synthetic-input unit tests of the simulation logic; no files, < 5 s).
 
 ## E3.01 — probe policies (mean over 7 clips; delay in windows, spacing ~15 s)
 | policy | frac | errL [95% CI] | verdicts | delay | miss |
@@ -23,7 +29,7 @@ Sampling policy for long video: which windows must be processed?
 | cusum-default | 0.29 | 0.124 (=every-4: never fires) | 7/7 | 3.1 | 0 |
 | cusum-LOCO | 0.30 | errM 0.214 [0.118,0.319] | — | — | — |
 - Random probing matches systematic error but destroys latency (delay 8.9 vs 0.3 windows): use grids.
-- Mode M is model-dominated: full-coverage errM=0.167, only 4/7 verdicts right. Sampling adds ≤0.05 on top (every-2).
+- Mode M is model-dominated: full-coverage errM=0.167, only 4/7 verdicts right. Sampling does not increase model error here (every-2 errM 0.157 vs full 0.167).
 
 ## E3.02 — OOD position bias: NO effect (MW p=0.42 raw / 0.47 normalised; medians bad 70 s vs good 90 s; logreg coef −0.31). n_bad=9: absence of evidence, not evidence of absence. No skip rule for Ego10K; re-run at n_bad≈24.
 
@@ -32,6 +38,9 @@ Sampling policy for long video: which windows must be processed?
 ## E3.04 — compute (4.404 h corpus): every-2 → 2.27 h (×1.9); every-2 + 4 s exit → ~0.9 h (×4.9); every-3 + 4 s → ×7.2. Upper-bound (decode-bound) arithmetic.
 
 ## E3.05 — decisions
-- ADOPT (IndEgo-like): every-2nd window + 4 s early exit. Budget option: every-3rd.
+- ADOPT (working policy on IndEgo, not validated): every-2nd window + 4 s early exit. Budget option: every-3rd.
+- Tolerance caveat: the errL ≤ 0.06 tolerance was chosen **after** seeing the candidates on the same 7 clips (post hoc, not pre-registered).
+  The every-2 error CI [0.019, 0.087] crosses 0.06, so the pass is marginal. Treat the decision as a judgement call on this data.
+- Domain fit to other footage is a hypothesis; this study does not test it.
 - DROP CUSUM-as-sampler; DROP skip-first-M (both regimes); OOD: no certified policy until scorer transfers (E5).
 - Sampling is NOT the bottleneck (model err 0.167 at full coverage). Thin evidence: 7 clips; n_bad=9 OOD; gold is sparse; early-exit curve IndEgo-only.

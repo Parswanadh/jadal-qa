@@ -7,24 +7,35 @@ Protocols:
   E3.03  early exit within a window: EG2-prefix LOCO accuracy vs observed seconds.
   E3.04  compute accounting from E3.01/E3.03 fractions.
 
-Regen:
-  PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 python3 \
+Regen (one command, run from the repo root; produces E3.01-E3.04 and then the E3.05 synthesis):
+  PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python \
     eval/exp_temporal/run_e3.py --out eval/results/exp_temporal
-(run with cwd=/home/parshu/projects/jadal-qa-wt/exp-temporal)
+Single step: add `--only e305` (re-synthesises E3.05 from the existing E3.01-E3.04 JSONs in --out).
+
+Environment:
+  JADAL_WT_ROOT  directory holding the untracked sibling data: spectral_data/, ensemble-views/,
+                 frames10k/, scale-data/, ood_labels/. Default: the parent of this repo if it holds
+                 spectral_data/, else this repo's root. The sibling data is not in git, so this
+                 script is not runnable from a clean clone.
 """
 import argparse, json, os, sys
 import numpy as np
 
 RNG = np.random.RandomState(7)
 
-MANIFEST = "/workspace/jadal_pod_bundle/labels/manifest_gold.json"
-OOF = "/workspace/jadal_pod_bundle/caches/ensemble/oof_probs.npz"
-SEG = "/workspace/jadal_pod_bundle/caches/frames10k/segments.npz"
-Q1 = "/workspace/jadal_pod_bundle/queues/label_queue_random.json"
-Q2 = "/workspace/jadal_pod_bundle/queues/label_queue_random2.json"
-OOD1 = "/workspace/jadal_pod_bundle/labels/ood_labels.json"
-OOD2 = "/workspace/jadal_pod_bundle/labels/ood_labels2.json"
-MANIFEST_SCALE = "/workspace/jadal_pod_bundle/queues/manifest_scale.json"
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_PARENT = os.path.dirname(REPO)
+WT_ROOT = os.environ.get("JADAL_WT_ROOT") or (
+    _PARENT if os.path.isdir(os.path.join(_PARENT, "spectral_data")) else REPO)
+
+MANIFEST = os.path.join(WT_ROOT, "spectral_data", "manifest_gold.json")
+OOF = os.path.join(WT_ROOT, "ensemble-views", "eval", "results", "ensemble", "oof_probs.npz")
+SEG = os.path.join(WT_ROOT, "frames10k", "eval", "results", "frames10k", "human_segments", "segments.npz")
+Q1 = os.path.join(WT_ROOT, "scale-data", "eval", "results", "scale", "label_queue_random.json")
+Q2 = os.path.join(WT_ROOT, "scale-data", "eval", "results", "scale", "label_queue_random2.json")
+OOD1 = os.path.join(WT_ROOT, "ood_labels", "labels.json")
+OOD2 = os.path.join(WT_ROOT, "ood_labels", "labels2.json")
+MANIFEST_SCALE = os.path.join(WT_ROOT, "scale-data", "eval", "scale", "manifest_scale.json")
 THRESH = 0.30  # clip accept/reject bad-fraction threshold
 
 
@@ -116,7 +127,7 @@ def eval_policy_clip(y_bad, p_good, S, thresh=THRESH):
     # M: model bad prob = 1 - P(good)
     est_M = float(np.mean(1.0 - p_good[S]))
     ver_M = "reject" if est_M >= thresh else "accept"
-    # detection delay of first bad stretch (in windows; spacing ~14.6 s)
+    # detection delay of first bad stretch (in windows; spacing ~15 s)
     run = first_bad_run(y_bad)
     if run is None:
         dL = dM = 0.0
@@ -224,7 +235,7 @@ def run_e301(outdir):
                cusum_loco=dict(mean_test_err_M=mu, ci_M=[lo, hi],
                                mean_test_frac=float(np.mean([v["test_frac"] for v in loco.values()])),
                                folds=loco, grid=["d=%.2f,h=%.2f" % g for g in grid]),
-               command="PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 python3 eval/exp_temporal/run_e3.py --out eval/results/exp_temporal")
+               command="PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_temporal/run_e3.py --out eval/results/exp_temporal")
     json.dump(res, open(os.path.join(outdir, "E3.01_policies.json"), "w"), indent=1)
     print("E3.01: orient AUROC=%.3f" % orient_auc)
     for pname, s in per_policy.items():
@@ -288,16 +299,24 @@ def run_e302(outdir):
     out["median_pos_good_s"] = float(np.median(pos[yb == 0]))
     out["median_posnorm_bad"] = float(np.median(pn[yb == 1])) if n_bad else None
     out["median_posnorm_good"] = float(np.median(pn[yb == 0]))
-    if have_sk and n_bad >= 2:
+    out["logreg_skipped"] = not (have_sk and n_bad >= 2)  # true if sklearn missing or n_bad < 2
+    if not out["logreg_skipped"]:
         lr = LogisticRegression(C=1.0).fit(pn.reshape(-1, 1), yb)
         out["logreg_coef_posnorm"] = float(lr.coef_[0, 0])
         out["logreg_intercept"] = float(lr.intercept_[0])
-    out["command"] = "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 python3 eval/exp_temporal/run_e3.py --out eval/results/exp_temporal"
+    out["command"] = "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_temporal/run_e3.py --out eval/results/exp_temporal"
     json.dump(out, open(os.path.join(outdir, "E3.02_ood_position.json"), "w"), indent=1)
     print("E3.02: n=%d n_bad=%d mw_raw_p=%.3f mw_norm_p=%.3f med_bad=%.0fs med_good=%.0fs" % (
         len(rows), n_bad, out.get("mw_raw_p", -1), out.get("mw_norm_p", -1),
         out["median_pos_bad_s"] or -1, out["median_pos_good_s"]))
     return out
+
+
+def prefix_embed(F, counts, pr):
+    """L2-normalised mean of the first min(pr, counts[i]) frames of each window (NaN padding excluded)."""
+    mlen = np.minimum(pr, counts)
+    E = np.stack([F[i, :mlen[i], :].mean(axis=0) for i in range(len(counts))]).astype(np.float64)
+    return E / np.linalg.norm(E, axis=1, keepdims=True)
 
 
 def run_e303(outdir):
@@ -314,9 +333,7 @@ def run_e303(outdir):
     idx_of = {c: clips[c] for c in order}
     curve = []
     for pr in prefixes:
-        mlen = np.minimum(pr, counts)
-        E = np.stack([F[i, :mlen[i], :].mean(axis=0) for i in range(len(y))]).astype(np.float64)
-        E = E / np.linalg.norm(E, axis=1, keepdims=True)
+        E = prefix_embed(F, counts, pr)
         oof_pred = np.zeros(len(y))
         for held in order:
             tr = np.concatenate([idx_of[c] for c in order if c != held])
@@ -332,7 +349,7 @@ def run_e303(outdir):
                protocol="LOCO logistic (StandardScaler, C=0.01 balanced) on L2-normalised mean "
                         "of first m EG2 frames (2 fps); pooled OOF AUROC/acc; recipe mirrors E0 baseline",
                curve=curve,
-               command="PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 python3 eval/exp_temporal/run_e3.py --out eval/results/exp_temporal")
+               command="PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_temporal/run_e3.py --out eval/results/exp_temporal")
     json.dump(res, open(os.path.join(outdir, "E3.03_early_exit.json"), "w"), indent=1)
     return res
 
@@ -361,7 +378,7 @@ def run_e304(outdir, r01, r03):
                         "assumes per-window cost scales with windows probed and, for early exit, "
                         "with seconds observed (decode-bound regime; feature cost sublinear — upper bound)",
                per_policy=tab, with_early_exit=combo,
-               command="PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 python3 eval/exp_temporal/run_e3.py --out eval/results/exp_temporal")
+               command="PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_temporal/run_e3.py --out eval/results/exp_temporal")
     json.dump(res, open(os.path.join(outdir, "E3.04_compute.json"), "w"), indent=1)
     for row in tab:
         print(f"  {row['policy']:16s} frac={row['window_frac']:.2f} hrs={row['proc_hours']:.2f} x{row['speedup']}")
@@ -371,7 +388,7 @@ def run_e304(outdir, r01, r03):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
-    ap.add_argument("--only", default="all")
+    ap.add_argument("--only", default="all", choices=["all", "e301", "e302", "e303", "e304", "e305"])
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     r01 = r03 = None
@@ -387,6 +404,9 @@ def main():
         if r03 is None:
             r03 = json.load(open(os.path.join(a.out, "E3.03_early_exit.json")))
         run_e304(a.out, r01, r03)
+    if a.only in ("all", "e305"):
+        from write_e305 import write_e305  # sibling module in eval/exp_temporal/
+        write_e305(a.out)
 
 
 if __name__ == "__main__":
