@@ -1,0 +1,11 @@
+{
+ "snapshot_utc": "2026-10-10T10:53:24.018553+00:00",
+ "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+ "denoise_cost_ms": {
+  "gauss": 0.6918112436930338,
+  "bilateral": 10.085582733154297,
+  "nlm": 1176.4020919799805
+ },
+ "denoise_note": "bilateral/NLM excluded from full ablation: 10/1176 ms/frame would dominate the 25ms extractor; recorded here as cost evidence.",
+ "elapsed_s": 777.6099407672882
+}

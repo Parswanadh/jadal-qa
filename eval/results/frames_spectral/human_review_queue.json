@@ -1,0 +1,171 @@
+{
+ "n_flagged_strong": 15,
+ "note": "human labels NEVER edited; re-check with labelling tool",
+ "items": [
+  {
+   "segment_id": "g123",
+   "clip": "organise",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+   "start_s": 135.2,
+   "end_s": 145.2,
+   "human_label": 0,
+   "human_reason": "TOO_DARK",
+   "oof_p_usable": 1.0,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g124",
+   "clip": "organise",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+   "start_s": 150.2,
+   "end_s": 160.2,
+   "human_label": 0,
+   "human_reason": "TOO_DARK",
+   "oof_p_usable": 1.0,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g072",
+   "clip": "desk",
+   "path": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+   "start_s": 145.0,
+   "end_s": 155.0,
+   "human_label": 0,
+   "human_reason": "DUPLICATE",
+   "oof_p_usable": 0.9861064705008551,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g113",
+   "clip": "pallet",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_H_pal_transport_Nar_480.mp4",
+   "start_s": 233.8,
+   "end_s": 243.8,
+   "human_label": 0,
+   "human_reason": "HANDS_NOT_VISIBLE",
+   "oof_p_usable": 0.9819898821961393,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g101",
+   "clip": "pallet",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_H_pal_transport_Nar_480.mp4",
+   "start_s": 58.5,
+   "end_s": 68.5,
+   "human_label": 1,
+   "human_reason": "",
+   "oof_p_usable": 0.026679763793085134,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g117",
+   "clip": "organise",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+   "start_s": 45.1,
+   "end_s": 55.1,
+   "human_label": 1,
+   "human_reason": "",
+   "oof_p_usable": 0.03506882137459719,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g095",
+   "clip": "pallet2",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_H_pal_transport2_Nar_480.mp4",
+   "start_s": 67.6,
+   "end_s": 77.6,
+   "human_label": 0,
+   "human_reason": "NO_ACTIVE_WORK",
+   "oof_p_usable": 0.947103737072835,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g105",
+   "clip": "pallet",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_H_pal_transport_Nar_480.mp4",
+   "start_s": 116.9,
+   "end_s": 126.9,
+   "human_label": 1,
+   "human_reason": "",
+   "oof_p_usable": 0.06211745378166733,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g052",
+   "clip": "ecu_late",
+   "path": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+   "start_s": 61.0,
+   "end_s": 71.0,
+   "human_label": 0,
+   "human_reason": "NO_ACTIVE_WORK",
+   "oof_p_usable": 0.9307235483660007,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g143",
+   "clip": "logistics4",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_User_16_451_3101_Logistics_4_480.mp4",
+   "start_s": 147.2,
+   "end_s": 157.2,
+   "human_label": 0,
+   "human_reason": "NO_ACTIVE_WORK",
+   "oof_p_usable": 0.9301830801350117,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g102",
+   "clip": "pallet",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_H_pal_transport_Nar_480.mp4",
+   "start_s": 73.1,
+   "end_s": 83.1,
+   "human_label": 1,
+   "human_reason": "",
+   "oof_p_usable": 0.07304269646861904,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g128",
+   "clip": "organise",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+   "start_s": 210.3,
+   "end_s": 220.3,
+   "human_label": 1,
+   "human_reason": "",
+   "oof_p_usable": 0.08376280963973612,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g058",
+   "clip": "ecu_late",
+   "path": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+   "start_s": 152.6,
+   "end_s": 162.6,
+   "human_label": 1,
+   "human_reason": "",
+   "oof_p_usable": 0.10758721615189865,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g096",
+   "clip": "pallet2",
+   "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_H_pal_transport2_Nar_480.mp4",
+   "start_s": 84.5,
+   "end_s": 94.5,
+   "human_label": 0,
+   "human_reason": "HANDS_NOT_VISIBLE",
+   "oof_p_usable": 0.8808482266645392,
+   "flag": "oof strongly disagrees with human label"
+  },
+  {
+   "segment_id": "g051",
+   "clip": "ecu_late",
+   "path": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+   "start_s": 45.8,
+   "end_s": 55.8,
+   "human_label": 0,
+   "human_reason": "NO_ACTIVE_WORK",
+   "oof_p_usable": 0.8688067945030703,
+   "flag": "oof strongly disagrees with human label"
+  }
+ ]
+}
