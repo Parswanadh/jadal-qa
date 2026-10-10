@@ -1,0 +1,36 @@
+{
+ "rungs": [
+  {
+   "rung": "R0_cpu_baseline",
+   "hours_per_hour": 706.7,
+   "why": "starting point: everything on CPU, one window at a time"
+  },
+  {
+   "rung": "R0_cpu_baseline",
+   "hours_per_hour": 22.2,
+   "why": "starting point: everything on CPU, one window at a time"
+  },
+  {
+   "rung": "R1_R2_kernels",
+   "hours_per_hour": {
+    "B1": 1791.9,
+    "B8": 1784.3,
+    "B32": 1997.6
+   },
+   "why": "batched GPU kernels remove per-launch overhead; kernels-only ceiling before decode is added"
+  },
+  {
+   "rung": "R3_nvdec_pipeline",
+   "hours_per_hour": 2.9,
+   "why": "NVDEC decode + scale_cuda at source + pinned H2D + batched kernels: decode and compute overlap"
+  },
+  {
+   "rung": "R3b_cpu_decode_gpu_kernels",
+   "hours_per_hour": {
+    "B8": 21.4,
+    "B32": 25.0
+   },
+   "why": "CPU ffmpeg decode (RTF~100) + H2D + batched kernels: NVDEC per-session overhead avoided at tiny frames"
+  }
+ ]
+}
