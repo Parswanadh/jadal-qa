@@ -14,3 +14,11 @@
 
 ## Results
 (pending — `exp.py finish` fills the registry; put figures/JSON in this folder)
+
+**Verdict (2026-10-10 15:59): adopt.** Cost table on A40 (contended pod): per-profile 0.51-15.22 video-h/wall-h; every-2nd+4s exit pixel26 565 ms/window -> 35.4 vs 9.1 full sampling (x3.88 wall-clock, mosaic-only x4.14); embedding-bound at batch 1 (183 ms/image, 47-94% of the window), decode-bound only for factory_1080p30 CPU (46%); NVDEC 7.37 vs 27.3 ms/frame on 1080p HEVC but slower on 480p (CI95 = window variation only, machine shared).
+
+Results file: eval/results/exp_cost/E7.01.json
+
+Decision: Use this table as the pod cost reference; keep NVDEC(1080p HEVC)/CPU(480p) separate; re-time on an idle pod and measure a pipelined multi-stream run + batch-8 eg2 feature path; policy verdicts stay with E3.01/E3.03/E3.05 (no new accuracy here; 3.88x < the 4x cost-only bar).
+
+Cost: timed measurement ~9 min wall (decode 4 configs x 6 windows, features 12 windows, embedder 32 images, mosaic build 6 windows), peak 1.5 GB VRAM

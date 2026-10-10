@@ -72,8 +72,9 @@ def sh(cmd):
 
 
 def git_sha(path=None):
-    if path and os.path.isdir(os.path.join(path, ".git")) is False:
-        pass
+    """Short HEAD sha of a git worktree, or 'unknown' if the path is not one."""
+    if path is not None and not os.path.exists(os.path.join(path, ".git")):
+        return "unknown (not a git worktree)"
     cmd = ["git", "-C", path or ROOT, "rev-parse", "--short", "HEAD"]
     r = sh(cmd)
     return r.stdout.strip() or "unknown"
@@ -159,7 +160,7 @@ def measure_features(n_windows=12):
     items = [it for it in load_manifest() if it["clip"] in
              ("ecu_full", "desk", "pallet", "organise", "logistics4")][:n_windows]
     cfgs = {"10": (1, 10.0), "5": (2, 5.0), "2": (5, 2.0)}
-    spans = {"10": None, "4": 40}          # None = whole decoded window
+    spans = {"10": None, "6": 60, "4": 40}   # None = whole decoded window
     ms = {f"{k}@{s}": [] for k in cfgs for s in spans}
     dec_ms = []
     for it in items:
@@ -277,9 +278,9 @@ def measure_embedding(n_timed=8, n_warm=2):
                                 trust_remote_code=True)
     model.eval()
 
-    def encode(pils):
+    def encode(pils, bs=1):
         with torch.inference_mode():
-            return model.encode(pils, batch_size=1, show_progress_bar=False,
+            return model.encode(pils, batch_size=bs, show_progress_bar=False,
                                 convert_to_numpy=True, normalize_embeddings=True,
                                 processing_kwargs={"image": {"max_soft_tokens": 140}})
 
@@ -321,7 +322,38 @@ def measure_embedding(n_timed=8, n_warm=2):
     return {"device": DEVICE, "batch_size": 1, "dtype": str(dtype),
             "max_soft_tokens": 140, "peak_vram_mb": float(
                 torch.cuda.max_memory_allocated() / 2 ** 20),
-            "mosaic_artifacts": MOSAIC_ART, "inputs": res}
+            "mosaic_artifacts": MOSAIC_ART, "inputs": res,
+            "batched_alt": measure_embedding_batched(
+                lambda pils, bs=8: encode(pils, bs), inputs, n_timed=4)}
+
+
+def measure_embedding_batched(encode_batch, inputs, n_timed=4, batch=8):
+    """Per-image cost when the eg2 FEATURE embeddings are batched.
+
+    NOT the receipt path (the hashed receipt uses batch 1; pod-resources skill:
+    batch size changes embeddings by ~1e-3).  Measured so the cost table can
+    show both, and labelled as an alternative in the results JSON.
+    """
+    import torch
+    out = {}
+    for name in ("tile_224x224", "mosaic_3x3_680x680_real"):
+        if name not in inputs:
+            continue
+        pils = inputs[name]
+        seq = [pils[i % len(pils)] for i in range(batch * n_timed)]
+        torch.cuda.synchronize()
+        ts = []
+        for k in range(n_timed):
+            chunk = seq[k * batch:(k + 1) * batch]
+            t0 = time.perf_counter()
+            encode_batch(chunk)
+            torch.cuda.synchronize()
+            ts.append(time.perf_counter() - t0)
+        out[name] = {"batch": batch, "n_timed_batches": len(ts),
+                     "ms_per_batch_mean": float(np.mean(ts) * 1000.0),
+                     "ms_per_image_batched": float(np.mean(ts) * 1000.0 / batch),
+                     "note": "feature path only; the hashed receipt stays batch 1"}
+    return out
 
 
 def measure_head(n=1000):
@@ -433,8 +465,7 @@ def find_source(relpath):
     for c in cands:
         if os.path.exists(c):
             wt = c.split("/eval/")[0]
-            return c, git_sha(wt if os.path.isdir(os.path.join(wt, ".git"))
-                              else None)
+            return c, git_sha(wt)
     return None, None
 
 
@@ -477,6 +508,10 @@ def stage_model(args):
 
     ms_tile = emb_ms("tile_224x224")
     ms_mosaic = emb_ms("mosaic_3x3_680x680_real")
+    batched = (meas.get("embedding_eg2") or {}).get("batched_alt") or {}
+    ms_tile_b = (batched.get("tile_224x224") or {}).get("ms_per_image_batched")
+    ms_mosaic_b = (batched.get("mosaic_3x3_680x680_real") or {}).get(
+        "ms_per_image_batched")
     mos_build = meas.get("mosaic_build", {}) or {}
     mos_layout_ms = (mos_build.get("layout_ms_mean") or 0.0) if \
         mos_build.get("status") == "measured" else 0.0
@@ -587,6 +622,15 @@ def stage_model(args):
                 "video_hours_per_wall_hour": (round(video_hph, 2)
                                               if video_hph else None),
                 "footage_fraction_probed": round(1.0 / k, 3),
+                "alt_eg2_features_batched": (
+                    {"embedding_eg2_ms": round(n_frames_emb * ms_tile_b, 1),
+                     "total_ms": round((dms or 0.0) + pix_ms + n_frames_emb * ms_tile_b
+                                       + mos_ms + head_ms, 1),
+                     "video_hours_per_wall_hour": round(video_hours_per_wall_hour(
+                         (dms or 0.0) + pix_ms + n_frames_emb * ms_tile_b + mos_ms
+                         + head_ms, k), 2),
+                     "note": "eg2 FEATURE embeddings at batch 8; receipt stays batch 1"}
+                    if (ms_tile_b and fset in ("eg2", "both")) else None),
             })
 
     # reference rows: full sampling (baseline) vs adopted E3 policy, IndEgo source
@@ -612,6 +656,7 @@ def stage_model(args):
                                   "mosaic_build_layout": round(mos_layout_ms, 1),
                                   "mosaic_png_encode": round(mos_enc_ms, 1),
                                   "mosaic_embed": round(ms_mosaic or 0.0, 1),
+                                  "mosaic_evidence": round(mos_ms, 1),
                                   "head": round(head_ms, 3),
                                   "total": round(total, 1)},
                 "decode_share_of_total": round((dec_ms or 0) / total, 3) if total else None,
@@ -624,7 +669,7 @@ def stage_model(args):
         synthetic_row("E3_baseline_full_pixel26", DEFAULT_FAM, 10, 1, None, "pixel26", "CPU"),
         synthetic_row("E3_adopted_every2_exit4_pixel26", DEFAULT_FAM, 2, 2, 4, "pixel26", "CPU"),
         synthetic_row("E3_adopted_every2_exit4_pixel26_nvdec", DEFAULT_FAM, 2, 2, 4, "pixel26", "NVDEC"),
-        synthetic_row("mosaic_only_every2_exit4", DEFAULT_FAM, 0.9, 2, 4, "eg2", "NVDEC"),
+        synthetic_row("mosaic_only_every2_exit4", DEFAULT_FAM, 2, 2, 4, "mosaic_only", "CPU"),
     ]
 
     out = {
@@ -659,6 +704,7 @@ def stage_model(args):
         "git_sha": git_sha(),
         "measured_this_run": {
             "decode": dec, "features_pixel26": feat,
+            "mosaic_build": meas.get("mosaic_build"),
             "embedding_eg2": {k: v for k, v in emb.items() if k != "inputs"},
             "embedding_ms_per_image": {k: v for k, v in emb["inputs"].items()},
             "head_logistic": meas["head_logistic"],
@@ -685,11 +731,14 @@ def stage_model(args):
     # same quantities, different runs/settings) -- reported, never averaged in
     cc = {}
     if e101:
-        mine10 = feat["features_ms_per_window"].get("10", {}).get("mean")
+        mine10 = feat["features_ms_per_window"].get("10@10", {}).get("mean")
         cc["features_pixel26_10fps"] = {
             "this_run_OMP1_ms": round(mine10, 1) if mine10 else None,
             "E1.01_OMP2_ms": e101_feat.get("10"),
-            "note": "E1.01 ran two shards in parallel; this run is single-process OMP_NUM_THREADS=1",
+            "note": ("E1.01 ran two shards in parallel; this run is single-process "
+                     "OMP_NUM_THREADS=1. Both ran while other pod workers were "
+                     "decoding, so both are contended; the CI covers windows, not "
+                     "machine load"),
         }
     if e101_decode_ms:
         cc["decode_indego_480p_cpu"] = {
@@ -713,6 +762,9 @@ def stage_model(args):
             "corpus_hours": e304.get("corpus_hours"),
             "per_policy": e304.get("per_policy"),
             "with_early_exit": e304.get("with_early_exit"),
+            "note": ("the E3.04 JSON exists only in the pod bundle's "
+                     "local_work copy on this pod; the wave-1 registry line points "
+                     "at a laptop path -- cited, not re-run here"),
         }
         cc["E3.04_vs_E7.01"] = ("E3.04 counts PROCESSED FOOTAGE fractions "
                                 "(arithmetic, no wall clock); E7.01 counts wall-clock "
@@ -723,19 +775,26 @@ def stage_model(args):
                                "note": "cached 0.5s-spacing EG2 embeddings; fewer frames did not hurt"}
     out["cross_checks"] = cc
 
-    # headline: best IndEgo profile row and speed-up vs the full-sampling profile
-    def best(name_filter=None, hw="NVDEC"):
-        c = [r for r in rows if r["decode_path"] == hw and
-             (name_filter is None or r["profile"] == name_filter)]
+    # headline: best row overall and the full-sampling baseline for comparison
+    def best(name_filter=None):
+        c = [r for r in rows if name_filter is None or r["profile"] == name_filter]
         return max(c, key=lambda r: r["video_hours_per_wall_hour"] or 0) if c else None
-    base = [r for r in rows if r["profile"] == "default" and r["decode_path"] == "NVDEC"]
+    base = [r for r in rows if r["profile"] == "default"
+            and r["decode_path"] == "CPU"]
     top = best()
+    ref_base = [r for r in ref_rows if r["profile"] == "E3_baseline_full_pixel26"]
+    ref_adopt = [r for r in ref_rows
+                 if r["profile"] == "E3_adopted_every2_exit4_pixel26"]
     out["headline"] = {
         "best_profile_row": top,
-        "baseline_default_nvdec": base[0] if base else None,
+        "baseline_default_cpu": base[0] if base else None,
         "speedup_x": (round(top["video_hours_per_wall_hour"] /
                             base[0]["video_hours_per_wall_hour"], 2)
                       if top and base and base[0]["video_hours_per_wall_hour"] else None),
+        "reference_speedup_every2_exit4_vs_full_x": (
+            round(ref_adopt[0]["video_hours_per_wall_hour"] /
+                  ref_base[0]["video_hours_per_wall_hour"], 2)
+            if ref_base and ref_adopt else None),
         "bound": ("decode-bound" if top and top["decode_share_of_total"] and
                   top["decode_share_of_total"] > 0.5 else "feature/embedding-bound")
         if top else "not measured",
@@ -747,14 +806,39 @@ def stage_model(args):
               f"video_h/wall_h={r['video_hours_per_wall_hour']}")
 
 
+def stage_embed_only(args):
+    """Re-measure ONLY the embedding block and merge it into the measure JSON
+    (used to re-time when the shared GPU is idle)."""
+    m = json.load(open(MEASURE_JSON))
+    m["embedding_eg2"] = measure_embedding()
+    m["embedding_remeasured_utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    json.dump(m, open(MEASURE_JSON, "w"), indent=1)
+    print("re-measured embedding ->", MEASURE_JSON)
+
+
+def stage_feats_only(args):
+    """Re-measure ONLY the pixel26 feature block and merge it in."""
+    m = json.load(open(MEASURE_JSON))
+    m["features_pixel26"] = measure_features(args.feature_windows)
+    m["features_remeasured_utc"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    json.dump(m, open(MEASURE_JSON, "w"), indent=1)
+    print("re-measured features ->", MEASURE_JSON)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", choices=["measure", "model", "all"], default="all")
+    ap.add_argument("--stage",
+                    choices=["measure", "model", "embed", "feats", "all"],
+                    default="all")
     ap.add_argument("--feature-windows", type=int, default=12)
     a = ap.parse_args()
     os.makedirs(RESULTS, exist_ok=True)
     if a.stage in ("measure", "all"):
         stage_measure(a)
+    if a.stage == "embed":
+        stage_embed_only(a)
+    if a.stage == "feats":
+        stage_feats_only(a)
     if a.stage in ("model", "all"):
         stage_model(a)
 
