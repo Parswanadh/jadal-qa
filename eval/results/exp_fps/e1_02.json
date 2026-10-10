@@ -42,6 +42,8 @@
    "delta_vs_2fps": 0.0222
   }
  ],
+ "claim_status": "descriptive only: no non-inferiority margin was pre-stated; CIs overlap across rows, so no fps setting is shown to be not worse than 2 fps",
+ "two_view_protocol": "mean of EG2 LOCO probability and pixel-view LOCO probability (26 features, C=0.3) at matching fps: 2fps<-pixel 2fps (step 5), 1fps<-pixel 1fps (step 10); pixel sweep has no 0.5fps",
  "two_view_prob_avg": [
   {
    "fps": "2fps",

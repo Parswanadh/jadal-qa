@@ -6,82 +6,124 @@
  "label_source": "human (IndEgo gold manifest_gold.json)",
  "protocol": "leave-one-clip-out, StandardScaler+LogisticRegression C=0.3 balanced; CI=clip-bootstrap B=1000 seed0",
  "subsample_rule": "decode once native ~10fps via POS_MSEC seek + consecutive reads at 160x90; idx=arange(0,T,step), step {10:1,5:2,3.33:3,2:5,1:10}; cpu_window_features with TRUE effective fps (10/step)",
- "command": "eval/exp_fps/run_fps.py --mode sweep --shard {0,1}/2, merged by merge_e1_01.py",
+ "command": "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_fps/run_fps.py --mode sweep --shard {0,1}/2; then merge_e1_01.py",
+ "decode_ms_per_window": 154.0,
+ "claim_status": "descriptive only: no equivalence margin was pre-stated and no paired test was run; the 95% CIs are ~0.2 wide at n=150 (50 bad), so differences between fps settings are not resolvable at this n",
  "rows": [
   {
    "fps": 10,
    "fps_eff": 10.0,
    "frames_per_window": 100,
-   "n_scored": 100,
+   "mean_decoded_frames": 100.0,
+   "n_features": 26,
    "auroc": 0.8086,
    "ci95": [
     0.6933,
     0.8895
    ],
    "bal_acc": 0.765,
-   "decode_ms_mean": 154.0,
+   "n_features_spatial": 18,
+   "auroc_spatial": 0.6898,
+   "ci95_spatial": [
+    0.5647,
+    0.8078
+   ],
+   "bal_acc_spatial": 0.69,
    "feat_ms_mean": 238.1,
-   "delta_vs_full": 0.0
+   "delta_vs_full": 0.0,
+   "delta_vs_full_spatial": 0.0
   },
   {
    "fps": 5,
    "fps_eff": 5.0,
    "frames_per_window": 50,
-   "n_scored": 100,
+   "mean_decoded_frames": 100.0,
+   "n_features": 26,
    "auroc": 0.7932,
    "ci95": [
     0.665,
     0.8782
    ],
    "bal_acc": 0.72,
-   "decode_ms_mean": 154.0,
+   "n_features_spatial": 18,
+   "auroc_spatial": 0.6656,
+   "ci95_spatial": [
+    0.5415,
+    0.7813
+   ],
+   "bal_acc_spatial": 0.66,
    "feat_ms_mean": 119.2,
-   "delta_vs_full": -0.0154
+   "delta_vs_full": -0.0154,
+   "delta_vs_full_spatial": -0.0242
   },
   {
    "fps": 3.33,
    "fps_eff": 3.3333333333333335,
    "frames_per_window": 34,
-   "n_scored": 100,
+   "mean_decoded_frames": 100.0,
+   "n_features": 26,
    "auroc": 0.8068,
    "ci95": [
     0.6967,
     0.8726
    ],
    "bal_acc": 0.805,
-   "decode_ms_mean": 154.0,
+   "n_features_spatial": 18,
+   "auroc_spatial": 0.678,
+   "ci95_spatial": [
+    0.5907,
+    0.7409
+   ],
+   "bal_acc_spatial": 0.635,
    "feat_ms_mean": 80.3,
-   "delta_vs_full": -0.0018
+   "delta_vs_full": -0.0018,
+   "delta_vs_full_spatial": -0.0118
   },
   {
    "fps": 2,
    "fps_eff": 2.0,
    "frames_per_window": 20,
-   "n_scored": 100,
+   "mean_decoded_frames": 100.0,
+   "n_features": 26,
    "auroc": 0.7866,
    "ci95": [
     0.6504,
     0.8657
    ],
    "bal_acc": 0.725,
-   "decode_ms_mean": 154.0,
+   "n_features_spatial": 18,
+   "auroc_spatial": 0.6794,
+   "ci95_spatial": [
+    0.5502,
+    0.792
+   ],
+   "bal_acc_spatial": 0.67,
    "feat_ms_mean": 46.7,
-   "delta_vs_full": -0.022
+   "delta_vs_full": -0.022,
+   "delta_vs_full_spatial": -0.0104
   },
   {
    "fps": 1,
    "fps_eff": 1.0,
    "frames_per_window": 10,
-   "n_scored": 100,
+   "mean_decoded_frames": 100.0,
+   "n_features": 26,
    "auroc": 0.7736,
    "ci95": [
     0.6306,
     0.8494
    ],
    "bal_acc": 0.745,
-   "decode_ms_mean": 154.0,
+   "n_features_spatial": 18,
+   "auroc_spatial": 0.6782,
+   "ci95_spatial": [
+    0.5474,
+    0.7907
+   ],
+   "bal_acc_spatial": 0.68,
    "feat_ms_mean": 26.1,
-   "delta_vs_full": -0.035
+   "delta_vs_full": -0.035,
+   "delta_vs_full_spatial": -0.0116
   }
  ],
  "per_feature_signed_auroc": {

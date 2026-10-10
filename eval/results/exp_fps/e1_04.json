@@ -2,54 +2,61 @@
  "experiment": "E1.04",
  "n": 150,
  "label_source": "human (IndEgo gold)",
- "protocol": "LOCO logistic C=0.3; CI=clip-bootstrap B=1000 seed0",
- "budget": "20 frames/window (~2fps); motion=top-20 inter-frame-diff + frame0 anchor; random=seed0; keyframe=I-frame timestamps via ffprobe padded with uniform to 20",
- "decode_ms_mean": 167.9,
- "command": "eval/exp_fps/run_fps.py --mode select --shard {0,1}/2",
+ "protocol": "LOCO logistic C=0.3 balanced; CI=clip-bootstrap B=1000 seed0",
+ "features": "18 spatial (dt-independent) features only",
+ "budget": "20 frames/window (~2 fps); motion=top-19 inter-frame-diff + frame0; random=seed0; keyframe=I-frame positions from ffprobe (valid only if >=20 per window)",
+ "decode_ms_per_window": 88.9,
+ "command": "PYTHONNOUSERSITE=1 OMP_NUM_THREADS=2 /home/parshu/envs/jadal/bin/python eval/exp_fps/run_fps.py --mode select --shard {0,1}/2; then merge_e1_04.py",
  "rows": [
   {
    "strategy": "uniform20",
    "frames": 20,
-   "auroc": 0.7866,
+   "status": "valid",
+   "auroc": 0.6794,
    "ci95": [
-    0.6504,
-    0.8657
+    0.5502,
+    0.792
    ],
-   "bal_acc": 0.725,
-   "feat_ms_mean": 48.2
+   "bal_acc": 0.67,
+   "feat_ms_mean": 43.6
   },
   {
    "strategy": "motion20",
    "frames": 20,
-   "auroc": 0.762,
+   "status": "valid",
+   "auroc": 0.5784,
    "ci95": [
-    0.6752,
-    0.8017
+    0.4995,
+    0.6844
    ],
-   "bal_acc": 0.675,
-   "feat_ms_mean": 47.6
+   "bal_acc": 0.575,
+   "feat_ms_mean": 36.3
   },
   {
    "strategy": "random20",
    "frames": 20,
-   "auroc": 0.7386,
+   "status": "valid",
+   "auroc": 0.5478,
    "ci95": [
-    0.586,
-    0.8055
+    0.3808,
+    0.6518
    ],
-   "bal_acc": 0.685,
-   "feat_ms_mean": 46.2
+   "bal_acc": 0.555,
+   "feat_ms_mean": 34.7
   },
   {
    "strategy": "keyframe",
    "frames": 20,
-   "auroc": 0.7866,
-   "ci95": [
-    0.6504,
-    0.8657
-   ],
-   "bal_acc": 0.725,
-   "feat_ms_mean": 46.5
+   "status": "INVALID",
+   "auroc": null,
+   "ci95": null,
+   "bal_acc": null,
+   "keyframe_fallback_windows": 150,
+   "n_windows": 150,
+   "iframes_per_window_min": 0,
+   "iframes_per_window_median": 1.0,
+   "iframes_per_window_max": 5,
+   "reason": "fewer than 20 distinct I-frame positions on the 10 fps grid in these windows; the arm would not be a 20-frame keyframe selection, so no result is reported"
   }
  ]
 }

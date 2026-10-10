@@ -21,3 +21,6 @@ __pycache__/
 # editor / os
 .DS_Store
 *.swp
+
+# E1.03 OOD per-window shards: local only (GPU pod continues E1.03); not committed
+eval/results/exp_fps/ood_shard_*.json

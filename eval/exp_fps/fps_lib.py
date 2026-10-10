@@ -1,12 +1,17 @@
 """E1 shared lib: deterministic decode-once + index-subsample + LOCO eval."""
 import json
+import os
 import time
 
 import cv2
 import numpy as np
 
-MANIFEST = "/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"
-GPU_SRC = "/home/parshu/projects/jadal-qa-wt/gpu-pipeline/jadal/gpu"
+# Root of the jadal-qa worktree that holds data/caches (manifest, GPU source,
+# labels). Override with the JADAL_WT_ROOT env var; the default is the
+# original workstation location.
+WT_ROOT = os.environ.get("JADAL_WT_ROOT", "/home/parshu/projects/jadal-qa-wt")
+MANIFEST = os.path.join(WT_ROOT, "spectral_data", "manifest_gold.json")
+GPU_SRC = os.path.join(WT_ROOT, "gpu-pipeline", "jadal", "gpu")
 
 W, H = 160, 90          # decode size (matches perpixel series_gold: every frame at 160x90)
 NATIVE_FPS = 10.0
@@ -14,6 +19,16 @@ WIN_S = 10.0
 
 # fps target -> (step, effective fps). Rule: idx = arange(0, T_native, step).
 FPS_STEPS = {10: 1, 5: 2, 3.33: 3, 2: 5, 1: 10}
+
+# The 18 features that do not depend on the frame-time step (spatial /
+# middle-or-endpoint only). The other 8 (temp_b0-b3, frozen_frac, flicker_idx,
+# motion_energy, rppg_pulse) depend on dt and are NOT comparable across fps.
+SPATIAL_FEATURES = [
+    "global_shift", "zncc_self", "radial_slope", "hf_ratio", "dct_energy",
+    "pca_resid", "pca_top1_share", "luma_mean", "luma_p05", "luma_p50",
+    "luma_p95", "dark_frac", "bright_frac", "illum_r", "illum_g", "illum_b",
+    "skin_frac", "dup_hash_mean",
+]
 
 
 def load_manifest():
