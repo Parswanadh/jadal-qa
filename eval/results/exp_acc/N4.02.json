@@ -1,0 +1,93 @@
+{
+ "experiment": "N4.02",
+ "title": "Certification budget: labelled clusters for a false-accept bound at 1-delta=0.95",
+ "n": 160,
+ "n_good": 138,
+ "n_bad": 22,
+ "label_source": "human, single labeller (labels/ood160_labels.json)",
+ "protocol": "cluster-Hoeffding upper confidence bound on the marginal false-accept rate R(t)=P(accept AND bad): UCB = Rhat + sqrt(ln(1/delta')/(2K)) <= r; K = exchangeable clusters (factories or video clips), delta'=delta for a pre-registered threshold or delta/grid for a union bound over the grid (Z2/LTT). Invert for the largest certifiable r at fixed K.",
+ "device": "CPU (closed form; no model run)",
+ "delta": 0.05,
+ "confidence": 0.95,
+ "grid_size": 46,
+ "formula": "K_min = ceil( ln(1/delta') / (2 (r - Rhat)^2) )",
+ "budget_rhat0": {
+  "0.05": {
+   "single_threshold": {
+    "K_clusters": 600,
+    "delta_prime": 0.05
+   },
+   "grid_union": {
+    "K_clusters": 1365,
+    "delta_prime": 0.0010869565217391304
+   }
+  },
+  "0.10": {
+   "single_threshold": {
+    "K_clusters": 150,
+    "delta_prime": 0.05
+   },
+   "grid_union": {
+    "K_clusters": 342,
+    "delta_prime": 0.0010869565217391304
+   }
+  },
+  "0.20": {
+   "single_threshold": {
+    "K_clusters": 38,
+    "delta_prime": 0.05
+   },
+   "grid_union": {
+    "K_clusters": 86,
+    "delta_prime": 0.0010869565217391304
+   }
+  }
+ },
+ "budget_rhat_0p02": {
+  "0.05": {
+   "single_threshold": {
+    "K_clusters": 1665,
+    "delta_prime": 0.05
+   },
+   "grid_union": {
+    "K_clusters": 3792,
+    "delta_prime": 0.0010869565217391304
+   }
+  },
+  "0.10": {
+   "single_threshold": {
+    "K_clusters": 235,
+    "delta_prime": 0.05
+   },
+   "grid_union": {
+    "K_clusters": 534,
+    "delta_prime": 0.0010869565217391304
+   }
+  },
+  "0.20": {
+   "single_threshold": {
+    "K_clusters": 47,
+    "delta_prime": 0.05
+   },
+   "grid_union": {
+    "K_clusters": 106,
+    "delta_prime": 0.0010869565217391304
+   }
+  }
+ },
+ "current_pool": {
+  "K_factories": 47,
+  "K_video_clips": 58,
+  "K_workers": 25,
+  "n_unlabelled_windows": 1546,
+  "note": "all 1,546 unlabelled windows sit in the SAME 47 factories as the 160 labels: the current pool CANNOT add independent clusters. Certification needs NEW factories (new data), not more windows from the existing ones."
+ },
+ "certifiable_r_now": {
+  "K_factories_47_grid_union": 0.2694,
+  "K_factories_47_single_threshold": 0.1785,
+  "interpretation": "with 47 factories the tightest certifiable marginal false-accept is ~27% (grid-union) / ~18% (pre-registered threshold) at 95% confidence \u2014 a 5% or 10% bound is NOT certifiable today."
+ },
+ "implication": "Review/error claims: (1) the current 'review 12%, FA 4%' operating point (Z2 coverage 0.85) is DESCRIPTIVE, not certified. (2) To certify FA<=20% at 95% confidence you need ~86 factories (have 47); FA<=10% -> ~342 factories; FA<=5% -> ~1,365 factories (grid-union). A pre-registered single threshold roughly halves-to-quarters those counts (38/150/599). (3) Window-level counts are anti-conservative under within-factory correlation; the cluster (factory) is the honest exchangeable unit. (4) Clip-level labels buy power only if the deployment claim is itself clip-level: there are 58 video clips vs 47 factories, but clips nest inside factories so factory-level remains the safe unit.",
+ "command": "OMP_NUM_THREADS=2 python3 eval/exp_acc/run_acc.py",
+ "git_sha": "f20013b"
+}
