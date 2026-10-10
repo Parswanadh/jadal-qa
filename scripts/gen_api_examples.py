@@ -48,64 +48,84 @@ def _normalized(obj):
 
 
 def build_examples() -> dict:
-    """Run the stub-mode service and return {file_stem: payload}."""
+    """Run the stub-mode service and return {file_stem: payload}.
+
+    Stub callables are injected (not just the env flag), so the output is
+    identical whether or not the real jadal.signals / decision / segmenter
+    modules are importable.
+    """
     from fastapi.testclient import TestClient
+    from jadal import pipeline
     from jadal import stubs
     from jadal.config import Config
     from jadal.service import create_app
     from jadal import store as store_mod
 
+    stage_patches = [
+        mock.patch.object(pipeline, "_compute_signals_fn",
+                          new=lambda: stubs.stub_compute_signals),
+        mock.patch.object(pipeline, "_decider_class",
+                          new=lambda: stubs.StubDecider),
+        mock.patch.object(pipeline, "_split_clip_fn",
+                          new=lambda: stubs.stub_split_clip),
+    ]
     with mock.patch.dict(os.environ, {"JADAL_USE_STUBS": "1",
                                       "JADAL_EVAL_RESULTS_DIR":
                                           str(EXAMPLES_DIR)}):
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            cfg = Config(
-                batch_size=5, batch_reject_k=1, segment_seconds=20.0, seed=1234,
-                bucket_dir=root / "bucket", segments_dir=root / "segments",
-                blurred_dir=root / "blurred", db_path=root / "jadal.db",
-                web_dir=root / "web", voicebank_dir=root / "voicebank")
-            cfg.bucket_dir.mkdir(parents=True, exist_ok=True)
-            store_mod.init_db(cfg.db_path)
-            app = create_app(cfg, batch_max_age_s=30.0, watch_bucket=False)
-            with TestClient(app) as client:
-                clips = []
-                for i in range(5):
-                    path = cfg.bucket_dir / f"example_{i}.mp4"
-                    path.write_bytes((f"api-example-clip:{i}\n".encode()
-                                      * 64)[:4096])
-                    signals = dict(PASS_SIGNALS)
-                    if i == 0:
-                        signals = dict(signals, blur_var=2.0)  # one BLUR reject
-                    stubs.set_test_override(path, signals=signals,
-                                            decisions=dict(PASS_DECISIONS))
-                    clips.append(path)
-                last = None
-                for path in clips:
-                    response = client.post("/ingest/event", json={
-                        "path": str(path), "worker_id": "w-ex",
-                        "site_id": "site-ex"})
-                    assert response.status_code == 200, response.text
-                    last = response.json()
-                assert last["batch"] is not None
-                batch_id = last["batch"]["batch_id"]
-                detail = client.get(f"/batches/{batch_id}").json()
-                receipt_id = detail["receipt_ids"][0]
-                out = {
-                    "health": client.get("/health").json(),
-                    "batches": client.get("/batches").json(),
-                    "batch_detail": detail,
-                    "receipt": client.get(f"/receipts/{receipt_id}").json(),
-                    "reverify": client.post(
-                        f"/receipts/{receipt_id}/reverify").json(),
-                    "risk_coverage": client.get(
-                        "/stats/risk_coverage").json(),
-                    "sop_gaps": client.get("/stats/sop_gaps").json(),
-                    "pico_status": client.get("/pico/status").json(),
-                    "ingest_errors": client.get("/ingest/errors").json(),
-                    "batches_failed": client.get("/batches/failed").json(),
-                }
-            stubs.clear_test_overrides()
+        for patcher in stage_patches:
+            patcher.start()
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                cfg = Config(
+                    batch_size=5, batch_reject_k=1, segment_seconds=20.0, seed=1234,
+                    bucket_dir=root / "bucket", segments_dir=root / "segments",
+                    blurred_dir=root / "blurred", db_path=root / "jadal.db",
+                    web_dir=root / "web", voicebank_dir=root / "voicebank")
+                cfg.bucket_dir.mkdir(parents=True, exist_ok=True)
+                store_mod.init_db(cfg.db_path)
+                app = create_app(cfg, batch_max_age_s=30.0, watch_bucket=False)
+                with TestClient(app) as client:
+                    clips = []
+                    for i in range(5):
+                        path = cfg.bucket_dir / f"example_{i}.mp4"
+                        path.write_bytes((f"api-example-clip:{i}\n".encode()
+                                          * 64)[:4096])
+                        signals = dict(PASS_SIGNALS)
+                        if i == 0:
+                            signals = dict(signals, blur_var=2.0)  # one BLUR reject
+                        stubs.set_test_override(path, signals=signals,
+                                                decisions=dict(PASS_DECISIONS))
+                        clips.append(path)
+                    last = None
+                    for path in clips:
+                        response = client.post("/ingest/event", json={
+                            "path": str(path), "worker_id": "w-ex",
+                            "site_id": "site-ex"})
+                        assert response.status_code == 200, response.text
+                        last = response.json()
+                    assert last["batch"] is not None
+                    batch_id = last["batch"]["batch_id"]
+                    detail = client.get(f"/batches/{batch_id}").json()
+                    receipt_id = detail["receipt_ids"][0]
+                    out = {
+                        "health": client.get("/health").json(),
+                        "batches": client.get("/batches").json(),
+                        "batch_detail": detail,
+                        "receipt": client.get(f"/receipts/{receipt_id}").json(),
+                        "reverify": client.post(
+                            f"/receipts/{receipt_id}/reverify").json(),
+                        "risk_coverage": client.get(
+                            "/stats/risk_coverage").json(),
+                        "sop_gaps": client.get("/stats/sop_gaps").json(),
+                        "pico_status": client.get("/pico/status").json(),
+                        "ingest_errors": client.get("/ingest/errors").json(),
+                        "batches_failed": client.get("/batches/failed").json(),
+                    }
+                stubs.clear_test_overrides()
+        finally:
+            for patcher in reversed(stage_patches):
+                patcher.stop()
     return {name: _normalized(payload) for name, payload in out.items()}
 
 
