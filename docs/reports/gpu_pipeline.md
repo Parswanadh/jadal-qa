@@ -54,7 +54,7 @@ leave-one-clip-out everywhere; thresholds inside train clips only.
 |---|---|---|---|
 | parallel `cascade.json` S1 logistic | 0.802 | 0.710–0.870 | their file, n=150 |
 | independent verify (`stream.json`) | 0.793 | 0.697–0.860 | mine, n=150 |
-| ablation full_27 (`ablation.json`) | 0.793 | 0.689–0.871 | mine, n=150 |
+| ablation full_26 (`ablation.json`) | 0.793 | 0.689–0.871 | mine, n=150 |
 
 Cascade exits on gold (`cascade.json`): S0 2% (3), S1-accept 50% (75),
 S1-reject 18% (27), S2-uncertain 30% (45). **False rejects: 8** (all S1, listed
@@ -71,7 +71,7 @@ real-time capable on 1 core for the streaming decision.
 
 | group | AUC | CI |
 |---|---|---|
-| full_27 | 0.793 | 0.689–0.871 |
+| full_26 | 0.793 | 0.689–0.871 |
 | no_pca_resid | **0.794** | 0.677–0.873 |
 | pca_only | 0.198 | 0.142–0.349 |
 | illum_only | 0.231 | 0.137–0.376 |

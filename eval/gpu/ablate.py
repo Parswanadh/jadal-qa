@@ -14,7 +14,7 @@ OUT = os.path.join(HERE, "..", "results", "gpu", "ablation.json")
 GOLD = "/home/parshu/projects/jadal-qa-wt/spectral_data/manifest_gold.json"
 
 GROUPS = {
-    "full_27": None,
+    "full_26": None,
     "no_pca_resid": ["pca_resid"],
     "pca_only": ["pca_resid", "pca_top1_share"],
     "illum_only": ["illum_r", "illum_g", "illum_b"],
@@ -44,7 +44,7 @@ def main():
     rng = np.random.default_rng(1)
     rows = {}
     for gname, drop_or_keep in GROUPS.items():
-        if gname == "full_27":
+        if gname == "full_26":
             cols = list(range(len(names)))
         elif gname.startswith("no_"):
             cols = [j for j, n in enumerate(names) if n not in drop_or_keep]

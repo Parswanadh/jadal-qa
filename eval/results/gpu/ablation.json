@@ -5,7 +5,7 @@
  "protocol": "leave-one-clip-out, clip-bootstrap CI (200)",
  "verdict": "inverse-PCA residual and illumination rows are ablated honestly; no hyperspectral claim (metamerism limit, see rgb_to_spectral.md).",
  "rows": {
-  "full_27": {
+  "full_26": {
    "auc": 0.7928,
    "ci95": [
     0.6893803391205096,
