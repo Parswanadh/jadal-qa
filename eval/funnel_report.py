@@ -100,12 +100,16 @@ def _source_section(routed: list[dict], source: str,
 
 def report(records: list[dict], thresholds: dict,
            minutes_per_review: float | None = None,
-           allow_uncalibrated: bool = False) -> dict:
+           allow_uncalibrated: bool = False,
+           allow_provisional: bool = False,
+           profile: str = "default") -> dict:
     routed = []
     for record in records:
         out = funnel.route(record.get("signals"), record.get("decisions"),
                            thresholds,
-                           allow_uncalibrated_accept=allow_uncalibrated)
+                           allow_uncalibrated_accept=allow_uncalibrated,
+                           allow_provisional_accept=allow_provisional,
+                           profile=profile)
         routed.append({**record, **out})
     total = len(routed)
     split = {v: sum(1 for r in routed if r["verdict"] == v)
@@ -114,11 +118,17 @@ def report(records: list[dict], thresholds: dict,
     for record in routed:
         sources[record.get("label_source", "unlabeled")] = \
             sources.get(record.get("label_source", "unlabeled"), 0) + 1
+    calibration = thresholds.get("calibration", {})
     return {
         "n": total,
         "label_sources": sources,
         "split": split,  # counts only, not a certificate
         "split_pct": {v: round(split[v] / total * 100, 2) for v in split},
+        "profile": profile,
+        "hard_reject_policy": thresholds.get("hard_reject_policy",
+                                             "integrity_only"),
+        "calibration_status": calibration.get("status"),
+        "calibration_label_source": calibration.get("label_source"),
         # Certificates below are PER SOURCE, never pooled.
         "per_source": {s: _source_section(routed, s, minutes_per_review)
                        for s in sorted(sources)},
@@ -136,6 +146,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-uncalibrated", action="store_true",
                         help="pass allow_uncalibrated_accept=True to route() "
                              "(demo on placeholder thresholds)")
+    parser.add_argument("--allow-provisional", action="store_true",
+                        help="pass allow_provisional_accept=True to route() "
+                             "(demo on provisional thresholds; every accept "
+                             "carries accept_status evidence)")
+    parser.add_argument("--profile", type=str, default="default",
+                        help="task profile for the hands rule "
+                             "(e.g. assembly, logistics)")
     parser.add_argument("--minutes-per-review", type=float, default=None,
                         help="USER-supplied QA minutes per review clip")
     parser.add_argument("--out", type=Path,
@@ -152,7 +169,9 @@ def main(argv: list[str] | None = None) -> int:
     with open(args.thresholds, "r", encoding="utf-8") as fh:
         thresholds = json.load(fh)
     result = report(records, thresholds, args.minutes_per_review,
-                    allow_uncalibrated=args.allow_uncalibrated)
+                    allow_uncalibrated=args.allow_uncalibrated,
+                    allow_provisional=args.allow_provisional,
+                    profile=args.profile)
     result["thresholds_version"] = thresholds.get("version")
     result["provenance"] = ("synthetic-fixtures" if args.records is None
                             else f"records-file:{args.records}")

@@ -30,6 +30,11 @@ THRESHOLDS = {
     "hands_visible_frac_min": 0.5,
     "min_duration_s": 5.0,
     "accept_conf": 0.9,
+    # Round 2: this fixture is an explicitly evidence-rejecting,
+    # legacy-hands quality gate (no 'profiles' map => hands enforced
+    # everywhere, as before). Default-policy/profile behaviour is pinned
+    # in tests/test_funnel_round2.py.
+    "hard_reject_policy": "evidence_reject",
 }
 # THRESHOLDS carries no calibration block => uncalibrated placeholder-like:
 # accept requires allow_uncalibrated_accept=True (the demo pattern).
@@ -125,11 +130,30 @@ class TestCalibrationGate(unittest.TestCase):
         self.assertNotIn("allow_uncalibrated_accept",
                          [e["check"] for e in out["evidence"]])
 
-    def test_provisional_status_accepts_without_flag(self):
+    def test_provisional_status_routes_to_review_without_flag(self):
+        # Round 2 (audit N1): provisional no longer auto-accepts. A clean,
+        # confident clip on provisional thresholds reviews unless the
+        # caller passes allow_provisional_accept=True.
         thresholds = dict(THRESHOLDS,
-                          calibration={"status": "provisional"})
+                          calibration={"status": "provisional",
+                                       "label_source": "synthetic"})
         out = route(sig(), dec(), thresholds)
+        self.assertEqual(out["verdict"], "review")
+        self.assertIn("accept_provisional",
+                      [e["check"] for e in out["evidence"]])
+
+    def test_provisional_flag_allows_accept_with_status_evidence(self):
+        thresholds = dict(THRESHOLDS,
+                          calibration={"status": "provisional",
+                                       "label_source": "synthetic"})
+        out = route(sig(), dec(), thresholds,
+                    allow_provisional_accept=True)
         self.assertEqual(out["verdict"], "accept")
+        status = [e for e in out["evidence"]
+                  if e["check"] == "accept_status"]
+        self.assertEqual(len(status), 1)
+        self.assertEqual(status[0]["value"], "provisional")
+        self.assertEqual(status[0]["label_source"], "synthetic")
 
 
 class TestHardReject(unittest.TestCase):
@@ -442,8 +466,11 @@ class TestCalibrateTwoSided(unittest.TestCase):
         records += [_mk_record(100.0 + 100.0 * i / 99, 0.99, "good",
                                group=f"good{i % 10}")
                     for i in range(100)]
+        # Mechanics test at full per-rule delta; the Bonferroni default
+        # (delta/8, support floor 86) is pinned in test_funnel_round2.py.
         result = funnel.calibrate_two_sided(
-            records, {"seed": 3, "min_accepted": 1000})
+            records, {"seed": 3, "min_accepted": 1000,
+                      "bonferroni": False})
         src = result["per_source"]["synthetic"]
         entry = src["reject_rules"]["blur_var_min"]
         self.assertFalse(entry["disabled"])
@@ -491,7 +518,10 @@ class TestCalibrateTwoSided(unittest.TestCase):
         records += [_mk_record(5.0 + 2 * i, 0.99,
                                "good" if i % 2 else "bad", group=noisy_group)
                     for i in range(120)]
-        result = funnel.calibrate_two_sided(records, {"seed": 3})
+        # Mechanics test at full per-rule delta (Bonferroni default pinned
+        # in test_funnel_round2.py).
+        result = funnel.calibrate_two_sided(
+            records, {"seed": 3, "bonferroni": False})
         entry = result["per_source"]["synthetic"]["reject_rules"][
             "blur_var_min"]
         self.assertTrue(entry["disabled"], entry)
@@ -543,7 +573,10 @@ class TestCalibrateTwoSided(unittest.TestCase):
                                "bad" if i % 2 else "good", source="gemini",
                                group=f"gem{i % 5}")
                     for i in range(100)]
-        result = funnel.calibrate_two_sided(records, {"seed": 3})
+        # Mechanics test at full per-rule delta (Bonferroni default pinned
+        # in test_funnel_round2.py).
+        result = funnel.calibrate_two_sided(
+            records, {"seed": 3, "bonferroni": False})
         self.assertEqual(result["meta"]["by_source"],
                          {"synthetic": 240, "gemini": 100})
         syn = result["per_source"]["synthetic"]["reject_rules"][

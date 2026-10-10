@@ -5,20 +5,53 @@ Contract: ``route(signals, decisions, thresholds)`` is a PURE function
 
 Rules (SPEC "Funnel router"):
 1. HARD REJECT only from exact, reproducible L0 rules: undecodable,
-   too-short segment, normalised blur, too dark / overexposed, static or
-   shaky motion, hands-visible fraction below minimum, near-duplicate.
-   Every reject records the measured value and the threshold in
-   ``evidence`` so a worker can dispute it and anyone can re-verify it.
-   Static motion maps to ``NO_ACTIVE_WORK``; too-short/undecodable maps
-   to ``UNDECODABLE`` (no new reason codes before baseline-v1).
+    too-short segment, normalised blur, too dark / overexposed, static or
+    shaky motion, hands-visible fraction below minimum, near-duplicate.
+    Every reject records the measured value and the threshold in
+    ``evidence`` so a worker can dispute it and anyone can re-verify it.
+    Static motion maps to ``NO_ACTIVE_WORK``; too-short/undecodable maps
+    to ``UNDECODABLE`` (no new reason codes before baseline-v1).
+    WHICH rules may reject is gated by ``thresholds['hard_reject_policy']``
+    (round 2, audit L9): ``'integrity_only'`` (the DEFAULT) lets only
+    undecodable / too-short / explicit-corruption rules reject — every
+    other L0 quality failure goes to ``review`` with its evidence;
+    ``'evidence_reject'`` additionally enables the calibrated L0 quality
+    rejects. Rationale: a false reject costs a worker pay and a re-shoot
+    inside the window, so quality rejects need a certified bound while
+    integrity rejects (the clip proves nothing) are always safe.
 2. L1 model outputs (``hands_ok.p_yes``, ``active_work.p_yes``, ``step``)
-   may NEVER hard-reject; they can only demote a clip to ``review``
-   (``LOW_CONFIDENCE`` / ``WRONG_STEP`` / ``NO_ACTIVE_WORK``).
+    may NEVER hard-reject; they can only demote a clip to ``review``
+    (``LOW_CONFIDENCE`` / ``WRONG_STEP`` / ``NO_ACTIVE_WORK``). NOTE (M4):
+    a ``reject`` verdict's ``reasons`` still list any L1 soft codes present
+    alongside the hard cause (``sorted(hard | soft)``) — they describe
+    additional uncertainty on the same clip, not an additional cause.
 3. AUTO-ACCEPT only when every L0 check passes AND the calibrated L1
-   ``answer_conf`` clears ``thresholds['accept_conf']``.
-4. Everything else is ``review`` (Awign QA queue), ordered by
-   ``queue_priority`` (higher = more uncertain / more worth a human's
-   time; ties break by segment order, see :func:`queue_rank_key`).
+    ``answer_conf`` clears ``thresholds['accept_conf']`` AND the
+    calibration gate opens (round 2, audit N1): ``status == 'calibrated'``
+    accepts by default; ``'provisional'`` (synthetic/Gemini labels) routes
+    to ``review`` unless the caller passes ``allow_provisional_accept=True``
+    (every such accept carries
+    ``{check: 'accept_status', value: 'provisional', label_source: ...}``
+    evidence); ``'placeholder'``/missing routes to ``review`` unless the
+    caller passes ``allow_uncalibrated_accept=True`` (demo pattern).
+4. The hands rule is TASK-SCOPED (round 2, audit L8: the 'no hands' rule
+    fires on 55/113 REAL segments — 0/46 assembly but 55/67
+    logistics/desk work — because walking with a pallet IS the task).
+    ``thresholds['profiles']`` maps profile name -> ``{requires_hands}``,
+    e.g. ``{'assembly': {requires_hands: True},
+    'logistics': {requires_hands: False}, 'default': {requires_hands:
+    False}}``; ``route(..., profile='assembly')`` hard-rejects a
+    hands violation, any other profile demotes it to ``review`` with
+    evidence (never rejects). Unknown profile names fall back to
+    ``'default'``. A config with NO ``profiles`` map keeps the legacy
+    behaviour (hands rule enforced everywhere).
+5. DUPLICATE never rejects on a degenerate 64-bit phash (all-zero hex, or
+    popcount <= 4 / >= 60: a flat/blank frame carries no identity) and
+    never in ``integrity_only`` mode; duplicates go to ``review`` with
+    evidence (audit L5: embedding similarity only routes to review).
+6. Everything else is ``review`` (Awign QA queue), ordered by
+    ``queue_priority`` (higher = more uncertain / more worth a human's
+    time; ties break by segment order, see :func:`queue_rank_key`).
 
 ``answer_conf`` choice: the MINIMUM of the available L1 head
 probabilities (``hands_ok.p_yes``, ``active_work.p_yes``,
@@ -46,6 +79,11 @@ NOT DONE (Phase 3+):
 - :func:`calibrate_two_sided` is implemented but only as trustworthy as its
   input labels: synthetic/Gemini runs are clearly marked and must never be
   presented as human-grade numbers.
+- I5: ``min_accepted`` can leave ``accept_conf`` null on low-prevalence
+  data: when SELECT holds fewer than ``min_accepted`` high-confidence
+  clips (e.g. good segments are rare), no accept candidate is selected
+  and auto-accept stays DISABLED (threshold None + note) — absence of a
+  threshold is the honest output, not a failure to look.
 """
 
 from __future__ import annotations
@@ -194,44 +232,135 @@ def queue_rank_key(segment_id: str, queue_priority: float | None) -> tuple:
 
 
 # --------------------------------------------------------------------------
+# policy / profiles / phash helpers (pure, round 2)
+# --------------------------------------------------------------------------
+HARD_REJECT_POLICIES = ("integrity_only", "evidence_reject")
+
+# L0 quality rules: may hard-reject ONLY under hard_reject_policy ==
+# 'evidence_reject' (with certified thresholds). Under the default
+# 'integrity_only' they demote to review with their evidence. Integrity
+# rules (decodable/duration -> UNDECODABLE) always reject: the clip
+# proves nothing, so no worker pay is at stake.
+QUALITY_RULE_CODES = frozenset({
+    "BLUR", "TOO_DARK", "OVEREXPOSED", "SHAKY", "NO_ACTIVE_WORK",
+    "HANDS_NOT_VISIBLE", "DUPLICATE",
+})
+
+
+def _phash_degenerate(phash: Any) -> bool | None:
+    """Is this 64-bit phash hex degenerate? None when it isn't one.
+
+    All-zero, or popcount <= 4 / >= 60 (a flat, blank or saturated frame
+    carries no identity), means a 'duplicate' match is unreliable: route
+    to review, never reject. Returns None for non-16-hex-char values
+    (no phash to judge — the caller's dup_of stands on its own).
+    """
+    if not isinstance(phash, str):
+        return None
+    text = phash.strip().lower()
+    if len(text) != 16 or any(c not in "0123456789abcdef" for c in text):
+        return None
+    value = int(text, 16)
+    if value == 0:
+        return True
+    popcount = bin(value).count("1")
+    return popcount <= 4 or popcount >= 60
+
+
+def _requires_hands(thresholds: Mapping[str, Any], profile: str) -> bool:
+    """Does this task profile require visible hands? (audit L8).
+
+    No ``profiles`` map in the config => legacy behaviour (enforced).
+    Unknown profile name => falls back to ``'default'``; a ``'default'``
+    entry missing ``requires_hands`` => False (hands demote to review).
+    """
+    profiles = thresholds.get("profiles")
+    if profiles is None:
+        return True
+    if not isinstance(profiles, Mapping):
+        raise ValueError("thresholds['profiles'] must be a mapping")
+    entry = profiles.get(profile, profiles.get("default", {}))
+    if not isinstance(entry, Mapping):
+        raise ValueError(f"profiles[{profile!r}] must be a mapping")
+    return bool(entry.get("requires_hands", False))
+
+
+# --------------------------------------------------------------------------
 # router
 # --------------------------------------------------------------------------
 def route(signals: Mapping[str, Any] | None,
           decisions: Mapping[str, Any] | None,
           thresholds: Mapping[str, Any],
-          allow_uncalibrated_accept: bool = False) -> dict:
+          allow_uncalibrated_accept: bool = False,
+          allow_provisional_accept: bool = False,
+          profile: str = "default") -> dict:
     """Route one segment to accept | reject | review (pure, deterministic).
 
     Returns ``{"verdict", "reasons", "evidence", "answer_conf",
-    "queue_priority"}``. ``reasons`` uses existing reason codes only, in
-    :data:`REASON_ORDER`; ``evidence`` follows :data:`CHECK_ORDER` then
-    L1 checks (``hands_ok``, ``active_work``, ``step``); floats are
-    rounded to 4 decimals.
+    "queue_priority"}``. ``reasons`` uses existing reason codes only: on
+    ``reject`` they are ``sorted(hard | soft)`` in :data:`REASON_ORDER`
+    (M4: L1 soft codes ride along as extra uncertainty context, never as
+    the cause); ``evidence`` follows :data:`CHECK_ORDER` then L1 checks
+    (``hands_ok``, ``active_work``, ``step``); floats are rounded to 4
+    decimals.
 
     Safety (C1): every REQUIRED L0 field — ``decodable`` plus each
     measurement whose rule threshold is configured — goes through the
-    strict :func:`need_float` path. A missing, non-numeric, NaN/inf or
+    strict ``need_float`` path. A missing, non-numeric, NaN/inf or
     garbage value can never prove anything, so it yields ``review`` with
     ``LOW_CONFIDENCE`` and an evidence entry
     ``{check: 'missing:<field>', ...}`` — never reject, never accept.
     Only ``decodable`` explicitly false (or 0) rejects (``UNDECODABLE``).
     ``dup_of`` is not required: missing/null simply means "not a duplicate".
 
-    Calibration gate: auto-accept additionally requires
-    ``thresholds['calibration']['status']`` to be ``'calibrated'`` or
-    ``'provisional'``, unless the caller passes
-    ``allow_uncalibrated_accept=True`` (the demo sets it; the evidence
-    then carries the flag). Otherwise a clean, confident clip still goes
-    to ``review`` with an ``accept_uncalibrated`` evidence entry.
+    Policy gate (round 2, audit L9): ``thresholds['hard_reject_policy']``
+    is ``'integrity_only'`` (DEFAULT when absent) or ``'evidence_reject'``
+    (anything else raises ``ValueError``). Under ``integrity_only`` only
+    UNDECODABLE integrity rules reject; every other L0 quality failure
+    (blur/dark/motion/hands/duplicate) demotes to ``review`` with its
+    evidence.
+
+    Hands scope (round 2, audit L8): the hands rule hard-rejects only
+    when ``profile`` requires hands (see :func:`_requires_hands`);
+    otherwise a low hands fraction demotes to ``review`` with evidence
+    (never rejects) — walking with a pallet IS the task.
+
+    Duplicate guard (round 2, audit L5): never reject on a degenerate
+    phash (see :func:`_phash_degenerate`) and never on duplicate in
+    ``integrity_only`` mode; duplicates go to ``review`` with evidence.
+
+    Calibration gate (round 2, audit N1): auto-accept additionally
+    requires ``thresholds['calibration']['status'] == 'calibrated'``.
+    ``'provisional'`` routes to ``review`` unless the caller passes
+    ``allow_provisional_accept=True`` (every such accept carries
+    ``{check: 'accept_status', value: 'provisional', label_source: ...}``
+    evidence); ``'placeholder'``/missing routes to ``review`` unless the
+    caller passes ``allow_uncalibrated_accept=True`` (the demo sets it;
+    the evidence then carries the flag).
     """
     signals = dict(signals) if isinstance(signals, Mapping) else {}
     decisions = dict(decisions) if isinstance(decisions, Mapping) else {}
     thresh = dict(thresholds)
 
+    policy = thresh.get("hard_reject_policy", "integrity_only")
+    if policy not in HARD_REJECT_POLICIES:
+        raise ValueError(
+            f"thresholds['hard_reject_policy'] must be one of "
+            f"{HARD_REJECT_POLICIES}, got {policy!r}")
+    quality_rejects = (policy == "evidence_reject")
+    hands_required = _requires_hands(thresh, profile)
+
     hard: set[str] = set()
     soft: set[str] = set()
     evidence: list[dict] = []
     missing_l0 = False  # any required L0 measurement missing/unparseable
+
+    def _file(code: str) -> None:
+        """File a quality-rule failure: reject iff policy enables it."""
+        if quality_rejects:
+            hard.add(code)
+        else:
+            soft.add(code)
 
     def need_float(name: str) -> float | None:
         """Strict required-field read: records missing-evidence on failure."""
@@ -281,7 +410,7 @@ def route(signals: Mapping[str, Any] | None,
     blur = need_float("blur_var") if blur_min is not None else None
     if blur_min is not None and blur is not None:
         if blur < blur_min:
-            hard.add("BLUR")
+            _file("BLUR")
         evidence.append(_evidence("blur_var", blur, ">=", blur_min, "BLUR"))
 
     # brightness / exposure
@@ -289,7 +418,7 @@ def route(signals: Mapping[str, Any] | None,
     bright = need_float("brightness_mean") if bright_min is not None else None
     if bright_min is not None and bright is not None:
         if bright < bright_min:
-            hard.add("TOO_DARK")
+            _file("TOO_DARK")
         evidence.append(_evidence("brightness_mean", bright, ">=",
                                   bright_min, "TOO_DARK"))
     under_max = _as_float(thresh.get("under_exposed_frac_max"))
@@ -297,14 +426,14 @@ def route(signals: Mapping[str, Any] | None,
              if under_max is not None else None)
     if under_max is not None and under is not None:
         if under > under_max:
-            hard.add("TOO_DARK")
+            _file("TOO_DARK")
         evidence.append(_evidence("under_exposed_frac", under, "<=",
                                   under_max, "TOO_DARK"))
     over_max = _as_float(thresh.get("over_exposed_frac_max"))
     over = need_float("over_exposed_frac") if over_max is not None else None
     if over_max is not None and over is not None:
         if over > over_max:
-            hard.add("OVEREXPOSED")
+            _file("OVEREXPOSED")
         evidence.append(_evidence("over_exposed_frac", over, "<=",
                                   over_max, "OVEREXPOSED"))
 
@@ -316,31 +445,54 @@ def route(signals: Mapping[str, Any] | None,
     if motion is not None:
         if motion_max is not None:
             if motion > motion_max:
-                hard.add("SHAKY")
+                _file("SHAKY")
             evidence.append(_evidence("motion_mean", motion, "<=",
                                       motion_max, "SHAKY"))
         if motion_min is not None:
             if motion < motion_min:
-                hard.add("NO_ACTIVE_WORK")
+                _file("NO_ACTIVE_WORK")
             evidence.append(_evidence("motion_mean_static", motion, ">=",
                                       motion_min, "NO_ACTIVE_WORK"))
 
-    # hands visible fraction
+    # hands visible fraction: task-scoped (audit L8). Where the profile
+    # requires hands this is a quality reject like the rest; elsewhere a
+    # low fraction only demotes to review (never rejects).
     hands_min = _as_float(thresh.get("hands_visible_frac_min"))
     hands_frac = (need_float("hands_visible_frac")
                   if hands_min is not None else None)
     if hands_min is not None and hands_frac is not None:
         if hands_frac < hands_min:
-            hard.add("HANDS_NOT_VISIBLE")
+            if hands_required:
+                _file("HANDS_NOT_VISIBLE")
+            else:
+                soft.add("HANDS_NOT_VISIBLE")
         evidence.append(_evidence("hands_visible_frac", hands_frac, ">=",
                                   hands_min, "HANDS_NOT_VISIBLE"))
 
-    # near-duplicate
+    # near-duplicate: never on a degenerate phash, never in
+    # integrity_only mode (audit L5) — review with evidence instead.
     dup_of = signals.get("dup_of")
     if dup_of:
-        hard.add("DUPLICATE")
-        evidence.append(_evidence("dup_of", str(dup_of), "!=", None,
-                                  "DUPLICATE"))
+        degenerate = _phash_degenerate(signals.get("phash"))
+        if degenerate:
+            soft.add("DUPLICATE")
+            evidence.append({
+                "check": "dup_phash_degenerate",
+                "value": str(signals.get("phash")),
+                "op": "==",
+                "threshold": "non-degenerate-phash",
+                "code": "DUPLICATE",
+            })
+            evidence.append(_evidence("dup_of", str(dup_of), "!=", None,
+                                      "DUPLICATE"))
+        elif not quality_rejects:
+            soft.add("DUPLICATE")
+            evidence.append(_evidence("dup_of", str(dup_of), "!=", None,
+                                      "DUPLICATE"))
+        else:
+            hard.add("DUPLICATE")
+            evidence.append(_evidence("dup_of", str(dup_of), "!=", None,
+                                      "DUPLICATE"))
 
     # -- L1 soft checks (demote to review only, never reject) -------------
     accept_conf = _as_float(thresh.get("accept_conf"))
@@ -390,12 +542,21 @@ def route(signals: Mapping[str, Any] | None,
 
     answer_conf: float | None = round(min(heads), 4) if heads else None
 
-    # Calibration gate: auto-accept only on calibrated thresholds, unless
-    # the caller explicitly opts into uncalibrated demo accepts.
+    # Calibration gate (round 2, audit N1): auto-accept ONLY on
+    # 'calibrated'. 'provisional' (synthetic/Gemini labels) needs the
+    # explicit allow_provisional_accept opt-in; 'placeholder'/missing
+    # needs the allow_uncalibrated_accept demo flag.
     calib_block = thresh.get("calibration")
     calib_status = calib_block.get("status") if isinstance(
         calib_block, Mapping) else None
-    calibrated = calib_status in ("calibrated", "provisional")
+    calib_source = calib_block.get("label_source") if isinstance(
+        calib_block, Mapping) else None
+    if calib_status == "calibrated":
+        accept_open, provisional_accept = True, False
+    elif calib_status == "provisional":
+        accept_open, provisional_accept = allow_provisional_accept, True
+    else:
+        accept_open, provisional_accept = allow_uncalibrated_accept, False
 
     def _review_priority() -> float:
         return round(
@@ -419,17 +580,30 @@ def route(signals: Mapping[str, Any] | None,
         reasons = sorted(reasons_set,
                          key=lambda c: _REASON_RANK.get(c, len(REASON_ORDER)))
         queue_priority = _review_priority()
-    elif not calibrated and not allow_uncalibrated_accept:
+    elif not accept_open:
         verdict = "review"
         reasons = ["LOW_CONFIDENCE"]
-        evidence.append(_evidence("accept_uncalibrated", answer_conf, ">=",
-                                  accept_conf, "LOW_CONFIDENCE"))
+        if provisional_accept:
+            evidence.append(_evidence("accept_provisional", answer_conf,
+                                      ">=", accept_conf, "LOW_CONFIDENCE"))
+        else:
+            evidence.append(_evidence("accept_uncalibrated", answer_conf,
+                                      ">=", accept_conf, "LOW_CONFIDENCE"))
         queue_priority = _review_priority()
     else:
         verdict = "accept"
         reasons = []
         queue_priority = 0.0
-        if allow_uncalibrated_accept and not calibrated:
+        if provisional_accept:
+            evidence.append({
+                "check": "accept_status",
+                "value": "provisional",
+                "op": "==",
+                "threshold": "allow_provisional_accept",
+                "code": "LOW_CONFIDENCE",
+                "label_source": calib_source,
+            })
+        elif calib_status != "calibrated":
             evidence.append(_evidence("allow_uncalibrated_accept", True,
                                       "==", True, "LOW_CONFIDENCE"))
 
@@ -473,12 +647,15 @@ REJECT_RULES = [
 
 DEFAULT_TARGETS = {
     "target_alpha": 0.05,   # defect rate among accepted
-    "delta": 0.1,           # 1 - delta confidence for every bound
+    "delta": 0.1,           # 1 - delta confidence for the family
     "target_beta": 0.05,    # false-reject rate per reject rule
     "min_support": 10,      # CERTIFY support required to write a threshold
     "min_accepted": 30,     # accept side must cover this many SELECT clips
     "accept_step": 0.05,    # accept-side candidate grid resolution
     "seed": 1234,           # salts the deterministic group split
+    "bonferroni": True,     # split delta across the m tunable reject
+    # rules (each tested at delta/m); False recovers the round-1
+    # behaviour (each rule at full delta — NOT family-wise, say so).
 }
 
 
@@ -502,6 +679,12 @@ def _validate_records(records: list[dict]) -> list[dict]:
         if decisions is not None and not isinstance(decisions, Mapping):
             raise ValueError(f"record {i} decisions must be a mapping or None")
         group = record.get("group")
+        wearer = record.get("wearer")
+        if wearer is not None and not isinstance(wearer, (str, list, tuple)):
+            raise ValueError(f"record {i} wearer must be a string or a list")
+        labeller = record.get("labeller")
+        if labeller is not None and not isinstance(labeller, str):
+            raise ValueError(f"record {i} labeller must be a string")
         cleaned.append({
             "signals": dict(signals),
             "decisions": dict(decisions) if decisions is not None else None,
@@ -513,6 +696,11 @@ def _validate_records(records: list[dict]) -> list[dict]:
             # group (fine for independent synthetic draws).
             "group": str(group) if group is not None else None,
             "segment_id": record.get("segment_id"),
+            # Optional provenance: wearer id(s) for this record's clip,
+            # labeller id for human labels (synthetic/gemini => none).
+            "wearer": (list(wearer) if isinstance(wearer, (list, tuple))
+                       else wearer),
+            "labeller": labeller,
         })
     if not cleaned:
         raise ValueError("need at least one labelled record")
@@ -529,13 +717,14 @@ def _content_key(record: dict) -> str:
 
 def _split_select_certify(records: list[dict],
                           seed: int) -> tuple[list[dict], list[dict]]:
-    """Deterministic SELECT/CERTIFY split by group, never by frame.
+    """Deterministic SELECT/CERTIFY split by CLIP GROUP, never by segment.
 
     Records sharing a ``group`` (clip id / near-duplicate component, else
     their content hash) always land on the SAME side: groups are ordered by
     ``sha256(seed + group)`` and dealt alternately to SELECT and CERTIFY,
-    so neighbouring segments of one clip cannot leak across the split.
-    No RNG anywhere; input order is irrelevant.
+    so neighbouring segments of one clip cannot leak across the split
+    (audit L3: with 7 clips this is a 4-clip SELECT / 3-clip CERTIFY
+    partition by hash order). No RNG anywhere; input order is irrelevant.
     """
     groups: dict[str, list[dict]] = {}
     for record in records:
@@ -550,6 +739,51 @@ def _split_select_certify(records: list[dict],
     for i, key in enumerate(ordered):
         (select if i % 2 == 0 else certify).extend(groups[key])
     return select, certify
+
+
+def _source_provenance(subset: list[dict], source: str) -> dict:
+    """Provenance printed and stored beside EVERY bound (audit L3/L7).
+
+    ``n_segments`` / ``n_clips`` (distinct clip groups) / ``n_wearers``
+    (distinct ``wearer`` ids parsed from clip names where available, else
+    ``'unknown'``) / ``n_labellers`` (distinct ``labeller`` ids from the
+    gold file; synthetic/gemini => 0 humans; human_gold with no labeller
+    ids recorded => ``'unknown'``) / ``label_source``.
+    """
+    wearers: set[str] = set()
+    for record in subset:
+        wearer = record.get("wearer")
+        if isinstance(wearer, str):
+            wearers.add(wearer)
+        elif isinstance(wearer, (list, tuple)):
+            wearers.update(str(w) for w in wearer)
+    labellers = {r["labeller"] for r in subset
+                 if r.get("labeller") is not None}
+    if source in ("synthetic", "gemini"):
+        n_labellers: Any = 0
+    elif labellers:
+        n_labellers = len(labellers)
+    else:
+        n_labellers = "unknown"
+    return {
+        "label_source": source,
+        "n_segments": len(subset),
+        "n_clips": len({r["group"] for r in subset
+                        if r["group"] is not None}),
+        "n_wearers": len(wearers) if wearers else "unknown",
+        "n_labellers": n_labellers,
+    }
+
+
+def calibration_content_hash(result: Mapping[str, Any]) -> str:
+    """Stable sha256 of a calibration result, excluding ``sidecar`` (M3).
+
+    Wall-clock/provenance stamps (``produced_utc``) live under
+    ``result['sidecar']`` and never enter compared or hashed JSON, so two
+    runs of the same records hash identically regardless of when they ran.
+    """
+    body = {k: v for k, v in dict(result).items() if k != "sidecar"}
+    return hashlib.sha256(canonical_json(body)).hexdigest()
 
 
 def _rate_bound(fired_labels: list[str], delta: float,
@@ -583,8 +817,18 @@ def _conf_of(record: dict) -> float | None:
 
 
 def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
-                      support_floor: int) -> dict:
-    """Select on SELECT, certify on CERTIFY (disjoint by group)."""
+                      delta_rule: float, support_floor: int,
+                      source: str) -> dict:
+    """Select on SELECT, certify on CERTIFY (disjoint by clip group).
+
+    Reject rules are tested at ``delta_rule`` (Bonferroni ``delta/m`` by
+    default; the per-rule delta used is reported). The accept side is a
+    single pre-registered hypothesis tested at full ``delta`` (stated,
+    not family-wise), and the UNION headline is measured once on CERTIFY
+    at full ``delta`` — per-rule bounds do NOT bound the union. A rule
+    that cannot be certified on held-out clips is DISABLED (threshold
+    null, reason says so): certification stopped a bad rule.
+    """
     alpha = float(cfg["target_alpha"])
     beta = float(cfg["target_beta"])
     min_support = int(cfg["min_support"])
@@ -666,7 +910,7 @@ def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
         best_stats: dict | None = None
         for threshold in eligible:
             stats = _rate_bound(
-                [r["label"] for r in _fires(measured, threshold)], delta)
+                [r["label"] for r in _fires(measured, threshold)], delta_rule)
             if stats["upper_bound"] is not None \
                     and stats["upper_bound"] <= beta:
                 best = threshold
@@ -678,7 +922,7 @@ def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
         if best is not None:
             cert_fired = _fires(cert_measured, best)
             cert_stats = _rate_bound(
-                [r["label"] for r in cert_fired], delta)
+                [r["label"] for r in cert_fired], delta_rule)
             gate_ok = cert_stats["upper_bound"] is not None \
                 and cert_stats["upper_bound"] <= beta \
                 and cert_stats["fired"] >= min_support
@@ -716,9 +960,9 @@ def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
         updates[key] = entry["threshold"]
 
     # -- (c) union: measured end-to-end on CERTIFY with selected thresholds.
-    # No Bonferroni correction across rules (at N~150 it would certify
-    # nothing); instead the UNION false-reject rate of route() itself is
-    # measured on CERTIFY with its exact bound. Per-rule bounds do NOT bound
+    # Each rule was tested at delta_rule (Bonferroni delta/m by default);
+    # the UNION false-reject rate of route() itself is measured on CERTIFY
+    # with its exact bound at full delta. Per-rule bounds do NOT bound
     # the union — only this number describes route().
     route_thresh = {k: v for k, v in updates.items()}
     union_rejected = [
@@ -730,10 +974,20 @@ def _calibrate_source(subset: list[dict], cfg: dict, delta: float,
              "note": ("union of all selected reject rules as route() "
                       "applies them; per-rule bounds do not bound this")}
 
+    select_groups = sorted({r["group"] for r in select
+                            if r["group"] is not None})
+    certify_groups = sorted({r["group"] for r in certify
+                             if r["group"] is not None})
     return {
         "n_total": len(subset),
         "n_select": len(select),
         "n_certify": len(certify),
+        "select_groups": select_groups,
+        "certify_groups": certify_groups,
+        "n_select_clips": len(select_groups),
+        "n_certify_clips": len(certify_groups),
+        "provenance": {**_source_provenance(subset, source),
+                       "delta_per_rule": round(delta_rule, 4)},
         "accept": accept_out,
         "reject_rules": reject_out,
         "union": union,
@@ -754,19 +1008,30 @@ def calibrate_two_sided(records: list[dict],
     result carries ``per_source`` sub-results — no bound is ever computed
     over a mix of sources.
 
-    Per source: records are split into SELECT and CERTIFY parts by group
-    (same group never spans the split; see :func:`_split_select_certify`).
+    Per source: records are split into SELECT and CERTIFY parts by CLIP
+    GROUP (same clip never spans the split; see
+    :func:`_split_select_certify`).
     (a) ACCEPT side: ``answer_conf`` threshold selected with
     ``jadal.certify.pick_threshold`` (fixed-sequence, exact binomial, confs
     floored to the fixed ``accept_step`` grid) on SELECT; the threshold is
     WRITTEN only if the CERTIFY defect bound <= ``target_alpha`` with
-    CERTIFY support >= ``min_support``. (b) REJECT side: per tunable rule,
-    candidates strictest-first on SELECT with the same fixed-sequence
-    logic; WRITTEN only if the CERTIFY false-reject bound <=
-    ``target_beta`` with CERTIFY support >= ``min_support``, else the rule
-    is DISABLED (threshold None) and the reason says so. (c) UNION: the
+    CERTIFY support >= ``min_support``. I5: when SELECT holds fewer than
+    ``min_accepted`` high-confidence clips (low-prevalence good data), no
+    candidate is selected and ``accept_conf`` stays null — auto-accept
+    stays disabled and the output says so. (b) REJECT side: per tunable
+    rule, candidates strictest-first on SELECT with the same
+    fixed-sequence logic, each rule tested at the Bonferroni
+    ``delta/m`` (``m`` = number of tunable rules; the per-rule delta used
+    is reported; ``bonferroni: False`` recovers per-rule full delta and
+    must then be STATED as not family-wise); WRITTEN only if the CERTIFY
+    false-reject bound <= ``target_beta`` with CERTIFY support >=
+    ``min_support``, else the rule is DISABLED (threshold None) and the
+    reason says so — certification stopped a bad rule. (c) UNION: the
     measured false-reject rate of the full route() union on CERTIFY with
-    its exact bound (per-rule bounds do not bound the union).
+    its exact bound at full ``delta`` (per-rule bounds do not bound the
+    union). Beside EVERY bound the output stores ``provenance``:
+    ``n_segments`` / ``n_clips`` / ``n_wearers`` / ``n_labellers`` /
+    ``label_source``.
 
     Pure function: no I/O, no randomness, no clock. Returns
     ``{"per_source", "threshold_updates" (per source), "meta"}``; all
@@ -781,6 +1046,7 @@ def calibrate_two_sided(records: list[dict],
     min_accepted = int(cfg["min_accepted"])
     accept_step = float(cfg["accept_step"])
     seed = int(cfg["seed"])
+    bonferroni = bool(cfg["bonferroni"])
     if not 0.0 < alpha < 1.0:
         raise ValueError("target_alpha must be in (0, 1)")
     if not 0.0 < delta < 1.0:
@@ -789,8 +1055,14 @@ def calibrate_two_sided(records: list[dict],
         raise ValueError("target_beta must be in (0, 1)")
     if not 0.0 < accept_step <= 1.0:
         raise ValueError("accept_step must be in (0, 1]")
+    # Family-wise error (audit L3): the m tunable reject rules share the
+    # budget — each is tested at delta/m by default. The support floor is
+    # computed from the same per-rule delta, so the first tested candidate
+    # CAN pass its certificate.
+    m_rules = len(REJECT_RULES)
+    delta_rule = delta / m_rules if bonferroni else delta
     # Smallest support at which a perfectly clean rule can pass the bound.
-    n_power = math.ceil(math.log(delta) / math.log(1.0 - beta))
+    n_power = math.ceil(math.log(delta_rule) / math.log(1.0 - beta))
     support_floor = max(min_support, n_power)
 
     cleaned = _validate_records(records)
@@ -803,19 +1075,24 @@ def calibrate_two_sided(records: list[dict],
             continue
         by_source[source] = len(subset)
         per_source[source] = _calibrate_source(subset, cfg, delta,
-                                               support_floor)
+                                               delta_rule, support_floor,
+                                               source)
         updates_all[source] = per_source[source]["threshold_updates"]
     meta = {
         "n_total": len(cleaned),
         "by_source": by_source,
         "targets": {k: cfg[k] for k in
                     ("target_alpha", "delta", "target_beta", "min_support",
-                     "min_accepted", "accept_step")},
+                     "min_accepted", "accept_step", "bonferroni")},
+        "m_rules": m_rules,
+        "delta_per_rule": round(delta_rule, 4),
         "support_floor": support_floor,
         "seed": seed,
-        "method": ("per-source independent calibration; group-based "
-                   "SELECT/CERTIFY split; no Bonferroni — measured union "
-                   "bound on CERTIFY instead"),
+        "method": ("per-source independent calibration; clip-group-based "
+                    "SELECT/CERTIFY split; Bonferroni delta/m across the m "
+                    "tunable reject rules by default (accept side and union "
+                    "at full delta, stated); no bound is ever pooled across "
+                    "label sources"),
     }
     return {"per_source": per_source, "threshold_updates": updates_all,
             "meta": meta}
@@ -824,6 +1101,8 @@ def calibrate_two_sided(records: list[dict],
 __all__ = [
     "REASON_ORDER", "CHECK_ORDER", "DEFAULT_THRESHOLDS_PATH",
     "LABEL_SOURCES", "REJECT_RULES", "DEFAULT_TARGETS",
+    "HARD_REJECT_POLICIES", "QUALITY_RULE_CODES",
     "canonical_json", "thresholds_hash", "load_thresholds",
     "queue_rank_key", "route", "calibrate_two_sided",
+    "calibration_content_hash",
 ]
