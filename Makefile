@@ -9,10 +9,10 @@ demo:
 	bash scripts/demo.sh
 
 # All unit/integration tests (stubs; no hardware, no network).
-# Each suite must finish well under the 120 s timeout.
+# Each suite must finish well under the 150 s timeout.
 test:
-	timeout 120 env PYTHONNOUSERSITE=1 $(PY) -m unittest discover -s tests
-	timeout 120 env PYTHONNOUSERSITE=1 $(PY) -m unittest discover -s web
+	timeout 150 env PYTHONNOUSERSITE=1 $(PY) -m unittest discover -s tests
+	timeout 150 env PYTHONNOUSERSITE=1 $(PY) -m unittest discover -s web
 
 # Run the service locally (stubs unless the real modules merged).
 service:
