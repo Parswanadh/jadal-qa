@@ -159,10 +159,12 @@ class LocoAndBootstrapTests(unittest.TestCase):
         self.assertNotEqual(a, c)
 
     def test_single_class_resamples_are_skipped(self):
-        # clip "a" is all-positive; any resample without "a" has one class and
-        # must be dropped, not raise. Perfect scores make every kept draw AUROC 1.
-        clips = np.repeat(np.array(["a", "b", "c", "d"]), 10)
-        y = np.r_[np.ones(10), np.tile(np.r_[np.ones(5), np.zeros(5)], 3)].astype(int)
+        # Two clips: "a" is all-positive, "b" is mixed. A resample that draws
+        # "a" twice has a single class, which roc_auc_score rejects with
+        # ValueError (P=1/4 per draw, so 200 draws always hit it). It must be
+        # dropped, not raise. Perfect scores make every kept draw AUROC 1.
+        clips = np.repeat(np.array(["a", "b"]), 10)
+        y = np.r_[np.ones(10), np.tile(np.r_[np.ones(5), np.zeros(5)], 1)].astype(int)
         p = y.astype(float)
         lo, hi = clip_bootstrap_ci(y, p, clips, B=200, seed=0)
         self.assertEqual((lo, hi), (1.0, 1.0))
