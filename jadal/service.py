@@ -8,7 +8,7 @@ on ``/ws`` and serves the ``web/`` dashboard at ``/``.
 
 Run with::
 
-    /home/parshu/envs/jadal/bin/python -m uvicorn jadal.service:app
+    python3 -m uvicorn jadal.service:app
 
 Env knobs (all optional; ``jadal/config.py`` is read-only so the time trigger
 lives here): ``JADAL_BATCH_MAX_AGE_S`` (30.0 s), ``JADAL_WATCH_BUCKET`` (1),
