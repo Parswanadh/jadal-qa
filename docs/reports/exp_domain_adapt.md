@@ -20,7 +20,7 @@ factory, so all out-of-domain numbers are **exploratory** and the window-bootstr
 | id | question | headline | verdict |
 |---|---|---|---|
 | E5.00 | does the frozen ensemble reproduce its OOD prior on the 60 human windows? | **0.415** AUROC [0.201, 0.656] (exploratory, n_bad=9) | cited prior |
-| E5.01 | does a head trained on the 10k **AI-labelled FACTORY** frames carry window signal on the 150 human IndEgo windows? | LOCO AUROC **0.789–0.826** (pooled AI-frame heads) vs the 0.85 in-domain EG2-window-embedding baseline | maybe |
+| E5.01 | does a head trained on the 10k **AI-labelled FACTORY** frames carry window signal on the 150 human IndEgo windows? | LOCO AUROC **0.789–0.826** (pooled AI-frame heads) vs the 0.846 nested in-domain EG2-window-embedding baseline | maybe |
 | E5.02 | how many human OOD labels to beat chance? | pixel-26 **0.756** [0.575, 0.902], two-view **0.767** [0.596, 0.904]; ~12 labels already ~0.71 (std 0.10); smallest n_bad in any train fold **7** | maybe |
 | E5.03 | which of the 26 per-pixel features keep their sign? | **8 stable, 14 flip, 4 chance**; sign-stable, still weak out-of-domain (AUROC 0.64–0.70); motion/temporal-band flip | maybe |
 | E5.04 | frozen re-score of the 160 OOD windows | labels2 **not delivered** → confirmatory eval **inconclusive** (n = 0); 160 windows scored descriptively only | inconclusive |
@@ -44,10 +44,12 @@ evaluated against the **human** gold labels with **leave-one-clip-out** over the
 | mean of both | **0.826** | [0.717, 0.881] | 0.615 |
 | LOCO logistic on 12 pooled feats | 0.789 | [0.686, 0.862] | 0.735 |
 
-Reference in-domain baseline: EG2 window-embedding logistic **0.85** (nested 0.846,
-`caches/ensemble/nested_loco.json`); 26 per-pixel-feature logistic 0.81.
-The pooled AI-frame heads are **below** that baseline, so E5.01 is not adopted as
-an improvement. Two different claims have to be kept apart: the **frame-level**
+Reference in-domain baseline: EG2 window-embedding logistic **0.846** nested
+(`eval/results/ensemble/nested_loco.json`; verified in
+`eval/results/pod_verify/ood_and_nested.json` as `eg2_nested` = 0.8458);
+26 per-pixel-feature logistic **0.792** nested (`pixel_nested` = 0.7916, same
+files). The pooled AI-frame heads (max 0.826) are **below** the EG2 baseline, so
+E5.01 is not adopted as an improvement. Two different claims have to be kept apart: the **frame-level**
 0.911 / 0.957 5-fold CV is **AI-vs-AI (model-vs-model)** and is **not ground-truth
 accuracy**; the **window-level** 0.789–0.826 *is* **scored against the human IndEgo
 gold labels** (single labeller, LOCO over 7 clips). What it measures is how well a
@@ -146,11 +148,11 @@ estimate is unstable.
 accuracy is computed**. Descriptive only, frozen `ensemble_v1`: 160 windows scored
 (60 batch-1 `$JADAL_BUNDLE/caches/ensemble/ood_scores.json` + 100 batch-2
 `ood_scores2.json`), mean usable_prob 0.560 (median 0.460); accept 71 / review 35 /
-reject 54. Batch-1 mean 0.496, batch-2 mean 0.598. Config check: the frozen scorer
-recorded sha `4da1068a…`; the local `configs/ensemble_v1.json` raw sha is `d62a95a…`
-because `scripts/remap_paths.py` rewrote pod paths, but the canonical content (path
-and provenance fields stripped) **matches** — `config_assert` and both observed shas
-are stored in `E5.04.json`. `eval/exp_domain/watch_e5_04.sh` re-scores and runs the
+reject 54. Batch-1 mean 0.496, batch-2 mean 0.598. Config check:
+`configs/ensemble_v1.json` is byte-identical to `origin/main` and hashes to the
+frozen `4da1068a…` (`config_sha256_match: true`); the canonical content (path and
+provenance fields stripped) also **matches** — `config_assert` and both observed
+shas are stored in `E5.04.json`. `eval/exp_domain/watch_e5_04.sh` re-scores and runs the
 confirmatory window-bootstrap eval automatically when `ood_labels2.json` appears.
 
 ## What did NOT transfer
@@ -161,7 +163,7 @@ confirmatory window-bootstrap eval automatically when `ood_labels2.json` appears
   from chance with 9 bad windows (E5.02).
 - **AI-frame heads as a drop-in** — 0.789–0.826 LOCO (scored against human IndEgo
   labels) but from an AI-label-trained head, so it is agreement, not a transferable
-  accuracy, and it is below the 0.85 in-domain baseline (E5.01).
+  accuracy, and it is below the 0.846 nested in-domain baseline (E5.01).
 - **The frozen ensemble out-of-domain** — 0.415 AUROC [0.201, 0.656] (reproduced in
   E5.00 from the frozen bundle scores; exploratory, n_bad = 9). This is why E5 exists.
 

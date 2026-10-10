@@ -7,7 +7,7 @@
 # One-shot check:
 #   bash eval/exp_domain/watch_e5_04.sh --once
 set -u
-BUNDLE="${JADAL_BUNDLE:-/workspace/jadal_pod_bundle}"
+BUNDLE="${JADAL_BUNDLE:?JADAL_BUNDLE is not set}"
 LABELS2="$BUNDLE/labels/ood_labels2.json"
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export JADAL_EXP_DIR="$REPO/experiments" OMP_NUM_THREADS=1

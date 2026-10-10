@@ -10,7 +10,7 @@ import os
 
 import numpy as np
 
-BUNDLE = os.environ.get("JADAL_BUNDLE", "/workspace/jadal_pod_bundle")
+BUNDLE = os.environ.get("JADAL_BUNDLE", "")
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(REPO, "eval", "results", "exp_domain")
