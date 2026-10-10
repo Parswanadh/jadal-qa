@@ -102,13 +102,33 @@ Not done (time box): optional third view (sp_cellmax, physics tripwire gate)
 (g000, g029, g100, g120, g140) — identical digests required. EG2 GPU numerics
 are NOT claimed identical across devices.
 
-## 5. Pre-registered OOD scoring
+## 5. Pre-registered OOD scoring — RESULT: does not transfer
 
 `eval/results/ensemble/PREREGISTRATION.md` (sha written before labels read).
-60 Egocentric-10K windows; frozen scores `eval/results/ensemble/ood_scores.json`;
-`eval/ensemble/eval_ood.py --labels <labels.json>` prints AUROC (window
-bootstrap, optimistic), bal.acc at frozen 0.5, accept/reject split; works on
-partial labels, refuses with < 10 per class. Nothing tuned after freezing.
+60 Egocentric-10K windows; frozen scores `eval/results/ensemble/ood_scores.json`
+(cache config sha `4da1068a…`, matches frozen; 60/60 scored, 0 errors);
+`eval/ensemble/eval_ood.py --labels /home/parshu/projects/jadal-qa-wt/ood_labels/labels.json --exploratory`.
+
+Human labels: 51 good / 9 bad (8 NO_ACTIVE_WORK, 1 SHAKY). The pre-registered
+minimum of 10 bad windows is NOT met, so this is exploratory, not confirmatory
+(the script refuses without `--exploratory`).
+
+| metric | value |
+|---|---|
+| OOD AUROC (window-bootstrap, optimistic) | **0.415 [0.210, 0.647]** |
+| mean usable_prob good / bad | 0.488 / 0.542 (inverted) |
+| good windows below 0.5 | 37/51 |
+| bal.acc@0.5 / acc | 0.471 / 0.333 |
+| accept / reject-or-review | 17 / 43 |
+
+The IndEgo-trained ensemble does NOT transfer to Egocentric-10K factory video:
+AUROC below chance with the sign flipped. For context, the frozen per-pixel
+scorer got 0.515 and the PoC cascade 0.529 on the same windows — all at chance.
+The frozen model was not tuned afterwards. Hypotheses under investigation
+(see §8): IndEgo is ~3 wearers doing assembly/logistics with visible
+hand-motion signal; OOD factories differ in viewpoint, activity mix and
+illumination, and the 26 pixel features' operating points (plus the EG2 head's
+small-C direction) do not carry over. n_bad=9 keeps every OOD CI very wide.
 
 ## 6. Honest limits
 
