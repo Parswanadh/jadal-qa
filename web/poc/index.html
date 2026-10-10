@@ -54,7 +54,7 @@
     <p><strong>Finding (human-labelled check, 2026-10-10):</strong> on 60 random real Egocentric-10K windows
     labelled by a human (51 good, 9 bad; exploratory, only 9 bad), the PoC cascade as shipped is
     <strong>at chance</strong>: score AUROC <strong>0.529</strong> (0.32–0.73 by window, optimistic), balanced accuracy 0.51.
-    It rejected <strong>21 of 51 good windows (41%)</strong>, so the ~40% reject share on this footage is mostly
+    It rejected <strong>21 of 51 good windows (41%)</strong>, so the 44% (702 of 1,587) reject share on this footage is mostly
     <strong>false reject</strong>s from the 480p/10 fps → 1080p/30 fps domain shift.</p>
     <p>Verdict rates on Egocentric-10K are descriptive, not quality. Accuracy on IndEgo (150 windows, AUROC ~0.7–0.8,
     not yet high) is a different data set. Thresholds are not certified; not measured on a Raspberry Pi; receipts are
@@ -74,7 +74,7 @@
     <div class="cards">
       <div class="card">
         <h2>Verdicts by reason</h2>
-        <p class="micro">Reject windows per reason code (evidence: value op threshold).</p>
+        <p class="micro">Windows per reason code (rejects and accepts).</p>
         <div id="chart-reason"></div>
       </div>
       <div class="card">

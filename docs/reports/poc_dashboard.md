@@ -45,7 +45,7 @@ frames are licensed; see `docs/screens/README.md`.
 Screens of the dashboard:
 
 1. **Overview** — tiles (windows, hours, accept/review/reject shares, ×/wall-hour,
-   GPU label), verdict-by-reason bars, per-factory stacked bars, S0/S1/S2 stage
+   GPU label), windows-per-reason-code bars (rejects and accepts), per-factory stacked bars, S0/S1/S2 stage
    split with early-reject share, honesty banner on every screen.
 2. **Gallery** — 3-thumb contact sheets, verdict + reason chips (evidence
    `value op threshold` on hover), 5 dropdown filters + search + sort +

@@ -9,7 +9,10 @@ poc_data/{summary.json,windows.jsonl,stream_events.jsonl,thumbs/}.
 Re-reads data files on every request (the run worker appends while we serve).
 
 Environment (optional):
-  JADAL_POC_DATA  default data dir (default: <repo>/../poc_data)
+  JADAL_POC_DATA   data dir (default: first existing of <repo>/../poc_data,
+                   <repo>/poc_data; see scripts/poc_paths.py). Never falls back
+                   to the demo fixture; only --demo-fixture does that.
+  JADAL_CLIP_ROOT  clip dir (used by poc_run.py, see scripts/poc_paths.py)
   JADAL_PY        interpreter used for POST /api/reverify (default: python3 on PATH)
 
 POST /api/reverify/<id> only accepts a Host of 127.0.0.1:<port> or
@@ -23,14 +26,16 @@ import mimetypes
 import os
 import re
 import subprocess
+import sys
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import poc_paths  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)  # repo / worktree root
 WEB_DIR = os.path.join(ROOT, "web", "poc")
-REAL_DATA = os.path.normpath(os.environ.get(
-    "JADAL_POC_DATA", os.path.join(ROOT, "..", "poc_data")))
 FIXTURE_DATA = os.path.join(ROOT, "tests", "fixtures", "poc")
 PY = os.environ.get("JADAL_PY", "python3")
 
@@ -40,7 +45,7 @@ THUMB_RE = re.compile(r"^[A-Za-z0-9_.\-]+\.jpg$")
 MAX_PER_PAGE = 100
 DEFAULT_PER_PAGE = 24
 
-DATA_DIR = REAL_DATA
+DATA_DIR = None  # resolved in main() (see scripts/poc_paths.py)
 DEMO_MODE = False
 PORT = 8840
 
@@ -61,7 +66,7 @@ def data_path(name):
 
 
 def using_demo():
-    return DEMO_MODE or not os.path.exists(data_path("summary.json"))
+    return DEMO_MODE
 
 
 def read_summary():
@@ -346,11 +351,22 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8840)
     ap.add_argument("--demo-fixture", action="store_true")
-    ap.add_argument("--data-dir", default=REAL_DATA)
+    ap.add_argument("--data-dir", default=None)
     args = ap.parse_args()
     PORT = args.port
     DEMO_MODE = args.demo_fixture
-    DATA_DIR = FIXTURE_DATA if args.demo_fixture else args.data_dir
+    if args.demo_fixture:
+        DATA_DIR = FIXTURE_DATA
+    else:
+        try:
+            if args.data_dir is not None:
+                if not os.path.isdir(args.data_dir):
+                    raise poc_paths.PathError(f"--data-dir {args.data_dir!r} does not exist")
+                DATA_DIR = os.path.normpath(args.data_dir)
+            else:
+                DATA_DIR = poc_paths.resolve_poc_data(ROOT)
+        except poc_paths.PathError as e:
+            ap.exit(2, f"poc_server: {e}\n")
     srv = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     print(f"poc dashboard on http://127.0.0.1:{args.port}/ data={DATA_DIR}")
     srv.serve_forever()

@@ -34,16 +34,23 @@ sys.path.insert(0, os.path.join(HERE, ".."))
 from eval.gpu.decode import clip_duration  # noqa: E402
 from jadal.poc import cascade as C  # noqa: E402
 from jadal.poc import receipts as R  # noqa: E402
+sys.path.insert(0, HERE)
+import poc_paths  # noqa: E402
 
-# Documented env overrides; defaults assume the sibling-worktree layout
-# (<projects>/jadal-qa-wt/poc_data and <projects>/awing/data/ego10k_scale/clips).
+# Paths resolve in main() via scripts/poc_paths.py (env var, then candidates
+# relative to ROOT; the first that exists; loud failure otherwise).
 ROOT = os.path.normpath(os.path.join(HERE, ".."))
-POC_DATA = os.environ.get("JADAL_POC_DATA", os.path.normpath(os.path.join(ROOT, "..", "poc_data")))
-CLIP_ROOT = os.environ.get("JADAL_CLIP_ROOT", os.path.normpath(
-    os.path.join(ROOT, "..", "..", "awing", "data", "ego10k_scale", "clips")))
-WINDOWS = os.path.join(POC_DATA, "windows.jsonl")
-SUMMARY = os.path.join(POC_DATA, "summary.json")
-THUMBS = os.path.join(POC_DATA, "thumbs")
+POC_DATA = WINDOWS = SUMMARY = THUMBS = None
+
+
+def set_data_dir(path):
+    global POC_DATA, WINDOWS, SUMMARY, THUMBS
+    POC_DATA = path
+    WINDOWS = os.path.join(POC_DATA, "windows.jsonl")
+    SUMMARY = os.path.join(POC_DATA, "summary.json")
+    THUMBS = os.path.join(POC_DATA, "thumbs")
+
+
 WIN_S = 10.0
 FRAMES_PER_WIN = 300  # 10 s @ 30 fps
 
@@ -306,7 +313,8 @@ def _thumb_names(wid):
 
 
 def list_clips():
-    cands = sorted(glob.glob(os.path.join(CLIP_ROOT, "factory_*", "worker_*", "*.mp4")))
+    clip_root = poc_paths.resolve_clip_root(ROOT)
+    cands = sorted(glob.glob(os.path.join(clip_root, "factory_*", "worker_*", "*.mp4")))
     good = []
     for p in cands:
         try:
@@ -416,6 +424,11 @@ def main():
     ap.add_argument("--rebuild-thumbs", action="store_true",
                     help="re-extract thumbs for stored windows missing jpgs")
     args = ap.parse_args()
+    try:
+        set_data_dir(poc_paths.resolve_poc_data(ROOT))
+    except poc_paths.PathError as e:
+        print(f"poc_run: {e}", file=sys.stderr)
+        sys.exit(2)
 
     recs = load_recs()
 
@@ -496,7 +509,11 @@ def main():
     if args.clips:
         clips = args.clips
     elif args.all:
-        clips = list_clips()
+        try:
+            clips = list_clips()
+        except poc_paths.PathError as e:
+            print(f"poc_run: {e}", file=sys.stderr)
+            sys.exit(2)
     else:
         ap.error("need --clips, --all, --verify, --selfcheck, --summary or --rebuild-thumbs")
     if args.shard:

@@ -15,15 +15,15 @@ set -u
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Environment overrides (documented defaults):
 #   JADAL_PY         interpreter (default: python3 on PATH)
-#   JADAL_POC_DATA   real PoC data dir (default: <repo>/../poc_data)
+#   JADAL_POC_DATA   real PoC data dir
 #   JADAL_CLIP_ROOT  Egocentric-10K clips for --replay
-#                    (default: <repo>/../../awing/data/ego10k_scale/clips)
+#   Defaults and the resolution order: scripts/poc_paths.py (never the demo fixture).
 PY="${JADAL_PY:-python3}"
 export PYTHONNOUSERSITE=1
 export OMP_NUM_THREADS=2
 
 PORT=8840
-DATA="${JADAL_POC_DATA:-$ROOT/../poc_data}"
+DATA="$("$PY" "$ROOT/scripts/poc_paths.py" data)" || exit 1
 EVENTS="$DATA/stream_events.jsonl"
 REPLAY=0
 NO_WAIT=0
@@ -108,7 +108,8 @@ echo "  live:     $BASE/#/live"
 echo "  about:    $BASE/#/about"
 
 if [[ "$REPLAY" == "1" ]]; then
-  CLIP="${CLIP:-$(find "${JADAL_CLIP_ROOT:-$ROOT/../../awing/data/ego10k_scale/clips}" -name '*.mp4' | head -n 1)}"
+  CLIP_DIR="$("$PY" "$ROOT/scripts/poc_paths.py" clips)" || exit 1
+  CLIP="${CLIP:-$(find "$CLIP_DIR" -name '*.mp4' | head -n 1)}"
   echo "-- replay: live 2 s chunks with scripted blackout (watch $BASE/#/live) --"
   echo "clip: $CLIP"
   "$PY" "$ROOT/scripts/poc_stream_replay.py" --clip "$CLIP" \

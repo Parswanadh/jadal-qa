@@ -2,7 +2,7 @@
 
 > **Finding (also shown on every dashboard screen):** on 60 human-labelled
 > Egocentric-10K windows the shipped cascade is **at chance** (score AUROC 0.529;
-> 21 of 51 good windows falsely rejected). The ~40% reject share on this footage
+> 21 of 51 good windows falsely rejected). The 44% (702 of 1,587) reject share on this footage
 > is mostly false rejects from domain shift. Verdict rates here are descriptive,
 > not quality. Accuracy on the 150 IndEgo windows (leave-one-clip-out AUROC
 > ~0.7–0.8, not yet high) is a different data set. Thresholds are not certified.
@@ -37,7 +37,9 @@
   served, `poc_up.sh` reports the owning PID and reuses it; it kills nothing it
   did not start.
 - Paths are set by env vars with defaults: `JADAL_PY` (python3 on PATH),
-  `JADAL_POC_DATA` (`../poc_data`), `JADAL_CLIP_ROOT` (`../../awing/data/ego10k_scale/clips`).
+  `JADAL_POC_DATA` and `JADAL_CLIP_ROOT`. Without them, the first existing
+  candidate is used (`scripts/poc_paths.py`); if none exists the scripts fail
+  and name the variable. The demo fixture is never used by default.
 
 ## Measured numbers (from files, not claims)
 
@@ -48,13 +50,16 @@ Batch run, from `eval/results/poc/run_summary.json` (`partial: false`):
 - stages S0 0 / S1 1411 / S2 176
 - per-window sequential latency p50 548.1 ms, p90 699.2 ms (RTF about 18x; the
   dashboard tile shows 17.91 video-hours per compute-hour, concurrency excluded)
-- Re-verify: 5 sampled windows reproduced their stored receipt in the run log
-  (not committed as a file; use `poc_run.py --verify <id>` to repeat one).
+- Re-verify: 5 random windows (seed 20261010) were run with
+  `poc_run.py --verify <id>` on CPU and all 5 receipt hashes match
+  (`eval/results/poc/reverify_5.json`; 0 mismatches).
 
-Replay (measured 2026-10-10): 16 chunks, scripted blackout at t=12 s -> S0 `black`
-rule fires (`p95 0.0 < 0.03`), time-to-reject 0.0 s of video, mean chunk
-latency 533.5 ms, 9.3 s wall, ~171 MB RAM, CPU decode. The blackout is injected
-by the script; it is not an event in the footage.
+Replay (`eval/results/poc/replay_summary.json`, from `eval/poc/replay_summary.py`):
+16 events on 2 s chunks (t = 0 to 30 s). The scripted blackout starts at t = 12 s,
+and the first `early_reject` is logged at t = 12.0 s (S0 `black`, `p95 0.0 < 0.03`),
+0.0 s after the onset. Chunk latency p50 574.6 ms, max 820.9 ms (mean 606.1 ms);
+peak RAM 170.6 MB; CPU decode. The blackout is injected by the script; it is not an
+event in the footage.
 
 Accuracy on labelled IndEgo data (`eval/results/gpu/cascade.json`, the shipped
 S1 logistic head): leave-one-clip-out AUROC **0.80** (95% CI 0.71-0.87), n = 150,
@@ -78,7 +83,7 @@ CI is optimistic.
   (`handover/ood_eval_ensemble_v1_exploratory.txt`); frozen per-pixel scorer
   AUROC 0.515 (`jadal-ops/explainer/FACTS.md`). The FACTS lines are copied into
   the JSON with their source line numbers.
-- The ~40% reject share shown on Egocentric-10K is therefore mostly false
+- The 44% (702 of 1,587) reject share shown on Egocentric-10K is therefore mostly false
   rejects, caused by the 480p/10 fps (IndEgo) -> 1080p/30 fps HEVC
   (Egocentric-10K) domain shift.
 
