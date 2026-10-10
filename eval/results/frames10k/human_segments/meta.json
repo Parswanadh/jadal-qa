@@ -1,0 +1,18 @@
+{
+ "n_segments": 150,
+ "n_frames": 3005,
+ "frames_per_seg_mean": 20.033333333333335,
+ "step_s": 0.5,
+ "decode_s": 229.4510407447815,
+ "encode_s": 205.17188358306885,
+ "frames_per_s_encode": 14.646256336499208,
+ "frames_per_s_wall": 6.914039347204866,
+ "vram_peak_gb": 2.822970368,
+ "batch_size": 32,
+ "gpu_decode": true,
+ "snapshot_utc": "2026-10-10T10:53:24.018553+00:00",
+ "labels_sha256": "43ab44e52eaae18f70cd1c3f993703762bfb163533a0812b65dd5e06cab062dc",
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (single labeller; read-only snapshot)"
+}
