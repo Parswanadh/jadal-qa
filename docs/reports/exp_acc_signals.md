@@ -1,6 +1,6 @@
 # A2 — New full-resolution signals: dense flow, hand segmentation, full-res per-pixel
 
-**Pod:** jadal-qa · **Branch:** `m/acc-signals` · **PR:** (link pending) base `main`
+**Pod:** jadal-qa · **Branch:** `m/acc-signals` · **PR:** #167 (base `main`)
 
 **Question.** With compute free, extract genuinely new signals at full resolution / all frames and measure the accuracy they add, alone and on top of the 26-feature + EG2 ensemble.
 
