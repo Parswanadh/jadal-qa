@@ -1,0 +1,1214 @@
+{
+ "experiment": "E7.01",
+ "title": "Cost model: hours of video per wall-hour on the pod A40, per profile",
+ "n": {
+  "windows_timed_decode": 12,
+  "windows_timed_features": 12,
+  "images_timed_embedding": 32,
+  "profiles_modelled": 5
+ },
+ "label_source": "n/a (cost model; no labels used; no accuracy claim)",
+ "protocol": "timed measurements on the pod A40 host (decode CPU vs NVDEC, pixel26 CPU features OMP_NUM_THREADS=1, EmbeddingGemma-2 batch-1 bf16 images) combined arithmetically per profiles/*.json; CI = percentile bootstrap over timed repetitions (decode 6 windows/config, features 12 windows, embedding 8 images)",
+ "ci95": {
+  "decode_fps": {
+   "indego_480p10_h264__cpu": {
+    "4.0": [
+     0.13814620207995176,
+     0.3655372989596799
+    ],
+    "10.0": [
+     0.334305431926623,
+     0.4690790150780231
+    ]
+   },
+   "indego_480p10_h264__nvdec": {
+    "4.0": [
+     1.8480209629051387,
+     2.0977392880013213
+    ],
+    "10.0": [
+     0.9533916759537533,
+     2.9000810040161014
+    ]
+   },
+   "ego10k_1080p30_hevc__cpu": {
+    "4.0": [
+     3.007368922000751,
+     7.366553878993727
+    ],
+    "10.0": [
+     5.8104906110093,
+     12.895630504004657
+    ]
+   },
+   "ego10k_1080p30_hevc__nvdec": {
+    "4.0": [
+     1.7307022248860449,
+     2.193592958035879
+    ],
+    "10.0": [
+     2.485582416993566,
+     4.00930817599874
+    ]
+   }
+  },
+  "features_ms_per_window": {
+   "10@10": [
+    342.46378285703634,
+    462.93664698120364
+   ],
+   "10@6": [
+    185.2864659532012,
+    260.5186223103374
+   ],
+   "10@4": [
+    110.39617118925283,
+    149.11039042975366
+   ],
+   "5@10": [
+    143.01837441380485,
+    188.52607085549
+   ],
+   "5@6": [
+    83.34639310075241,
+    100.09867242891535
+   ],
+   "5@4": [
+    52.808972382141896,
+    66.49222280708878
+   ],
+   "2@10": [
+    54.091216893963676,
+    67.16443080222234
+   ],
+   "2@6": [
+    36.57224693912819,
+    52.185651752612706
+   ],
+   "2@4": [
+    29.375352351295685,
+    45.582065308311336
+   ]
+  },
+  "embedding_ms_per_image": {
+   "tile_224x224": [
+    146.0404364981514,
+    223.1568516745028
+   ],
+   "mosaic_2x2_454x454": [
+    185.40574860599008,
+    257.2594194287376
+   ],
+   "mosaic_3x3_680x680_real": [
+    91.18420697159308,
+    128.4012393087323
+   ],
+   "mosaic_4x4_906x906": [
+    113.83048763673287,
+    164.9103719577397
+   ]
+  }
+ },
+ "device": "A40",
+ "decode_path_note": "NVDEC = ffmpeg -hwaccel cuda -hwaccel_output_format cuda -c:v {h264,hevc}_cuvid + scale_cuda to 160x90; CPU = ffmpeg -vf scale=160:90; both measured on the same clips",
+ "command": "bash tools/pod/gpu_run.sh python3 eval/exp_cost/run_e7.py --stage measure && python3 eval/exp_cost/run_e7.py --stage model",
+ "git_sha": "2fe115f",
+ "measured_this_run": {
+  "decode": {
+   "indego_480p10_h264__cpu": {
+    "source": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "native_fps": 10.0,
+    "by_duration_s": {
+     "4.0": {
+      "n_windows": 3,
+      "frames_mean": 40.0,
+      "wall_s_mean": 0.2481322557044526,
+      "wall_s_ci95": [
+       0.13814620207995176,
+       0.3655372989596799
+      ],
+      "fps": 161.20435405078302,
+      "ms_per_window": 248.13225570445263
+     },
+     "10.0": {
+      "n_windows": 3,
+      "frames_mean": 100.0,
+      "wall_s_mean": 0.4131160656688735,
+      "wall_s_ci95": [
+       0.334305431926623,
+       0.4690790150780231
+      ],
+      "fps": 242.06272355467624,
+      "ms_per_window": 413.11606566887343
+     }
+    }
+   },
+   "indego_480p10_h264__nvdec": {
+    "source": "/workspace/jadal_pod_bundle/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "native_fps": 10.0,
+    "by_duration_s": {
+     "4.0": {
+      "n_windows": 3,
+      "frames_mean": 40.0,
+      "wall_s_mean": 1.9315531213069335,
+      "wall_s_ci95": [
+       1.8480209629051387,
+       2.0977392880013213
+      ],
+      "fps": 20.70872375124484,
+      "ms_per_window": 1931.5531213069335
+     },
+     "10.0": {
+      "n_windows": 3,
+      "frames_mean": 100.0,
+      "wall_s_mean": 1.830952294015636,
+      "wall_s_ci95": [
+       0.9533916759537533,
+       2.9000810040161014
+      ],
+      "fps": 54.61638750875397,
+      "ms_per_window": 1830.9522940156362
+     }
+    }
+   },
+   "ego10k_1080p30_hevc__cpu": {
+    "source": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+    "native_fps": 30.0,
+    "by_duration_s": {
+     "4.0": {
+      "n_windows": 3,
+      "frames_mean": 120.0,
+      "wall_s_mean": 4.619983938677858,
+      "wall_s_ci95": [
+       3.007368922000751,
+       7.366553878993727
+      ],
+      "fps": 25.97411627243481,
+      "ms_per_window": 4619.983938677858
+     },
+     "10.0": {
+      "n_windows": 3,
+      "frames_mean": 300.0,
+      "wall_s_mean": 9.540153400041163,
+      "wall_s_ci95": [
+       5.8104906110093,
+       12.895630504004657
+      ],
+      "fps": 31.44603523866876,
+      "ms_per_window": 9540.153400041165
+     }
+    }
+   },
+   "ego10k_1080p30_hevc__nvdec": {
+    "source": "/workspace/jadal_pod_bundle/data/ego10k_scale/clips/factory_001/worker_006/factory001_worker006_00008.mp4",
+    "native_fps": 30.0,
+    "by_duration_s": {
+     "4.0": {
+      "n_windows": 3,
+      "frames_mean": 120.0,
+      "wall_s_mean": 2.004007321976436,
+      "wall_s_ci95": [
+       1.7307022248860449,
+       2.193592958035879
+      ],
+      "fps": 59.880020738472645,
+      "ms_per_window": 2004.0073219764358
+     },
+     "10.0": {
+      "n_windows": 3,
+      "frames_mean": 300.0,
+      "wall_s_mean": 3.331490296016758,
+      "wall_s_ci95": [
+       2.485582416993566,
+       4.00930817599874
+      ],
+      "fps": 90.0497895367398,
+      "ms_per_window": 3331.4902960167574
+     }
+    }
+   }
+  },
+  "features_pixel26": {
+   "n_windows": 12,
+   "decode_160x90_ms_per_window": 250.3818234836217,
+   "decode_160x90_ms_ci95": [
+    195.54054917146763,
+    312.5638905493057
+   ],
+   "features_ms_per_window": {
+    "10@10": {
+     "mean": 401.84496925212443,
+     "ci95": [
+      342.46378285703634,
+      462.93664698120364
+     ],
+     "n": 12
+    },
+    "10@6": {
+     "mean": 223.69163201074116,
+     "ci95": [
+      185.2864659532012,
+      260.5186223103374
+     ],
+     "n": 12
+    },
+    "10@4": {
+     "mean": 128.2165277613482,
+     "ci95": [
+      110.39617118925283,
+      149.11039042975366
+     ],
+     "n": 12
+    },
+    "5@10": {
+     "mean": 165.05007405066863,
+     "ci95": [
+      143.01837441380485,
+      188.52607085549
+     ],
+     "n": 12
+    },
+    "5@6": {
+     "mean": 91.06202592374757,
+     "ci95": [
+      83.34639310075241,
+      100.09867242891535
+     ],
+     "n": 12
+    },
+    "5@4": {
+     "mean": 58.395297169530146,
+     "ci95": [
+      52.808972382141896,
+      66.49222280708878
+     ],
+     "n": 12
+    },
+    "2@10": {
+     "mean": 60.25890301680192,
+     "ci95": [
+      54.091216893963676,
+      67.16443080222234
+     ],
+     "n": 12
+    },
+    "2@6": {
+     "mean": 43.50531350549621,
+     "ci95": [
+      36.57224693912819,
+      52.185651752612706
+     ],
+     "n": 12
+    },
+    "2@4": {
+     "mean": 36.18855832610279,
+     "ci95": [
+      29.375352351295685,
+      45.582065308311336
+     ],
+     "n": 12
+    }
+   },
+   "note": "key = fps@observed_span_s; 4 s = early-exit prefix (first 40 native frames)"
+  },
+  "mosaic_build": {
+   "status": "measured",
+   "builder_path": "/workspace/wt/exp-mosaic/jadal/mosaic/build.py",
+   "builder_git_sha": "e8942b3",
+   "n_windows": 6,
+   "n_tiles": 9,
+   "tile_px": 224,
+   "layout_ms_mean": 49.788801659209035,
+   "layout_ms_ci95": [
+    35.66259518265724,
+    65.62678031526349
+   ],
+   "png_encode_ms_mean": 261.8586629978381,
+   "png_encode_ms_ci95": [
+    228.16304918766642,
+    308.4050786565058
+   ],
+   "note": "layout = grid + letterbox + timestamps + sidecar; encode = PNG bytes (compress_level=6). Decoded frames come from cv2 at native 480x480, not charged here"
+  },
+  "embedding_eg2": {
+   "device": "A40",
+   "batch_size": 1,
+   "dtype": "torch.bfloat16",
+   "max_soft_tokens": 140,
+   "peak_vram_mb": 1499.82421875,
+   "mosaic_artifacts": "/workspace/artifacts/mosaics",
+   "batched_alt": {
+    "tile_224x224": {
+     "batch": 8,
+     "n_timed_batches": 4,
+     "ms_per_batch_mean": 633.4088742441963,
+     "ms_per_image_batched": 79.17610928052454,
+     "note": "feature path only; the hashed receipt stays batch 1"
+    },
+    "mosaic_3x3_680x680_real": {
+     "batch": 8,
+     "n_timed_batches": 4,
+     "ms_per_batch_mean": 1030.6412852660287,
+     "ms_per_image_batched": 128.8301606582536,
+     "note": "feature path only; the hashed receipt stays batch 1"
+    }
+   }
+  },
+  "embedding_ms_per_image": {
+   "tile_224x224": {
+    "n_timed": 8,
+    "size": [
+     224,
+     224
+    ],
+    "ms_per_image_mean": 183.31001362821553,
+    "ms_per_image_ci95": [
+     146.0404364981514,
+     223.1568516745028
+    ],
+    "images_per_s": 5.455239352216585
+   },
+   "mosaic_2x2_454x454": {
+    "n_timed": 8,
+    "size": [
+     454,
+     454
+    ],
+    "ms_per_image_mean": 222.35484050179366,
+    "ms_per_image_ci95": [
+     185.40574860599008,
+     257.2594194287376
+    ],
+    "images_per_s": 4.497316081553589
+   },
+   "mosaic_3x3_680x680_real": {
+    "n_timed": 8,
+    "size": [
+     680,
+     680
+    ],
+    "ms_per_image_mean": 107.15924686519429,
+    "ms_per_image_ci95": [
+     91.18420697159308,
+     128.4012393087323
+    ],
+    "images_per_s": 9.331905824776785
+   },
+   "mosaic_4x4_906x906": {
+    "n_timed": 8,
+    "size": [
+     906,
+     906
+    ],
+    "ms_per_image_mean": 139.34727436571848,
+    "ms_per_image_ci95": [
+     113.83048763673287,
+     164.9103719577397
+    ],
+    "images_per_s": 7.176315464739474
+   }
+  },
+  "head_logistic": {
+   "n_predicts": 1000,
+   "ms_per_predict": 0.13814088993240148
+  }
+ },
+ "source_inputs": {
+  "E1.01": {
+   "path": "/workspace/wt/b-verify/eval/results/exp_fps/e1_01.json",
+   "git_sha": "f20013b",
+   "status": "found"
+  },
+  "E1.02": {
+   "path": "/workspace/wt/exp-fps-pod/eval/results/exp_fps/e1_02.json",
+   "git_sha": "2cad6dd",
+   "status": "found"
+  },
+  "E1.04": {
+   "path": "/workspace/wt/exp-fps-pod/eval/results/exp_fps/E1.04.json",
+   "git_sha": "2cad6dd",
+   "status": "found"
+  },
+  "E2.01": {
+   "path": "/workspace/wt/exp-mosaic/eval/results/exp_mosaic/E2.01.json",
+   "git_sha": "e8942b3",
+   "status": "found"
+  },
+  "E3.04": {
+   "path": "/workspace/jadal_pod_bundle/local_work/exp-temporal/eval/results/exp_temporal/E3.04_compute.json",
+   "git_sha": "unknown (not a git worktree)",
+   "status": "found"
+  }
+ },
+ "assumptions": [
+  "serial single-stream pipeline: one window processed at a time, no batching/pipelining (not measured)",
+  "decode cost is proportional to native frames inside the OBSERVED span; samplers cannot skip frames during decode (E1.04: selection happens after decode)",
+  "one processed window covers probe_every_k_windows x 10 s of footage (sparse probe; E3.01)",
+  "early exit = stop observing after early_exit_s; features/embeddings use only frames inside that span",
+  "pixel26 features are CPU float64 at 160x90 (jadal.gpu.features.cpu_window_features)",
+  "eg2 embeddings are EmbeddingGemma-2 image embeddings, batch 1, bf16, max_soft_tokens=140",
+  "mosaic evidence = one N=9/tile-224/680x680 PNG per processed window (E2.01 geometry), embedded batch 1",
+  "logistic head cost measured on this pod",
+  "hours/wall-hour = 3600 / ms_per_window * probe_k * 10 s / 3600"
+ ],
+ "not_measured": [],
+ "cross_checks": {
+  "features_pixel26_10fps": {
+   "this_run_OMP1_ms": 401.8,
+   "E1.01_OMP2_ms": 584.7,
+   "note": "E1.01 ran two shards in parallel; this run is single-process OMP_NUM_THREADS=1. Both ran while other pod workers were decoding, so both are contended; the CI covers windows, not machine load"
+  },
+  "decode_indego_480p_cpu": {
+   "this_run_ms_per_100f_window": 620.3,
+   "E1.01_cv2_ms": 388.9,
+   "E1.04_ffmpeg_ms": 568.8,
+   "note": "E1.01/E1.04 decoded with cv2 at 160x90; this run uses ffmpeg -vf scale=160:90 (same work res)"
+  },
+  "mosaic_cost_aggregate_E2.01": {
+   "decode_ms": 55941.2,
+   "build_ms": 67931.2,
+   "embed_ms": 153099.6,
+   "n_windows": 28,
+   "note": "E2.01 aggregate over 28 windows x 15 mosaic/variant images (all variants in one pass) -> NOT a per-window number; this run times the mosaic embed alone"
+  },
+  "E3.04_arithmetic": {
+   "corpus_hours": 4.404,
+   "per_policy": [
+    {
+     "policy": "every-2",
+     "window_frac": 0.5146,
+     "proc_hours": 2.266,
+     "speedup": 1.94
+    },
+    {
+     "policy": "every-3",
+     "window_frac": 0.349,
+     "proc_hours": 1.537,
+     "speedup": 2.87
+    },
+    {
+     "policy": "every-4",
+     "window_frac": 0.2852,
+     "proc_hours": 1.256,
+     "speedup": 3.51
+    },
+    {
+     "policy": "every-6",
+     "window_frac": 0.1834,
+     "proc_hours": 0.808,
+     "speedup": 5.45
+    },
+    {
+     "policy": "every-8",
+     "window_frac": 0.1548,
+     "proc_hours": 0.682,
+     "speedup": 6.46
+    },
+    {
+     "policy": "skip-first-30s",
+     "window_frac": 0.8428,
+     "proc_hours": 3.712,
+     "speedup": 1.19
+    },
+    {
+     "policy": "skip-first-60s",
+     "window_frac": 0.7103,
+     "proc_hours": 3.128,
+     "speedup": 1.41
+    },
+    {
+     "policy": "skip-first-120s",
+     "window_frac": 0.5168,
+     "proc_hours": 2.276,
+     "speedup": 1.94
+    },
+    {
+     "policy": "skip-first-240s",
+     "window_frac": 0.2248,
+     "proc_hours": 0.99,
+     "speedup": 4.45
+    },
+    {
+     "policy": "random-1/2-s7",
+     "window_frac": 0.4929,
+     "proc_hours": 2.171,
+     "speedup": 2.03
+    },
+    {
+     "policy": "random-1/4-s7",
+     "window_frac": 0.2635,
+     "proc_hours": 1.16,
+     "speedup": 3.8
+    },
+    {
+     "policy": "cusum-default",
+     "window_frac": 0.2852,
+     "proc_hours": 1.256,
+     "speedup": 3.51
+    },
+    {
+     "policy": "full",
+     "window_frac": 1.0,
+     "proc_hours": 4.404,
+     "speedup": 1.0
+    }
+   ],
+   "with_early_exit": [
+    {
+     "policy": "every-2",
+     "seconds": 4.0,
+     "total_frac": 0.2059,
+     "proc_hours": 0.907,
+     "speedup": 4.86
+    },
+    {
+     "policy": "every-2",
+     "seconds": 6.0,
+     "total_frac": 0.3088,
+     "proc_hours": 1.36,
+     "speedup": 3.24
+    },
+    {
+     "policy": "every-3",
+     "seconds": 4.0,
+     "total_frac": 0.1396,
+     "proc_hours": 0.615,
+     "speedup": 7.16
+    },
+    {
+     "policy": "every-3",
+     "seconds": 6.0,
+     "total_frac": 0.2094,
+     "proc_hours": 0.922,
+     "speedup": 4.78
+    },
+    {
+     "policy": "every-4",
+     "seconds": 4.0,
+     "total_frac": 0.1141,
+     "proc_hours": 0.502,
+     "speedup": 8.77
+    },
+    {
+     "policy": "every-4",
+     "seconds": 6.0,
+     "total_frac": 0.1711,
+     "proc_hours": 0.754,
+     "speedup": 5.84
+    },
+    {
+     "policy": "cusum-default",
+     "seconds": 4.0,
+     "total_frac": 0.1141,
+     "proc_hours": 0.502,
+     "speedup": 8.77
+    },
+    {
+     "policy": "cusum-default",
+     "seconds": 6.0,
+     "total_frac": 0.1711,
+     "proc_hours": 0.754,
+     "speedup": 5.84
+    }
+   ],
+   "note": "the E3.04 JSON exists only in the pod bundle's local_work copy on this pod; the wave-1 registry line points at a laptop path -- cited, not re-run here"
+  },
+  "E3.04_vs_E7.01": "E3.04 counts PROCESSED FOOTAGE fractions (arithmetic, no wall clock); E7.01 counts wall-clock throughput given the measured pipeline cost -- the two speed-ups are different metrics and are not expected to match",
+  "E1.02_eg2_fps": {
+   "rows": [
+    {
+     "fps": "2fps",
+     "frames_per_window": 20.0,
+     "auroc": 0.848,
+     "ci95": [
+      0.7344,
+      0.9087
+     ],
+     "bal_acc": 0.77,
+     "delta_vs_2fps": 0.0
+    },
+    {
+     "fps": "1fps",
+     "frames_per_window": 10.0,
+     "auroc": 0.8596,
+     "ci95": [
+      0.7597,
+      0.9139
+     ],
+     "bal_acc": 0.77,
+     "delta_vs_2fps": 0.0116
+    },
+    {
+     "fps": "0.5fps",
+     "frames_per_window": 5.0,
+     "auroc": 0.8702,
+     "ci95": [
+      0.763,
+      0.9243
+     ],
+     "bal_acc": 0.785,
+     "delta_vs_2fps": 0.0222
+    }
+   ],
+   "note": "cached 0.5s-spacing EG2 embeddings; fewer frames did not hurt"
+  }
+ },
+ "rows": [
+  {
+   "profile": "blurry_lowlight",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "CPU",
+   "fps": 5.0,
+   "probe_every_k_windows": 1,
+   "early_exit_s": null,
+   "observed_s": 10.0,
+   "mosaic": true,
+   "features_set": "eg2",
+   "decode_rate_fps_ref_4s": 161.2,
+   "decode_rate_fps_check_10s": 242.1,
+   "decode_ms_per_frame_marginal": 2.75,
+   "decode_startup_ms_per_invocation": 138.0,
+   "decode_marginal_fit_usable": true,
+   "ms_per_window": {
+    "decode": 275.0,
+    "features_pixel26": 0.0,
+    "features_span_used": "5@10",
+    "embedding_eg2": 9165.5,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 9859.4
+   },
+   "decode_share_of_total": 0.028,
+   "windows_per_wall_hour": 365.1,
+   "video_hours_per_wall_hour": 1.01,
+   "footage_fraction_probed": 1.0,
+   "alt_eg2_features_batched": {
+    "embedding_eg2_ms": 3958.8,
+    "total_ms": 4652.7,
+    "video_hours_per_wall_hour": 2.15,
+    "note": "eg2 FEATURE embeddings at batch 8; receipt stays batch 1"
+   }
+  },
+  {
+   "profile": "blurry_lowlight",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "NVDEC",
+   "fps": 5.0,
+   "probe_every_k_windows": 1,
+   "early_exit_s": null,
+   "observed_s": 10.0,
+   "mosaic": true,
+   "features_set": "eg2",
+   "decode_rate_fps_ref_4s": 20.7,
+   "decode_rate_fps_check_10s": 54.6,
+   "decode_ms_per_frame_marginal": 18.31,
+   "decode_startup_ms_per_invocation": 1999.0,
+   "decode_marginal_fit_usable": false,
+   "ms_per_window": {
+    "decode": 1831.0,
+    "features_pixel26": 0.0,
+    "features_span_used": "5@10",
+    "embedding_eg2": 9165.5,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 11415.4
+   },
+   "decode_share_of_total": 0.16,
+   "windows_per_wall_hour": 315.4,
+   "video_hours_per_wall_hour": 0.88,
+   "footage_fraction_probed": 1.0,
+   "alt_eg2_features_batched": {
+    "embedding_eg2_ms": 3958.8,
+    "total_ms": 6208.7,
+    "video_hours_per_wall_hour": 1.61,
+    "note": "eg2 FEATURE embeddings at batch 8; receipt stays batch 1"
+   }
+  },
+  {
+   "profile": "clear_stationary",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "CPU",
+   "fps": 10.0,
+   "probe_every_k_windows": 1,
+   "early_exit_s": 6,
+   "observed_s": 6.0,
+   "mosaic": true,
+   "features_set": "both",
+   "decode_rate_fps_ref_4s": 161.2,
+   "decode_rate_fps_check_10s": 242.1,
+   "decode_ms_per_frame_marginal": 2.75,
+   "decode_startup_ms_per_invocation": 138.0,
+   "decode_marginal_fit_usable": true,
+   "ms_per_window": {
+    "decode": 165.0,
+    "features_pixel26": 223.7,
+    "features_span_used": "10@6",
+    "embedding_eg2": 10998.6,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 11806.2
+   },
+   "decode_share_of_total": 0.014,
+   "windows_per_wall_hour": 304.9,
+   "video_hours_per_wall_hour": 0.85,
+   "footage_fraction_probed": 1.0,
+   "alt_eg2_features_batched": {
+    "embedding_eg2_ms": 4750.6,
+    "total_ms": 5558.2,
+    "video_hours_per_wall_hour": 1.8,
+    "note": "eg2 FEATURE embeddings at batch 8; receipt stays batch 1"
+   }
+  },
+  {
+   "profile": "clear_stationary",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "NVDEC",
+   "fps": 10.0,
+   "probe_every_k_windows": 1,
+   "early_exit_s": 6,
+   "observed_s": 6.0,
+   "mosaic": true,
+   "features_set": "both",
+   "decode_rate_fps_ref_4s": 20.7,
+   "decode_rate_fps_check_10s": 54.6,
+   "decode_ms_per_frame_marginal": 18.31,
+   "decode_startup_ms_per_invocation": 1999.0,
+   "decode_marginal_fit_usable": false,
+   "ms_per_window": {
+    "decode": 1098.6,
+    "features_pixel26": 223.7,
+    "features_span_used": "10@6",
+    "embedding_eg2": 10998.6,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 12739.8
+   },
+   "decode_share_of_total": 0.086,
+   "windows_per_wall_hour": 282.6,
+   "video_hours_per_wall_hour": 0.78,
+   "footage_fraction_probed": 1.0,
+   "alt_eg2_features_batched": {
+    "embedding_eg2_ms": 4750.6,
+    "total_ms": 6491.8,
+    "video_hours_per_wall_hour": 1.54,
+    "note": "eg2 FEATURE embeddings at batch 8; receipt stays batch 1"
+   }
+  },
+  {
+   "profile": "default",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "CPU",
+   "fps": 10.0,
+   "probe_every_k_windows": 1,
+   "early_exit_s": null,
+   "observed_s": 10.0,
+   "mosaic": true,
+   "features_set": "both",
+   "decode_rate_fps_ref_4s": 161.2,
+   "decode_rate_fps_check_10s": 242.1,
+   "decode_ms_per_frame_marginal": 2.75,
+   "decode_startup_ms_per_invocation": 138.0,
+   "decode_marginal_fit_usable": true,
+   "ms_per_window": {
+    "decode": 275.0,
+    "features_pixel26": 401.8,
+    "features_span_used": "10@10",
+    "embedding_eg2": 18331.0,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 19426.8
+   },
+   "decode_share_of_total": 0.014,
+   "windows_per_wall_hour": 185.3,
+   "video_hours_per_wall_hour": 0.51,
+   "footage_fraction_probed": 1.0,
+   "alt_eg2_features_batched": {
+    "embedding_eg2_ms": 7917.6,
+    "total_ms": 9013.4,
+    "video_hours_per_wall_hour": 1.11,
+    "note": "eg2 FEATURE embeddings at batch 8; receipt stays batch 1"
+   }
+  },
+  {
+   "profile": "default",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "NVDEC",
+   "fps": 10.0,
+   "probe_every_k_windows": 1,
+   "early_exit_s": null,
+   "observed_s": 10.0,
+   "mosaic": true,
+   "features_set": "both",
+   "decode_rate_fps_ref_4s": 20.7,
+   "decode_rate_fps_check_10s": 54.6,
+   "decode_ms_per_frame_marginal": 18.31,
+   "decode_startup_ms_per_invocation": 1999.0,
+   "decode_marginal_fit_usable": false,
+   "ms_per_window": {
+    "decode": 1831.0,
+    "features_pixel26": 401.8,
+    "features_span_used": "10@10",
+    "embedding_eg2": 18331.0,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 20982.7
+   },
+   "decode_share_of_total": 0.087,
+   "windows_per_wall_hour": 171.6,
+   "video_hours_per_wall_hour": 0.48,
+   "footage_fraction_probed": 1.0,
+   "alt_eg2_features_batched": {
+    "embedding_eg2_ms": 7917.6,
+    "total_ms": 10569.4,
+    "video_hours_per_wall_hour": 0.95,
+    "note": "eg2 FEATURE embeddings at batch 8; receipt stays batch 1"
+   }
+  },
+  {
+   "profile": "factory_1080p30",
+   "source_family": "ego10k_1080p30_hevc",
+   "decode_path": "CPU",
+   "fps": 5.0,
+   "probe_every_k_windows": 2,
+   "early_exit_s": null,
+   "observed_s": 10.0,
+   "mosaic": true,
+   "features_set": "both",
+   "decode_rate_fps_ref_4s": 26.0,
+   "decode_rate_fps_check_10s": 31.4,
+   "decode_ms_per_frame_marginal": 27.33,
+   "decode_startup_ms_per_invocation": 1340.0,
+   "decode_marginal_fit_usable": true,
+   "ms_per_window": {
+    "decode": 8200.3,
+    "features_pixel26": 165.1,
+    "features_span_used": "5@10",
+    "embedding_eg2": 9165.5,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 17949.8
+   },
+   "decode_share_of_total": 0.457,
+   "windows_per_wall_hour": 200.6,
+   "video_hours_per_wall_hour": 1.11,
+   "footage_fraction_probed": 0.5,
+   "alt_eg2_features_batched": {
+    "embedding_eg2_ms": 3958.8,
+    "total_ms": 12743.1,
+    "video_hours_per_wall_hour": 1.57,
+    "note": "eg2 FEATURE embeddings at batch 8; receipt stays batch 1"
+   }
+  },
+  {
+   "profile": "factory_1080p30",
+   "source_family": "ego10k_1080p30_hevc",
+   "decode_path": "NVDEC",
+   "fps": 5.0,
+   "probe_every_k_windows": 2,
+   "early_exit_s": null,
+   "observed_s": 10.0,
+   "mosaic": true,
+   "features_set": "both",
+   "decode_rate_fps_ref_4s": 59.9,
+   "decode_rate_fps_check_10s": 90.0,
+   "decode_ms_per_frame_marginal": 7.37,
+   "decode_startup_ms_per_invocation": 1119.0,
+   "decode_marginal_fit_usable": true,
+   "ms_per_window": {
+    "decode": 2212.5,
+    "features_pixel26": 165.1,
+    "features_span_used": "5@10",
+    "embedding_eg2": 9165.5,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 11962.0
+   },
+   "decode_share_of_total": 0.185,
+   "windows_per_wall_hour": 301.0,
+   "video_hours_per_wall_hour": 1.67,
+   "footage_fraction_probed": 0.5,
+   "alt_eg2_features_batched": {
+    "embedding_eg2_ms": 3958.8,
+    "total_ms": 6755.3,
+    "video_hours_per_wall_hour": 2.96,
+    "note": "eg2 FEATURE embeddings at batch 8; receipt stays batch 1"
+   }
+  },
+  {
+   "profile": "walking_logistics",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "CPU",
+   "fps": 10.0,
+   "probe_every_k_windows": 1,
+   "early_exit_s": 4,
+   "observed_s": 4.0,
+   "mosaic": true,
+   "features_set": "pixel26",
+   "decode_rate_fps_ref_4s": 161.2,
+   "decode_rate_fps_check_10s": 242.1,
+   "decode_ms_per_frame_marginal": 2.75,
+   "decode_startup_ms_per_invocation": 138.0,
+   "decode_marginal_fit_usable": true,
+   "ms_per_window": {
+    "decode": 110.0,
+    "features_pixel26": 128.2,
+    "features_span_used": "10@4",
+    "embedding_eg2": 0.0,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 657.2
+   },
+   "decode_share_of_total": 0.167,
+   "windows_per_wall_hour": 5478.2,
+   "video_hours_per_wall_hour": 15.22,
+   "footage_fraction_probed": 1.0,
+   "alt_eg2_features_batched": null
+  },
+  {
+   "profile": "walking_logistics",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "NVDEC",
+   "fps": 10.0,
+   "probe_every_k_windows": 1,
+   "early_exit_s": 4,
+   "observed_s": 4.0,
+   "mosaic": true,
+   "features_set": "pixel26",
+   "decode_rate_fps_ref_4s": 20.7,
+   "decode_rate_fps_check_10s": 54.6,
+   "decode_ms_per_frame_marginal": 18.31,
+   "decode_startup_ms_per_invocation": 1999.0,
+   "decode_marginal_fit_usable": false,
+   "ms_per_window": {
+    "decode": 732.4,
+    "features_pixel26": 128.2,
+    "features_span_used": "10@4",
+    "embedding_eg2": 0.0,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 1279.5
+   },
+   "decode_share_of_total": 0.572,
+   "windows_per_wall_hour": 2813.5,
+   "video_hours_per_wall_hour": 7.82,
+   "footage_fraction_probed": 1.0,
+   "alt_eg2_features_batched": null
+  }
+ ],
+ "reference_rows": [
+  {
+   "profile": "E3_baseline_full_pixel26",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "CPU",
+   "fps": 10,
+   "probe_every_k_windows": 1,
+   "early_exit_s": null,
+   "observed_s": 10.0,
+   "mosaic": true,
+   "features_set": "pixel26",
+   "features_span_used": "10@10",
+   "ms_per_window": {
+    "decode": 275.0,
+    "features_pixel26": 401.8,
+    "embedding_eg2": 0.0,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 1095.8
+   },
+   "decode_share_of_total": 0.251,
+   "windows_per_wall_hour": 3285.4,
+   "video_hours_per_wall_hour": 9.13,
+   "footage_fraction_probed": 1.0
+  },
+  {
+   "profile": "E3_adopted_every2_exit4_pixel26",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "CPU",
+   "fps": 2,
+   "probe_every_k_windows": 2,
+   "early_exit_s": 4,
+   "observed_s": 4.0,
+   "mosaic": true,
+   "features_set": "pixel26",
+   "features_span_used": "2@4",
+   "ms_per_window": {
+    "decode": 110.0,
+    "features_pixel26": 36.2,
+    "embedding_eg2": 0.0,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 565.1
+   },
+   "decode_share_of_total": 0.195,
+   "windows_per_wall_hour": 6370.3,
+   "video_hours_per_wall_hour": 35.39,
+   "footage_fraction_probed": 0.5
+  },
+  {
+   "profile": "E3_adopted_every2_exit4_pixel26_nvdec",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "NVDEC",
+   "fps": 2,
+   "probe_every_k_windows": 2,
+   "early_exit_s": 4,
+   "observed_s": 4.0,
+   "mosaic": true,
+   "features_set": "pixel26",
+   "features_span_used": "2@4",
+   "ms_per_window": {
+    "decode": 732.4,
+    "features_pixel26": 36.2,
+    "embedding_eg2": 0.0,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 1187.5
+   },
+   "decode_share_of_total": 0.617,
+   "windows_per_wall_hour": 3031.5,
+   "video_hours_per_wall_hour": 16.84,
+   "footage_fraction_probed": 0.5
+  },
+  {
+   "profile": "mosaic_only_every2_exit4",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "CPU",
+   "fps": 2,
+   "probe_every_k_windows": 2,
+   "early_exit_s": 4,
+   "observed_s": 4.0,
+   "mosaic": true,
+   "features_set": "mosaic_only",
+   "features_span_used": "2@4",
+   "ms_per_window": {
+    "decode": 110.0,
+    "features_pixel26": 0.0,
+    "embedding_eg2": 0.0,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 528.9
+   },
+   "decode_share_of_total": 0.208,
+   "windows_per_wall_hour": 6806.1,
+   "video_hours_per_wall_hour": 37.81,
+   "footage_fraction_probed": 0.5
+  }
+ ],
+ "headline": {
+  "best_profile_row": {
+   "profile": "walking_logistics",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "CPU",
+   "fps": 10.0,
+   "probe_every_k_windows": 1,
+   "early_exit_s": 4,
+   "observed_s": 4.0,
+   "mosaic": true,
+   "features_set": "pixel26",
+   "decode_rate_fps_ref_4s": 161.2,
+   "decode_rate_fps_check_10s": 242.1,
+   "decode_ms_per_frame_marginal": 2.75,
+   "decode_startup_ms_per_invocation": 138.0,
+   "decode_marginal_fit_usable": true,
+   "ms_per_window": {
+    "decode": 110.0,
+    "features_pixel26": 128.2,
+    "features_span_used": "10@4",
+    "embedding_eg2": 0.0,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 657.2
+   },
+   "decode_share_of_total": 0.167,
+   "windows_per_wall_hour": 5478.2,
+   "video_hours_per_wall_hour": 15.22,
+   "footage_fraction_probed": 1.0,
+   "alt_eg2_features_batched": null
+  },
+  "baseline_default_cpu": {
+   "profile": "default",
+   "source_family": "indego_480p10_h264",
+   "decode_path": "CPU",
+   "fps": 10.0,
+   "probe_every_k_windows": 1,
+   "early_exit_s": null,
+   "observed_s": 10.0,
+   "mosaic": true,
+   "features_set": "both",
+   "decode_rate_fps_ref_4s": 161.2,
+   "decode_rate_fps_check_10s": 242.1,
+   "decode_ms_per_frame_marginal": 2.75,
+   "decode_startup_ms_per_invocation": 138.0,
+   "decode_marginal_fit_usable": true,
+   "ms_per_window": {
+    "decode": 275.0,
+    "features_pixel26": 401.8,
+    "features_span_used": "10@10",
+    "embedding_eg2": 18331.0,
+    "mosaic_build_layout": 49.8,
+    "mosaic_png_encode": 261.9,
+    "mosaic_embed": 107.2,
+    "mosaic_evidence": 418.8,
+    "head": 0.138,
+    "total": 19426.8
+   },
+   "decode_share_of_total": 0.014,
+   "windows_per_wall_hour": 185.3,
+   "video_hours_per_wall_hour": 0.51,
+   "footage_fraction_probed": 1.0,
+   "alt_eg2_features_batched": {
+    "embedding_eg2_ms": 7917.6,
+    "total_ms": 9013.4,
+    "video_hours_per_wall_hour": 1.11,
+    "note": "eg2 FEATURE embeddings at batch 8; receipt stays batch 1"
+   }
+  },
+  "speedup_x": 29.84,
+  "reference_speedup_every2_exit4_vs_full_x": 3.88,
+  "bound": "feature/embedding-bound"
+ }
+}
