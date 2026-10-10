@@ -19,6 +19,19 @@ organise 0.856, **pallet 0.515, pallet2 0.500** (chance).
 **Outcome: documented negative result.** Did not reach AUROC >= 0.85 / CI lower
 bound >= 0.72 / no clip below 0.60. Does not beat the 0.810 logistic baseline.
 
+## CORRECTION to the interpretation (found by the rhythm_analysis track, confirmed independently)
+Every residual-motion MAGNITUDE scalar is INVERTED on the real windows:
+`flow_top_mean` signed AUROC 0.196 (orientation-free 0.804), `flow_mean` 0.197,
+`coh_mean` 0.218. **Good windows have LESS residual flow than bad.** Because
+ego-motion compensation is translation-only, walking/turning breaks the warp and
+raises residual everywhere. The strongest cue is therefore closer to a "wearer is
+NOT walking" detector than a "work is happening" detector. Judge-facing wording
+must be corrected. `concentration` (0.759) and `coh_std` (0.721) point the
+expected way.
+`pallet` is a per-clip SIGN INVERSION (raw 0.273, pallet2 0.750); label-free
+per-clip pooling lifts pallet (abs_z 0.606) but costs the pooled score. Live lead
+= per-clip sign calibration, not a new feature.
+
 ## The decisive finding
 Tensor-level synthetic negatives make the model score **0.351 on real windows**
 while looking fine on synthetic-inclusive data. It learns the approximation, not
