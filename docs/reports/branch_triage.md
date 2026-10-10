@@ -221,6 +221,13 @@ I ran the suite **once per checkout** as instructed (three light runs ≤ 32 s e
 
 ## 8. What was landed on `b/triage` (and what was deliberately not done)
 
+> **Branch-lineage caveat (read before merging PR #94).** `b/triage` was cut from `pod/base`, so the
+> PR diff against `main` contains the whole pod/base tree (132 files) and GitHub reports the PR
+> `CONFLICTING`. The **LB5 payload is exactly commit `056c68f` — 2 files** (this report +
+> `experiments/registry.jsonl`). Do **not** merge the branch wholesale: cherry-pick `056c68f` onto
+> main (or rebase `b/triage` onto main in a scratch copy). Re-cutting/force-pushing `b/triage` was
+> out of scope for this worker (never force-push).
+
 Landed in this PR:
 * this triage report (`docs/reports/branch_triage.md`) — the replacement for the missing
   `handover/BRANCH_TRIAGE_REPORT.md`;
