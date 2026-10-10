@@ -15,13 +15,17 @@ What it does
 2. Streams the images in small batches (memory-safe: decode with PIL,
    immediately convert to 64x64 grayscale for the pHash, close the image),
    computes a pHash per frame.
-3. Removes near-duplicate frames (pHash Hamming distance <= 4) BEFORE
-   splitting, so no near-duplicate pair can end up in two different splits.
-4. Assigns the surviving frames to train / calibration / test with a
-   deterministic seeded hash order inside each stratum
-   (source_dataset x hand_count x active_labor), so the split is stratified
-   by source and hand count and keeps the label balance.
-5. Writes the manifests and a report JSON under ``eval/results/``.
+3. Removes near-duplicate frames as CONNECTED COMPONENTS under pHash
+   Hamming distance <= 4 (exact-hash collapse + multi-index blocking +
+   union-find, NO bucket-size cutoff) and assigns each component WHOLLY to
+   one split, so no near-duplicate pair spans two splits.
+4. Assigns components to train / calibration / test with a deterministic
+   seeded order inside each majority-vote stratum
+   (source_dataset x hand_count x active_labor), with per-stratum frame
+   targets from largest-remainder 70/15/15 (exact up to the largest
+   component in the stratum).
+5. Writes the manifests and a report JSON under ``eval/results/``, including
+   peak RSS.
 
 The ``active_labor`` labels in these files were produced by gemini-2.5-flash
 and were NOT human-checked. See ``eval/README.md``.
@@ -29,9 +33,6 @@ and were NOT human-checked. See ``eval/README.md``.
 NOT DONE:
 - No model baselines live here yet (see ``eval/README.md``); this module only
   builds the split manifests.
-- ``jadal.certify`` does not exist on the branch this was written against, so
-  nothing in ``eval`` imports it yet except an optional try/except inside
-  ``eval/calibration_report.py``.
 - The pHash cache is invalidated by ``PHASH_VERSION`` only; if the input
   parquet files change, delete ``eval/results/phash_cache.json`` or pass
   ``--no-cache``.
@@ -43,6 +44,7 @@ import argparse
 import hashlib
 import json
 import math
+import resource
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -61,6 +63,7 @@ PARQUET_FILES = ("ego4d.parquet", "egocentric_10k.parquet", "epic_kitchens.parqu
 RESULTS_DIR = Path(__file__).resolve().parent / "results"
 
 COLUMNS = ["frame_id", "image", "source_dataset", "hand_count", "active_labor"]
+META_COLUMNS = ["frame_id", "source_dataset", "hand_count", "active_labor"]  # never image bytes
 HAND_COUNTS = (0, 1, 2)
 LABEL_VALUES = ("yes", "no")
 
@@ -72,7 +75,7 @@ DEFAULT_SEED = 1234
 DEFAULT_RATIOS = (0.70, 0.15, 0.15)
 DEFAULT_DUP_THRESHOLD = 4
 DEFAULT_WORKERS = 4
-DEFAULT_BATCH_SIZE = 256
+DEFAULT_BATCH_SIZE = 64
 CHUNK = 32  # rows submitted to the thread pool at once (bounds decode memory)
 
 SPLIT_NAMES = ("train", "calibration", "test")
@@ -80,6 +83,11 @@ SPLIT_NAMES = ("train", "calibration", "test")
 
 def log(msg: str) -> None:
     print(f"[make_splits] {msg}", flush=True)
+
+
+def peak_rss_mb() -> float:
+    """Peak resident set size of this process in MiB (ru_maxrss is KiB on Linux)."""
+    return round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024.0, 1)
 
 
 # ---------------------------------------------------------------------------
@@ -96,7 +104,11 @@ def _dist(values: Iterable[object]) -> dict[str, int]:
 
 
 def scan_metadata(data_dir: Path, files: Sequence[str] = PARQUET_FILES) -> dict:
-    """Row counts and label distributions per file, without decoding images."""
+    """Row counts and label distributions per file, without decoding images.
+
+    Reads only META_COLUMNS: the ``image`` column is never requested, so no
+    image bytes are materialised here (review I3).
+    """
     report: dict = {"data_dir": str(data_dir), "files": {}, "frame_id_duplicates": []}
     seen_frames: dict[str, str] = {}
     for name in files:
@@ -107,7 +119,7 @@ def scan_metadata(data_dir: Path, files: Sequence[str] = PARQUET_FILES) -> dict:
         labels: list[str] = []
         sources: list[str] = []
         id_lengths: list[int] = []
-        for batch in pf.iter_batches(batch_size=2048, columns=COLUMNS):
+        for batch in pf.iter_batches(batch_size=2048, columns=META_COLUMNS):
             for r in batch.to_pylist():
                 rows += 1
                 hand_counts.append(int(r["hand_count"]))
@@ -203,8 +215,10 @@ def hash_parquet(
     """Stream one parquet file and return one record per frame (no images kept).
 
     ``only_frames`` restricts decoding to those frame_ids (frames already in the
-    cache are skipped, so a re-run only pays for the missing ones).
+    cache are skipped, so a re-run only pays for the missing ones). At most
+    ``batch_size`` (clamped to 64) encoded rows are materialised at once.
     """
+    batch_size = max(1, min(int(batch_size), 64))
     out: list[dict] = []
     pf = pq.ParquetFile(path)
     seen = 0
@@ -271,7 +285,7 @@ def hash_dataset(
         cached_rows: list[dict] = []
         need: set[str] = set()
         seen = 0
-        for batch in pf.iter_batches(batch_size=2048, columns=COLUMNS):
+        for batch in pf.iter_batches(batch_size=2048, columns=META_COLUMNS):
             for r in batch.to_pylist():
                 seen += 1
                 if limit is not None and seen > limit:
@@ -302,7 +316,7 @@ def hash_dataset(
 
 
 # ---------------------------------------------------------------------------
-# stage 3: near-duplicate removal (pHash Hamming <= threshold)
+# stage 3: near-duplicate CONNECTED COMPONENTS (pHash Hamming <= threshold)
 # ---------------------------------------------------------------------------
 
 
@@ -323,11 +337,20 @@ def _block_keys(phash: str, blocks: int = 4) -> Iterator[tuple[int, int]]:
             yield (b, block ^ (1 << i))
 
 
-def dedup(records: Sequence[dict], threshold: int = DEFAULT_DUP_THRESHOLD) -> tuple[list[dict], dict]:
-    """Collapse near-duplicate frames (pHash Hamming <= threshold) into one representative.
+def find_components(
+    records: Sequence[dict], threshold: int = DEFAULT_DUP_THRESHOLD
+) -> tuple[list[list[int]], dict]:
+    """Connected components of frames under pHash Hamming <= threshold.
 
-    Returns (kept_records, report). The representative of a duplicate group is the
-    smallest frame_id in that group, so the result does not depend on input order.
+    No bucket-size cutoff: exact-duplicate hash groups are collapsed first
+    (O(n) dict grouping, no pairwise work), then multi-index blocking finds
+    candidate pairs among the distinct hashes and EVERY candidate pair is
+    compared exactly. A huge group of identical hashes (e.g. hundreds of
+    all-zero pHashes) is simply one component, never skipped.
+
+    Returns (components, report). Each component is a list of record indices
+    sorted by (frame_id, source_dataset); the component list itself is sorted
+    by its smallest frame_id, so the result is input-order independent.
     """
     n = len(records)
     parent = list(range(n))
@@ -343,44 +366,79 @@ def dedup(records: Sequence[dict], threshold: int = DEFAULT_DUP_THRESHOLD) -> tu
         if ri != rj:
             parent[max(ri, rj)] = min(ri, rj)
 
-    buckets: dict[tuple[int, int], list[int]] = {}
-    for idx, rec in enumerate(records):
-        for key in _block_keys(rec["phash"]):
-            buckets.setdefault(key, []).append(idx)
-
     pairs_checked = 0
-    bucket_skipped = 0
+    # pass 1: exact-duplicate hashes need no pairwise comparison at all
+    by_hash: dict[str, list[int]] = {}
+    for idx, rec in enumerate(records):
+        by_hash.setdefault(rec["phash"], []).append(idx)
+    for members in by_hash.values():
+        first = members[0]
+        for other in members[1:]:
+            union(first, other)
+    # pass 2: blocking over DISTINCT hashes only; every bucket fully compared
+    distinct = sorted(by_hash)
+    buckets: dict[tuple[int, int], list[int]] = {}
+    for h in distinct:
+        for key in _block_keys(h):
+            buckets.setdefault(key, []).append(h)
+    max_bucket = 0
+    seen_pairs: set[tuple[str, str]] = set()
     for members in buckets.values():
+        if len(members) > max_bucket:
+            max_bucket = len(members)
         if len(members) < 2:
-            continue
-        if len(members) > 400:  # degenerate bucket (all-identical hashes); keep it cheap
-            bucket_skipped += 1
             continue
         for pos in range(len(members)):
             for other in range(pos + 1, len(members)):
-                i, j = members[pos], members[other]
+                ha, hb = members[pos], members[other]
+                if ha == hb or (ha, hb) in seen_pairs or (hb, ha) in seen_pairs:
+                    continue
+                seen_pairs.add((ha, hb))
                 pairs_checked += 1
-                if hamming(records[i]["phash"], records[j]["phash"]) <= threshold:
-                    union(i, j)
+                if hamming(ha, hb) <= threshold:
+                    union(by_hash[ha][0], by_hash[hb][0])
 
     groups: dict[int, list[int]] = {}
     for idx in range(n):
         groups.setdefault(find(idx), []).append(idx)
-
-    kept: list[dict] = []
-    removed = 0
-    clusters = 0
-    removed_map: list[dict] = []
-    for root in sorted(groups):
-        members = groups[root]
-        if len(members) > 1:
-            clusters += 1
-        # representative = smallest frame_id
+    components = []
+    for members in groups.values():
         ordered = sorted(members, key=lambda i: (records[i]["frame_id"], records[i]["source_dataset"]))
-        keep_idx = ordered[0]
+        components.append(ordered)
+    components.sort(key=lambda m: (records[m[0]]["frame_id"], records[m[0]]["source_dataset"]))
+
+    sizes = sorted(len(c) for c in components)
+    size_hist: dict[str, int] = {}
+    for s in sizes:
+        key = str(s) if s <= 10 else ">10"
+        size_hist[key] = size_hist.get(key, 0) + 1
+    report = {
+        "input_rows": n,
+        "n_components": len(components),
+        "kept_rows": len(components),
+        "removed_rows": n - len(components),
+        "multiframe_components": sum(1 for c in components if len(c) > 1),
+        "largest_component": sizes[-1] if sizes else 0,
+        "component_size_histogram": dict(sorted(size_hist.items())),
+        "hash_pairs_checked": pairs_checked,
+        "distinct_hashes": len(distinct),
+        "max_bucket_members": max_bucket,
+        "bucket_cutoff": None,
+        "threshold_hamming": threshold,
+    }
+    return components, report
+
+
+def component_records(
+    records: Sequence[dict], components: Sequence[Sequence[int]]
+) -> tuple[list[dict], list[dict]]:
+    """Representative (smallest frame_id) per component + removed-member map."""
+    kept: list[dict] = []
+    removed_map: list[dict] = []
+    for members in components:
+        keep_idx = members[0]
         kept.append(records[keep_idx])
-        for other in ordered[1:]:
-            removed += 1
+        for other in members[1:]:
             removed_map.append(
                 {
                     "frame_id": records[other]["frame_id"],
@@ -388,63 +446,101 @@ def dedup(records: Sequence[dict], threshold: int = DEFAULT_DUP_THRESHOLD) -> tu
                     "hamming": hamming(records[other]["phash"], records[keep_idx]["phash"]),
                 }
             )
-    report = {
-        "input_rows": n,
-        "kept_rows": len(kept),
-        "removed_rows": removed,
-        "duplicate_groups": clusters,
-        "hash_pairs_checked": pairs_checked,
-        "skipped_large_buckets": bucket_skipped,
-        "threshold_hamming": threshold,
-        "removed": removed_map,
-    }
-    return kept, report
+    return kept, removed_map
 
 
 # ---------------------------------------------------------------------------
-# stage 4: stratified split
+# stage 4: component-level stratified split (largest remainder)
 # ---------------------------------------------------------------------------
 
 
-def _bucket(frame_id: str, seed: int, cell: tuple) -> str:
-    key = f"{seed}|{cell[0]}|{cell[1]}|{cell[2]}|{frame_id}"
+def _component_key(
+    records: Sequence[dict], members: Sequence[int], seed: int, stratum: tuple
+) -> str:
+    first = min(records[i]["frame_id"] for i in members)
+    key = f"{seed}|{stratum[0]}|{stratum[1]}|{stratum[2]}|{first}"
     return hashlib.sha256(key.encode("utf-8")).hexdigest()
+
+
+def _majority(values: list) -> object:
+    """Most common value; ties broken by sorted order (deterministic)."""
+    counts: dict[str, int] = {}
+    for v in values:
+        counts[str(v)] = counts.get(str(v), 0) + 1
+    top = max(counts.values())
+    return sorted(k for k, v in counts.items() if v == top)[0]
+
+
+def component_stratum(records: Sequence[dict], members: Sequence[int]) -> tuple:
+    """Stratum of a component = majority (source, hand_count, active_labor).
+
+    Near-duplicate frames almost always agree; on disagreement the majority
+    wins and ties break toward the smallest value, deterministically.
+    hand_count is restored to int so downstream code is unchanged.
+    """
+    src = _majority([records[i]["source_dataset"] for i in members])
+    hand = _majority([records[i]["hand_count"] for i in members])
+    label = _majority([records[i]["active_labor"] for i in members])
+    return (str(src), int(hand), str(label))
+
+
+def largest_remainder(n: int, ratios: Sequence[float]) -> dict[str, int]:
+    """Split n frames over SPLIT_NAMES with exact totals (largest remainder).
+
+    Floors first, then remaining seats go to the largest fractional parts;
+    ties break in SPLIT_NAMES order. Sums to exactly n.
+    """
+    floors = [math.floor(float(r) * n) for r in ratios]
+    rest = n - sum(floors)
+    fracs = sorted(
+        range(len(ratios)),
+        key=lambda i: (-(float(ratios[i]) * n - floors[i]), i),
+    )
+    counts = list(floors)
+    for i in fracs[:rest]:
+        counts[i] += 1
+    return {name: counts[k] for k, name in enumerate(SPLIT_NAMES)}
 
 
 def assign_splits(
     records: Sequence[dict],
+    components: Sequence[Sequence[int]],
     seed: int = DEFAULT_SEED,
     ratios: Sequence[float] = DEFAULT_RATIOS,
-    min_cell_for_split: int = 4,
 ) -> dict:
-    """Assign each record to train/calibration/test, stratified per (source, hand_count, label).
+    """Assign each COMPONENT wholly to one split, stratified, near-exact totals.
 
-    Deterministic: the order inside a stratum comes from a seeded SHA-256 of the
-    frame_id, so the same records + seed always give the same assignment.
+    Components are grouped by their stratum (majority vote, see
+    component_stratum). Inside a stratum, components are ordered by a seeded
+    SHA-256 of their smallest frame_id; per-stratum frame targets come from
+    largest_remainder, and each whole component goes to the split with the
+    largest remaining deficit (ties in SPLIT_NAMES order). A component never
+    spans two splits, so no Hamming <= threshold pair can leak across splits.
+
+    Deterministic in the records + seed. Returns {"assignment", "strata"} with
+    the assignment covering every frame_id.
     """
-    cells: dict[tuple, list[dict]] = {}
-    for rec in records:
-        cell = (rec["source_dataset"], int(rec["hand_count"]), str(rec["active_labor"]))
-        cells.setdefault(cell, []).append(rec)
+    by_stratum: dict[tuple, list[Sequence[int]]] = {}
+    for members in components:
+        by_stratum.setdefault(component_stratum(records, members), []).append(members)
 
     assignment: dict[str, str] = {}
     strata: dict[str, dict[str, int]] = {}
-    for cell in sorted(cells):
-        members = sorted(cells[cell], key=lambda r: (_bucket(r["frame_id"], seed, cell), r["frame_id"]))
-        n = len(members)
-        r_train, r_cal, r_test = (float(x) for x in ratios)
-        if n < min_cell_for_split:
-            counts = {"train": n, "calibration": 0, "test": 0}
-        else:
-            n_test = min(n, math.ceil(r_test * n))
-            n_cal = min(n - n_test, math.ceil(r_cal * n))
-            counts = {"train": n - n_cal - n_test, "calibration": n_cal, "test": n_test}
-        strata["|".join(str(c) for c in cell)] = counts
-        pos = 0
-        for split in SPLIT_NAMES:
-            for _ in range(counts[split]):
-                assignment[members[pos]["frame_id"]] = split
-                pos += 1
+    for stratum in sorted(by_stratum):
+        comps = sorted(by_stratum[stratum], key=lambda m: _component_key(records, m, seed, stratum))
+        total_frames = sum(len(m) for m in comps)
+        targets = largest_remainder(total_frames, ratios)
+        remaining = dict(targets)
+        for members in comps:
+            # split with the largest unmet target; ties in SPLIT_NAMES order
+            best = max(SPLIT_NAMES, key=lambda s: (remaining[s], -SPLIT_NAMES.index(s)))
+            for i in members:
+                assignment[records[i]["frame_id"]] = best
+            remaining[best] -= len(members)
+        strata["|".join(str(c) for c in stratum)] = {
+            s: sum(len(m) for m in comps if assignment[records[m[0]]["frame_id"]] == s)
+            for s in SPLIT_NAMES
+        }
     return {"assignment": assignment, "strata": strata}
 
 
@@ -491,6 +587,7 @@ def build_manifest(
     manifest = {
         "created_utc": _utc_now(),
         "tool": "eval/make_splits.py",
+        "peak_rss_mb": peak_rss_mb(),
         "data_dir": str(data_dir),
         "files": list(files),
         "seed": int(seed),
@@ -535,9 +632,11 @@ def print_split_report(manifest: dict) -> None:
     print("\n=== split report ===")
     print(f"seed={manifest['seed']} ratios={manifest['ratios']} phash={manifest['phash_version']}")
     print(f"rows in dataset: {manifest['dataset_report']['total_rows']}, "
-          f"kept after dedup: {manifest['dedup']['kept_rows']} "
-          f"(removed {manifest['dedup']['removed_rows']} near-duplicates in "
-          f"{manifest['dedup']['duplicate_groups']} groups, hamming <= {manifest['dedup']['threshold_hamming']})")
+          f"{manifest['dedup']['n_components']} near-duplicate components "
+          f"(removed {manifest['dedup']['removed_rows']} frames in "
+          f"{manifest['dedup']['multiframe_components']} multi-frame components, "
+          f"largest {manifest['dedup']['largest_component']}, "
+          f"hamming <= {manifest['dedup']['threshold_hamming']}, no bucket cutoff)")
     print(f"\n{'split':<14}{'count':>8}{'fraction':>10}  " + f"{'sources':<46}{'hand_count':<20}{'active_labor':<16}")
     print("-" * 112)
     for name in SPLIT_NAMES:
@@ -561,6 +660,8 @@ def _utc_now() -> str:
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Build stratified train/calibration/test manifests for the ego10k eval set.")
     p.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
+    p.add_argument("--files", nargs="+", default=list(PARQUET_FILES),
+                   help="parquet file names inside --data-dir")
     p.add_argument("--out-dir", type=Path, default=RESULTS_DIR)
     p.add_argument("--seed", type=int, default=DEFAULT_SEED)
     p.add_argument("--ratios", type=str, default="70,15,15", help="train,calibration,test percentages")
@@ -583,7 +684,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
     log("stage 1/3: scanning parquet metadata (no images decoded)")
-    metadata = scan_metadata(args.data_dir)
+    metadata = scan_metadata(args.data_dir, files=args.files)
     print_metadata_report(metadata)
     (args.out_dir / "dataset_report.json").write_text(json.dumps(metadata, indent=2, sort_keys=True))
 
@@ -594,6 +695,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     log("stage 2/3: computing pHashes (streaming, images downscaled immediately)")
     records = hash_dataset(
         args.data_dir,
+        files=args.files,
         workers=args.workers,
         batch_size=args.batch_size,
         limit=args.limit,
@@ -602,30 +704,32 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     log(f"  hashed {len(records)} frames in {time.time() - started:.1f}s")
 
-    log("stage 3/3: dedup + stratified split")
-    kept, dup_report = dedup(records, threshold=args.dup_threshold)
-    log(f"  kept {len(kept)}, removed {dup_report['removed_rows']} near-duplicates "
-        f"({dup_report['duplicate_groups']} groups, {dup_report['hash_pairs_checked']} pairs checked)")
-    split = assign_splits(kept, seed=args.seed, ratios=ratios)
+    log("stage 3/3: connected components + component-level stratified split")
+    components, comp_report = find_components(records, threshold=args.dup_threshold)
+    kept, removed_map = component_records(records, components)
+    log(f"  {comp_report['input_rows']} frames -> {comp_report['n_components']} components "
+        f"({comp_report['multiframe_components']} multi-frame, largest {comp_report['largest_component']}, "
+        f"{comp_report['hash_pairs_checked']} pairs checked, max bucket {comp_report['max_bucket_members']})")
+    split = assign_splits(records, components, seed=args.seed, ratios=ratios)
     manifest = build_manifest(
-        kept,
+        records,
         split["assignment"],
         split["strata"],
         seed=args.seed,
         ratios=ratios,
-        dup_report=dup_report,
+        dup_report={**comp_report, "removed": removed_map},
         metadata_report=metadata,
         data_dir=args.data_dir,
-        files=PARQUET_FILES,
+        files=args.files,
         dup_threshold=args.dup_threshold,
     )
     out_path = args.out_dir / "splits.json"
     out_path.write_text(json.dumps(manifest, indent=2, sort_keys=True))
     (args.out_dir / "duplicates_removed.json").write_text(
-        json.dumps({"threshold_hamming": args.dup_threshold, "removed": dup_report["removed"]}, indent=2)
+        json.dumps({"threshold_hamming": args.dup_threshold, "removed": removed_map}, indent=2)
     )
     print_split_report(manifest)
-    log(f"wrote {out_path} ({out_path.stat().st_size / 1e6:.2f} MB) in {time.time() - started:.1f}s total")
+    log(f"wrote {out_path} ({out_path.stat().st_size / 1e6:.2f} MB) in {time.time() - started:.1f}s total, peak RSS {peak_rss_mb()} MiB")
     return 0
 
 

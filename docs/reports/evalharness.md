@@ -76,3 +76,47 @@ apart from the `created_utc` field.
   artifacts are committed.
 - Contract proposal: none needed — `docs/SPEC.md` already covers
   `jadal/certify.py`; this module only consumes it optionally.
+
+## Fix round 1 (review rulings C1, C2, I3–I6)
+
+- **C1 — connected components, no cutoff, no leakage.** `dedup()` (with its
+  >400 bucket skip) is replaced by `find_components()`: exact-duplicate
+  hashes collapse in O(n) first, then multi-index blocking compares *every*
+  candidate pair (`bucket_cutoff: None` in the report). Each component is
+  assigned wholly to one split; the stratum is the majority
+  (source, hand_count, active_labor) vote with deterministic tie-breaks.
+  Per-stratum frame targets use largest-remainder 70/15/15; components go to
+  the split with the largest remaining deficit. New `splits.json` (seed 1234):
+  train 21001 / calibration 4501 / test 4498 (fractions 0.7/0.15/0.1499).
+- **Leakage proof** (`eval/check_leakage.py`):
+  `[check_leakage] 30000 frames, threshold=4: cross-split pairs at Hamming <= threshold: 0`
+- **C2 — select on calibration, report on test.** `calibration_report` takes
+  `--select-split` (default `calibration` with `--splits`) and
+  `--report-split`, refuses with an error on any frame_id overlap, chooses
+  the threshold with `jadal.certify.pick_threshold(target_err, delta)` on the
+  selection set only, and reports the threshold's *observed* (not certified)
+  error/coverage on the report set. Demo run on synthetic predictions:
+  selection calibration n=4501 → threshold 0.5005 (upper_bound 0.0034 at
+  delta=0.1), test n=4498 accuracy 0.9964, ECE 0.0712, sources
+  `jadal.certify` throughout.
+- **I3 — memory.** Metadata passes read only `META_COLUMNS` (no `image`
+  bytes); image batches clamped to ≤ 64 rows. Peak RSS recorded in the
+  manifest and console: full run peaked at **2687.1 MiB** (blocking
+  pair-set dominates; box has ~15 GB).
+- **I4 — demo names.** Committed demo artifacts renamed to
+  `DEMO_synthetic_predictions.json`, `DEMO_synthetic_calibration.json/.png`
+  (predictions file also carries `"synthetic_demo_data": true` inside).
+- **I5/I6 — tests.** 26 eval tests: large-bucket collapse (>400 identical
+  hashes → one component), component atomicity across disagreeing strata,
+  planted-leak detector check, imageless-parquet metadata scan, CLI
+  determinism (byte-identical manifests modulo `created_utc`; `peak_rss_mb`
+  excluded), overlap refusal, largest-remainder exactness.
+- **Test command + tail (real):**
+  `cd /home/parshu/projects/jadal-qa-wt/evalharness && PYTHONNOUSERSITE=1 /home/parshu/envs/jadal/bin/python -m unittest discover -s tests`
+  → `Ran 239 tests ... FAILED (failures=1, errors=1)` — all 26 eval tests
+  pass; the 1 failure + 1 error are pre-existing `tests/test_voicebank.py`
+  items (verified failing with my changes stashed; owned by another module,
+  untouched).
+- First-pass pHash timing (~163 s, single observed run, review minor #10).
+  Review minors #7 (ambiguous dict order now refused), #8 (chained
+  expression split), #9 (soft-label binarisation documented) fixed.

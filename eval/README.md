@@ -35,12 +35,14 @@ python -m eval.make_splits --report-only
 # 2. full pipeline: pHash all frames -> dedup -> stratified manifests
 python -m eval.make_splits [--seed 1234] [--dup-threshold 4] [--workers 4]
 
-# 3. calibration report for a predictions file (optionally test split only)
-python -m eval.calibration_report --predictions eval/results/predictions.json
+# 3. calibration report: threshold selected on calibration, reported on test
 python -m eval.calibration_report --predictions eval/results/predictions.json \
-    --splits eval/results/splits.json --split test
+    --splits eval/results/splits.json --select-split calibration --report-split test
 
-# 4. unit tests (synthetic fixtures, no real data needed)
+# 4. leakage proof (must print 0 cross-split pairs)
+python -m eval.check_leakage
+
+# 5. unit tests (synthetic fixtures, no real data needed)
 python -m unittest discover -s tests -v
 ```
 
@@ -52,45 +54,61 @@ python -m unittest discover -s tests -v
    decodes with PIL, immediately converts to 64x64 grayscale, computes
    `imagehash.phash`, closes the image. A cache
    (`eval/results/phash_cache.json`) makes re-runs cheap; `--no-cache` to skip.
-3. **Near-duplicate removal** — pHash Hamming distance ≤ `--dup-threshold`
-   (default 4) groups frames via blocking + union-find *before* splitting, so
-   no near-duplicate pair can land in two different splits. The kept
-   representative is the smallest `frame_id` (order-independent).
-   Removed pairs go to `eval/results/duplicates_removed.json`.
-4. **Stratified split** — deterministic seeded SHA-256 ordering inside each
-   `(source_dataset, hand_count, active_labor)` cell, assigned 70/15/15 to
-   `train` / `calibration` / `test`, exact per cell (tiny cells with < 4 rows
-   stay whole in train). Manifest + split report: `eval/results/splits.json`.
+3. **Near-duplicate CONNECTED COMPONENTS** — pHash Hamming distance ≤
+   `--dup-threshold` (default 4) groups frames via exact-hash collapse +
+   multi-index blocking + union-find, with **no bucket-size cutoff** (a huge
+   group of identical hashes is simply one component). Each component is
+   assigned **wholly to one split**, so no near-duplicate pair can span two
+   splits (`python -m eval.check_leakage` proves it: 0 cross-split pairs).
+   Removed non-representative members go to
+   `eval/results/duplicates_removed.json`.
+4. **Stratified split** — components are grouped by stratum = majority
+   `(source_dataset, hand_count, active_labor)` vote (ties break
+   deterministically). Per-stratum frame targets come from largest-remainder
+   70/15/15, and each whole component goes to the split with the largest
+   remaining deficit, so per-stratum totals are exact up to the largest
+   component in the stratum. Manifest + split report:
+   `eval/results/splits.json` (includes `peak_rss_mb`).
 
-Memory safety: only `--batch-size` encoded rows are ever materialised; decoded
-images live only inside worker threads. Never prints image bytes or rows.
+Memory safety: metadata passes never request the `image` column; image reads
+use batches of at most 64 rows, each image is downscaled to 64x64 grayscale
+immediately and closed. Never prints image bytes or rows.
 
 ### `eval/calibration_report.py`
 
 Input: JSON list (or `{"predictions": [...]}`) of
 `{"frame_id", "probs", "label"}` where `probs` is a float, `[p_no, p_yes]`,
-or `{"yes": p, "no": q}` / `{"0": .., "1": ..}`, and `label` is
-`"yes"`/`"no"`/`0`/`1`. Unparseable records are counted as `skipped`.
+or `{"yes": p, "no": q}` / `{"0": .., "1": ..}` (a two-key dict without a
+recognised positive key is refused, not guessed), and `label` is
+`"yes"`/`"no"`/`0`/`1` (soft labels in (0, 1) are binarised at 0.5).
+Unparseable records are counted as `skipped`.
 `--write-example PATH` writes a schema example.
 
 Operating convention: binary classifier with confidence `max(p, 1-p)`,
-prediction `1 iff p >= 0.5`; the risk-coverage curve is "accept if confidence
-≥ threshold". Uses `jadal.certify.ece` / `risk_coverage` / `pick_threshold`
-when that module is importable, otherwise local implementations of the same
-formulas; the JSON records which source produced each number
-(`ece_source`, `risk_coverage_source` — currently `local_fallback` because
-`jadal/certify.py` does not exist yet on this branch).
+prediction `1 iff p >= 0.5`. The accept threshold is chosen on the
+SELECTION set (default `--select-split calibration`) with
+`jadal.certify.pick_threshold` (fixed-sequence testing, exact-binomial
+certificate at `--delta`, default 0.1); accuracy, ECE and the
+risk-coverage curve are computed on the REPORT set (`--report-split test`).
+Selection and report frame_ids must be disjoint — the tool exits with an
+error otherwise. The threshold's error/coverage on the report set is
+reported as *observed*, never certified (the certificate lives on the
+selection set). Uses `jadal.certify.ece` / `risk_coverage` /
+`pick_threshold` when that module is importable, otherwise local
+implementations of the same formulas; the JSON records which source
+produced each number.
 
-Outputs: `eval/results/calibration.json` (accuracy, ECE, full curve,
-threshold pick for `--target-error`, default 0.05) and
-`eval/results/calibration.png` (reliability diagram + accuracy/error vs
-coverage, matplotlib `Agg`).
+Outputs: `eval/results/calibration.json` and `eval/results/calibration.png`
+(reliability diagram + accuracy/error vs coverage, matplotlib `Agg`).
+Files prefixed `DEMO_synthetic_*` are synthetic demo data (noisy copies of
+the auto-labels, for pipeline smoke tests only); real model outputs use the
+unprefixed names (`predictions.json`, `calibration.json`, `calibration.png`).
 
 ## NOT DONE
 
 - No model baselines yet: there is no `predictions.json` producer. The
   calibration report runs on caller-supplied predictions only.
-- `jadal/certify.py` does not exist yet, so all numbers come from the local
-  fallback (clearly labelled in the output).
 - pHash cache invalidation is by recipe version only; re-run with
   `--no-cache` if the input parquet files change.
+- `eval/check_leakage.py` checks pHash leakage only; semantic near-duplicates
+  with very different hashes are out of scope.

@@ -4,7 +4,16 @@ Usage (from the repo root):
 
     /home/parshu/envs/jadal/bin/python -m eval.calibration_report \
         --predictions eval/results/predictions.json \
-        --splits eval/results/splits.json --split test
+        --splits eval/results/splits.json \
+        --select-split calibration --report-split test
+
+The accept threshold is chosen on the SELECTION set only (default: the
+calibration split) with jadal.certify.pick_threshold (fixed-sequence testing,
+exact-binomial certificate at --delta), and accuracy / ECE / the
+risk-coverage curve are reported on the REPORT set (default: --report-split
+test). Selection and report frame_ids must be disjoint — the tool refuses
+with an error otherwise, so a threshold is never tuned on the set it is
+reported on.
 
 Input (a JSON file): a list of
 ``{"frame_id": str, "probs": float | [p_no, p_yes] | {"yes": p, "no": q} | {"0": .., "1": ..}, "label": "yes"|"no"|0|1}``.
@@ -105,10 +114,10 @@ def _as_p_yes(probs: Any) -> float | None:
                     return _clip(float(keys[key]))
                 except (TypeError, ValueError):
                     return None
-        if len(keys) == 2:  # {"no": .., "yes": ..} spelled differently -> take the larger key? no: ordered
-            values = [float(v) for v in probs.values()]
-            if len(values) == 2:
-                return _clip(values[1])
+        if len(keys) == 2:
+            # Two-key dict without a recognised positive key: order is
+            # arbitrary, so refuse instead of guessing which entry is P(yes).
+            return None
         return None
     elif isinstance(probs, (list, tuple)):
         if len(probs) == 2:
@@ -142,12 +151,14 @@ def _as_label(label: Any) -> int | None:
         return None
     if isinstance(label, bool):
         return int(label)
-    if isinstance(label, (int, float)):
+    if isinstance(label, (int, float)) and not isinstance(label, bool):
         if label == 1:
             return 1
         if label == 0:
             return 0
         if 0.0 < float(label) < 1.0:
+            # A soft label in (0, 1) is binarised at 0.5 (documented choice;
+            # callers needing strict labels should pre-threshold upstream).
             return 1 if float(label) >= 0.5 else 0
         return None
     return None
@@ -173,7 +184,11 @@ def load_predictions(path: Path) -> tuple[list[dict], int]:
             skipped += 1
             continue
         fid = item.get("frame_id", item.get("id"))
-        p_yes = item["probs"].get("p_yes") if isinstance(item.get("probs"), dict) and "p_yes" in item["probs"] else _as_p_yes(item.get("probs", item.get("prob", item.get("p_yes", item.get("score")))))
+        raw_probs = item.get("probs", item.get("prob", item.get("p_yes", item.get("score"))))
+        if isinstance(raw_probs, dict) and "p_yes" in raw_probs:
+            p_yes = _as_p_yes(raw_probs["p_yes"])
+        else:
+            p_yes = _as_p_yes(raw_probs)
         label = item.get("label", item.get("gold", item.get("y_true", item.get("active_labor"))))
         y = _as_label(label)
         if fid is None or p_yes is None or y is None:
@@ -273,26 +288,141 @@ def local_risk_coverage(conf: Sequence[float], correct: Sequence[int]) -> list[d
 # ---------------------------------------------------------------------------
 
 
-def build_report(records: Sequence[dict], bins: int, certify, target_error: float, min_accepted: int) -> dict:
+def _conf_correct(records: Sequence[dict]) -> tuple[list[float], list[int]]:
+    """Predicted-class confidences and argmax-correctness flags."""
     conf = [r["p_yes"] for r in records]
     y = [r["y"] for r in records]
     pred = [int(p >= 0.5) for p in conf]
     correct = [int(pr == int(yi)) for pr, yi in zip(pred, y)]
     confidence = [max(float(p), 1.0 - float(p)) for p in conf]
+    return confidence, correct
+
+
+def local_binomial_upper(errors: int, n: int, delta: float) -> float:
+    """One-sided Clopper-Pearson upper bound (local mirror of certify)."""
+    from scipy.stats import beta
+
+    errors, n = int(errors), int(n)
+    if n <= 0:
+        raise ValueError("n must be positive")
+    if errors == 0:
+        return 1.0 - delta ** (1.0 / n)
+    if errors == n:
+        return 1.0
+    return float(beta.ppf(1.0 - delta, errors + 1, n - errors))
+
+
+def local_pick_threshold(
+    conf: Sequence[float],
+    correct: Sequence[int],
+    target_err: float,
+    delta: float = 0.1,
+    min_accepted: int = DEFAULT_MIN_ACCEPTED,
+) -> dict:
+    """Fixed-sequence threshold scan (local mirror of certify.pick_threshold).
+
+    Candidates are the distinct confidences, strictest first; the scan stops
+    at the first candidate that accepts fewer than min_accepted or whose
+    exact-binomial error upper bound exceeds target_err, and returns the last
+    passer. Same return schema as jadal.certify.pick_threshold.
+    """
+    c = [float(x) for x in conf]
+    ok = [int(x) for x in correct]
+    total = len(c)
+    if total == 0:
+        return {"threshold": None, "accepted": 0, "errors": 0, "upper_bound": None, "coverage": 0.0}
+    best: dict | None = None
+    for threshold in sorted(set(c), reverse=True):
+        accepted = sum(1 for v in c if v >= threshold)
+        errors = sum(1 for v, o in zip(c, ok) if v >= threshold and not o)
+        upper = local_binomial_upper(errors, accepted, delta)
+        if accepted < min_accepted or upper > target_err:
+            break
+        best = {
+            "threshold": _round(threshold),
+            "accepted": accepted,
+            "errors": errors,
+            "upper_bound": _round(upper),
+            "coverage": _round(accepted / total),
+        }
+    if best is not None:
+        return best
+    errors = sum(1 for o in ok if not o)
+    return {
+        "threshold": None,
+        "accepted": total,
+        "errors": errors,
+        "upper_bound": _round(local_binomial_upper(errors, total, delta)),
+        "coverage": 1.0,
+    }
+
+
+def select_threshold(
+    select_records: Sequence[dict],
+    certify,
+    target_error: float,
+    delta: float,
+    min_accepted: int,
+) -> tuple[dict, str]:
+    """Choose the accept threshold on the SELECTION set only."""
+    confidence, correct = _conf_correct(select_records)
+    if certify is not None and hasattr(certify, "pick_threshold"):
+        try:
+            res = certify.pick_threshold(
+                confidence, correct,
+                target_err=target_error, delta=delta, min_accepted=min_accepted,
+            )
+            out = {
+                "threshold": res.get("threshold"),
+                "accepted": res.get("accepted"),
+                "errors": res.get("errors"),
+                "upper_bound": res.get("upper_bound"),
+                "coverage": res.get("coverage"),
+            }
+            return out, "jadal.certify"
+        except Exception as exc:
+            log(f"jadal.certify.pick_threshold failed ({type(exc).__name__}: {exc}); local scan used")
+    return (
+        local_pick_threshold(confidence, correct, target_error, delta, min_accepted),
+        "local_fallback",
+    )
+
+
+def build_report(
+    select_records: Sequence[dict],
+    report_records: Sequence[dict],
+    bins: int,
+    certify,
+    target_error: float,
+    delta: float,
+    min_accepted: int,
+    select_desc: str,
+    report_desc: str,
+) -> dict:
+    """Threshold on the SELECTION set; accuracy/ECE/curve on the REPORT set.
+
+    The selection certificate (exact-binomial upper bound at level delta)
+    comes from the selection set only. Applying the threshold to the report
+    set gives observed coverage/error there — reported separately and never
+    described as certified.
+    """
+    rep_conf = [r["p_yes"] for r in report_records]
+    rep_y = [r["y"] for r in report_records]
+    rep_confidence, rep_correct = _conf_correct(report_records)
 
     ece_source = "local_fallback"
-    ece_value = local_ece(conf, y, bins=bins)
+    ece_value = local_ece(rep_conf, rep_y, bins=bins)
     rc_source = "local_fallback"
-    points = local_risk_coverage(confidence, correct)
+    points = local_risk_coverage(rep_confidence, rep_correct)
 
     if certify is not None:
         try:
-            ece_value = _round(float(certify.ece(conf, y, bins=bins)))
+            ece_value = _round(float(certify.ece(rep_conf, rep_y, bins=bins)))
             ece_source = "jadal.certify"
         except Exception as exc:
             log(f"jadal.certify.ece failed ({type(exc).__name__}: {exc}); local ECE kept")
         try:
-            rc = certify.risk_coverage(confidence, correct)
+            rc = certify.risk_coverage(rep_confidence, rep_correct)
             points = [
                 {"threshold": _round(p["threshold"]), "coverage": _round(p["coverage"]), "error": _round(p["error"])}
                 for p in rc
@@ -301,23 +431,40 @@ def build_report(records: Sequence[dict], bins: int, certify, target_error: floa
         except Exception as exc:
             log(f"jadal.certify.risk_coverage failed ({type(exc).__name__}: {exc}); local curve kept")
 
-    n = len(records)
-    accuracy = _round(sum(correct) / n) if n else 0.0
-    points = [p for p in points if p["error"] is not None]
+    n = len(report_records)
+    accuracy = _round(sum(rep_correct) / n) if n else 0.0
 
-    threshold_info: dict = {"target_error": _round(target_error), "min_accepted": min_accepted}
+    selection, threshold_source = ({"threshold": None}, "none")
     try:
-        threshold_info.update(local_choose_threshold(points, n, target_error, min_accepted, certify))
+        selection, threshold_source = select_threshold(
+            select_records, certify, target_error, delta, min_accepted
+        )
     except Exception as exc:  # never let a threshold hunt kill the report
         log(f"threshold selection failed: {type(exc).__name__}: {exc}")
-        threshold_info["threshold"] = None
+        selection = {"threshold": None}
+
+    # observed operating point of the selected threshold on the REPORT set
+    applied: dict = {"threshold": selection.get("threshold")}
+    if selection.get("threshold") is not None and n:
+        tau = float(selection["threshold"])
+        acc_idx = [i for i, c in enumerate(rep_confidence) if c >= tau]
+        applied["accepted"] = len(acc_idx)
+        applied["coverage"] = _round(len(acc_idx) / n)
+        applied["error"] = _round(1.0 - sum(rep_correct[i] for i in acc_idx) / len(acc_idx)) if acc_idx else None
+        applied["note"] = "observed on the report set; NOT certified (certificate lives on the selection set)"
+    else:
+        applied.update({"accepted": 0, "coverage": 0.0, "error": None,
+                        "note": "no threshold selected; nothing applied"})
 
     return {
         "created_utc": _utc_now(),
         "tool": "eval/calibration_report.py",
+        "selection_set": select_desc,
+        "report_set": report_desc,
+        "n_select": len(select_records),
         "n": n,
-        "n_positive": int(sum(y)),
-        "n_negative": int(n - sum(y)),
+        "n_positive": int(sum(rep_y)),
+        "n_negative": int(n - sum(rep_y)),
         "bins": bins,
         "accuracy": accuracy,
         "ece": _round(ece_value),
@@ -325,45 +472,16 @@ def build_report(records: Sequence[dict], bins: int, certify, target_error: floa
         "risk_coverage_source": rc_source,
         "certify_present": certify is not None,
         "label_note": "labels are gemini-2.5-flash auto-labels, NOT human-checked (eval/README.md)",
-        "threshold": threshold_info,
+        "threshold": {
+            "target_error": _round(target_error),
+            "delta": _round(delta),
+            "min_accepted": min_accepted,
+            "source": threshold_source,
+            "selection": selection,
+            "applied_to_report": applied,
+        },
         "risk_coverage": points,
     }
-
-
-def local_choose_threshold(
-    points: list[dict], n: int, target_error: float, min_accepted: int, certify
-) -> dict:
-    """Pick the accept-threshold with the best coverage at error <= target_error."""
-    def _pick(candidates: list[dict]) -> dict:
-        best = max(candidates, key=lambda p: (p["coverage"], -p["threshold"]))
-        accepted = int(round(best["coverage"] * n))
-        return {
-            "threshold": best["threshold"],
-            "coverage": best["coverage"],
-            "error": best["error"],
-            "accepted": accepted,
-        }
-
-    if certify is not None and hasattr(certify, "pick_threshold"):
-        try:
-            res = certify.pick_threshold(
-                [p["threshold"] for p in points],
-                [int(round((1.0 - p["error"]) * n)) for p in points],
-                target_error=target_error,
-                min_accepted=min_accepted,
-            )
-            return {"threshold": res.get("threshold"), "from": "jadal.certify.pick_threshold", "raw": res}
-        except Exception as exc:
-            log(f"jadal.certify.pick_threshold unusable ({type(exc).__name__}: {exc}); local pick used")
-
-    eligible = [p for p in points if p["error"] <= target_error and int(round(p["coverage"] * n)) >= min_accepted]
-    if not eligible:
-        relaxed = [p for p in points if p["error"] <= target_error]
-        source = "local_min_accepted"
-        if not relaxed:
-            return {"threshold": None, "coverage": 0.0, "error": None, "accepted": 0, "from": "none_eligible"}
-        return {**_pick(relaxed), "from": source}
-    return {**_pick(eligible), "from": "local_min_accepted"}
 
 
 # ---------------------------------------------------------------------------
@@ -431,13 +549,23 @@ def write_png(path: Path, records: Sequence[dict], bins: int, title_suffix: str 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Accuracy-vs-coverage + ECE report for ego10k predictions.")
-    p.add_argument("--predictions", type=Path, default=RESULTS_DIR / "predictions.json")
-    p.add_argument("--splits", type=Path, default=None, help="splits.json manifest; with --split, restrict the report to that split")
-    p.add_argument("--split", type=str, default=None, choices=["train", "calibration", "test"])
+    p.add_argument("--predictions", type=Path, default=RESULTS_DIR / "predictions.json",
+                   help="predictions file for the REPORT set")
+    p.add_argument("--report-split", type=str, default=None, choices=["train", "calibration", "test"],
+                   help="restrict the report set to this split (requires --splits)")
+    p.add_argument("--split", type=str, default=None, choices=["train", "calibration", "test"],
+                   help="deprecated alias for --report-split")
+    p.add_argument("--select-predictions", type=Path, default=None,
+                   help="predictions file for threshold SELECTION (default: same as --predictions)")
+    p.add_argument("--select-split", type=str, default=None, choices=["train", "calibration", "test"],
+                   help="restrict the selection set to this split (requires --splits; "
+                        "default 'calibration' when --splits is given)")
+    p.add_argument("--splits", type=Path, default=None, help="splits.json manifest for split filtering")
     p.add_argument("--json-out", type=Path, default=RESULTS_DIR / "calibration.json")
     p.add_argument("--png-out", type=Path, default=RESULTS_DIR / "calibration.png")
     p.add_argument("--bins", type=int, default=DEFAULT_BINS)
     p.add_argument("--target-error", type=float, default=DEFAULT_TARGET_ERROR)
+    p.add_argument("--delta", type=float, default=0.1, help="error level for the exact-binomial certificate")
     p.add_argument("--min-accepted", type=int, default=DEFAULT_MIN_ACCEPTED)
     p.add_argument("--write-example", type=Path, default=None, help="write a schema example predictions file and exit")
     return p.parse_args(list(argv) if argv is not None else None)
@@ -464,42 +592,89 @@ def main(argv: Sequence[str] | None = None) -> int:
     if not args.predictions.exists():
         raise SystemExit(f"predictions file not found: {args.predictions} (see --write-example)")
 
+    report_split = args.report_split or args.split  # --split is a deprecated alias
+    if report_split and args.splits is None:
+        raise SystemExit("--report-split/--split requires --splits")
+    select_file = args.select_predictions or args.predictions
+    if not select_file.exists():
+        raise SystemExit(f"selection predictions file not found: {select_file}")
+    select_split = args.select_split
+    if select_split and args.splits is None:
+        raise SystemExit("--select-split requires --splits")
+    if args.splits is not None and select_split is None and report_split != "calibration":
+        select_split = "calibration"  # the standard: select on calibration …
+
     records, skipped = load_predictions(args.predictions)
     if not records:
         raise SystemExit("no usable predictions parsed")
     dropped = 0
-    if args.split:
-        if args.splits is None:
-            raise SystemExit("--split requires --splits")
-        records, dropped = restrict_to_split(records, args.splits, args.split)
+    if report_split:
+        records, dropped = restrict_to_split(records, args.splits, report_split)
         if not records:
-            raise SystemExit("no predictions left after restricting to the split")
+            raise SystemExit("no predictions left after restricting to the report split")
+
+    if select_file == args.predictions:
+        select_records = records if report_split is None and select_split is None else None
+        sel_skipped = 0
+        if select_records is None:
+            all_records, sel_skipped = load_predictions(select_file)
+            if select_split:
+                select_records, _ = restrict_to_split(all_records, args.splits, select_split)
+            else:
+                select_records = all_records
+    else:
+        select_records, sel_skipped = load_predictions(select_file)
+        if select_split:
+            if args.splits is None:
+                raise SystemExit("--select-split requires --splits")
+            select_records, _ = restrict_to_split(select_records, args.splits, select_split)
+    if not select_records:
+        raise SystemExit("no predictions left in the selection set")
+
+    # refuse any overlap between selection and report frame_ids
+    overlap = {r["frame_id"] for r in select_records} & {r["frame_id"] for r in records}
+    if overlap:
+        raise SystemExit(
+            f"refusing: {len(overlap)} frame_id(s) are in BOTH the selection and report sets "
+            f"(e.g. {sorted(overlap)[:3]}). Select the threshold on calibration, report on test."
+        )
+
+    select_desc = f"{select_file}" + (f"[{select_split}]" if select_split else "[all]")
+    report_desc = f"{args.predictions}" + (f"[{report_split}]" if report_split else "[all]")
 
     certify = _load_certify()
     report = build_report(
+        select_records,
         records,
         bins=args.bins,
         certify=certify,
         target_error=args.target_error,
+        delta=args.delta,
         min_accepted=args.min_accepted,
+        select_desc=select_desc,
+        report_desc=report_desc,
     )
     report["input"] = {
         "predictions": str(args.predictions),
+        "select_predictions": str(select_file),
         "skipped_records": skipped,
+        "selection_skipped_records": sel_skipped,
         "dropped_outside_split": dropped,
-        "split": args.split,
+        "report_split": report_split,
+        "select_split": select_split,
         "splits_manifest": str(args.splits) if args.splits else None,
     }
 
     args.json_out.parent.mkdir(parents=True, exist_ok=True)
     args.json_out.write_text(json.dumps(report, indent=2, sort_keys=True))
-    title = f" (split={args.split}, n={report['n']})" if args.split else f" (n={report['n']})"
+    title = f" (report={report_desc}, n={report['n']})"
     write_png(args.png_out, records, bins=args.bins, title_suffix=title)
 
     log(
-        f"n={report['n']} skipped={skipped} dropped={dropped} accuracy={report['accuracy']} "
-        f"ece={report['ece']} ({report['ece_source']}) curve={report['risk_coverage_source']} "
-        f"threshold={report['threshold'].get('threshold')} cov={report['threshold'].get('coverage')}"
+        f"select={select_desc} n_sel={report['n_select']} report={report_desc} n={report['n']} "
+        f"accuracy={report['accuracy']} ece={report['ece']} ({report['ece_source']}) "
+        f"threshold={report['threshold']['selection'].get('threshold')} "
+        f"({report['threshold']['source']}) applied_cov={report['threshold']['applied_to_report'].get('coverage')}"
     )
     log(f"wrote {args.json_out} and {args.png_out}")
     return 0
