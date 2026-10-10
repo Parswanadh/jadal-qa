@@ -26,14 +26,15 @@ labeller), the shipped IndEgo-calibrated cascade is **at chance**: score AUROC *
 Source: FACTS §“UPDATE 18:40 IST”; corroborated by registry `E6.03` (0.281 [0.145, 0.434]),
 `E4.03` (0.415), `E1.03` (0.36–0.55).
 
-**Verification note (LEAD B, claim LB1, `b/verify`):** the published 0.529 does **not**
-reproduce from the artifacts shipped in this bundle. Recomputing from
-`caches/ensemble/ood_scores.json` joined to `labels/ood_labels.json` (same 51 good / 9 bad
-label set) gives score AUROC **0.415 [0.207, 0.630]**, **26 of 51** good windows rejected,
-3 of 9 bad, balanced accuracy 0.412 (`p_eg2` 0.586, `p_pixel` 0.342). The qualitative
-finding — at chance with heavy false rejects — is confirmed and is **worse than published**.
-The 0.529 figure is quoted from FACTS.md and is pending re-derivation from the recovered
-frozen artifact (`configs/frozen/ensemble_v1.prereg.json`, PR #97).
+**Verification note (LEAD B, claim LB1, `b/verify`, + independent verifier PR #100):** these
+are **two different scorers and both numbers are correct**. **0.529** is the **PoC cascade as
+shipped** (`eval/results/poc/ood_check_60.json`): AUROC 0.529 [0.316, 0.728], 21 of 51 good
+windows falsely rejected, 5 of 9 bad, balanced accuracy 0.513 — it reproduces exactly.
+**0.415** [0.207, 0.630] is the **frozen two-view ensemble** (`caches/ensemble/ood_scores.json`,
+column `usable_prob`): 26 of 51 good windows rejected, 3 of 9 bad. Both are at chance with
+heavy false rejects, so the out-of-domain failure is confirmed for both. **Do not merge the
+two figures into one.** No artifact drift: the shipped OOD score file is byte-identical to
+`origin/main` (sha256 `300c1eda…`).
 
 ## 3 · What to open
 

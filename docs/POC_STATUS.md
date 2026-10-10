@@ -5,10 +5,11 @@
 > 0.32–0.74, optimistic), **21 of 51 good windows falsely rejected (41%)** and 5 of 9
 > bad, balanced accuracy **0.51**. The dashboard’s ~40% reject share on that footage is
 > therefore **mostly false rejects from domain shift** (480p/10 fps IndEgo → 1080p/30 fps
-> HEVC), **not a quality measure**. The 0.529 itself does **not** reproduce from the
-> artifacts shipped in this bundle (LB1 recompute: AUROC 0.415 [0.207, 0.630], 26/51 good
-> rejected) — see the verification note in §3. In-domain numbers (below) are ~0.8 AUROC and
-> the accuracy gates are **not met**. Nothing here is measured on a Raspberry Pi.
+> HEVC), **not a quality measure**. Two **different** scorers are both at chance here: the
+> **PoC cascade as shipped** 0.529 [0.316, 0.728] (reproduces exactly) and the **frozen
+> two-view ensemble** 0.415 [0.207, 0.630] — see the verification note in §3. In-domain
+> numbers (below) are ~0.8 AUROC and the accuracy gates are **not met**. Nothing here is
+> measured on a Raspberry Pi.
 >
 > Sources for this page: `docs/FACTS.md` (verbatim snapshot, sha256 `77c7331b5e9ca8e8…`)
 > and `experiments/registry.jsonl` (34 entries, rendered to `docs/EXPERIMENTS.md`).
@@ -66,16 +67,16 @@ Corroborating registry results (different protocols, all exploratory at n_bad = 
 AUROC 0.415 on the 480p/30 transcode; `E1.03` frozen IndEgo logistic 0.36–0.55 across
 source fps. **Domain shift is the finding; verdict shares are descriptive.**
 
-> **Verification note (LEAD B, claim LB1, `b/verify`):** the published 0.529 does **not**
-> reproduce from the artifacts shipped in this bundle. Recomputing from
-> `caches/ensemble/ood_scores.json` joined to `labels/ood_labels.json` (same 51 good /
-> 9 bad label set) gives score AUROC **0.415 [0.207, 0.630]**, **26 of 51** good windows
-> rejected, 3 of 9 bad, balanced accuracy 0.412 (`p_eg2` 0.586, `p_pixel` 0.342). The
-> qualitative finding — at chance with heavy false rejects — is confirmed and is **worse
-> than published**. The 0.529 figure is quoted from FACTS.md and is pending re-derivation
-> from the recovered frozen artifact (`configs/frozen/ensemble_v1.prereg.json`, PR #97).
-> (The 0.415 recompute agrees with registry `E4.03`’s exploratory frozen-ensemble OOD
-> AUROC of 0.415.)
+> **Verification note (LEAD B, claim LB1, `b/verify`, + independent verifier PR #100):** these
+> are **two different scorers and both numbers are correct**. **0.529** is the **PoC cascade as
+> shipped** (`eval/results/poc/ood_check_60.json`): AUROC 0.529 [0.316, 0.728], 21 of 51 good
+> windows falsely rejected, 5 of 9 bad, balanced accuracy 0.513 — it reproduces exactly.
+> **0.415** [0.207, 0.630] is the **frozen two-view ensemble** (`caches/ensemble/ood_scores.json`,
+> column `usable_prob`): 26 of 51 good windows rejected, 3 of 9 bad. Both are at chance with
+> heavy false rejects, so the out-of-domain failure is confirmed for both. **Do not merge the
+> two figures into one.** (Registry `E4.03` independently records the frozen-ensemble 0.415 as
+> exploratory; no artifact drift: the shipped OOD score file is byte-identical to `origin/main`,
+> sha256 `300c1eda…`.)
 
 ## 4 · In progress (never reported as results)
 
