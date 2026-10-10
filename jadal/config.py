@@ -25,6 +25,7 @@ class Config:
     batch_size: int = 5            # N segments per batch
     batch_reject_k: int = 1        # reject the batch if rejected_count > k (fixed rule, no guarantee)
     segment_seconds: float = 20.0
+    batch_timeout_s: float = 60.0   # flush a partial batch after this many seconds per site
     seed: int = 1234
     float_decimals: int = 4
     # L0 thresholds (placeholders until calibrated on our own labelled clips)
@@ -45,6 +46,9 @@ class Config:
     voicebank_dir: Path = field(default_factory=lambda: ROOT / "voicebank")
     sop_dir: Path = field(default_factory=lambda: ROOT / "sop")
     web_dir: Path = field(default_factory=lambda: ROOT / "web")
+    # offline mediapipe model files (git-ignored; see models/README.md)
+    face_detector_task: Path = field(default_factory=lambda: ROOT / "models" / "blaze_face_short_range.tflite")
+    hand_landmarker_task: Path = field(default_factory=lambda: ROOT / "models" / "hand_landmarker.task")
     pico_port: str = field(default_factory=lambda: os.environ.get("JADAL_PICO_PORT", "/dev/ttyACM0"))
     pico_baud: int = 115200
     pipeline_version: str = "0.1.0"

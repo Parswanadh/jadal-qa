@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jadal QA — segment dashboard</title>
+<meta name="description" content="Deterministic QA for crowd-captured head-camera video: batch decisions, re-verifiable receipts, risk/coverage and SOP gaps.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121316" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap topbar-row">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-text">
+        <span class="brand-name">Jadal QA</span>
+        <span class="brand-sub">segment QA · verifiable receipts</span>
+      </span>
+    </div>
+
+    <div class="statusstrip" id="pico-status" aria-live="polite" aria-label="Pico status light">
+      <span class="status-led" id="pico-led" data-led="off" aria-hidden="true"></span>
+      <span class="statusstrip-body">
+        <span class="micro">Pico status light</span>
+        <span class="status-line" id="pico-line">checking…</span>
+      </span>
+    </div>
+  </div>
+
+  <nav class="tabs" aria-label="Dashboard screens">
+    <div class="wrap tabs-row" role="tablist">
+      <button class="tab" role="tab" id="tab-batches" aria-controls="view-batches" data-route="batches" aria-selected="true">
+        <span class="tab-name">Batches</span><span class="tab-hint">live list</span>
+      </button>
+      <button class="tab" role="tab" id="tab-segment" aria-controls="view-segment" data-route="segment" aria-selected="false" tabindex="-1">
+        <span class="tab-name">Segment</span><span class="tab-hint">receipt &amp; re-verify</span>
+      </button>
+      <button class="tab" role="tab" id="tab-insights" aria-controls="view-insights" data-route="insights" aria-selected="false" tabindex="-1">
+        <span class="tab-name">Insights</span><span class="tab-hint">risk &amp; gaps</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main" class="wrap">
+
+  <!-- ── Screen 1: batches ─────────────────────────────────────────────── -->
+  <section class="view" id="view-batches" role="tabpanel" aria-labelledby="tab-batches" tabindex="0">
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Batches</h1>
+        <p class="view-sub" id="batches-sub">Every batch decision with its per-segment verdicts.</p>
+      </div>
+      <div class="view-actions">
+        <span class="pill pill-live" id="live-pill" hidden>live</span>
+        <span class="pill pill-mock" id="mock-pill" hidden>mock data</span>
+        <button class="btn" id="batches-refresh" type="button">Refresh</button>
+      </div>
+    </div>
+
+    <div class="filters" id="batches-filters" role="group" aria-label="Filter batches">
+      <button class="chip is-on" type="button" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" type="button" data-filter="reject" aria-pressed="false">Rejected</button>
+      <button class="chip" type="button" data-filter="accept" aria-pressed="false">Accepted</button>
+    </div>
+
+    <p class="micro meta-line" id="batches-meta" hidden></p>
+
+    <div id="batches-body" aria-live="polite" aria-busy="true"></div>
+  </section>
+
+  <!-- ── Screen 2: segment ─────────────────────────────────────────────── -->
+  <section class="view" id="view-segment" role="tabpanel" aria-labelledby="tab-segment" tabindex="0" hidden>
+    <div class="view-head">
+      <div>
+        <a class="backlink" href="#/batches" id="segment-back">← All batches</a>
+        <h1 class="view-title" id="segment-title">Segment</h1>
+        <p class="view-sub" id="segment-sub">Receipt, signals, decisions and re-verification.</p>
+      </div>
+      <div class="view-actions" id="segment-actions"></div>
+    </div>
+
+    <div id="segment-body" aria-live="polite" aria-busy="true"></div>
+  </section>
+
+  <!-- ── Screen 3: insights ────────────────────────────────────────────── -->
+  <section class="view" id="view-insights" role="tabpanel" aria-labelledby="tab-insights" tabindex="0" hidden>
+    <div class="view-head">
+      <div>
+        <h1 class="view-title">Insights</h1>
+        <p class="view-sub">Risk/coverage for the calibrated threshold and where the SOP leaks.</p>
+      </div>
+      <div class="view-actions">
+        <span class="pill pill-mock" id="insights-mock-pill" hidden>mock data</span>
+        <button class="btn" id="insights-refresh" type="button">Refresh</button>
+      </div>
+    </div>
+
+    <div id="insights-body" aria-live="polite" aria-busy="true"></div>
+  </section>
+
+  <footer class="foot">
+    <p id="foot-source">Loading data source…</p>
+    <p class="foot-note">Green, amber and red appear only on verdict chips and the Pico status light. Receipt hashes follow <code>docs/SPEC.md</code>.</p>
+  </footer>
+</main>
+
+<script src="app.js" defer></script>
+</body>
+</html>
