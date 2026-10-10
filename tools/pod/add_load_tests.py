@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Append a `load_tests` hook so bare module-level `test_*` functions are collected by
-`python -m unittest discover` (the repo's canonical runner). Idempotent.
+"""Append a self-contained `load_tests` hook so bare module-level `test_*` functions are collected by
+`python -m unittest discover` (the repo's canonical runner), including a minimal pytest `monkeypatch` shim.
 
 usage: add_load_tests.py <test_file.py> [...]
 """
-import inspect  # noqa: F401  (used inside the generated hook)
 import os
 import re
 import sys
@@ -13,34 +12,65 @@ HOOK = '''
 
 # --- pod: make bare module-level `test_*` functions visible to `unittest discover` ---
 # `unittest` collects only TestCase subclasses; the functions above were written pytest-style and were
-# therefore silently skipped by `python -m unittest discover -s tests`. This hook adapts them.
-def load_tests(loader, tests, pattern):  # noqa: D103
-    import unittest as _u
+# therefore silently skipped by `python -m unittest discover -s tests`. This hook adapts them, including a
+# minimal `monkeypatch` shim (only `setattr` is used) so no test is silently dropped.
+class _PodMonkeyPatch:
+    _MISSING = object()
 
-    class _Missing:
-        pass
+    def __init__(self):
+        self._undo = []
 
-    class _MonkeyPatch:
-        """Minimal pytest `monkeypatch` shim: setattr() only, undone after each test."""
+    def setattr(self, target, name=None, value=_MISSING, raising=True):
+        if isinstance(target, str):  # pytest-style "module.attr" form
+            import importlib
 
-        def __init__(self):
-            self._undo = []
+            mod, _, attr = target.rpartition(".")
+            target, name, value = importlib.import_module(mod), attr, name
+        old = getattr(target, name, self._MISSING)
+        self._undo.append((target, name, old))
+        setattr(target, name, value)
 
-        def setattr(self, target, name, value=None, raising=True):
-            if isinstance(target, str):  # "module.attr" form
-                mod, _, attr = target.rpartition(".")
-                target, name, value = __import__(mod, fromlist=[attr]), attr, name
-            old = getattr(target, name, _Missing)
-            self._undo.append((target, name, old))
-            setattr(target, name, value)
-
-        def undo(self):
-            while self._undo:
-                target, name, old = self._undo.pop()
-                if old is _Missing:
+    def undo(self):
+        while self._undo:
+            target, name, old = self._undo.pop()
+            if old is self._MISSING:
+                try:
                     delattr(target, name)
-                else:
-                    setattr(target, name, old)
+                except AttributeError:
+                    pass
+            else:
+                setattr(target, name, old)
+
+
+def _pod_wrap(fn):
+    def _test(self):
+        import inspect
+        import tempfile
+
+        kwargs = {}
+        params = inspect.signature(fn).parameters
+        mp = _PodMonkeyPatch()
+        _tmp = None
+        if "monkeypatch" in params:
+            kwargs["monkeypatch"] = mp
+        if "tmp_path" in params:
+            _tmp = tempfile.TemporaryDirectory()
+            import pathlib
+
+            kwargs["tmp_path"] = pathlib.Path(_tmp.name)
+        try:
+            fn(**kwargs)
+        finally:
+            mp.undo()
+            if _tmp is not None:
+                _tmp.cleanup()
+
+    return _test
+
+
+def load_tests(loader, tests, pattern):  # noqa: D103
+    import inspect
+    import unittest as _u
 
     class _ModuleTests(_u.TestCase):
         pass
@@ -48,19 +78,8 @@ def load_tests(loader, tests, pattern):  # noqa: D103
     for _name, _fn in sorted(list(globals().items())):
         if not (_name.startswith("test_") and callable(_fn)):
             continue
-        if "monkeypatch" in inspect.signature(_fn).parameters:
-
-            def _wrap(fn):
-                def _test(self):
-                    mp = _MonkeyPatch()
-                    try:
-                        fn(monkeypatch=mp)
-                    finally:
-                        mp.undo()
-
-                return _test
-
-            setattr(_ModuleTests, _name, _wrap(_fn))
+        if {"monkeypatch", "tmp_path"} & set(inspect.signature(_fn).parameters):
+            setattr(_ModuleTests, _name, _pod_wrap(_fn))
         else:
             setattr(_ModuleTests, _name, staticmethod(_fn))
     return _u.TestSuite([loader.loadTestsFromTestCase(_ModuleTests)])
