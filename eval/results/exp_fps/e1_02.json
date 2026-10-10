@@ -1,0 +1,66 @@
+{
+ "experiment": "E1.02",
+ "n": 150,
+ "n_good": 100,
+ "n_bad": 50,
+ "label_source": "human (IndEgo gold)",
+ "protocol": "LOCO, L2-normalised mean embedding + StandardScaler + logistic C=0.01; CI=clip-bootstrap B=1000 seed0",
+ "subsample_rule": "cached 0.5s-spacing rows; 2fps=all rows counts-aware, 1fps=rows ::2, 0.5fps=rows ::4; NO re-embed",
+ "command": "eval/exp_fps/run_eg2.py",
+ "eg2_rows": [
+  {
+   "fps": "2fps",
+   "frames_per_window": 20.0,
+   "auroc": 0.848,
+   "ci95": [
+    0.7344,
+    0.9087
+   ],
+   "bal_acc": 0.77,
+   "delta_vs_2fps": 0.0
+  },
+  {
+   "fps": "1fps",
+   "frames_per_window": 10.0,
+   "auroc": 0.8596,
+   "ci95": [
+    0.7597,
+    0.9139
+   ],
+   "bal_acc": 0.77,
+   "delta_vs_2fps": 0.0116
+  },
+  {
+   "fps": "0.5fps",
+   "frames_per_window": 5.0,
+   "auroc": 0.8702,
+   "ci95": [
+    0.763,
+    0.9243
+   ],
+   "bal_acc": 0.785,
+   "delta_vs_2fps": 0.0222
+  }
+ ],
+ "two_view_prob_avg": [
+  {
+   "fps": "2fps",
+   "auroc": 0.8524,
+   "ci95": [
+    0.724,
+    0.9312
+   ],
+   "bal_acc": 0.79
+  },
+  {
+   "fps": "1fps",
+   "auroc": 0.8538,
+   "ci95": [
+    0.7306,
+    0.9266
+   ],
+   "bal_acc": 0.8
+  }
+ ],
+ "note_5_10fps": "pending GPU-lock re-embed (E1.02b)"
+}
