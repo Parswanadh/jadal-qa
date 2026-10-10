@@ -67,5 +67,7 @@
  "epochs": 20,
  "seed": 0,
  "single_logistic_auroc": 0.8182978565609722,
- "delta_many_minus_single": 0.005382787594775618
+ "delta_many_minus_single": 0.005382787594775618,
+ "single_logistic_balanced_auroc": 0.8212835140487554,
+ "delta_many_minus_balanced_single": 0.0023971301069923845
 }

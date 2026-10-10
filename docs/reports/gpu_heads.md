@@ -16,7 +16,23 @@ Peak VRAM ≤ 3 GiB for our process (measured per run, see JSONs).
   TOO_DARK 6, UNDECODABLE 1). READ-ONLY, never written.
 
 ## M1 frame-level (5-fold stratified CV, nested selection inside train folds)
-(TABLE TO FILL from eval/results/gpu_heads/m1_*.json)
+AI labels, protocol: outer 5-fold stratified; per-fold winner picked by inner
+2-fold CV on the outer-train only, refit, scored held-out. Bootstrap CI95 (n=1000).
+`eval/results/gpu_heads/m1_*.json`. (CPU-fit interim; GPU full-grid queued under flock.)
+
+| features | target (AI) | n (pos rate) | many-heads AUROC [CI95] | single balanced-logistic AUROC | delta |
+|---|---|---|---|---|---|
+| spec-53 | hands≥1 | 10000 (0.964) | 0.824 [0.802, 0.845], bal-acc 0.755, F1 0.877 | 0.821 | **+0.002** |
+| spec-53 | active_labor | 10000 (0.917) | 0.770 [0.753, 0.786], bal-acc 0.704, F1 0.825 | 0.763 | **+0.007** |
+| EG2-768 | hands≥1 | 8000 (0.964) | 0.948 [0.934, 0.961], bal-acc 0.889, F1 0.962 | 0.959 | **−0.011** |
+| EG2+spec | hands≥1 | pending (run in progress) | | | |
+
+Honest read: many-heads + nested selection ≈ a well-specified single
+(class-weighted) logistic head (±0.01) on this AI-labelled frame task — the
+"many heads" win is nil here, not a breakthrough. The big effect is FEATURES:
+EG2-768 (0.95) >> spectral-53 (0.82) for hands-visible. (An unweighted
+single logistic collapses to ~0.50 on these imbalanced labels — reported only
+to document the baseline pitfall, not as a comparison.)
 
 ## M2 human windows (THE KEY TEST)
 Frame head (selected on AI frame labels only) → all 101 frames/window →

@@ -175,7 +175,7 @@ def main():
     X64 = X.astype(np.float64)  # lbfgs stalls on float32 with ill-conditioned spectral feats
     for tri, tei in skf.split(X64, y):
         mu = X64[tri].mean(axis=0); sd = X64[tri].std(axis=0); sd[sd < 1e-8] = 1.0
-        clf = LogisticRegression(max_iter=5000)
+        clf = LogisticRegression(max_iter=5000, class_weight="balanced")
         clf.fit((X64[tri] - mu) / sd, y[tri])
         Pb[tei] = clf.predict_proba((X64[tei] - mu) / sd)[:, 1]
     from jadal.gpuheads.metrics import auroc as auc
