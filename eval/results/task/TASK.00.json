@@ -112,7 +112,7 @@
  },
  "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
  "false_accepts_no_active_work": 7,
- "git_sha": "83b03df1cf25918c0a6854926b8b7cf8b3c82dcc",
+ "git_sha": "4d27e7eefe9f60b1857e8daf1d8bd6de3b09ddc0",
  "headline": "AUROC of the frozen old26 score for NO_ACTIVE_WORK (0) vs good (1)",
  "id": "TASK.00",
  "label_source": "human labels, ONE labeller (160 Egocentric-10K windows: 138 good / 22 bad; 19 of 22 bad are NO_ACTIVE_WORK)",

@@ -149,7 +149,7 @@
  "config_sha256": "edcaf22ce34e13ef452a91b7553b70249c059327d3295c9ca37f6576b856f300",
  "cost": "0 GPU; cached features + sklearn fits on 150x26; ~5 s CPU",
  "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
- "git_sha": "83b03df1cf25918c0a6854926b8b7cf8b3c82dcc",
+ "git_sha": "4d27e7eefe9f60b1857e8daf1d8bd6de3b09ddc0",
  "headline": "AUROC of the shipped 26-feature LOCO score for advancing (1) vs no_relevant_work (0), 4 annotated clips",
  "id": "TASK.00b",
  "l1_label_counts": {
