@@ -35,9 +35,20 @@ it is not established to work on factory footage, and **100 % coverage is not su
 * **An audit policy** (AUTO.07): auto-decide, send a random 2–5 % sample **plus every low-confidence
   window** to humans, track error and verdict mix per site, alarm on drift. All hours columns are
   arithmetic on assumed review time and are labelled as such.
-* **The brightness-calibrated sharpness statistic** as an S0-quality gate if GRID.09 confirms it
-  (see `docs/reports/grid_s0_parity.md`); blur is a known miss today (a strongly blurred clip is
-  accepted at 0.9999).
+* **The brightness-calibrated sharpness rule** (GRID.09) — the one clear win in this pass. It fixes a
+  hole that was reproduced first: the shipped five S0 rules reject **0 of 16** blurred windows and the
+  head accepts **6 of 16 at σ=3 with max p = 0.9999**. With the rule (threshold 0.0211, chosen on a
+  clip/factory-grouped CALIB split that never saw a blurred window), on held-out EVAL (n=132 each):
+  catch **18.9 % [5.8, 40.4]** at σ=1.5, **72.0 % [38.8, 89.4]** at σ=3, **100 %** at σ=8; AUROC at
+  σ=3 **0.955 [0.876, 0.991]**. Clean false-reject on human-good windows **3.00 % [0.62, 8.52]**
+  (IndEgo, 3/100) and **6.52 % [3.04, 12.0]** (OOD-160, 9/138) — and **0 of 238 are marginal**: all 12
+  exits were already rejected by the shipped five rules, so enabling it costs nothing on clean data.
+  The brightness control confirms the calibration does the work (surface-only gain ×1.4 rejects
+  1.6 % / 7.2 %), but the statistic is **not gain-invariant** — gain ×0.5 rejects 22.2 % / 15.9 %.
+  **It ships OFF** (`BLUR_LAPVAR_CAL_MIN = 0.0`); enabling is one constant flip, and that is the
+  builder's call. Requirements: all positives are **synthetic** Gaussian blur at 480p (no real defocus
+  footage exists in the inputs), and the catch at σ=3 is 100 % on IndEgo but 46 % on OOD-160, so
+  per-dataset operating points are still needed.
 
 **DROP**
 * **The mosaic as a decision input.** Pre-registered kill-gate **FAILED**: inter-tile features add
@@ -62,6 +73,13 @@ it is not established to work on factory footage, and **100 % coverage is not su
   listed in AUTO.03, a 5 % target supports at most **7.3 % coverage [1.1, 16.9]** — and the realized
   held-out risk was **18.2 %**, so the bound failed at every target on held-out clips, reproducing the
   repo's earlier nominal-2.7 %-became-46 %. This is not a shippable guarantee.
+* **The mosaic S0 probe as the production gate** (GRID.05). It reaches six-rule agreement **98.2 %
+  [90.6, 99.7]** on 56 synthetic clips, but its clean false-reject rate is **7.00 % [3.43, 13.75]**
+  (IndEgo) and **7.97 % [4.51, 13.71]** (OOD-160) — all of it *marginal* windows that the shipped
+  rules already reject, against **0 of 238** for the full-pipeline blur rule. Keep the shipped probe.
+* **The mosaic as a cost story** (GRID.07). The mosaic path is genuinely faster — **190.5 ms/window
+  → 52.5 footage-h/wall-h** vs the shipped **348.4 ms → 28.7** — but that is **0.55×**, not the
+  ≤ 0.33× the pre-registered decision rule (b) requires, so cost alone does not buy it either.
 
 ## 3. Human workload (arithmetic from measured band shares, not a measurement)
 
@@ -127,12 +145,18 @@ can tolerate, and that is the builder's/Awign's call, not a modelling result.
 
 * Full GRID.04 layout/density sweep — stopped by the pre-registered kill-gate.
 * GRID.08 round-3 hold-out scoring — deliberately not spent.
+* **The blur rule is left disabled** and all its positives are synthetic; **OVEREXPOSED parity on the
+  mosaic is untested** (the injected defect never reaches the p5 > 0.70 rule), and the mosaic's FROZEN
+  rule mis-attributes dark windows (verified: the 8 `too_dark` clips fire FROZEN — right verdict,
+  wrong rule).
 * AUTO.02 (Q4 hybrid-fallback replication), AUTO.05 (per-site calibration), AUTO.06 (paid vision
   resolver), AUTO.08 (final spec) — not run; AUTO.02/05 need artifacts that live only on unmerged
   branches, and AUTO.06 needs the builder's go-ahead.
 * TASK.01/02/03/04/05/06 — TASK.01 needs the builder's labelling hours, TASK.02/03 need the paid
-  quota, TASK.04 needs Awign's task definition.
-* No A40 numbers, no Raspberry Pi measurement, no multi-pod run.
+  quota, TASK.04 needs Awign's task definition. TASK.00b showed the free IndEgo annotations are **not**
+  a substitute: the clip-level truth has zero variance (4/4 "completed") and the slice label agrees
+  with a always-advancing baseline at κ = 0.208.
+* No A40 numbers, no Raspberry Pi measurement, no multi-pod run, no 1080p-source cost row.
 
 ## The one honest sentence the product may say
 
@@ -140,6 +164,8 @@ can tolerate, and that is the builder's/Awign's call, not a modelling result.
 [0.631, 0.789], but on 160 labelled factory windows it is 0.556 [0.448, 0.673] with 41 % of bad
 windows accepted and 48 % of good windows rejected, so automation today must be tiered with a human
 audit sample rather than fully automatic; a 12-frame 4×3 picture scored by our own mosaic-native
-features does not change this (0.704 in-domain, 0.356 when transferred to factory footage), and the
-missing ingredient for factory footage is new signals and fresh multi-labeller labels, not a new
-picture format.**
+features does not change this (0.704 in-domain, 0.356 when transferred to factory footage), the
+missing ingredient for factory footage is new signals and fresh multi-labeller labels rather than a
+new picture format, and the one change measured here that is worth shipping is a brightness-calibrated
+sharpness rule that catches 100 % of σ=8 and 72 % of σ=3 blur at zero marginal clean false-rejects
+(0 of 238) and ships disabled until the builder turns it on.**
