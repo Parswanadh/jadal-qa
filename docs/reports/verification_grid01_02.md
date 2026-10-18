@@ -136,8 +136,14 @@ This reproduces the GRID arithmetic; it does not validate the GRID protocol. The
 windows from **one** labeller, **7** clips, and a mosaic feature family designed by the stream that
 then evaluated it. Exact agreement means the code, the committed vectors and the labels line up — it
 says nothing about whether the 26-feature baseline's advantage would hold on fresh footage, on more
-factories, or with a second labeller. The out-of-domain side of this track (GRID.06, 0.588
-[0.450, 0.728]) was **not** re-run here.
+factories, or with a second labeller.
+
+The out-of-domain side of this track was **not** re-run here. One of its numbers has nevertheless
+been reproduced by a different route: GRID.06's frozen-26 baseline on the 160 OOD windows is
+**0.5878 [0.450, 0.728]** (factory-grouped bootstrap), and `TASK.00(a)` — written separately, for the
+`NO_ACTIVE_WORK` question, with its own loader and bootstrap code — measured the same quantity on the
+same 160 windows as **0.5878 [0.4503, 0.7284]**. GRID.06's frozen *mosaic* head, 0.3557
+[0.224, 0.515], was not re-run; it is below chance and is quoted here only as the claim.
 
 ## 8. The one honest sentence for this verification
 
