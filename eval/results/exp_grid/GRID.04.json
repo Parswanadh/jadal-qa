@@ -1,0 +1,326 @@
+{
+ "arms": [
+  {
+   "auroc": 0.675,
+   "canvas_px": 206116,
+   "ci95": [
+    0.504,
+    0.762
+   ],
+   "feature_digest_sha256": "b585dc2da1f33532d97431e36a4ff61252e752d2429de1825ded28a8d5f9fd4f",
+   "grid": [
+    2,
+    2
+   ],
+   "ms_per_window": 171.8,
+   "n_features": 79,
+   "n_tiles": 4,
+   "tag": "m2x2_t224",
+   "tile_px": 224,
+   "timestamps": true,
+   "vs_baseline26_paired": {
+    "ci95": [
+     -0.245,
+     -0.073
+    ],
+    "delta": -0.135,
+    "excludes_zero": true
+   },
+   "vs_n9_paired": {
+    "ci95": [
+     -0.093,
+     0.034
+    ],
+    "delta": -0.0252,
+    "excludes_zero": false
+   }
+  },
+  {
+   "auroc": 0.7002,
+   "canvas_px": 462400,
+   "ci95": [
+    0.503,
+    0.778
+   ],
+   "feature_digest_sha256": "600e6eb467ea0969a666382133fd98f39ec3eef002d99cff1f4f472b9f207315",
+   "grid": [
+    3,
+    3
+   ],
+   "ms_per_window": 194.9,
+   "n_features": 79,
+   "n_tiles": 9,
+   "tag": "m3x3_t224",
+   "tile_px": 224,
+   "timestamps": true,
+   "vs_baseline26_paired": {
+    "ci95": [
+     -0.207,
+     -0.069
+    ],
+    "delta": -0.1098,
+    "excludes_zero": true
+   },
+   "vs_n9_paired": {
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "delta": 0.0,
+    "excludes_zero": false
+   }
+  },
+  {
+   "auroc": 0.7044,
+   "canvas_px": 616080,
+   "ci95": [
+    0.488,
+    0.786
+   ],
+   "feature_digest_sha256": "620e6192f03690632eb87690b618827c61719f8adbcd0e48755021f68605ed71",
+   "grid": [
+    3,
+    4
+   ],
+   "ms_per_window": 171.8,
+   "n_features": 79,
+   "n_tiles": 12,
+   "tag": "m4x3_t224",
+   "tile_px": 224,
+   "timestamps": true,
+   "vs_baseline26_paired": {
+    "ci95": [
+     -0.243,
+     -0.063
+    ],
+    "delta": -0.1056,
+    "excludes_zero": true
+   },
+   "vs_n9_paired": {
+    "ci95": [
+     -0.071,
+     0.036
+    ],
+    "delta": 0.0042,
+    "excludes_zero": false
+   }
+  },
+  {
+   "auroc": 0.6986,
+   "canvas_px": 820836,
+   "ci95": [
+    0.516,
+    0.764
+   ],
+   "feature_digest_sha256": "01a35e7631b85dfd0eceb02da2258060f4fafae972636b658878d4f40d44bfc3",
+   "grid": [
+    4,
+    4
+   ],
+   "ms_per_window": 171.8,
+   "n_features": 79,
+   "n_tiles": 16,
+   "tag": "m4x4_t224",
+   "tile_px": 224,
+   "timestamps": true,
+   "vs_baseline26_paired": {
+    "ci95": [
+     -0.206,
+     -0.077
+    ],
+    "delta": -0.1114,
+    "excludes_zero": true
+   },
+   "vs_n9_paired": {
+    "ci95": [
+     -0.031,
+     0.022
+    ],
+    "delta": -0.0016,
+    "excludes_zero": false
+   }
+  },
+  {
+   "auroc": 0.7126,
+   "canvas_px": 317200,
+   "ci95": [
+    0.521,
+    0.785
+   ],
+   "feature_digest_sha256": "d2387f4aed2f88e0b1e18292d0957ad428e8c94ec573f2924fe5f239ec81b3d8",
+   "grid": [
+    3,
+    4
+   ],
+   "ms_per_window": 171.8,
+   "n_features": 79,
+   "n_tiles": 12,
+   "tag": "m4x3_t160",
+   "tile_px": 160,
+   "timestamps": true,
+   "vs_baseline26_paired": {
+    "ci95": [
+     -0.217,
+     -0.052
+    ],
+    "delta": -0.0974,
+    "excludes_zero": true
+   },
+   "vs_n9_paired": {
+    "ci95": [
+     -0.053,
+     0.061
+    ],
+    "delta": 0.0124,
+    "excludes_zero": false
+   }
+  },
+  {
+   "auroc": 0.7146,
+   "canvas_px": 157552,
+   "ci95": [
+    0.536,
+    0.774
+   ],
+   "feature_digest_sha256": "6467cd5dba942834eba00ab7c89ddbc6cf037351420088fa3679c4f3df301d57",
+   "grid": [
+    3,
+    4
+   ],
+   "ms_per_window": 171.8,
+   "n_features": 79,
+   "n_tiles": 12,
+   "tag": "m4x3_t112",
+   "tile_px": 112,
+   "timestamps": true,
+   "vs_baseline26_paired": {
+    "ci95": [
+     -0.203,
+     -0.045
+    ],
+    "delta": -0.0954,
+    "excludes_zero": true
+   },
+   "vs_n9_paired": {
+    "ci95": [
+     -0.049,
+     0.076
+    ],
+    "delta": 0.0144,
+    "excludes_zero": false
+   }
+  }
+ ],
+ "baseline_26_on_same_folds": {
+  "auroc": 0.81
+ },
+ "best_arm": {
+  "auroc": 0.7146,
+  "canvas_px": 157552,
+  "ci95": [
+   0.536,
+   0.774
+  ],
+  "feature_digest_sha256": "6467cd5dba942834eba00ab7c89ddbc6cf037351420088fa3679c4f3df301d57",
+  "grid": [
+   3,
+   4
+  ],
+  "ms_per_window": 171.8,
+  "n_features": 79,
+  "n_tiles": 12,
+  "tag": "m4x3_t112",
+  "tile_px": 112,
+  "timestamps": true,
+  "vs_baseline26_paired": {
+   "ci95": [
+    -0.203,
+    -0.045
+   ],
+   "delta": -0.0954,
+   "excludes_zero": true
+  },
+  "vs_n9_paired": {
+   "ci95": [
+    -0.049,
+    0.076
+   ],
+   "delta": 0.0144,
+   "excludes_zero": false
+  }
+ },
+ "ci95": [
+  0.488,
+  0.786
+ ],
+ "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+ "command": "JADAL_BUNDLE=<bundle> python3 eval/exp_grid/run_grid04.py",
+ "config": {
+  "arms": [
+   "m2x2_t224",
+   "m3x3_t224",
+   "m4x3_t224",
+   "m4x4_t224",
+   "m4x3_t160",
+   "m4x3_t112"
+  ],
+  "folds": "leave-one-clip-out over 7 clips",
+  "groups": "spatial+intertile+diff",
+  "model": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced)",
+  "reference": "m3x3_t224",
+  "seed": 0,
+  "why": "post-kill-gate small control permitted by the brief; the full sweep is not run"
+ },
+ "config_sha256": "f75f577d13679b1865dd12f3290fd93c972fd0c8deb440566c20b16cc4d81911",
+ "cost": "mosaic build+features ~195 ms/window/arm (CPU), 0 GPU",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "gamma": {
+  "note": "the full GRID.04 sweep (N in {4,6,9,12,16} x tile in {112,160,224} x uniform vs motion-adaptive selection x timestamps on/off) was NOT run because the GRID.02 kill-gate failed",
+  "tail_frac": 0.2
+ },
+ "git_sha": "c9d993388358e9c9e1cccc446c0fefce2cc7321a",
+ "headline_4x3_12_frames": {
+  "auroc": 0.7044,
+  "canvas_px": 616080,
+  "ci95": [
+   0.488,
+   0.786
+  ],
+  "feature_digest_sha256": "620e6192f03690632eb87690b618827c61719f8adbcd0e48755021f68605ed71",
+  "grid": [
+   3,
+   4
+  ],
+  "ms_per_window": 171.8,
+  "n_features": 79,
+  "n_tiles": 12,
+  "tag": "m4x3_t224",
+  "tile_px": 224,
+  "timestamps": true,
+  "vs_baseline26_paired": {
+   "ci95": [
+    -0.243,
+    -0.063
+   ],
+   "delta": -0.1056,
+   "excludes_zero": true
+  },
+  "vs_n9_paired": {
+   "ci95": [
+    -0.071,
+    0.036
+   ],
+   "delta": 0.0042,
+   "excludes_zero": false
+  }
+ },
+ "id": "GRID.04",
+ "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad)",
+ "n": 150,
+ "n_bad": 50,
+ "pareto_tags": [
+  "m4x3_t112"
+ ],
+ "protocol": "LOCO over 7 clips, identical feature definition and head recipe per arm; paired clip-bootstrap comparisons on the same windows",
+ "seed": 0
+}

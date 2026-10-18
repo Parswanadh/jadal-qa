@@ -51,6 +51,17 @@ CONFIGS = [
     # no-op for these features; it is reported as the "does tile layout matter" answer
     {"tag": "m3x3_t224_shuf", "n": 9, "grid": (3, 3), "tile_px": 224,
      "timestamps": True, "shuffle_seed": 12345, "mask_timestamp": True},
+    # --- GRID.04 compact post-kill-gate control ladder (brief: "beyond a small control") ---
+    {"tag": "m2x2_t224", "n": 4, "grid": (2, 2), "tile_px": 224,
+     "timestamps": True, "shuffle_seed": None, "mask_timestamp": True},
+    {"tag": "m4x3_t224", "n": 12, "grid": (3, 4), "tile_px": 224,
+     "timestamps": True, "shuffle_seed": None, "mask_timestamp": True},   # headline config
+    {"tag": "m4x4_t224", "n": 16, "grid": (4, 4), "tile_px": 224,
+     "timestamps": True, "shuffle_seed": None, "mask_timestamp": True},
+    {"tag": "m4x3_t160", "n": 12, "grid": (3, 4), "tile_px": 160,
+     "timestamps": True, "shuffle_seed": None, "mask_timestamp": True},
+    {"tag": "m4x3_t112", "n": 12, "grid": (3, 4), "tile_px": 112,
+     "timestamps": True, "shuffle_seed": None, "mask_timestamp": True},
 ]
 
 
