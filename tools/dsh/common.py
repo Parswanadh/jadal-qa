@@ -79,6 +79,19 @@ def load_gold(bundle: str | None = None):
             "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad)"}
 
 
+def _ood160_manifest(b: str) -> str:
+    """The merged 160-window manifest.  It ships one level ABOVE $JADAL_BUNDLE in
+    the builder's handover (outer pod_bundle/labels/), and inside it on the pod."""
+    cands = [os.path.join(b, "labels", "ood160_labels.json"),
+             os.path.join(b, os.pardir, "labels", "ood160_labels.json"),
+             os.path.join(b, os.pardir, os.pardir, "labels", "ood160_labels.json"),
+             "/home/parshu/projects/jadal-qa-wt/handover/pod_bundle/labels/ood160_labels.json"]
+    for c in cands:
+        if os.path.exists(c):
+            return c
+    raise FileNotFoundError(f"ood160_labels.json not found; tried {cands}")
+
+
 def load_ood160(bundle: str | None = None):
     """The 160 human-labelled Egocentric-10K windows (138 good / 22 bad, 47 factories).
 
@@ -88,7 +101,7 @@ def load_ood160(bundle: str | None = None):
     through the ORIGINAL portal.  `video` paths are 480p window clips.
     """
     b = bundle or BUNDLE
-    lab = json.load(open(os.path.join(b, "labels", "ood160_labels.json")))
+    lab = json.load(open(_ood160_manifest(b)))
     win = lab["windows"]
     scores_p = os.environ.get("JADAL_OOD160_HEADS") or os.path.join(
         "/home/parshu/projects/awing/interview/dsh_pack/ood160_heads_old26_vs_new22.json")
