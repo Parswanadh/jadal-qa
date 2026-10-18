@@ -1,0 +1,313 @@
+{
+ "arms": {
+  "a_no_timestamps": {
+   "auroc_progress_graded": 0.7,
+   "auroc_usable_binary": 0.7,
+   "ci95_progress": [
+    0.5,
+    0.896
+   ],
+   "ci95_usable": [
+    0.5,
+    0.896
+   ],
+   "false_reject_good_call_unusable": 0.1,
+   "mean_seconds": 13.78,
+   "n_bad": 10,
+   "n_good": 10,
+   "n_parsed": 20,
+   "n_unparsed": 0,
+   "paired_vs_reference": {
+    "ci95_progress": [
+     0.0,
+     0.0
+    ],
+    "ci95_usable": [
+     0.0,
+     0.0
+    ],
+    "delta_progress": 0.0,
+    "delta_usable": 0.0,
+    "excludes_zero_progress": false,
+    "excludes_zero_usable": false,
+    "n_windows_paired": 20,
+    "reference": "e_json_only_prompt"
+   },
+   "recall_bad_call_unusable": 0.5,
+   "usable_true_share": 0.7
+  },
+  "b_shuffled_order": {
+   "auroc_progress_graded": 0.795,
+   "auroc_usable_binary": 0.8,
+   "ci95_progress": [
+    0.578,
+    1.0
+   ],
+   "ci95_usable": [
+    0.586,
+    1.0
+   ],
+   "false_reject_good_call_unusable": 0.1,
+   "mean_seconds": 12.97,
+   "n_bad": 10,
+   "n_good": 10,
+   "n_parsed": 20,
+   "n_unparsed": 0,
+   "paired_vs_reference": {
+    "ci95_progress": [
+     0.0,
+     0.273
+    ],
+    "ci95_usable": [
+     0.0,
+     0.278
+    ],
+    "delta_progress": 0.095,
+    "delta_usable": 0.1,
+    "excludes_zero_progress": false,
+    "excludes_zero_usable": false,
+    "n_windows_paired": 20,
+    "reference": "e_json_only_prompt"
+   },
+   "recall_bad_call_unusable": 0.7,
+   "usable_true_share": 0.6
+  },
+  "c_single_middle_frame": {
+   "auroc_progress_graded": 0.61,
+   "auroc_usable_binary": 0.6,
+   "ci95_progress": [
+    0.4,
+    0.8
+   ],
+   "ci95_usable": [
+    0.379,
+    0.8
+   ],
+   "false_reject_good_call_unusable": 0.1,
+   "mean_seconds": 4.68,
+   "n_bad": 10,
+   "n_good": 10,
+   "n_parsed": 20,
+   "n_unparsed": 0,
+   "paired_vs_reference": {
+    "ci95_progress": [
+     -0.24,
+     0.111
+    ],
+    "ci95_usable": [
+     -0.25,
+     0.111
+    ],
+    "delta_progress": -0.09,
+    "delta_usable": -0.1,
+    "excludes_zero_progress": false,
+    "excludes_zero_usable": false,
+    "n_windows_paired": 20,
+    "reference": "e_json_only_prompt"
+   },
+   "recall_bad_call_unusable": 0.3,
+   "usable_true_share": 0.8
+  },
+  "d24_tiles": {
+   "auroc_progress_graded": 0.65,
+   "auroc_usable_binary": 0.65,
+   "ci95_progress": [
+    0.47,
+    0.846
+   ],
+   "ci95_usable": [
+    0.47,
+    0.846
+   ],
+   "false_reject_good_call_unusable": 0.1,
+   "mean_seconds": 17.96,
+   "n_bad": 10,
+   "n_good": 10,
+   "n_parsed": 20,
+   "n_unparsed": 0,
+   "paired_vs_reference": {
+    "ci95_progress": [
+     -0.167,
+     0.0
+    ],
+    "ci95_usable": [
+     -0.167,
+     0.0
+    ],
+    "delta_progress": -0.05,
+    "delta_usable": -0.05,
+    "excludes_zero_progress": false,
+    "excludes_zero_usable": false,
+    "n_windows_paired": 20,
+    "reference": "e_json_only_prompt"
+   },
+   "recall_bad_call_unusable": 0.4,
+   "usable_true_share": 0.75
+  },
+  "d6_tiles": {
+   "auroc_progress_graded": 0.745,
+   "auroc_usable_binary": 0.75,
+   "ci95_progress": [
+    0.529,
+    0.944
+   ],
+   "ci95_usable": [
+    0.542,
+    0.944
+   ],
+   "false_reject_good_call_unusable": 0.1,
+   "mean_seconds": 8.88,
+   "n_bad": 10,
+   "n_good": 10,
+   "n_parsed": 20,
+   "n_unparsed": 0,
+   "paired_vs_reference": {
+    "ci95_progress": [
+     0.0,
+     0.167
+    ],
+    "ci95_usable": [
+     0.0,
+     0.182
+    ],
+    "delta_progress": 0.045,
+    "delta_usable": 0.05,
+    "excludes_zero_progress": false,
+    "excludes_zero_usable": false,
+    "n_windows_paired": 20,
+    "reference": "e_json_only_prompt"
+   },
+   "recall_bad_call_unusable": 0.6,
+   "usable_true_share": 0.65
+  },
+  "e_json_only_prompt": {
+   "auroc_progress_graded": 0.7,
+   "auroc_usable_binary": 0.7,
+   "ci95_progress": [
+    0.5,
+    0.896
+   ],
+   "ci95_usable": [
+    0.5,
+    0.896
+   ],
+   "false_reject_good_call_unusable": 0.1,
+   "mean_seconds": 10.98,
+   "n_bad": 10,
+   "n_good": 10,
+   "n_parsed": 20,
+   "n_unparsed": 0,
+   "paired_vs_reference": null,
+   "recall_bad_call_unusable": 0.5,
+   "usable_true_share": 0.7
+  }
+ },
+ "auroc_note": "auroc_usable_binary is a BINARY score, so it equals balanced accuracy at 0.5 and is a coarse summary; auroc_progress_graded uses the 3-level task_progress field and is the more informative number",
+ "ci95": null,
+ "ci95_type": "none at experiment level; per-arm CI is factory-grouped bootstrap (2000 draws, seed 0) over the 14 factories of this subset",
+ "command": "JADAL_VLM_LEDGER=<ledger> python3 eval/exp_vlm/run_v03.py",
+ "config": {
+  "arms": {
+   "a_no_timestamps": {
+    "labels": false
+   },
+   "b_shuffled_order": {
+    "shuffle_seed": 12345
+   },
+   "c_single_middle_frame": {
+    "cols": 1,
+    "n_tiles": 1
+   },
+   "d24_tiles": {
+    "cols": 6,
+    "n_tiles": 24
+   },
+   "d6_tiles": {
+    "cols": 3,
+    "n_tiles": 6
+   },
+   "e_json_only_prompt": {
+    "prompt": "quality_json_only"
+   }
+  },
+  "cap": 122,
+  "reference": "e_json_only_prompt",
+  "windows": [
+   "q002",
+   "q005",
+   "q011",
+   "q014",
+   "q058",
+   "r000",
+   "r013",
+   "r020",
+   "r021",
+   "r022",
+   "r033",
+   "r047",
+   "r054",
+   "r063",
+   "r064",
+   "r071",
+   "r074",
+   "r083",
+   "r087",
+   "r091"
+  ]
+ },
+ "config_sha256": "e65fc2a074492c354ebc1fd677f70d89795c5453e8c53774b1514d09973eab9b",
+ "cost": "V03 made 122 image API calls (cap 122 = 120 arm calls + 2 negative-control calls); the shared sub-stream ledger also holds V01's 20 calls, total 142 image calls; 0 text calls",
+ "device": "API call (OpenCode Go Responses); sheets built on CPU",
+ "git_sha": "e2a1aac04499424bc2528121a83f31286399c1ce",
+ "honesty": [
+  "the model is probabilistic; nothing here is deterministic",
+  "the usable=true share of ALL answers is reported per arm (documented success bias)",
+  "one labeller; a ranker/reviewer result, not an accuracy claim",
+  "the subset is balanced, so no rate here is a base rate"
+ ],
+ "id": "GRID.V03",
+ "label_source": "human labels, ONE labeller (Egocentric-10K OOD-160 subset); all 10 bad windows are NO_ACTIVE_WORK",
+ "model_id": "muse-spark-1.3-contributor",
+ "model_label": "opencode-go/muse-spark-1.3-contributor",
+ "n": 20,
+ "n_bad": 10,
+ "n_factories": 14,
+ "n_good": 10,
+ "negative_controls": {
+  "records": {
+   "null_grey_quality": {
+    "n_tile_lines": 0,
+    "ok": true,
+    "quality": [
+     false,
+     "HANDS_NOT_VISIBLE",
+     "cannot_tell",
+     "All twelve tiles are blank gray, no hands or work visible."
+    ],
+    "raw": "#1: Blank gray tile, no hands or work visible.\n#2: Blank gray tile, no hands or work visible.\n#3: Blank gray tile, no hands or work visible.\n#4: Blank gray tile, no hands or work visible.\n#5: Blank gray tile, no hands or work visible.\n#6: Blank gray tile, no hands or work visible.\n#7: Blank gray tile, no hands or work visible.\n#8: Blank gray tile, no hands or work visible.\n#9: Blank gray tile, no hands or work visible.\n#10: Blank gray tile, no hands or work visible.\n#11: Blank gray tile, no hands or work visible.\n#12: Blank gray tile, no hands or work visible.\n{\"usable\": false, \"reason_code\": \"HANDS_NOT_VISIBLE\", \"task_progress\": \"cannot_tell\", \"explanation\": \"All twelve tiles are blank gray, no hands or work visible.\"}",
+    "seconds": 4.73,
+    "sheet_sha256": "5cbc3cd63e99f29cb43af46a2cdb359ada6be27dd00d57eaed34ab2271b2face"
+   },
+   "null_grey_read_tiles": {
+    "n_tile_lines": 0,
+    "ok": true,
+    "quality": null,
+    "raw": "tile 1 @ --:--.- :: uniform gray blank tile\ntile 2 @ --:--.- :: uniform gray blank tile\ntile 3 @ --:--.- :: uniform gray blank tile\ntile 4 @ --:--.- :: uniform gray blank tile\ntile 5 @ --:--.- :: uniform gray blank tile\ntile 6 @ --:--.- :: uniform gray blank tile\ntile 7 @ --:--.- :: uniform gray blank tile\ntile 8 @ --:--.- :: uniform gray blank tile\ntile 9 @ --:--.- :: uniform gray blank tile\ntile 10 @ --:--.- :: uniform gray blank tile\ntile 11 @ --:--.- :: uniform gray blank tile\ntile 12 @ --:--.- :: uniform gray blank tile",
+    "seconds": 6.11,
+    "sheet_sha256": "5cbc3cd63e99f29cb43af46a2cdb359ada6be27dd00d57eaed34ab2271b2face"
+   }
+  },
+  "verdict": "PASS: the contentless sheet was not read as usable (usable=false), consistent with the model using the image"
+ },
+ "power_note": "10 bad windows across 14 factories: arm-to-arm intervals are very wide and most differences will not be established. A paired interval that includes zero is the expected outcome, not a failure.",
+ "prompt_confound": "arms a,b,c,d6,d24 use the `quality` prompt while arm e uses `quality_json_only`, so a c-vs-e 'one frame vs twelve frames' comparison is confounded with the prompt; read it beside the within-prompt arms (c vs d6 vs d24)",
+ "prompt_sha256": {
+  "quality": "a59f387edecf382336ce373bc2ef6d2068bf16ecda4db2ceabff82b3ea06e113",
+  "quality_json_only": "5189114868c5d2ecd0cb8de7c602ae267e08f7d5c5bd1fb6fbe74109ba64df99"
+ },
+ "protocol": "20-window pre-registered stratified subset (10 bad / 10 good -- BALANCED, therefore NOT representative of the base rate), six arms x 20 windows on the SAME windows, plus two contentless-sheet negative controls; factory-grouped bootstrap CI (2000 draws, seed 0)",
+ "reference_arm": "e_json_only_prompt",
+ "reference_why": "arm (e) is the default 12-tile labelled sheet with only the reasoning step removed, the closest in-budget analogue of V02's primary arm; the true primary (quality on 12 tiles) is V02's job and was not re-bought",
+ "seed": 0,
+ "status": "done"
+}

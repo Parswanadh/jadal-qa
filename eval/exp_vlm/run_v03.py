@@ -43,6 +43,9 @@ from eval.exp_vlm import vlm_common as V  # noqa: E402
 from eval.exp_vlm import vlm_run as R  # noqa: E402
 
 CAP = 122
+#: which ledger arms count against V03's cap (per-experiment accounting: this
+#: ledger is shared with V01, whose 20 calls must not eat V03's budget)
+V03_LEDGER_ARMS = set(R.V03_ARMS) | {"null_grey_quality", "null_grey_read_tiles"}
 IDS = R.PREREG["windows"]["V03_20_stratified"]
 OUT = os.path.join(ROOT, "eval", "results", "exp_vlm", "GRID.V03.json")
 LEDGER = os.environ.get("JADAL_VLM_LEDGER", "/tmp/opencode/dsh/vlm_ledger_b.jsonl")
@@ -62,7 +65,7 @@ def run_arms(rows, already):
             win = rows[wid]
             png, doc = R.sheet_for_window(win, n_tiles=n_tiles, cols=cols, labels=labels,
                                           shuffle_seed=seed, tag="v03_")
-            R.guard(LEDGER, CAP, 1)
+            R.guard(LEDGER, CAP, 1, arms=V03_LEDGER_ARMS)
             rec = VM.ask(png, prompt, ledger=LEDGER,
                          extra={"window": wid, "arm": arm, "y": win["y"],
                                 "factory": win["factory"], "reason": win["reason"],
@@ -80,7 +83,7 @@ def run_nulls():
     for arm, prompt in (("null_grey_quality", "quality"), ("null_grey_read_tiles", "read_tiles")):
         if ("null_grey", arm) in already:
             continue
-        R.guard(LEDGER, CAP, 1)
+        R.guard(LEDGER, CAP, 1, arms=V03_LEDGER_ARMS)
         rec = VM.ask(grey, prompt, ledger=LEDGER,
                      extra={"window": "null_grey", "arm": arm, "y": None,
                             "factory": None, "reason": None,
@@ -93,7 +96,7 @@ def run_nulls():
 def analyse(recs, y_of, fac_of):
     """Per-arm scores + AUROC + paired vs the reference arm."""
     arms = {}
-    for arm in list(R.V03_ARMS) + ["null_grey_quality", "null_grey_read_tiles"]:
+    for arm in list(R.V03_ARMS):
         by_w = {}
         for r in recs:
             if r.get("arm") == arm and r.get("window") != "null_grey":
@@ -193,6 +196,8 @@ def main():
                         "PASS: the contentless sheet was not read as usable "
                         "(usable=false), consistent with the model using the image")
     calls = VM.count_calls(LEDGER)
+    v03_calls = sum(1 for r in recs if r.get("arm") in V03_LEDGER_ARMS)
+    v01_calls = sum(1 for r in recs if r.get("arm") == "v01_read_tiles")
 
     payload = {
         "id": "GRID.V03", "status": "done",
@@ -225,8 +230,9 @@ def main():
         "model_id": VM.MODEL_ID, "model_label": VM.MODEL_LABEL,
         "prompt_sha256": {k: VM.PROMPT_SHA256[k] for k in ("quality", "quality_json_only")},
         "device": "API call (OpenCode Go Responses); sheets built on CPU",
-        "cost": f"{calls['total']} image API calls made in this run (V03 cap 122; "
-                f"120 arm calls + 2 negative-control calls); {calls['text']} text calls",
+        "cost": f"V03 made {v03_calls} image API calls (cap 122 = 120 arm calls + 2 "
+                f"negative-control calls); the shared sub-stream ledger also holds V01's "
+                f"{v01_calls} calls, total {calls['total']} image calls; {calls['text']} text calls",
         "command": "JADAL_VLM_LEDGER=<ledger> python3 eval/exp_vlm/run_v03.py",
         "git_sha": C.git_sha(), "seed": SEED,
         "config_sha256": C.config_sha256({"windows": IDS, "arms": R.V03_ARMS, "cap": CAP,

@@ -104,18 +104,18 @@ class TestQualityScores(unittest.TestCase):
 class TestBudgetGuard(unittest.TestCase):
     """The guard must REFUSE rather than overspend the pre-registered cap."""
 
-    def _ledger(self, n):
+    def _ledger(self, n, arm="a"):
         fd, path = tempfile.mkstemp(suffix=".jsonl")
         os.close(fd)
         with open(path, "w") as f:
             for i in range(n):
-                f.write(json.dumps({"window": f"w{i}", "arm": "a", "ok": True}) + "\n")
+                f.write(json.dumps({"window": f"w{i}", "arm": arm, "ok": True}) + "\n")
         return path
 
     def test_passes_below_cap(self):
         p = self._ledger(5)
         try:
-            self.assertEqual(R.guard(p, 10, 1)["total"], 5)
+            self.assertEqual(R.guard(p, 10, 1)["substream_total"], 5)
         finally:
             os.unlink(p)
 
@@ -133,7 +133,44 @@ class TestBudgetGuard(unittest.TestCase):
         try:
             with self.assertRaises(RuntimeError):
                 R.guard(p, 122, 3)
-            self.assertEqual(R.guard(p, 122, 2)["total"], 120)
+            self.assertEqual(R.guard(p, 122, 2)["substream_total"], 120)
+        finally:
+            os.unlink(p)
+
+    def test_arms_filter_keeps_experiments_separable(self):
+        """A shared ledger must not let V01's calls eat V03's cap.
+
+        This is the exact bug that stopped the first V03 run at 122 total calls
+        (20 V01 + 102 V03) when V03's own cap was 122: per-experiment accounting
+        has to filter by arm.
+        """
+        fd, path = tempfile.mkstemp(suffix=".jsonl")
+        os.close(fd)
+        with open(path, "w") as f:
+            for i in range(20):                       # V01's 20 calls
+                f.write(json.dumps({"window": f"v{i}", "arm": "v01_read_tiles", "ok": True}) + "\n")
+            for i in range(102):                      # V03 so far
+                f.write(json.dumps({"window": f"w{i}", "arm": "a_no_timestamps", "ok": True}) + "\n")
+        try:
+            # counting everything would refuse (122 >= 122)
+            with self.assertRaises(RuntimeError):
+                R.guard(path, 122, 1)
+            # counting V03 only leaves exactly 20 calls, which must be allowed
+            got = R.guard(path, 122, 20, arms={"a_no_timestamps", "e_json_only_prompt"})
+            self.assertEqual(got["experiment"], 102)
+            self.assertEqual(got["substream_total"], 122)
+            # ...but not 21
+            with self.assertRaises(RuntimeError):
+                R.guard(path, 122, 21, arms={"a_no_timestamps", "e_json_only_prompt"})
+        finally:
+            os.unlink(path)
+
+    def test_substream_total_cap_is_enforced(self):
+        p = self._ledger(R.SUBSTREAM_TOTAL_CAP, arm="x")
+        try:
+            with self.assertRaises(RuntimeError) as ctx:
+                R.guard(p, 9999, 1)
+            self.assertIn("sub-stream total", str(ctx.exception))
         finally:
             os.unlink(p)
 

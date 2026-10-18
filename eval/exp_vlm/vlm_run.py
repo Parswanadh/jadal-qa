@@ -46,14 +46,35 @@ V03_REFERENCE = "e_json_only_prompt"
 
 
 # ----------------------------------------------------------------- budget ----
-def guard(ledger: str, cap: int, will_add: int = 1):
-    """Raise before a call that would exceed the pre-registered cap."""
-    now = VM.count_calls(ledger)
-    if now["total"] + will_add > cap:
+#: the sub-stream's own total ceiling: V01's plan (20) + V03's cap (122).  The
+#: PREREG's caps are PER EXPERIMENT, and this ledger is shared between the two, so
+#: a per-experiment guard must filter by arm -- counting the whole ledger against
+#: V03's 122 would stop 20 calls early (that mistake happened once; see
+#: docs/reports/grid_vlm_b.md).
+SUBSTREAM_TOTAL_CAP = 142
+
+
+def guard(ledger: str, cap: int, will_add: int = 1, arms=None):
+    """Raise before a call that would exceed a pre-registered cap.
+
+    ``arms`` : when given, only ledger records whose ``arm`` is in this set count
+    against ``cap`` (per-experiment accounting on a shared ledger).  The
+    sub-stream total is checked as well, so no combination can exceed 142.
+    """
+    rows = [r for r in ledger_rows(ledger) if not r.get("text_only")]
+    if arms is not None:
+        rows = [r for r in rows if r.get("arm") in arms]
+    n_exp = len(rows)
+    n_all = sum(1 for r in ledger_rows(ledger) if not r.get("text_only"))
+    if n_exp + will_add > cap:
         raise RuntimeError(
-            f"BUDGET STOP: ledger already has {now['total']} calls and the cap is {cap}; "
+            f"BUDGET STOP: this experiment already has {n_exp} calls and its cap is {cap}; "
             f"{will_add} more would exceed it. Reporting instead of spending.")
-    return now
+    if n_all + will_add > SUBSTREAM_TOTAL_CAP:
+        raise RuntimeError(
+            f"BUDGET STOP (sub-stream total): the ledger has {n_all} image calls and the "
+            f"sub-stream ceiling is {SUBSTREAM_TOTAL_CAP}; {will_add} more would exceed it.")
+    return {"experiment": n_exp, "substream_total": n_all}
 
 
 def done_pairs(ledger: str):
