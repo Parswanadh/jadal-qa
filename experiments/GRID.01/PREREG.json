@@ -1,0 +1,116 @@
+{
+ "config": {
+  "folds": "leave-one-clip-out over 7 clips",
+  "grid": [
+   3,
+   3
+  ],
+  "groups": [
+   "spatial"
+  ],
+  "kill_gate_delta": 0.02,
+  "model": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced)",
+  "n_tiles": 9,
+  "order": "row-major time",
+  "pools": [
+   "mean",
+   "min",
+   "max",
+   "std"
+  ],
+  "primary": "spatial_pooled_meanminmaxstd",
+  "secondary": "spatial_mean_only",
+  "seed": 0,
+  "tile_px": 224,
+  "timestamps": true
+ },
+ "config_sha256": "557752c9f49eb3c3d6ace0491ae4924d6427ad3e5018f2cd78c054878cc67d89",
+ "controls": {
+  "null_grey_mosaic": "identical feature rows, must print 0.50",
+  "random_gaussian": "20 draws, must print <=0.60",
+  "shuffled_labels": "20 draws, must print <=0.60",
+  "tile_order_shuffled": {
+   "folds": "same",
+   "grid": [
+    3,
+    3
+   ],
+   "groups": [
+    "spatial",
+    "intertile",
+    "diff"
+   ],
+   "model": "same",
+   "n_tiles": 9,
+   "order": "shuffled (seed 12345)",
+   "pools": [
+    "mean",
+    "min",
+    "max",
+    "std"
+   ],
+   "role": "canvas control",
+   "seed": 0,
+   "tile_px": 224,
+   "timestamps": true
+  },
+  "timestamps_off": {
+   "folds": "same",
+   "grid": [
+    3,
+    3
+   ],
+   "groups": [
+    "spatial",
+    "intertile",
+    "diff"
+   ],
+   "model": "same",
+   "n_tiles": 9,
+   "order": "row-major time",
+   "pools": [
+    "mean",
+    "min",
+    "max",
+    "std"
+   ],
+   "role": "timestamp-leak control",
+   "seed": 0,
+   "tile_px": 224,
+   "timestamps": false
+  }
+ },
+ "decision_rule": {
+  "adopt_if": "AUROC within 0.05 of the 26-feature baseline (0.810) on the same folds AND the mosaic costs <=1/3 of the full-window pipeline",
+  "kill_if": "AUROC <= 0.60 (no usable signal in the still picture)",
+  "secondary": "mean-only pooling must be within 0.02 of full pooling, else the pooled feature count (60) overfits at n=150"
+ },
+ "frozen_before_run": true,
+ "frozen_utc": "2026-10-18",
+ "id": "GRID.01",
+ "protocol": {
+  "folds": "leave-one-clip-out over 7 clips",
+  "grid": [
+   3,
+   3
+  ],
+  "groups": [
+   "spatial"
+  ],
+  "kill_gate_delta": 0.02,
+  "model": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced)",
+  "n_tiles": 9,
+  "order": "row-major time",
+  "pools": [
+   "mean",
+   "min",
+   "max",
+   "std"
+  ],
+  "primary": "spatial_pooled_meanminmaxstd",
+  "secondary": "spatial_mean_only",
+  "seed": 0,
+  "tile_px": 224,
+  "timestamps": true
+ }
+}

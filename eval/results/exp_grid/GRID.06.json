@@ -1,0 +1,91 @@
+{
+ "bad_reason_mix": {
+  "HANDS_NOT_VISIBLE": 2,
+  "NO_ACTIVE_WORK": 19,
+  "SHAKY": 1
+ },
+ "ci95": [
+  0.224,
+  0.515
+ ],
+ "ci95_type": "factory-grouped bootstrap (2000, seed 0)",
+ "command": "JADAL_BUNDLE=<bundle> python3 eval/exp_grid/run_grid06.py",
+ "config": {
+  "C": 0.3,
+  "arm": "m3x3_t224",
+  "cv_folds": 5,
+  "frozen": true,
+  "seed": 0
+ },
+ "config_sha256": "14844bc1b4ee57739998fd71f48f2d34efc3f69ed02620c0f524cbb96c19be36",
+ "context_required_with_every_ood_number": "n=160, n_bad=22, ONE labeller, 19 of 22 bad are NO_ACTIVE_WORK; window bootstrap is optimistic and is never used alone",
+ "cost": "feature extraction 389.1 ms/window (CPU); 0 GPU",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "frozen_transfer": {
+  "auroc": 0.3557,
+  "auroc_vs_frozen_26": 0.5878,
+  "band_share": {
+   "accept": 0.63125,
+   "reject": 0.175,
+   "review": 0.19375
+  },
+  "ci95": [
+   0.224,
+   0.515
+  ],
+  "ci95_type": "factory-grouped bootstrap (2000, seed 0)",
+  "ci95_vs_frozen_26": [
+   0.45,
+   0.728
+  ],
+  "ci95_window_optimistic": [
+   0.22,
+   0.497
+  ],
+  "paired_vs_26": {
+   "delta": -0.23204874835309613,
+   "excludes_zero": true,
+   "hi": -0.0773838881438003,
+   "lo": -0.3804259314903847,
+   "n_boot": 2000
+  }
+ },
+ "git_sha": "3cd0c2509ba14a92e3e463fd3bf89c4cc60070b5",
+ "grouped_cv_on_ood": {
+  "C": 0.3,
+  "auroc": 0.6798,
+  "ci95": [
+   0.487,
+   0.845
+  ],
+  "n_folds": 5,
+  "paired_vs_26": {
+   "delta": 0.09206192358366272,
+   "excludes_zero": false,
+   "hi": 0.29615097517730465,
+   "lo": -0.14928195985523116,
+   "n_boot": 2000
+  },
+  "split": "factories assigned to folds by sorted name (deterministic)"
+ },
+ "id": "GRID.06",
+ "label_source": "human labels, ONE labeller (160 Egocentric-10K windows: 138 good / 22 bad; 19 of 22 bad are NO_ACTIVE_WORK)",
+ "n": 160,
+ "n_bad": 22,
+ "n_factories": 47,
+ "n_good": 138,
+ "protocol": "mosaic features from the 480p Egocentric-10K window clips (same files the frozen shipped-head scores were produced on); head trained on the 150 IndEgo windows only and applied unchanged; CI = factory-grouped bootstrap (2000, seed 0)",
+ "reason_stratified": {
+  "ci95_frozen": [
+   0.183,
+   0.525
+  ],
+  "frozen_26_auroc": 0.5755,
+  "frozen_mosaic_auroc": 0.3341,
+  "grouped_cv_auroc": 0.6739,
+  "n_bad": 19,
+  "note": "HANDS_NOT_VISIBLE (2) and SHAKY (1) are not reportable at this n",
+  "reason": "NO_ACTIVE_WORK"
+ },
+ "seed": 0
+}

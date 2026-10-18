@@ -1,0 +1,2693 @@
+{
+ "agreement_per_clip": {
+  "desk": {
+   "agreement_rate": 0.6207,
+   "always_advancing_agreement": 0.5517,
+   "balanced_accuracy": 0.5769,
+   "cohen_kappa": 0.1671,
+   "n": 29,
+   "n_gap_windows": 2,
+   "pred_advancing_gold_bad": 11,
+   "pred_advancing_gold_good": 16,
+   "pred_no_relevant_work_gold_bad": 2,
+   "pred_no_relevant_work_gold_good": 0,
+   "sensitivity_advancing_vs_good": 1.0,
+   "specificity_no_relevant_work_vs_bad": 0.1538
+  },
+  "ecu_full": {
+   "agreement_rate": 0.9375,
+   "always_advancing_agreement": 0.8958,
+   "balanced_accuracy": 0.7,
+   "cohen_kappa": 0.5443,
+   "n": 48,
+   "n_gap_windows": 2,
+   "pred_advancing_gold_bad": 3,
+   "pred_advancing_gold_good": 43,
+   "pred_no_relevant_work_gold_bad": 2,
+   "pred_no_relevant_work_gold_good": 0,
+   "sensitivity_advancing_vs_good": 1.0,
+   "specificity_no_relevant_work_vs_bad": 0.4
+  },
+  "ecu_late": {
+   "agreement_rate": 0.7857,
+   "always_advancing_agreement": 0.7143,
+   "balanced_accuracy": 0.625,
+   "cohen_kappa": 0.3226,
+   "n": 14,
+   "n_gap_windows": 1,
+   "pred_advancing_gold_bad": 3,
+   "pred_advancing_gold_good": 10,
+   "pred_no_relevant_work_gold_bad": 1,
+   "pred_no_relevant_work_gold_good": 0,
+   "sensitivity_advancing_vs_good": 1.0,
+   "specificity_no_relevant_work_vs_bad": 0.25
+  },
+  "organise": {
+   "agreement_rate": 0.4737,
+   "always_advancing_agreement": 0.4737,
+   "balanced_accuracy": 0.5,
+   "cohen_kappa": 0.0,
+   "n": 19,
+   "n_gap_windows": 0,
+   "pred_advancing_gold_bad": 10,
+   "pred_advancing_gold_good": 9,
+   "pred_no_relevant_work_gold_bad": 0,
+   "pred_no_relevant_work_gold_good": 0,
+   "sensitivity_advancing_vs_good": 1.0,
+   "specificity_no_relevant_work_vs_bad": 0.0
+  }
+ },
+ "agreement_with_human_gold": {
+  "constant_baselines": {
+   "always_advancing_agreement": 0.7091,
+   "always_gold_majority_agreement": 0.7091,
+   "note": "the agreement rate must be read against the 0.709 always-advancing baseline: the derived L1 label is 105/110 advancing"
+  },
+  "coverage_fraction_histogram": {
+   "n_windows_fully_inside_a_step": 96,
+   "n_windows_partial": 12,
+   "n_windows_with_zero_step_overlap": 2
+  },
+  "primary_majority_overlap": {
+   "agreement_rate": 0.7545,
+   "balanced_accuracy": 0.5781,
+   "cohen_kappa": 0.208,
+   "n": 110,
+   "pred_advancing_gold_bad": 27,
+   "pred_advancing_gold_good": 78,
+   "pred_no_relevant_work_gold_bad": 5,
+   "pred_no_relevant_work_gold_good": 0,
+   "sensitivity_advancing_vs_good": 1.0,
+   "specificity_no_relevant_work_vs_bad": 0.1562
+  },
+  "primary_majority_overlap_gold_reason_work_only": {
+   "agreement_rate": 0.8723,
+   "balanced_accuracy": 0.625,
+   "cohen_kappa": 0.3562,
+   "n": 94,
+   "pred_advancing_gold_bad": 12,
+   "pred_advancing_gold_good": 78,
+   "pred_no_relevant_work_gold_bad": 4,
+   "pred_no_relevant_work_gold_good": 0,
+   "sensitivity_advancing_vs_good": 1.0,
+   "specificity_no_relevant_work_vs_bad": 0.25
+  },
+  "sensitivity_any_overlap": {
+   "agreement_rate": 0.7273,
+   "balanced_accuracy": 0.5312,
+   "cohen_kappa": 0.0864,
+   "n": 110,
+   "pred_advancing_gold_bad": 30,
+   "pred_advancing_gold_good": 78,
+   "pred_no_relevant_work_gold_bad": 2,
+   "pred_no_relevant_work_gold_good": 0,
+   "sensitivity_advancing_vs_good": 1.0,
+   "specificity_no_relevant_work_vs_bad": 0.0625
+  },
+  "sensitivity_fully_inside_step": {
+   "agreement_rate": 0.6455,
+   "balanced_accuracy": 0.5473,
+   "cohen_kappa": 0.0991,
+   "n": 110,
+   "pred_advancing_gold_bad": 22,
+   "pred_advancing_gold_good": 61,
+   "pred_no_relevant_work_gold_bad": 10,
+   "pred_no_relevant_work_gold_good": 17,
+   "sensitivity_advancing_vs_good": 0.7821,
+   "specificity_no_relevant_work_vs_bad": 0.3125
+  },
+  "sensitivity_midpoint_in_step": {
+   "agreement_rate": 0.7455,
+   "balanced_accuracy": 0.5717,
+   "cohen_kappa": 0.1886,
+   "n": 110,
+   "pred_advancing_gold_bad": 27,
+   "pred_advancing_gold_good": 77,
+   "pred_no_relevant_work_gold_bad": 5,
+   "pred_no_relevant_work_gold_good": 1,
+   "sensitivity_advancing_vs_good": 0.9872,
+   "specificity_no_relevant_work_vs_bad": 0.1562
+  }
+ },
+ "auroc": 0.6476,
+ "caveat": "IndEgo keysteps are demo-style assembly/logistics tasks recorded for a research dataset; the 4 annotated clips are one worker's one task each, so nothing here transfers to factory work without testing it there. L2 has no variance on this subset and 4 groups make the grouped CI weak. These are descriptive rates on dataset-shipped annotations, not accuracy of a product on unlabelled video.",
+ "ci95": [
+  0.4565,
+  0.8305
+ ],
+ "ci95_type": "clip-grouped bootstrap (2000 draws, seed 0)",
+ "command": "JADAL_BUNDLE=<bundle> /home/parshu/envs/jadal/bin/python tools/task/task00b.py",
+ "config": {
+  "annotation_glob": "data/indego/**/annotated_keysteps_*/*.json (VIA temporal segments)",
+  "id": "TASK.00b",
+  "l1_rule": "advancing iff annotated step intervals cover >50% of the 10-s window, else no_relevant_work",
+  "l2_rule": "completed iff the annotation reaches the last step of the clip's matched task list",
+  "n_boot": 2000,
+  "score_primary": "common.loco_proba (StandardScaler+LogisticRegression C=0.3 class_weight=balanced, leave-one-clip-out)",
+  "seed": 0
+ },
+ "config_sha256": "edcaf22ce34e13ef452a91b7553b70249c059327d3295c9ca37f6576b856f300",
+ "cost": "0 GPU; cached features + sklearn fits on 150x26; ~5 s CPU",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "git_sha": "4d27e7eefe9f60b1857e8daf1d8bd6de3b09ddc0",
+ "headline": "AUROC of the shipped 26-feature LOCO score for advancing (1) vs no_relevant_work (0), 4 annotated clips",
+ "id": "TASK.00b",
+ "l1_label_counts": {
+  "n_advancing": 105,
+  "n_gold_bad": 32,
+  "n_gold_good": 78,
+  "n_no_relevant_work": 5
+ },
+ "l1_rows": [
+  {
+   "clip": "desk",
+   "end_s": 10.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g062",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 0.0,
+   "step_overlap_frac": 0.5935,
+   "steps_hit": [
+    "07_adjust_height"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 24.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g063",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 14.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 39.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g064",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 29.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 53.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g065",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 43.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 68.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g066",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 58.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 82.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g067",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 72.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 97.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g068",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 87.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 111.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g069",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 101.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 126.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g070",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 116.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 140.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g071",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 130.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 155.0,
+   "gold_label": 0,
+   "gold_reason": "DUPLICATE",
+   "id": "g072",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 145.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 169.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g073",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 159.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_tabletop"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 184.0,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g074",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 0,
+    "midpoint_in_step": 0
+   },
+   "start_s": 174.0,
+   "step_overlap_frac": 0.0841,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 198.5,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g075",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 188.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 213.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g076",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 203.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 227.6,
+   "gold_label": 0,
+   "gold_reason": "DUPLICATE",
+   "id": "g077",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 217.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 242.1,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g078",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 232.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 256.6,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g079",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 246.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 271.1,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g080",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 261.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 285.6,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g081",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 275.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 300.1,
+   "gold_label": 0,
+   "gold_reason": "UNDECODABLE",
+   "id": "g082",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 290.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 314.6,
+   "gold_label": 0,
+   "gold_reason": "HANDS_NOT_VISIBLE",
+   "id": "g083",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 304.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 329.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g084",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 319.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 343.6,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g085",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 333.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 358.1,
+   "gold_label": 0,
+   "gold_reason": "HANDS_NOT_VISIBLE",
+   "id": "g086",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 348.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 372.6,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g087",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 362.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 387.1,
+   "gold_label": 0,
+   "gold_reason": "DUPLICATE",
+   "id": "g088",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 377.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 401.6,
+   "gold_label": 0,
+   "gold_reason": "DUPLICATE",
+   "id": "g089",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 391.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "desk",
+   "end_s": 416.1,
+   "gold_label": 0,
+   "gold_reason": "DUPLICATE",
+   "id": "g090",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 0,
+    "midpoint_in_step": 0
+   },
+   "start_s": 406.1,
+   "step_overlap_frac": 0.2361,
+   "steps_hit": [
+    "09_clean_up"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 10.0,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g000",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 0,
+    "midpoint_in_step": 0
+   },
+   "start_s": 0.0,
+   "step_overlap_frac": 0.121,
+   "steps_hit": [
+    "01_inspect_and_clean"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 24.6,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g001",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 14.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_inspect_and_clean",
+    "02_attach_ram_chip"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 39.3,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g002",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 29.3,
+   "step_overlap_frac": 0.7063,
+   "steps_hit": [
+    "02_attach_ram_chip"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 53.9,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g003",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 43.9,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "03_attach_hard_disk"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 68.6,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g004",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 58.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "03_attach_hard_disk"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 83.2,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g005",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 73.2,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "03_attach_hard_disk"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 97.9,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g006",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 87.9,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "03_attach_hard_disk"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 112.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g007",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 102.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "03_attach_hard_disk"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 127.2,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g008",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 117.2,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "03_attach_hard_disk"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 141.8,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g009",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 131.8,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "03_attach_hard_disk",
+    "04_attach_hard_disk_cables"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 156.4,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g010",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 146.4,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_inspect_and_clean",
+    "04_attach_hard_disk_cables"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 171.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g011",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 161.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_inspect_and_clean",
+    "05_attach_side_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 185.7,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g012",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 175.7,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "05_attach_side_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 200.4,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g013",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 190.4,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "05_attach_side_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 215.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g014",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 205.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "05_attach_side_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 229.7,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g015",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 219.7,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "05_attach_side_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 244.3,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g016",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 234.3,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "05_attach_side_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 259.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g017",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 249.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "05_attach_side_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 273.6,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g018",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 263.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "05_attach_side_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 288.2,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g019",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 278.2,
+   "step_overlap_frac": 0.7981,
+   "steps_hit": [
+    "06_attach_bottom_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 302.9,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g020",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 292.9,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "06_attach_bottom_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 317.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g021",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 307.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "06_attach_bottom_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 332.2,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g022",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 322.2,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "06_attach_bottom_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 346.8,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g023",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 336.8,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "07_attach_top_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 361.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g024",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 351.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "07_attach_top_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 376.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g025",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 366.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "07_attach_top_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 390.8,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g026",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 380.8,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "07_attach_top_plate",
+    "08_attach_power_connection"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 405.4,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g027",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 395.4,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_power_connection"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 420.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g028",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 410.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_power_connection",
+    "09_attach_connector_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 434.7,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g029",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 424.7,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_attach_connector_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 449.3,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g030",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 439.3,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_attach_connector_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 464.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g031",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 454.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_attach_connector_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 478.6,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g032",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 468.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_attach_connector_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 493.3,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g033",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 483.3,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_attach_connector_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 507.9,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g034",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 497.9,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_attach_connector_plates"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 522.6,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g035",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 512.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "09_attach_connector_plates",
+    "10_attach_wooden_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 537.2,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g036",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 527.2,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "10_attach_wooden_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 551.9,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g037",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 541.9,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "10_attach_wooden_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 566.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g038",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 556.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "10_attach_wooden_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 581.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g039",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 571.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "10_attach_wooden_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 595.8,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g040",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 585.8,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "10_attach_wooden_plate"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 610.4,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g041",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 600.4,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "10_attach_wooden_plate",
+    "11_attach_zip_ties"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 625.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g042",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 615.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "11_attach_zip_ties"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 639.7,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g043",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 629.7,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "11_attach_zip_ties"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 654.4,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g044",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 644.4,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "11_attach_zip_ties",
+    "12_plug_in"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 669.0,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g045",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 659.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "12_plug_in",
+    "13_attach_monitor"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 683.7,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g046",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 673.7,
+   "step_overlap_frac": 0.6822,
+   "steps_hit": [
+    "13_attach_monitor",
+    "14_turn_on"
+   ]
+  },
+  {
+   "clip": "ecu_full",
+   "end_s": 698.3,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g047",
+   "labels": {
+    "any_overlap": 0,
+    "fully_inside_step": 0,
+    "majority_overlap": 0,
+    "midpoint_in_step": 0
+   },
+   "start_s": 688.3,
+   "step_overlap_frac": 0.0,
+   "steps_hit": []
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 10.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g048",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 0.0,
+   "step_overlap_frac": 0.8122,
+   "steps_hit": [
+    "08_attach_power_connection"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 25.3,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g049",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 15.3,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_power_connection"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 40.5,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g050",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 30.5,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_power_connection"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 55.8,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g051",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 45.8,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "08_attach_power_connection",
+    "11_attach_zip_ties"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 71.0,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g052",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 61.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "11_attach_zip_ties"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 86.3,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g053",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 76.3,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "11_attach_zip_ties"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 101.6,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g054",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 91.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "11_attach_zip_ties"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 116.8,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g055",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 106.8,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "11_attach_zip_ties"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 132.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g056",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 122.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "11_attach_zip_ties"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 147.4,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g057",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 137.4,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "12_plug_in",
+    "13_attach_monitor"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 162.6,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g058",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 152.6,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "13_attach_monitor"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 177.9,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g059",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 0
+   },
+   "start_s": 167.9,
+   "step_overlap_frac": 0.5805,
+   "steps_hit": [
+    "13_attach_monitor",
+    "14_turn_on"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 193.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g060",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 183.1,
+   "step_overlap_frac": 0.9934,
+   "steps_hit": [
+    "14_turn_on"
+   ]
+  },
+  {
+   "clip": "ecu_late",
+   "end_s": 208.4,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g061",
+   "labels": {
+    "any_overlap": 0,
+    "fully_inside_step": 0,
+    "majority_overlap": 0,
+    "midpoint_in_step": 0
+   },
+   "start_s": 198.4,
+   "step_overlap_frac": 0.0,
+   "steps_hit": []
+  },
+  {
+   "clip": "organise",
+   "end_s": 10.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g114",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 0.0,
+   "step_overlap_frac": 0.8443,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 25.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g115",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 15.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 40.0,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g116",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 30.0,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 55.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g117",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 45.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 70.1,
+   "gold_label": 0,
+   "gold_reason": "HANDS_NOT_VISIBLE",
+   "id": "g118",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 60.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 85.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g119",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 75.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 100.1,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g120",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 90.1,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 115.2,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g121",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 105.2,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 130.2,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g122",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 120.2,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 145.2,
+   "gold_label": 0,
+   "gold_reason": "TOO_DARK",
+   "id": "g123",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 135.2,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 160.2,
+   "gold_label": 0,
+   "gold_reason": "TOO_DARK",
+   "id": "g124",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 150.2,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 175.2,
+   "gold_label": 0,
+   "gold_reason": "HANDS_NOT_VISIBLE",
+   "id": "g125",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 165.2,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 190.3,
+   "gold_label": 0,
+   "gold_reason": "HANDS_NOT_VISIBLE",
+   "id": "g126",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 180.3,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 205.3,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g127",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 195.3,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 220.3,
+   "gold_label": 1,
+   "gold_reason": "",
+   "id": "g128",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 210.3,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 235.3,
+   "gold_label": 0,
+   "gold_reason": "HANDS_NOT_VISIBLE",
+   "id": "g129",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 225.3,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "01_organize",
+    "02_clean_up"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 250.4,
+   "gold_label": 0,
+   "gold_reason": "TOO_DARK",
+   "id": "g130",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 240.4,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "02_clean_up"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 265.4,
+   "gold_label": 0,
+   "gold_reason": "TOO_DARK",
+   "id": "g131",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 1,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 255.4,
+   "step_overlap_frac": 1.0,
+   "steps_hit": [
+    "02_clean_up"
+   ]
+  },
+  {
+   "clip": "organise",
+   "end_s": 280.4,
+   "gold_label": 0,
+   "gold_reason": "NO_ACTIVE_WORK",
+   "id": "g132",
+   "labels": {
+    "any_overlap": 1,
+    "fully_inside_step": 0,
+    "majority_overlap": 1,
+    "midpoint_in_step": 1
+   },
+   "start_s": 270.4,
+   "step_overlap_frac": 0.5426,
+   "steps_hit": [
+    "02_clean_up"
+   ]
+  }
+ ],
+ "l2_summary": {
+  "desk": "completed",
+  "ecu_full": "completed",
+  "ecu_late": "completed",
+  "organise": "completed"
+ },
+ "l2_variance": 1,
+ "label_source": "L1 derived from IndEgo VIA keystep annotations (dataset-shipped, no human QA labeller); agreement is measured against human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad)",
+ "n": 110,
+ "n_bad": 5,
+ "n_good": 105,
+ "n_groups": 4,
+ "per_clip": {
+  "desk": {
+   "L2": "completed",
+   "annotated_coverage_s": 395.202,
+   "annotated_span_s": 404.396,
+   "annotation": "1_Assembly/annotated_keysteps_assembly_disassembly/AS_User_1_User_15_411_2910_2_1.json",
+   "attribute_name": "steps",
+   "clip": "desk",
+   "duration_check_cv2": {
+    "duration_s": 416.1,
+    "fps": 10.0,
+    "n_frames": 4161,
+    "path": "/home/parshu/projects/awing/data/indego/1_Assembly/03_Mechanical_Desk/mp4_480/User_1_User_15_411_2910_2_1_480.mp4",
+    "wh": [
+     480,
+     480
+    ]
+   },
+   "first_step_s": 4.065,
+   "gaps_s": [
+    {
+     "end_s": 4.065,
+     "start_s": 0.0
+    },
+    {
+     "end_s": 183.159,
+     "start_s": 173.965
+    },
+    {
+     "end_s": 416.1,
+     "start_s": 408.461
+    }
+   ],
+   "last_step_end_s": 408.461,
+   "last_step_of_task_list": "09_clean_up",
+   "n_annotated_segments": 3,
+   "n_distinct_steps_annotated": 3,
+   "n_options_in_annotation": 10,
+   "n_steps_in_matched_task_list": 10,
+   "n_task_list_steps_not_annotated": 7,
+   "steps_missing_from_task_list": [],
+   "steps_present": [
+    "07_adjust_height",
+    "08_attach_tabletop",
+    "09_clean_up"
+   ],
+   "task_list_file": "1_Assembly/03_Mechanical_Desk/keysteps_03_assembly.txt",
+   "task_list_matched": "Assembly_Table (without top: leave out 08)",
+   "task_list_steps_not_annotated": [
+    "00_preparation",
+    "01_put_on_gloves",
+    "02_attach_feet",
+    "03_connect_legs",
+    "04_attach_upper_cover",
+    "05_attach_lower_plate",
+    "06_attach_crank"
+   ],
+   "video": "User_1_User_15_411_2910_2_1_480.mp4"
+  },
+  "ecu_full": {
+   "L2": "completed",
+   "annotated_coverage_s": 659.981,
+   "annotated_span_s": 671.732,
+   "annotation": "1_Assembly/annotated_keysteps_assembly_disassembly/AS_User_15_410_0411_2.json",
+   "attribute_name": "TEMPORAL-SEGMENTS",
+   "clip": "ecu_full",
+   "duration_check_cv2": {
+    "duration_s": 698.3,
+    "fps": 10.0,
+    "n_frames": 6983,
+    "path": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_15_410_0411_2_480.mp4",
+    "wh": [
+     480,
+     480
+    ]
+   },
+   "first_step_s": 8.79,
+   "gaps_s": [
+    {
+     "end_s": 8.79,
+     "start_s": 0.0
+    },
+    {
+     "end_s": 42.716,
+     "start_s": 36.363
+    },
+    {
+     "end_s": 280.219,
+     "start_s": 274.82
+    },
+    {
+     "end_s": 698.3,
+     "start_s": 680.522
+    }
+   ],
+   "last_step_end_s": 680.522,
+   "last_step_of_task_list": "14_turn_on",
+   "n_annotated_segments": 15,
+   "n_distinct_steps_annotated": 14,
+   "n_options_in_annotation": 14,
+   "n_steps_in_matched_task_list": 15,
+   "n_task_list_steps_not_annotated": 1,
+   "steps_missing_from_task_list": [],
+   "steps_present": [
+    "01_inspect_and_clean",
+    "02_attach_ram_chip",
+    "03_attach_hard_disk",
+    "04_attach_hard_disk_cables",
+    "05_attach_side_plates",
+    "06_attach_bottom_plate",
+    "07_attach_top_plate",
+    "08_attach_power_connection",
+    "09_attach_connector_plates",
+    "10_attach_wooden_plate",
+    "11_attach_zip_ties",
+    "12_plug_in",
+    "13_attach_monitor",
+    "14_turn_on"
+   ],
+   "task_list_file": "1_Assembly/01_ECU/keysteps_01_assembly.txt",
+   "task_list_matched": "Assembly_ECU",
+   "task_list_steps_not_annotated": [
+    "00_preparation"
+   ],
+   "video": "User_15_410_0411_2_480.mp4"
+  },
+  "ecu_late": {
+   "L2": "completed",
+   "annotated_coverage_s": 186.961,
+   "annotated_span_s": 191.156,
+   "annotation": "1_Assembly/annotated_keysteps_assembly_disassembly/AS_User_1_412_2010_3.json",
+   "attribute_name": "steps",
+   "clip": "ecu_late",
+   "duration_check_cv2": {
+    "duration_s": 208.4,
+    "fps": 10.0,
+    "n_frames": 2084,
+    "path": "/home/parshu/projects/awing/data/indego/1_Assembly/mp4_480/User_1_412_2010_3_480.mp4",
+    "wh": [
+     480,
+     480
+    ]
+   },
+   "first_step_s": 1.878,
+   "gaps_s": [
+    {
+     "end_s": 1.878,
+     "start_s": 0.0
+    },
+    {
+     "end_s": 176.375,
+     "start_s": 172.18
+    },
+    {
+     "end_s": 208.4,
+     "start_s": 193.034
+    }
+   ],
+   "last_step_end_s": 193.034,
+   "last_step_of_task_list": "14_turn_on",
+   "n_annotated_segments": 5,
+   "n_distinct_steps_annotated": 5,
+   "n_options_in_annotation": 15,
+   "n_steps_in_matched_task_list": 15,
+   "n_task_list_steps_not_annotated": 10,
+   "steps_missing_from_task_list": [],
+   "steps_present": [
+    "08_attach_power_connection",
+    "11_attach_zip_ties",
+    "12_plug_in",
+    "13_attach_monitor",
+    "14_turn_on"
+   ],
+   "task_list_file": "1_Assembly/01_ECU/keysteps_01_assembly.txt",
+   "task_list_matched": "Assembly_ECU",
+   "task_list_steps_not_annotated": [
+    "00_preparation",
+    "01_inspect_and_clean",
+    "02_attach_ram_chip",
+    "03_attach_hard_disk",
+    "04_attach_hard_disk_cables",
+    "05_attach_side_plates",
+    "06_attach_bottom_plate",
+    "07_attach_top_plate",
+    "09_attach_connector_plates",
+    "10_attach_wooden_plate"
+   ],
+   "video": "User_1_412_2010_3_480.mp4"
+  },
+  "organise": {
+   "L2": "completed",
+   "annotated_coverage_s": 274.269,
+   "annotated_span_s": 274.269,
+   "annotation": "3_Logistics_Organization/annotated_keysteps_logistics_organisation/AS_User_1_2110_Organisation.json",
+   "attribute_name": "steps",
+   "clip": "organise",
+   "duration_check_cv2": {
+    "duration_s": 280.4,
+    "fps": 10.0,
+    "n_frames": 2804,
+    "path": "/home/parshu/projects/awing/data/indego/3_Logistics_Organization/mp4_480/User_1_2110_Organisation_480.mp4",
+    "wh": [
+     480,
+     480
+    ]
+   },
+   "first_step_s": 1.557,
+   "gaps_s": [
+    {
+     "end_s": 1.557,
+     "start_s": 0.0
+    },
+    {
+     "end_s": 280.4,
+     "start_s": 275.826
+    }
+   ],
+   "last_step_end_s": 275.826,
+   "last_step_of_task_list": "02_clean_up",
+   "n_annotated_segments": 2,
+   "n_distinct_steps_annotated": 2,
+   "n_options_in_annotation": 3,
+   "n_steps_in_matched_task_list": 3,
+   "n_task_list_steps_not_annotated": 1,
+   "steps_missing_from_task_list": [],
+   "steps_present": [
+    "01_organize",
+    "02_clean_up"
+   ],
+   "task_list_file": "3_Logistics_Organization/keysteps_logistics_organization.txt",
+   "task_list_matched": "Organize",
+   "task_list_steps_not_annotated": [
+    "00_preparation"
+   ],
+   "video": "User_1_2110_Organisation_480.mp4"
+  }
+ },
+ "protocol": "zero-training: VIA temporal segments -> per-window L1 label; agreement with human gold labels; AUROC of the shipped 26-feature LOCO score for the derived L1 label; clip-grouped bootstrap CIs; 4 annotated clips only",
+ "score_direction": {
+  "auroc_advancing_vs_no_relevant_work": {
+   "fullfit_portal_not_out_of_fold": {
+    "auroc": 0.7048,
+    "ci95": [
+     0.5625,
+     0.8475
+    ],
+    "ci95_type": "clip-grouped bootstrap (2000 draws, seed 0)",
+    "ci95_type_window_optimistic": "window bootstrap (2000 draws, seed 0) -- optimistic",
+    "ci95_window_optimistic": [
+     0.5732,
+     0.8495
+    ],
+    "n": 110,
+    "n_advancing": 105,
+    "n_boot_valid": 1993,
+    "n_groups": 4,
+    "n_no_relevant_work": 5
+   },
+   "loco_harness_C0.3_balanced": {
+    "auroc": 0.6476,
+    "ci95": [
+     0.4565,
+     0.8305
+    ],
+    "ci95_type": "clip-grouped bootstrap (2000 draws, seed 0)",
+    "ci95_type_window_optimistic": "window bootstrap (2000 draws, seed 0) -- optimistic",
+    "ci95_window_optimistic": [
+     0.5288,
+     0.7616
+    ],
+    "n": 110,
+    "n_advancing": 105,
+    "n_boot_valid": 1993,
+    "n_groups": 4,
+    "n_no_relevant_work": 5
+   },
+   "loco_portal_C1.0_maxiter2000": {
+    "auroc": 0.6248,
+    "ci95": [
+     0.4783,
+     0.8089
+    ],
+    "ci95_type": "clip-grouped bootstrap (2000 draws, seed 0)",
+    "ci95_type_window_optimistic": "window bootstrap (2000 draws, seed 0) -- optimistic",
+    "ci95_window_optimistic": [
+     0.4494,
+     0.7779
+    ],
+    "n": 110,
+    "n_advancing": 105,
+    "n_boot_valid": 1993,
+    "n_groups": 4,
+    "n_no_relevant_work": 5
+   }
+  },
+  "auroc_flipped": {
+   "fullfit_portal_not_out_of_fold": 0.2952,
+   "loco_harness_C0.3_balanced": 0.3524,
+   "loco_portal_C1.0_maxiter2000": 0.3752
+  },
+  "auroc_gold_labels_same_windows_same_score": {
+   "auroc": 0.8646,
+   "ci95": [
+    0.7518,
+    0.95
+   ],
+   "ci95_type": "clip-grouped bootstrap (2000 draws, seed 0)",
+   "ci95_type_window_optimistic": "window bootstrap (2000 draws, seed 0) -- optimistic",
+   "ci95_window_optimistic": [
+    0.7758,
+    0.9394
+   ],
+   "n": 110,
+   "n_advancing": 78,
+   "n_boot_valid": 2000,
+   "n_groups": 4,
+   "n_no_relevant_work": 32
+  },
+  "per_clip_auroc_primary_score": {
+   "desk": {
+    "auroc": 0.4815,
+    "n": 29,
+    "n_advancing": 27
+   },
+   "ecu_full": {
+    "auroc": 0.8587,
+    "n": 48,
+    "n_advancing": 46
+   },
+   "ecu_late": {
+    "auroc": 0.6923,
+    "n": 14,
+    "n_advancing": 13
+   },
+   "organise": {
+    "auroc": null,
+    "n": 19,
+    "n_advancing": 19,
+    "note": "one class only -- AUROC undefined"
+   }
+  },
+  "primary": "higher score -> more likely advancing"
+ },
+ "seed": 0,
+ "segments_engine": {
+  "clips_with_annotation": [
+   "desk",
+   "ecu_full",
+   "ecu_late",
+   "organise"
+  ],
+  "clips_without_annotation": {
+   "logistics4": [
+    "User_1_User_16_451_3101_Logistics_4_480.mp4"
+   ],
+   "pallet": [
+    "User_1_H_pal_transport_Nar_480.mp4"
+   ],
+   "pallet2": [
+    "User_1_H_pal_transport2_Nar_480.mp4"
+   ]
+  },
+  "n_annotation_files_on_disk": 180,
+  "n_gold_clips": 7,
+  "n_parsed": 180,
+  "n_unparseable": 0,
+  "task_list_sections_parsed": {
+   "Assembly_ECU": {
+    "file": "1_Assembly/01_ECU/keysteps_01_assembly.txt",
+    "n_steps": 15
+   },
+   "Assembly_IKEA_Lamp": {
+    "file": "1_Assembly/02_IKEA_Lamp/keysteps_02_assembly.txt",
+    "n_steps": 5
+   },
+   "Assembly_IKEA_Table": {
+    "file": "1_Assembly/04_IKEA_Desk/keysteps_04_assembly.txt",
+    "n_steps": 8
+   },
+   "Assembly_Table (without top: leave out 08)": {
+    "file": "1_Assembly/03_Mechanical_Desk/keysteps_03_assembly.txt",
+    "n_steps": 10
+   },
+   "Assembly_Trolley_Prototype": {
+    "file": "1_Assembly/05_Trolley_Prototype/keysteps_05_assembly.txt",
+    "n_steps": 8
+   },
+   "Assembly_Workstation_Computer": {
+    "file": "1_Assembly/06_Workstation_Computer/keysteps_06_assembly.txt",
+    "n_steps": 16
+   },
+   "Camera_Subassembly_Assembly": {
+    "file": "1_Assembly/08_Camera_Mount_Subassembly/keysteps_08_assembly.txt",
+    "n_steps": 4
+   },
+   "Camera_Subassembly_Disassembly (08)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 4
+   },
+   "Circular_Table_Assembly": {
+    "file": "1_Assembly/10_Circular_Desk/keysteps_10_assembly.txt",
+    "n_steps": 4
+   },
+   "Circular_Table_Disassembly (10)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 4
+   },
+   "Delivery": {
+    "file": "3_Logistics_Organization/keysteps_logistics_organization.txt",
+    "n_steps": 4
+   },
+   "Delivery (01)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 4
+   },
+   "Disassembly_ECU (01)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 11
+   },
+   "Disassembly_IKEA_Lamp (02)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 4
+   },
+   "Disassembly_IKEA_Table (04)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 8
+   },
+   "Disassembly_Table (without top: leave out 02 & 03) (03.1 with, 03.2 without)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 11
+   },
+   "Disassembly_Trolley_Prototype (05)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 8
+   },
+   "Disassembly_Workstation_Computer (06)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 15
+   },
+   "Inspect_and_Collect": {
+    "file": "3_Logistics_Organization/keysteps_logistics_organization.txt",
+    "n_steps": 4
+   },
+   "Inspect_and_Collect (03)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 4
+   },
+   "Open_and_Close": {
+    "file": "2_Inspection_Repair/keysteps_inspection_repair.txt",
+    "n_steps": 6
+   },
+   "Organize": {
+    "file": "3_Logistics_Organization/keysteps_logistics_organization.txt",
+    "n_steps": 3
+   },
+   "Organize (04)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 3
+   },
+   "Pickup": {
+    "file": "3_Logistics_Organization/keysteps_logistics_organization.txt",
+    "n_steps": 4
+   },
+   "Pickup (02)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 4
+   },
+   "Repair": {
+    "file": "2_Inspection_Repair/keysteps_inspection_repair.txt",
+    "n_steps": 3
+   },
+   "Small_Camera_Assembly": {
+    "file": "1_Assembly/07_Inspection_Assembly/keysteps_07_assembly.txt",
+    "n_steps": 6
+   },
+   "Small_Camera_Disassembly (07)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 6
+   },
+   "Trolley_ITEM_Assembly": {
+    "file": "1_Assembly/09_ITEM_Prototype/keysteps_09_assembly.txt",
+    "n_steps": 5
+   },
+   "Trolley_ITEM_Disassembly (09)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 7
+   },
+   "Woodworking_Long": {
+    "file": "4_Woodworking/keysteps_woodworking.txt",
+    "n_steps": 5
+   },
+   "Woodworking_Long (02)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 5
+   },
+   "Woodworking_Small": {
+    "file": "4_Woodworking/keysteps_woodworking.txt",
+    "n_steps": 3
+   },
+   "Woodworking_Small (01)": {
+    "file": "annotated_keysteps.txt",
+    "n_steps": 3
+   }
+  },
+  "unparseable": []
+ },
+ "source_vs_source_disagreement": {
+  "gold_bad_by_reason": {
+   "DUPLICATE": 5,
+   "HANDS_NOT_VISIBLE": 6,
+   "NO_ACTIVE_WORK": 16,
+   "TOO_DARK": 4,
+   "UNDECODABLE": 1
+  },
+  "ids_annotation_says_gap": [
+   "g074",
+   "g090",
+   "g000",
+   "g047",
+   "g061"
+  ],
+  "n_gold_good_windows_annotation_says_gap": 0,
+  "n_gold_no_active_work_windows_on_these_4_clips": 16,
+  "n_of_those_annotation_says_advancing": 12,
+  "n_of_those_annotation_says_gap": 4
+ },
+ "status": "done"
+}

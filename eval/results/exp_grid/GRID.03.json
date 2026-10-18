@@ -1,0 +1,152 @@
+{
+ "baseline_26_on_same_folds": {
+  "auroc": 0.81,
+  "bal_acc_at_0.5": 0.74,
+  "bal_acc_youden_in_sample": 0.785,
+  "ci95": [
+   0.683,
+   0.892
+  ],
+  "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+  "ci95_window_optimistic": [
+   0.722,
+   0.889
+  ],
+  "label": "baseline_26_shipped_features",
+  "n_features": 26,
+  "youden_threshold_in_sample": 0.3961
+ },
+ "canvas_controls": {
+  "ARRANGEMENT_test": {
+   "comparison": "primary vs shuffled tile placement",
+   "delta_vs_primary_all_groups": 0.0,
+   "note": "the pooled feature set is arrangement-invariant by construction, so this control is expected to be a no-op and is reported as the answer to 'does tile layout matter', not as a leak test"
+  },
+  "MASK_COST_test": {
+   "ci95": [
+    -0.048,
+    0.008
+   ],
+   "comparison": "primary (timestamps drawn, masked)  vs  content reference (no mask)",
+   "delta_auroc": -0.0178,
+   "excludes_zero": false
+  },
+  "TEXT_LEAK_test": {
+   "ci95": [
+    -0.027,
+    0.036
+   ],
+   "comparison": "timestamps drawn and NOT masked  vs  no timestamps and no mask",
+   "delta_auroc": -0.0058,
+   "excludes_zero": false,
+   "verdict": "no measurable text leak"
+  },
+  "content_reference_no_ts_no_mask": {
+   "arm_tag": "m3x3_t224_nots",
+   "auroc": 0.718,
+   "delta_vs_primary_all_groups": 0.0178,
+   "n_features": 79
+  },
+  "text_visible_not_masked": {
+   "arm_tag": "m3x3_t224_leak",
+   "auroc": 0.7122,
+   "delta_vs_primary_all_groups": 0.012,
+   "n_features": 79
+  },
+  "tile_order_shuffled": {
+   "arm_tag": "m3x3_t224_shuf",
+   "auroc": 0.7002,
+   "delta_vs_primary_all_groups": 0.0,
+   "n_features": 79
+  }
+ },
+ "ci95": [
+  0.503,
+  0.778
+ ],
+ "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+ "command": "JADAL_BUNDLE=<bundle> python3 eval/exp_grid/run_grid.py",
+ "config": {
+  "folds": "leave-one-clip-out over 7 clips",
+  "grid": [
+   3,
+   3
+  ],
+  "groups": [
+   "spatial",
+   "intertile",
+   "diff"
+  ],
+  "kill_gate_delta": 0.02,
+  "model": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced)",
+  "n_tiles": 9,
+  "order": "row-major time",
+  "pools": [
+   "mean",
+   "min",
+   "max",
+   "std"
+  ],
+  "primary": "spatial_pooled_meanminmaxstd",
+  "secondary": "spatial_mean_only",
+  "seed": 0,
+  "tile_px": 224,
+  "timestamps": true
+ },
+ "config_sha256": "5db8add278f8cac68d2f7e9d1fb7a7a9a7dc8b0ec2f82d7c619a65a2d91369f5",
+ "cost": "mosaic build+features 194.9 ms/window (CPU)",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "feature_digest_sha256": "600e6eb467ea0969a666382133fd98f39ec3eef002d99cff1f4f472b9f207315",
+ "git_sha": "83b03df1cf25918c0a6854926b8b7cf8b3c82dcc",
+ "id": "GRID.03",
+ "kill_gate_upstream": {
+  "note": "GRID.03 ran only as the small post-kill-gate control permitted by the brief",
+  "passed": false
+ },
+ "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad)",
+ "n": 150,
+ "n_bad": 50,
+ "primary": {
+  "auroc": 0.7002,
+  "bal_acc_at_0.5": 0.67,
+  "bal_acc_youden_in_sample": 0.69,
+  "ci95": [
+   0.503,
+   0.778
+  ],
+  "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+  "ci95_window_optimistic": [
+   0.607,
+   0.783
+  ],
+  "delta_vs_spatial_plus_intertile": {
+   "delta": -0.005599999999999938,
+   "excludes_zero": false,
+   "hi": 0.001677768544400025,
+   "lo": -0.016153838346932962,
+   "n_boot": 2000
+  },
+  "label": "spatial+intertile+diff",
+  "n_features": 79,
+  "youden_threshold_in_sample": 0.8313
+ },
+ "protocol": "LOCO over 7 clips; difference-mosaic group added on top of spatial+intertile",
+ "seed": 0,
+ "spatial_plus_intertile": {
+  "auroc": 0.7058,
+  "bal_acc_at_0.5": 0.68,
+  "bal_acc_youden_in_sample": 0.7,
+  "ci95": [
+   0.514,
+   0.785
+  ],
+  "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+  "ci95_window_optimistic": [
+   0.608,
+   0.79
+  ],
+  "label": "spatial+intertile",
+  "n_features": 72,
+  "youden_threshold_in_sample": 0.7498
+ }
+}
