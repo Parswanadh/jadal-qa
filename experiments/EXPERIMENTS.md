@@ -7,8 +7,11 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 | E0.01 | E0 | done | maybe | Label persistence and position bias on IndEgo gold | IndEgo human gold, 150 windows, 7 clips (human labels) / 480p/10fps IndEgo |
 | E1.01 | E1 | done | adopt | IndEgo pixel-feature fps sweep {10,5,3.33,2,1} | IndEgo gold 150 windows human labels 100good/50bad / 480p 10fps H264 in-domain |
 | E1.02 | E1 | done | maybe | EG2 window-embedding fps subsample {2,1,0.5} + 5/10fps re-embed | IndEgo gold 150 windows human labels / 480p 10fps in-domain |
+| E1.02b | E1 | done | drop | Denser EG2 sampling (5/10 fps) vs the 2 fps IndEgo view | IndEgo human gold 150 windows / 7 clips (100 good / 50 bad,  / 480p/10fps H.264 IndEgo in-domain, LOCO over 7 clips |
 | E1.03 | E1 | running | - | OOD 1080p30 source fps sweep {30,15,10,5,3,2,1} | OOD labels.json 60 windows human 51good/9bad (+labels2 if pr / 1080p 30fps HEVC out-of-domain |
 | E1.04 | E1 | running | - | Frame-selection strategies at fixed 2fps budget | IndEgo gold 150 human labels / 480p 10fps in-domain |
+| E1.05 | E1 | done | maybe | Cost / Pareto re-bench: clean minima for the E1 fps and selection arms | cost only, no labels: 1 IndEgo window (labels/manifest_gold. / in-domain IndEgo 480p 10fps H.264 + out-of-domain Egocentric-10K original 1080p 30fps HEVC, decode CPU cv2 160x90 |
+| E1.06 | E1 | running | - | fps x resolution Pareto cross (IndEgo gold, pixel-26) | IndEgo gold manifest_gold.json, human labels, n=150 (100 goo / 480p~10fps H.264 source; re-encoded grid fps {1,2,3.33,5} x res {480,360,240}px CRF23 |
 | E2.01 | E2 | done | drop | Mosaic embedding (adopt candidate) | IndEgo gold 150 human windows (LOCO, 7 clips) + OOD 60 human / 480p@10fps IndEgo, 854x480@30fps Egocentric-10K; 10-s windows |
 | E2.02 | E2 | done | adopt | Mean-of-frames control (matched frames) | same windows/folds as E2.01; label_source human / same as E2.01 |
 | E2.03 | E2 | done | drop | Shuffled tile order | same windows/folds; label_source human / same as E2.01 |
@@ -16,6 +19,7 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 | E2.05 | E2 | done | maybe | Single middle frame | same windows/folds; label_source human / same as E2.01 |
 | E2.06 | E2 | done | maybe | Motion mosaic (|I_t - I_{t-1}| tiles) | same windows/folds; label_source human / same as E2.01 |
 | E2.07 | E2 | done | drop | Pooled per-tile statistics control (no layout) | same windows/folds; label_source human / same as E2.01 |
+| E2.1080 | E2 | running | - | True-1080p mosaic tile-resolution ladder + equal-canvas duel | Egocentric-10K human-labelled OOD windows ood160_labels.json / 1080p/30fps HEVC factory egocentric + 480p/30fps transcodes; mixed lighting |
 | E3.01 | E3 | done | adopt | Sparse probe vs full coverage on IndEgo clips (label oracle + OOF scores) | IndEgo human gold 150 windows/7 clips (human labels) + EG2/2 / 480p/10fps IndEgo assembly+logistics |
 | E3.02 | E3 | done | drop | Position bias on OOD Egocentric-10K labelled windows | OOD labels.json 60 windows (51 good/9 bad, human) + queue so / 1080p/30fps Egocentric-10K factory |
 | E3.03 | E3 | done | adopt | Early exit within a window: accuracy vs observed seconds (EG2 prefixes) | IndEgo human gold 150 windows; EG2 21-frame/2fps embeddings  / 480p/10fps IndEgo |
@@ -25,6 +29,7 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 | E4.02 | E4 | running | - | Regime-specific vs global models within IndEgo | 150 IndEgo gold windows, human labels, leave-one-clip-out / terciles of sharpness/lighting/motion |
 | E4.03 | E4 | running | - | Domain gap control: common-spec renormalisation | 60 OOD labelled windows, human labels; frozen ensemble basel / 480p/10fps transcode vs 1080p/30fps source |
 | E4.04 | E4 | running | - | Profiles product layer: schema + examples + deterministic router | synthetic + E4.01 descriptor ranges / all |
+| E5.00 | E5 | done | maybe | Frozen ensemble OOD prior (usable_prob AUROC on 60 human OOD windows) | 60 Egocentric-10K human-labelled windows (51 good / 9 bad, s / 480p 10s transcodes of 1080p/30fps factory clips; ~1 window/factory |
 | E5.01 | E5 | done | maybe | In-domain EG2 frame heads (10k AI FACTORY frames) pooled to IndEgo human windows | Egocentric-10K-Evaluation 10k AI-labelled FACTORY frames (ha / head frames: 1080p/30fps factory stills; IndEgo eval: 480p ~10fps H.264, mixed lighting/sharpness |
 | E5.02 | E5 | done | maybe | Few-shot adaptation on human OOD labels (factory-grouped CV) | 60 Egocentric-10K human-labelled windows (51 good / 9 bad, s / 480p 10s transcodes of 1080p/30fps factory clips; ~47 factories, ~1 window/factory |
 | E5.03 | E5 | done | maybe | Per-feature signed AUROC IndEgo gold vs Egocentric-10K OOD (the what-transfers table) | 150 IndEgo human gold windows (manifest_gold.json) + 60 Egoc / IndEgo 480p ~10fps vs Egocentric-10K 1080p/30fps-source, both decoded 160x90; IndEgo native 10fps vs OOD subsampled to 10fps effective |
@@ -36,10 +41,50 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 | E7.01 | E7 | done | adopt | Cost model: hours of video per wall-hour on the pod A40, per profile | n/a (cost model): measured timings on the pod A40 from this  / 480p/10fps H.264 IndEgo + 1080p/30fps HEVC Egocentric-10K |
 | E8.01 | E8 | running | - | E8.01 re-score 1,546 Egocentric-10K windows with the frozen two-view recipe + profile router | queues/manifest_scale.json: 1546 windows / 58 clips / 4.404  / factory Egocentric-10K, 1080p, 30 fps, HEVC, handheld egocentric manufacturing |
 | E9.01 |  | done | adopt |  |  /  |
+| GRID.00 | GRID | done | adopt | Baseline gate: 26-feature logistic LOCO on IndEgo-150 must reproduce AUROC 0.810 | IndEgo 150 windows (100 good / 50 bad), ONE human labeller;  / 480p, ~10 fps, IndEgo assembly+logistics, 7 clips |
+| GRID.01 | GRID | done | drop | Mosaic-native spatial features + logistic on N=9 3x3 t224 (IndEgo-150, LOCO) | IndEgo 150 windows (100 good / 50 bad), ONE human labeller,  / 480p ~10 fps square 480x480 IndEgo assembly+logistics, CPU only |
+| GRID.02 | GRID | done | drop | Inter-tile temporal-proxy features on the mosaic: added value and leave-one-group-out ablation | same 150 IndEgo windows; mosaic-native group 'intertile' (12 / 480p ~10 fps IndEgo, CPU only |
+| GRID.03 | GRID | done | drop | Difference-mosaic channel (|I_t - I_{t-1}|) as a post-kill-gate small control | same 150 IndEgo windows; 'diff' group (7 features) on m3x3_t / 480p ~10 fps IndEgo, CPU only |
+| GRID.04 | GRID | done | drop | Compact frame-count/layout/density control ladder after a failed kill-gate (incl. the 4x3 / 12-frame headline) | IndEgo 150 windows, ONE human labeller, 7 clips; arms: m2x2_ / 480p ~10 fps IndEgo, CPU only |
+| GRID.06 | GRID | done | drop | Out-of-domain transfer of the mosaic head on the 160 labelled factory windows | OOD-160: 160 human-labelled Egocentric-10K windows, 138 good / 480p letterboxed 16:9 factory footage (source 1080p HEVC transcoded to 480p), CPU only |
 | LB1 | B | done | adopt | Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy | IndEgo human gold 150 windows / 7 clips (human labels, READ- / 480p/10fps IndEgo in-domain LOCO (+ OOD position test, labels only) |
 | LB2 | B | done | adopt | PoC integration: adopted every-2nd window grid + 4s early exit + EG2 2fps + 26-feature pixel logistic (descriptive verdicts) |  / CPU only (GPU unavailable in the container); cached features; deterministic (fixed seeds) |
 | LB4 | B | pending | inconclusive | Stage frozen pre-registered OOD run (one command, sha256-guarded) | labels/ood_labels2.json (100 human-labelled Egocentric-10K w /  |
 | LB5 | B | done | maybe | Branch triage & merge queue |  /  |
+| MR.01 |  | done | adopt |  |  /  |
+| MR.02 |  | done | drop |  |  /  |
+| MR.03 |  | done | maybe |  |  /  |
+| O1.01 | O | done | maybe | Frozen PoC out-of-domain evaluation on the 160 human labels | Egocentric-10K 160 windows, 47 factories, 138 good / 22 bad  /  |
+| O2.01 |  | done | drop |  |  /  |
+| O2.02 |  | done | maybe |  |  /  |
+| O2.03 |  | done | maybe |  |  /  |
+| O3.01 | O3 | done | adopt-with-caveats | Honest review-vs-OOD-error frontier on the 160-window pre-registered OOD label set | 160 human-labelled Egocentric-10K windows (138 good / 22 bad / Egocentric-10K factory 1920x1080/30 |
+| O4.01 |  | done | adopt |  |  /  |
+| O4.02 |  | done | adopt |  |  /  |
+| RES.01 |  | done | adopt |  |  /  |
+| RES.02 |  | done | adopt |  |  /  |
+| RES.03 |  | done | adopt |  |  /  |
+| RES.04 |  | done | maybe |  |  /  |
+| SKIP.01 |  | done | maybe |  |  /  |
+| SKIP.02 |  | done | drop |  |  /  |
+| SKIP.03 |  | done | adopt |  |  /  |
+| Y1.01 |  | done | adopt |  |  /  |
+| Y2.01 |  | done | adopt |  |  /  |
+| Y2.02 |  | done | adopt |  |  /  |
+| Y3.01 |  | done | adopt |  |  /  |
+| Y3.02 |  | done | drop |  |  /  |
+| Z1.01 |  | done | maybe |  |  /  |
+| Z1.02 |  | done | drop |  |  /  |
+| Z1.03 |  | done | maybe |  |  /  |
+| Z2.01 |  | done | adopt |  |  /  |
+| Z2.02 |  | done | adopt |  |  /  |
+| Z2.03 |  | done | drop |  |  /  |
+| Z3.01 |  | done | maybe |  |  /  |
+| Z3.02 |  | done | no |  |  /  |
+| Z3.03 |  | done | yes |  |  /  |
+| Z4.01 |  | done | maybe |  |  /  |
+| Z4.02 |  | done | drop |  |  /  |
+| Z4.03 |  | done | maybe |  |  /  |
 
 ## E0.01 — Label persistence and position bias on IndEgo gold
 - **Why:** Test whether sparse window sampling or skipping clip starts is justified
@@ -77,6 +122,18 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Cost:** 0 GPU (cached embeds); eval CPU seconds
 - **Results:** eval/results/exp_fps/e1_02.json
 
+## E1.02b — Denser EG2 sampling (5/10 fps) vs the 2 fps IndEgo view
+- **Why:** E1.02 left the denser arm untested ('5/10fps re-embed only if GPU time remains'); the product ships the 2 fps EG2 view, so the cost/benefit of 2.5x-5x denser sampling had to be settled before the freeze.
+- **Hypothesis:** A denser window mean (50/100 frames instead of 20) raises the LOCO AUROC of the EG2 view by more than the 0.005 practical-significance bar.
+- **Data / label source:** IndEgo human gold 150 windows / 7 clips (100 good / 50 bad, one labeller, read-only labels/manifest_gold.json, labels_sha256 43ab44e5...); published 2 fps cache caches/frames10k/segments.npz
+- **Regime:** 480p/10fps H.264 IndEgo in-domain, LOCO over 7 clips
+- **Method:** one GPU decode+embed pass at native 10 fps (100 frames/window, 15000 frames, A40, EG2 revision 914f7f89..., bf16, max_soft_tokens 140); 5 fps and 2 fps are exact row subsamples ::2/::5 of that pass; LOCO logistic C=0.01 + StandardScaler on the train fold; clip-bootstrap B=2000 seed 0 with ONE shared resample set, so CIs and deltas are paired; deltas reported vs the published 2 fps cache AND vs a same-pass 2 fps control (noise floor).
+- **Owner / started / finished:** lead-b / 2026-10-10 17:16 / 2026-10-10 17:38
+- **Verdict:** drop — n=150 IndEgo human windows (100 good/50 bad, 7 clips, one labeller), device A40. EG2 LOCO AUROC: 2 fps published 0.8480 [0.733,0.910]; 2 fps same-pass control 0.8468 [0.733,0.909]; 5 fps 0.8486 [0.743,0.910]; 10 fps 0.8478 [0.739,0.910]. Paired clip-bootstrap deltas (B=2000, shared resamples) against the published 2 fps cache: 5 fps +0.0006 [-0.0051,+0.0140], 10 fps -0.0002 [-0.0082,+0.0127]; density-only vs the same-pass 2 fps control: 5 fps +0.0018 [-0.0045,+0.0151], 10 fps +0.0010 [-0.0073,+0.0127]; noise floor (same frames re-embedded) -0.0012 [-0.0048,+0.0049]. NO difference is established at any density and the point estimates sit at the noise floor, so denser sampling is dropped on cost-effectiveness: 2.5x (5 fps) and 5.0x (10 fps) the embedding work per window (0.85 s -> 2.12 s -> 4.23 s measured on the A40). Decode validated pixel-identical to the published seek decode (6/6 windows), per-frame cosine 0.9947.
+- **Decision:** Keep the 2 fps EG2 view in the funnel; do not re-run the denser arm. Read the verdict as 'no gain established at 2.5x-5x cost', NOT as 'denser is worse' (the CIs exclude only gains above ~+0.015).
+- **Cost:** GPU A40 slot 1, 15000 EG2 frames: 78.5 s decode + 556.6 s encode (26.9 frames/s, batch 16), VRAM peak 2.17 GB; scoring CPU ~40 s; embeddings kept out of git at /workspace/cache_e1_02b/dense10.npz (17.9 MB).
+- **Results:** eval/results/exp_fps/e1_02b.json
+
 ## E1.03 — OOD 1080p30 source fps sweep {30,15,10,5,3,2,1}
 - **Why:** OOD regime is 1080p30 HEVC; fps answer may differ per regime; frozen models fail transfer so also label-free stability
 - **Hypothesis:** frozen IndEgo model stays 0.4-0.53 at all fps; score rank-correlation across fps high
@@ -96,6 +153,30 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Regime:** 480p 10fps in-domain
 - **Method:** 20-frame budget: uniform vs motion-adaptive vs keyframe-only vs random seed0, same LOCO protocol
 - **Owner / started / finished:** EXP-FPS / 2026-10-10 19:25 / —
+- **Verdict:** pending — 
+- **Decision:** 
+- **Cost:** 
+- **Results:** 
+
+## E1.05 — Cost / Pareto re-bench: clean minima for the E1 fps and selection arms
+- **Why:** The PR #88 review (F5/F6) found the committed Pareto artefact had no single-command regeneration (run_all.sh omitted --benches) and its cost_note quoted a shard-run multiplier that does not match the committed JSONs; the pod load also changed since the first bench, so re-measure the clean minima and let the script record the per-regime/stage ratio in the JSON instead of a hand-typed range.
+- **Hypothesis:** Re-benching keeps the same Pareto front (IndEgo 10/3.33/2/1 fps + uniform20, OOD 1-2 fps) and the shard-run means stay slower than the clean minima, by a regime/stage-dependent factor of roughly 2-9x.
+- **Data / label source:** cost only, no labels: 1 IndEgo window (labels/manifest_gold.json, human) + 1 Egocentric-10K labelled window (labels/ood_labels.json source_path, human); accuracy rows read from E1.01/E1.03/E1.04.json (n=150 in-domain LOCO, n=60 out-of-domain, 51 good/9 bad)
+- **Regime:** in-domain IndEgo 480p 10fps H.264 + out-of-domain Egocentric-10K original 1080p 30fps HEVC, decode CPU cv2 160x90
+- **Method:** eval/exp_fps/pareto.py --reps 3 --benches 3: min over 3 reps x 3 bench runs of decode + cpu_window_features per fps setting, OMP_NUM_THREADS=1, cv2 threads=1; Pareto front over (AUROC, total ms/window) per regime; clean_vs_shard_ratio computed in-script from E1.01/E1.03/E1.04.json
+- **Owner / started / finished:** experimenter / 2026-10-10 16:20 / 2026-10-10 16:20
+- **Verdict:** maybe — cost re-bench, no labels (n=1 IndEgo window + 1 Egocentric-10K 1080p window), 3 reps x 3 bench runs, min-of-9, OMP_NUM_THREADS=1 cv2 threads=1, host load 17.6: clean minima in-domain 480p decode 112.0 ms/window (1.1198 ms/frame) + features 288.9/166.7/102.2/53.7/32.4 ms/window at 10/5/3.33/2/1 fps; OOD 1080p HEVC decode 2900.4 ms/window (9.6679 ms/frame) + features 843.0/391.8/246.5/128.7/74.9/55.5/32.4 ms/window at 30/15/10/5/3/2/1 fps. Pareto fronts unchanged (in-domain 10/3.33/2/1 fps + uniform20; OOD 1-2 fps). The shard-run means in E1.01/E1.03/E1.04.json are 2.24-8.01x these clean minima, regime/stage-dependent (OOD decode 2.24x, in-domain decode 5.08x, features 3.11-5.75x). Spread over the 3 bench runs: in-domain decode 1.12-1.84 ms/frame, OOD decode 9.67-11.54 ms/frame.
+- **Decision:** Cite pareto.json for every clean cost number in the E1 docs. Regenerate with python3 eval/exp_fps/pareto.py --reps 3 --benches 3 (run_all.sh now does); read clean_vs_shard_ratio instead of quoting a hand-typed shard/clean multiplier.
+- **Cost:** about 80 s wall, 1 core, no GPU; CPU decode cv2 160x90
+- **Results:** eval/results/exp_fps/pareto.json
+
+## E1.06 — fps x resolution Pareto cross (IndEgo gold, pixel-26)
+- **Why:** Find cheapest (fps,res) cell within 0.02 AUROC of 480p/10fps baseline; prior E1.01 (fps) and X1/RES (res/CRF) tested one axis each, interaction (low fps + low res) unknown
+- **Hypothesis:** A mid cell (e.g. 360p/3.33fps or 240p/5fps) keeps AUROC within 0.02 of 0.809 at a fraction of bytes; very-low+very-low (240p/1fps) may interact downward
+- **Data / label source:** IndEgo gold manifest_gold.json, human labels, n=150 (100 good/50 bad), 7 clips
+- **Regime:** 480p~10fps H.264 source; re-encoded grid fps {1,2,3.33,5} x res {480,360,240}px CRF23
+- **Method:** re-encode each gold window at (fps,res) libx264 veryfast CRF23 -> decode 160x90 -> 26 cpu per-pixel features -> LOCO logistic C=0.3 balanced + StandardScaler; CI=clip-bootstrap B=1000 seed0
+- **Owner / started / finished:** H3 / 2026-10-10 17:43 / —
 - **Verdict:** pending — 
 - **Decision:** 
 - **Cost:** 
@@ -184,6 +265,18 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Decision:** Drop as a method; record as the no-layout control.
 - **Cost:** 9 embed passes/window; A40
 - **Results:** eval/results/exp_mosaic/E2.07.json
+
+## E2.1080 — True-1080p mosaic tile-resolution ladder + equal-canvas duel
+- **Why:** User claim: 480p-or-smaller tiles with more of them process faster without accuracy loss; X3 tested this on 480p gold clips only, need TRUE 1080p source
+- **Hypothesis:** At equal canvas pixels, 1080p-source 3x3/t224 ties 480p-source 4x4/t168 within 0.02 AUROC; smaller tiles cut canvas px and ms
+- **Data / label source:** Egocentric-10K human-labelled OOD windows ood160_labels.json (160; 138 good/22 bad), 1080p HEVC source + 480p H264 transcodes
+- **Regime:** 1080p/30fps HEVC factory egocentric + 480p/30fps transcodes; mixed lighting
+- **Method:** mosaic EG2 embeddings, stratified 5-fold CV logistic C=0.01, factory-bootstrap CI
+- **Owner / started / finished:** H2 / 2026-10-10 17:43 / —
+- **Verdict:** pending — 
+- **Decision:** 
+- **Cost:** 
+- **Results:** 
 
 ## E3.01 — Sparse probe vs full coverage on IndEgo clips (label oracle + OOF scores)
 - **Why:** Builder wants sparse sampling / skip stretches; E0.01 showed verdicts persist (~15 s) but skip-the-start fails on IndEgo. Need measured error-vs-cost for probe-every-k, skip-first-M, random, change-point-driven policies.
@@ -292,6 +385,18 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Decision:** 
 - **Cost:** 
 - **Results:** 
+
+## E5.00 — Frozen ensemble OOD prior (usable_prob AUROC on 60 human OOD windows)
+- **Why:** The E5 report quotes the frozen-ensemble out-of-domain AUROC 0.415 [0.210,0.647], but that number lived only in docs/reports/ensemble_views.md on main / PR #79, not in this branch or in a committed results JSON. Reproduce it from the frozen bundle scores so every E5 number traces to a committed file.
+- **Hypothesis:** The frozen IndEgo ensemble scores ~0.415 AUROC on the 60 human-labelled Egocentric-10K windows (exploratory, n_bad=9); reproducing it from the frozen scores gives the same headline.
+- **Data / label source:** 60 Egocentric-10K human-labelled windows (51 good / 9 bad, single labeller, ood_labels.json) scored by frozen ensemble_v1 (bundle caches/ensemble/ood_scores.json); human labels
+- **Regime:** 480p 10s transcodes of 1080p/30fps factory clips; ~1 window/factory
+- **Method:** load frozen usable_prob; AUROC vs human labels; window-bootstrap 95% CI (optimistic)
+- **Owner / started / finished:** experimenter / 2026-10-10 16:12 / 2026-10-10 16:20
+- **Verdict:** maybe — Frozen ensemble_v1 usable_prob vs 60 human OOD windows (51 good/9 bad, exploratory): AUROC 0.4150, window-bootstrap CI [0.201,0.656] (optimistic); balacc@0.5 0.471. Reproduces the 0.415 headline previously cited from docs/reports/ensemble_views.md (main/PR #79, NOT on this branch) from $JADAL_BUNDLE/caches/ensemble/ood_scores.json.
+- **Decision:** Cite E5.00.json for the frozen-OOD prior in the E5 report; keep the PR-#79 note for the earlier CI [0.210,0.647].
+- **Cost:** CPU <1 s; 60 frozen scores; no GPU, no encode
+- **Results:** eval/results/exp_domain/E5.00.json
 
 ## E5.01 — In-domain EG2 frame heads (10k AI FACTORY frames) pooled to IndEgo human windows
 - **Why:** All IndEgo-trained models failed out-of-domain on Egocentric-10K (0.4-0.53 AUROC). Before adapting, measure how much window-level signal a head trained on in-domain (factory, AI-labelled) frames carries on the 150 human-labelled IndEgo windows.
@@ -425,6 +530,78 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Cost:** CPU sklearn, no GPU, ~14-36 s, no network
 - **Results:** eval/results/standard/run_all.json
 
+## GRID.00 — Baseline gate: 26-feature logistic LOCO on IndEgo-150 must reproduce AUROC 0.810
+- **Why:** Pre-registered gate from the DSH brief: no GRID experiment starts until the documented baseline is reproduced on this machine from the pod-bundle cache, proving data paths, features and folds are the same as the pod.
+- **Hypothesis:** Pooled leave-one-clip-out AUROC on the 150 human-labelled IndEgo windows = 0.810 +/- 0.01; semantic-bad and quality-bad breakdown as documented (pallet/pallet2 at chance).
+- **Data / label source:** IndEgo 150 windows (100 good / 50 bad), ONE human labeller; features from pod bundle cache caches/gpu/features.json (26 per-pixel features); labels labels/manifest_gold.json
+- **Regime:** 480p, ~10 fps, IndEgo assembly+logistics, 7 clips
+- **Method:** tools/port/baseline_logistic_loco.py unchanged: StandardScaler + LogisticRegression(C=0.3, class_weight=balanced), leave-one-clip-out over 7 clips, pooled AUROC; clip-bootstrap 95% CI
+- **Owner / started / finished:** dsh / 2026-10-18 06:30 / 2026-10-18 06:32
+- **Verdict:** adopt — PASS. 26-number logistic LOCO AUROC 0.810 [0.683,0.892] clip-bootstrap (window-bootstrap 0.722-0.889, optimistic), n=150 (100 good/50 bad, ONE human labeller), 7 clips. good-vs-semantic-bad 0.797, good-vs-quality-bad 0.846. pallet/pallet2 at chance (0.50) as documented. Gate expected 0.810 +/-0.01: observed 0.810.
+- **Decision:** Gate passed: GRID.01-09 and AUTO.00+ may start. Cached pod-bundle 26 features reproduce exactly on this laptop; use jadal-qa-wt/handover/jadal_pod_bundle/pod_bundle as JADAL_BUNDLE.
+- **Cost:** 0 GPU, ~2 s CPU
+- **Results:** eval/results/grid/GRID.00.json
+
+## GRID.01 — Mosaic-native spatial features + logistic on N=9 3x3 t224 (IndEgo-150, LOCO)
+- **Why:** The builder's headline question: can ONE composite image of N frames be scored by OUR OWN extractors and heads instead of the full-window pipeline? Only EmbeddingGemma-2 was ever tested on mosaics; the 26-number head cannot run on a still mosaic because 10 of its 26 features are measured along time at each pixel.
+- **Hypothesis:** Per-tile spatial statistics pooled over the 9 tiles carry usable quality signal: nested-LOCO AUROC within 0.05 of the 26-feature baseline (0.810) but below it, because the temporal features that carry much of the baseline are absent; the mean-pooled 15-feature variant will not be worse than the 60-feature pooled variant by more than 0.02 (capacity control).
+- **Data / label source:** IndEgo 150 windows (100 good / 50 bad), ONE human labeller, 7 clips; mosaic built from the 480p clips with jadal/mosaic/build.py (mosaic-1.0.0, N=9 3x3 224px, timestamps on, row-major time order); features from jadal/mosaic/features.py mosaic-features-1.0.0
+- **Regime:** 480p ~10 fps square 480x480 IndEgo assembly+logistics, CPU only
+- **Method:** StandardScaler + LogisticRegression(C=0.3, class_weight=balanced), leave-one-clip-out over 7 clips, pooled AUROC + clip-bootstrap 95% CI (2000 draws, seed 0); paired clip-bootstrap vs the 26-feature baseline; negative controls: shuffled labels, random Gaussian features, flat-grey null mosaic
+- **Owner / started / finished:** dsh / 2026-10-18 06:38 / 2026-10-18 06:43
+- **Verdict:** drop — Mosaic-native SPATIAL features only, N=9 3x3 t224, LOCO n=150 (100 good/50 bad, ONE labeller, 7 clips): AUROC 0.6864 [0.522,0.772] clip-bootstrap vs the 26-number baseline 0.810 [0.683,0.892] on the SAME folds. Paired clip-bootstrap difference -0.124 [-0.202,-0.071], EXCLUDES ZERO: the still picture is significantly WORSE than the full-window pipeline, not within 0.02. Mean-only pooling (15 feats) 0.7122 [0.504,0.788], delta vs 60-feature pooling -0.026 [-0.093,+0.072] (not established). Negative controls pass: shuffled labels 0.504, random Gaussian 0.470, null grey mosaic 0.500.
+- **Decision:** DROP as a decision input on in-domain evidence (decision rule (a) fails by 0.10). Keep the mosaic as an evidence picture. GRID.02/03 still run because they were pre-registered; the kill-gate at GRID.02 governs whether the line stops.
+- **Cost:** 195 ms/window for build+features (CPU), 0 GPU; 150 windows x 3 arms = ~90 s
+- **Results:** eval/results/exp_grid/GRID.01.json
+
+## GRID.02 — Inter-tile temporal-proxy features on the mosaic: added value and leave-one-group-out ablation
+- **Why:** A still mosaic has no time axis, so the temporal half of the shipped head cannot be computed the same way. The question is whether cheap inter-tile proxies (frame difference, pHash/ZNCC similarity, phase-correlation shift, cross-tile flicker) recover any of it.
+- **Hypothesis:** Inter-tile proxies add LESS than 0.02 nested-LOCO AUROC over spatial-only mosaic features (the pre-registered kill-gate), because an earlier motion mosaic was best in-domain (0.863) yet collapsed out of domain (0.401) and pooling beat spatial layout.
+- **Data / label source:** same 150 IndEgo windows; mosaic-native group 'intertile' (12 features) on the m3x3_t224 arm
+- **Regime:** 480p ~10 fps IndEgo, CPU only
+- **Method:** leave-one-group-out ablation (spatial / spatial+intertile / spatial+intertile+diff) with the same LOCO protocol; paired clip-bootstrap on the AUROC difference; kill-gate: stop the mosaic-as-decision-input line if the intertile group adds < 0.02
+- **Owner / started / finished:** dsh / 2026-10-18 06:38 / 2026-10-18 06:43
+- **Verdict:** drop — Inter-tile temporal-proxy features add +0.019 AUROC over spatial-only (0.7058 [0.514,0.785] vs 0.6864 [0.522,0.772]), paired clip-bootstrap delta +0.019 [-0.018,+0.053] does NOT exclude zero. PRE-REGISTERED KILL-GATE (delta >= 0.02) FAILS: 0.019 < 0.02. Per the brief the mosaic-as-decision-input line STOPS; GRID.03/04 run only as a small control. Best single intertile proxies are the frozen/duplicate/zncc family, not the shift proxies.
+- **Decision:** KILL-GATE FAILED -> stop the mosaic-as-decision-input line: no full GRID.04 sweep, no adoption path. Keep jadal/mosaic/features.py + tests as the measured answer and the mosaic as an evidence picture. Spend the freed compute on AUTO and on the mosaic's OOD transfer (report-only), which is the part the customer actually asked about.
+- **Cost:** same extraction, 0 extra GPU
+- **Results:** eval/results/exp_grid/GRID.02.json
+
+## GRID.03 — Difference-mosaic channel (|I_t - I_{t-1}|) as a post-kill-gate small control
+- **Why:** Pre-specified in the brief as conditional on the GRID.02 kill-gate passing. The kill-gate FAILED, so this runs only as the small control the brief permits; the feature group was fixed in eval/exp_grid/extract.py before any result was read, but the registry entry is written after the kill-gate outcome is known and is labelled as such.
+- **Hypothesis:** The motion channel adds nothing: the earlier EmbeddingGemma-2 test found the motion mosaic best in-domain (0.863) and worst out of domain (0.401).
+- **Data / label source:** same 150 IndEgo windows; 'diff' group (7 features) on m3x3_t224
+- **Regime:** 480p ~10 fps IndEgo, CPU only
+- **Method:** LOCO, same head recipe; paired clip-bootstrap vs spatial+intertile
+- **Owner / started / finished:** dsh / 2026-10-18 06:43 / 2026-10-18 06:43
+- **Verdict:** drop — Difference-mosaic (|I_t - I_{t-1}|) features on top of spatial+intertile: 0.7002 [0.503,0.778], paired delta vs spatial+intertile -0.006 [-0.016,+0.002], does NOT exclude zero: the motion channel adds nothing. Registered after the GRID.02 kill-gate failed (the small control the brief permits); the feature group and protocol were fixed before the run.
+- **Decision:** DROP the diff channel. Consistent with the earlier EG2 result (motion mosaic 0.863 in-domain, 0.401 OOD) and with the withdrawn spatial-localisation claim.
+- **Cost:** 0 extra (same decode pass)
+- **Results:** eval/results/exp_grid/GRID.03.json
+
+## GRID.04 — Compact frame-count/layout/density control ladder after a failed kill-gate (incl. the 4x3 / 12-frame headline)
+- **Why:** The customer's headline configuration is 12 frames in a 4x3 grid. The GRID.02 kill-gate failed, so the brief permits only a SMALL control sweep rather than the full GRID.04 grid. This ladder answers the customer's specific configuration question and measures the Pareto of AUROC vs canvas pixels, without opening an adoption path.
+- **Hypothesis:** Frame count does not rescue the mosaic: more tiles give at most a small gain, tile resolution matters more than tile count (MR.01/MR.03 found 112-160 px tiles as good as 224 at 3x3), and no arm approaches the 26-number baseline 0.810 (mean-of-frames EG2 reference was 0.852/0.861).
+- **Data / label source:** IndEgo 150 windows, ONE human labeller, 7 clips; arms: m2x2_t224 (N=4), m4x3_t224 (N=12, HEADLINE), m4x4_t224 (N=16), m4x3_t160 (N=12 density control), m4x3_t112 (N=12 density control); m3x3_t224 (N=9) is the GRID.01/02 arm
+- **Regime:** 480p ~10 fps IndEgo, CPU only
+- **Method:** identical LOCO protocol and head recipe as GRID.01/02; every arm compared with a paired clip-bootstrap interval against the N=9 arm and against the 26-number baseline; canvas px and ms/window reported per arm
+- **Owner / started / finished:** dsh / 2026-10-18 06:44 / 2026-10-18 06:48
+- **Verdict:** drop — Compact ladder, LOCO n=150, identical features/head/folds per arm. N=4/2x2 0.6750 [0.504,0.762]; N=9/3x3 0.7002 [0.503,0.778]; N=12/4x3 HEADLINE 0.7044 [0.488,0.786]; N=16/4x4 0.6986 [0.516,0.764]; N=12 t160 0.7126 [0.521,0.785]; N=12 t112 0.7146 [0.536,0.774]. No arm differs from N=9 with a paired interval excluding zero (max +0.014 [-0.049,+0.076]); every arm is 0.095-0.135 BELOW the 26-number baseline 0.810. Frame count is flat; smaller tiles are marginally better, consistent with MR.01.
+- **Decision:** DROP. The customer's headline 12-frame 4x3 mosaic is 0.7044, significantly below the full-window pipeline: automation on a 12-frame picture is not supported by our own extractors. The full sweep was not run (kill-gate).
+- **Cost:** ~172 ms/window/arm CPU build+features; 0 GPU; 5 arms x 150 windows = ~2.5 min
+- **Results:** eval/results/exp_grid/GRID.04.json
+
+## GRID.06 — Out-of-domain transfer of the mosaic head on the 160 labelled factory windows
+- **Why:** The customer's real footage is factory footage. In-domain AUROC is not the question that decides the product; transfer is. The shipped IndEgo-trained 26-number head is near chance on factory windows, so the mosaic head must be tested on the same windows with the same folds and a factory-clustered interval.
+- **Hypothesis:** The IndEgo-trained mosaic head will NOT transfer (the frozen per-pixel head scored 0.342 and the EG2 head 0.586 out of domain), but the mosaic-native spatial features are less tied to IndEgo photometry than the shipped temporal features, so an OOD-trained mosaic recipe may reach the same 0.6-0.7 band as the pod's OOD recipes.
+- **Data / label source:** OOD-160: 160 human-labelled Egocentric-10K windows, 138 good / 22 bad, 47 factories, ONE labeller, 19 of 22 bad are NO_ACTIVE_WORK; 480p window clips. In-domain training labels: the 150 IndEgo windows.
+- **Regime:** 480p letterboxed 16:9 factory footage (source 1080p HEVC transcoded to 480p), CPU only
+- **Method:** frozen transfer (head trained on the 150 IndEgo windows only, applied unchanged) and 5-fold factory-grouped CV on the OOD set itself; factory-grouped bootstrap CIs (2000, seed 0); paired factory-clustered comparison against the frozen 26-number shipped-head scores on the same windows; reason-stratified result for NO_ACTIVE_WORK only
+- **Owner / started / finished:** dsh / 2026-10-18 06:49 / 2026-10-18 06:49
+- **Verdict:** drop — OOD-160 (n=160, n_bad=22, 47 factories, ONE labeller; 19/22 bad are NO_ACTIVE_WORK). FROZEN IndEgo-trained mosaic head: AUROC 0.3557 [0.224,0.515] factory-grouped = INVERTED; paired vs the frozen 26-number shipped head (0.5878) delta -0.2320 [-0.380,-0.077], EXCLUDES ZERO. Trained on factory footage with 5-fold factory-grouped CV the same mosaic features reach 0.6798 [0.487,0.845], paired vs 26-number +0.0921 [-0.149,+0.296] = NOT established. Window-bootstrap intervals are optimistic and are reported only next to the grouped ones. NO_ACTIVE_WORK-stratified numbers are in the JSON.
+- **Decision:** DROP the mosaic as a decision input out of domain: the IndEgo-trained mosaic head does not transfer (it inverts, like the frozen per-pixel head at 0.342 before it). The grouped-CV number 0.68 is the honest statement that factory labels are the missing ingredient, not the picture format.
+- **Cost:** 319 ms/window CPU for OOD mosaic features; 0 GPU
+- **Results:** eval/results/exp_grid/GRID.06.json
+
 ## LB1 — Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy
 - **Why:** The adopted settings (every-2nd window, 4 s early exit, EG2 2 fps view, 26-feature logistic) drive the PoC and the submission; a second, independent re-run is the cheapest defence against a silent protocol bug.
 - **Hypothesis:** Every published number reproduces within the published precision when re-run from pod/base with the cached features and read-only gold labels.
@@ -432,10 +609,10 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Regime:** 480p/10fps IndEgo in-domain LOCO (+ OOD position test, labels only)
 - **Method:** Re-run pinned scripts from pod/base; E1.02 additionally re-implemented from scratch; LOCO + clip-bootstrap 95% CI; exact-match tolerance at published precision
 - **Owner / started / finished:** lead-b /  / —
-- **Verdict:** adopt — 20/20 core claims reproduced EXACTLY from pod/base: pixel26 0.810, EG2 0.8480 [0.734,0.909], prob-avg 0.853, rank-avg 0.856; E1.01 10/5/3.33/2/1 fps 0.8086/0.7932/0.8068/0.7866/0.7736; E1.02 2/1/0.5 fps 0.8480/0.8596/0.8702 (plus an independent from-scratch re-implementation with identical point estimates); two-view 0.8524/0.8538; E3.01 every-2 clip-error 0.0486 [0.0189,0.0872], 7/7 verdicts, delay 0.286 at 0.515 of windows; E3.02 MW p=0.419/0.468 (n=60, n_bad=9); E3.03 2/4/6/8/10.5 s = 0.8038/0.8596/0.8694/0.8574/0.8480; E3.04 x1.94; E3.05 strict-pass ['every-2']. TWO FINDINGS FAILED VERIFICATION: (1) 14/316 SHA256SUMS.txt entries mismatch on disk, including the frozen scorer caches/ensemble/ensemble_v1.json (recorded 4da1068a..., on disk cf7fd7d3...) and labels/manifest_gold.json - cause is post-checksum path remapping (the file contains the pod path /workspace/jadal_pod_bundle/data/eg2); no canonical-JSON variant matches either; LB4 recovered the byte-exact frozen file from git blob 0ede3b83d93ce23dc5b68cd20fb7de0af703ad27. (2) OOD ATTRIBUTION FIXED: the published 0.529 is the PoC CASCADE and reproduces exactly (origin/main:eval/results/poc/ood_check_60.json -> 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513 vs published 0.51); the FROZEN ensemble_v1 is a different figure, 0.415 [0.207,0.630] with 26/51 good rejected and 3/9 bad (p_eg2 0.586, p_pixel 0.342). My first pass conflated the two scorers. No drift involved (shipped OOD file is byte-identical to origin/main, sha256 300c1eda...). Both scorers are at chance with heavy false rejects, so the finding the submission rests on is confirmed twice. 29 attempts recorded by verifier PR #100. Also: the frozen artifact hash IS recoverable and verifies (git blob 0ede3b83d93ce23dc5b68cd20fb7de0af703ad27 -> sha256 4da1068a..., independently re-checked by LB1). ADDITIONAL LIVE HAZARD: jadal.ensemble.scorer.load_config() raises ValueError on the DEFAULT config path (config sha256 mismatch d62a95a4... != recorded 4da1068a...) on pod/base and every branch tested, because the shipped config is the path-remapped file while the .sha256 still records the frozen hash; meanwhile the LB2 PoC loader (jadal/poc_stream/policy.py load_frozen_ensemble) does NOT check the sha256 at all and loads the remapped artifact silently. Strict loader fails on a recoverable situation, lenient loader succeeds on the wrong artifact. Fix: point the default path at the recovered hash-verified configs/frozen/ensemble_v1.prereg.json (LB4, PR #97) and make the PoC loader fail closed. LB2 C-sensitivity independently verified (PR #98): fused 4s AUROC 0.8736 at C_eg2=0.003 vs 0.8734 at published C_eg2=0.01, paired delta -0.0002 CI [-0.0133,+0.0095] => C choice is immaterial; do not frame it as an improvement over 0.848 (that is a full-window inner-OOF number).
-- **Decision:** Adopt the verified in-domain stack (every-2nd window, 4 s exit, EG2 2 fps, 26-feature logistic). Quote the two OOD numbers separately and never merge them: 0.529 = PoC cascade, 0.415 = frozen ensemble_v1; both at chance. GPU feature-extraction half and the delivered OOD-labels half remain unverified (no CUDA in this container).
+- **Verdict:** adopt — 20/20 core claims reproduced EXACTLY from pod/base: pixel26 0.810, EG2 0.8480 [0.734,0.909], prob-avg 0.853, rank-avg 0.856; E1.01 10/5/3.33/2/1 fps 0.8086/0.7932/0.8068/0.7866/0.7736; E1.02 2/1/0.5 fps 0.8480/0.8596/0.8702 (plus an independent from-scratch re-implementation with identical point estimates); two-view 0.8524/0.8538; E3.01 every-2 clip-error 0.0486 [0.0189,0.0872], 7/7 verdicts, delay 0.286 at 0.515 of windows; E3.02 MW p=0.419/0.468 (n=60, n_bad=9); E3.03 2/4/6/8/10.5 s = 0.8038/0.8596/0.8694/0.8574/0.8480; E3.04 x1.94; E3.05 strict-pass ['every-2']. TWO FINDINGS FAILED VERIFICATION: (1) 14/316 SHA256SUMS.txt entries mismatch on disk, including the frozen scorer caches/ensemble/ensemble_v1.json (recorded 4da1068a..., on disk cf7fd7d3...) and labels/manifest_gold.json - cause is post-checksum path remapping (the file contains the pod path /workspace/jadal_pod_bundle/data/eg2); no canonical-JSON variant matches either; LB4 recovered the byte-exact frozen file from git blob 0ede3b83d93ce23dc5b68cd20fb7de0af703ad27. (2) OOD ATTRIBUTION FIXED: the published 0.529 is the PoC CASCADE and reproduces exactly (origin/main:eval/results/poc/ood_check_60.json -> 0.529 [0.316,0.728], 21/51 good rejected, 5/9 bad, bal.acc 0.513 vs published 0.51); the FROZEN ensemble_v1 is a different figure, 0.415 [0.207,0.630] with 26/51 good rejected and 3/9 bad (p_eg2 0.586, p_pixel 0.342). My first pass conflated the two scorers. No drift involved (shipped OOD file is byte-identical to origin/main, sha256 300c1eda...). Both scorers are at chance with heavy false rejects, so the finding the submission rests on is confirmed twice. 29 attempts recorded by verifier PR #100. Also: the frozen artifact hash IS recoverable and verifies (git blob 0ede3b83d93ce23dc5b68cd20fb7de0af703ad27 -> sha256 4da1068a..., independently re-checked by LB1). ADDITIONAL LIVE HAZARD: jadal.ensemble.scorer.load_config() raises ValueError on the DEFAULT config path (config sha256 mismatch d62a95a4... != recorded 4da1068a...) on pod/base and every branch tested, because the shipped config is the path-remapped file while the .sha256 still records the frozen hash; meanwhile the LB2 PoC loader (jadal/poc_stream/policy.py load_frozen_ensemble) does NOT check the sha256 at all and loads the remapped artifact silently. Strict loader fails on a recoverable situation, lenient loader succeeds on the wrong artifact. Fix: point the default path at the recovered hash-verified configs/frozen/ensemble_v1.prereg.json (LB4, PR #97) and make the PoC loader fail closed. LB2 C-sensitivity independently verified (PR #98): fused 4s AUROC 0.8736 at C_eg2=0.003 vs 0.8734 at published C_eg2=0.01, paired delta -0.0002 CI [-0.0133,+0.0095] => C choice is immaterial; do not frame it as an improvement over 0.848 (that is a full-window inner-OOF number). POST-GPU-UNLOCK ADDITIONS (the GPU was never broken - see docs/reports/pod_verification.md §9: the driver was loaded and CUDA 12.8 installed, but the execution sandbox denied /dev/nvidia* with EACCES, which surfaced as NVML 'Unknown Error'; once device access was granted the A40 came up immediately). (a) FEATURE-EXTRACTION HALF NOW VERIFIED: all 150 gold windows re-derived from source video reproduce caches/gpu/features.json to max|delta| 7.11e-15 (mean per-window max 1.81e-15). (b) NESTED AUROCs RECOMPUTED FROM RAW PROBABILITIES (oof_probs.npz holds the NESTED OOF probs): EG2 0.8458, pixel 0.7916, prob-avg 0.8336, rank-avg 0.8440 - exactly the published nested figures, so the earlier caveat that they could not be recomputed from scratch is RETRACTED. (c) E1.02b (denser EG2 at 5/10 fps) and the EG2 embedding-cache reproduction are running as separate tracks. (d) RECEIPT + DETERMINISM CLAIMS VERIFIED: receipt hash is stable across calls and processes, the timestamp and receipt_id are excluded/derived correctly, tampering any of the 5 body fields is detected, key order is irrelevant (sorted-key canonical JSON), there is no signature field inside the receipt, and the CPU feature path gives an identical quantised digest over 10 repeated runs (max spread 0.0, cross-process match). (e) GPU KERNEL PARITY: the GPU feature kernels agree with the verified CPU reference on 22/26 features to <1e-6, but 7 features move >1e-3 on this device (rppg_pulse up to 0.57 abs, radial_slope 0.24, dup_hash_mean 0.14, illum_* ~0.008, pca_top1_share 0.003). Decision impact measured over all 150 windows: LOCO AUROC 0.7998 from GPU features vs 0.8100 from CPU features, paired clip-bootstrap delta -0.0093 [-0.0304,+0.0149] => the difference is NOT established at n=150. So the fast GPU path is usable without a demonstrated accuracy cost, but it is NOT the same artifact as the published 0.810 and any number must say which path produced it.
+- **Decision:** Adopt the verified in-domain stack (every-2nd window, 4 s exit, EG2 2 fps, 26-feature logistic). Quote the two OOD numbers separately and never merge them: 0.529 = PoC cascade, 0.415 = frozen ensemble_v1; both at chance. GPU feature-extraction half and the delivered OOD-labels half remain unverified (no CUDA in this container). Feature-extraction half verified; nested numbers verified from raw probs. Remaining unverified: the E1.02b dense-sampling question and the EG2 embedding-extraction half (both in flight).
 - **Cost:** CPU-only, ~6 min wall (2 shards E1.01 + cached-feature LOCO); 0 GPU
-- **Results:** docs/reports/pod_verification.md + eval/results/pod_verify/ (baseline_pixel26_loco.json, baseline_ensemble_views.json, e1_01_fps_sweep.json, e1_02_eg2.json, ood_and_nested.json, bundle_checksum_audit.json, exp_temporal/E3.0{1..5}_*.json) + eval/results/pod_verify/ood_and_nested.json + bundle_checksum_audit.json
+- **Results:** docs/reports/pod_verification.md + eval/results/pod_verify/ (baseline_pixel26_loco.json, baseline_ensemble_views.json, e1_01_fps_sweep.json, e1_02_eg2.json, ood_and_nested.json, bundle_checksum_audit.json, exp_temporal/E3.0{1..5}_*.json) + eval/results/pod_verify/ood_and_nested.json + bundle_checksum_audit.json + feature_reproduction_all150.json + oof_crosscheck.json + feature_ablation.json + receipts_determinism.json + gpu_kernel_parity.json + gpu_features_decision_impact.json + manifest_restore_event.json
 
 ## LB2 — PoC integration: adopted every-2nd window grid + 4s early exit + EG2 2fps + 26-feature pixel logistic (descriptive verdicts)
 - **Why:** E3.01/E3.05 adopted an IndEgo working policy (every-2nd window, 4s exit) but the PoC scorer path did not apply it; E1.01/E1.02 views were only measured standalone. This integrates the adopted settings in one policy module and regenerates per-window verdicts from the cached features, with LOCO numbers and DESCRIPTIVE labels only.
@@ -472,3 +649,411 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Decision:** 
 - **Cost:** 
 - **Results:** docs/reports/branch_triage.md
+
+## MR.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:50
+- **Verdict:** adopt — Tiles 112-160px at 3x3 match/better 224px (0.803-0.804 vs 0.785) at -36% ms/win and -74% canvas px; smallest within 0.02 of best = 112px. Still below mean-of-frames N9 0.851. Adopt small tiles for a mosaic pipeline.
+- **Decision:** adopt 112-160px tiles at 3x3
+- **Cost:** 43.7 ms/win, 118k canvas px @112px vs 68.5 ms/win, 462k px @224px
+- **Results:** eval/results/exp_mosaic_res/MR.01.json
+
+## MR.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:50
+- **Verdict:** drop — At matched frame count mosaic loses to mean-of-frames at EVERY density (-0.048 N9, -0.063 N16, -0.113 N25, -0.081 N36). Best density 3x3 (0.803). E2 verdict stands; density does not recover the gap.
+- **Decision:** keep as evidence artefact only
+- **Cost:** 43.7 ms/win @3x3/112 to 107.4 ms/win @6x6/112
+- **Results:** eval/results/exp_mosaic_res/MR.02.json
+
+## MR.03 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:50
+- **Verdict:** maybe — Equal canvas (~462-465k px): 16x168px (0.845) beats 9x224px (0.785) by +0.060 AUROC at -2.4 ms/win -> supports 'more smaller tiles, no loss'. But mosaic still within 0.016 of mean-of-frames N16 (0.861) and only ties EG2 baseline 0.848. Timestamps help +0.021; order irrelevant.
+- **Decision:** adopt geometry only if a mosaic input is used; mean-of-frames still preferred
+- **Cost:** 66.1 ms/win, 465k canvas px
+- **Results:** eval/results/exp_mosaic_res/MR.03.json
+
+## O1.01 — Frozen PoC out-of-domain evaluation on the 160 human labels
+- **Why:** Measure the real OOD error rate of the frozen ensemble_v1 against the newly delivered 160 human labels (pre-registered test)
+- **Hypothesis:** The IndEgo-trained frozen ensemble transfers weakly to Egocentric-10K
+- **Data / label source:** Egocentric-10K 160 windows, 47 factories, 138 good / 22 bad (labels/ood160_labels.json); frozen scores from caches/ensemble/ood_scores{,2}.json
+- **Regime:** n/a
+- **Method:** frozen two-view ensemble_v1 as-is (no fitting/re-thresholding); AUROC + balanced accuracy with window bootstrap (optimistic) and factory-grouped bootstrap (honest)
+- **Owner / started / finished:** O1 /  / 2026-10-10 17:34
+- **Verdict:** maybe — Frozen ensemble OOD AUROC 0.566 (window CI 0.433-0.693; factory-grouped 0.414-0.697), up from a noise-level 0.415 at n=60. Shipped operating point: accept 71 / review 35 / reject 54; BA 0.387 review=miss (0.546 scalar@0.5); it hard-rejects 47/138 good windows (34%) and rejects only 7/22 bad. Weak positive ranking signal, not separable from chance; unusable as a gate.
+- **Decision:** OOD claims: replace 'at chance/inverted 0.415' with 'weak positive 0.566, not significant, bad operating point'; cascade 0.600 carried over from handover with no grouped CI.
+- **Cost:** CPU only, caches (no GPU decode)
+- **Results:** eval/results/exp_ood160/O1.01.json
+
+## O2.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:40
+- **Verdict:** drop — 160 OOD windows (138/22, 47 factories), frozen ensemble_v1 usable_prob: AUROC 0.566, factory-grouped CI [0.445,0.674] (includes 0.5), window-bootstrap CI [0.437,0.694], bal.acc@0.5 0.546 [0.460,0.635], acc 0.481. Batch caveat: q1(old 60) 0.415 vs q2(new 100) 0.657. Frozen ensemble is NOT a reliable standalone OOD scorer.
+- **Decision:** Update E5.04 inconclusive -> drop. Do not use the frozen ensemble as an OOD gate; adapt (O2.02).
+- **Cost:** CPU; 160 cached frozen scores; 0 new GPU scoring
+- **Results:** eval/results/exp_fewshot/O2.01.json
+
+## O2.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:40
+- **Verdict:** maybe — Factory-grouped curve. pixel-26 logistic: k=10 0.544/err0.489, 20 0.609/0.452, 40 0.650/0.415, 80 0.701/0.389, 160 grouped-CV 0.689 [0.510,0.847]/err0.395. Frozen-view arms stay at chance (platt 0.49-0.56, two-view 0.47-0.52). Best label-efficient recipe = logistic on 26 pixel features; ~40-80 labels matches the 160-label level. Frozen 0-label baseline 0.566/0.454.
+- **Decision:** Adapt with the 26-pixel logistic; spend labels on pixel features, not on ensembling frozen views. Operating point ~40-80 labels (AUROC 0.65-0.70, err 0.39-0.42).
+- **Cost:** CPU; 160 windows; 20 repeats/k; no GPU
+- **Results:** eval/results/exp_fewshot/O2.02.json
+
+## O2.03 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:40
+- **Verdict:** maybe — 160-label table: 8 stable / 14 flip / 4 chance (same counts as the 60). Only 2/26 change class: frozen_frac flip->stable, global_shift stable->flip. Sharpness trio stable (radial_slope 0.633/0.635, hf_ratio 0.618/0.657, dct_energy 0.631/0.700 with grouped CI [0.55,0.83]); motion_energy still flips (0.308->0.646). Transferable subset (stable & >=0.10): dct_energy, hf_ratio, radial_slope, luma_p05, illum_b, illum_r, frozen_frac.
+- **Decision:** Use the sharpness/spatial-spectrum features for regime routing; do not reuse motion/temporal-band signs. Table robust to doubling labels.
+- **Cost:** CPU; 150+160 windows x 26 features
+- **Results:** eval/results/exp_fewshot/O2.03.json
+
+## O3.01 — Honest review-vs-OOD-error frontier on the 160-window pre-registered OOD label set
+- **Why:** Y1/Y2 cut REVIEW below 60% on a 60-window OOD set (n_bad=9); re-measure the frontier on the larger 160-window OOD set (n_bad=22, 47 factories) and pick a defensible operating point.
+- **Hypothesis:** Cutting REVIEW to <=60% cannot improve OOD accuracy on the frozen score; rank-average fusion may help at equal review.
+- **Data / label source:** 160 human-labelled Egocentric-10K windows (138 good / 22 bad, 47 factories), pre-registered test; 1,546 unlabelled E8.01 rescored windows (workload)
+- **Regime:** Egocentric-10K factory 1920x1080/30
+- **Method:** band sweep w=0..0.30; coverage gating c=0.40..1.00; rank-average fusion (no new inference); OOD balanced accuracy on decided windows with factory-grouped 2000x bootstrap CI
+- **Owner / started / finished:** O3 /  / 2026-10-10 20:40
+- **Verdict:** adopt-with-caveats — Frozen score reproduced on 160/160 (accept 64/reject 54/review 42); OOD AUROC usable_prob 0.566 [0.422,0.702], p_eg2 0.589, p_pixel 0.520, rank-avg 0.563. Band w=0.16 -> review 53.4% OOD BA 0.577 [0.415,0.740]; w=0.17 -> 57.4% BA 0.600 [0.440,0.767]. Gate c=0.45 -> review 55.0% BA 0.629 [0.444,0.822] (1546-cutoff variant 0.587 [0.427,0.752]). Rank-avg lifts OOD BA to 0.690 at gate c=0.45 and 0.708 at band w=0.155-0.16 (review 42.8-44.2%) but AUROC is flat (0.563) -> operating-point effect.
+- **Decision:** Ship rank-average fusion + band w=0.16 (review 44.2% on 1,546, OOD BA 0.708 [0.521,0.832]); robust equal-review alt = rank-avg + gate c=0.45 (55.0% review, BA 0.690). On the frozen prob-avg score every <=60%-review point stays at chance (all grouped CIs contain 0.5): the review cut is a workload win, not an accuracy win.
+- **Cost:** CPU only, ~1 min; no GPU
+- **Results:** eval/results/exp_review160/O3.01.json, eval/results/exp_review160/O3.02.json
+
+## O4.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:43
+- **Verdict:** adopt — Z3 transferable-6 per-domain z-score: OOD-160 AUROC 0.759 [0.597,0.886] grouped, BA 0.709; stable-8+6 0.781 [0.634,0.895], BA 0.733; frozen 0.566. Paired grouped gain +0.19/+0.21 (99.5% >0). Gain holds at n_bad=22; q2 alone (0.70/0.73) not separable from chance.
+- **Decision:** confirm
+- **Cost:** CPU only, 100 q2 decodes (~75s)
+- **Results:** eval/results/exp_adapt160/O4.01.json
+
+## O4.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:43
+- **Verdict:** adopt — All 6 Z3 transferable candidates stable on OOD-160; 9 stable/10 flip/1 chance across 20 candidates; selection set unchanged.
+- **Decision:** confirm
+- **Cost:** CPU only
+- **Results:** eval/results/exp_adapt160/O4.02.json
+
+## RES.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:49
+- **Verdict:** adopt — Encoded resolution can drop to 180p (0.8428, 198 KiB) and 120p (0.8022, 137 KiB) with no AUROC loss vs 0.810 native; no knee down to 120p; all rungs within 0.02 (one CI).
+- **Decision:** 
+- **Cost:** encode~0.6s+dec0.2s+feat0.5s per 10s window (shared pod)
+- **Results:** eval/results/exp_res/RES.01.json
+
+## RES.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:49
+- **Verdict:** adopt — Target met: CRF28=0.7960 (dAUROC -0.014) at 57% of CRF23 bytes; CRF33=0.7946 (-0.015) at 36%; no CRF broke 0.02.
+- **Decision:** 
+- **Cost:** flat ms; bytes 1.14MB->230KB
+- **Results:** eval/results/exp_res/RES.02.json
+
+## RES.03 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:49
+- **Verdict:** adopt — 360p@CRF28=0.8036 at 257 KiB (best bytes/accuracy, 40% of 480p@CRF23 bytes); 240p@CRF28=0.7934 at 169 KiB inside budget.
+- **Decision:** 
+- **Cost:** 257 KiB/window @ ~3.0 s/window
+- **Results:** eval/results/exp_res/RES.03.json
+
+## RES.04 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:49
+- **Verdict:** maybe — Pixel-26 OOD AUROC~0.43 (IndEgo head does not transfer) and is resolution-neutral: 480p d-0.002 [-0.026,+0.019], 360p d+0.013 [-0.034,+0.059]. EG2 view NOT recomputed.
+- **Decision:** 
+- **Cost:** NVDEC; 60 windows
+- **Results:** eval/results/exp_res/RES.04.json
+
+## SKIP.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:27
+- **Verdict:** maybe — drop1-start err 0.110 (worst, confirms E3) vs drop1-end 0.057 / drop1-evenly 0.033-0.041; drop2-start 0.189. START-drop biases high, END-drop low (bad rate sec1 0.09 -> sec5 0.58). END/MIDDLE/EVENLY keep 7/7 verdicts but every variant is dominated by uniform-every-2 (0.049 @ 51%). No section drop adopted.
+- **Decision:** Do not adopt any section-drop rule; keep every-2. Direction (start worst, end/even safest) is evidence for time-spread sampling.
+- **Cost:** CPU-only simulation on cached labels+scores, no GPU
+- **Results:** eval/results/exp_skip/SKIP.01.json
+
+## SKIP.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:27
+- **Verdict:** drop — strat-probe(1/section) err 0.142 @ 33.1% beats equal-budget contiguous probe 0.211 @ 33.1% and lifts agreement 0.57->0.86, but is not better than uniform-every-3 (0.117 @ 34.9%). dense-where-uncertain x1 0.100 @ 45.9% loses to uniform at equal budget (~0.072); x2 0.057 @ 62.5% also loses. Reproduces E3 CUSUM rejection.
+- **Decision:** Drop dense-where-uncertain and stratified-as-primary; uniform every-k grid stays.
+- **Cost:** CPU-only, cached scores + labels, no GPU
+- **Results:** eval/results/exp_skip/SKIP.02.json
+
+## SKIP.03 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:27
+- **Verdict:** adopt — Best cell = uniform-every-2: 51.5% processed, error 0.049 [0.019,0.087], 7/7 verdicts @0.30. Only policy meeting agreement>=0.90 AND error<=0.05; still wins when relaxing error to 0.07/0.10. No section-skip policy is cheaper within tolerance.
+- **Decision:** Re-affirm E3.01 uniform-every-2 (optionally + E3.03 4s early exit). No skip-anywhere rule adopted.
+- **Cost:** CPU-only synthesis, no GPU
+- **Results:** eval/results/exp_skip/SKIP.03.json
+
+## Y1.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:49
+- **Verdict:** adopt — Raw symmetric band w=0.16 -> review 53.4% (from 75.5%) at IndEgo gold BA 0.846 (err 0.154, 95% CI 0.662-0.931); exact widest band <60% is w=0.177 (59.6%, err 0.150); w=0.12 gives 37.0% at err 0.153. Calibration does NOT cut review at equal error: in-sample temperature is neutral vs raw (31.6% vs 32.0% min review at gold err<=0.155); the LOCO temperature 'gain' (9.4%) is a per-fold small-sample artifact; Platt/isotonic degrade gold BA to 0.71/0.725. OOD-60 decisions stay 0.34-0.53 BA (near chance, n_bad=9) -> unreliable.
+- **Decision:** Ship raw band half-width 0.16 (band [0.34,0.66]) on the frozen score; no calibration; keep OOD near-chance caveat in the verdict.
+- **Cost:** CPU only, ~1 min; no GPU
+- **Results:** eval/results/exp_review/Y1.01.json
+
+## Y2.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:48
+- **Verdict:** adopt — Decision-theoretic gating: gating at coverage 45% (cost 1:1) cuts the 1,546-window REVIEW share 75.5%->55.0%; gold-LOCO BA 0.837 [0.645,0.937] (n=150); OOD-60 eval-only BA 0.496 (near chance, AUROC 0.415, n_bad=9); asymmetric costs 2:1/5:1 hurt (weighted err 0.309/0.382 vs 0.162).
+- **Decision:** adopt coverage 0.45, cost 1:1
+- **Cost:** CPU, <5 s, cached only
+- **Results:** eval/results/exp_review/Y2.01.json
+
+## Y2.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:48
+- **Verdict:** adopt — Deterministic stage-0 rules fire on 6/6 of each synthetic black/darken/overexpose/frozen and 0/6 clean/blur/noise/shake/lowbitrate/static; on 150 gold they fire 3x (precision_bad 0.67, n=3, matching the funnel's no-certified-rule result); on the 1,546 they fire 39x (2.5%) and drop review 55.0%->54.0%. Combined pipeline reaches 54.0% review. Calibration (gold-LOCO temperature) is a no-op on share and hurts gold BA -> dropped.
+- **Decision:** adopt stage-0 reject overlay; temperature off
+- **Cost:** CPU, <5 s, cached only
+- **Results:** eval/results/exp_review/Y2.02.json
+
+## Y3.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:58
+- **Verdict:** adopt — Baseline reproduced: fixed-C two-view prob-average AUROC 0.8534, nested-LOCO 0.8336. Per-view nested AUROC: eg2 0.8458, perpixel121 0.8140, pixel26 0.7916, series16 0.7912, physics16 0.7608, theory18 0.6698. EG2@1fps/@0.5fps caches absent (only @2fps).
+- **Decision:** Use as reference; combo sweep in Y3.02
+- **Cost:** CPU <1 min
+- **Results:** eval/results/exp_review/Y3.01.json
+
+## Y3.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 16:58
+- **Verdict:** drop — NEGATIVE: adding cached views does not cut ambiguity at equal/better AUROC; every extra view raises the review-band mass and AUROC is flat/worse. EG2-alone dominates the two-view baseline (AUROC .834->.846, profile-band .653->.420). Rank-average is a free improvement (.653->.607). All AUROC diffs within CI.
+- **Decision:** Adopt rank-average (free); consider EG2-only; reject adding per-pixel/physics/series/theory views
+- **Cost:** CPU ~3 min
+- **Results:** eval/results/exp_review/Y3.02.json
+
+## Z1.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:25
+- **Verdict:** maybe — Sharpness-3 head (radial_slope,hf_ratio,dct_energy) cuts OOD AUROC 0.534->0.706 [0.518,0.867] (frozen 0.415); stable-8 only 0.551; in-domain LOCO drops 0.774->0.578. n_bad=9 exploratory.
+- **Decision:** Adopt sharpness-3 as the no-label OOD view; keep full-26 for in-domain.
+- **Cost:** CPU ~seconds
+- **Results:** eval/results/exp_adapt/Z1.01.json
+
+## Z1.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:25
+- **Verdict:** drop — No unsupervised alignment beat raw: coral_t2s 0.547, stable8+coral_s2t 0.678, domain_whiten worse (0.33-0.37), perclip_z 0.283; Ego10K-corpus CORAL no gain (fps confound).
+- **Decision:** Do not ship alignment; report negative.
+- **Cost:** CPU ~2 min
+- **Results:** eval/results/exp_adapt/Z1.02.json
+
+## Z1.03 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:25
+- **Verdict:** maybe — Factory-grouped few-shot pixel-26: k=12 ->0.717, k=24 ->0.763 (POST-HOC, optimistic; min n_bad train=1). Self-training on unlabelled Ego10K did not help (<=+0.02). Blend zero-shot+few-shot did not beat few-shot.
+- **Decision:** ~12 labels matches the label-free sharpness-3 head (0.706); needs 24 to clearly exceed.
+- **Cost:** CPU ~3 min
+- **Results:** eval/results/exp_adapt/Z1.03.json
+
+## Z2.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:33
+- **Verdict:** adopt — Split-conformal decision sets give a monotone U-shaped review/error frontier under clip-grouped LOCO; empirical coverage tracks nominal. Min review 3.3% at coverage 0.80 (marginal FA 6%); coverage 0.85 gives review 12% with marginal FA 4%<=5% and stated marginal false-decision bound 15%.
+- **Decision:** Adopt coverage-0.85 operating point (review 12% vs 75.5% today)
+- **Cost:** CPU only, <1 min, seed 7
+- **Results:** eval/results/exp_conformal/Z2.01.json
+
+## Z2.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:33
+- **Verdict:** adopt — Marginal split-conformal coverage holds (0.80->0.800, 0.90->0.893) because ICC of the conformity score is ~0.02 despite raw-score ICC 0.46; but clip-conditional coverage fails (worst clip 0.647 at nominal 0.90). Mondrian-by-clip lifts clip-conditional coverage to 0.873; Mondrian-by-score-strata near-nominal; cluster-bootstrap over-corrects at K=7.
+- **Decision:** Report marginal coverage; use Mondrian-by-clip when per-clip fairness matters
+- **Cost:** CPU only, <1 min
+- **Results:** eval/results/exp_conformal/Z2.02.json
+
+## Z2.03 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:33
+- **Verdict:** drop — With K=7 exchangeable clips a nonparametric cluster UCB cannot certify a 5% false-accept bound at 90% confidence (floor UCB 0.66; EB 1.0; LOCO-honest no fold). Window-Bentkus reaches 5% at 88.7% review but assumes window exchangeability, which intra-clip correlation violates. The guarantee is data-limited by the number of clips, not the tail bound.
+- **Decision:** Do NOT ship a 5% CRC bound on 7 clips; recommend the conformal 15% bound and collect more labelled clips for a rigorous r-bound
+- **Cost:** CPU only, <1 min
+- **Results:** eval/results/exp_conformal/Z2.03.json
+
+## Z3.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:33
+- **Verdict:** maybe — 20 candidates: 9 stable / 11 flip. Stable: ct_fsize_std, ct_fsize_cv, inv_clip_frac, inv_laplacian_var, inv_hist_entropy, mo_hand_motion_excess, inv_dct_hf_lf, ct_iframe_frac, ct_fsize_entropy. Flips: absolute bitrate/frame-size, all raw motion residuals (translation AND full affine), noise_snr, dhash.
+- **Decision:** advance stable candidates to the combination test
+- **Cost:** CPU ~5 min
+- **Results:** eval/results/exp_features/Z3.01.json
+
+## Z3.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:33
+- **Verdict:** no — Affine fix did NOT restore sign (mo_affine_resid 0.322/0.728 flips, same as translation-only 0.301/0.704). Absolute bitrate flips (0.376/0.802). Survivors: hand-region motion EXCESS (0.649/0.771), compression variability ct_fsize_std (0.620/0.747), invariants clip_frac/laplacian_var/hist_entropy.
+- **Decision:** drop raw motion and absolute bitrate; keep hand-excess, size-variability, invariants
+- **Cost:** CPU ~1 min
+- **Results:** eval/results/exp_features/Z3.02.json
+
+## Z3.03 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:33
+- **Verdict:** yes — Raw-feature logistic zero-shot OOD 0.497 (stable8+6) - collapses. Per-domain z-score signed equal-weight: 6-transferable IndEgo 0.684 / OOD 0.852 [0.732,0.950]; stable8+6 IndEgo 0.736 / OOD 0.841 [0.712,0.942]. Frozen ensemble OOD 0.415. OOD few-shot (factory CV) 0.776.
+- **Decision:** Adopt per-domain normalised transferable score; cross-domain failure is largely scale/offset, not concept
+- **Cost:** CPU ~2 min
+- **Results:** eval/results/exp_features/Z3.03.json
+
+## Z4.01 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:30
+- **Verdict:** maybe — q75 aggregator best clip AUROC 0.917 (mean 0.833); LOCO clip BA <=0.75 (5/7) for every aggregator -> clip verdicts are discriminative but thin. Uncertainty-targeted review: 35% of windows -> error<=1/7, 65% -> 7/7 (vs every-2 51.5% -> 7/7).
+- **Decision:** No single aggregator lifts clip BA above 5/7; use q75/mean only as a ranking signal, not a certified verdict.
+- **Cost:** CPU-only on cached labels+scores, no GPU
+- **Results:** eval/results/exp_clip/Z4.01.json
+
+## Z4.02 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:30
+- **Verdict:** drop — Best tolerated SPRT cell (A=4.9,B=3.7, hard) decides 5/5 correct with 2/7 abstained but at 66.5% of windows -- MORE than every-2's 51.5%. Label-oracle SPRT also 65.5% at 7/7. Soft expected-LLR never accepts (clip-level miscalibration). Sequential early stop does NOT drop review at equal error.
+- **Decision:** Keep fixed every-2 grid; use SPRT only as a clip-level abstain gate. Negative result kept.
+- **Cost:** CPU-only, cached scores, no GPU
+- **Results:** eval/results/exp_clip/Z4.02.json
+
+## Z4.03 — 
+- **Why:** 
+- **Hypothesis:** 
+- **Data / label source:** 
+- **Regime:** n/a
+- **Method:** 
+- **Owner / started / finished:**  /  / 2026-10-10 17:30
+- **Verdict:** maybe — Best tolerated cell = A=4.9,B=3.7 hard (5/5 correct, 2/7 abstain, 66.5% windows). Next-100 active labels written (47/47 factories). OOD-60 eval: uncertainty U AUROC 0.349 (anti-correlated) -> uncertainty sampling does not find confidently-wrong domain-shift errors; list is coverage/audit, not guaranteed error reduction.
+- **Decision:** Label the top-100 for factory coverage/audit; do not expect them to be the OOD errors. Add domain-shift-aware acquisition before relying on active learning.
+- **Cost:** CPU-only, cached features, no GPU
+- **Results:** eval/results/exp_clip/Z4.03.json
