@@ -134,12 +134,24 @@ def parse_quality(text: str):
 
 
 def parse_tile_lines(text: str):
-    """{tile_number: (timestamp_string, description)} from a read_tiles reply."""
+    """{tile_number: (timestamp_string, description)} from a sheet reply.
+
+    Two shapes occur in practice and BOTH are accepted here:
+      * ``tile 7 @ 00:05.4s :: description``   (what `read_tiles` asks for)
+      * ``#7  00:05.4s: description``          (what the model usually echoes back,
+        copying the sheet's own label -- diagnosed by the V-A stream, which found the
+        original stricter pattern recovered 0 lines from 160 real replies)
+    """
     out = {}
+    pats = [re.compile(r"\s*tile\s*#?(\d+)\s*@\s*([0-9]{1,2}:[0-9]{2}(?:\.[0-9])?)\s*s?\s*::\s*(.*)", re.I),
+            re.compile(r"\s*#(\d+)\s*@?\s*([0-9]{1,2}:[0-9]{2}(?:\.[0-9])?)\s*s?\s*[:\-]\s*(.*)"),
+            re.compile(r"\s*tile\s*#?(\d+)\s*@?\s*([0-9]{1,2}:[0-9]{2}(?:\.[0-9])?)\s*s?\s*[:\-]\s*(.*)", re.I)]
     for line in text.splitlines():
-        m = re.match(r"\s*tile\s*#?(\d+)\s*@\s*([0-9:.]+\s*s?)\s*::\s*(.*)", line, re.I)
-        if m:
-            out[int(m.group(1))] = (m.group(2).strip(), m.group(3).strip())
+        for pat in pats:
+            m = pat.match(line)
+            if m:
+                out[int(m.group(1))] = (m.group(2).strip(), m.group(3).strip())
+                break
     return out
 
 
