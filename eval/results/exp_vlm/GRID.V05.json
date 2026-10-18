@@ -1,9 +1,16 @@
 {
+ "call_counts": {
+  "image": 24,
+  "ledger": "/tmp/opencode/dsh/vlm_ledger_v05.jsonl",
+  "note": "video calls go through the existing analyze_video path (input_video), not input_image",
+  "text": 4,
+  "video": 24
+ },
  "ci95": null,
  "ci95_type": "not applicable (24 slices, 2 of them no_relevant_work: no interval is meaningful)",
  "command": "JADAL_VLM_LEDGER=<ledger> python3 eval/exp_vlm/v05_task.py --phase map|sheet|video|l2|report",
  "config_sha256": "1cc7ad6e2d0c08e670739b3912699fbc54688f220656d0cf2d21a30a03d88ed0",
- "cost": "0 image calls + 0 text calls + 24 video calls; sheet median 10.04 s/call, video median 9.63 s/call",
+ "cost": "24 image calls + 4 text calls + 24 video calls; sheet median 10.04 s/call, video median 9.63 s/call",
  "device": "CPU (sheet build) + OpenCode Go API (image and video calls); no GPU used",
  "git_sha": "a3e504659f74d69f54632dcd1f8bfba5606e51c2",
  "id": "GRID.V05",
@@ -62,8 +69,8 @@
    }
   },
   "l2_truth": "4/4 completed from the VIA annotations (TASK.00b) - ZERO variance",
-  "n_image_calls": 0,
-  "n_text_calls": 0,
+  "n_image_calls": 24,
+  "n_text_calls": 4,
   "sheet_png_bytes_median": null,
   "sheet_seconds_median": 10.04,
   "sheet_usable_true_share": 0.7917,
