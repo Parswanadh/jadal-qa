@@ -46,8 +46,8 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 | GRID.V02 | GRID.V | done | adopt | Quality verdict from a 12-tile sheet on OOD-160, factory-grouped | OOD-160: 160 human-labelled Egocentric-10K windows, 138 good / One 10 s window = one 12-tile sheet; frozen quality prompt; factory-grouped bootstrap CI; paired comparison vs the frozen shipped head |
 | GRID.V03 | GRID.V | running | - | Ablations: timestamps, tile order, single frame, tile count, reasoning step, grey null | The V03 stratified 20 windows (10 bad / 10 good, frozen ids  / Six arms x 20 windows: no timestamps, shuffled order, one middle frame, 6 tiles, 24 tiles, JSON-only prompt; plus a flat grey null sheet |
 | GRID.V04 | GRID.V | done | maybe | Run-to-run variance of the model on the same sheets | The V04 40-window subset (frozen ids in PREREG), 3 runs each / Same frozen prompt and sheets across runs; unanimous share and Cohen/Fleiss kappa over usable and over task_progress |
-| GRID.V05 | GRID.V | running | - | Task level on IndEgo: 12-tile sheets vs video on the same 30 s slices, then L2 | 4 annotated IndEgo clips (ecu_full, ecu_late, desk, organise / One slice_l1 call per 30 s slice as a sheet and as video via the existing analyze_video path; then ONE l2_text call over the six slice answers per clip |
-| GRID.V06 | GRID.V | running | - | Role in the funnel: review-band resolver and veto on high-confidence accepts | IndEgo-150 and OOD-160 with frozen model outputs from V02 pl / Frozen prompt and model id; (a) resolver for the band, (b) veto on windows the shipped head accepts at p>=0.75; error at 100 % coverage and the resulting review load |
+| GRID.V05 | GRID.V | done | drop | Task level on IndEgo: 12-tile sheets vs video on the same 30 s slices, then L2 | 4 annotated IndEgo clips (ecu_full, ecu_late, desk, organise / One slice_l1 call per 30 s slice as a sheet and as video via the existing analyze_video path; then ONE l2_text call over the six slice answers per clip |
+| GRID.V06 | GRID.V | done | maybe | Role in the funnel: review-band resolver and veto on high-confidence accepts | IndEgo-150 and OOD-160 with frozen model outputs from V02 pl / Frozen prompt and model id; (a) resolver for the band, (b) veto on windows the shipped head accepts at p>=0.75; error at 100 % coverage and the resulting review load |
 | LB1 | B | done | adopt | Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy | IndEgo human gold 150 windows / 7 clips (human labels, READ- / 480p/10fps IndEgo in-domain LOCO (+ OOD position test, labels only) |
 | LB2 | B | done | adopt | PoC integration: adopted every-2nd window grid + 4s early exit + EG2 2fps + 26-feature pixel logistic (descriptive verdicts) |  / CPU only (GPU unavailable in the container); cached features; deterministic (fixed seeds) |
 | LB4 | B | pending | inconclusive | Stage frozen pre-registered OOD run (one command, sha256-guarded) | labels/ood_labels2.json (100 human-labelled Egocentric-10K w /  |
@@ -597,11 +597,11 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Data / label source:** 4 annotated IndEgo clips (ecu_full, ecu_late, desk, organise), 30 s slices, clip-absolute tile timestamps; L1 labels derived from the VIA step annotations; L2 from the builder's working definition (pick from one place, put in another, accurately)
 - **Regime:** One slice_l1 call per 30 s slice as a sheet and as video via the existing analyze_video path; then ONE l2_text call over the six slice answers per clip
 - **Method:** L1 agreement vs annotations and vs the always-advancing baseline, kappa, seconds per call, bytes sent, image-sheet vs video; L2 accuracy vs the majority class. Reported as 'builder's definition, not Awign's'.
-- **Owner / started / finished:** dsh / 2026-10-18 08:29 / —
-- **Verdict:** pending — 
-- **Decision:** 
-- **Cost:** 
-- **Results:** 
+- **Owner / started / finished:** dsh / 2026-10-18 08:29 / 2026-10-18 08:49
+- **Verdict:** drop — IndEgo 4 annotated clips, 6 evenly spaced 30 s slices each (24 slices, 2 of them no_relevant_work), 12-tile sheets with clip-absolute timestamps vs the same slices as VIDEO. L1 (is relevant work progressing): sheet agreement 0.7083 vs an always-advancing baseline of 0.9167, kappa -0.1351, gap recall 0/2 -- WORSE than a constant; video agreement 0.7917, also below the constant, and it also missed both gap slices. Reading is not the problem: V01 showed 240/240 exact tile+timestamp reads. L2 (was the task completed, BUILDER's definition): the free truth is 4/4 completed = ZERO variance, so no accuracy can be computed; the model answered not_completed once and cannot_tell three times, disagreeing with the annotations on all four clips. Cost: 24 image + 4 text + 24 video calls; sheet 10.04 s/call, video 9.63 s/call, video median 1.06 MB.
+- **Decision:** DROP the VLM as an L1/L2 task judge on this evidence: on IndEgo it does not beat the always-advancing constant, and the L2 truth is too weak (zero variance) to support any claim. The 12-tile sheet and 30 s of video cost the same (~10 s) and perform the same, so the sheet is not a cheaper substitute for video on the task question either. Builder's definition of completion used for L2, NOT Awign's; Awign must confirm what counts as inaccurate.
+- **Cost:** 24 image + 4 text + 24 video API calls
+- **Results:** eval/results/exp_vlm/GRID.V05.json
 
 ## GRID.V06 — Role in the funnel: review-band resolver and veto on high-confidence accepts
 - **Why:** A model that is only a ranker is still useful if it resolves the review band or vetoes confident accepts.
@@ -609,11 +609,11 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Data / label source:** IndEgo-150 and OOD-160 with frozen model outputs from V02 plus fresh calls on the IndEgo review band
 - **Regime:** Frozen prompt and model id; (a) resolver for the band, (b) veto on windows the shipped head accepts at p>=0.75; error at 100 % coverage and the resulting review load
 - **Method:** 100 %-coverage balanced accuracy and review share for each role, with clip- and factory-grouped intervals, against AUTO.00's forced decision.
-- **Owner / started / finished:** dsh / 2026-10-18 08:29 / —
-- **Verdict:** pending — 
-- **Decision:** 
-- **Cost:** 
-- **Results:** 
+- **Owner / started / finished:** dsh / 2026-10-18 08:29 / 2026-10-18 09:12
+- **Verdict:** maybe — ROLE (a) OOD-160 VETO, zero new calls (reuses V02): the shipped head accepts 71 windows (63 good, 8 bad). The VLM vetoes 4 of those 8 false accepts (50%) at a cost of 3 good windows (4.76% of the good the head accepted). Balanced accuracy 0.5464 -> 0.6265, false-accept 0.3636 -> 0.1818, false-reject 0.5435 -> 0.5652. Paired factory-clustered difference vs the head alone +0.08, CI [0.0000, 0.1591] - DOES NOT EXCLUDE ZERO, so the gain is not established at n_bad=22. ROLE (b) IndEgo RESOLVER, 115 new image calls of a 120 cap (band 72 + high-confidence accepts 43): forced-0.5 baseline reproduces AUTO.00 exactly (BA 0.740). Throwing the band away 0.640; resolving the band with the VLM 0.755; adding the veto on high-confidence accepts also 0.755. band_resolve - thrown_away = +0.115 [0.0361, 0.1794] EXCLUDES ZERO; band_resolve - forced05 = +0.015 [-0.0609, 0.1089] NOT established; full_veto - forced05 = +0.015 [-0.0448, 0.0876] NOT established. The VLM said usable for 65/72 band windows (90.3%) and 105/115 targets (91.3%), so the success bias reappears in-domain: FAR rises 0.26 -> 0.38 even as FRR falls 0.26 -> 0.11. V04 already showed a single call is not a measurement (kappa 0.52, AUROC spread 0.071), so every number here is repeat-needed.
+- **Decision:** The VLM as a review-band resolver is significantly better than DISCARDING the band (+0.115 BA, CI excludes zero) but NOT significantly better than the free forced-0.5 rule in-domain (+0.015, CI includes zero), so it does not justify its API cost as an accuracy device there. Out of domain the veto halves the head's false accepts and lifts BA by 0.08 but the interval touches zero, so it is a promising, unestablished signal that needs round-4 labels (and repeated calls) before it can be recommended. Treat VLM output as a ranker feeding a human, never as an automatic verdict.
+- **Cost:** 115 image calls for V06 of a 120 cap (all tag=v06 in the ledger; 0 failures, 0 retries); role (a) 0 calls; 11.3 s mean per call; no GPU
+- **Results:** eval/results/exp_vlm/GRID.V06.json
 
 ## LB1 — Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy
 - **Why:** The adopted settings (every-2nd window, 4 s early exit, EG2 2 fps view, 26-feature logistic) drive the PoC and the submission; a second, independent re-run is the cheapest defence against a silent protocol bug.

@@ -102,3 +102,90 @@ than the frozen shipped head's 0.588 on the same windows — but it calls 87.5 %
 usable, still accepts 9 of 22 bad windows, and moves by κ ≈ 0.52 and ±0.07 AUROC between
 identical repeat runs, so it is a triage ranker requiring repeated calls and a human on
 disagreement, not an automatic verdict.**
+
+---
+
+# GRID.V06 — the model's role in the funnel (both pre-registered roles)
+
+Prompt, model id and window sets unchanged from the frozen PREREG. The model is
+**probabilistic** and GRID.V04 showed a single call is not a measurement (Fleiss κ 0.52,
+AUROC spread 0.071 across identical runs), so **every number here is repeat-needed**. One
+labeller. Parser used: **the tolerant parser in `eval/exp_vlm/vlm_run.py`** — after the
+lead's `beb742e` fix the shared `vlm_mosaic.parse_tile_lines` still requires a timestamp
+and recovers only **372 of 1920** lines, because 113 of 160 replies emit `#N: text` with no
+timestamp at all.
+
+## Role (a) — veto on high-confidence accepts, OOD-160, **zero new calls**
+
+Reuses the V02 run-1 replies. `P_head` = accept iff p26 ≥ 0.75; `P_head_veto` = accept iff
+p26 ≥ 0.75 **and** the model says usable.
+
+| | value |
+|---|---|
+| Windows the shipped head accepts | **71** (63 good, **8 bad**) |
+| Head false accepts vetoed by the model | **4 of 8 (50 %)** |
+| Good windows the head accepted that the veto loses | **3** (4.76 % of them) |
+| Balanced accuracy: head → head+veto | **0.5464 → 0.6265** |
+| False-accept rate: head → head+veto | **0.3636 → 0.1818** |
+| False-reject rate: head → head+veto | 0.5435 → 0.5652 |
+| **Paired factory-clustered difference** | **+0.08 [0.0000, 0.1591] — does NOT exclude zero** |
+
+The veto halves the head's false accepts on factory footage and roughly doubles the
+false-accept improvement into a +0.08 balanced-accuracy gain — but at n_bad = 22 the paired
+interval's lower bound sits exactly on zero, so **the gain is not established**. It is a
+promising signal, not a result.
+
+## Role (b) — resolver for the review band, IndEgo-150, **115 new calls** (cap 120)
+
+Head scores from `common.loco_proba` on the frozen 26 features (the AUTO.00 recipe); the
+forced-0.5 baseline reproduces **exactly** (0.740 here vs 0.740 documented). Band =
+0.25 < p < 0.75 → **72 windows**; high-confidence accepts (p ≥ 0.75) → **43**. Both were
+called (115 ≤ 120) so the model's two roles are measured in-domain as well.
+
+| Policy (100 % coverage) | balanced acc | false accept | false reject | accepted bad | rejected good |
+|---|---|---|---|---|---|
+| `P_forced05` — AUTO.00 baseline | **0.740** | 0.26 | 0.26 | 13 | 26 |
+| `P_band` — throw the band away | 0.640 | 0.10 | **0.62** | 5 | 62 |
+| `P_band_resolve` — model decides the band | **0.755** | 0.38 | 0.11 | 19 | 11 |
+| `P_full_veto` — resolve + veto accepts | **0.755** | 0.36 | 0.13 | 18 | 13 |
+
+| Paired clip-clustered difference | Δ balanced accuracy | 95 % CI | established |
+|---|---|---|---|
+| band_resolve − band_thrown_away | **+0.115** | [0.0361, 0.1794] | **yes** |
+| band_resolve − forced05 | +0.015 | [−0.0609, 0.1089] | no |
+| full_veto − forced05 | +0.015 | [−0.0448, 0.0876] | no |
+
+**The honest reading:** resolving the review band with the model is **significantly better
+than throwing the band away** (+0.115, interval excludes zero) — it recovers most of what
+the band costs. But it is **not significantly better than the free forced-0.5 rule**
+(+0.015, interval includes zero), so as an accuracy device in-domain it does not earn its
+API cost. The success bias reappears: the model called **65 of 72** band windows usable
+(90 %) and **105 of 115** targets (91 %), which is why false-accept rises from 0.26 to 0.38
+even as false-reject falls from 0.26 to 0.11 — the resolver mostly converts rejects into
+accepts rather than separating the classes. The veto on in-domain high-confidence accepts
+changed almost nothing (1 of 5 false accepts caught, 2 good lost), leaving BA unchanged at
+0.755.
+
+## Call accounting (checked before and after)
+
+| | image calls |
+|---|---|
+| Ledger before V06 | 241 |
+| **V06 calls (all tag `v06`, cap 120)** | **115** |
+| Ledger after V06 | 356 |
+| Failures / retries in V06 | **0 / 0** |
+
+Role (a) cost nothing: it reuses the V02 replies. The 115 calls took 11.3 s mean / 11.23 s
+median each. `JADAL_VLM_LEDGER` accounting is by ledger tag, not by invocation, so a re-run
+after a crash reports the **true** expenditure (a first attempt crashed in the final
+assembly after the calls were already paid for; the fix re-used them and made zero new
+calls).
+
+## The one honest sentence (addendum)
+
+**The model halves the shipped head's false accepts on 160 factory windows (8 → 4) for the
+loss of 3 good ones, but the paired factory-clustered balanced-accuracy gain of +0.08
+[0.000, 0.159] is not established at n_bad = 22; in-domain it resolves the review band
+significantly better than discarding it (+0.115 [0.036, 0.179]) yet no better than the free
+forced-0.5 rule (+0.015, interval includes zero), so it is a triage ranker for a human — never
+an automatic verdict — and every number here needs repeat runs.**

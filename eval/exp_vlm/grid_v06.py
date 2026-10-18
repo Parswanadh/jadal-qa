@@ -101,7 +101,7 @@ def paired_group_boot_rate(y, a, b, groups, fn, n_boot=N_BOOT, seed=SEED):
     return {"delta": round(float(fn(y, a) - fn(y, b)), 4),
             "ci95": [round(float(lo), 4), round(float(hi), 4)],
             "excludes_zero": bool(lo > 0 or hi < 0), "n_boot": len(vals),
-            "ci95_type": f"paired cluster bootstrap ({N_BOOT} draws, seed {SEED})"}
+            "ci95_type": f"paired cluster bootstrap ({n_boot} draws, seed {seed})"}
 
 
 # ---------------------------------------------------------------- role (a) --
@@ -201,10 +201,33 @@ def role_b(workers: int, ledger: str, limit: int = 0):
                 replies[w] = parse_row(reuse)
     wall = time.time() - started
     after = M.count_calls(ledger)
-    v06_calls = after["image"] - before["image"]
+    # The honest V06 expenditure is every image call tagged 'v06' in the ledger, NOT
+    # `after - before` of this invocation: a re-run after a crash reuses the replies and
+    # would otherwise report zero calls for 115 calls actually paid for.
+    v06_calls = 0
+    if os.path.exists(ledger):
+        with open(ledger) as f:
+            for line in f:
+                if not line.strip():
+                    continue
+                try:
+                    e = json.loads(line)
+                except ValueError:
+                    continue
+                if not e.get("text_only") and e.get("tag") == "v06":
+                    v06_calls += 1
 
-    vlm_ok = np.array([bool(replies[w]["usable"]) for w in ids])
-    have = np.array([w in replies for w in ids])
+    # only the 115 target windows (band + high-confidence accepts) have a reply; the
+    # low-confidence rejects never need one because both policies reject them outright.
+    vlm_ok = np.zeros(len(ids), bool)
+    have = np.zeros(len(ids), bool)
+    for i, w in enumerate(ids):
+        if w in replies:
+            vlm_ok[i] = bool(replies[w]["usable"])
+            have[i] = True
+    missing_replies = [w for w in targets if w not in replies]
+    if missing_replies:
+        raise SystemExit(f"no reply for target windows: {missing_replies[:5]}")
 
     p_band_resolve = np.where(hi, True, np.where(lo, False, vlm_ok))
     p_full_veto = np.where(band, vlm_ok, hi & vlm_ok)
@@ -245,7 +268,8 @@ def role_b(workers: int, ledger: str, limit: int = 0):
     return {
         "band_size": int(band.sum()), "accepts_size": int(hi.sum()),
         "targets": len(targets), "new_calls": int(len(todo)),
-        "v06_calls_total": int(v06_calls),
+        "v06_calls_total_from_ledger_tag": int(v06_calls),
+        "new_calls_this_invocation": int(len(todo)),
         "ledger_before": before, "ledger_after": after,
         "windows_with_a_reply": int(have.sum()),
         "head_scores": "common.loco_proba on the frozen 26 features (C=0.3, LOCO over 7 clips)",
@@ -260,7 +284,10 @@ def role_b(workers: int, ledger: str, limit: int = 0):
                                "vlm_usable": bool(vlm_ok[ids.index(w)])} for w in targets],
         "seconds_mean": round(float(np.mean(secs)), 2) if secs else None,
         "seconds_median": round(float(np.median(secs)), 2) if secs else None,
-        "wall_s": round(wall, 1),
+        "wall_s_this_invocation": round(wall, 1),
+        "wall_note": ("wall_s is THIS invocation only; when the replies are already in the "
+                      "ledger it is ~0 because nothing is called. The 115 calls themselves "
+                      "took seconds_mean per call, measured when they were made."),
         "per_window": {w: {"usable": replies[w]["usable"],
                            "reason_code": replies[w]["reason_code"],
                            "task_progress": replies[w]["task_progress"],
@@ -293,7 +320,10 @@ def main():
 
     payload = {
         "id": "GRID.V06",
-        "n": b.get("targets", 0), "n_bad": b.get("veto_table", {}).get("band_bad"),
+        # the top-level n/n_bad describe ROLE (a), which is the OOD-160 veto question;
+        # role (b) carries its own n's inside role_b_indego_resolver.
+        "n": 160, "n_bad": 22, "n_good": 138,
+        "n_datasets": "role (a) OOD-160 (n=160, n_bad=22); role (b) IndEgo-150 (n=150, n_bad=50)",
         "label_source": ("OOD-160: human labels, ONE labeller (138 good / 22 bad). "
                          "IndEgo-150: human gold, ONE labeller (100 good / 50 bad)."),
         "protocol": ("role (a) reuses the V02 run-1 replies on all 160 OOD windows (zero new "
@@ -320,9 +350,11 @@ def main():
                  .get("band_resolve_minus_forced05", {}).get("ci95")),
         "ci95_type": f"paired cluster bootstrap ({N_BOOT} draws, seed {SEED})",
         "device": "CPU (sheet build) + OpenCode Go API (image calls); no GPU used",
-        "cost": (f"role (a) 0 new calls; role (b) {b.get('new_calls', 0)} new image calls of a "
-                 f"{V06_CAP} cap (band 72 + high-confidence accepts 43 = 115 targets); "
-                 f"ledger before {b.get('ledger_before', {}).get('image')} / after "
+        "cost": (f"role (a) 0 new calls; role (b) {b.get('v06_calls_total_from_ledger_tag', 0)} "
+                 f"image calls made for V06 (cap {V06_CAP}; band 72 + high-confidence accepts 43 "
+                 f"= 115 targets; this invocation made {b.get('new_calls_this_invocation', 0)} new "
+                 f"calls and reused the rest); ledger before "
+                 f"{b.get('ledger_before', {}).get('image')} / after "
                  f"{b.get('ledger_after', {}).get('image')}; wall {round(time.time()-t0,1)} s"),
         "command": "JADAL_VLM_LEDGER=<ledger> python3 eval/exp_vlm/grid_v06.py --workers 3",
         "git_sha": C.git_sha(), "seed": SEED,

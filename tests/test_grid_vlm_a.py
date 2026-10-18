@@ -85,14 +85,28 @@ class TestParsing(unittest.TestCase):
         self.assertEqual(len(r["tile_lines"]), 1)
         self.assertEqual(r["n_tile_lines"], 1)
 
-    def test_frozen_parser_misses_the_format_the_model_actually_uses(self):
-        """Documents the real mismatch found in the run: the model echoes the sheet
-        label `#N MM:SS.s: ...`, which the frozen `tile N @ t ::` parser does not match."""
+    def test_shared_parser_still_misses_the_no_timestamp_shape(self):
+        """The shared parser was fixed (beb742e) to accept `#N MM:SS.s: text`, but it still
+        REQUIRES a timestamp, and 113 of 160 real replies omit it entirely (`#1: text`).
+        Measured recovery on the real V02 run: shared 372/1920, tolerant 1920/1920."""
         from tools.dsh import vlm_mosaic as M
         from eval.exp_vlm.vlm_run import parse_tile_lines_tolerant
-        raw = "#1 00:00.4s: both hands align a tube\n#2 00:01.2s: right hand lifts a tool"
-        self.assertEqual(M.parse_tile_lines(raw), {})
-        self.assertEqual(len(parse_tile_lines_tolerant(raw)), 2)
+        with_ts = "#1 00:00.4s: both hands align a tube"
+        no_ts = "#1: both hands align a tube"
+        self.assertEqual(len(M.parse_tile_lines(with_ts)), 1)      # fixed in beb742e (lead)
+        self.assertEqual(M.parse_tile_lines(no_ts), {})           # still missed
+        self.assertEqual(len(parse_tile_lines_tolerant(no_ts)), 1)  # our parser reads it
+
+    def test_both_reply_shapes_are_read_by_the_tolerant_parser(self):
+        from eval.exp_vlm.vlm_run import parse_tile_lines_tolerant
+        raw = ("#1 00:00.4s: both hands align a tube\n"
+               "#2: right hand lifts a tool\n"
+               "#3 00:02.1s  left hand steadies the jig\n"
+               '{"usable": true, "reason_code": "OK"}')
+        tl = parse_tile_lines_tolerant(raw)
+        self.assertEqual(len(tl), 3)
+        self.assertIn("align", tl[1][1])
+        self.assertIn("lifts", tl[2][1])
 
     def test_tolerant_parser_also_reads_the_requested_format(self):
         from eval.exp_vlm.vlm_run import parse_tile_lines_tolerant
@@ -155,3 +169,43 @@ class TestSheetDeterminism(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestV06Metrics(unittest.TestCase):
+    """The V06 policy comparison rests on these two functions; pin both."""
+
+    def test_bal_acc_positive_class_is_good(self):
+        from eval.exp_vlm.grid_v06 import bal_acc
+        y = np.array([1, 1, 0, 0])
+        accept = np.array([True, False, False, True])   # 1 good in, 1 good out, 1 bad out, 1 bad in
+        self.assertAlmostEqual(bal_acc(y, accept), 0.5)
+        self.assertAlmostEqual(bal_acc(y, np.array([True, True, False, False])), 1.0)
+        self.assertAlmostEqual(bal_acc(y, np.array([False, False, True, True])), 0.0)
+
+    def test_paired_group_boot_detects_a_real_improvement(self):
+        from eval.exp_vlm.grid_v06 import paired_group_boot_rate, bal_acc
+        rng = np.random.default_rng(0)
+        n = 200
+        y = np.array([1] * 100 + [0] * 100)
+        groups = np.array([f"f{i%20}" for i in range(n)])
+        a = np.where(y == 1, rng.random(n) < 0.95, rng.random(n) < 0.05)   # good policy
+        b = np.where(y == 1, rng.random(n) < 0.6, rng.random(n) < 0.4)     # bad policy
+        r = paired_group_boot_rate(y, a, b, groups, bal_acc, n_boot=300)
+        self.assertGreater(r["delta"], 0.2)
+        self.assertTrue(r["excludes_zero"])
+        self.assertEqual(r["ci95_type"], "paired cluster bootstrap (300 draws, seed 0)")
+
+    def test_paired_group_boot_is_null_for_identical_policies(self):
+        from eval.exp_vlm.grid_v06 import paired_group_boot_rate, bal_acc
+        y = np.array([1, 1, 0, 0] * 25)
+        g = np.array([f"c{i%5}" for i in range(len(y))])
+        a = np.array([True, False, True, False] * 25)
+        r = paired_group_boot_rate(y, a, a.copy(), g, bal_acc, n_boot=200)
+        self.assertAlmostEqual(r["delta"], 0.0)
+        self.assertFalse(r["excludes_zero"])
+
+    def test_group_index_covers_every_window(self):
+        from eval.exp_vlm.grid_v06 import _group_index
+        uniq, idx = _group_index(["b", "a", "b", "c"])
+        self.assertEqual(uniq, ["a", "b", "c"])
+        self.assertEqual(sum(len(i) for i in idx), 4)
