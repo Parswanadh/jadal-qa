@@ -134,24 +134,35 @@ def parse_quality(text: str):
 
 
 def parse_tile_lines(text: str):
-    """{tile_number: (timestamp_string, description)} from a sheet reply.
+    """{tile_number: (timestamp_or_empty, description)} from a sheet reply.
 
-    Two shapes occur in practice and BOTH are accepted here:
-      * ``tile 7 @ 00:05.4s :: description``   (what `read_tiles` asks for)
-      * ``#7  00:05.4s: description``          (what the model usually echoes back,
-        copying the sheet's own label -- diagnosed by the V-A stream, which found the
-        original stricter pattern recovered 0 lines from 160 real replies)
+    The model does NOT reliably echo the shape the prompt asks for.  Measured over
+    160 real replies by the V-A stream (1920 tile lines expected, 12 per sheet):
+      * 0 replies used the requested ``tile N @ 00:05.4s :: text``;
+      * 113 replies emitted ``#N: text`` with NO timestamp at all  -> 1356 lines;
+      * 31 replies emitted ``#N  MM:SS.s: text``                  -> 372 lines.
+    So the timestamp is OPTIONAL here and reported as ``""`` when absent.  A line
+    whose description starts with ``{`` is rejected so the trailing JSON verdict is
+    never mistaken for a tile.
     """
+    pats = [
+        re.compile(r"\s*tile\s*#?(\d+)\s*(?:@?\s*([0-9]{1,2}:[0-9]{2}(?:\.[0-9]+)?)\s*s?)?\s*[:\-]\s*(.*)", re.I),
+        re.compile(r"\s*#(\d+)\s*(?:@?\s*([0-9]{1,2}:[0-9]{2}(?:\.[0-9]+)?)\s*s?)?\s*[:\-]?\s+(.*)"),
+        re.compile(r"\s*#(\d+)\s*(?:@?\s*([0-9]{1,2}:[0-9]{2}(?:\.[0-9]+)?)\s*s?)?\s*[:\-]\s*(.*)"),
+    ]
     out = {}
-    pats = [re.compile(r"\s*tile\s*#?(\d+)\s*@\s*([0-9]{1,2}:[0-9]{2}(?:\.[0-9])?)\s*s?\s*::\s*(.*)", re.I),
-            re.compile(r"\s*#(\d+)\s*@?\s*([0-9]{1,2}:[0-9]{2}(?:\.[0-9])?)\s*s?\s*[:\-]\s*(.*)"),
-            re.compile(r"\s*tile\s*#?(\d+)\s*@?\s*([0-9]{1,2}:[0-9]{2}(?:\.[0-9])?)\s*s?\s*[:\-]\s*(.*)", re.I)]
     for line in text.splitlines():
+        if "{" in line.split(":")[0]:
+            continue
         for pat in pats:
             m = pat.match(line)
-            if m:
-                out[int(m.group(1))] = (m.group(2).strip(), m.group(3).strip())
+            if not m:
+                continue
+            desc = (m.group(3) or "").lstrip(":-").strip()
+            if not desc or desc.startswith("{"):
                 break
+            out[int(m.group(1))] = ((m.group(2) or "").strip(), desc)
+            break
     return out
 
 
