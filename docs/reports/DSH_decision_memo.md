@@ -36,7 +36,7 @@ it is not established to work on factory footage, and **100 % coverage is not su
   window** to humans, track error and verdict mix per site, alarm on drift. All hours columns are
   arithmetic on assumed review time and are labelled as such.
 * **The brightness-calibrated sharpness rule** (GRID.09) — the one clear win in this pass. It fixes a
-  hole that was reproduced first: the shipped five S0 rules reject **0 of 16** blurred windows and the
+  hole before proposing the rule: the shipped five S0 rules reject **0 of 16** blurred windows and the
   head accepts **6 of 16 at σ=3 with max p = 0.9999**. With the rule (threshold 0.0211, chosen on a
   clip/factory-grouped CALIB split that never saw a blurred window), on held-out EVAL (n=132 each):
   catch **18.9 % [5.8, 40.4]** at σ=1.5, **72.0 % [38.8, 89.4]** at σ=3, **100 %** at σ=8; AUROC at
@@ -156,7 +156,7 @@ can tolerate, and that is the builder's/Awign's call, not a modelling result.
   quota, TASK.04 needs Awign's task definition. TASK.00b showed the free IndEgo annotations are **not**
   a substitute: the clip-level truth has zero variance (4/4 "completed") and the slice label agrees
   with a always-advancing baseline at κ = 0.208.
-* No A40 numbers, no Raspberry Pi measurement, no multi-pod run, no 1080p-source cost row.
+* No A40 numbers, no edge-board measurement, no multi-pod run, no 1080p-source cost row.
 
 ## The one honest sentence the product may say
 
