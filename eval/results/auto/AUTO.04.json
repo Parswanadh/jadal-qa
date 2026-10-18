@@ -1,0 +1,536 @@
+{
+ "ci95": [
+  0.5894,
+  0.7621
+ ],
+ "ci95_type": "clip-level bootstrap (resample 7 IndEgo clips, 2000 draws, seed 0) on balanced accuracy at the 1:1 ratio",
+ "command": "JADAL_BUNDLE=<bundle> OMP_NUM_THREADS=2 nice -n 10 /home/parshu/envs/jadal/bin/python tools/dsh/auto04.py",
+ "config": {
+  "band": "|p-0.5| < 0.25 (reported as a share only)",
+  "cost_definition": "c_fa * (bad windows accepted) + c_fr * (good windows rejected), counted on the evaluation set; cost per 1000 windows is arithmetic from the evaluation set's own class mix",
+  "cost_ratios_false_accept_false_reject": [
+   "1:1",
+   "3:1",
+   "1:3"
+  ],
+  "id": "AUTO.04",
+  "n_boot": 2000,
+  "ood_selection": "cost minimiser on the IndEgo-150 out-of-fold probabilities (training data w.r.t. OOD)",
+  "seed": 0,
+  "selection": "empirical cost minimiser on the training clips' inner-LOCO probabilities per outer fold"
+ },
+ "config_sha256": "87a53ef04716c33a44978939d11157170b3aa301e1b051864cffaf40b8a21aff",
+ "cost": "0 GPU; cached features and frozen scores; ~12 s CPU (3 ratios x 7 outer + 42 inner fits)",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "git_sha": "78654486c8427605150103f2be4e097a359b7e7e",
+ "groups": "7 IndEgo clips / 47 OOD factories",
+ "id": "AUTO.04",
+ "indomain": {
+  "1:1": {
+   "analytic_bayes_threshold_arithmetic": 0.5,
+   "cost_on_eval": {
+    "cost": 40.0,
+    "cost_per_1000": 266.6667,
+    "fa_count": 24,
+    "fr_count": 16
+   },
+   "cost_ratio_fa_fr": "1:1",
+   "fixed_0.5_contrast": {
+    "accept_share": 0.58,
+    "bal_acc": 0.74,
+    "cost_on_eval": {
+     "cost": 39.0,
+     "cost_per_1000": 260.0,
+     "fa_count": 13,
+     "fr_count": 26
+    },
+    "coverage": 1.0,
+    "error_rate": 0.26,
+    "false_accept_rate": 0.26,
+    "false_reject_rate": 0.26,
+    "n": 150,
+    "n_bad": 50,
+    "n_good": 100,
+    "note": "the same cost function evaluated at the fixed 0.5 threshold; a cost-sensitive threshold that does not beat this on the held-out clips has not paid for itself"
+   },
+   "rates": {
+    "accept_share": 0.72,
+    "bal_acc": 0.68,
+    "coverage": 1.0,
+    "error_rate": 0.2667,
+    "false_accept_rate": 0.48,
+    "false_reject_rate": 0.16,
+    "n": 150,
+    "n_bad": 50,
+    "n_good": 100
+   },
+   "rates_ci95_clip": {
+    "accept_share_ci95": [
+     0.4545,
+     0.8743
+    ],
+    "accept_share_n_boot_used": 2000,
+    "bal_acc_ci95": [
+     0.5894,
+     0.7621
+    ],
+    "bal_acc_n_boot_used": 2000,
+    "error_rate_ci95": [
+     0.1675,
+     0.3841
+    ],
+    "error_rate_n_boot_used": 2000,
+    "false_accept_rate_ci95": [
+     0.2667,
+     0.7112
+    ],
+    "false_accept_rate_n_boot_used": 2000,
+    "false_reject_rate_ci95": [
+     0.0694,
+     0.4
+    ],
+    "false_reject_rate_n_boot_used": 2000
+   },
+   "threshold_per_fold_min_median_max": [
+    0.186,
+    0.4165,
+    0.5013
+   ],
+   "thresholds_by_fold": {
+    "desk": 0.186,
+    "ecu_full": 0.5013,
+    "ecu_late": 0.4165,
+    "logistics4": 0.1909,
+    "organise": 0.4846,
+    "pallet": 0.2897,
+    "pallet2": 0.31
+   }
+  },
+  "1:3": {
+   "analytic_bayes_threshold_arithmetic": 0.25,
+   "cost_on_eval": {
+    "cost": 56.0,
+    "cost_per_1000": 373.3333,
+    "fa_count": 44,
+    "fr_count": 4
+   },
+   "cost_ratio_fa_fr": "1:3",
+   "fixed_0.5_contrast": {
+    "accept_share": 0.58,
+    "bal_acc": 0.74,
+    "cost_on_eval": {
+     "cost": 91.0,
+     "cost_per_1000": 606.6667,
+     "fa_count": 13,
+     "fr_count": 26
+    },
+    "coverage": 1.0,
+    "error_rate": 0.26,
+    "false_accept_rate": 0.26,
+    "false_reject_rate": 0.26,
+    "n": 150,
+    "n_bad": 50,
+    "n_good": 100,
+    "note": "the same cost function evaluated at the fixed 0.5 threshold; a cost-sensitive threshold that does not beat this on the held-out clips has not paid for itself"
+   },
+   "rates": {
+    "accept_share": 0.9333,
+    "bal_acc": 0.54,
+    "coverage": 1.0,
+    "error_rate": 0.32,
+    "false_accept_rate": 0.88,
+    "false_reject_rate": 0.04,
+    "n": 150,
+    "n_bad": 50,
+    "n_good": 100
+   },
+   "rates_ci95_clip": {
+    "accept_share_ci95": [
+     0.8051,
+     1.0
+    ],
+    "accept_share_n_boot_used": 2000,
+    "bal_acc_ci95": [
+     0.4953,
+     0.6037
+    ],
+    "bal_acc_n_boot_used": 2000,
+    "error_rate_ci95": [
+     0.1878,
+     0.4783
+    ],
+    "error_rate_n_boot_used": 2000,
+    "false_accept_rate_ci95": [
+     0.7,
+     1.0
+    ],
+    "false_accept_rate_n_boot_used": 2000,
+    "false_reject_rate_ci95": [
+     0.0,
+     0.1312
+    ],
+    "false_reject_rate_n_boot_used": 2000
+   },
+   "threshold_per_fold_min_median_max": [
+    0.0093,
+    0.1329,
+    0.2188
+   ],
+   "thresholds_by_fold": {
+    "desk": 0.0762,
+    "ecu_full": 0.2188,
+    "ecu_late": 0.1329,
+    "logistics4": 0.1909,
+    "organise": 0.0093,
+    "pallet": 0.0735,
+    "pallet2": 0.0814
+   }
+  },
+  "3:1": {
+   "analytic_bayes_threshold_arithmetic": 0.75,
+   "cost_on_eval": {
+    "cost": 76.0,
+    "cost_per_1000": 506.6667,
+    "fa_count": 6,
+    "fr_count": 58
+   },
+   "cost_ratio_fa_fr": "3:1",
+   "fixed_0.5_contrast": {
+    "accept_share": 0.58,
+    "bal_acc": 0.74,
+    "cost_on_eval": {
+     "cost": 65.0,
+     "cost_per_1000": 433.3333,
+     "fa_count": 13,
+     "fr_count": 26
+    },
+    "coverage": 1.0,
+    "error_rate": 0.26,
+    "false_accept_rate": 0.26,
+    "false_reject_rate": 0.26,
+    "n": 150,
+    "n_bad": 50,
+    "n_good": 100,
+    "note": "the same cost function evaluated at the fixed 0.5 threshold; a cost-sensitive threshold that does not beat this on the held-out clips has not paid for itself"
+   },
+   "rates": {
+    "accept_share": 0.32,
+    "bal_acc": 0.65,
+    "coverage": 1.0,
+    "error_rate": 0.4267,
+    "false_accept_rate": 0.12,
+    "false_reject_rate": 0.58,
+    "n": 150,
+    "n_bad": 50,
+    "n_good": 100
+   },
+   "rates_ci95_clip": {
+    "accept_share_ci95": [
+     0.2479,
+     0.4299
+    ],
+    "accept_share_n_boot_used": 2000,
+    "bal_acc_ci95": [
+     0.5909,
+     0.7151
+    ],
+    "bal_acc_n_boot_used": 2000,
+    "error_rate_ci95": [
+     0.303,
+     0.5313
+    ],
+    "error_rate_n_boot_used": 2000,
+    "false_accept_rate_ci95": [
+     0.0351,
+     0.2683
+    ],
+    "false_accept_rate_n_boot_used": 2000,
+    "false_reject_rate_ci95": [
+     0.4464,
+     0.6526
+    ],
+    "false_reject_rate_n_boot_used": 2000
+   },
+   "threshold_per_fold_min_median_max": [
+    0.5001,
+    0.7247,
+    0.7683
+   ],
+   "thresholds_by_fold": {
+    "desk": 0.7247,
+    "ecu_full": 0.7683,
+    "ecu_late": 0.558,
+    "logistics4": 0.5145,
+    "organise": 0.623,
+    "pallet": 0.6767,
+    "pallet2": 0.5001
+   }
+  }
+ },
+ "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad) | human labels, ONE labeller (160 Egocentric-10K windows: 138 good / 22 bad; 19 of 22 bad are NO_ACTIVE_WORK)",
+ "n": 150,
+ "n_bad": 50,
+ "n_bad_ood": 22,
+ "n_good": 100,
+ "n_groups": 7,
+ "n_ood": 160,
+ "notes": [
+  "False accept = bad window accepted (cost c_fa); false reject = good window rejected (cost c_fr).",
+  "3:1 makes the policy accept more and raises the false-accept rate; 1:3 does the reverse.",
+  "The analytic Bayes threshold is arithmetic, not a measurement, and assumes calibrated probabilities.",
+  "cost_per_1000 is expressed in that row's own cost units (c_fa, c_fr as named); rows with different ratios are therefore NOT comparable with each other.",
+  "All policies here are forced decisions at a threshold; the shipped cascade accepts outside the band at p >= 0.75 instead, so these operating points are not the shipped ones."
+ ],
+ "ood160": {
+  "1:1": {
+   "analytic_bayes_threshold_arithmetic": 0.5,
+   "cost_on_eval": {
+    "cost": 71.0,
+    "cost_per_1000": 443.75,
+    "fa_count": 10,
+    "fr_count": 61
+   },
+   "cost_ratio_fa_fr": "1:1",
+   "fixed_0.5_contrast": {
+    "accept_share": 0.5062,
+    "bal_acc": 0.5563,
+    "cost_on_eval": {
+     "cost": 75.0,
+     "cost_per_1000": 468.75,
+     "fa_count": 9,
+     "fr_count": 66
+    },
+    "coverage": 1.0,
+    "error_rate": 0.4688,
+    "false_accept_rate": 0.4091,
+    "false_reject_rate": 0.4783,
+    "n": 160,
+    "n_bad": 22,
+    "n_good": 138
+   },
+   "optimistic_in_sample_ood_contrast": {
+    "note": "threshold chosen on the OOD-160 labels themselves -> in-sample, not a policy",
+    "rates": {
+     "accept_share": 1.0,
+     "bal_acc": 0.5,
+     "coverage": 1.0,
+     "error_rate": 0.1375,
+     "false_accept_rate": 1.0,
+     "false_reject_rate": 0.0,
+     "n": 160,
+     "n_bad": 22,
+     "n_good": 138
+    },
+    "threshold": 0.0
+   },
+   "rates": {
+    "accept_share": 0.5437,
+    "bal_acc": 0.5517,
+    "coverage": 1.0,
+    "error_rate": 0.4437,
+    "false_accept_rate": 0.4545,
+    "false_reject_rate": 0.442,
+    "n": 160,
+    "n_bad": 22,
+    "n_good": 138
+   },
+   "rates_ci95_factory": {
+    "accept_share_ci95": [
+     0.4025,
+     0.6562
+    ],
+    "accept_share_n_boot_used": 2000,
+    "bal_acc_ci95": [
+     0.4259,
+     0.6837
+    ],
+    "bal_acc_n_boot_used": 2000,
+    "error_rate_ci95": [
+     0.3432,
+     0.5641
+    ],
+    "error_rate_n_boot_used": 2000,
+    "false_accept_rate_ci95": [
+     0.1818,
+     0.7059
+    ],
+    "false_accept_rate_n_boot_used": 2000,
+    "false_reject_rate_ci95": [
+     0.3264,
+     0.5887
+    ],
+    "false_reject_rate_n_boot_used": 2000
+   },
+   "threshold_from_indego": 0.3961,
+   "threshold_train_cost": 29.0
+  },
+  "1:3": {
+   "analytic_bayes_threshold_arithmetic": 0.25,
+   "cost_on_eval": {
+    "cost": 167.0,
+    "cost_per_1000": 1043.75,
+    "fa_count": 11,
+    "fr_count": 52
+   },
+   "cost_ratio_fa_fr": "1:3",
+   "fixed_0.5_contrast": {
+    "accept_share": 0.5062,
+    "bal_acc": 0.5563,
+    "cost_on_eval": {
+     "cost": 207.0,
+     "cost_per_1000": 1293.75,
+     "fa_count": 9,
+     "fr_count": 66
+    },
+    "coverage": 1.0,
+    "error_rate": 0.4688,
+    "false_accept_rate": 0.4091,
+    "false_reject_rate": 0.4783,
+    "n": 160,
+    "n_bad": 22,
+    "n_good": 138
+   },
+   "optimistic_in_sample_ood_contrast": {
+    "note": "threshold chosen on the OOD-160 labels themselves -> in-sample, not a policy",
+    "rates": {
+     "accept_share": 1.0,
+     "bal_acc": 0.5,
+     "coverage": 1.0,
+     "error_rate": 0.1375,
+     "false_accept_rate": 1.0,
+     "false_reject_rate": 0.0,
+     "n": 160,
+     "n_bad": 22,
+     "n_good": 138
+    },
+    "threshold": 0.0
+   },
+   "rates": {
+    "accept_share": 0.6062,
+    "bal_acc": 0.5616,
+    "coverage": 1.0,
+    "error_rate": 0.3937,
+    "false_accept_rate": 0.5,
+    "false_reject_rate": 0.3768,
+    "n": 160,
+    "n_bad": 22,
+    "n_good": 138
+   },
+   "rates_ci95_factory": {
+    "accept_share_ci95": [
+     0.4552,
+     0.72
+    ],
+    "accept_share_n_boot_used": 2000,
+    "bal_acc_ci95": [
+     0.4192,
+     0.6953
+    ],
+    "bal_acc_n_boot_used": 2000,
+    "error_rate_ci95": [
+     0.2896,
+     0.5254
+    ],
+    "error_rate_n_boot_used": 2000,
+    "false_accept_rate_ci95": [
+     0.2222,
+     0.7619
+    ],
+    "false_accept_rate_n_boot_used": 2000,
+    "false_reject_rate_ci95": [
+     0.2582,
+     0.5385
+    ],
+    "false_reject_rate_n_boot_used": 2000
+   },
+   "threshold_from_indego": 0.1184,
+   "threshold_train_cost": 43.0
+  },
+  "3:1": {
+   "analytic_bayes_threshold_arithmetic": 0.75,
+   "cost_on_eval": {
+    "cost": 94.0,
+    "cost_per_1000": 587.5,
+    "fa_count": 8,
+    "fr_count": 70
+   },
+   "cost_ratio_fa_fr": "3:1",
+   "fixed_0.5_contrast": {
+    "accept_share": 0.5062,
+    "bal_acc": 0.5563,
+    "cost_on_eval": {
+     "cost": 93.0,
+     "cost_per_1000": 581.25,
+     "fa_count": 9,
+     "fr_count": 66
+    },
+    "coverage": 1.0,
+    "error_rate": 0.4688,
+    "false_accept_rate": 0.4091,
+    "false_reject_rate": 0.4783,
+    "n": 160,
+    "n_bad": 22,
+    "n_good": 138
+   },
+   "optimistic_in_sample_ood_contrast": {
+    "note": "threshold chosen on the OOD-160 labels themselves -> in-sample, not a policy",
+    "rates": {
+     "accept_share": 1.0,
+     "bal_acc": 0.5,
+     "coverage": 1.0,
+     "error_rate": 0.1375,
+     "false_accept_rate": 1.0,
+     "false_reject_rate": 0.0,
+     "n": 160,
+     "n_bad": 22,
+     "n_good": 138
+    },
+    "threshold": 0.0
+   },
+   "rates": {
+    "accept_share": 0.475,
+    "bal_acc": 0.5646,
+    "coverage": 1.0,
+    "error_rate": 0.4875,
+    "false_accept_rate": 0.3636,
+    "false_reject_rate": 0.5072,
+    "n": 160,
+    "n_bad": 22,
+    "n_good": 138
+   },
+   "rates_ci95_factory": {
+    "accept_share_ci95": [
+     0.3333,
+     0.594
+    ],
+    "accept_share_n_boot_used": 2000,
+    "bal_acc_ci95": [
+     0.4484,
+     0.6847
+    ],
+    "bal_acc_n_boot_used": 2000,
+    "error_rate_ci95": [
+     0.3836,
+     0.6074
+    ],
+    "error_rate_n_boot_used": 2000,
+    "false_accept_rate_ci95": [
+     0.0999,
+     0.6112
+    ],
+    "false_accept_rate_n_boot_used": 2000,
+    "false_reject_rate_ci95": [
+     0.3851,
+     0.6546
+    ],
+    "false_reject_rate_n_boot_used": 2000
+   },
+   "threshold_from_indego": 0.642,
+   "threshold_train_cost": 50.0
+  },
+  "caveat": "OOD-160: n=160, n_bad=22, and 19 of the 22 bad windows are NO_ACTIVE_WORK (2 HANDS_NOT_VISIBLE, 1 SHAKY); 47 factories; ONE human labeller. Intervals are factory-grouped; the window bootstrap is shown only marked optimistic."
+ },
+ "protocol": "per-fold cost minimiser on the 6 training clips' inner-LOCO probabilities (in-domain); IndEgo-150 OOF cost minimiser transferred to the frozen OOD-160 scores; clip- and factory-grouped bootstrap CIs",
+ "seed": 0,
+ "status": "done"
+}

@@ -1,0 +1,54 @@
+{
+ "auroc": 0.81,
+ "auroc_good_vs_quality_bad": 0.8462,
+ "auroc_good_vs_semantic_bad": 0.7973,
+ "ci95": [
+  0.683,
+  0.892
+ ],
+ "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+ "ci95_window_optimistic": [
+  0.722,
+  0.889
+ ],
+ "command": "JADAL_BUNDLE=<bundle> python3 tools/dsh/grid00.py",
+ "config": {
+  "expected_auroc": 0.81,
+  "features": "26 per-pixel, pod-bundle cache caches/gpu/features.json",
+  "folds": "leave-one-clip-out over 7 IndEgo clips",
+  "model": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced)",
+  "n_boot": 2000,
+  "seed": 0,
+  "tolerance": 0.01
+ },
+ "config_sha256": "469ca4224be5107151f066901ff20b165e48c657dd1242dceb761efa19653ae7",
+ "cost": "0 GPU; cached features; ~2 s CPU (150 windows x 7 folds)",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "gate": {
+  "expected": 0.81,
+  "observed": 0.81,
+  "passed": true,
+  "tolerance": 0.01
+ },
+ "git_sha": "55b7da19d632307527ad41490df76252b2a96d39",
+ "groups": "7 IndEgo clips",
+ "id": "GRID.00",
+ "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad)",
+ "n": 150,
+ "n_bad": 50,
+ "n_good": 100,
+ "n_groups": 7,
+ "notes": "Matches the pod's documented 0.810 exactly. The independent reproduction (tools/port/baseline_logistic_loco.py) also printed 0.810 raw / 0.797 semantic / 0.846 quality.",
+ "per_clip_auroc": {
+  "desk": 0.803,
+  "ecu_full": 0.949,
+  "ecu_late": 0.65,
+  "logistics4": 0.905,
+  "organise": 0.911,
+  "pallet": 0.5,
+  "pallet2": 0.5
+ },
+ "protocol": "leave-one-clip-out (LOCO) over 7 clips; hyperparameters fixed (C=0.3, class_weight=balanced), nothing selected on held-out clips",
+ "seed": 0,
+ "status": "done"
+}

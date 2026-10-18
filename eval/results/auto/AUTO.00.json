@@ -1,0 +1,501 @@
+{
+ "ci95": [
+  0.6314,
+  0.7889
+ ],
+ "ci95_type": "clip-level bootstrap (resample 7 IndEgo clips, 2000 draws, seed 0) on balanced accuracy of policy (a)",
+ "command": "JADAL_BUNDLE=<bundle> OMP_NUM_THREADS=2 nice -n 10 /home/parshu/envs/jadal/bin/python tools/dsh/auto00.py",
+ "config": {
+  "band": "|p-0.5| < 0.25 (the shipped review band, reported as a share only)",
+  "features": "26 per-pixel, caches/gpu/features.json",
+  "head": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced)",
+  "id": "AUTO.00",
+  "in_domain_protocol": "leave-one-clip-out over 7 IndEgo clips",
+  "n_boot": 2000,
+  "ood_scores": "load_ood160()['p26'] frozen shipped-head scores (original portal)",
+  "policy_a": "accept iff p >= 0.5 (forced, coverage 1.0)",
+  "policy_b": "per-fold Youden threshold from the 6 training clips' inner-LOCO probs",
+  "seed": 0
+ },
+ "config_sha256": "53bba8c561c2e1505889f4036d0f586d158a6fa81caa9f980090088f998fe6fc",
+ "cost": "0 GPU; cached features and frozen scores; ~15 s CPU (7 outer + 42 inner logistic fits, 2000-draw bootstraps)",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "git_sha": "78654486c8427605150103f2be4e097a359b7e7e",
+ "groups": "7 IndEgo clips / 47 OOD factories",
+ "id": "AUTO.00",
+ "indomain": {
+  "auroc": 0.81,
+  "auroc_ci95_clip": [
+   0.683,
+   0.892
+  ],
+  "optimistic_in_sample_youden_contrast": {
+   "accept_share": 0.66,
+   "bal_acc": 0.785,
+   "coverage": 1.0,
+   "error_rate": 0.1933,
+   "false_accept_rate": 0.28,
+   "false_reject_rate": 0.15,
+   "n": 150,
+   "n_bad": 50,
+   "n_good": 100,
+   "note": "threshold chosen on ALL 150 OOF labels -> uses the evaluation labels; contrast only, not a policy",
+   "threshold": 0.3961
+  },
+  "policy_a_ci95_clip": {
+   "accept_share_ci95": [
+    0.3259,
+    0.788
+   ],
+   "accept_share_n_boot_used": 2000,
+   "bal_acc_ci95": [
+    0.6314,
+    0.7889
+   ],
+   "bal_acc_n_boot_used": 2000,
+   "error_rate_ci95": [
+    0.171,
+    0.375
+   ],
+   "error_rate_n_boot_used": 2000,
+   "false_accept_rate_ci95": [
+    0.1364,
+    0.4572
+   ],
+   "false_accept_rate_n_boot_used": 2000,
+   "false_reject_rate_ci95": [
+    0.1154,
+    0.5117
+   ],
+   "false_reject_rate_n_boot_used": 2000
+  },
+  "policy_a_forced_0.5": {
+   "accept_share": 0.58,
+   "bal_acc": 0.74,
+   "coverage": 1.0,
+   "error_rate": 0.26,
+   "false_accept_rate": 0.26,
+   "false_reject_rate": 0.26,
+   "n": 150,
+   "n_bad": 50,
+   "n_good": 100
+  },
+  "policy_b_ci95_clip": {
+   "accept_share_ci95": [
+    0.3232,
+    0.7793
+   ],
+   "accept_share_n_boot_used": 2000,
+   "bal_acc_ci95": [
+    0.6464,
+    0.7974
+   ],
+   "bal_acc_n_boot_used": 2000,
+   "error_rate_ci95": [
+    0.1628,
+    0.3736
+   ],
+   "error_rate_n_boot_used": 2000,
+   "false_accept_rate_ci95": [
+    0.1316,
+    0.4103
+   ],
+   "false_accept_rate_n_boot_used": 2000,
+   "false_reject_rate_ci95": [
+    0.1103,
+    0.5185
+   ],
+   "false_reject_rate_n_boot_used": 2000
+  },
+  "policy_b_folds": {
+   "desk": {
+    "n_test": 29,
+    "n_train": 121,
+    "threshold": 0.3589,
+    "train_objective": 0.7112
+   },
+   "ecu_full": {
+    "n_test": 48,
+    "n_train": 102,
+    "threshold": 0.5013,
+    "train_objective": 0.7041
+   },
+   "ecu_late": {
+    "n_test": 14,
+    "n_train": 136,
+    "threshold": 0.558,
+    "train_objective": 0.8068
+   },
+   "logistics4": {
+    "n_test": 17,
+    "n_train": 133,
+    "threshold": 0.5145,
+    "train_objective": 0.7589
+   },
+   "organise": {
+    "n_test": 19,
+    "n_train": 131,
+    "threshold": 0.4846,
+    "train_objective": 0.7516
+   },
+   "pallet": {
+    "n_test": 17,
+    "n_train": 133,
+    "threshold": 0.5032,
+    "train_objective": 0.746
+   },
+   "pallet2": {
+    "n_test": 6,
+    "n_train": 144,
+    "threshold": 0.5001,
+    "train_objective": 0.7906
+   }
+  },
+  "policy_b_threshold_summary": {
+   "max": 0.558,
+   "median": 0.5013,
+   "min": 0.3589,
+   "note": "one threshold per held-out clip, chosen on the other 6 clips only"
+  },
+  "policy_b_youden_per_fold": {
+   "accept_share": 0.58,
+   "bal_acc": 0.755,
+   "coverage": 1.0,
+   "error_rate": 0.2467,
+   "false_accept_rate": 0.24,
+   "false_reject_rate": 0.25,
+   "n": 150,
+   "n_bad": 50,
+   "n_good": 100
+  },
+  "shipped_band_accept_within_band": 0.6111,
+  "shipped_band_share": 0.48
+ },
+ "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad) | OOD-160: human labels, ONE labeller (160 Egocentric-10K windows: 138 good / 22 bad; 19 of 22 bad are NO_ACTIVE_WORK) | round-3 108 (read-only, different model): human, single labeller, CONSUMED",
+ "n": 150,
+ "n_bad": 50,
+ "n_good": 100,
+ "n_groups": 7,
+ "notes": [
+  "False accept = a BAD window accepted; false reject = a GOOD window rejected.",
+  "Policy (b) is nested: the inner LOCO runs inside the 6 training clips of every outer fold.",
+  "The frozen p26 scores are the shipped head's scores, so this is the shipped head at full coverage."
+ ],
+ "ood160": {
+  "accept_share_at_0.5": 0.5062,
+  "auroc": 0.5878,
+  "auroc_ci95_factory_grouped": [
+   0.45,
+   0.728
+  ],
+  "auroc_ci95_window_optimistic": [
+   0.47,
+   0.711
+  ],
+  "auroc_naw_only": {
+   "auroc": 0.5755,
+   "ci95_factory_grouped": [
+    0.427,
+    0.739
+   ],
+   "ci95_window_optimistic": [
+    0.442,
+    0.698
+   ],
+   "n": 157,
+   "n_bad": 19,
+   "note": "stratified: 138 good + the 19 NO_ACTIVE_WORK bad windows only (n=157)"
+  },
+  "caveat": "OOD-160: n=160, n_bad=22, and 19 of the 22 bad windows are NO_ACTIVE_WORK (2 HANDS_NOT_VISIBLE, 1 SHAKY); 47 factories; ONE human labeller. Intervals are factory-grouped; the window bootstrap is shown only marked optimistic.",
+  "n": 160,
+  "n_bad": 22,
+  "n_factories": 47,
+  "n_good": 138,
+  "optimistic_in_sample_ood_youden_contrast": {
+   "accept_share": 0.6,
+   "bal_acc": 0.5843,
+   "coverage": 1.0,
+   "error_rate": 0.3875,
+   "false_accept_rate": 0.4545,
+   "false_reject_rate": 0.3768,
+   "n": 160,
+   "n_bad": 22,
+   "n_good": 138,
+   "note": "threshold chosen on the OOD-160 labels themselves -> in-sample; contrast only",
+   "threshold": 0.2013
+  },
+  "per_reason_auroc_vs_good": {
+   "HANDS_NOT_VISIBLE": {
+    "auroc_vs_good": 0.8533,
+    "ci95_factory_grouped": [
+     0.711,
+     0.939
+    ],
+    "n_bad": 2
+   },
+   "NO_ACTIVE_WORK": {
+    "auroc_vs_good": 0.5755,
+    "ci95_factory_grouped": [
+     0.427,
+     0.739
+    ],
+    "n_bad": 19
+   },
+   "SHAKY": {
+    "auroc_vs_good": 0.2899,
+    "ci95_factory_grouped": [
+     0.156,
+     0.412
+    ],
+    "n_bad": 1
+   }
+  },
+  "policy_a_ci95_factory": {
+   "accept_share_ci95": [
+    0.3676,
+    0.6184
+   ],
+   "accept_share_n_boot_used": 2000,
+   "bal_acc_ci95": [
+    0.4483,
+    0.6733
+   ],
+   "bal_acc_n_boot_used": 2000,
+   "error_rate_ci95": [
+    0.3771,
+    0.5879
+   ],
+   "error_rate_n_boot_used": 2000,
+   "false_accept_rate_ci95": [
+    0.1578,
+    0.6364
+   ],
+   "false_accept_rate_n_boot_used": 2000,
+   "false_reject_rate_ci95": [
+    0.3659,
+    0.621
+   ],
+   "false_reject_rate_n_boot_used": 2000
+  },
+  "policy_a_forced_0.5": {
+   "accept_share": 0.5062,
+   "bal_acc": 0.5563,
+   "coverage": 1.0,
+   "error_rate": 0.4688,
+   "false_accept_rate": 0.4091,
+   "false_reject_rate": 0.4783,
+   "n": 160,
+   "n_bad": 22,
+   "n_good": 138
+  },
+  "policy_b_ci95_factory": {
+   "accept_share_ci95": [
+    0.4025,
+    0.6562
+   ],
+   "accept_share_n_boot_used": 2000,
+   "bal_acc_ci95": [
+    0.4259,
+    0.6837
+   ],
+   "bal_acc_n_boot_used": 2000,
+   "error_rate_ci95": [
+    0.3432,
+    0.5641
+   ],
+   "error_rate_n_boot_used": 2000,
+   "false_accept_rate_ci95": [
+    0.1818,
+    0.7059
+   ],
+   "false_accept_rate_n_boot_used": 2000,
+   "false_reject_rate_ci95": [
+    0.3264,
+    0.5887
+   ],
+   "false_reject_rate_n_boot_used": 2000
+  },
+  "policy_b_indego_youden_transferred": {
+   "accept_share": 0.5437,
+   "bal_acc": 0.5517,
+   "coverage": 1.0,
+   "error_rate": 0.4437,
+   "false_accept_rate": 0.4545,
+   "false_reject_rate": 0.442,
+   "n": 160,
+   "n_bad": 22,
+   "n_good": 138,
+   "note": "threshold chosen on IndEgo-150 OOF (training data w.r.t. OOD), applied to frozen p26",
+   "threshold_from_indego": 0.3961
+  },
+  "score": "load_ood160()['p26'] (FROZEN shipped 26-number head, original portal)",
+  "shipped_band_share": 0.1375
+ },
+ "protocol": "(in-domain) LOCO over 7 clips; policy (a) fixed 0.5, policy (b) Youden chosen on the 6 training clips' inner-LOCO probs per fold; (OOD-160) frozen p26 scores, factory-grouped CIs, window bootstrap marked optimistic; (round-3) read-only, single-head arm skipped",
+ "round3_108": {
+  "frozen_ensemble_readonly_different_model": {
+   "label_source": "human, single labeller (round-3 confirmatory hold-out, 108 windows); CONSUMED - already scored twice (C1 PR #162, physics v2 PR #163)",
+   "model": "frozen two-view ensemble_v1 (jadal.ensemble.scorer), the shipped cascade's score - NOT the 26-number single head measured in the in-domain arm",
+   "n": 108,
+   "n_bad": 16,
+   "n_factories": 44,
+   "n_good": 92,
+   "rows": {
+    "p_eg2_only": {
+     "auroc": 0.7334,
+     "ci95_factory_grouped": [
+      0.564,
+      0.874
+     ],
+     "ci95_window_optimistic": [
+      0.591,
+      0.852
+     ],
+     "forced_at_0.5": {
+      "accept_share": 0.8981,
+      "bal_acc": 0.587,
+      "coverage": 1.0,
+      "error_rate": 0.1759,
+      "false_accept_rate": 0.75,
+      "false_reject_rate": 0.0761,
+      "n": 108,
+      "n_bad": 16,
+      "n_good": 92
+     },
+     "rates_ci95_factory_grouped": {
+      "accept_share_ci95": [
+       0.8055,
+       0.9737
+      ],
+      "accept_share_n_boot_used": 2000,
+      "bal_acc_ci95": [
+       0.4647,
+       0.7363
+      ],
+      "bal_acc_n_boot_used": 2000,
+      "error_rate_ci95": [
+       0.0849,
+       0.2857
+      ],
+      "error_rate_n_boot_used": 2000,
+      "false_accept_rate_ci95": [
+       0.4545,
+       1.0
+      ],
+      "false_accept_rate_n_boot_used": 2000,
+      "false_reject_rate_ci95": [
+       0.0,
+       0.1765
+      ],
+      "false_reject_rate_n_boot_used": 2000
+     }
+    },
+    "p_pixel_only": {
+     "auroc": 0.6247,
+     "ci95_factory_grouped": [
+      0.474,
+      0.765
+     ],
+     "ci95_window_optimistic": [
+      0.48,
+      0.755
+     ],
+     "forced_at_0.5": {
+      "accept_share": 0.3426,
+      "bal_acc": 0.591,
+      "coverage": 1.0,
+      "error_rate": 0.5648,
+      "false_accept_rate": 0.1875,
+      "false_reject_rate": 0.6304,
+      "n": 108,
+      "n_bad": 16,
+      "n_good": 92
+     },
+     "rates_ci95_factory_grouped": {
+      "accept_share_ci95": [
+       0.2264,
+       0.4643
+      ],
+      "accept_share_n_boot_used": 2000,
+      "bal_acc_ci95": [
+       0.4836,
+       0.6899
+      ],
+      "bal_acc_n_boot_used": 2000,
+      "error_rate_ci95": [
+       0.4556,
+       0.6737
+      ],
+      "error_rate_n_boot_used": 2000,
+      "false_accept_rate_ci95": [
+       0.0,
+       0.381
+      ],
+      "false_accept_rate_n_boot_used": 2000,
+      "false_reject_rate_ci95": [
+       0.5042,
+       0.7614
+      ],
+      "false_reject_rate_n_boot_used": 2000
+     }
+    },
+    "usable_prob_frozen_two_view_ensemble": {
+     "auroc": 0.6895,
+     "ci95_factory_grouped": [
+      0.534,
+      0.823
+     ],
+     "ci95_window_optimistic": [
+      0.541,
+      0.82
+     ],
+     "forced_at_0.5": {
+      "accept_share": 0.4259,
+      "bal_acc": 0.6399,
+      "coverage": 1.0,
+      "error_rate": 0.4815,
+      "false_accept_rate": 0.1875,
+      "false_reject_rate": 0.5326,
+      "n": 108,
+      "n_bad": 16,
+      "n_good": 92
+     },
+     "rates_ci95_factory_grouped": {
+      "accept_share_ci95": [
+       0.2917,
+       0.5577
+      ],
+      "accept_share_n_boot_used": 2000,
+      "bal_acc_ci95": [
+       0.5372,
+       0.7396
+      ],
+      "bal_acc_n_boot_used": 2000,
+      "error_rate_ci95": [
+       0.3679,
+       0.5922
+      ],
+      "error_rate_n_boot_used": 2000,
+      "false_accept_rate_ci95": [
+       0.0,
+       0.381
+      ],
+      "false_accept_rate_n_boot_used": 2000,
+      "false_reject_rate_ci95": [
+       0.3981,
+       0.6782
+      ],
+      "false_reject_rate_n_boot_used": 2000
+     }
+    }
+   },
+   "source": "read from the C1 PR's committed inputs; NO model was run in this stream"
+  },
+  "shipped_26_number_single_head": {
+   "status": "SKIPPED",
+   "why": "no per-window score file exists for the 26-number single head on the 108 round-3 windows; the C1 PR scored the frozen TWO-VIEW ensemble, and producing a 26-head score would mean re-running a model on a consumed hold-out. Not scored here."
+  }
+ },
+ "seed": 0,
+ "status": "done"
+}

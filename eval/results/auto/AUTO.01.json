@@ -1,0 +1,325 @@
+{
+ "band_share": 0.48,
+ "ci95": [
+  0.6254,
+  0.8056
+ ],
+ "ci95_type": "clip-level bootstrap (resample 7 IndEgo clips, 2000 draws, seed 0) on balanced accuracy of the EG2 hybrid at 100 % coverage",
+ "command": "JADAL_BUNDLE=<bundle> OMP_NUM_THREADS=2 nice -n 10 /home/parshu/envs/jadal/bin/python tools/dsh/auto01.py",
+ "conditional_on_band": {
+  "auroc_eg2_in_band": 0.8106,
+  "auroc_eg2_in_band_ci95_clip": [
+   0.683,
+   0.882
+  ],
+  "auroc_eg2_in_band_ci95_window_optimistic": [
+   0.698,
+   0.912
+  ],
+  "auroc_s1_26_in_band": 0.8202,
+  "auroc_s1_26_in_band_ci95_clip": [
+   0.68,
+   0.91
+  ],
+  "n_band": 72,
+  "n_band_bad": 20,
+  "n_band_good": 52,
+  "paired_eg2_minus_s1_in_band": {
+   "delta": -0.009615384615384581,
+   "excludes_zero": false,
+   "hi": 0.052185354691075374,
+   "lo": -0.11538461538461531,
+   "n_boot": 2000
+  }
+ },
+ "config": {
+  "band": "|p26 - 0.5| < 0.25 (the shipped review band)",
+  "comparison": "paired clip bootstrap of balanced accuracy vs AUTO.00 forced 0.5",
+  "id": "AUTO.01",
+  "n_boot": 2000,
+  "policies": [
+   "hybrid: S1 (26 features) outside the band, EG2 inside the band, accept iff p >= 0.5",
+   "band+rankavg: S1 outside the band, rank-average of the two OOF scores inside the band"
+  ],
+  "recipe": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced), leave-one-clip-out",
+  "second_view": "caches/frames10k/segments.npz F (150,21,768) float16, mean-pooled over the 21 frames",
+  "seed": 0
+ },
+ "config_sha256": "f4d42dc5d8405f26812b7a95e89f4354821c1ac751464c91cff60a523cfcff9d",
+ "cost": "0 GPU, no downloads; cached embeddings (3.5 MB npz); ~8 s CPU (7 outer + 7 outer logistic fits, 768-d features, 2000-draw bootstraps)",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "git_sha": "78654486c8427605150103f2be4e097a359b7e7e",
+ "id": "AUTO.01",
+ "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad)",
+ "n": 150,
+ "n_bad": 50,
+ "n_band": 72,
+ "n_good": 100,
+ "n_groups": 7,
+ "notes": [
+  "The band is defined by the S1 score alone, so the rank transform inside the band uses no labels.",
+  "Outside the band both policies are identical (S1 at 0.5), so the paired difference is driven by the band windows.",
+  "n_band is small; the conditional intervals are correspondingly wide.",
+  "The shipped cascade decides OUTSIDE the band with accept iff p >= 0.75 and reject iff p <= 0.25; this experiment models the forced variant (accept iff p >= 0.5) so that the comparison with AUTO.00 is on identical windows. The hybrid is therefore a strengthened funnel that decides the band instead of reviewing it, not the shipped cascade with one stage swapped.",
+  "The rank-average is decided at rank 0.5, which accepts the top half of the band by construction; the equal-coverage controls (single view's ranks at 0.5) separate a real combination win from a mere operating-point change."
+ ],
+ "paired_comparisons_clip_bootstrap": {
+  "band_only_eg2_vs_band_only_forced0.5_bal_acc": {
+   "delta": -0.023076923076922995,
+   "excludes_zero": false,
+   "hi": 0.10521528198908436,
+   "lo": -0.15171974052779003,
+   "n_boot": 2000
+  },
+  "hybrid_vs_forced0.5_bal_acc": {
+   "delta": 0.0,
+   "excludes_zero": false,
+   "hi": 0.05946774115716844,
+   "lo": -0.04449605502024853,
+   "n_boot": 2000
+  },
+  "hybrid_vs_forced0.5_error": {
+   "delta": 0.026666666666666672,
+   "excludes_zero": false,
+   "hi": 0.08477765627847622,
+   "lo": -0.03848684210526313,
+   "n_boot": 2000
+  },
+  "rankavg_vs_equal_coverage_eg2_only": {
+   "delta": 0.025000000000000133,
+   "excludes_zero": false,
+   "hi": 0.07650786481668825,
+   "lo": -0.02777777777777779,
+   "n_boot": 2000
+  },
+  "rankavg_vs_equal_coverage_p26_only": {
+   "delta": 0.025000000000000133,
+   "excludes_zero": true,
+   "hi": 0.05000968992248061,
+   "lo": 0.007456550802139053,
+   "n_boot": 2000
+  },
+  "rankavg_vs_forced0.5_bal_acc": {
+   "delta": 0.06000000000000005,
+   "excludes_zero": true,
+   "hi": 0.1361654135338346,
+   "lo": 0.014705368161250464,
+   "n_boot": 2000
+  },
+  "rankavg_vs_hybrid_bal_acc": {
+   "delta": 0.06000000000000005,
+   "excludes_zero": true,
+   "hi": 0.10447239692522714,
+   "lo": 0.0009302474966656845,
+   "n_boot": 2000
+  }
+ },
+ "policies_100pct_coverage": {
+  "band_only_eg2": {
+   "accept_share": 0.7778,
+   "bal_acc": 0.6231,
+   "coverage": 1.0,
+   "error_rate": 0.2778,
+   "false_accept_rate": 0.6,
+   "false_reject_rate": 0.1538,
+   "n": 72,
+   "n_bad": 20,
+   "n_good": 52
+  },
+  "band_only_forced_0.5": {
+   "accept_share": 0.6111,
+   "bal_acc": 0.6462,
+   "coverage": 1.0,
+   "error_rate": 0.3333,
+   "false_accept_rate": 0.4,
+   "false_reject_rate": 0.3077,
+   "n": 72,
+   "n_bad": 20,
+   "n_good": 52
+  },
+  "band_only_rankavg": {
+   "accept_share": 0.4861,
+   "bal_acc": 0.8019,
+   "coverage": 1.0,
+   "error_rate": 0.2639,
+   "false_accept_rate": 0.05,
+   "false_reject_rate": 0.3462,
+   "n": 72,
+   "n_bad": 20,
+   "n_good": 52
+  },
+  "band_rankavg": {
+   "accept_share": 0.52,
+   "bal_acc": 0.8,
+   "coverage": 1.0,
+   "error_rate": 0.2267,
+   "false_accept_rate": 0.12,
+   "false_reject_rate": 0.28,
+   "n": 150,
+   "n_bad": 50,
+   "n_good": 100
+  },
+  "equal_coverage_control_rank_eg2_only": {
+   "accept_share": 0.5267,
+   "bal_acc": 0.775,
+   "coverage": 1.0,
+   "error_rate": 0.2467,
+   "false_accept_rate": 0.16,
+   "false_reject_rate": 0.29,
+   "n": 150,
+   "n_bad": 50,
+   "n_good": 100
+  },
+  "equal_coverage_control_rank_p26_only": {
+   "accept_share": 0.5267,
+   "bal_acc": 0.775,
+   "coverage": 1.0,
+   "error_rate": 0.2467,
+   "false_accept_rate": 0.16,
+   "false_reject_rate": 0.29,
+   "n": 150,
+   "n_bad": 50,
+   "n_good": 100
+  },
+  "forced_0.5": {
+   "accept_share": 0.58,
+   "bal_acc": 0.74,
+   "coverage": 1.0,
+   "error_rate": 0.26,
+   "false_accept_rate": 0.26,
+   "false_reject_rate": 0.26,
+   "n": 150,
+   "n_bad": 50,
+   "n_good": 100
+  },
+  "hybrid_eg2": {
+   "accept_share": 0.66,
+   "bal_acc": 0.74,
+   "coverage": 1.0,
+   "error_rate": 0.2333,
+   "false_accept_rate": 0.34,
+   "false_reject_rate": 0.18,
+   "n": 150,
+   "n_bad": 50,
+   "n_good": 100
+  }
+ },
+ "policies_ci95_clip": {
+  "band_rankavg": {
+   "accept_share_ci95": [
+    0.2919,
+    0.7188
+   ],
+   "accept_share_n_boot_used": 2000,
+   "bal_acc_ci95": [
+    0.6718,
+    0.8901
+   ],
+   "bal_acc_n_boot_used": 2000,
+   "error_rate_ci95": [
+    0.133,
+    0.3334
+   ],
+   "error_rate_n_boot_used": 2000,
+   "false_accept_rate_ci95": [
+    0.0351,
+    0.2683
+   ],
+   "false_accept_rate_n_boot_used": 2000,
+   "false_reject_rate_ci95": [
+    0.135,
+    0.5102
+   ],
+   "false_reject_rate_n_boot_used": 2000
+  },
+  "forced_0.5": {
+   "accept_share_ci95": [
+    0.3259,
+    0.788
+   ],
+   "accept_share_n_boot_used": 2000,
+   "bal_acc_ci95": [
+    0.6314,
+    0.7889
+   ],
+   "bal_acc_n_boot_used": 2000,
+   "error_rate_ci95": [
+    0.171,
+    0.375
+   ],
+   "error_rate_n_boot_used": 2000,
+   "false_accept_rate_ci95": [
+    0.1364,
+    0.4572
+   ],
+   "false_accept_rate_n_boot_used": 2000,
+   "false_reject_rate_ci95": [
+    0.1154,
+    0.5117
+   ],
+   "false_reject_rate_n_boot_used": 2000
+  },
+  "hybrid_eg2": {
+   "accept_share_ci95": [
+    0.4545,
+    0.8319
+   ],
+   "accept_share_n_boot_used": 2000,
+   "bal_acc_ci95": [
+    0.6254,
+    0.8056
+   ],
+   "bal_acc_n_boot_used": 2000,
+   "error_rate_ci95": [
+    0.1311,
+    0.3684
+   ],
+   "error_rate_n_boot_used": 2000,
+   "false_accept_rate_ci95": [
+    0.2368,
+    0.5
+   ],
+   "false_accept_rate_n_boot_used": 2000,
+   "false_reject_rate_ci95": [
+    0.0637,
+    0.4054
+   ],
+   "false_reject_rate_n_boot_used": 2000
+  }
+ },
+ "protocol": "LOCO over 7 clips for both views; conditional-on-band metrics use the band windows only; policies are compared at 100 % coverage by PAIRED clip bootstrap (2000 draws, seed 0)",
+ "second_view": {
+  "auroc_overall": 0.8256,
+  "auroc_overall_ci95_clip": [
+   0.701,
+   0.889
+  ],
+  "frozen_cross_check": {
+   "auroc_frozen_in_band": 0.8481,
+   "auroc_frozen_overall": 0.8458,
+   "auroc_this_view_overall": 0.8256,
+   "n": 150,
+   "note": "the repo's own frozen artifact; shown as a cross-check, NOT this stream's result",
+   "pearson_r_vs_this_view": 0.9086,
+   "source": "caches/ensemble/oof_probs.npz p_eg2 (frozen ensemble_v1 nested-LOCO EG2 view)"
+  },
+  "ids_aligned_by": "id (positional match verified)",
+  "n_frames_used": {
+   "20_frames": 145,
+   "21_frames": 5,
+   "note": "the 21st frame slot is NaN padding for the shorter windows and is excluded"
+  },
+  "source": "/home/parshu/projects/jadal-qa-wt/handover/jadal_pod_bundle/pod_bundle/caches/frames10k/segments.npz",
+  "window_representation": "mean over the cached frame embeddings (768-d); the 21st slot is NaN padding on 145/150 windows and is excluded"
+ },
+ "seed": 0,
+ "status": "done",
+ "verdicts": {
+  "hybrid_improves_over_forced0.5": false,
+  "rankavg_beats_equal_coverage_eg2_only": false,
+  "rankavg_beats_equal_coverage_p26_only": true,
+  "rankavg_differs_from_hybrid": true,
+  "rankavg_improves_over_forced0.5": true,
+  "rule": "a difference is stated only when the paired clip-bootstrap interval excludes zero"
+ }
+}
