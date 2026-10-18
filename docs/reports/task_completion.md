@@ -114,7 +114,7 @@ association; a factory-level regression on these counts would be fitting noise.
 
 Headline: **AUROC 0.5755, 95 % CI [0.4275, 0.7386]**, factory-grouped bootstrap (2000 draws,
 seed 0, all 2000 valid), n = 157, n_good = 138, n_bad = 19, 47 factories. Window-bootstrap
-(optimistic) CI [0.4413, 0.7077] is reported in the JSON but is **never** used here to call
+(optimistic) CI [0.4425, 0.6985] is reported in the JSON but is **never** used here to call
 anything significant. Flipped direction (`NO_ACTIVE_WORK` as the positive class): 0.4245
 [0.2614, 0.5725].
 
@@ -238,8 +238,10 @@ supposed to have. But the interval includes 0.5 and there are **5 negative windo
 this is not an established direction. Per-clip AUROC of the primary score: `desk` 0.4815 (n = 29),
 `ecu_full` 0.8587 (n = 48), `ecu_late` 0.6923 (n = 14), `organise` **undefined** (all 19 windows
 are `advancing`, one class only). For reference on the same 110 windows, the gold-label AUROC of
-the same score is 0.7759 — i.e. the derived L1 label is a noisier target than the human label, as
-expected since it agrees with the human label only 75 % of the time.
+the same score is **0.8646** [0.7518, 0.9500] clip-grouped — i.e. the derived L1 label is a noisier
+target than the human label (0.6476 vs 0.8646), as expected since it agrees with the human label
+only 75 % of the time. Note the gold-label AUROC on these 4 clips is higher than the 0.810 pooled
+LOCO figure in `GRID.00` because this subset excludes the three clips where the head is at chance.
 
 **Answer to the question as asked:** the annotations parse and are free, but in this form they are
 not usable as L1/L2 ground truth — the gap class is 5 windows, the L2 flag has one value, and the
@@ -295,7 +297,22 @@ denser gap definition or more annotated clips appear).
 7. **Is there a second labeller available?** Every human label in this repo comes from one person,
    so we cannot report inter-rater agreement, and the L1/L2 targets cannot be validated.
 
-## 6. The one honest sentence the product may say
+## 6. Corrections made while writing this report
+
+Two numbers were transcribed wrong in the first draft and are corrected above rather than quietly
+replaced (both were checked against the results JSON, which is the source of truth):
+
+* was `[0.4413, 0.7077]` (window-bootstrap optimistic CI, TASK.00 headline) → **now [0.4425, 0.6985]**
+  `[MEASURED]` from `TASK.00.json → auroc_blocks.no_active_work_vs_good.ci95_window_optimistic`.
+* was `0.7759` (gold-label AUROC on the same 110 windows, same score) → **now 0.8646
+  [0.7518, 0.9500]** `[MEASURED]` from
+  `TASK.00b.json → score_direction.auroc_gold_labels_same_windows_same_score`. The wrong figure was
+  the lower end of that block's window-optimistic CI (0.7758), i.e. a copy of the wrong field.
+
+No conclusion in this report changes: 0.8646 > 0.6476, so the derived L1 label is still the noisier
+target of the two.
+
+## 7. The one honest sentence the product may say
 
 > On 160 human-labelled Egocentric-10K windows, the shipped 26-feature head flags 63 % of the
 > windows a human called NO_ACTIVE_WORK as reject-or-review against 55 % of the rest, and accepts
