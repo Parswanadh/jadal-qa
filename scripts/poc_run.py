@@ -34,6 +34,7 @@ sys.path.insert(0, os.path.join(HERE, ".."))
 from eval.gpu.decode import clip_duration  # noqa: E402
 from jadal.poc import cascade as C  # noqa: E402
 from jadal.poc import receipts as R  # noqa: E402
+from jadal.poc import s0_blur  # noqa: E402
 sys.path.insert(0, HERE)
 import poc_paths  # noqa: E402
 
@@ -173,12 +174,28 @@ def s0_from_luma(luma60):
 
     Training probe was ffmpeg scale=80:45 gray; the 2x2 box over the 160x90
     luma is the documented equivalent (same bandlimit, no extra decode).
+
+    GRID.09 adds the brightness-calibrated sharpness statistic.  It is computed
+    on the decoded 160x90 luma (``lapvar_cal``), NOT on the 2x2-boxed 80x45
+    buffer: a sigma=3 blur at 480p survives the downsample to 160x90 but not the
+    extra 2x2 box, and the 80x45 candidate measured 0.796 AUROC against 0.981 at
+    160x90 on the GRID.09 calibration split (both on clean-only thresholds; see
+    eval/results/exp_grid/GRID.09.json).  The 80x45 value is still reported as
+    ``lapvar_cal_45`` so the rejected candidate stays auditable.  One definition,
+    shared with the mosaic tile statistic (``jadal.poc.s0_blur``).
+
+    The five shipped keys keep their exact meaning, so a stored probe without the
+    new keys decides as before (``s0_decide`` skips keys it cannot see).  The two
+    new keys are OBSERVABILITY: no shipped verdict changes, because the BLUR rule
+    in ``cascade.S0_RULES`` ships disabled (``BLUR_LAPVAR_CAL_MIN = 0.0``).
     """
     g = luma60.reshape(60, 45, 2, 80, 2).mean(axis=(2, 4))
     return {"mean": float(g.mean()), "p5": float(np.percentile(g, 5)),
             "p95": float(np.percentile(g, 95)),
             "spatial_var": float(g[:10].mean(axis=0).var()),
-            "temp_e": float(abs(np.diff(g, axis=0)).mean())}
+            "temp_e": float(abs(np.diff(g, axis=0)).mean()),
+            "lapvar_cal": s0_blur.probe_lapvar_cal(luma60),
+            "lapvar_cal_45": s0_blur.probe_lapvar_cal(g)}
 
 
 def boxcar_to_10fps(chunk_f64):

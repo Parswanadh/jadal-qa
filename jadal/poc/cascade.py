@@ -25,6 +25,7 @@ import os
 import numpy as np
 
 from jadal.gpu.features import FEATURE_NAMES, cpu_window_features
+from jadal.poc import s0_blur
 
 FEATURES_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              "..", "..", "eval", "results", "gpu", "features.json")
@@ -32,18 +33,29 @@ CASCADE_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "..", "..", "eval", "results", "gpu", "cascade.json")
 
 # (rule_code, s0_key, op, threshold) — same values as eval/gpu/cascade.py S0_RULES
+# for the five shipped rules; GRID.09 appends the brightness-calibrated blur rule
+# LAST, so the five shipped rules keep priority (a black clip reports BLACK, not
+# BLUR).
+#
+# SHIPPED VERDICT PATH: unchanged.  The BLUR entry is present but DISABLED, because
+# s0_blur.BLUR_LAPVAR_CAL_MIN ships 0.0 and `lapvar_cal < 0.0` can never fire.
+# Flipping that one constant to BLUR_LAPVAR_CAL_MIN_CALIBRATED enables the rule at
+# the operating point measured in eval/results/exp_grid/GRID.09.json.  The probe
+# gained `lapvar_cal`/`lapvar_cal_45` (observability only); the five shipped keys
+# are arithmetically identical to before.
 S0_RULES = [
     ("BLACK", "p95", "<", 0.03),
     ("TOO_DARK", "mean", "<", 0.05),
     ("LENS_BLOCKED", "spatial_var", "<", 1e-5),
     ("OVEREXPOSED", "p5", ">", 0.70),
     ("FROZEN", "temp_e", "<", 5e-4),
+    s0_blur.BLUR_RULE,
 ]
 
 # S0 probe keys -> window-feature names for the evidence block
 S0_FEATURE_NAME = {"p95": "luma_p95", "mean": "luma_mean",
                    "spatial_var": "spatial_var", "p5": "luma_p05",
-                   "temp_e": "temp_e"}
+                   "temp_e": "temp_e", "lapvar_cal": s0_blur.BLUR_EVIDENCE_NAME}
 
 THRESHOLD = 0.6
 MARGIN = 0.25

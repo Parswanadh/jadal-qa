@@ -1,0 +1,1113 @@
+{
+ "agreement_synthetic_clips": {
+  "agree_any_fire_full_ci95": [
+   0.9055414182080672,
+   0.9968408710355361
+  ],
+  "agree_any_fire_full_rate": 0.9821428571428571,
+  "agree_any_fire_full_rate_features_pooling": 0.9821428571428571,
+  "agree_exact_rule_ci95": [
+   0.7219354555032431,
+   0.9130743035941074
+  ],
+  "agree_exact_rule_rate": 0.8392857142857143,
+  "agree_five_vs_inherited4_fire_rate": 0.8392857142857143,
+  "agree_five_vs_inherited4_note": "production five rules vs the mosaic's FOUR inherited rules only: FROZEN defects disagree by construction, so this is not a parity failure",
+  "agree_five_vs_mosaic_five_ci95": [
+   0.7426383257914846,
+   0.9257929995741472
+  ],
+  "agree_five_vs_mosaic_five_note": "the FAIR five-rule parity target: the four inherited rules at their shipped thresholds plus FROZEN at its calibrated mosaic threshold",
+  "agree_five_vs_mosaic_five_rate": 0.8571428571428571,
+  "ci95_type": "Wilson score interval over clips (binomial, ungrouped)",
+  "disagreements": [
+   {
+    "bg_leak_frac_features": 0.0,
+    "bg_leak_frac_strict": 0.0,
+    "defect": "too_dark",
+    "file": "s0_desk_too_dark.mp4",
+    "mosaic_five": "FROZEN",
+    "mosaic_full": "FROZEN",
+    "mosaic_full_features_pooling": "FROZEN",
+    "mosaic_inherited": null,
+    "production": null,
+    "production_with_blur": "BLUR"
+   },
+   {
+    "bg_leak_frac_features": 0.0,
+    "bg_leak_frac_strict": 0.0,
+    "defect": "too_dark",
+    "file": "s1_desk_too_dark.mp4",
+    "mosaic_five": "FROZEN",
+    "mosaic_full": "FROZEN",
+    "mosaic_full_features_pooling": "FROZEN",
+    "mosaic_inherited": null,
+    "production": null,
+    "production_with_blur": "BLUR"
+   },
+   {
+    "bg_leak_frac_features": 0.0,
+    "bg_leak_frac_strict": 0.0,
+    "defect": "too_dark",
+    "file": "s2_ecu_late_too_dark.mp4",
+    "mosaic_five": "FROZEN",
+    "mosaic_full": "FROZEN",
+    "mosaic_full_features_pooling": "FROZEN",
+    "mosaic_inherited": null,
+    "production": "TOO_DARK",
+    "production_with_blur": "TOO_DARK"
+   },
+   {
+    "bg_leak_frac_features": 0.0,
+    "bg_leak_frac_strict": 0.0,
+    "defect": "too_dark",
+    "file": "s3_ecu_late_too_dark.mp4",
+    "mosaic_five": "FROZEN",
+    "mosaic_full": "FROZEN",
+    "mosaic_full_features_pooling": "FROZEN",
+    "mosaic_inherited": null,
+    "production": null,
+    "production_with_blur": "BLUR"
+   },
+   {
+    "bg_leak_frac_features": 0.0,
+    "bg_leak_frac_strict": 0.0,
+    "defect": "too_dark",
+    "file": "s4_organise_too_dark.mp4",
+    "mosaic_five": "FROZEN",
+    "mosaic_full": "FROZEN",
+    "mosaic_full_features_pooling": "FROZEN",
+    "mosaic_inherited": null,
+    "production": null,
+    "production_with_blur": "BLUR"
+   },
+   {
+    "bg_leak_frac_features": 0.0,
+    "bg_leak_frac_strict": 0.0,
+    "defect": "too_dark",
+    "file": "s5_organise_too_dark.mp4",
+    "mosaic_five": "FROZEN",
+    "mosaic_full": "FROZEN",
+    "mosaic_full_features_pooling": "FROZEN",
+    "mosaic_inherited": null,
+    "production": null,
+    "production_with_blur": "BLUR"
+   },
+   {
+    "bg_leak_frac_features": 0.0,
+    "bg_leak_frac_strict": 0.0,
+    "defect": "too_dark",
+    "file": "s6_pallet2_too_dark.mp4",
+    "mosaic_five": "FROZEN",
+    "mosaic_full": "FROZEN",
+    "mosaic_full_features_pooling": "FROZEN",
+    "mosaic_inherited": null,
+    "production": null,
+    "production_with_blur": null
+   },
+   {
+    "bg_leak_frac_features": 0.0,
+    "bg_leak_frac_strict": 0.0,
+    "defect": "too_dark",
+    "file": "s7_pallet2_too_dark.mp4",
+    "mosaic_five": "FROZEN",
+    "mosaic_full": "FROZEN",
+    "mosaic_full_features_pooling": "FROZEN",
+    "mosaic_inherited": null,
+    "production": null,
+    "production_with_blur": "BLUR"
+   }
+  ],
+  "n": 56
+ },
+ "bg_leak_frac_median_by_dataset": {
+  "indego": 0.016399745237681663,
+  "ood160": 0.012662588183421516
+ },
+ "bg_leak_frac_median_features_pooling_by_dataset": {
+  "indego": 0.016399745237681663,
+  "ood160": 0.08230879565596025
+ },
+ "catch_rate_synthetic_clips": {
+  "black": {
+   "agree_any_fire_full_rate": 1.0,
+   "agree_any_fire_full_rate_features_pooling": 1.0,
+   "agree_any_fire_rate": 1.0,
+   "ci95_type": "Wilson score interval over clips (binomial, ungrouped)",
+   "mosaic_caught": 8,
+   "mosaic_caught_features_pooling": 8,
+   "mosaic_fired_rules": {
+    "BLACK": 8
+   },
+   "mosaic_rate": 1.0,
+   "mosaic_rate_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "n": 8,
+   "n_source_clips": 4,
+   "production_fired_rules": {
+    "BLACK": 8
+   },
+   "production_five_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "production_five_rate": 1.0,
+   "production_five_rule_caught": 8,
+   "production_with_blur_caught": 8,
+   "production_with_blur_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "production_with_blur_rate": 1.0,
+   "rule_match_rate": 1.0
+  },
+  "blur": {
+   "agree_any_fire_full_rate": 1.0,
+   "agree_any_fire_full_rate_features_pooling": 1.0,
+   "agree_any_fire_rate": 1.0,
+   "ci95_type": "Wilson score interval over clips (binomial, ungrouped)",
+   "mosaic_caught": 8,
+   "mosaic_caught_features_pooling": 8,
+   "mosaic_fired_rules": {
+    "BLUR": 8
+   },
+   "mosaic_rate": 1.0,
+   "mosaic_rate_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "n": 8,
+   "n_source_clips": 4,
+   "production_fired_rules": {
+    "BLUR": 8
+   },
+   "production_five_ci95": [
+    0.0,
+    0.3244156195108769
+   ],
+   "production_five_rate": 0.0,
+   "production_five_rule_caught": 0,
+   "production_with_blur_caught": 8,
+   "production_with_blur_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "production_with_blur_rate": 1.0,
+   "rule_match_rate": 1.0
+  },
+  "frozen": {
+   "agree_any_fire_full_rate": 1.0,
+   "agree_any_fire_full_rate_features_pooling": 1.0,
+   "agree_any_fire_rate": 0.0,
+   "ci95_type": "Wilson score interval over clips (binomial, ungrouped)",
+   "mosaic_caught": 8,
+   "mosaic_caught_features_pooling": 8,
+   "mosaic_fired_rules": {
+    "FROZEN": 8
+   },
+   "mosaic_rate": 1.0,
+   "mosaic_rate_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "n": 8,
+   "n_source_clips": 4,
+   "production_fired_rules": {
+    "FROZEN": 8
+   },
+   "production_five_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "production_five_rate": 1.0,
+   "production_five_rule_caught": 8,
+   "production_with_blur_caught": 8,
+   "production_with_blur_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "production_with_blur_rate": 1.0,
+   "rule_match_rate": 0.0
+  },
+  "lens_blocked": {
+   "agree_any_fire_full_rate": 1.0,
+   "agree_any_fire_full_rate_features_pooling": 1.0,
+   "agree_any_fire_rate": 1.0,
+   "ci95_type": "Wilson score interval over clips (binomial, ungrouped)",
+   "mosaic_caught": 8,
+   "mosaic_caught_features_pooling": 8,
+   "mosaic_fired_rules": {
+    "LENS_BLOCKED": 8
+   },
+   "mosaic_rate": 1.0,
+   "mosaic_rate_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "n": 8,
+   "n_source_clips": 4,
+   "production_fired_rules": {
+    "LENS_BLOCKED": 8
+   },
+   "production_five_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "production_five_rate": 1.0,
+   "production_five_rule_caught": 8,
+   "production_with_blur_caught": 8,
+   "production_with_blur_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "production_with_blur_rate": 1.0,
+   "rule_match_rate": 1.0
+  },
+  "none": {
+   "agree_any_fire_full_rate": 1.0,
+   "agree_any_fire_full_rate_features_pooling": 1.0,
+   "agree_any_fire_rate": 1.0,
+   "ci95_type": "Wilson score interval over clips (binomial, ungrouped)",
+   "mosaic_caught": 0,
+   "mosaic_caught_features_pooling": 0,
+   "mosaic_fired_rules": {
+    "none": 8
+   },
+   "mosaic_rate": 0.0,
+   "mosaic_rate_ci95": [
+    0.0,
+    0.3244156195108769
+   ],
+   "n": 8,
+   "n_source_clips": 4,
+   "production_fired_rules": {
+    "none": 8
+   },
+   "production_five_ci95": [
+    0.0,
+    0.3244156195108769
+   ],
+   "production_five_rate": 0.0,
+   "production_five_rule_caught": 0,
+   "production_with_blur_caught": 0,
+   "production_with_blur_ci95": [
+    0.0,
+    0.3244156195108769
+   ],
+   "production_with_blur_rate": 0.0,
+   "rule_match_rate": 1.0
+  },
+  "overexposed": {
+   "agree_any_fire_full_rate": 1.0,
+   "agree_any_fire_full_rate_features_pooling": 1.0,
+   "agree_any_fire_rate": 1.0,
+   "ci95_type": "Wilson score interval over clips (binomial, ungrouped)",
+   "mosaic_caught": 0,
+   "mosaic_caught_features_pooling": 0,
+   "mosaic_fired_rules": {
+    "none": 8
+   },
+   "mosaic_rate": 0.0,
+   "mosaic_rate_ci95": [
+    0.0,
+    0.3244156195108769
+   ],
+   "n": 8,
+   "n_source_clips": 4,
+   "production_fired_rules": {
+    "none": 8
+   },
+   "production_five_ci95": [
+    0.0,
+    0.3244156195108769
+   ],
+   "production_five_rate": 0.0,
+   "production_five_rule_caught": 0,
+   "production_with_blur_caught": 0,
+   "production_with_blur_ci95": [
+    0.0,
+    0.3244156195108769
+   ],
+   "production_with_blur_rate": 0.0,
+   "rule_match_rate": 1.0
+  },
+  "too_dark": {
+   "agree_any_fire_full_rate": 0.875,
+   "agree_any_fire_full_rate_features_pooling": 0.875,
+   "agree_any_fire_rate": 0.875,
+   "ci95_type": "Wilson score interval over clips (binomial, ungrouped)",
+   "mosaic_caught": 8,
+   "mosaic_caught_features_pooling": 8,
+   "mosaic_fired_rules": {
+    "FROZEN": 8
+   },
+   "mosaic_rate": 1.0,
+   "mosaic_rate_ci95": [
+    0.6755843804891231,
+    1.0
+   ],
+   "n": 8,
+   "n_source_clips": 4,
+   "production_fired_rules": {
+    "BLUR": 6,
+    "TOO_DARK": 1,
+    "none": 1
+   },
+   "production_five_ci95": [
+    0.02241690886329617,
+    0.4708948057698615
+   ],
+   "production_five_rate": 0.125,
+   "production_five_rule_caught": 1,
+   "production_with_blur_caught": 7,
+   "production_with_blur_ci95": [
+    0.5291051942301386,
+    0.9775830911367038
+   ],
+   "production_with_blur_rate": 0.875,
+   "rule_match_rate": 0.875
+  }
+ },
+ "ci95": [
+  0.9055414182080672,
+  0.9968408710355361
+ ],
+ "ci95_type": "Wilson score interval over clips (binomial, ungrouped)",
+ "command": "python eval/exp_grid/grid05.py --phase clips && python eval/exp_grid/grid05.py --phase windows && python eval/exp_grid/grid05.py --phase calibrate && python eval/exp_grid/grid05.py --phase evaluate",
+ "config": {
+  "added_defects": [
+   {
+    "defect": "black",
+    "parameters": {
+     "op": "constant_frame",
+     "value": 0,
+     "why": "all-zero frames: BLACK at the production rule"
+    },
+    "variant": "black"
+   },
+   {
+    "defect": "lens_blocked",
+    "parameters": {
+     "op": "constant_frame",
+     "value": 110,
+     "why": "uniform mid-grey: zero spatial variance, not dark/bright enough for the other rules"
+    },
+    "variant": "lens_blocked"
+   }
+  ],
+  "frozen_lapvar_cal_min": 0.013163918969293153,
+  "frozen_temp_e_max": 0.05470779972318289,
+  "frr_budget": 0.02,
+  "inherited_rules": [
+   [
+    "BLACK",
+    "p95",
+    "<",
+    0.03
+   ],
+   [
+    "TOO_DARK",
+    "mean",
+    "<",
+    0.05
+   ],
+   [
+    "LENS_BLOCKED",
+    "spatial_var",
+    "<",
+    1e-05
+   ],
+   [
+    "OVEREXPOSED",
+    "p5",
+    ">",
+    0.7
+   ]
+  ],
+  "mask_timestamp": true,
+  "n_tiles": 9,
+  "production_blur_threshold": 0.021092022956273312,
+  "split_rule": "even/odd index over the sorted unique groups of each dataset (even -> calib, odd -> eval)",
+  "tile_px": 224,
+  "timestamps": true,
+  "window_s": 10.0,
+  "window_variants": {
+   "blur30": "sigma=3.0 Gaussian, ksize 19",
+   "frozen": "all 9 tiles = tile 0"
+  }
+ },
+ "config_sha256": "d798b7261fe9efad07de872368947798b0c82632491bc27ebfc40d395617f0ff",
+ "confounds": [
+  "The synthetic defects are injected by this repo's own generator, not observed in the wild; the demo_kit clips carry no labels at all.",
+  "Both paths decode the same cv2 frames here, so this measures the PROBES, not the two decode front ends (GRID.07 measures those).",
+  "FROZEN and BLUR thresholds are not comparable with the GRID.09 full-pipeline values: different statistic units.",
+  "Per-defect n is the number of generated clips (2 windows x 4 CALIB source clips), so the Wilson intervals are wide.",
+  "The generator's too_dark (x0.25) and overexposed (gain 1.7 + 30) defects are milder than the shipped operating points on most source windows, so both paths miss them; that is a property of the injected strength, not a parity difference.",
+  "Pooled luma percentiles use the STRICT padding detector; the features-pooling ablation is reported separately and is measurably contaminated on 16:9 sources."
+ ],
+ "cost": "68 clip comparisons + 238 clean windows x 3 mosaic variants, 2 workers, nice -n 10, OMP_NUM_THREADS=2, scratch under /tmp/opencode/grid05_clips",
+ "decisions_note": "every verdict in this file is derived at evaluation time from the cached probe statistics and the frozen thresholds in jadal/mosaic/s0_parity.py / jadal/poc/s0_blur.py, not read back from the probe cache",
+ "demo_kit_clips": [
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.07887,
+   "bg_leak_frac_strict": 0.00897,
+   "file": "demo_01.mp4",
+   "mosaic_it_mad": 0.23223,
+   "mosaic_lapvar_cal": 0.04196,
+   "mosaic_p95": 1.0,
+   "mosaic_p95_features_pooling": 1.0,
+   "mosaic_six_rule": null,
+   "mosaic_six_rule_features_pooling": null,
+   "n_frames_available": 100,
+   "native_fps": 10.0,
+   "production_five_rule": null,
+   "production_lapvar_cal": 0.088514,
+   "production_p95": 0.997,
+   "production_six_rule": null,
+   "production_temp_e": 0.02817
+  },
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.0181,
+   "bg_leak_frac_strict": 0.0181,
+   "file": "demo_02.mp4",
+   "mosaic_it_mad": 0.078834,
+   "mosaic_lapvar_cal": 0.024974,
+   "mosaic_p95": 0.6446,
+   "mosaic_p95_features_pooling": 0.6446,
+   "mosaic_six_rule": null,
+   "mosaic_six_rule_features_pooling": null,
+   "n_frames_available": 100,
+   "native_fps": 10.0,
+   "production_five_rule": null,
+   "production_lapvar_cal": 0.051218,
+   "production_p95": 0.5934,
+   "production_six_rule": null,
+   "production_temp_e": 0.01376
+  },
+  {
+   "agree_any_fire_full": false,
+   "agree_any_fire_full_features_pooling": false,
+   "bg_leak_frac_features": 1e-05,
+   "bg_leak_frac_strict": 1e-05,
+   "file": "demo_03.mp4",
+   "mosaic_it_mad": 0.020555,
+   "mosaic_lapvar_cal": 0.015103,
+   "mosaic_p95": 0.1609,
+   "mosaic_p95_features_pooling": 0.1609,
+   "mosaic_six_rule": "FROZEN",
+   "mosaic_six_rule_features_pooling": "FROZEN",
+   "n_frames_available": 100,
+   "native_fps": 10.0,
+   "production_five_rule": null,
+   "production_lapvar_cal": 0.054159,
+   "production_p95": 0.1544,
+   "production_six_rule": null,
+   "production_temp_e": 0.003136
+  },
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.08068,
+   "bg_leak_frac_strict": 0.01091,
+   "file": "demo_04.mp4",
+   "mosaic_it_mad": 0.258691,
+   "mosaic_lapvar_cal": 0.01748,
+   "mosaic_p95": 0.9181,
+   "mosaic_p95_features_pooling": 0.9147,
+   "mosaic_six_rule": null,
+   "mosaic_six_rule_features_pooling": null,
+   "n_frames_available": 100,
+   "native_fps": 10.0,
+   "production_five_rule": null,
+   "production_lapvar_cal": 0.048209,
+   "production_p95": 0.9427,
+   "production_six_rule": null,
+   "production_temp_e": 0.008344
+  },
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.02105,
+   "bg_leak_frac_strict": 0.02105,
+   "file": "demo_05.mp4",
+   "mosaic_it_mad": 0.13051,
+   "mosaic_lapvar_cal": 0.026711,
+   "mosaic_p95": 0.7392,
+   "mosaic_p95_features_pooling": 0.7392,
+   "mosaic_six_rule": null,
+   "mosaic_six_rule_features_pooling": null,
+   "n_frames_available": 100,
+   "native_fps": 10.0,
+   "production_five_rule": null,
+   "production_lapvar_cal": 0.074891,
+   "production_p95": 0.5539,
+   "production_six_rule": null,
+   "production_temp_e": 0.015578
+  },
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.07829,
+   "bg_leak_frac_strict": 0.00834,
+   "file": "demo_06.mp4",
+   "mosaic_it_mad": 0.214902,
+   "mosaic_lapvar_cal": 0.022382,
+   "mosaic_p95": 1.0,
+   "mosaic_p95_features_pooling": 1.0,
+   "mosaic_six_rule": null,
+   "mosaic_six_rule_features_pooling": null,
+   "n_frames_available": 300,
+   "native_fps": 30.0,
+   "production_five_rule": null,
+   "production_lapvar_cal": 0.044628,
+   "production_p95": 1.0,
+   "production_six_rule": null,
+   "production_temp_e": 0.020593
+  },
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.08533,
+   "bg_leak_frac_strict": 0.01591,
+   "file": "demo_07.mp4",
+   "mosaic_it_mad": 0.218084,
+   "mosaic_lapvar_cal": 0.033393,
+   "mosaic_p95": 0.985,
+   "mosaic_p95_features_pooling": 0.9832,
+   "mosaic_six_rule": null,
+   "mosaic_six_rule_features_pooling": null,
+   "n_frames_available": 100,
+   "native_fps": 10.0,
+   "production_five_rule": null,
+   "production_lapvar_cal": 0.078509,
+   "production_p95": 0.9508,
+   "production_six_rule": null,
+   "production_temp_e": 0.025839
+  },
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.07054,
+   "bg_leak_frac_strict": 0.0,
+   "file": "demo_08.mp4",
+   "mosaic_it_mad": 0.071256,
+   "mosaic_lapvar_cal": 0.049988,
+   "mosaic_p95": 0.3632,
+   "mosaic_p95_features_pooling": 0.502,
+   "mosaic_six_rule": null,
+   "mosaic_six_rule_features_pooling": null,
+   "n_frames_available": 100,
+   "native_fps": 10.0,
+   "production_five_rule": null,
+   "production_lapvar_cal": 0.120857,
+   "production_p95": 0.3547,
+   "production_six_rule": null,
+   "production_temp_e": 0.009939
+  },
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.08145,
+   "bg_leak_frac_strict": 0.01174,
+   "file": "demo_09.mp4",
+   "mosaic_it_mad": 0.20925,
+   "mosaic_lapvar_cal": 0.005667,
+   "mosaic_p95": 0.9914,
+   "mosaic_p95_features_pooling": 0.9873,
+   "mosaic_six_rule": "BLUR",
+   "mosaic_six_rule_features_pooling": "BLUR",
+   "n_frames_available": 100,
+   "native_fps": 10.0,
+   "production_five_rule": null,
+   "production_lapvar_cal": 0.004583,
+   "production_p95": 0.994,
+   "production_six_rule": "BLUR",
+   "production_temp_e": 0.023867
+  },
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.08195,
+   "bg_leak_frac_strict": 0.01227,
+   "file": "demo_10.mp4",
+   "mosaic_it_mad": 1.5e-05,
+   "mosaic_lapvar_cal": 0.043478,
+   "mosaic_p95": 0.9955,
+   "mosaic_p95_features_pooling": 0.9922,
+   "mosaic_six_rule": "FROZEN",
+   "mosaic_six_rule_features_pooling": "FROZEN",
+   "n_frames_available": 100,
+   "native_fps": 10.0,
+   "production_five_rule": "FROZEN",
+   "production_lapvar_cal": 0.101267,
+   "production_p95": 0.9834,
+   "production_six_rule": "FROZEN",
+   "production_temp_e": 4e-06
+  },
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.05414,
+   "bg_leak_frac_strict": 0.0,
+   "file": "demo_11.mp4",
+   "mosaic_it_mad": 0.0,
+   "mosaic_lapvar_cal": 0.0,
+   "mosaic_p95": 0.0,
+   "mosaic_p95_features_pooling": 0.502,
+   "mosaic_six_rule": "BLACK",
+   "mosaic_six_rule_features_pooling": "TOO_DARK",
+   "n_frames_available": 300,
+   "native_fps": 30.0,
+   "production_five_rule": "BLACK",
+   "production_lapvar_cal": 0.0,
+   "production_p95": 0.0,
+   "production_six_rule": "BLACK",
+   "production_temp_e": 0.0
+  },
+  {
+   "agree_any_fire_full": true,
+   "agree_any_fire_full_features_pooling": true,
+   "bg_leak_frac_features": 0.07896,
+   "bg_leak_frac_strict": 0.00906,
+   "file": "demo_12.mp4",
+   "mosaic_it_mad": 0.219137,
+   "mosaic_lapvar_cal": 0.039209,
+   "mosaic_p95": 1.0,
+   "mosaic_p95_features_pooling": 1.0,
+   "mosaic_six_rule": null,
+   "mosaic_six_rule_features_pooling": null,
+   "n_frames_available": 300,
+   "native_fps": 30.0,
+   "production_five_rule": null,
+   "production_lapvar_cal": 0.090924,
+   "production_p95": 0.9976,
+   "production_six_rule": null,
+   "production_temp_e": 0.028168
+  }
+ ],
+ "demo_kit_disagreements": [
+  {
+   "bg_leak_frac_features": 9.264084303167159e-06,
+   "bg_leak_frac_strict": 9.264084303167159e-06,
+   "file": "demo_03.mp4",
+   "mosaic": "FROZEN",
+   "mosaic_features_pooling": "FROZEN",
+   "mosaic_p95": 0.16088235294117648,
+   "mosaic_p95_features_pooling": 0.16088235294117648,
+   "n_frames_available": 100,
+   "production": null,
+   "production_p95": 0.15444710784313725
+  }
+ ],
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "git_sha": "78654486c8427605150103f2be4e097a359b7e7e",
+ "id": "GRID.05",
+ "label_source": "synthetic defect clips generated locally with known injected defects (SYNTHETIC-GOOD / SYNTHETIC-DEFECT, never presented as human labels); the 12 interview/demo_kit clips are UNLABELLED real uploads and are reported for agreement only; clean windows are human gold (ONE labeller)",
+ "mosaic_catch_on_window_variants": {
+  "blur30_all": {
+   "catch_ci95": [
+    0.929706135554935,
+    0.9799802045949813
+   ],
+   "catch_rate": 0.9621848739495799,
+   "caught": 229,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "fired_rules": {
+    "BLUR": 215,
+    "FROZEN": 14,
+    "none": 9
+   },
+   "n": 238
+  },
+  "blur30_eval": {
+   "catch_ci95": [
+    0.8754946530666444,
+    0.9637180770543198
+   ],
+   "catch_rate": 0.9318181818181818,
+   "caught": 123,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "fired_rules": {
+    "BLUR": 112,
+    "FROZEN": 11,
+    "none": 9
+   },
+   "n": 132
+  },
+  "frozen_all": {
+   "catch_ci95": [
+    0.9841152225258184,
+    0.9999999999999999
+   ],
+   "catch_rate": 1.0,
+   "caught": 238,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "fired_rules": {
+    "FROZEN": 238
+   },
+   "n": 238
+  },
+  "frozen_eval": {
+   "catch_ci95": [
+    0.9717200032979587,
+    1.0
+   ],
+   "catch_rate": 1.0,
+   "caught": 132,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "fired_rules": {
+    "FROZEN": 132
+   },
+   "n": 132
+  }
+ },
+ "mosaic_false_reject_clean": {
+  "indego_all": {
+   "bg_leak_frac_median": 0.016399745237681663,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "false_reject_ci95": [
+    0.034318824364064096,
+    0.13749671006529757
+   ],
+   "false_reject_rate": 0.07,
+   "label": "IndEgo-150 good windows",
+   "mosaic_any_rejects": 7,
+   "mosaic_blur_rule_rejects": 2,
+   "mosaic_frozen_rule_rejects": 5,
+   "mosaic_inherited4_disagreements": 0,
+   "mosaic_inherited4_rejects": 0,
+   "mosaic_only_false_reject_ci95": [
+    0.034318824364064096,
+    0.13749671006529757
+   ],
+   "mosaic_only_false_reject_rate": 0.07,
+   "mosaic_only_rejects": 7,
+   "n": 100,
+   "n_groups": 7,
+   "pooling": "variants",
+   "production_five_rule_rejects": 0,
+   "production_joined_windows": 100
+  },
+  "indego_eval": {
+   "bg_leak_frac_median": 0.017488275143303804,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "false_reject_ci95": [
+    0.02496521390048502,
+    0.15219392053076736
+   ],
+   "false_reject_rate": 0.06349206349206349,
+   "label": "IndEgo EVAL split",
+   "mosaic_any_rejects": 4,
+   "mosaic_blur_rule_rejects": 2,
+   "mosaic_frozen_rule_rejects": 2,
+   "mosaic_inherited4_disagreements": 0,
+   "mosaic_inherited4_rejects": 0,
+   "mosaic_only_false_reject_ci95": [
+    0.02496521390048502,
+    0.15219392053076736
+   ],
+   "mosaic_only_false_reject_rate": 0.06349206349206349,
+   "mosaic_only_rejects": 4,
+   "n": 63,
+   "n_groups": 3,
+   "pooling": "variants",
+   "production_five_rule_rejects": 0,
+   "production_joined_windows": 63
+  },
+  "ood160_all": {
+   "bg_leak_frac_median": 0.012662588183421516,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "false_reject_ci95": [
+    0.0450894755777049,
+    0.1370968505776684
+   ],
+   "false_reject_rate": 0.07971014492753623,
+   "label": "OOD-160 good windows",
+   "mosaic_any_rejects": 11,
+   "mosaic_blur_rule_rejects": 10,
+   "mosaic_frozen_rule_rejects": 1,
+   "mosaic_inherited4_disagreements": 0,
+   "mosaic_inherited4_rejects": 0,
+   "mosaic_only_false_reject_ci95": [
+    0.0450894755777049,
+    0.1370968505776684
+   ],
+   "mosaic_only_false_reject_rate": 0.07971014492753623,
+   "mosaic_only_rejects": 11,
+   "n": 138,
+   "n_groups": 43,
+   "pooling": "variants",
+   "production_five_rule_rejects": 0,
+   "production_joined_windows": 138
+  },
+  "ood160_eval": {
+   "bg_leak_frac_median": 0.012857457797933989,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "false_reject_ci95": [
+    0.05993426545958408,
+    0.21245953149160868
+   ],
+   "false_reject_rate": 0.11594202898550725,
+   "label": "OOD-160 EVAL split",
+   "mosaic_any_rejects": 8,
+   "mosaic_blur_rule_rejects": 7,
+   "mosaic_frozen_rule_rejects": 1,
+   "mosaic_inherited4_disagreements": 0,
+   "mosaic_inherited4_rejects": 0,
+   "mosaic_only_false_reject_ci95": [
+    0.05993426545958408,
+    0.21245953149160868
+   ],
+   "mosaic_only_false_reject_rate": 0.11594202898550725,
+   "mosaic_only_rejects": 8,
+   "n": 69,
+   "n_groups": 21,
+   "pooling": "variants",
+   "production_five_rule_rejects": 0,
+   "production_joined_windows": 69
+  },
+  "pooled_all": {
+   "bg_leak_frac_median": 0.014398064612524028,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "false_reject_ci95": [
+    0.048371989251504904,
+    0.11637055297448101
+   ],
+   "false_reject_rate": 0.07563025210084033,
+   "label": "all human-good windows",
+   "mosaic_any_rejects": 18,
+   "mosaic_blur_rule_rejects": 12,
+   "mosaic_frozen_rule_rejects": 6,
+   "mosaic_inherited4_disagreements": 0,
+   "mosaic_inherited4_rejects": 0,
+   "mosaic_only_false_reject_ci95": [
+    0.048371989251504904,
+    0.11637055297448101
+   ],
+   "mosaic_only_false_reject_rate": 0.07563025210084033,
+   "mosaic_only_rejects": 18,
+   "n": 238,
+   "n_groups": 50,
+   "pooling": "variants",
+   "production_five_rule_rejects": 0,
+   "production_joined_windows": 238
+  },
+  "pooled_eval": {
+   "bg_leak_frac_median": 0.01530218568909045,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "false_reject_ci95": [
+    0.0527686879818506,
+    0.15218767295618307
+   ],
+   "false_reject_rate": 0.09090909090909091,
+   "label": "EVAL-split human-good windows",
+   "mosaic_any_rejects": 12,
+   "mosaic_blur_rule_rejects": 9,
+   "mosaic_frozen_rule_rejects": 3,
+   "mosaic_inherited4_disagreements": 0,
+   "mosaic_inherited4_rejects": 0,
+   "mosaic_only_false_reject_ci95": [
+    0.0527686879818506,
+    0.15218767295618307
+   ],
+   "mosaic_only_false_reject_rate": 0.09090909090909091,
+   "mosaic_only_rejects": 12,
+   "n": 132,
+   "n_groups": 24,
+   "pooling": "variants",
+   "production_five_rule_rejects": 0,
+   "production_joined_windows": 132
+  }
+ },
+ "mosaic_false_reject_clean_features_pooling_ablation": {
+  "ood160_all": {
+   "bg_leak_frac_median": 0.08230879565596025,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "false_reject_ci95": [
+    0.0450894755777049,
+    0.1370968505776684
+   ],
+   "false_reject_rate": 0.07971014492753623,
+   "label": "OOD-160 good windows",
+   "mosaic_any_rejects": 11,
+   "mosaic_only_rejects": 11,
+   "n": 138,
+   "pooling": "features"
+  },
+  "pooled_all": {
+   "bg_leak_frac_median": 0.07938703374388022,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "false_reject_ci95": [
+    0.048371989251504904,
+    0.11637055297448101
+   ],
+   "false_reject_rate": 0.07563025210084033,
+   "label": "all human-good windows",
+   "mosaic_any_rejects": 18,
+   "mosaic_only_rejects": 18,
+   "n": 238,
+   "pooling": "features"
+  },
+  "pooled_eval": {
+   "bg_leak_frac_median": 0.0790028321148653,
+   "ci95_type": "Wilson score interval over windows (binomial, ungrouped)",
+   "false_reject_ci95": [
+    0.0527686879818506,
+    0.15218767295618307
+   ],
+   "false_reject_rate": 0.09090909090909091,
+   "label": "EVAL-split human-good windows",
+   "mosaic_any_rejects": 12,
+   "mosaic_only_rejects": 12,
+   "n": 132,
+   "pooling": "features"
+  }
+ },
+ "ms_mosaic_build_median": 24.9,
+ "ms_mosaic_probe_median": 117.0,
+ "n": 68,
+ "n_bad": 48,
+ "n_good": 8,
+ "not_measured": [
+  "No human labels exist for the generated clips or for demo_kit; the labels are 'SYNTHETIC-GOOD'/'SYNTHETIC-DEFECT' by construction.",
+  "Container defects of make_demo_clips (wrong_fps, truncated, garbage, reupload_duplicate) were skipped: neither probe is a container validator.",
+  "No real lens-blocked or real defocus capture was available."
+ ],
+ "protocol": "same decoded 480p pixels through both probes: shipped 2 s probe (s0_from_luma + s0_decide) vs mosaic probe on the 3x3 224 px canvas; the four unit-identical rules inherit the shipped thresholds, FROZEN and BLUR are calibrated on the clean CALIB split only and evaluated on the EVAL split",
+ "seed": 0,
+ "split": {
+  "calib_groups": [
+   "indego:desk",
+   "indego:ecu_late",
+   "indego:organise",
+   "indego:pallet2",
+   "ood160:factory_001",
+   "ood160:factory_009",
+   "ood160:factory_013",
+   "ood160:factory_016",
+   "ood160:factory_020",
+   "ood160:factory_022",
+   "ood160:factory_026",
+   "ood160:factory_029",
+   "ood160:factory_035",
+   "ood160:factory_037",
+   "ood160:factory_039",
+   "ood160:factory_041",
+   "ood160:factory_044",
+   "ood160:factory_051",
+   "ood160:factory_054",
+   "ood160:factory_057",
+   "ood160:factory_060",
+   "ood160:factory_062",
+   "ood160:factory_068",
+   "ood160:factory_070",
+   "ood160:factory_079",
+   "ood160:factory_085"
+  ],
+  "eval_groups": [
+   "indego:ecu_full",
+   "indego:logistics4",
+   "indego:pallet",
+   "ood160:factory_003",
+   "ood160:factory_010",
+   "ood160:factory_014",
+   "ood160:factory_019",
+   "ood160:factory_021",
+   "ood160:factory_024",
+   "ood160:factory_028",
+   "ood160:factory_033",
+   "ood160:factory_036",
+   "ood160:factory_038",
+   "ood160:factory_040",
+   "ood160:factory_042",
+   "ood160:factory_046",
+   "ood160:factory_053",
+   "ood160:factory_056",
+   "ood160:factory_058",
+   "ood160:factory_061",
+   "ood160:factory_066",
+   "ood160:factory_069",
+   "ood160:factory_077",
+   "ood160:factory_084"
+  ],
+  "n_calib": 106,
+  "n_eval": 132,
+  "rule": "even/odd index over the sorted unique groups of each dataset (even -> calib, odd -> eval)"
+ },
+ "status": "done",
+ "thresholds": {
+  "ablation_features_pooling": {
+   "note": "S1's features.letterbox_mask: padding under the timestamp box leaks",
+   "selected_lapvar_cal_min": 0.013251068492862774,
+   "selected_temp_e_max": 0.05470779972318289
+  },
+  "inherited_from_shipped": [
+   [
+    "BLACK",
+    "p95",
+    "<",
+    0.03
+   ],
+   [
+    "TOO_DARK",
+    "mean",
+    "<",
+    0.05
+   ],
+   [
+    "LENS_BLOCKED",
+    "spatial_var",
+    "<",
+    1e-05
+   ],
+   [
+    "OVEREXPOSED",
+    "p5",
+    ">",
+    0.7
+   ]
+  ],
+  "mosaic_blur_lapvar_cal_min": {
+   "n_calib": 106,
+   "rule": "largest threshold whose clean-only false-reject rate on the CALIB split is <= 2% = 2nd percentile of the clean CALIB distribution (applies to FROZEN and BLUR alike)",
+   "source": "grid05_calibration.json",
+   "value": 0.013163918969293153
+  },
+  "mosaic_frozen_temp_e_max": {
+   "n_calib": 106,
+   "rule": "largest threshold whose clean-only false-reject rate on the CALIB split is <= 2% = 2nd percentile of the clean CALIB distribution (applies to FROZEN and BLUR alike)",
+   "source": "grid05_calibration.json",
+   "value": 0.05470779972318289
+  },
+  "pooling": "strict (padding detection that survives the timestamp box)",
+  "production_blur_lapvar_cal_min": 0.021092022956273312,
+  "youden_reference_arm": {
+   "blur_features_pooling": {
+    "j": 0.9716981132075473,
+    "note": "reference arm only; not the frozen rule",
+    "threshold": 0.0128565302
+   },
+   "blur_strict": {
+    "j": 0.9811320754716981,
+    "note": "reference arm only; not the frozen rule",
+    "threshold": 0.0129267285
+   },
+   "frozen_features_pooling": {
+    "j": 0.990566037735849,
+    "note": "reference arm only; not the frozen rule",
+    "threshold": 0.0378190743
+   },
+   "frozen_strict": {
+    "j": 0.990566037735849,
+    "note": "reference arm only; not the frozen rule",
+    "threshold": 0.0378190743
+   }
+  }
+ }
+}

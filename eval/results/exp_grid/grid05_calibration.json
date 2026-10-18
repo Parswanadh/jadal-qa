@@ -1,0 +1,117 @@
+{
+ "ablation_features_pooling": {
+  "note": "S1's features.letterbox_mask: padding under the timestamp box leaks",
+  "selected_lapvar_cal_min": 0.013251068492862774,
+  "selected_temp_e_max": 0.05470779972318289
+ },
+ "calib_groups": [
+  "indego:desk",
+  "indego:ecu_late",
+  "indego:organise",
+  "indego:pallet2",
+  "ood160:factory_001",
+  "ood160:factory_009",
+  "ood160:factory_013",
+  "ood160:factory_016",
+  "ood160:factory_020",
+  "ood160:factory_022",
+  "ood160:factory_026",
+  "ood160:factory_029",
+  "ood160:factory_035",
+  "ood160:factory_037",
+  "ood160:factory_039",
+  "ood160:factory_041",
+  "ood160:factory_044",
+  "ood160:factory_051",
+  "ood160:factory_054",
+  "ood160:factory_057",
+  "ood160:factory_060",
+  "ood160:factory_062",
+  "ood160:factory_068",
+  "ood160:factory_070",
+  "ood160:factory_079",
+  "ood160:factory_085"
+ ],
+ "command": "python eval/exp_grid/grid05.py --phase calibrate",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "eval_groups": [
+  "indego:ecu_full",
+  "indego:logistics4",
+  "indego:pallet",
+  "ood160:factory_003",
+  "ood160:factory_010",
+  "ood160:factory_014",
+  "ood160:factory_019",
+  "ood160:factory_021",
+  "ood160:factory_024",
+  "ood160:factory_028",
+  "ood160:factory_033",
+  "ood160:factory_036",
+  "ood160:factory_038",
+  "ood160:factory_040",
+  "ood160:factory_042",
+  "ood160:factory_046",
+  "ood160:factory_053",
+  "ood160:factory_056",
+  "ood160:factory_058",
+  "ood160:factory_061",
+  "ood160:factory_066",
+  "ood160:factory_069",
+  "ood160:factory_077",
+  "ood160:factory_084"
+ ],
+ "frr_budget": 0.02,
+ "git_sha": "78654486c8427605150103f2be4e097a359b7e7e",
+ "id": "GRID.05",
+ "n_calib_groups": 26,
+ "n_calib_windows": 106,
+ "per_dataset": {
+  "indego": {
+   "bg_leak_frac_median_features": 0.014046667824677204,
+   "bg_leak_frac_median_strict": 0.014046667824677204,
+   "lapvar_cal_p02": 0.014740224911129491,
+   "lapvar_cal_p50": 0.024986131259396374,
+   "n": 37,
+   "temp_e_p02": 0.04175189647508404,
+   "temp_e_p50": 0.12327293772287444
+  },
+  "ood160": {
+   "bg_leak_frac_median_features": 0.08202521826311591,
+   "bg_leak_frac_median_strict": 0.012357489292013102,
+   "lapvar_cal_p02": 0.010585876589538535,
+   "lapvar_cal_p50": 0.03730917681152482,
+   "n": 69,
+   "temp_e_p02": 0.07766360452544319,
+   "temp_e_p50": 0.18568871005755921
+  }
+ },
+ "phase": "calibrate",
+ "primary_pooling": "strict",
+ "seed": 0,
+ "selected_lapvar_cal_min": 0.013163918969293153,
+ "selected_temp_e_max": 0.05470779972318289,
+ "selection_rule": "largest threshold whose clean-only false-reject rate on the CALIB split is <= 2% = 2nd percentile of the clean CALIB distribution (applies to FROZEN and BLUR alike)",
+ "split_rule": "even/odd index over the sorted unique groups of each dataset (even -> calib, odd -> eval)",
+ "youden_j_on_calib": {
+  "blur_features_pooling": {
+   "j": 0.9716981132075473,
+   "note": "reference arm only; not the frozen rule",
+   "threshold": 0.0128565302
+  },
+  "blur_strict": {
+   "j": 0.9811320754716981,
+   "note": "reference arm only; not the frozen rule",
+   "threshold": 0.0129267285
+  },
+  "frozen_features_pooling": {
+   "j": 0.990566037735849,
+   "note": "reference arm only; not the frozen rule",
+   "threshold": 0.0378190743
+  },
+  "frozen_strict": {
+   "j": 0.990566037735849,
+   "note": "reference arm only; not the frozen rule",
+   "threshold": 0.0378190743
+  }
+ }
+}
