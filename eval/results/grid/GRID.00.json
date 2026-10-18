@@ -30,7 +30,7 @@
   "passed": true,
   "tolerance": 0.01
  },
- "git_sha": "a3789b893b10779f149b4f5fe24ecfd80b9a2f60",
+ "git_sha": "55b7da19d632307527ad41490df76252b2a96d39",
  "groups": "7 IndEgo clips",
  "id": "GRID.00",
  "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad)",
