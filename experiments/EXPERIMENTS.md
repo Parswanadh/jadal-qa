@@ -42,12 +42,12 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 | E8.01 | E8 | running | - | E8.01 re-score 1,546 Egocentric-10K windows with the frozen two-view recipe + profile router | queues/manifest_scale.json: 1546 windows / 58 clips / 4.404  / factory Egocentric-10K, 1080p, 30 fps, HEVC, handheld egocentric manufacturing |
 | E9.01 |  | done | adopt |  |  /  |
 | GRID.00 | GRID | done | adopt | Baseline gate: 26-feature logistic LOCO on IndEgo-150 must reproduce AUROC 0.810 | IndEgo 150 windows (100 good / 50 bad), ONE human labeller;  / 480p, ~10 fps, IndEgo assembly+logistics, 7 clips |
-| GRID.V01 | GRID.V | done | adopt | Reading check: does the model read the sheet's tiles and timestamps correctly? | 20 context sheets (OOD subset seed 0), one read_tiles call e / 12-tile 4x3 426px sheets, 10 s windows, CPU sheet build + API call |
-| GRID.V02 | GRID.V | running | - | Quality verdict from a 12-tile sheet on OOD-160, factory-grouped | OOD-160: 160 human-labelled Egocentric-10K windows, 138 good / One 10 s window = one 12-tile sheet; frozen quality prompt; factory-grouped bootstrap CI; paired comparison vs the frozen shipped head |
-| GRID.V03 | GRID.V | done | inconclusive | Ablations: timestamps, tile order, single frame, tile count, reasoning step, grey null | The V03 stratified 20 windows (10 bad / 10 good, frozen ids  / Six arms x 20 windows: no timestamps, shuffled order, one middle frame, 6 tiles, 24 tiles, JSON-only prompt; plus a flat grey null sheet |
-| GRID.V04 | GRID.V | running | - | Run-to-run variance of the model on the same sheets | The V04 40-window subset (frozen ids in PREREG), 3 runs each / Same frozen prompt and sheets across runs; unanimous share and Cohen/Fleiss kappa over usable and over task_progress |
+| GRID.V01 | GRID.V | running | adopt | Reading check: does the model read the sheet's tiles and timestamps correctly? | 20 context sheets (OOD subset seed 0), one read_tiles call e / 12-tile 4x3 426px sheets, 10 s windows, CPU sheet build + API call |
+| GRID.V02 | GRID.V | done | adopt | Quality verdict from a 12-tile sheet on OOD-160, factory-grouped | OOD-160: 160 human-labelled Egocentric-10K windows, 138 good / One 10 s window = one 12-tile sheet; frozen quality prompt; factory-grouped bootstrap CI; paired comparison vs the frozen shipped head |
+| GRID.V03 | GRID.V | running | inconclusive | Ablations: timestamps, tile order, single frame, tile count, reasoning step, grey null | The V03 stratified 20 windows (10 bad / 10 good, frozen ids  / Six arms x 20 windows: no timestamps, shuffled order, one middle frame, 6 tiles, 24 tiles, JSON-only prompt; plus a flat grey null sheet |
+| GRID.V04 | GRID.V | done | maybe | Run-to-run variance of the model on the same sheets | The V04 40-window subset (frozen ids in PREREG), 3 runs each / Same frozen prompt and sheets across runs; unanimous share and Cohen/Fleiss kappa over usable and over task_progress |
 | GRID.V05 | GRID.V | done | drop | Task level on IndEgo: 12-tile sheets vs video on the same 30 s slices, then L2 | 4 annotated IndEgo clips (ecu_full, ecu_late, desk, organise / One slice_l1 call per 30 s slice as a sheet and as video via the existing analyze_video path; then ONE l2_text call over the six slice answers per clip |
-| GRID.V06 | GRID.V | running | - | Role in the funnel: review-band resolver and veto on high-confidence accepts | IndEgo-150 and OOD-160 with frozen model outputs from V02 pl / Frozen prompt and model id; (a) resolver for the band, (b) veto on windows the shipped head accepts at p>=0.75; error at 100 % coverage and the resulting review load |
+| GRID.V06 | GRID.V | done | maybe | Role in the funnel: review-band resolver and veto on high-confidence accepts | IndEgo-150 and OOD-160 with frozen model outputs from V02 pl / Frozen prompt and model id; (a) resolver for the band, (b) veto on windows the shipped head accepts at p>=0.75; error at 100 % coverage and the resulting review load |
 | LB1 | B | done | adopt | Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy | IndEgo human gold 150 windows / 7 clips (human labels, READ- / 480p/10fps IndEgo in-domain LOCO (+ OOD position test, labels only) |
 | LB2 | B | done | adopt | PoC integration: adopted every-2nd window grid + 4s early exit + EG2 2fps + 26-feature pixel logistic (descriptive verdicts) |  / CPU only (GPU unavailable in the container); cached features; deterministic (fixed seeds) |
 | LB4 | B | pending | inconclusive | Stage frozen pre-registered OOD run (one command, sha256-guarded) | labels/ood_labels2.json (100 human-labelled Egocentric-10K w /  |
@@ -561,11 +561,11 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Data / label source:** OOD-160: 160 human-labelled Egocentric-10K windows, 138 good / 22 bad (19 NO_ACTIVE_WORK), 47 factories, ONE labeller
 - **Regime:** One 10 s window = one 12-tile sheet; frozen quality prompt; factory-grouped bootstrap CI; paired comparison vs the frozen shipped head
 - **Method:** AUROC, recall of bad, false-reject on good, balanced accuracy, confusion by reason code, usable=true share, paired factory-clustered difference vs the shipped head.
-- **Owner / started / finished:** dsh / 2026-10-18 08:29 / —
-- **Verdict:** pending — 
-- **Decision:** 
-- **Cost:** 
-- **Results:** 
+- **Owner / started / finished:** dsh / 2026-10-18 08:29 / 2026-10-18 08:46
+- **Verdict:** adopt — Vision model (muse-spark-1.3-contributor), frozen quality prompt, ONE 4x3 12-tile sheet per window, no training. OOD-160 n=160 (138 good/22 bad; 19 of 22 bad are NO_ACTIVE_WORK; 47 factories; ONE labeller). AUROC of usable = 0.7701 [0.662,0.878] factory-grouped bootstrap (window bootstrap 0.664-0.877, optimistic). NO_ACTIVE_WORK subset (19 bad vs all good, n=157): 0.7641 [0.652,0.887]. PAIRED factory-clustered difference vs the frozen shipped 26-number head (0.5878 [0.450,0.728]): +0.1823 [+0.0428,+0.3141], EXCLUDES ZERO. Natural threshold (usable==true): 13/22 bad rejected (recall 0.5909), 7/138 good rejected (FRR 0.0507), balanced accuracy 0.7701 (positive class = good). HANDS_NOT_VISIBLE 2/2 caught; 8 of 19 NO_ACTIVE_WORK read as OK. Share of ALL answers usable=true = 0.875 (87.5%) - the documented success bias, reported as required. Parse rate 160/160. Cost 161 image calls (the 160 windows plus one smoke call for q000), 11.95 s mean / 11.69 s median per call, 666 s wall.
+- **Decision:** ADOPT the model as a REVIEW-BAND RANKER / second reader on factory footage, NOT as an automatic verdict: AUROC 0.77 is well above the shipped head's 0.588 on the same windows, but 8 of 19 NO_ACTIVE_WORK windows still read as usable and 87.5% of all answers are usable=true, so a naive usable==true gate accepts 9 of 22 bad windows. It is probabilistic, one labeller, no inter-rater kappa; the load-bearing follow-up is V04 (stability) and V03 (does the sheet format carry the signal).
+- **Cost:** 161 image calls of a 480 cap; 11.95 s mean per call; 666 s wall; CPU sheet build only, no GPU
+- **Results:** eval/results/exp_vlm/GRID.V02.json
 
 ## GRID.V03 — Ablations: timestamps, tile order, single frame, tile count, reasoning step, grey null
 - **Why:** V02 could be explained by any single frame, by the labels, or by the reasoning step rather than by the multi-frame sheet.
@@ -585,11 +585,11 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Data / label source:** The V04 40-window subset (frozen ids in PREREG), 3 runs each
 - **Regime:** Same frozen prompt and sheets across runs; unanimous share and Cohen/Fleiss kappa over usable and over task_progress
 - **Method:** Unanimous share, kappa with CI, and the per-run AUROC spread.
-- **Owner / started / finished:** dsh / 2026-10-18 08:29 / —
-- **Verdict:** pending — 
-- **Decision:** 
-- **Cost:** 
-- **Results:** 
+- **Owner / started / finished:** dsh / 2026-10-18 08:29 / 2026-10-18 08:52
+- **Verdict:** maybe — 3 runs of the same frozen quality prompt on the same pre-registered 40 windows with the EXACT same cached PNG bytes, so the only variation is the model. 80 new calls (cap 120); run 1 reused from V02. n=40, n_bad=7 (each single-run CI is therefore wide and uninformative alone). usable unanimous share 0.90 (36/40; votes-true 35x3, 2x2, 2x1, 1x0), Fleiss kappa 0.5195, mean pairwise Cohen kappa 0.5347 (pairwise 0.286/0.787/0.531). task_progress unanimous 0.875, Fleiss kappa 0.410. Per-run AUROC of usable: 0.6429, 0.6991, 0.7143 -> SPREAD 0.0714. Majority vote of 3: AUROC 0.7143 [0.500,0.900], share usable 0.925.
+- **Decision:** A SINGLE CALL CANNOT BE TREATED AS A MEASUREMENT (agreement moderate at kappa ~0.52, and the AUROC itself moves 0.07 between identical runs). Minimum honest usage is repeated calls with a majority vote, and only as triage/ranking feeding a human, never as an automatic verdict. This is consistent with the PREREG fallback rule.
+- **Cost:** 80 new image calls of a 120 cap (241 total in the track ledger); 326.8 s wall; no GPU
+- **Results:** eval/results/exp_vlm/GRID.V04.json
 
 ## GRID.V05 — Task level on IndEgo: 12-tile sheets vs video on the same 30 s slices, then L2
 - **Why:** L1 (is relevant work progressing) is answerable from video alone; L2 (was the task completed) needs the builder's definition. IndEgo's 4 annotated clips are free ground truth.
@@ -609,11 +609,11 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Data / label source:** IndEgo-150 and OOD-160 with frozen model outputs from V02 plus fresh calls on the IndEgo review band
 - **Regime:** Frozen prompt and model id; (a) resolver for the band, (b) veto on windows the shipped head accepts at p>=0.75; error at 100 % coverage and the resulting review load
 - **Method:** 100 %-coverage balanced accuracy and review share for each role, with clip- and factory-grouped intervals, against AUTO.00's forced decision.
-- **Owner / started / finished:** dsh / 2026-10-18 08:29 / —
-- **Verdict:** pending — 
-- **Decision:** 
-- **Cost:** 
-- **Results:** 
+- **Owner / started / finished:** dsh / 2026-10-18 08:29 / 2026-10-18 09:12
+- **Verdict:** maybe — ROLE (a) OOD-160 VETO, zero new calls (reuses V02): the shipped head accepts 71 windows (63 good, 8 bad). The VLM vetoes 4 of those 8 false accepts (50%) at a cost of 3 good windows (4.76% of the good the head accepted). Balanced accuracy 0.5464 -> 0.6265, false-accept 0.3636 -> 0.1818, false-reject 0.5435 -> 0.5652. Paired factory-clustered difference vs the head alone +0.08, CI [0.0000, 0.1591] - DOES NOT EXCLUDE ZERO, so the gain is not established at n_bad=22. ROLE (b) IndEgo RESOLVER, 115 new image calls of a 120 cap (band 72 + high-confidence accepts 43): forced-0.5 baseline reproduces AUTO.00 exactly (BA 0.740). Throwing the band away 0.640; resolving the band with the VLM 0.755; adding the veto on high-confidence accepts also 0.755. band_resolve - thrown_away = +0.115 [0.0361, 0.1794] EXCLUDES ZERO; band_resolve - forced05 = +0.015 [-0.0609, 0.1089] NOT established; full_veto - forced05 = +0.015 [-0.0448, 0.0876] NOT established. The VLM said usable for 65/72 band windows (90.3%) and 105/115 targets (91.3%), so the success bias reappears in-domain: FAR rises 0.26 -> 0.38 even as FRR falls 0.26 -> 0.11. V04 already showed a single call is not a measurement (kappa 0.52, AUROC spread 0.071), so every number here is repeat-needed.
+- **Decision:** The VLM as a review-band resolver is significantly better than DISCARDING the band (+0.115 BA, CI excludes zero) but NOT significantly better than the free forced-0.5 rule in-domain (+0.015, CI includes zero), so it does not justify its API cost as an accuracy device there. Out of domain the veto halves the head's false accepts and lifts BA by 0.08 but the interval touches zero, so it is a promising, unestablished signal that needs round-4 labels (and repeated calls) before it can be recommended. Treat VLM output as a ranker feeding a human, never as an automatic verdict.
+- **Cost:** 115 image calls for V06 of a 120 cap (all tag=v06 in the ledger; 0 failures, 0 retries); role (a) 0 calls; 11.3 s mean per call; no GPU
+- **Results:** eval/results/exp_vlm/GRID.V06.json
 
 ## LB1 — Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy
 - **Why:** The adopted settings (every-2nd window, 4 s early exit, EG2 2 fps view, 26-feature logistic) drive the PoC and the submission; a second, independent re-run is the cheapest defence against a silent protocol bug.
