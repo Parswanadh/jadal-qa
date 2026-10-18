@@ -85,17 +85,27 @@ class TestParsing(unittest.TestCase):
         self.assertEqual(len(r["tile_lines"]), 1)
         self.assertEqual(r["n_tile_lines"], 1)
 
-    def test_shared_parser_still_misses_the_no_timestamp_shape(self):
-        """The shared parser was fixed (beb742e) to accept `#N MM:SS.s: text`, but it still
-        REQUIRES a timestamp, and 113 of 160 real replies omit it entirely (`#1: text`).
-        Measured recovery on the real V02 run: shared 372/1920, tolerant 1920/1920."""
+    def test_shared_parser_now_reads_the_no_timestamp_shape(self):
+        """History, kept as a regression guard.
+
+        The shared parser read 0/1920 real tile lines; a first fix (beb742e) accepted
+        `#N MM:SS.s: text` but still REQUIRED a timestamp, and 113 of 160 real replies
+        omit it (`#1: text`), so it recovered only 372/1920.  The final fix makes the
+        timestamp OPTIONAL, and the shared parser now recovers 1920/1920.  This test
+        pins the end state and both sub-stream parsers must agree with it.
+        """
         from tools.dsh import vlm_mosaic as M
         from eval.exp_vlm.vlm_run import parse_tile_lines_tolerant
         with_ts = "#1 00:00.4s: both hands align a tube"
         no_ts = "#1: both hands align a tube"
-        self.assertEqual(len(M.parse_tile_lines(with_ts)), 1)      # fixed in beb742e (lead)
-        self.assertEqual(M.parse_tile_lines(no_ts), {})           # still missed
-        self.assertEqual(len(parse_tile_lines_tolerant(no_ts)), 1)  # our parser reads it
+        self.assertEqual(len(M.parse_tile_lines(with_ts)), 1)
+        self.assertEqual(len(M.parse_tile_lines(no_ts)), 1)        # fixed: timestamp optional
+        self.assertEqual(M.parse_tile_lines(no_ts)[1][0], "")      # and reported as empty
+        self.assertEqual(len(parse_tile_lines_tolerant(no_ts)), 1)
+        # both parsers agree on the three real shapes
+        for raw in (with_ts, no_ts, "#3 00:02.1s  left hand steadies the jig"):
+            self.assertEqual(sorted(M.parse_tile_lines(raw)),
+                             sorted(parse_tile_lines_tolerant(raw)), raw)
 
     def test_both_reply_shapes_are_read_by_the_tolerant_parser(self):
         from eval.exp_vlm.vlm_run import parse_tile_lines_tolerant

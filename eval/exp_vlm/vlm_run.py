@@ -1,53 +1,42 @@
-<<<<<<< HEAD
-"""Shared run helpers for GRID.V01 / GRID.V03 (sub-stream V-B).
+"""Shared run helpers for the GRID.V track (sub-streams V-A and V-B merged).
 
-Three jobs:
-  * build the sheet for a named arm WITHOUT re-deriving anything (the arm table is
-    fixed by `experiments/GRID.VLM/PREREG.json`);
-  * a hard call-budget guard: every call goes through `guard()`, which reads the
-    per-run JSONL ledger and refuses to exceed the pre-registered cap;
-  * ledger-based RESUME, so a crash or a timeout never re-spends a call: a
-    (window, arm) pair already recorded with ok=True is skipped.
+V-B side: the pre-registered V03 arm table, sheet building for a named arm, a hard
+call-budget guard wired to the per-run JSONL ledger, and ledger-based RESUME so a
+crash or a timeout never re-spends a call.
+V-A side: PNG sheet caching (one build per window/config, reused byte-identically
+across repeat runs) and a small parallel runner.
 
-Nothing here prints, logs or stores the API key: the key is read in-process by
-`portal/muse_video.py::_post` and never surfaces.
-=======
-"""Shared runner helpers for GRID.V02/V04 (sheet caching + parallel calls).
+The two sub-streams independently created this module under the same path; the merge
+kept BOTH APIs rather than dropping either, because run_v01.py/run_v03.py need the
+guard/resume half and grid_v02.py/grid_v04.py/grid_v06.py need the cache half.
 
-Sheets are built ONCE per (window, config) and cached as PNG bytes under
-/tmp/opencode/dsh/sheets, so:
-  * V04's repeat runs reuse the EXACT same PNG bytes (the only variation is the
-    model), and
-  * a re-run after a crash does not rebuild or re-call anything already done.
-
-PNGs are dataset frames: they live under /tmp/opencode only and are never
-committed.  Dataset frames and videos must not reach git.
->>>>>>> 3a01dfbf16b5de6f7f384470bfa4aad69651e534
+Nothing here prints, logs or stores the API key: it is read in-process by
+`portal/muse_video.py::_post` and never surfaces.  PNGs are dataset frames and live
+under /tmp/opencode only; they are never committed.
 """
-from __future__ import annotations
-
 import hashlib
 import json
 import os
-<<<<<<< HEAD
+import re
 import sys
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-for p in (ROOT, os.path.join(ROOT, "tools", "dsh")):
-    if p not in sys.path:
-        sys.path.insert(0, p)
+for _p in (ROOT, os.path.join(ROOT, "tools", "dsh"), os.path.join(ROOT, "eval", "exp_vlm")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
+import vlm_common as V  # noqa: E402
+import vlm_mosaic as M  # noqa: E402
 import vlm_mosaic as VM  # noqa: E402
 import vlm_sheet as S  # noqa: E402
-from eval.exp_vlm import vlm_common as V  # noqa: E402
 
 PREREG = json.load(open(os.path.join(ROOT, "experiments", "GRID.VLM", "PREREG.json")))
 
-#: V03 arms exactly as pre-registered.  ``prompt`` defaults to the plain quality
-#: prompt; only arm (e) changes it.  ``labels``/``shuffle_seed``/``n_tiles``/``cols``
-#: are the sheet switches.
 V03_ARMS = {
     "a_no_timestamps":       {"labels": False},
     "b_shuffled_order":      {"shuffle_seed": 12345},
@@ -236,19 +225,7 @@ def quality_scores(rec: dict):
 def usable_share(records) -> float:
     us = [r for r in records if r.get("quality") is not None]
     return round(sum(1 for r in us if r["quality"][0]) / len(us), 4) if us else float("nan")
-=======
-import re
-import sys
-import threading
-import time
-from concurrent.futures import ThreadPoolExecutor
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, os.path.join(ROOT, "tools", "dsh"))
-sys.path.insert(0, os.path.join(ROOT, "eval", "exp_vlm"))
-
-import vlm_common as V  # noqa: E402
-import vlm_mosaic as M  # noqa: E402
 
 SHEET_DIR = os.environ.get("JADAL_SHEET_DIR", "/tmp/opencode/dsh/sheets")
 CALLS_DIR = os.path.join(ROOT, "eval", "results", "exp_vlm")
@@ -349,4 +326,3 @@ def parallel_run(items, fn, workers: int = 3, on_done=None):
         for i, res in ex.map(wrapped, list(enumerate(items))):
             out[i] = res
     return out
->>>>>>> 3a01dfbf16b5de6f7f384470bfa4aad69651e534
