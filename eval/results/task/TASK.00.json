@@ -1,0 +1,554 @@
+{
+ "auroc": 0.5755,
+ "auroc_blocks": {
+  "flipped_no_active_work_as_positive": {
+   "auroc": 0.4245,
+   "ci95": [
+    0.2614,
+    0.5725
+   ],
+   "ci95_type": "factory-grouped bootstrap (2000 draws, seed 0)",
+   "label_1": "NO_ACTIVE_WORK (1) vs good (0)",
+   "n": 157,
+   "n_bad": 138,
+   "n_good": 19
+  },
+  "good_vs_all_bad": {
+   "auroc": 0.5878,
+   "ci95": [
+    0.4503,
+    0.7284
+   ],
+   "ci95_type": "factory-grouped bootstrap (2000 draws, seed 0)",
+   "ci95_type_window_optimistic": "window bootstrap (2000 draws, seed 0) -- optimistic, factories correlated",
+   "ci95_window_optimistic": [
+    0.4703,
+    0.7105
+   ],
+   "label_1": "good (1) vs all 22 bad (0)",
+   "n": 160,
+   "n_bad": 22,
+   "n_boot_valid": 2000,
+   "n_factories": 47,
+   "n_good": 138
+  },
+  "good_vs_all_bad_same_rows": {
+   "auroc": 0.5878,
+   "ci95": [
+    0.4503,
+    0.7284
+   ],
+   "ci95_type": "factory-grouped bootstrap (2000 draws, seed 0)",
+   "ci95_type_window_optimistic": "window bootstrap (2000 draws, seed 0) -- optimistic, factories correlated",
+   "ci95_window_optimistic": [
+    0.4703,
+    0.7105
+   ],
+   "label_1": "good (1) vs all 22 bad (0) [same set, sensitivity]",
+   "n": 160,
+   "n_bad": 22,
+   "n_boot_valid": 2000,
+   "n_factories": 47,
+   "n_good": 138
+  },
+  "no_active_work_vs_good": {
+   "auroc": 0.5755,
+   "ci95": [
+    0.4275,
+    0.7386
+   ],
+   "ci95_type": "factory-grouped bootstrap (2000 draws, seed 0)",
+   "ci95_type_window_optimistic": "window bootstrap (2000 draws, seed 0) -- optimistic, factories correlated",
+   "ci95_window_optimistic": [
+    0.4425,
+    0.6985
+   ],
+   "label_1": "good (1) vs NO_ACTIVE_WORK (0)",
+   "n": 157,
+   "n_bad": 19,
+   "n_boot_valid": 2000,
+   "n_factories": 47,
+   "n_good": 138
+  }
+ },
+ "band_check": {
+  "derived_vs_shipped_mismatches": 0,
+  "n_checked": 160
+ },
+ "bundle_used_for_ood160_labels": "/home/parshu/projects/jadal-qa-wt/handover/pod_bundle",
+ "caveat": "Rates here are descriptive agreement on 160 windows a single human labelled; the negative class is small (19 NO_ACTIVE_WORK) and 47 factories with 1-13 windows each make factory-grouped intervals wide. No accuracy claim is made about unlabelled video.",
+ "ci95": [
+  0.4275,
+  0.7386
+ ],
+ "ci95_type": "factory-grouped bootstrap (2000 draws, seed 0)",
+ "command": "JADAL_BUNDLE=<bundle> /home/parshu/envs/jadal/bin/python tools/task/task00.py",
+ "config": {
+  "band": "review iff |p-0.5|<0.25; else accept iff p>=0.6 (inert) -> accept iff p>=0.75, reject iff p<=0.25",
+  "id": "TASK.00",
+  "labels": "labels/ood160_labels.json",
+  "margin": 0.25,
+  "n_boot": 2000,
+  "n_perm": 20000,
+  "score_file": "interview/dsh_pack/ood160_heads_old26_vs_new22.json [old26]",
+  "seed": 0,
+  "threshold": 0.6
+ },
+ "config_sha256": "c35aeb2e344029869e9ad3a1fbc3291c63e7f6db3ab6902bc567f07ab483df3c",
+ "cost": "0 GPU; cached scores only; <5 s CPU",
+ "dataset": {
+  "bad_reasons": {
+   "HANDS_NOT_VISIBLE": 2,
+   "NO_ACTIVE_WORK": 19,
+   "SHAKY": 1
+  },
+  "n_bad": 22,
+  "n_factories": 47,
+  "n_good": 138,
+  "n_no_active_work": 19,
+  "n_null_scores": 0,
+  "n_other_bad": 3,
+  "n_windows": 160
+ },
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "false_accepts_no_active_work": 7,
+ "git_sha": "83b03df1cf25918c0a6854926b8b7cf8b3c82dcc",
+ "headline": "AUROC of the frozen old26 score for NO_ACTIVE_WORK (0) vs good (1)",
+ "id": "TASK.00",
+ "label_source": "human labels, ONE labeller (160 Egocentric-10K windows: 138 good / 22 bad; 19 of 22 bad are NO_ACTIVE_WORK)",
+ "n": 157,
+ "n_bad": 19,
+ "n_good": 138,
+ "n_groups": 47,
+ "per_factory": {
+  "caveat": "weak test: 47 factory-level points, 41 of 47 factories have <=5 windows, only 11 have any NO_ACTIVE_WORK at all, and the factory shares are coarse ratios of small counts",
+  "n_factories": 47,
+  "n_factories_with_any_no_active_work": 11,
+  "n_factories_with_ge5_windows": 8,
+  "n_perm": 20000,
+  "pearson_r": 0.204,
+  "permutation_p_two_sided": 0.1708,
+  "rows": [
+   {
+    "factory": "factory_001",
+    "n_no_active_work": 1,
+    "n_windows": 10,
+    "no_active_work_share": 0.1,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_003",
+    "n_no_active_work": 1,
+    "n_windows": 11,
+    "no_active_work_share": 0.0909,
+    "reject_or_review_share": 0.6364
+   },
+   {
+    "factory": "factory_009",
+    "n_no_active_work": 3,
+    "n_windows": 13,
+    "no_active_work_share": 0.2308,
+    "reject_or_review_share": 0.1538
+   },
+   {
+    "factory": "factory_010",
+    "n_no_active_work": 0,
+    "n_windows": 3,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.0
+   },
+   {
+    "factory": "factory_013",
+    "n_no_active_work": 0,
+    "n_windows": 4,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.5
+   },
+   {
+    "factory": "factory_014",
+    "n_no_active_work": 2,
+    "n_windows": 3,
+    "no_active_work_share": 0.6667,
+    "reject_or_review_share": 0.3333
+   },
+   {
+    "factory": "factory_016",
+    "n_no_active_work": 0,
+    "n_windows": 4,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.5
+   },
+   {
+    "factory": "factory_019",
+    "n_no_active_work": 0,
+    "n_windows": 3,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.0
+   },
+   {
+    "factory": "factory_020",
+    "n_no_active_work": 0,
+    "n_windows": 6,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.6667
+   },
+   {
+    "factory": "factory_021",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.5
+   },
+   {
+    "factory": "factory_022",
+    "n_no_active_work": 0,
+    "n_windows": 4,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.0
+   },
+   {
+    "factory": "factory_023",
+    "n_no_active_work": 2,
+    "n_windows": 2,
+    "no_active_work_share": 1.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_024",
+    "n_no_active_work": 0,
+    "n_windows": 5,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.0
+   },
+   {
+    "factory": "factory_026",
+    "n_no_active_work": 0,
+    "n_windows": 1,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_028",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.5
+   },
+   {
+    "factory": "factory_029",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_033",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.0
+   },
+   {
+    "factory": "factory_035",
+    "n_no_active_work": 0,
+    "n_windows": 1,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_036",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_037",
+    "n_no_active_work": 0,
+    "n_windows": 3,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.0
+   },
+   {
+    "factory": "factory_038",
+    "n_no_active_work": 0,
+    "n_windows": 1,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.0
+   },
+   {
+    "factory": "factory_039",
+    "n_no_active_work": 0,
+    "n_windows": 3,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_040",
+    "n_no_active_work": 0,
+    "n_windows": 10,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.1
+   },
+   {
+    "factory": "factory_041",
+    "n_no_active_work": 0,
+    "n_windows": 3,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.0
+   },
+   {
+    "factory": "factory_042",
+    "n_no_active_work": 0,
+    "n_windows": 3,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_044",
+    "n_no_active_work": 0,
+    "n_windows": 1,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_046",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.5
+   },
+   {
+    "factory": "factory_051",
+    "n_no_active_work": 0,
+    "n_windows": 1,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.0
+   },
+   {
+    "factory": "factory_053",
+    "n_no_active_work": 0,
+    "n_windows": 3,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.6667
+   },
+   {
+    "factory": "factory_054",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_056",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_057",
+    "n_no_active_work": 0,
+    "n_windows": 4,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_058",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_060",
+    "n_no_active_work": 0,
+    "n_windows": 1,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_061",
+    "n_no_active_work": 1,
+    "n_windows": 9,
+    "no_active_work_share": 0.1111,
+    "reject_or_review_share": 0.4444
+   },
+   {
+    "factory": "factory_062",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_066",
+    "n_no_active_work": 1,
+    "n_windows": 2,
+    "no_active_work_share": 0.5,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_068",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_069",
+    "n_no_active_work": 3,
+    "n_windows": 5,
+    "no_active_work_share": 0.6,
+    "reject_or_review_share": 0.4
+   },
+   {
+    "factory": "factory_070",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_073",
+    "n_no_active_work": 2,
+    "n_windows": 2,
+    "no_active_work_share": 1.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_076",
+    "n_no_active_work": 2,
+    "n_windows": 2,
+    "no_active_work_share": 1.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_077",
+    "n_no_active_work": 0,
+    "n_windows": 4,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_079",
+    "n_no_active_work": 0,
+    "n_windows": 4,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_080",
+    "n_no_active_work": 1,
+    "n_windows": 1,
+    "no_active_work_share": 1.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_084",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 1.0
+   },
+   {
+    "factory": "factory_085",
+    "n_no_active_work": 0,
+    "n_windows": 2,
+    "no_active_work_share": 0.0,
+    "reject_or_review_share": 0.0
+   }
+  ],
+  "seed": 0,
+  "spearman_rho": 0.1217
+ },
+ "protocol": "zero-training agreement/association study on frozen scores; verdicts re-derived from the frozen score with the jadal/poc/cascade.py band and checked against the shipped verdict field (0/160 mismatches); factory-grouped bootstrap for every CI",
+ "score_separation": {
+  "good_median": 0.6259,
+  "no_active_work_median": 0.1467,
+  "other_bad_median": 0.0001
+ },
+ "seed": 0,
+ "status": "done",
+ "verdict_shares": {
+  "all_160": {
+   "accept": 71,
+   "accept_share": 0.4437,
+   "n": 160,
+   "reject": 67,
+   "reject_or_review": 89,
+   "reject_or_review_share": 0.5563,
+   "reject_share": 0.4188,
+   "review": 22,
+   "review_share": 0.1375
+  },
+  "all_other_windows": {
+   "accept": 64,
+   "accept_share": 0.4539,
+   "n": 141,
+   "reject": 57,
+   "reject_or_review": 77,
+   "reject_or_review_share": 0.5461,
+   "reject_share": 0.4043,
+   "review": 20,
+   "review_share": 0.1418
+  },
+  "by_bad_reason": {
+   "HANDS_NOT_VISIBLE": {
+    "accept": 0,
+    "accept_share": 0.0,
+    "n": 2,
+    "reject": 2,
+    "reject_or_review": 2,
+    "reject_or_review_share": 1.0,
+    "reject_share": 1.0,
+    "review": 0,
+    "review_share": 0.0
+   },
+   "NO_ACTIVE_WORK": {
+    "accept": 7,
+    "accept_share": 0.3684,
+    "n": 19,
+    "reject": 10,
+    "reject_or_review": 12,
+    "reject_or_review_share": 0.6316,
+    "reject_share": 0.5263,
+    "review": 2,
+    "review_share": 0.1053
+   },
+   "SHAKY": {
+    "accept": 1,
+    "accept_share": 1.0,
+    "n": 1,
+    "reject": 0,
+    "reject_or_review": 0,
+    "reject_or_review_share": 0.0,
+    "reject_share": 0.0,
+    "review": 0,
+    "review_share": 0.0
+   }
+  },
+  "good_only": {
+   "accept": 63,
+   "accept_share": 0.4565,
+   "n": 138,
+   "reject": 55,
+   "reject_or_review": 75,
+   "reject_or_review_share": 0.5435,
+   "reject_share": 0.3986,
+   "review": 20,
+   "review_share": 0.1449
+  },
+  "no_active_work": {
+   "accept": 7,
+   "accept_share": 0.3684,
+   "n": 19,
+   "reject": 10,
+   "reject_or_review": 12,
+   "reject_or_review_share": 0.6316,
+   "reject_share": 0.5263,
+   "review": 2,
+   "review_share": 0.1053
+  }
+ }
+}
