@@ -30,7 +30,9 @@ import vlm_mosaic as VM  # noqa: E402
 from eval.exp_vlm import vlm_common as V  # noqa: E402
 from eval.exp_vlm import vlm_run as R  # noqa: E402
 
-CAP = 160                      # pre-registered V01 cap
+#: The frozen PREREG sets V01's budget to 20 calls.  The task brief said "cap 160"
+#: (a discrepancy recorded in docs/reports/grid_vlm_b.md); 20 calls satisfy both.
+CAP = R.PREREG["call_budget"]["V01"]
 IDS = R.PREREG["windows"]["V01_20"]
 OUT = os.path.join(ROOT, "eval", "results", "exp_vlm", "GRID.V01.json")
 LEDGER = os.environ.get("JADAL_VLM_LEDGER", "/tmp/opencode/dsh/vlm_ledger_b.jsonl")
@@ -109,8 +111,9 @@ def main():
         "ci95_type": "not applicable: V01 is a descriptive reading measurement (no AUROC, "
                      "no classifier, no hypothesis test)",
         "device": "API call (OpenCode Go Responses, model read in-process); sheets built on CPU",
-        "cost": f"{calls['total']} image API calls made in this run (V01 cap 160); "
-                f"{calls['text']} text calls",
+        "cost": f"{len([r for r in R.ledger_rows(LEDGER) if r.get('arm') == 'v01_read_tiles'])} "
+                f"image API calls made by V01 (PREREG cap {CAP}; the task brief said 160 -- "
+                f"both satisfied); {calls['text']} text calls",
         "command": "JADAL_VLM_LEDGER=<ledger> python3 eval/exp_vlm/run_v01.py",
         "git_sha": C.git_sha(), "seed": 0,
         "config_sha256": C.config_sha256({"windows": IDS, "cap": CAP, "n_tiles": 12, "cols": 4,

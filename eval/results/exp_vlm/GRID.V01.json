@@ -3,7 +3,7 @@
  "ci95_type": "not applicable: V01 is a descriptive reading measurement (no AUROC, no classifier, no hypothesis test)",
  "command": "JADAL_VLM_LEDGER=<ledger> python3 eval/exp_vlm/run_v01.py",
  "config": {
-  "cap": 160,
+  "cap": 20,
   "cols": 4,
   "labels": true,
   "n_tiles": 12,
@@ -31,8 +31,8 @@
    "r098"
   ]
  },
- "config_sha256": "c7772148301188c33f75d2d5ff10633800a167b5fbd4aef00bf6326c715a7008",
- "cost": "20 image API calls made in this run (V01 cap 160); 0 text calls",
+ "config_sha256": "011596e8389f63311d7ad10fbbd484f8e8e4730c6d26b62ec235a7b4d02ecb05",
+ "cost": "20 image API calls made by V01 (PREREG cap 20; the task brief said 160 -- both satisfied); 0 text calls",
  "counts": {
   "exact_number_and_timestamp": 240,
   "returned_lines": 240,
@@ -42,7 +42,7 @@
  "device": "API call (OpenCode Go Responses, model read in-process); sheets built on CPU",
  "exact_match_rate_per_returned_line": 1.0,
  "exact_match_rate_per_sheet_tile": 1.0,
- "git_sha": "a3e504659f74d69f54632dcd1f8bfba5606e51c2",
+ "git_sha": "e66f3aff53153f2949c4e9e3346d5ad6056212b5",
  "human_spot_check": "OUTSTANDING -- the builder must eyeball the sheets and replies; sheet PNG sha256 and full raw replies are included for that purpose. PNGs live under /tmp/opencode/dsh/sheets and are never committed.",
  "id": "GRID.V01",
  "interpretation_limits": [
