@@ -251,6 +251,29 @@ denser gap definition or more annotated clips appear).
 
 ---
 
+## 3b. Independent re-run: GRID.01 / GRID.02 (S5's verification duty)
+
+Separate page: **`docs/reports/verification_grid01_02.md`**. Registry `TASK.07`, results
+`eval/results/task/TASK.07.json`, code `tools/task/verify_grid01.py`.
+
+S5 rewrote the AUROC, the LOCO loop, the clip bootstrap and the paired clip bootstrap from scratch
+(no import of `eval/exp_grid/run_grid.py`; no `tools/dsh/common.py` metric functions — that loader is
+imported only to assert that my own manifest/cache derivation equals it) and recomputed the GRID
+claims from the committed feature vectors. **Verdict: reproduced exactly** — every published AUROC and
+every interval, including the 26-feature baseline 0.810 [0.683, 0.892], GRID.01's 0.6864
+[0.522, 0.772] and its paired delta −0.12360 [−0.20164, −0.07104], GRID.02's 0.7058 [0.514, 0.785]
+and its paired delta +0.01940 [−0.01803, +0.05316], and GRID.03's 0.7002 and −0.00560.
+
+**The kill gate still fails**: +0.019400 against the pre-registered 0.02, a margin of 0.0006, and the
+paired interval includes zero, so the mosaic-as-decision-input line stays stopped. The feature artifact
+was integrity-checked (150/150 per-window digests and the top-level digest reproduce under a
+re-implementation of the digest recipe), and two presentation hazards are recorded: GRID.01's
+`secondary_mean_pooling.delta_vs_primary` sign reads backwards (the control is 0.026 *better*, which
+the GRID report states correctly), and the kill gate is evaluated on 4-dp-rounded AUROCs (verified not
+to change the outcome).
+
+---
+
 ## 4. What was NOT done, and why
 
 * **No training, no new inference, no API calls.** TASK.00 is a join over existing labels and
