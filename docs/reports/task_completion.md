@@ -275,6 +275,22 @@ denser gap definition or more annotated clips appear).
 * **The per-factory correlation is not a usable predictor**, and is reported only because the brief
   asked for it. 47 points, 11 informative, p = 0.17.
 
+## 4b. Environment finding that affects every stream's "definition of done" [MEASURED]
+
+`nice -n 10 python -m unittest discover -s tests` in `/home/parshu/envs/jadal/bin/python` runs
+**778 tests**: **0 failures, 1 error, 11 skipped, 34.3 s**. The single error is
+`ModuleNotFoundError: No module named 'pytest'` raised at import time by
+`tests/test_exp_motion_cue.py` line 14. That file is **byte-identical to `origin/main`**
+(`git diff --stat origin/main -- tests/test_exp_motion_cue.py` is empty), it is not touched by this
+branch, and `pytest` is simply not installed in the project venv — so this is a pre-existing
+red on `main`, not a regression from this work. Two other test modules also import `pytest`
+(`tests/test_ood_frozen_guard.py`, `tests/test_poc_integration.py`) and only pass because their
+`load_tests` hooks avoid the import path. S0 owns the environment record; flagging it here because
+`make test` cannot be green for any stream until `pytest` is installed or those imports are guarded.
+
+The 10 tests added by this work (`tests/test_task00_zero_label.py`) pass, and the band regression
+test was shown to fail when the band is deliberately moved by 0.01.
+
 ## 5. Open questions for Awign
 
 1. **The task list for these clips.** We hold step lists for the IndEgo dataset tasks
