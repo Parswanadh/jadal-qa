@@ -1,0 +1,56 @@
+{
+ "negative_controls": {
+  "shuffled_labels_mean_auroc": 0.5035,
+  "shuffled_labels_max_auroc": 0.6384,
+  "random_gaussian_mean_auroc": 0.4695,
+  "random_gaussian_max_auroc": 0.5774,
+  "null_grey_mosaic_auroc": 0.5,
+  "passes": true
+ },
+ "canvas_controls": {
+  "content_reference_no_ts_no_mask": {
+   "arm_tag": "m3x3_t224_nots",
+   "n_features": 79,
+   "auroc": 0.718,
+   "delta_vs_primary_all_groups": 0.0178
+  },
+  "text_visible_not_masked": {
+   "arm_tag": "m3x3_t224_leak",
+   "n_features": 79,
+   "auroc": 0.7122,
+   "delta_vs_primary_all_groups": 0.012
+  },
+  "tile_order_shuffled": {
+   "arm_tag": "m3x3_t224_shuf",
+   "n_features": 79,
+   "auroc": 0.7002,
+   "delta_vs_primary_all_groups": 0.0
+  },
+  "TEXT_LEAK_test": {
+   "comparison": "timestamps drawn and NOT masked  vs  no timestamps and no mask",
+   "delta_auroc": -0.0058,
+   "ci95": [
+    -0.027,
+    0.036
+   ],
+   "excludes_zero": false,
+   "verdict": "no measurable text leak"
+  },
+  "MASK_COST_test": {
+   "comparison": "primary (timestamps drawn, masked)  vs  content reference (no mask)",
+   "delta_auroc": -0.0178,
+   "ci95": [
+    -0.048,
+    0.008
+   ],
+   "excludes_zero": false
+  },
+  "ARRANGEMENT_test": {
+   "comparison": "primary vs shuffled tile placement",
+   "note": "the pooled feature set is arrangement-invariant by construction, so this control is expected to be a no-op and is reported as the answer to 'does tile layout matter', not as a leak test",
+   "delta_vs_primary_all_groups": 0.0
+  }
+ },
+ "feature_digest_sha256": "600e6eb467ea0969a666382133fd98f39ec3eef002d99cff1f4f472b9f207315",
+ "git_sha": "83b03df1cf25918c0a6854926b8b7cf8b3c82dcc"
+}

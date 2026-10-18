@@ -1,0 +1,152 @@
+{
+ "baseline_26_on_same_folds": {
+  "auroc": 0.81,
+  "bal_acc_at_0.5": 0.74,
+  "bal_acc_youden_in_sample": 0.785,
+  "ci95": [
+   0.683,
+   0.892
+  ],
+  "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+  "ci95_window_optimistic": [
+   0.722,
+   0.889
+  ],
+  "label": "baseline_26_shipped_features",
+  "n_features": 26,
+  "youden_threshold_in_sample": 0.3961
+ },
+ "ci95": [
+  0.514,
+  0.785
+ ],
+ "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+ "command": "JADAL_BUNDLE=<bundle> python3 eval/exp_grid/run_grid.py",
+ "config": {
+  "folds": "leave-one-clip-out over 7 clips",
+  "grid": [
+   3,
+   3
+  ],
+  "groups": [
+   "spatial",
+   "intertile"
+  ],
+  "kill_gate_delta": 0.02,
+  "model": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced)",
+  "n_tiles": 9,
+  "order": "row-major time",
+  "pools": [
+   "mean",
+   "min",
+   "max",
+   "std"
+  ],
+  "primary": "spatial_pooled_meanminmaxstd",
+  "secondary": "spatial_mean_only",
+  "seed": 0,
+  "tile_px": 224,
+  "timestamps": true
+ },
+ "config_sha256": "299010191225ceb8518a78ded4384ae4776de5acfa4945586e69a8b7178f50f8",
+ "cost": "mosaic build+features 194.9 ms/window (CPU)",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "feature_digest_sha256": "600e6eb467ea0969a666382133fd98f39ec3eef002d99cff1f4f472b9f207315",
+ "git_sha": "83b03df1cf25918c0a6854926b8b7cf8b3c82dcc",
+ "id": "GRID.02",
+ "kill_gate": {
+  "delta_required": 0.02,
+  "observed": 0.0194,
+  "passed": false
+ },
+ "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad)",
+ "n": 150,
+ "n_bad": 50,
+ "negative_controls": {
+  "null_grey_mosaic_auroc": 0.5,
+  "passes": true,
+  "random_gaussian_max_auroc": 0.5774,
+  "random_gaussian_mean_auroc": 0.4695,
+  "shuffled_labels_max_auroc": 0.6384,
+  "shuffled_labels_mean_auroc": 0.5035
+ },
+ "per_group_ablation": {
+  "spatial+intertile": {
+   "auroc": 0.7058,
+   "n_features": 72
+  },
+  "spatial_only": {
+   "auroc": 0.6864,
+   "n_features": 60
+  }
+ },
+ "primary": {
+  "auroc": 0.7058,
+  "bal_acc_at_0.5": 0.68,
+  "bal_acc_youden_in_sample": 0.7,
+  "ci95": [
+   0.514,
+   0.785
+  ],
+  "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+  "ci95_window_optimistic": [
+   0.608,
+   0.79
+  ],
+  "delta_vs_spatial_only": {
+   "delta": 0.019399999999999973,
+   "excludes_zero": false,
+   "hi": 0.053159501139085186,
+   "lo": -0.018027210884353773,
+   "n_boot": 2000
+  },
+  "label": "spatial+intertile",
+  "n_features": 72,
+  "youden_threshold_in_sample": 0.7498
+ },
+ "protocol": "LOCO over 7 clips; leave-one-group-out ablation of the intertile group",
+ "seed": 0,
+ "spatial_only": {
+  "auroc": 0.6864,
+  "bal_acc_at_0.5": 0.67,
+  "bal_acc_youden_in_sample": 0.695,
+  "ci95": [
+   0.522,
+   0.772
+  ],
+  "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+  "ci95_window_optimistic": [
+   0.585,
+   0.777
+  ],
+  "label": "spatial_pooled_meanminmaxstd",
+  "n_features": 60,
+  "youden_threshold_in_sample": 0.5313
+ },
+ "top_single_intertile_features_pooled_auc": [
+  [
+   0.747,
+   "it_zncc_mean"
+  ],
+  [
+   0.684,
+   "it_flicker"
+  ],
+  [
+   0.673,
+   "it_zncc_min"
+  ],
+  [
+   0.67,
+   "it_bright_var"
+  ],
+  [
+   0.649,
+   "it_mad_mean"
+  ],
+  [
+   0.621,
+   "it_shift_max"
+  ]
+ ]
+}

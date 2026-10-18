@@ -1,0 +1,117 @@
+{
+ "config": {
+  "folds": "leave-one-clip-out over 7 clips",
+  "grid": [
+   3,
+   3
+  ],
+  "groups": [
+   "spatial",
+   "intertile"
+  ],
+  "kill_gate_delta": 0.02,
+  "model": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced)",
+  "n_tiles": 9,
+  "order": "row-major time",
+  "pools": [
+   "mean",
+   "min",
+   "max",
+   "std"
+  ],
+  "primary": "spatial_pooled_meanminmaxstd",
+  "secondary": "spatial_mean_only",
+  "seed": 0,
+  "tile_px": 224,
+  "timestamps": true
+ },
+ "config_sha256": "299010191225ceb8518a78ded4384ae4776de5acfa4945586e69a8b7178f50f8",
+ "controls": {
+  "null_grey_mosaic": "identical feature rows, must print 0.50",
+  "random_gaussian": "20 draws, must print <=0.60",
+  "shuffled_labels": "20 draws, must print <=0.60",
+  "tile_order_shuffled": {
+   "folds": "same",
+   "grid": [
+    3,
+    3
+   ],
+   "groups": [
+    "spatial",
+    "intertile",
+    "diff"
+   ],
+   "model": "same",
+   "n_tiles": 9,
+   "order": "shuffled (seed 12345)",
+   "pools": [
+    "mean",
+    "min",
+    "max",
+    "std"
+   ],
+   "role": "canvas control",
+   "seed": 0,
+   "tile_px": 224,
+   "timestamps": true
+  },
+  "timestamps_off": {
+   "folds": "same",
+   "grid": [
+    3,
+    3
+   ],
+   "groups": [
+    "spatial",
+    "intertile",
+    "diff"
+   ],
+   "model": "same",
+   "n_tiles": 9,
+   "order": "row-major time",
+   "pools": [
+    "mean",
+    "min",
+    "max",
+    "std"
+   ],
+   "role": "timestamp-leak control",
+   "seed": 0,
+   "tile_px": 224,
+   "timestamps": false
+  }
+ },
+ "decision_rule": {
+  "adopt_if": "intertile adds >= 0.02 AUROC (kill-gate) AND the paired clip-bootstrap interval excludes zero",
+  "kill_if": "delta < 0.02 -> STOP the mosaic-as-decision-input line (no GRID.03/04 beyond a small control); keep the mosaic as an evidence picture",
+  "multiplicity": "GRID.02 is one of two group comparisons on the same 150 labels (spatial vs spatial+intertile); no correction applied, both reported"
+ },
+ "frozen_before_run": true,
+ "frozen_utc": "2026-10-18",
+ "id": "GRID.02",
+ "protocol": {
+  "folds": "leave-one-clip-out over 7 clips",
+  "grid": [
+   3,
+   3
+  ],
+  "groups": [
+   "spatial"
+  ],
+  "kill_gate_delta": 0.02,
+  "model": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced)",
+  "n_tiles": 9,
+  "order": "row-major time",
+  "pools": [
+   "mean",
+   "min",
+   "max",
+   "std"
+  ],
+  "primary": "spatial_pooled_meanminmaxstd",
+  "secondary": "spatial_mean_only",
+  "seed": 0,
+  "tile_px": 224,
+  "timestamps": true
+ }
+}

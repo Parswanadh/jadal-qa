@@ -1,0 +1,118 @@
+{
+ "baseline_26_on_same_folds": {
+  "auroc": 0.81,
+  "bal_acc_at_0.5": 0.74,
+  "bal_acc_youden_in_sample": 0.785,
+  "ci95": [
+   0.683,
+   0.892
+  ],
+  "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+  "ci95_window_optimistic": [
+   0.722,
+   0.889
+  ],
+  "label": "baseline_26_shipped_features",
+  "n_features": 26,
+  "youden_threshold_in_sample": 0.3961
+ },
+ "ci95": [
+  0.522,
+  0.772
+ ],
+ "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+ "command": "JADAL_BUNDLE=<bundle> python3 eval/exp_grid/run_grid.py",
+ "config": {
+  "folds": "leave-one-clip-out over 7 clips",
+  "grid": [
+   3,
+   3
+  ],
+  "groups": [
+   "spatial"
+  ],
+  "kill_gate_delta": 0.02,
+  "model": "StandardScaler+LogisticRegression(C=0.3,class_weight=balanced)",
+  "n_tiles": 9,
+  "order": "row-major time",
+  "pools": [
+   "mean",
+   "min",
+   "max",
+   "std"
+  ],
+  "primary": "spatial_pooled_meanminmaxstd",
+  "secondary": "spatial_mean_only",
+  "seed": 0,
+  "tile_px": 224,
+  "timestamps": true
+ },
+ "config_sha256": "557752c9f49eb3c3d6ace0491ae4924d6427ad3e5018f2cd78c054878cc67d89",
+ "cost": "mosaic build+features 194.9 ms/window (CPU)",
+ "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
+ "feature_digest_sha256": "600e6eb467ea0969a666382133fd98f39ec3eef002d99cff1f4f472b9f207315",
+ "git_sha": "83b03df1cf25918c0a6854926b8b7cf8b3c82dcc",
+ "id": "GRID.01",
+ "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad)",
+ "n": 150,
+ "n_bad": 50,
+ "negative_controls": {
+  "null_grey_mosaic_auroc": 0.5,
+  "passes": true,
+  "random_gaussian_max_auroc": 0.5774,
+  "random_gaussian_mean_auroc": 0.4695,
+  "shuffled_labels_max_auroc": 0.6384,
+  "shuffled_labels_mean_auroc": 0.5035
+ },
+ "notes": "EmbeddingGemma-2 mosaic reference on this layout was 0.785 (E2.01, embedding model, optional arm); the 26-number baseline on the same folds is in this file.",
+ "primary": {
+  "auroc": 0.6864,
+  "bal_acc_at_0.5": 0.67,
+  "bal_acc_youden_in_sample": 0.695,
+  "ci95": [
+   0.522,
+   0.772
+  ],
+  "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+  "ci95_window_optimistic": [
+   0.585,
+   0.777
+  ],
+  "delta_vs_baseline26": {
+   "delta": -0.12360000000000004,
+   "excludes_zero": true,
+   "hi": -0.0710445892614334,
+   "lo": -0.20163953134510046,
+   "n_boot": 2000
+  },
+  "label": "spatial_pooled_meanminmaxstd",
+  "n_features": 60,
+  "youden_threshold_in_sample": 0.5313
+ },
+ "protocol": "LOCO over 7 IndEgo clips, shipped head recipe, nothing selected on held-out clips",
+ "secondary_mean_pooling": {
+  "auroc": 0.7122,
+  "bal_acc_at_0.5": 0.68,
+  "bal_acc_youden_in_sample": 0.695,
+  "ci95": [
+   0.504,
+   0.788
+  ],
+  "ci95_type": "clip-level bootstrap (2000 draws, seed 0)",
+  "ci95_window_optimistic": [
+   0.628,
+   0.797
+  ],
+  "delta_vs_primary": {
+   "delta": -0.025800000000000045,
+   "excludes_zero": false,
+   "hi": 0.07222725212501128,
+   "lo": -0.09268838452273415,
+   "n_boot": 2000
+  },
+  "label": "spatial_mean_only_capacity_control",
+  "n_features": 15,
+  "youden_threshold_in_sample": 0.5175
+ },
+ "seed": 0
+}

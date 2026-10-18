@@ -42,6 +42,9 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 | E8.01 | E8 | running | - | E8.01 re-score 1,546 Egocentric-10K windows with the frozen two-view recipe + profile router | queues/manifest_scale.json: 1546 windows / 58 clips / 4.404  / factory Egocentric-10K, 1080p, 30 fps, HEVC, handheld egocentric manufacturing |
 | E9.01 |  | done | adopt |  |  /  |
 | GRID.00 | GRID | done | adopt | Baseline gate: 26-feature logistic LOCO on IndEgo-150 must reproduce AUROC 0.810 | IndEgo 150 windows (100 good / 50 bad), ONE human labeller;  / 480p, ~10 fps, IndEgo assembly+logistics, 7 clips |
+| GRID.01 | GRID | done | drop | Mosaic-native spatial features + logistic on N=9 3x3 t224 (IndEgo-150, LOCO) | IndEgo 150 windows (100 good / 50 bad), ONE human labeller,  / 480p ~10 fps square 480x480 IndEgo assembly+logistics, CPU only |
+| GRID.02 | GRID | done | drop | Inter-tile temporal-proxy features on the mosaic: added value and leave-one-group-out ablation | same 150 IndEgo windows; mosaic-native group 'intertile' (12 / 480p ~10 fps IndEgo, CPU only |
+| GRID.03 | GRID | done | drop | Difference-mosaic channel (|I_t - I_{t-1}|) as a post-kill-gate small control | same 150 IndEgo windows; 'diff' group (7 features) on m3x3_t / 480p ~10 fps IndEgo, CPU only |
 | LB1 | B | done | adopt | Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy | IndEgo human gold 150 windows / 7 clips (human labels, READ- / 480p/10fps IndEgo in-domain LOCO (+ OOD position test, labels only) |
 | LB2 | B | done | adopt | PoC integration: adopted every-2nd window grid + 4s early exit + EG2 2fps + 26-feature pixel logistic (descriptive verdicts) |  / CPU only (GPU unavailable in the container); cached features; deterministic (fixed seeds) |
 | LB4 | B | pending | inconclusive | Stage frozen pre-registered OOD run (one command, sha256-guarded) | labels/ood_labels2.json (100 human-labelled Egocentric-10K w /  |
@@ -536,6 +539,42 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Decision:** Gate passed: GRID.01-09 and AUTO.00+ may start. Cached pod-bundle 26 features reproduce exactly on this laptop; use jadal-qa-wt/handover/jadal_pod_bundle/pod_bundle as JADAL_BUNDLE.
 - **Cost:** 0 GPU, ~2 s CPU
 - **Results:** eval/results/grid/GRID.00.json
+
+## GRID.01 — Mosaic-native spatial features + logistic on N=9 3x3 t224 (IndEgo-150, LOCO)
+- **Why:** The builder's headline question: can ONE composite image of N frames be scored by OUR OWN extractors and heads instead of the full-window pipeline? Only EmbeddingGemma-2 was ever tested on mosaics; the 26-number head cannot run on a still mosaic because 10 of its 26 features are measured along time at each pixel.
+- **Hypothesis:** Per-tile spatial statistics pooled over the 9 tiles carry usable quality signal: nested-LOCO AUROC within 0.05 of the 26-feature baseline (0.810) but below it, because the temporal features that carry much of the baseline are absent; the mean-pooled 15-feature variant will not be worse than the 60-feature pooled variant by more than 0.02 (capacity control).
+- **Data / label source:** IndEgo 150 windows (100 good / 50 bad), ONE human labeller, 7 clips; mosaic built from the 480p clips with jadal/mosaic/build.py (mosaic-1.0.0, N=9 3x3 224px, timestamps on, row-major time order); features from jadal/mosaic/features.py mosaic-features-1.0.0
+- **Regime:** 480p ~10 fps square 480x480 IndEgo assembly+logistics, CPU only
+- **Method:** StandardScaler + LogisticRegression(C=0.3, class_weight=balanced), leave-one-clip-out over 7 clips, pooled AUROC + clip-bootstrap 95% CI (2000 draws, seed 0); paired clip-bootstrap vs the 26-feature baseline; negative controls: shuffled labels, random Gaussian features, flat-grey null mosaic
+- **Owner / started / finished:** dsh / 2026-10-18 06:38 / 2026-10-18 06:43
+- **Verdict:** drop — Mosaic-native SPATIAL features only, N=9 3x3 t224, LOCO n=150 (100 good/50 bad, ONE labeller, 7 clips): AUROC 0.6864 [0.522,0.772] clip-bootstrap vs the 26-number baseline 0.810 [0.683,0.892] on the SAME folds. Paired clip-bootstrap difference -0.124 [-0.202,-0.071], EXCLUDES ZERO: the still picture is significantly WORSE than the full-window pipeline, not within 0.02. Mean-only pooling (15 feats) 0.7122 [0.504,0.788], delta vs 60-feature pooling -0.026 [-0.093,+0.072] (not established). Negative controls pass: shuffled labels 0.504, random Gaussian 0.470, null grey mosaic 0.500.
+- **Decision:** DROP as a decision input on in-domain evidence (decision rule (a) fails by 0.10). Keep the mosaic as an evidence picture. GRID.02/03 still run because they were pre-registered; the kill-gate at GRID.02 governs whether the line stops.
+- **Cost:** 195 ms/window for build+features (CPU), 0 GPU; 150 windows x 3 arms = ~90 s
+- **Results:** eval/results/exp_grid/GRID.01.json
+
+## GRID.02 — Inter-tile temporal-proxy features on the mosaic: added value and leave-one-group-out ablation
+- **Why:** A still mosaic has no time axis, so the temporal half of the shipped head cannot be computed the same way. The question is whether cheap inter-tile proxies (frame difference, pHash/ZNCC similarity, phase-correlation shift, cross-tile flicker) recover any of it.
+- **Hypothesis:** Inter-tile proxies add LESS than 0.02 nested-LOCO AUROC over spatial-only mosaic features (the pre-registered kill-gate), because an earlier motion mosaic was best in-domain (0.863) yet collapsed out of domain (0.401) and pooling beat spatial layout.
+- **Data / label source:** same 150 IndEgo windows; mosaic-native group 'intertile' (12 features) on the m3x3_t224 arm
+- **Regime:** 480p ~10 fps IndEgo, CPU only
+- **Method:** leave-one-group-out ablation (spatial / spatial+intertile / spatial+intertile+diff) with the same LOCO protocol; paired clip-bootstrap on the AUROC difference; kill-gate: stop the mosaic-as-decision-input line if the intertile group adds < 0.02
+- **Owner / started / finished:** dsh / 2026-10-18 06:38 / 2026-10-18 06:43
+- **Verdict:** drop — Inter-tile temporal-proxy features add +0.019 AUROC over spatial-only (0.7058 [0.514,0.785] vs 0.6864 [0.522,0.772]), paired clip-bootstrap delta +0.019 [-0.018,+0.053] does NOT exclude zero. PRE-REGISTERED KILL-GATE (delta >= 0.02) FAILS: 0.019 < 0.02. Per the brief the mosaic-as-decision-input line STOPS; GRID.03/04 run only as a small control. Best single intertile proxies are the frozen/duplicate/zncc family, not the shift proxies.
+- **Decision:** KILL-GATE FAILED -> stop the mosaic-as-decision-input line: no full GRID.04 sweep, no adoption path. Keep jadal/mosaic/features.py + tests as the measured answer and the mosaic as an evidence picture. Spend the freed compute on AUTO and on the mosaic's OOD transfer (report-only), which is the part the customer actually asked about.
+- **Cost:** same extraction, 0 extra GPU
+- **Results:** eval/results/exp_grid/GRID.02.json
+
+## GRID.03 — Difference-mosaic channel (|I_t - I_{t-1}|) as a post-kill-gate small control
+- **Why:** Pre-specified in the brief as conditional on the GRID.02 kill-gate passing. The kill-gate FAILED, so this runs only as the small control the brief permits; the feature group was fixed in eval/exp_grid/extract.py before any result was read, but the registry entry is written after the kill-gate outcome is known and is labelled as such.
+- **Hypothesis:** The motion channel adds nothing: the earlier EmbeddingGemma-2 test found the motion mosaic best in-domain (0.863) and worst out of domain (0.401).
+- **Data / label source:** same 150 IndEgo windows; 'diff' group (7 features) on m3x3_t224
+- **Regime:** 480p ~10 fps IndEgo, CPU only
+- **Method:** LOCO, same head recipe; paired clip-bootstrap vs spatial+intertile
+- **Owner / started / finished:** dsh / 2026-10-18 06:43 / 2026-10-18 06:43
+- **Verdict:** drop — Difference-mosaic (|I_t - I_{t-1}|) features on top of spatial+intertile: 0.7002 [0.503,0.778], paired delta vs spatial+intertile -0.006 [-0.016,+0.002], does NOT exclude zero: the motion channel adds nothing. Registered after the GRID.02 kill-gate failed (the small control the brief permits); the feature group and protocol were fixed before the run.
+- **Decision:** DROP the diff channel. Consistent with the earlier EG2 result (motion mosaic 0.863 in-domain, 0.401 OOD) and with the withdrawn spatial-localisation claim.
+- **Cost:** 0 extra (same decode pass)
+- **Results:** eval/results/exp_grid/GRID.03.json
 
 ## LB1 — Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy
 - **Why:** The adopted settings (every-2nd window, 4 s early exit, EG2 2 fps view, 26-feature logistic) drive the PoC and the submission; a second, independent re-run is the cheapest defence against a silent protocol bug.
