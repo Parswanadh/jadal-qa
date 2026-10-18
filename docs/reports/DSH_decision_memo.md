@@ -32,6 +32,15 @@ it is not established to work on factory footage, and **100 % coverage is not su
 **SHIP**
 * The existing funnel unchanged (S0 exact rules → 26-number head → 0.25/0.75 band). Nothing in this
   pass justified moving it.
+* **A vision-language second reader on the accepts** (GRID.V02/V06, Addendum 2) — the one new signal
+  that beats the pixel pipeline on factory footage. On OOD-160 the 12-tile sheet model scores
+  **AUROC 0.770 [0.662, 0.878]** factory-grouped, catches the `NO_ACTIVE_WORK` windows the pixel head
+  misses (**0.764 [0.652, 0.887]**), and beats the frozen shipped head by **+0.182 [+0.043, +0.314]**.
+  Used as a **veto on windows the head accepts at p ≥ 0.75** it halves the false accepts
+  (8 → 4 of 22) for a cost of 3 good windows, balanced accuracy **0.546 → 0.627** — but the paired
+  factory-clustered interval is **+0.08 [0.0000, 0.1591] and does not exclude zero**, so this ships as
+  a *risk-reducing audit aid*, not as an accuracy claim. Carry the success bias with it: **87.5 % of
+  its answers are "usable"**, so it never replaces the human sample.
 * **An audit policy** (AUTO.07): auto-decide, send a random 2–5 % sample **plus every low-confidence
   window** to humans, track error and verdict mix per site, alarm on drift. All hours columns are
   arithmetic on assumed review time and are labelled as such.
@@ -139,12 +148,24 @@ can tolerate, and that is the builder's/Awign's call, not a modelling result.
 5. **For TASK: the task list, the end-state that counts as done, whether a 3-minute clip is one task
    or several repeats, whether collectors repeat tasks across clips (episode grouping), and which
    partial states are billable.** Without these, clip-level "task completed" labels are guesswork and
-   must stay `UNVERIFIED`.
+   must stay `UNVERIFIED`. Additionally, per Addendum 1: **what counts as inaccurate?** We now have a
+   working definition (pick an object from one place, put it in another, accurately — right object,
+   right destination, no drop and no redo; judged from the visible start and end state), and every L2
+   number in this pass is reported as **"the builder's definition, not Awign's"**. On the 4 annotated
+   IndEgo clips the definition could not even be scored: the free truth is 4/4 "completed", i.e. zero
+   variance, so no L2 accuracy exists yet.
 
 ## 6. What this pass did not do
 
 * Full GRID.04 layout/density sweep — stopped by the pre-registered kill-gate.
-* GRID.08 round-3 hold-out scoring — deliberately not spent.
+* GRID.08 round-3 hold-out scoring — deliberately not spent, and the GRID.V track did not touch it
+  either.
+* **GRID.V (Addendum 2) limits** — see `docs/reports/grid_vlm.md`: the builder's human spot check of
+  the 20 reading sheets is outstanding; the ablation arms were run once each, so against the measured
+  run-to-run spread (**Fleiss κ 0.52, AUROC spread 0.071**) **no ablation difference is interpretable**
+  and the "does a 12-frame sheet beat a single frame" question is **not answered**; the L1 task
+  judgment on IndEgo is **worse than always saying "advancing"** (0.708 vs 0.917, κ −0.135); and L2 has
+  zero-variance truth so it cannot be scored at all.
 * **The blur rule is left disabled** and all its positives are synthetic; **OVEREXPOSED parity on the
   mosaic is untested** (the injected defect never reaches the p5 > 0.70 rule), and the mosaic's FROZEN
   rule mis-attributes dark windows (verified: the 8 `too_dark` clips fire FROZEN — right verdict,
@@ -163,9 +184,12 @@ can tolerate, and that is the builder's/Awign's call, not a modelling result.
 **On 150 IndEgo windows the shipped funnel decides 100 % of windows with balanced accuracy 0.740
 [0.631, 0.789], but on 160 labelled factory windows it is 0.556 [0.448, 0.673] with 41 % of bad
 windows accepted and 48 % of good windows rejected, so automation today must be tiered with a human
-audit sample rather than fully automatic; a 12-frame 4×3 picture scored by our own mosaic-native
-features does not change this (0.704 in-domain, 0.356 when transferred to factory footage), the
-missing ingredient for factory footage is new signals and fresh multi-labeller labels rather than a
-new picture format, and the one change measured here that is worth shipping is a brightness-calibrated
-sharpness rule that catches 100 % of σ=8 and 72 % of σ=3 blur at zero marginal clean false-rejects
-(0 of 238) and ships disabled until the builder turns it on.**
+audit sample rather than fully automatic; a 12-frame 4x3 picture scored by our own mosaic-native
+features does not change this (0.704 in-domain, 0.356 when transferred to factory footage), but the
+SAME picture shown to a vision-language model does read correctly and does separate factory windows
+at AUROC 0.770 [0.662, 0.878] -- catching the no-active-work windows the pixels miss -- so the
+picture's value is as a second reader that flags accepts for audit rather than a replacement for the
+review band, which is also why the model's 87.5 % "usable" rate means it can never replace the human
+sample; and the one change measured here that is worth shipping outright is a brightness-calibrated
+sharpness rule that catches 100 % of sigma=8 and 72 % of sigma=3 blur at zero marginal clean
+false-rejects (0 of 238), currently shipped disabled until the builder turns it on.**
