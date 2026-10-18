@@ -1,0 +1,1188 @@
+{
+ "l2": {
+  "desk": {
+   "n_slices": 6,
+   "ok": true,
+   "parsed": {
+    "completed": "cannot_tell",
+    "explanation": "Descriptions show varied assembly and moving without clear object destination confirmation",
+    "farthest_step": "carrying and positioning white table"
+   },
+   "raw": "{\"completed\": \"cannot_tell\", \"farthest_step\": \"carrying and positioning white table\", \"explanation\": \"Descriptions show varied assembly and moving without clear object destination confirmation\"}",
+   "seconds": 5.1,
+   "slice_answers": [
+    {
+     "progressing": "advancing",
+     "reason": "Two workers position and mount curved tabletop onto metal frame",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Using screwdriver under table to assemble desk frame",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Woman manipulates device on table across multiple frames",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Two people carrying and positioning white table across rooms",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "no_relevant_work",
+     "reason": "Pushing cart and walking hallways, no assembly",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "no_relevant_work",
+     "reason": "Walks through offices and hallways then checks phone, no task performed",
+     "visibility": "clear"
+    }
+   ]
+  },
+  "ecu_full": {
+   "n_slices": 6,
+   "ok": true,
+   "parsed": {
+    "completed": "not_completed",
+    "explanation": "All slices show active assembly with no final placed object shown",
+    "farthest_step": "Assembling and screwing electronic chassis"
+   },
+   "raw": "{\"completed\": \"not_completed\", \"farthest_step\": \"Assembling and screwing electronic chassis\", \"explanation\": \"All slices show active assembly with no final placed object shown\"}",
+   "seconds": 3.46,
+   "slice_answers": [
+    {
+     "progressing": "advancing",
+     "reason": "Cleaning and assembling electronic chassis with tools visible",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Hands actively screw, wire, and inspect chassis throughout sequence",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Screwing and assembling electronic device case consistently",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Manipulating device, connecting cables, repositioning enclosure continuously",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Hands assemble and screw electronic chassis on bench",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Manipulating device, connecting cables and positioning unit on workbench",
+     "visibility": "clear"
+    }
+   ]
+  },
+  "ecu_late": {
+   "n_slices": 6,
+   "ok": true,
+   "parsed": {
+    "completed": "cannot_tell",
+    "explanation": "Only busy hands visible, no clear pick and place start end states",
+    "farthest_step": "Hands manipulating wiring on electronic unit"
+   },
+   "raw": "{\"completed\": \"cannot_tell\", \"farthest_step\": \"Hands manipulating wiring on electronic unit\", \"explanation\": \"Only busy hands visible, no clear pick and place start end states\"}",
+   "seconds": 4.34,
+   "slice_answers": [
+    {
+     "progressing": "advancing",
+     "reason": "Hands-on assembly and electrical probing of device",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Hands actively test, reposition and connect electronic chassis with tools",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Hands continuously connect and adjust wires on electronic unit",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Hands manipulate wiring on device with tools continuously",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Handling electronic unit, plugging cables and testing",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Hands manipulate electronic unit on workbench throughout",
+     "visibility": "clear"
+    }
+   ]
+  },
+  "organise": {
+   "n_slices": 6,
+   "ok": true,
+   "parsed": {
+    "completed": "cannot_tell",
+    "explanation": "No clear pick-to-place with confirmed destination; worker leaves without showing final placement.",
+    "farthest_step": "Handling assembly parts at workbench"
+   },
+   "raw": "{\"completed\": \"cannot_tell\", \"farthest_step\": \"Handling assembly parts at workbench\", \"explanation\": \"No clear pick-to-place with confirmed destination; worker leaves without showing final placement.\"}",
+   "seconds": 4.56,
+   "slice_answers": [
+    {
+     "progressing": "advancing",
+     "reason": "Handling tools, tape and materials at workbench and machines",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Handling, inspecting and carrying mechanical parts between benches",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "advancing",
+     "reason": "Selecting tools and handling assembly parts at workbench",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "no_relevant_work",
+     "reason": "Mostly walking around lab and exiting door, no assembly observed",
+     "visibility": "partial"
+    },
+    {
+     "progressing": "no_relevant_work",
+     "reason": "Puts drill and cable into drawer, then walks away without workpiece",
+     "visibility": "clear"
+    },
+    {
+     "progressing": "no_relevant_work",
+     "reason": "Walking hallways pushing cart while using phone, no task work",
+     "visibility": "clear"
+    }
+   ]
+  }
+ },
+ "sheet": {
+  "desk#0": {
+   "clip": "desk",
+   "error": "",
+   "labels": [
+    "#1  00:01.2s",
+    "#2  00:03.8s",
+    "#3  00:06.2s",
+    "#4  00:08.8s",
+    "#5  00:11.2s",
+    "#6  00:13.8s",
+    "#7  00:16.2s",
+    "#8  00:18.8s",
+    "#9  00:21.2s",
+    "#10  00:23.8s",
+    "#11  00:26.2s",
+    "#12  00:28.8s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Two workers position and mount curved tabletop onto metal frame",
+    "visibility": "clear"
+   },
+   "png_sha256": "536f971397018aa5f0249eb5789cc52306c89e9fbfd34de07c2526e1288c550d",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Two workers position and mount curved tabletop onto metal frame\", \"visibility\": \"clear\"}",
+   "seconds": 10.0,
+   "slice": 0,
+   "t0": 0.0,
+   "truth_l1": "advancing"
+  },
+  "desk#1": {
+   "clip": "desk",
+   "error": "",
+   "labels": [
+    "#1  01:18.5s",
+    "#2  01:21.0s",
+    "#3  01:23.5s",
+    "#4  01:26.0s",
+    "#5  01:28.5s",
+    "#6  01:31.0s",
+    "#7  01:33.5s",
+    "#8  01:36.0s",
+    "#9  01:38.5s",
+    "#10  01:41.0s",
+    "#11  01:43.5s",
+    "#12  01:46.0s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Using screwdriver under table to assemble desk frame",
+    "visibility": "clear"
+   },
+   "png_sha256": "7f8b470c57222a08ef55f37f7a35e5c8a621038437845715bc9e6fa4b3115111",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Using screwdriver under table to assemble desk frame\", \"visibility\": \"clear\"}",
+   "seconds": 10.07,
+   "slice": 1,
+   "t0": 77.22,
+   "truth_l1": "advancing"
+  },
+  "desk#2": {
+   "clip": "desk",
+   "error": "",
+   "labels": [
+    "#1  02:35.7s",
+    "#2  02:38.2s",
+    "#3  02:40.7s",
+    "#4  02:43.2s",
+    "#5  02:45.7s",
+    "#6  02:48.2s",
+    "#7  02:50.7s",
+    "#8  02:53.2s",
+    "#9  02:55.7s",
+    "#10  02:58.2s",
+    "#11  03:00.7s",
+    "#12  03:03.2s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Woman manipulates device on table across multiple frames",
+    "visibility": "clear"
+   },
+   "png_sha256": "d7582ddf477e56db9227e414392a74d4c3e507bc7a29759bd5432ec140ca4742",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Woman manipulates device on table across multiple frames\", \"visibility\": \"clear\"}",
+   "seconds": 10.5,
+   "slice": 2,
+   "t0": 154.44,
+   "truth_l1": "advancing"
+  },
+  "desk#3": {
+   "clip": "desk",
+   "error": "",
+   "labels": [
+    "#1  03:52.9s",
+    "#2  03:55.4s",
+    "#3  03:57.9s",
+    "#4  04:00.4s",
+    "#5  04:02.9s",
+    "#6  04:05.4s",
+    "#7  04:07.9s",
+    "#8  04:10.4s",
+    "#9  04:12.9s",
+    "#10  04:15.4s",
+    "#11  04:17.9s",
+    "#12  04:20.4s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Two people carrying and positioning white table across rooms",
+    "visibility": "clear"
+   },
+   "png_sha256": "b928bd75d80d73a76309ed3d515e73769e07fc2c3da003f98448560a88423b6e",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Two people carrying and positioning white table across rooms\", \"visibility\": \"clear\"}",
+   "seconds": 10.02,
+   "slice": 3,
+   "t0": 231.66,
+   "truth_l1": "advancing"
+  },
+  "desk#4": {
+   "clip": "desk",
+   "error": "",
+   "labels": [
+    "#1  05:10.1s",
+    "#2  05:12.6s",
+    "#3  05:15.1s",
+    "#4  05:17.6s",
+    "#5  05:20.1s",
+    "#6  05:22.6s",
+    "#7  05:25.1s",
+    "#8  05:27.6s",
+    "#9  05:30.1s",
+    "#10  05:32.6s",
+    "#11  05:35.1s",
+    "#12  05:37.6s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "no_relevant_work",
+    "reason": "Pushing cart and walking hallways, no assembly",
+    "visibility": "clear"
+   },
+   "png_sha256": "c4bc5beaa9c669297a0153771babdd2f28469c4cbdac21bf958512a77fb4df71",
+   "raw": "{\"progressing\": \"no_relevant_work\", \"reason\": \"Pushing cart and walking hallways, no assembly\", \"visibility\": \"clear\"}",
+   "seconds": 12.98,
+   "slice": 4,
+   "t0": 308.88,
+   "truth_l1": "advancing"
+  },
+  "desk#5": {
+   "clip": "desk",
+   "error": "",
+   "labels": [
+    "#1  06:27.4s",
+    "#2  06:29.9s",
+    "#3  06:32.4s",
+    "#4  06:34.9s",
+    "#5  06:37.4s",
+    "#6  06:39.9s",
+    "#7  06:42.4s",
+    "#8  06:44.9s",
+    "#9  06:47.4s",
+    "#10  06:49.9s",
+    "#11  06:52.4s",
+    "#12  06:54.9s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "no_relevant_work",
+    "reason": "Walks through offices and hallways then checks phone, no task performed",
+    "visibility": "clear"
+   },
+   "png_sha256": "1b69b9766ebca01add7432c5a3be55994e743d9aaeb10ee587a0932592905c1f",
+   "raw": "{\"progressing\": \"no_relevant_work\", \"reason\": \"Walks through offices and hallways then checks phone, no task performed\", \"visibility\": \"clear\"}",
+   "seconds": 10.98,
+   "slice": 5,
+   "t0": 386.1,
+   "truth_l1": "advancing"
+  },
+  "ecu_full#0": {
+   "clip": "ecu_full",
+   "error": "",
+   "labels": [
+    "#1  00:01.2s",
+    "#2  00:03.8s",
+    "#3  00:06.2s",
+    "#4  00:08.8s",
+    "#5  00:11.2s",
+    "#6  00:13.8s",
+    "#7  00:16.2s",
+    "#8  00:18.8s",
+    "#9  00:21.2s",
+    "#10  00:23.8s",
+    "#11  00:26.2s",
+    "#12  00:28.8s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Cleaning and assembling electronic chassis with tools visible",
+    "visibility": "clear"
+   },
+   "png_sha256": "644eecbcd88ed7358cdd8d6d5b932238ee7067e4d420bfd6e197adcda2817e2a",
+   "raw": "{\"progressing\":\"advancing\",\"reason\":\"Cleaning and assembling electronic chassis with tools visible\",\"visibility\":\"clear\"}",
+   "seconds": 8.34,
+   "slice": 0,
+   "t0": 0.0,
+   "truth_l1": "advancing"
+  },
+  "ecu_full#1": {
+   "clip": "ecu_full",
+   "error": "",
+   "labels": [
+    "#1  02:14.9s",
+    "#2  02:17.4s",
+    "#3  02:19.9s",
+    "#4  02:22.4s",
+    "#5  02:24.9s",
+    "#6  02:27.4s",
+    "#7  02:29.9s",
+    "#8  02:32.4s",
+    "#9  02:34.9s",
+    "#10  02:37.4s",
+    "#11  02:39.9s",
+    "#12  02:42.4s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Hands actively screw, wire, and inspect chassis throughout sequence",
+    "visibility": "clear"
+   },
+   "png_sha256": "b098c9608cdd73b0cb5755e7551eb16d48743cf4ee7a1a5d121c7e57d51f3e7a",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Hands actively screw, wire, and inspect chassis throughout sequence\", \"visibility\": \"clear\"}",
+   "seconds": 8.74,
+   "slice": 1,
+   "t0": 133.66,
+   "truth_l1": "advancing"
+  },
+  "ecu_full#2": {
+   "clip": "ecu_full",
+   "error": "",
+   "labels": [
+    "#1  04:28.6s",
+    "#2  04:31.1s",
+    "#3  04:33.6s",
+    "#4  04:36.1s",
+    "#5  04:38.6s",
+    "#6  04:41.1s",
+    "#7  04:43.6s",
+    "#8  04:46.1s",
+    "#9  04:48.6s",
+    "#10  04:51.1s",
+    "#11  04:53.6s",
+    "#12  04:56.1s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Screwing and assembling electronic device case consistently",
+    "visibility": "clear"
+   },
+   "png_sha256": "e938d0b0c4dd7ef047b62b82b79f9dea380e4580010a4e8c86b150f97220dd61",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Screwing and assembling electronic device case consistently\", \"visibility\": \"clear\"}",
+   "seconds": 9.04,
+   "slice": 2,
+   "t0": 267.32,
+   "truth_l1": "advancing"
+  },
+  "ecu_full#3": {
+   "clip": "ecu_full",
+   "error": "",
+   "labels": [
+    "#1  06:42.2s",
+    "#2  06:44.7s",
+    "#3  06:47.2s",
+    "#4  06:49.7s",
+    "#5  06:52.2s",
+    "#6  06:54.7s",
+    "#7  06:57.2s",
+    "#8  06:59.7s",
+    "#9  07:02.2s",
+    "#10  07:04.7s",
+    "#11  07:07.2s",
+    "#12  07:09.7s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Manipulating device, connecting cables, repositioning enclosure continuously",
+    "visibility": "clear"
+   },
+   "png_sha256": "6046f5fd09252c7d19c48457302b52ff26f1d8d3a250d1d0acb9393b6bb3377f",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Manipulating device, connecting cables, repositioning enclosure continuously\", \"visibility\": \"clear\"}",
+   "seconds": 11.96,
+   "slice": 3,
+   "t0": 400.98,
+   "truth_l1": "advancing"
+  },
+  "ecu_full#4": {
+   "clip": "ecu_full",
+   "error": "",
+   "labels": [
+    "#1  08:55.9s",
+    "#2  08:58.4s",
+    "#3  09:00.9s",
+    "#4  09:03.4s",
+    "#5  09:05.9s",
+    "#6  09:08.4s",
+    "#7  09:10.9s",
+    "#8  09:13.4s",
+    "#9  09:15.9s",
+    "#10  09:18.4s",
+    "#11  09:20.9s",
+    "#12  09:23.4s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Hands assemble and screw electronic chassis on bench",
+    "visibility": "clear"
+   },
+   "png_sha256": "21a2a9789f981f39f6964c17da99b9bd7008d8461e4992516fc34bf3ffeed264",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Hands assemble and screw electronic chassis on bench\", \"visibility\": \"clear\"}",
+   "seconds": 10.46,
+   "slice": 4,
+   "t0": 534.64,
+   "truth_l1": "advancing"
+  },
+  "ecu_full#5": {
+   "clip": "ecu_full",
+   "error": "",
+   "labels": [
+    "#1  11:09.5s",
+    "#2  11:12.0s",
+    "#3  11:14.5s",
+    "#4  11:17.0s",
+    "#5  11:19.5s",
+    "#6  11:22.0s",
+    "#7  11:24.5s",
+    "#8  11:27.0s",
+    "#9  11:29.5s",
+    "#10  11:32.0s",
+    "#11  11:34.5s",
+    "#12  11:37.0s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Manipulating device, connecting cables and positioning unit on workbench",
+    "visibility": "clear"
+   },
+   "png_sha256": "086e9fbb01511c34e1ef94bb7abb45a7e7d5d39e367d6fd6b00c3e1609ecc638",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Manipulating device, connecting cables and positioning unit on workbench\", \"visibility\": \"clear\"}",
+   "seconds": 9.98,
+   "slice": 5,
+   "t0": 668.3,
+   "truth_l1": "no_relevant_work"
+  },
+  "ecu_late#0": {
+   "clip": "ecu_late",
+   "error": "",
+   "labels": [
+    "#1  00:01.2s",
+    "#2  00:03.8s",
+    "#3  00:06.2s",
+    "#4  00:08.8s",
+    "#5  00:11.2s",
+    "#6  00:13.8s",
+    "#7  00:16.2s",
+    "#8  00:18.8s",
+    "#9  00:21.2s",
+    "#10  00:23.8s",
+    "#11  00:26.2s",
+    "#12  00:28.8s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Hands-on assembly and electrical probing of device",
+    "visibility": "clear"
+   },
+   "png_sha256": "0e57dd177ff9e10f3fe1885ba0a4b0f852a29ed038d6b097e7db28a92c3ad1f8",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Hands-on assembly and electrical probing of device\", \"visibility\": \"clear\"}",
+   "seconds": 8.3,
+   "slice": 0,
+   "t0": 0.0,
+   "truth_l1": "advancing"
+  },
+  "ecu_late#1": {
+   "clip": "ecu_late",
+   "error": "",
+   "labels": [
+    "#1  00:36.9s",
+    "#2  00:39.4s",
+    "#3  00:41.9s",
+    "#4  00:44.4s",
+    "#5  00:46.9s",
+    "#6  00:49.4s",
+    "#7  00:51.9s",
+    "#8  00:54.4s",
+    "#9  00:56.9s",
+    "#10  00:59.4s",
+    "#11  01:01.9s",
+    "#12  01:04.4s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Hands actively test, reposition and connect electronic chassis with tools",
+    "visibility": "clear"
+   },
+   "png_sha256": "64d53b6789cd5c14a94a82028e4843f400995b3b6ece185e1f3b355da602d6c7",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Hands actively test, reposition and connect electronic chassis with tools\", \"visibility\": \"clear\"}",
+   "seconds": 8.65,
+   "slice": 1,
+   "t0": 35.68,
+   "truth_l1": "advancing"
+  },
+  "ecu_late#2": {
+   "clip": "ecu_late",
+   "error": "",
+   "labels": [
+    "#1  01:12.6s",
+    "#2  01:15.1s",
+    "#3  01:17.6s",
+    "#4  01:20.1s",
+    "#5  01:22.6s",
+    "#6  01:25.1s",
+    "#7  01:27.6s",
+    "#8  01:30.1s",
+    "#9  01:32.6s",
+    "#10  01:35.1s",
+    "#11  01:37.6s",
+    "#12  01:40.1s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Hands continuously connect and adjust wires on electronic unit",
+    "visibility": "clear"
+   },
+   "png_sha256": "3c2779e10be4ffd1069ad0b06175edeb52537af11359d39685cdee2917ae2b5c",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Hands continuously connect and adjust wires on electronic unit\", \"visibility\": \"clear\"}",
+   "seconds": 8.53,
+   "slice": 2,
+   "t0": 71.36,
+   "truth_l1": "advancing"
+  },
+  "ecu_late#3": {
+   "clip": "ecu_late",
+   "error": "",
+   "labels": [
+    "#1  01:48.3s",
+    "#2  01:50.8s",
+    "#3  01:53.3s",
+    "#4  01:55.8s",
+    "#5  01:58.3s",
+    "#6  02:00.8s",
+    "#7  02:03.3s",
+    "#8  02:05.8s",
+    "#9  02:08.3s",
+    "#10  02:10.8s",
+    "#11  02:13.3s",
+    "#12  02:15.8s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Hands manipulate wiring on device with tools continuously",
+    "visibility": "clear"
+   },
+   "png_sha256": "bd5cc906f8f0e2af6977155e8ac1cf490959c457c82774cea0b1f1684f04cf8d",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Hands manipulate wiring on device with tools continuously\", \"visibility\": \"clear\"}",
+   "seconds": 8.98,
+   "slice": 3,
+   "t0": 107.04,
+   "truth_l1": "advancing"
+  },
+  "ecu_late#4": {
+   "clip": "ecu_late",
+   "error": "",
+   "labels": [
+    "#1  02:24.0s",
+    "#2  02:26.5s",
+    "#3  02:29.0s",
+    "#4  02:31.5s",
+    "#5  02:34.0s",
+    "#6  02:36.5s",
+    "#7  02:39.0s",
+    "#8  02:41.5s",
+    "#9  02:44.0s",
+    "#10  02:46.5s",
+    "#11  02:49.0s",
+    "#12  02:51.5s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Handling electronic unit, plugging cables and testing",
+    "visibility": "clear"
+   },
+   "png_sha256": "1970d5650e225904051b40fbcaa0f20e4cfa3bf754a7ac7e5a54c7f41e007351",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Handling electronic unit, plugging cables and testing\", \"visibility\": \"clear\"}",
+   "seconds": 8.34,
+   "slice": 4,
+   "t0": 142.72,
+   "truth_l1": "advancing"
+  },
+  "ecu_late#5": {
+   "clip": "ecu_late",
+   "error": "",
+   "labels": [
+    "#1  02:59.7s",
+    "#2  03:02.2s",
+    "#3  03:04.7s",
+    "#4  03:07.2s",
+    "#5  03:09.7s",
+    "#6  03:12.2s",
+    "#7  03:14.7s",
+    "#8  03:17.2s",
+    "#9  03:19.7s",
+    "#10  03:22.2s",
+    "#11  03:24.7s",
+    "#12  03:27.2s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Hands manipulate electronic unit on workbench throughout",
+    "visibility": "clear"
+   },
+   "png_sha256": "03fd06dccbf18c5af66d885ddd19574eb5cbe14c61ae00733f9a7a80c74b080b",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Hands manipulate electronic unit on workbench throughout\", \"visibility\": \"clear\"}",
+   "seconds": 12.75,
+   "slice": 5,
+   "t0": 178.4,
+   "truth_l1": "no_relevant_work"
+  },
+  "organise#0": {
+   "clip": "organise",
+   "error": "",
+   "labels": [
+    "#1  00:01.2s",
+    "#2  00:03.8s",
+    "#3  00:06.2s",
+    "#4  00:08.8s",
+    "#5  00:11.2s",
+    "#6  00:13.8s",
+    "#7  00:16.2s",
+    "#8  00:18.8s",
+    "#9  00:21.2s",
+    "#10  00:23.8s",
+    "#11  00:26.2s",
+    "#12  00:28.8s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Handling tools, tape and materials at workbench and machines",
+    "visibility": "clear"
+   },
+   "png_sha256": "639d24f9b8ac58c397caba3c89381a5695a289d28684ebf358dde31804902f70",
+   "raw": "{\"progressing\":\"advancing\",\"reason\":\"Handling tools, tape and materials at workbench and machines\",\"visibility\":\"clear\"}",
+   "seconds": 13.01,
+   "slice": 0,
+   "t0": 0.0,
+   "truth_l1": "advancing"
+  },
+  "organise#1": {
+   "clip": "organise",
+   "error": "",
+   "labels": [
+    "#1  00:51.3s",
+    "#2  00:53.8s",
+    "#3  00:56.3s",
+    "#4  00:58.8s",
+    "#5  01:01.3s",
+    "#6  01:03.8s",
+    "#7  01:06.3s",
+    "#8  01:08.8s",
+    "#9  01:11.3s",
+    "#10  01:13.8s",
+    "#11  01:16.3s",
+    "#12  01:18.8s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Handling, inspecting and carrying mechanical parts between benches",
+    "visibility": "clear"
+   },
+   "png_sha256": "cc7994c20608691eb8ac7dc9fdfcfdf4149c47c03efcb647d17add805b6a958c",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Handling, inspecting and carrying mechanical parts between benches\", \"visibility\": \"clear\"}",
+   "seconds": 14.45,
+   "slice": 1,
+   "t0": 50.08,
+   "truth_l1": "advancing"
+  },
+  "organise#2": {
+   "clip": "organise",
+   "error": "",
+   "labels": [
+    "#1  01:41.4s",
+    "#2  01:43.9s",
+    "#3  01:46.4s",
+    "#4  01:48.9s",
+    "#5  01:51.4s",
+    "#6  01:53.9s",
+    "#7  01:56.4s",
+    "#8  01:58.9s",
+    "#9  02:01.4s",
+    "#10  02:03.9s",
+    "#11  02:06.4s",
+    "#12  02:08.9s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "advancing",
+    "reason": "Selecting tools and handling assembly parts at workbench",
+    "visibility": "clear"
+   },
+   "png_sha256": "84dfa13e01009115b00624f9a091f0fc6cab961b628c31c451569434068c233b",
+   "raw": "{\"progressing\": \"advancing\", \"reason\": \"Selecting tools and handling assembly parts at workbench\", \"visibility\": \"clear\"}",
+   "seconds": 11.22,
+   "slice": 2,
+   "t0": 100.16,
+   "truth_l1": "advancing"
+  },
+  "organise#3": {
+   "clip": "organise",
+   "error": "",
+   "labels": [
+    "#1  02:31.5s",
+    "#2  02:34.0s",
+    "#3  02:36.5s",
+    "#4  02:39.0s",
+    "#5  02:41.5s",
+    "#6  02:44.0s",
+    "#7  02:46.5s",
+    "#8  02:49.0s",
+    "#9  02:51.5s",
+    "#10  02:54.0s",
+    "#11  02:56.5s",
+    "#12  02:59.0s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "no_relevant_work",
+    "reason": "Mostly walking around lab and exiting door, no assembly observed",
+    "visibility": "partial"
+   },
+   "png_sha256": "a6e8e646f14b4e1c4456aba53b11c0a3a7b87a631e4f1bb010922d060e68ff06",
+   "raw": "{\"progressing\": \"no_relevant_work\", \"reason\": \"Mostly walking around lab and exiting door, no assembly observed\", \"visibility\": \"partial\"}",
+   "seconds": 12.29,
+   "slice": 3,
+   "t0": 150.24,
+   "truth_l1": "advancing"
+  },
+  "organise#4": {
+   "clip": "organise",
+   "error": "",
+   "labels": [
+    "#1  03:21.6s",
+    "#2  03:24.1s",
+    "#3  03:26.6s",
+    "#4  03:29.1s",
+    "#5  03:31.6s",
+    "#6  03:34.1s",
+    "#7  03:36.6s",
+    "#8  03:39.1s",
+    "#9  03:41.6s",
+    "#10  03:44.1s",
+    "#11  03:46.6s",
+    "#12  03:49.1s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "no_relevant_work",
+    "reason": "Puts drill and cable into drawer, then walks away without workpiece",
+    "visibility": "clear"
+   },
+   "png_sha256": "4a0efee8fdfd2020ac6e512404a97267a2c5155bdc6ab5595473a411823da44c",
+   "raw": "{\"progressing\":\"no_relevant_work\",\"reason\":\"Puts drill and cable into drawer, then walks away without workpiece\",\"visibility\":\"clear\"}",
+   "seconds": 15.68,
+   "slice": 4,
+   "t0": 200.32,
+   "truth_l1": "advancing"
+  },
+  "organise#5": {
+   "clip": "organise",
+   "error": "",
+   "labels": [
+    "#1  04:11.7s",
+    "#2  04:14.2s",
+    "#3  04:16.6s",
+    "#4  04:19.1s",
+    "#5  04:21.6s",
+    "#6  04:24.1s",
+    "#7  04:26.6s",
+    "#8  04:29.1s",
+    "#9  04:31.6s",
+    "#10  04:34.1s",
+    "#11  04:36.6s",
+    "#12  04:39.1s"
+   ],
+   "ok": true,
+   "parsed": {
+    "progressing": "no_relevant_work",
+    "reason": "Walking hallways pushing cart while using phone, no task work",
+    "visibility": "clear"
+   },
+   "png_sha256": "bdb93e0fdbc15185fd7efb486abb0c08809d2959e301fd84caf03136e23cbdd8",
+   "raw": "{\"progressing\":\"no_relevant_work\",\"reason\":\"Walking hallways pushing cart while using phone, no task work\",\"visibility\":\"clear\"}",
+   "seconds": 9.26,
+   "slice": 5,
+   "t0": 250.4,
+   "truth_l1": "advancing"
+  }
+ },
+ "video": {
+  "desk#0": {
+   "bytes": 1091130,
+   "clip": "desk",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Two people actively assemble table, hands visible, clear lighting.\"}",
+   "reason_code": "OK",
+   "seconds": 8.49,
+   "slice": 0,
+   "status": "ok",
+   "t0": 0.0,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "desk#1": {
+   "bytes": 1011617,
+   "clip": "desk",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible performing screwing task with clear view\"}",
+   "reason_code": "OK",
+   "seconds": 9.57,
+   "slice": 1,
+   "status": "ok",
+   "t0": 77.22,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "desk#2": {
+   "bytes": 1018415,
+   "clip": "desk",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible doing assembly tasks in bright clear view.\"}",
+   "reason_code": "OK",
+   "seconds": 12.7,
+   "slice": 2,
+   "status": "ok",
+   "t0": 154.44,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "desk#3": {
+   "bytes": 1148033,
+   "clip": "desk",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Two people carry table through rooms, hands visible, clear lighting.\"}",
+   "reason_code": "OK",
+   "seconds": 9.51,
+   "slice": 3,
+   "status": "ok",
+   "t0": 231.66,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "desk#4": {
+   "bytes": 1246640,
+   "clip": "desk",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible performing transport and handling tasks in lit lab.\"}",
+   "reason_code": "OK",
+   "seconds": 11.85,
+   "slice": 4,
+   "status": "ok",
+   "t0": 308.88,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "desk#5": {
+   "bytes": 1375019,
+   "clip": "desk",
+   "raw": "{\"usable\": false, \"reason_code\": \"NO_ACTIVE_WORK\", \"explanation\": \"Walking through rooms and hallways, no manual task performed.\"}",
+   "reason_code": "NO_ACTIVE_WORK",
+   "seconds": 9.97,
+   "slice": 5,
+   "status": "ok",
+   "t0": 386.1,
+   "truth_l1": "advancing",
+   "usable": false
+  },
+  "ecu_full#0": {
+   "bytes": 1169766,
+   "clip": "ecu_full",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands perform electronics cleaning and assembly on desk clearly visible.\"}",
+   "reason_code": "OK",
+   "seconds": 9.83,
+   "slice": 0,
+   "status": "ok",
+   "t0": 0.0,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "ecu_full#1": {
+   "bytes": 1110048,
+   "clip": "ecu_full",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands actively assemble electronics chassis with clear view and lighting\"}",
+   "reason_code": "OK",
+   "seconds": 7.89,
+   "slice": 1,
+   "status": "ok",
+   "t0": 133.66,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "ecu_full#2": {
+   "bytes": 948351,
+   "clip": "ecu_full",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible performing assembly with screwdriver in well-lit view.\"}",
+   "reason_code": "OK",
+   "seconds": 8.47,
+   "slice": 2,
+   "status": "ok",
+   "t0": 267.32,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "ecu_full#3": {
+   "bytes": 785834,
+   "clip": "ecu_full",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible performing assembly work clearly in well-lit view.\"}",
+   "reason_code": "OK",
+   "seconds": 7.14,
+   "slice": 3,
+   "status": "ok",
+   "t0": 400.98,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "ecu_full#4": {
+   "bytes": 1035895,
+   "clip": "ecu_full",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands clearly manipulate device and tighten screws with tool.\"}",
+   "reason_code": "OK",
+   "seconds": 11.33,
+   "slice": 4,
+   "status": "ok",
+   "t0": 534.64,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "ecu_full#5": {
+   "bytes": 915955,
+   "clip": "ecu_full",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands perform wiring and device setup clearly visible in well-lit view.\"}",
+   "reason_code": "OK",
+   "seconds": 11.09,
+   "slice": 5,
+   "status": "ok",
+   "t0": 668.3,
+   "truth_l1": "no_relevant_work",
+   "usable": true
+  },
+  "ecu_late#0": {
+   "bytes": 1003313,
+   "clip": "ecu_late",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible performing active assembly work in clear view.\"}",
+   "reason_code": "OK",
+   "seconds": 9.7,
+   "slice": 0,
+   "status": "ok",
+   "t0": 0.0,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "ecu_late#1": {
+   "bytes": 1038676,
+   "clip": "ecu_late",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible performing active assembly with clear lighting.\"}",
+   "reason_code": "OK",
+   "seconds": 7.73,
+   "slice": 1,
+   "status": "ok",
+   "t0": 35.68,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "ecu_late#2": {
+   "bytes": 827556,
+   "clip": "ecu_late",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands clearly visible performing wiring task in well-lit view.\"}",
+   "reason_code": "OK",
+   "seconds": 8.29,
+   "slice": 2,
+   "status": "ok",
+   "t0": 71.36,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "ecu_late#3": {
+   "bytes": 884842,
+   "clip": "ecu_late",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible doing wiring work with clear view.\"}",
+   "reason_code": "OK",
+   "seconds": 7.44,
+   "slice": 3,
+   "status": "ok",
+   "t0": 107.04,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "ecu_late#4": {
+   "bytes": 1106546,
+   "clip": "ecu_late",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands perform hardware setup with clear view of tools and connections.\"}",
+   "reason_code": "OK",
+   "seconds": 9.99,
+   "slice": 4,
+   "status": "ok",
+   "t0": 142.72,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "ecu_late#5": {
+   "bytes": 944138,
+   "clip": "ecu_late",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible manipulating hardware with clear view.\"}",
+   "reason_code": "OK",
+   "seconds": 8.46,
+   "slice": 5,
+   "status": "ok",
+   "t0": 178.4,
+   "truth_l1": "no_relevant_work",
+   "usable": true
+  },
+  "organise#0": {
+   "bytes": 1404657,
+   "clip": "organise",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible manipulating tools in bright workshop with continuous motion\"}",
+   "reason_code": "OK",
+   "seconds": 10.43,
+   "slice": 0,
+   "status": "ok",
+   "t0": 0.0,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "organise#1": {
+   "bytes": 1123174,
+   "clip": "organise",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands manipulate tools and drawers with clear view in lit workshop.\"}",
+   "reason_code": "OK",
+   "seconds": 13.07,
+   "slice": 1,
+   "status": "ok",
+   "t0": 50.08,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "organise#2": {
+   "bytes": 1257605,
+   "clip": "organise",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands visible handling tools, drawers, workbench in lit workshop.\"}",
+   "reason_code": "OK",
+   "seconds": 11.86,
+   "slice": 2,
+   "status": "ok",
+   "t0": 100.16,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "organise#3": {
+   "bytes": 1135219,
+   "clip": "organise",
+   "raw": "{\"usable\": false, \"reason_code\": \"NO_ACTIVE_WORK\", \"explanation\": \"Person mostly walks and looks, no sustained assembly task.\"}",
+   "reason_code": "NO_ACTIVE_WORK",
+   "seconds": 13.68,
+   "slice": 3,
+   "status": "ok",
+   "t0": 150.24,
+   "truth_l1": "advancing",
+   "usable": false
+  },
+  "organise#4": {
+   "bytes": 1329097,
+   "clip": "organise",
+   "raw": "{\"usable\": true, \"reason_code\": \"OK\", \"explanation\": \"Hands manipulate tools, clear view, good lighting, active work.\"}",
+   "reason_code": "OK",
+   "seconds": 8.96,
+   "slice": 4,
+   "status": "ok",
+   "t0": 200.32,
+   "truth_l1": "advancing",
+   "usable": true
+  },
+  "organise#5": {
+   "bytes": 717112,
+   "clip": "organise",
+   "raw": "{\"usable\": false, \"reason_code\": \"NO_ACTIVE_WORK\", \"explanation\": \"Only walking hallway pushing cart, no factory work shown\"}",
+   "reason_code": "NO_ACTIVE_WORK",
+   "seconds": 7.51,
+   "slice": 5,
+   "status": "ok",
+   "t0": 250.4,
+   "truth_l1": "advancing",
+   "usable": false
+  }
+ }
+}

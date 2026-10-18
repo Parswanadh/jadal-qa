@@ -1,0 +1,76 @@
+{
+ "ci95": null,
+ "ci95_type": "not applicable (24 slices, 2 of them no_relevant_work: no interval is meaningful)",
+ "command": "JADAL_VLM_LEDGER=<ledger> python3 eval/exp_vlm/v05_task.py --phase map|sheet|video|l2|report",
+ "config_sha256": "1cc7ad6e2d0c08e670739b3912699fbc54688f220656d0cf2d21a30a03d88ed0",
+ "cost": "0 image calls + 0 text calls + 24 video calls; sheet median 10.04 s/call, video median 9.63 s/call",
+ "device": "CPU (sheet build) + OpenCode Go API (image and video calls); no GPU used",
+ "git_sha": "a3e504659f74d69f54632dcd1f8bfba5606e51c2",
+ "id": "GRID.V05",
+ "interpretation": "L1 is near-uninformative on IndEgo: the free truth is 22 advancing / 2 no_relevant_work so the always-advancing baseline is 0.9167 and the model scores 0.7083 with kappa -0.135 -- WORSE than the constant. L2 has zero-variance truth (4/4 completed), so no L2 accuracy can be computed against it; the model returned not_completed once and cannot_tell three times, disagreeing with the annotations on all four clips.",
+ "l1": {
+  "l1_agreement": 0.7083,
+  "l1_always_advancing_baseline": 0.9167,
+  "l1_gap_recall": 0.0,
+  "l1_kappa": -0.1351,
+  "n_clips": 4,
+  "n_gap_slices": 2,
+  "n_slices": 24
+ },
+ "l2_builder_definition": "a task is completed when the worker picks an object from one place, puts it in another place, and does so accurately: right object, right destination, no drop or redo. Judge from the visible start and end state, not from how busy the hands look. (BUILDER's definition, not Awign's.)",
+ "label_source": "L1 free ground truth derived from the IndEgo VIA keystep annotations (4 annotated clips, ONE human annotator); L2 truth is 4/4 completed (zero variance). IndEgo steps are demo-style assembly and may not transfer to factory work.",
+ "n": 24,
+ "n_bad": 2,
+ "notes": [
+  "the model never caught either true gap slice",
+  "the sheets are readable (V01: 240/240 exact) so the L1 failure is a judgment failure, not a reading failure",
+  "one labeller; the IndEgo L1 truth is derived from annotations that omit task-list steps (TASK.00b)"
+ ],
+ "protocol": "6 evenly spaced 30 s slices per clip spanning start to end (linspace(0,dur-30,6)); 12-tile 4x3 sheet with CLIP-ABSOLUTE timestamps; frozen slice_l1 prompt; same slices as video via the existing analyze_video path (ffmpeg CRF 28, 480p); then ONE l2_text call per clip over its six slice answers using the builder's working definition",
+ "seed": 0,
+ "video_vs_sheet": {
+  "gap_slice_preds": {
+   "sheet": [
+    "advancing",
+    "advancing"
+   ],
+   "video_usable": [
+    true,
+    true
+   ]
+  },
+  "l2_model": {
+   "desk": {
+    "completed": "cannot_tell",
+    "explanation": "Descriptions show varied assembly and moving without clear object destination confirmation",
+    "farthest_step": "carrying and positioning white table"
+   },
+   "ecu_full": {
+    "completed": "not_completed",
+    "explanation": "All slices show active assembly with no final placed object shown",
+    "farthest_step": "Assembling and screwing electronic chassis"
+   },
+   "ecu_late": {
+    "completed": "cannot_tell",
+    "explanation": "Only busy hands visible, no clear pick and place start end states",
+    "farthest_step": "Hands manipulating wiring on electronic unit"
+   },
+   "organise": {
+    "completed": "cannot_tell",
+    "explanation": "No clear pick-to-place with confirmed destination; worker leaves without showing final placement.",
+    "farthest_step": "Handling assembly parts at workbench"
+   }
+  },
+  "l2_truth": "4/4 completed from the VIA annotations (TASK.00b) - ZERO variance",
+  "n_image_calls": 0,
+  "n_text_calls": 0,
+  "sheet_png_bytes_median": null,
+  "sheet_seconds_median": 10.04,
+  "sheet_usable_true_share": 0.7917,
+  "video_agreement_usable_vs_truth": 0.7917,
+  "video_bytes_median": 1064903,
+  "video_n": 24,
+  "video_seconds_median": 9.63,
+  "video_usable_true_share": 0.875
+ }
+}
