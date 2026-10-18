@@ -95,9 +95,10 @@
  },
  "config_sha256": "5db8add278f8cac68d2f7e9d1fb7a7a9a7dc8b0ec2f82d7c619a65a2d91369f5",
  "cost": "mosaic build+features 194.9 ms/window (CPU)",
+ "delta_convention": "every *_delta_* field is AUROC(first-named arm) - AUROC(second-named arm); a NEGATIVE delta_primary_minus_X therefore means the PRIMARY arm is WORSE than X. (Raised by the independent re-run TASK.07: the earlier field name 'delta_vs_primary' read backwards.)",
  "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
  "feature_digest_sha256": "600e6eb467ea0969a666382133fd98f39ec3eef002d99cff1f4f472b9f207315",
- "git_sha": "83b03df1cf25918c0a6854926b8b7cf8b3c82dcc",
+ "git_sha": "7de5f49b74196b86791adee427c2a38698e6f361",
  "id": "GRID.03",
  "kill_gate_upstream": {
   "note": "GRID.03 ran only as the small post-kill-gate control permitted by the brief",
@@ -119,7 +120,7 @@
    0.607,
    0.783
   ],
-  "delta_vs_spatial_plus_intertile": {
+  "delta_primary_minus_spatial_plus_intertile": {
    "delta": -0.005599999999999938,
    "excludes_zero": false,
    "hi": 0.001677768544400025,

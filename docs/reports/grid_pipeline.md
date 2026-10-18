@@ -65,6 +65,18 @@ over the 7 clips, pooled AUROC with a **clip-level** bootstrap CI, and every A-v
 * **GRID.02 — the pre-registered KILL-GATE FAILED.** Inter-tile features add **+0.019** AUROC
   (paired CI [−0.018, +0.053], does **not** exclude zero), below the pre-registered 0.02. Per the
   brief, the mosaic-as-decision-input line **stopped here**: no full GRID.04 sweep, no adoption path.
+  Two caveats stated plainly: the margin against the 0.02 bar is thin (**0.0006**, so the gate is
+  technically inside rounding distance of passing), and the **stronger support for the stop is that
+  the paired interval includes zero** — the effect is not established, whichever side of 0.02 it
+  lands on. A 10,000-draw re-bootstrap with a different seed returns the same intervals
+  ([−0.019, +0.053]), so this is not bootstrap noise.
+* A fourth reason to stop, found by the independent re-run: the **15-feature mean-only control
+  (0.7122) beats both richer mosaic variants** (60 features 0.6864, 72 features 0.7058). Adding
+  mosaic features at n=150 does not pay.
+* A fifth: the mosaic head is **below chance on the `pallet` clip** (0.197 spatial-only, 0.167
+  spatial+intertile) where the 26-feature baseline is at chance (0.500) — and `pallet` holds 11 of the
+  50 bad windows. The pooled 0.686/0.706 is therefore **not** "slightly weaker everywhere"; it is
+  weaker and locally inverted.
 * **GRID.03** (run only as the small control the brief permits after a failed gate): the difference
   mosaic adds −0.006 [−0.016, +0.002] — nothing. This reproduces the earlier EmbeddingGemma-2
   finding from the other direction (motion mosaic 0.863 in-domain, 0.401 out of domain).
@@ -135,13 +147,50 @@ not establish a difference at n_bad=22. The honest conclusion is that **the miss
 factory labels, not the picture format** — which is the same conclusion the pod's `NEXT_EXPERIMENTS`
 reached from the other direction.
 
-## 4. GRID.05 / GRID.07 / GRID.09
+## 4. Independent re-run (TASK.07, stream S5 — PR #173)
+
+Before this report was relied on, stream S5 re-derived every GRID.01-03 number with **its own code**
+(own AUROC and bootstrap implementations, its own label/clip derivation from the bundle manifest,
+importing neither this track's evaluator nor the shared metric functions). Result: **reproduced
+exactly**, to the last reported digit.
+
+| Arm | S5 independent | This track |
+|---|---|---|
+| baseline 26 (GRID.00) | 0.8100 [0.683, 0.892] | 0.8100 [0.683, 0.892] |
+| `spatial` 60 | 0.6864 [0.522, 0.772] | 0.6864 [0.522, 0.772] |
+| mean-only 15 | 0.7122 [0.504, 0.788] | 0.7122 [0.504, 0.788] |
+| `spatial+intertile` 72 | 0.7058 [0.514, 0.785] | 0.7058 [0.514, 0.785] |
+| `+diff` 79 | 0.7002 [0.503, 0.778] | 0.7002 [0.503, 0.778] |
+| paired `spatial` − baseline | −0.12360 [−0.20164, −0.07104] | same |
+| paired `sp+it` − `spatial` | +0.01940 [−0.01803, +0.05316] | same |
+
+Independence evidence from that run: rank AUROC matches `sklearn.roc_auc_score` to 2.2e-16;
+150/150 per-window feature digests recompute under an independent re-implementation; the feature
+cache's own `label`/`clip` fields agree with the manifest on all 150 windows. As a by-product,
+GRID.06's frozen 26-number OOD baseline (0.5878 [0.450, 0.728]) was **cross-reproduced** by a
+different script written for a different purpose.
+
+Two honest limitations it recorded, both carried here:
+* **Pre-registration ordering is not independently verifiable.** Both PREREG configs re-hash to their
+  declared sha256 and match the config hash in the results JSON, but PREREG.json and the results were
+  added in the *same commit*, so it cannot be shown from git alone that the config was frozen before
+  the run. The registry timestamps (`new` 06:38, `finish` 06:43) and the fact that GRID.02's
+  registered hypothesis pre-states the direction the gate requires are consistent with good faith,
+  but they are not proof. Treat the pre-registration as *recorded*, not *independently attested*.
+* This reproduces the **arithmetic, not the protocol**: one labeller, 7 clips, and the same stream
+  designed and evaluated the mosaic. GRID.04 and the canvas/leak controls were not re-run.
+
+A corrected field name came out of this: `GRID.01.json`'s old `delta_vs_primary` was
+AUROC(primary) − AUROC(secondary), so it read backwards. Every results file now carries an explicit
+`delta_convention` string, and the keys say which arm is subtracted from which.
+
+## 5. GRID.05 / GRID.07 / GRID.09
 
 See `docs/reports/grid_s0_parity.md` (S0 parity on synthetic defects, cost, and the
 brightness-calibrated blur fix), owned by stream S2. Numbers live in
 `eval/results/exp_grid/GRID.05.json`, `GRID.07.json` and `GRID.09.json`.
 
-## 5. What was NOT done, and why
+## 6. What was NOT done, and why
 
 * The full GRID.04 sweep — kill-gate failed (pre-registered stopping rule).
 * Motion-adaptive frame selection and the timestamps-on/off *inference* ablation across layouts —

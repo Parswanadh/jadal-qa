@@ -31,6 +31,10 @@ import common as C  # noqa: E402
 from jadal.mosaic import features as F  # noqa: E402
 
 RESULTS = os.path.join(ROOT, "eval", "results", "exp_grid")
+DELTA_CONVENTION = ("every *_delta_* field is AUROC(first-named arm) - AUROC(second-named arm); "
+                    "a NEGATIVE delta_primary_minus_X therefore means the PRIMARY arm is WORSE "
+                    "than X. (Raised by the independent re-run TASK.07: the earlier field name "
+                    "'delta_vs_primary' read backwards.)")
 SEED, N_BOOT = 0, 2000
 KILL_GATE_DELTA = 0.02
 
@@ -142,8 +146,8 @@ def main():
         "id": "GRID.01", "n": int(len(y)), "n_bad": int((y == 0).sum()),
         "label_source": gold["label_source"],
         "protocol": "LOCO over 7 IndEgo clips, shipped head recipe, nothing selected on held-out clips",
-        "primary": {**r_sp, "delta_vs_baseline26": d_base},
-        "secondary_mean_pooling": {**r_spm, "delta_vs_primary": d_spm},
+        "primary": {**r_sp, "delta_primary_minus_baseline26": d_base},
+        "secondary_mean_pooling": {**r_spm, "delta_primary_minus_secondary": d_spm},
         "baseline_26_on_same_folds": base,
         "negative_controls": controls,
         "ci95": r_sp["ci95"], "ci95_type": r_sp["ci95_type"],
@@ -152,6 +156,7 @@ def main():
         "command": "JADAL_BUNDLE=<bundle> python3 eval/exp_grid/run_grid.py",
         "git_sha": C.git_sha(), "seed": SEED,
         "config_sha256": C.config_sha256(cfg01), "config": cfg01,
+        "delta_convention": DELTA_CONVENTION,
         "feature_digest_sha256": doc["feature_digest_sha256"],
         "notes": "EmbeddingGemma-2 mosaic reference on this layout was 0.785 (E2.01, embedding "
                  "model, optional arm); the 26-number baseline on the same folds is in this file.",
@@ -187,7 +192,7 @@ def main():
         "id": "GRID.02", "n": int(len(y)), "n_bad": int((y == 0).sum()),
         "label_source": gold["label_source"],
         "protocol": "LOCO over 7 clips; leave-one-group-out ablation of the intertile group",
-        "primary": {**r_spit, "delta_vs_spatial_only": d_it},
+        "primary": {**r_spit, "delta_primary_minus_spatial_only": d_it},
         "spatial_only": r_sp,
         "baseline_26_on_same_folds": base,
         "per_group_ablation": abl,
@@ -201,6 +206,7 @@ def main():
         "command": "JADAL_BUNDLE=<bundle> python3 eval/exp_grid/run_grid.py",
         "git_sha": C.git_sha(), "seed": SEED,
         "config_sha256": C.config_sha256(cfg02), "config": cfg02,
+        "delta_convention": DELTA_CONVENTION,
         "feature_digest_sha256": doc["feature_digest_sha256"],
     })
     print("wrote GRID.01.json and GRID.02.json")
@@ -264,7 +270,7 @@ def main():
         "id": "GRID.03", "n": int(len(y)), "n_bad": int((y == 0).sum()),
         "label_source": gold["label_source"],
         "protocol": "LOCO over 7 clips; difference-mosaic group added on top of spatial+intertile",
-        "primary": {**r_all, "delta_vs_spatial_plus_intertile": d_dm},
+        "primary": {**r_all, "delta_primary_minus_spatial_plus_intertile": d_dm},
         "spatial_plus_intertile": r_spit,
         "baseline_26_on_same_folds": base,
         "kill_gate_upstream": {"passed": gate, "note": "GRID.03 ran only as the small "
@@ -276,6 +282,7 @@ def main():
         "command": "JADAL_BUNDLE=<bundle> python3 eval/exp_grid/run_grid.py",
         "git_sha": C.git_sha(), "seed": SEED,
         "config_sha256": C.config_sha256(cfg03), "config": cfg03,
+        "delta_convention": DELTA_CONVENTION,
         "feature_digest_sha256": doc["feature_digest_sha256"],
     })
     print("wrote GRID.01.json, GRID.02.json, GRID.03.json")

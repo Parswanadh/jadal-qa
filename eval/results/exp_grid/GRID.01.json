@@ -49,9 +49,10 @@
  },
  "config_sha256": "557752c9f49eb3c3d6ace0491ae4924d6427ad3e5018f2cd78c054878cc67d89",
  "cost": "mosaic build+features 194.9 ms/window (CPU)",
+ "delta_convention": "every *_delta_* field is AUROC(first-named arm) - AUROC(second-named arm); a NEGATIVE delta_primary_minus_X therefore means the PRIMARY arm is WORSE than X. (Raised by the independent re-run TASK.07: the earlier field name 'delta_vs_primary' read backwards.)",
  "device": "CPU (numpy/sklearn, this laptop: RTX 4070 Laptop 8GB / 22 cores / 15GB RAM)",
  "feature_digest_sha256": "600e6eb467ea0969a666382133fd98f39ec3eef002d99cff1f4f472b9f207315",
- "git_sha": "83b03df1cf25918c0a6854926b8b7cf8b3c82dcc",
+ "git_sha": "7de5f49b74196b86791adee427c2a38698e6f361",
  "id": "GRID.01",
  "label_source": "human gold, ONE labeller (150 IndEgo windows: 100 good / 50 bad)",
  "n": 150,
@@ -78,7 +79,7 @@
    0.585,
    0.777
   ],
-  "delta_vs_baseline26": {
+  "delta_primary_minus_baseline26": {
    "delta": -0.12360000000000004,
    "excludes_zero": true,
    "hi": -0.0710445892614334,
@@ -103,7 +104,7 @@
    0.628,
    0.797
   ],
-  "delta_vs_primary": {
+  "delta_primary_minus_secondary": {
    "delta": -0.025800000000000045,
    "excludes_zero": false,
    "hi": 0.07222725212501128,
