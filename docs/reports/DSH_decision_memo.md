@@ -42,11 +42,15 @@ it is not established to work on factory footage, and **100 % coverage is not su
 **DROP**
 * **The mosaic as a decision input.** Pre-registered kill-gate **FAILED**: inter-tile features add
   **+0.019** AUROC (paired clip bootstrap [−0.018, +0.053], does not exclude zero), under the 0.02
-  threshold. Spatial-only mosaic features score **0.6864 [0.522, 0.772]** against the 26-number
-  baseline **0.810 [0.683, 0.892]** — a paired difference of **−0.124 [−0.202, −0.071]** that
-  excludes zero. The customer's headline **12-frame 4×3 picture scores 0.7044 [0.488, 0.786]**;
-  frame count is flat from N=4 to N=16, and smaller tiles are marginally *better* (t112 0.7146).
-  Keep the mosaic as an **evidence picture**, which is what it already is.
+  threshold. The margin against the 0.02 bar is thin (0.0006), so the **stronger** reason to stop is
+  that the interval includes zero — the effect is not established at all. Spatial-only mosaic features
+  score **0.6864 [0.522, 0.772]** against the 26-number baseline **0.810 [0.683, 0.892]** — a paired
+  difference of **−0.124 [−0.202, −0.071]** that excludes zero, and the mosaic head is **below chance
+  on the `pallet` clip** (0.197) which holds 11 of the 50 bad windows. The customer's headline
+  **12-frame 4×3 picture scores 0.7044 [0.488, 0.786]**; frame count is flat from N=4 to N=16, and
+  smaller tiles are marginally *better* (t112 0.7146). Keep the mosaic as an **evidence picture**,
+  which is what it already is. All of this was **independently re-derived by a different stream with
+  its own code and reproduced exactly** (TASK.07, PR #173).
 * **Mosaic out of domain.** The IndEgo-trained mosaic head **inverts** on factory windows:
   **0.3557 [0.224, 0.515]** vs the shipped head's 0.588, paired **−0.232 [−0.380, −0.077]**.
 * **The EmbeddingGemma-2 second view as a review-band resolver.** In-band AUROC 0.811 vs the head's
@@ -95,6 +99,11 @@ can tolerate, and that is the builder's/Awign's call, not a modelling result.
    changed), so the workload table is a snapshot, and per-site monitoring is not optional.
 5. **Round-3 hold-out is consumed** (two prior scorings, C1 #162 and physics v2 #163). It was **not**
    scored again here — nothing earned the last permitted look. It therefore cannot support adoption.
+6. **Pre-registration ordering is recorded but not independently attested.** GRID.01/02 PREREG
+   configs re-hash to the sha256 in their results JSON, but PREREG and results landed in the same
+   commit, so git alone cannot show the config was frozen before the run. The registry timestamps and
+   the direction-predicting hypothesis are consistent with good faith, not proof. A future pass should
+   commit PREREG in its own commit before the run and record the commit sha.
 
 ## 5. Questions only the builder / Awign can answer
 
