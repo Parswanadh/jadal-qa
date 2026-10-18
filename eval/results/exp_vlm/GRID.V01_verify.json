@@ -1,0 +1,196 @@
+{
+ "exact_match_rate_per_returned_line": 1.0,
+ "exact_match_rate_per_sheet_tile": 1.0,
+ "exact_number_and_timestamp": 240,
+ "id": "GRID.V01_verify",
+ "ledger": "/tmp/opencode/dsh/vlm_ledger_b.jsonl",
+ "method": "independent re-parse of the raw ledger replies with a locally written regex, against independently re-read sidecars; imports nothing from eval/exp_vlm/vlm_run.py",
+ "n_windows_counted": 20,
+ "note": "a disagreement with GRID.V01.json is the finding; a match is a reproduction of the arithmetic, not a validation of the protocol",
+ "per_window": [
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "q010"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "q041"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "q052"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "q053"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "q054"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r008"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r011"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r023"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r028"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r029"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r042"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r043"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r046"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r047"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r050"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r075"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r079"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r084"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r086"
+  },
+  {
+   "coverage": 1.0,
+   "covered": 12,
+   "exact": 12,
+   "exact_rate": 1.0,
+   "lines": 12,
+   "n_tiles": 12,
+   "window": "r098"
+  }
+ ],
+ "returned_lines": 240,
+ "sheet_tiles": 240,
+ "tile_coverage_rate": 1.0,
+ "tiles_covered": 240
+}
