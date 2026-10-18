@@ -1,0 +1,1154 @@
+{
+ "auroc_spread_across_runs": 0.0714,
+ "ci95": [
+  0.5,
+  0.9
+ ],
+ "ci95_type": "factory-grouped bootstrap (2000 draws, seed 0)",
+ "command": "JADAL_VLM_LEDGER=<ledger> python3 eval/exp_vlm/grid_v04.py --workers 3",
+ "config_sha256": "59629bdd68ee02a78f501dbda1d61b3e462f4072eccac7463fdebe5e87a439c1",
+ "context_required_with_every_number": "OOD-160: n=160 (138 good / 22 bad), 19 of the 22 bad are NO_ACTIVE_WORK, 47 factories, ONE human labeller. The model is probabilistic.",
+ "cost": "241 image calls in the ledger total; V04 added 80; 40 windows x 3 runs; 326.8 s wall",
+ "device": "CPU (sheet build) + OpenCode Go API (image calls); no GPU used",
+ "git_sha": "9db70672383643a40d98d7614055f6d466b55cf9",
+ "id": "GRID.V04",
+ "label_source": "human labels, ONE labeller (160 Egocentric-10K windows: 138 good / 22 bad; 19 of 22 bad are NO_ACTIVE_WORK)",
+ "majority_vote_of_3": {
+  "auroc_usable": 0.7143,
+  "ci95": [
+   0.5,
+   0.9
+  ],
+  "share_usable": 0.925
+ },
+ "model": "opencode-go/muse-spark-1.3-contributor",
+ "model_id": "muse-spark-1.3-contributor",
+ "n": 40,
+ "n_bad": 7,
+ "per_run": {
+  "run1": {
+   "auroc_usable": 0.6429,
+   "ci95": [
+    0.5,
+    0.875
+   ],
+   "n_accepted_bad": 5,
+   "n_rejected_good": 0,
+   "share_usable": 0.95
+  },
+  "run2": {
+   "auroc_usable": 0.6991,
+   "ci95": [
+    0.5,
+    0.877
+   ],
+   "n_accepted_bad": 4,
+   "n_rejected_good": 1,
+   "share_usable": 0.9
+  },
+  "run3": {
+   "auroc_usable": 0.7143,
+   "ci95": [
+    0.5,
+    0.9
+   ],
+   "n_accepted_bad": 4,
+   "n_rejected_good": 0,
+   "share_usable": 0.925
+  }
+ },
+ "per_window": {
+  "q005": {
+   "factory": "factory_014",
+   "run1": {
+    "raw": "#1: Arms raised, hands at top edge positioning white work mat.\n#2: Left hand reaches left to grab white part, right hand raised.\n#3: Both hands together at top center manipulating small part.\n#4: Both hands together at top pressing/assembling component.\n#5: Hands centered together assembling small part over mat.\n#6: Hands together in center continuing fine assembly work.\n#7: Hands clasped together in center fitting parts together.\n#8: Hands in same central position continuing assembly.\n#9: Hands holding small part, maintaining assembly posture.\n#10: Hands together in center still working on component.\n#11: Hands together in center finishing assembly of part.\n#12: Hands separate, left holds part, right releases to side.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible assembling small parts throughout with clear progress.\"}",
+    "reason_code": "OK",
+    "seconds": 10.95,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 00:00.4s: Both hands raised to top edge handling a white part.\n#2 00:01.2s: Left hand reaches left to pick a part, right hand raised.\n#3 00:02.1s: Both hands meet at top center assembling a small component.\n#4 00:02.9s: Both hands together pressing/fitting the component.\n#5 00:03.8s: Both hands clasped center continuing manual assembly.\n#6 00:04.6s: Both hands together manipulating the small part.\n#7 00:05.4s: Both hands together holding and fitting the part.\n#8 00:06.2s: Both hands together maintaining assembly work.\n#9 00:07.1s: Both hands together still assembling the component.\n#10 00:07.9s: Both hands together continuing fine assembly.\n#11 00:08.8s: Both hands together finishing the assembly.\n#12 00:09.6s: Hands separate, right hand moves aside, left releases part.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Clear overhead view of hands repeatedly assembling small white parts.\"}",
+    "reason_code": "OK",
+    "seconds": 12.9,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Both hands raised at top of mat positioning material.\n#2: Left hand holds white part left side, right hand at top.\n#3: Both hands together at top center manipulating part.\n#4: Both hands together at top center continuing assembly.\n#5: Both hands joined center assembling small component.\n#6: Both hands joined center doing fine manipulation.\n#7: Both hands joined center manipulating small part.\n#8: Both hands joined center continuing fine work.\n#9: Both hands joined left-center assembling part.\n#10: Both hands joined left-center continuing assembly.\n#11: Both hands joined left-center manipulating component.\n#12: Hands separate, left center, right moves to side.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible manipulating parts throughout with good lighting.\"}",
+    "reason_code": "OK",
+    "seconds": 10.07,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 0
+  },
+  "q010": {
+   "factory": "factory_022",
+   "run1": {
+    "raw": "#1: Both hands hold black unit adjusting internal parts.\n#2: Left holds unit, right wipes circuit with white cloth.\n#3: Both hands manipulate circuit board inside unit.\n#4: Both hands continue fine adjusting on circuit area.\n#5: Both hands grip and rotate unit for inspection.\n#6: Both hands flip unit over to show perforated back.\n#7: Hands hold inverted unit inspecting bottom holes.\n#8: Hands continue holding aligning bottom of unit.\n#9: Hands hold bottom rim of unit steady.\n#10: Hands blur moving away placing unit down.\n#11: Camera turns away, hands not on unit near stack.\n#12: Motion blur, right hand reaches for another unit.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker assembles inspects device then places it and reaches for next unit.\"}",
+    "reason_code": "OK",
+    "seconds": 9.65,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Both hands hold black device, fingers adjusting internal top part.\n#2: Left holds device, right fingers manipulate small circuit area.\n#3: Left holds device steady, right inserts/adjusts green circuit component.\n#4: Both hands grip device, fingers working on circuit detail.\n#5: Both hands reposition device on table, turning slightly.\n#6: Both hands flip device over to show perforated bottom.\n#7: Both hands hold and inspect bottom casing with holes.\n#8: Both hands rotate bottom of device for further inspection.\n#9: Both hands hold device bottom facing up centered.\n#10: Hands blur moving away, appearing to place device down.\n#11: Camera looks away, hands handling stacked units near coworker.\n#12: Blurred motion, right hand holds small component low right.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands continuously assemble and inspect device with clear view\"}",
+    "reason_code": "OK",
+    "seconds": 14.73,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: Both hands holding black device, adjusting top.\n#2 00:01.2s: Left holds device, right manipulates internal circuit.\n#3 00:02.1s: Left holds device, right works inside enclosure.\n#4 00:02.9s: Both hands assembling internal components of device.\n#5 00:03.8s: Both hands repositioning and pressing device casing.\n#6 00:04.6s: Both hands lifting and rotating device to inspect base.\n#7 00:05.4s: Both hands holding perforated base, aligning parts.\n#8 00:06.2s: Both hands holding device, continuing assembly.\n#9 00:07.1s: Both hands holding bottom of device on table.\n#10 00:07.9s: Hands moving away, blurry, device out of view.\n#11 00:08.8s: Camera turned to coworker, worker hand idle at edge.\n#12 00:09.6s: Blurry motion, hand reaching for device at edge.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Clear hands-on electronic assembly with visible progress\"}",
+    "reason_code": "OK",
+    "seconds": 15.15,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "q013": {
+   "factory": "factory_026",
+   "run1": {
+    "raw": "#1: Camera wearer's hands sorting white papers, nearby coworker writing on red mat.\n#2: Same as #1, hands handling papers while coworker continues writing.\n#3: Coworker peeling/handling sticker sheet, wearer's hands on papers.\n#4: Coworker writing on red mat, papers spread on green table.\n#5: Wearer's left hand reaches for paper bag, coworker writing.\n#6: Wearer's left arm extended to paper bag, coworker writing.\n#7: Coworker handling small items on red mat.\n#8: Coworker assembling/writing on red mat.\n#9: Coworker writing on papers at red station.\n#10: Coworker folding/handling papers, wearer's gloved hands appear below.\n#11: Coworker sorting papers, wearer's hand visible at bottom.\n#12: Coworker assembling papers, wearer holds up small object.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands actively sort, fold and write on packaging papers throughout\"}",
+    "reason_code": "OK",
+    "seconds": 14.8,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 00:00.4s: Wearer's hands handling white papers in overexposed foreground, coworker working on pink mat right.\n#2 00:01.2s: Wearer's hands adjusting papers foreground, coworker continuing small-parts work on right.\n#3 00:02.1s: Wearer's view on conveyor, coworker right hand placing items on white sheet.\n#4 00:02.9s: Coworker folding/handling white paper on pink mat, wearer's hands out of frame.\n#5 00:03.8s: Wearer's left hand holding white bag/paper on conveyor, coworker working on right.\n#6 00:04.6s: Wearer's left arm extended placing paper on conveyor, coworker working on right.\n#7 00:05.4s: Wearer's hands sorting papers below, coworker assembling items on pink mat.\n#8 00:06.2s: Wearer's hands moving papers foreground, coworker peeling/placing items on right.\n#9 00:07.1s: Wider view, coworker with both hands assembling on pink mat.\n#10 00:07.9s: Coworker assembling with both hands center, wearer's hands entering at bottom.\n#11 00:08.8s: Coworker folding paper/bag with both hands, wearer's hands handling material below.\n#12 00:09.6s: Coworker working on pink mat, wearer's right hand raised holding object foreground.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Continuous manual packing work visible with hands manipulating papers and materials.\"}",
+    "reason_code": "OK",
+    "seconds": 11.0,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: Wearer's hands handle papers foreground, coworker writes on pink mat right.\n#2 00:01.2s: Wearer's hands sort papers foreground, coworker continues writing on right.\n#3 00:02.1s: Wearer's view shifts, coworker picks/handles white material on pink mat.\n#4 00:02.9s: Coworker manipulates small items on pink mat, wearer's hands out of view.\n#5 00:03.8s: Wearer's left hand reaches for white sheet center, coworker writes right.\n#6 00:04.6s: Wearer's left arm extends holding white sheet, coworker writes right.\n#7 00:05.4s: Wearer's hands out of view, coworker handles items on pink mat.\n#8 00:06.2s: Wearer's hands not visible, coworker assembles/writes on pink mat.\n#9 00:07.1s: Coworker works with both hands on pink mat, wearer observes.\n#10 00:07.9s: Wearer's hands reappear bottom handling material, coworker works pink mat.\n#11 00:08.8s: Wearer's hands handle papers bottom, coworker folds/handles papers pink mat.\n#12 00:09.6s: Wearer's right hand lifts in foreground, coworker continues working pink mat.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands actively handle papers and assembly tasks with clear view throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 13.59,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "q016": {
+   "factory": "factory_033",
+   "run1": {
+    "raw": "#1: Hands holding open product box over table.\n#2: Hands adjusting open box flaps.\n#3: Hands holding box open upright.\n#4: Hands pressing top flaps of box.\n#5: Both hands inside open box shaping it.\n#6: Left in box, right reaching toward side.\n#7: Left holds box, right picks white packet from tray.\n#8: Hands placing white packet into box.\n#9: Left holds box, right tucking contents inside.\n#10: Both hands folding/closing box flaps.\n#11: Both hands holding closed box upright.\n#12: Both hands pressing box closed on table.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker opens carton, inserts accessory packets, then closes box.\"}",
+    "reason_code": "OK",
+    "seconds": 7.49,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Holding and positioning open product box on table.\n#2: Adjusting box flaps open with both hands.\n#3: Holding box open and tilting it upright.\n#4: Pressing top flaps to open box fully.\n#5: Holding both sides of box open.\n#6: Left holds box, right reaches toward parts tray.\n#7: Left steadies box, right picks white packet from tray.\n#8: Placing packet inside box with both hands.\n#9: Adjusting contents inside box.\n#10: Starting to fold box flaps closed.\n#11: Folding lid closed over box.\n#12: Pressing box shut to finish packing.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker packs packet into box and closes it, hands visible.\"}",
+    "reason_code": "OK",
+    "seconds": 10.51,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Holding large product box upright over table.\n#2: Setting box down onto green table.\n#3: Lifting and unfolding box flaps open.\n#4: Spreading box open with both hands.\n#5: Both hands inside open box adjusting.\n#6: Left holds box, right hand reaching away.\n#7: Left holds box, right picks packet from blue tray.\n#8: Placing white packet inside box.\n#9: Adjusting box flaps with both hands.\n#10: Folding box lid closed.\n#11: Holding and positioning closed box.\n#12: Pressing down on top of closed box.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Clear view of hands opening box, inserting packet, then closing it.\"}",
+    "reason_code": "OK",
+    "seconds": 8.14,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "q041": {
+   "factory": "factory_076",
+   "run1": {
+    "raw": "#1: Both hands at table edge handling white paper strips.\n#2: Hands holding white paper sheet in place on table.\n#3: Hands steady on paper, little change from prior.\n#4: Hands maintaining same hold on paper.\n#5: Hands still positioned on paper with slight shift.\n#6: Hands continuing to hold paper strips.\n#7: Hands holding paper, right fingers pinching edge.\n#8: Right hand raised toward camera blocking view.\n#9: Hand covering lens, view obscured, work hidden.\n#10: Arm/hand blocking view, white paper only background.\n#11: Foreground arm blur obscures table, no hands seen.\n#12: Blurry hand still blocks camera, no work visible.\n{\"usable\": false, \"reason_code\": \"BLOCKED_VIEW\", \"task_progress\": \"cannot_tell\", \"explanation\": \"Initial static hold then hand blocks camera for seconds\"}",
+    "reason_code": "BLOCKED_VIEW",
+    "seconds": 12.4,
+    "task_progress": "cannot_tell",
+    "usable": false
+   },
+   "run2": {
+    "raw": "#1: Both hands positioning white paper strips at table edge.\n#2: Left hand holds strip, right hand adjusts paper below.\n#3: Hands held steady on paper strips, minimal movement.\n#4: Hands continue handling paper, right hand repositions slightly.\n#5: Hands maintain grip on paper strips on table.\n#6: Hands still working with white paper sheets.\n#7: Hands holding paper in same working posture.\n#8: Right hand lifts toward lens, starting to block view.\n#9: Fingers cover camera, work view obscured.\n#10: Arm/body blocks lens, only table edge visible.\n#11: View blocked by arm, no hands or work visible.\n#12: Blurry hand blocks lens, no work visible.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"First 6s show hands handling paper strips; later camera blocked.\"}",
+    "reason_code": "OK",
+    "seconds": 13.2,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Both hands on table handling white paper strips.\n#2: Left hand holds sheet, right hand at table edge.\n#3: Hands steady on paper in same position.\n#4: Hands maintaining hold on paper strips.\n#5: Left hand on paper, right hand slightly moved.\n#6: Hands still positioned on paper work area.\n#7: Hands holding paper with minimal change.\n#8: Right hand rises and blocks camera view.\n#9: Fingers close to lens obscuring scene.\n#10: View blocked, only arm and paper edge visible.\n#11: Camera still blocked, arm under paper visible.\n#12: Blurred hand covers lens, no work visible.\n{\"usable\": false, \"reason_code\": \"BLOCKED_VIEW\", \"task_progress\": \"cannot_tell\", \"explanation\": \"First half shows paper handling but second half blocked by hand, obscuring work.\"}",
+    "reason_code": "BLOCKED_VIEW",
+    "seconds": 12.2,
+    "task_progress": "cannot_tell",
+    "usable": false
+   },
+   "y": 0
+  },
+  "q042": {
+   "factory": "factory_077",
+   "run1": {
+    "raw": "#1: Right hand sorting white plastic strips on blue tray.\n#2: Right hand picking up a white strip.\n#3: Right hand holding and adjusting a white strip.\n#4: Right hand moving over arranged white strips.\n#5: Left arm extended, right hand reaching strips on right.\n#6: Left arm on table, right hand low picking parts.\n#7: Left arm resting, right hand working at bottom edge.\n#8: Right hand grabbing strips in blurry motion.\n#9: Right hand touching/arranging strips in tray.\n#10: Right hand pressing over white strips.\n#11: Left holds tape roll, right arranges a strip.\n#12: Left holds tape, right holds strip for taping.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands handle white strips throughout, progressing to taping.\"}",
+    "reason_code": "OK",
+    "seconds": 8.86,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 00:00.4s: Right hand picking white plastic strips from blue tray.\n#2 00:01.2s: Right hand grasping and shifting white plastic strips.\n#3 00:02.1s: Right hand holding one white plastic strip.\n#4 00:02.9s: Right hand arranging white plastic strips in tray.\n#5 00:03.8s: Camera pans left, left arm on table, right hand at tray.\n#6 00:04.6s: Left arm resting on table, right hand at tray edge.\n#7 00:05.4s: Left arm resting on table, right hand at tray edge.\n#8 00:06.2s: Motion blur, right hand reaching into tray of parts.\n#9 00:07.1s: Right hand touching white strips in blue tray.\n#10 00:07.9s: Right hand pointing at / selecting white strips.\n#11 00:08.8s: Both hands handling tape roll and white strip.\n#12 00:09.6s: Both hands applying tape to white plastic strip.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands manipulate white parts and tape throughout, clearly visible.\"}",
+    "reason_code": "OK",
+    "seconds": 8.79,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Right hand touches/arranges white plastic strips in blue tray.\n#2: Right hand picks/aligns a white plastic strip.\n#3: Right hand lifts/holds a white plastic strip.\n#4: Right hand arranges white plastic strips.\n#5: View shifts, left forearm on table, right hand at tray edge.\n#6: Left arm rests on table, right hand near white parts.\n#7: Left arm rests on table, right hand near white parts.\n#8: Blurry motion as right hand moves over tray of parts.\n#9: Right hand touches/arranges white parts in tray.\n#10: Right hand arranges white parts in tray.\n#11: Both hands hold white roll and plastic part for assembly.\n#12: Both hands continue holding roll and part assembling.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker continuously handles white plastic parts, arranging and assembling with both hands visible.\"}",
+    "reason_code": "OK",
+    "seconds": 11.9,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "q052": {
+   "factory": "factory_014",
+   "run1": {
+    "raw": "#1: Both hands reach to top edge to pick white plastic parts.\n#2: Hands handle small white parts along top of bench.\n#3: Hands move together at top center arranging components.\n#4: Left hand adjusts part, right gloved hand reaches top right.\n#5: Left hand picks part, right hand holds position at top.\n#6: Hands press/manipulate parts at upper left area.\n#7: Both hands lift a white housing component together.\n#8: Hands fit white parts together at top row.\n#9: Hands continue assembling parts at top center.\n#10: Left hand lifts white part up, right hand steadies top.\n#11: Both hands join two white halves together.\n#12: Hands place assembled parts back onto top row.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands continuously pick and assemble white handles with clear view.\"}",
+    "reason_code": "OK",
+    "seconds": 16.93,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Both hands reach to top edge arranging white plastic parts.\n#2: Hands meet at top center handling white housings.\n#3: Both hands lifted positioning parts at top.\n#4: Left bare hand rests near parts, right gloved hand reaches top right.\n#5: Left hand touches left parts row, right arm stays top.\n#6: Left hand works left-side parts, right arm extended forward.\n#7: Both hands lift a small white component together.\n#8: Both hands assemble white handles at top center.\n#9: Both arms extend forward reaching for top parts.\n#10: Left hand holds up white part, right hand at top.\n#11: Both hands together manipulate white assembly center-top.\n#12: Hands spread handling parts at top left and center.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands continuously handle and assemble white plastic handles at bench, clearly visible.\"}",
+    "reason_code": "OK",
+    "seconds": 10.53,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Both arms extended upward handling white plastic parts at top edge.\n#2: Hands at top center arranging white housing components.\n#3: Both hands lifted to top organizing parts.\n#4: Left bare hand adjusts left part, right gloved hand at top right.\n#5: Left hand picks left-side part, right gloved hand rests near top.\n#6: Left hand works on left, right arm reaches to top parts.\n#7: Both hands bring white parts together at center-top.\n#8: Hands assembling white plastic components at top center.\n#9: Hands spread at top edge positioning parts.\n#10: Left hand lifts white part, right hand holds top part.\n#11: Both hands join two white parts together centrally.\n#12: Hands place finished parts along top edge of bench.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible assembling white parts continuously with clear view.\"}",
+    "reason_code": "OK",
+    "seconds": 10.25,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "q053": {
+   "factory": "factory_016",
+   "run1": {
+    "raw": "#1: Left hand reaches under conveyor, right hand picks bagged items from pile.\n#2: Both hands gather a bunch of plastic-wrapped items together.\n#3: Left arm raised holding one wrapped item above pile.\n#4: Both hands sort spread pile of wrapped items on table.\n#5: Both hands gather small bundle from table pile.\n#6: Both hands hold bundle together over table near scale.\n#7: Both hands spread flat arranging items on table.\n#8: Left hand holds items while right hand reaches to pile.\n#9: Both hands hold bundle at bottom edge of view.\n#10: Both hands hold and inspect a bundled wrapped item.\n#11: Both hands handle bundle on table by the scale.\n#12: Both hands hold bundle together on left side table.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands continuously sorting gathering packing wrapped items clearly visible.\"}",
+    "reason_code": "OK",
+    "seconds": 12.95,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Left hand reaches under conveyor, right hand holds wrapped item over pile.\n#2: Both hands gather a bunch of plastic-wrapped black items together.\n#3: Arm extends up placing a wrapped item onto the conveyor.\n#4: Both hands sort/spread pile of wrapped items on right table.\n#5: Both hands gather pile into a bundle.\n#6: Both hands hold bundle together at center table.\n#7: Both hands press and spread items flat on table.\n#8: Both hands arrange items into rows on table.\n#9: Both hands hold bundle at bottom of table.\n#10: Both hands hold and inspect a single wrapped item.\n#11: Both hands handle bundle near center-bottom table.\n#12: Both hands hold bundle together for packing.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible sorting counting packing wrapped items on table continuously.\"}",
+    "reason_code": "OK",
+    "seconds": 14.68,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Left hand reaches under conveyor, right hand holds packaged item over pile.\n#2: Both hands gather a bundle of plastic-wrapped black items.\n#3: Left arm lifts single packaged item up from table pile.\n#4: Both hands spread and sort pile on table by scale and box.\n#5: Both hands collect and move pile of packaged items.\n#6: Both hands gather small stack in center of table.\n#7: Left hand holds center package, right hand pulls from right pile.\n#8: Both hands arrange and flatten packages on table.\n#9: Both hands hold bundle at bottom edge of table.\n#10: Both hands hold and inspect single packaged item.\n#11: Both hands handle packages near digital scale.\n#12: Both hands hold bundle of packaged items together.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker continuously sorts and packs plastic-wrapped items on table.\"}",
+    "reason_code": "OK",
+    "seconds": 13.82,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "q054": {
+   "factory": "factory_019",
+   "run1": {
+    "raw": "#1: Left holds red wire, right gloved hand positions white part on jig.\n#2: Left holds wire above part, right stabilizes white part.\n#3: Left inserts wire into white part slot, right holds part.\n#4: Left presses wire into place, right holds part steady.\n#5: Left adjusts wire on part, right maintains hold.\n#6: Left repositions wire/part, right holds part.\n#7: Left holds part edge, right adjusts underneath.\n#8: Left holds white part, right gloved lifts orange screwdriver.\n#9: Left holds part, right holds screwdriver at feeder.\n#10: Left holds part, right operates screwdriver near feeder.\n#11: Left holds part, right holds screwdriver at feeder.\n#12: Left holds part, right drives screwdriver into feeder.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible wiring white part then using screwdriver, clear progress.\"}",
+    "reason_code": "OK",
+    "seconds": 12.32,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Left holds red wire, right gloved hand places white part on fixture.\n#2: Left holds wire up, right holds white part centered on mat.\n#3: Left routes wire onto white part, right stabilizes part.\n#4: Left presses wire into part slot, right holds part steady.\n#5: Both hands adjust wire and white part alignment.\n#6: Left adjusts wire, right holds part during positioning.\n#7: Left holds part, right hand moves off part.\n#8: Left holds part, right reaches for orange electric screwdriver.\n#9: Left holds part, right docks driver at screw feeder to pick screw.\n#10: Left holds part, right moves loaded driver toward part.\n#11: Left holds part, right drives screw into part.\n#12: Left holds part, right continues screwdriving operation.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Clear top-down view of wire placement then screwdriving with hands visible.\"}",
+    "reason_code": "OK",
+    "seconds": 17.73,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Left holds red wire, right gloved positions white housing on jig.\n#2: Left holds wire up, right steadies white housing.\n#3: Left inserts wire into housing, right holds housing steady.\n#4: Left pushes wire into housing, right holds housing.\n#5: Left adjusts wire in part, right holds part.\n#6: Left routes wire on part, right holds part.\n#7: Left presses part, right hand shifts off part.\n#8: Left holds part, right grabs orange electric screwdriver.\n#9: Left holds part, right picks screw from feeder.\n#10: Left holds part, right brings screwdriver toward part.\n#11: Left holds part, right drives screw into part.\n#12: Left holds part, right continues screwdriving.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Clear hands assembling wire housing then screwdriving fastener.\"}",
+    "reason_code": "OK",
+    "seconds": 12.71,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r004": {
+   "factory": "factory_003",
+   "run1": {
+    "raw": "#1 00:00.4s: Right hand lifts cloth, left hand touches small cast parts.\n#2 00:01.2s: Right hand on cloth, left hand among scattered metal parts.\n#3 00:02.1s: Both hands lift and shake the cloth, motion blurred.\n#4 00:02.9s: Hands handle small dark parts at bench edge.\n#5 00:03.8s: Hands work low on bench with tools and parts.\n#6 00:04.6s: Both hands assemble/clean Y-shaped metal castings.\n#7 00:05.4s: Both hands rub and join metal castings together.\n#8 00:06.2s: Left hand holds casting, right hand reaches for another.\n#9 00:07.1s: Left hand steadies castings, right hand lifts to place part.\n#10 00:07.9s: Left hand holds casting, right hand places part on rack.\n#11 00:08.8s: Both hands adjust large cast parts on bench.\n#12 00:09.6s: Hands reposition castings, right hand actively moving part.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visibly handle and assemble cast parts continuously across all tiles.\"}",
+    "reason_code": "OK",
+    "seconds": 14.03,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Right holds cloth over bowl, left touches metal castings.\n#2: Right handles cloth, left arranges small parts.\n#3: Both hands lift white object, motion blurred.\n#4: Right works black part, left rests on lap.\n#5: Both hands work a part at table edge.\n#6: Both hands pick and position small castings.\n#7: Both hands scrub a Y-shaped casting.\n#8: Both hands arrange multiple castings on table.\n#9: Left holds casting, right reaches upward.\n#10: Both hands spread and align castings.\n#11: Both hands scrape white residue off casting.\n#12: Left steadies part, right actively cleans it.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visibly clean and arrange metal castings continuously.\"}",
+    "reason_code": "OK",
+    "seconds": 13.32,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Left hand near metal parts, right hand holds cloth over bowl.\n#2: Left hand near parts, right hand adjusts cloth over bowl.\n#3: Both hands lift and shake cloth/material, motion blurred.\n#4: Right hand scrubs a dark part, left hand rests on table.\n#5: Left hand on table edge, right hand scrubs part at edge.\n#6: Both hands handle small metal castings on dusty table.\n#7: Both hands manipulate/clean metal parts together.\n#8: Both hands position curved metal parts among pile.\n#9: Left hand holds part, right hand reaches for another part.\n#10: Left hand steadies parts, right hand picks part from pile.\n#11: Left hand holds casting, right hand rubs white residue.\n#12: Left hand near parts, right hand scrubs small dark part.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands clearly cleaning handling castings throughout with good visibility.\"}",
+    "reason_code": "OK",
+    "seconds": 17.02,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r008": {
+   "factory": "factory_029",
+   "run1": {
+    "raw": "#1: Right hand touching/pushing white box on conveyor.\n#2: Hand guiding white box forward on conveyor.\n#3: Hands not visible due to motion blur during head turn.\n#4: Both hands holding flat white sleeve over box.\n#5: Both hands positioning white sleeve at conveyor side.\n#6: Left hand placing sleeve, right hand steadying box.\n#7: Both hands folding/wrapping sleeve around white box.\n#8: Both hands holding wrapped box, aligning it.\n#9: Hands moving wrapped box toward machine entrance.\n#10: Hands pushing wrapped box into shrink tunnel.\n#11: Box inside tunnel, hands retreating to cardboard below.\n#12: Hands out of view, blurred view of tunnel exit.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker wraps white boxes and feeds them into shrink tunnel continuously.\"}",
+    "reason_code": "OK",
+    "seconds": 13.94,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Right hand reaching to white box on conveyor.\n#2: Hand adjusting white box on conveyor belt.\n#3: Hands blurred in fast motion near boxes.\n#4: Both hands holding white sleeve over box.\n#5: Both hands folding paper packaging on box.\n#6: Hands wrapping white paper around box.\n#7: Both hands folding/sealing packaging around box.\n#8: Both hands lifting holding finished white box.\n#9: Left hand moving box while box feeds to tunnel.\n#10: Hands feeding white box into yellow machine.\n#11: Hands handling paper as box enters tunnel.\n#12: Hands out of view during blurred camera turn.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker wraps white boxes and feeds them into heat tunnel continuously.\"}",
+    "reason_code": "OK",
+    "seconds": 10.5,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Right hand pushing white box on conveyor belt.\n#2: Hand steadying white box on conveyor.\n#3: Motion blur, hands moving between boxes.\n#4: Both hands holding white paper/sleeve on box.\n#5: Both hands positioning paper on box.\n#6: Hands placing paper sheet onto box.\n#7: Both hands smoothing paper onto box top.\n#8: Both hands lifting/holding boxed product.\n#9: Left hand reaching aside as box tips into tunnel.\n#10: Hand feeding white box into yellow shrink machine.\n#11: Box inside tunnel, hands handling paper below.\n#12: Blurry turn, hands out of view near machine.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands pack boxes and feed shrink tunnel, work progresses.\"}",
+    "reason_code": "OK",
+    "seconds": 16.55,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r011": {
+   "factory": "factory_009",
+   "run1": {
+    "raw": "#1: Both hands below table manipulating clear plastic packaging.\n#2: Hands blurred in motion below table, action unclear.\n#3: Hands holding clear plastic tray under table edge.\n#4: Hands manipulating small metal/plastic parts below table.\n#5: Blurred view of table, hands not clearly visible.\n#6: Top-down table view, hands out of frame at bottom.\n#7: Right hand touching white paper on table.\n#8: Both hands clasped together below table, paused.\n#9: Overexposed blurred table, hands not visible.\n#10: Both hands on white paper holding small object, blurry.\n#11: Hands on table arranging small orange rings/components.\n#12: Both hands holding clear plastic pack assembling parts.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands handle plastic and small parts across clear and blurry frames showing packing progress.\"}",
+    "reason_code": "OK",
+    "seconds": 10.27,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Both hands below table manipulating clear plastic blister.\n#2: Hands blurred in motion handling material below table.\n#3: Hands holding clear plastic trays below table.\n#4: Hands manipulating plastic and thin wire below table.\n#5: Hands not visible due to heavy motion blur.\n#6: Hands out of view below workstation table.\n#7: Right hand on white paper, left hand below table.\n#8: Both hands clasped together at table edge.\n#9: Hands not visible in overexposed blurry frame.\n#10: Both hands holding object over white paper, blurred.\n#11: Left holds clear pack, right touches colored items.\n#12: Both hands holding clear pack over paper assembling.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands actively handle plastic packs and small parts throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 13.22,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Both hands below table manipulating clear plastic blister pack.\n#2: Hands blurred below table, still handling plastic material.\n#3: Hands holding clear plastic tray under table edge.\n#4: Right hand holding small part/wire, left assisting under table.\n#5: View blurred, hands indistinct during rapid head movement.\n#6: Hands out of view below table, worktable with parts visible.\n#7: Right hand touching white paper on table, arranging.\n#8: Right hand holding paper edge at table corner.\n#9: Overexposed blur, hands not clearly visible during movement.\n#10: Both hands centered on paper holding clear plastic pack.\n#11: Left holds clear pack, right reaches for orange/green rings.\n#12: Both hands holding clear pack over paper, assembling/packing.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands pack small parts into plastic trays with clear progression.\"}",
+    "reason_code": "OK",
+    "seconds": 12.16,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r012": {
+   "factory": "factory_085",
+   "run1": {
+    "raw": "#1 00:00.4s: Left hand reaches into blue bin, right hand holds hammer.\n#2 00:01.2s: Left holds white item over bucket, right holds hammer.\n#3 00:02.1s: Left places material in bucket, right holds hammer.\n#4 00:02.9s: Both hands work over bucket, right still holds hammer.\n#5 00:03.8s: Left holds yellowish item, right holds tool over bucket.\n#6 00:04.6s: Left raised dropping material, right holds item and hammer.\n#7 00:05.4s: Left reaches to left blue bin, right holds hammer.\n#8 00:06.2s: Left sorts in blue bin, right holds hammer by bucket.\n#9 00:07.1s: Left picks from blue bin, right holds hammer.\n#10 00:07.9s: Left presses material in bucket, right holds hammer.\n#11 00:08.8s: Left holds bucket material, right taps with hammer.\n#12 00:09.6s: Both hands manipulate white item together.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible sorting and hammer-crushing material into bucket continuously.\"}",
+    "reason_code": "OK",
+    "seconds": 13.5,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Left hand reaches into blue bin, right hand holds hammer by bucket.\n#2: Left hand lifts light object, right hand holds hammer near bucket.\n#3: Left hand places material into bucket, right hand grips hammer.\n#4: Both hands work over bucket, right hand holding hammer.\n#5: Both hands hold yellow object and tool, manipulating together.\n#6: Left hand raised with item, right hand holds hammer and item.\n#7: Left hand reaches to blue bin, right hand holds hammer.\n#8: Left hand sorts in blue bin, right hand rests hammer on floor.\n#9: Left hand rummages in blue bin, right hand holds hammer.\n#10: Left hand works in bucket, right hand holds hammer.\n#11: Left hand holds bucket material, right hand positions hammer.\n#12: Both hands hold white object with hammer, inspecting.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker continuously picks, crushes and sorts material with hammer between bins and basin.\"}",
+    "reason_code": "OK",
+    "seconds": 13.16,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Left reaches into left blue bin, right holds orange hammer.\n#2: Left lifts light object, right holds hammer near bucket, motion blur.\n#3: Left works inside bucket, right grips hammer.\n#4: Both hands over bucket, right holds hammer.\n#5: Both hands hold yellow object, right still holds hammer.\n#6: Left raised empty, right holds hammer with stick.\n#7: Left reaches to side bin with object, right holds hammer.\n#8: Left sorts in blue bin, right holds hammer down.\n#9: Left picks in blue bin, right rests hammer on ground.\n#10: Left presses material in bucket, right holds hammer.\n#11: Left holds bucket material, right positions hammer over it.\n#12: Both hands manipulate white object, right with hammer.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible crushing sorting material with hammer continuously.\"}",
+    "reason_code": "OK",
+    "seconds": 14.73,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r015": {
+   "factory": "factory_009",
+   "run1": {
+    "raw": "#1: Hands at bottom edge barely visible, holding something below table.\n#2: Hands out of view, workstation with trays and paper visible.\n#3: Right hand raised mid-air in blurred motion to the right.\n#4: Right arm extended, hand touching paper cover on blue bin.\n#5: Left hand below table adjusting or picking small parts.\n#6: Both hands centered below, manipulating small metal parts.\n#7: Hands below table handling small tools or components.\n#8: Both hands visible holding clear small plastic parts.\n#9: Hands assembling transparent plastic parts below table.\n#10: Hands working together on small parts and tools.\n#11: Hands holding metallic components, continuing assembly.\n#12: Hands at bottom manipulating small clear component.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands perform reaching then assembly work clearly visible throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 12.4,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 hands barely visible at bottom edge handling something below table.\n#2 no hands visible, view of work table with parts and paper.\n#3 right arm raised, hand blurred reaching over blue bin.\n#4 right hand touching/adjusting paper cover on blue bin.\n#5 hands below table edge, starting to handle clear parts.\n#6 both hands centered below table manipulating small items.\n#7 hands low holding clear plastic packaging/parts.\n#8 both hands visible assembling clear plastic components.\n#9 both hands low holding and aligning clear parts.\n#10 both hands manipulating small clear parts together.\n#11 left hand in bag, right hand holding small metallic parts.\n#12 both hands low together finishing manipulation of small part.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands actively handle and assemble small parts throughout clip.\"}",
+    "reason_code": "OK",
+    "seconds": 10.1,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: hands below table edge, barely visible.\n#2 00:01.2s: hands out of view below workstation.\n#3 00:02.1s: right arm reaching toward blue bin.\n#4 00:02.9s: right hand touching paper on blue bin.\n#5 00:03.8s: hands low below table handling small parts.\n#6 00:04.6s: both hands centered below manipulating metal parts.\n#7 00:05.4s: hands handling clear plastic parts below table.\n#8 00:06.2s: both hands holding small components below edge.\n#9 00:07.1s: hands assembling clear plastic pieces.\n#10 00:07.9s: hands manipulating small parts/tools together.\n#11 00:08.8s: left hand by bag, right holding metal part.\n#12 00:09.6s: both hands low assembling small metal part.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands actively assemble small components below table in clear view\"}",
+    "reason_code": "OK",
+    "seconds": 12.79,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r023": {
+   "factory": "factory_057",
+   "run1": {
+    "raw": "#1 00:00.4s: Both hands position red-brown strip under microscope base.\n#2 00:01.2s: Hands adjust strip, left holds edge right near scope.\n#3 00:02.1s: Single right hand holds strip flat on base.\n#4 00:02.9s: Both hands reposition strip centered under scope.\n#5 00:03.8s: Both hands hold strip steady for inspection.\n#6 00:04.6s: Both hands hold strip steady under scope viewing monitor.\n#7 00:05.4s: Both hands maintain strip position during inspection.\n#8 00:06.2s: Both hands keep holding same strip in place.\n#9 00:07.1s: Both hands continue holding strip for visual check.\n#10 00:07.9s: Both hands hold strip steady, monitor image blurred.\n#11 00:08.8s: Both hands still holding strip under scope.\n#12 00:09.6s: View blurs from head turn, right arm resting nearby.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker positions and holds part under microscope for visual inspection\"}",
+    "reason_code": "OK",
+    "seconds": 15.95,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 hands placing reddish strip part under microscope base.\n#2 left hand pulls back, right hand adjusts part with tool.\n#3 right hand holds part under scope, left out of view.\n#4 both hands reposition and steady part under scope.\n#5 both hands hold part steady for magnified inspection.\n#6 both hands hold part steady, monitor shows circular detail.\n#7 both hands maintain part position during inspection.\n#8 both hands keep holding part in place under scope.\n#9 both hands hold part steady as inspection continues.\n#10 both hands hold part, monitor image blurs slightly.\n#11 both hands still holding part under microscope.\n#12 head moves sharply, hands leave station, view blurs.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visibly position and hold part for microscope inspection throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 14.98,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Both hands position red-brown part under microscope.\n#2: Both hands adjust part under scope, left holds edge.\n#3: One hand holds part, view shifts to blue monitor.\n#4: Both hands reposition part under microscope for inspection.\n#5: Both hands hold part steady while inspecting on screen.\n#6: Both hands hold part steady under scope.\n#7: Both hands maintain part position for visual check.\n#8: Both hands hold part steady, continuing inspection.\n#9: Both hands hold part in place under microscope.\n#10: Both hands steady part during screen inspection.\n#11: Both hands hold part, head slightly moves.\n#12: Motion blur as head turns away, hands leave work area.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands position and inspect part under microscope clearly visible.\"}",
+    "reason_code": "OK",
+    "seconds": 17.66,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r024": {
+   "factory": "factory_042",
+   "run1": {
+    "raw": "#1 00:00.4s: Hands arranging yellow paper bags on table.\n#2 00:01.2s: Left hand holds green oval case, right handles its strap.\n#3 00:02.1s: Both hands hold and inspect green case with strap.\n#4 00:02.9s: Both hands manipulate edge of green case.\n#5 00:03.8s: Both hands rotate and inspect green case.\n#6 00:04.6s: Both hands turn over green case for check.\n#7 00:05.4s: Left hand places green case on conveyor, right raised.\n#8 00:06.2s: Left hand sets green case down, right hovers.\n#9 00:07.1s: Left hand adjusts placed case on belt.\n#10 00:07.9s: One hand reaches for yellow bag, other raised.\n#11 00:08.8s: Both hands pick up and open yellow paper bag.\n#12 00:09.6s: Both hands hold and fold yellow paper bag.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands inspect product then place it and handle packaging.\"}",
+    "reason_code": "OK",
+    "seconds": 8.58,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Left hand on yellow papers, right hand raised above table.\n#2: Left holds green oval tag, right hand handling its strap.\n#3: Both hands hold tag and strap, adjusting alignment.\n#4: Both hands grip tag, fingers working strap attachment.\n#5: Left holds tag, right fingers press its edge.\n#6: Both hands turn and inspect green tag.\n#7: Left places tag on conveyor, right hand raised.\n#8: Left sets tag down by strap, right hand hovers.\n#9: Left places tag on belt, right hand hovers.\n#10: Left reaches to yellow papers, right hand hovers.\n#11: Both hands pick up yellow paper/bag.\n#12: Both hands hold and fold yellow paper/bag.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands inspect tag, place it, then handle packaging clearly.\"}",
+    "reason_code": "OK",
+    "seconds": 10.73,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Left hand on yellow bag, right hand raised moving.\n#2: Left holds green case, right touches its strap.\n#3: Both hands hold and inspect green case.\n#4: Both hands grip and adjust green case.\n#5: Left holds green case, right picks at edge.\n#6: Both hands rotate and examine green case.\n#7: Left places case on belt, right hand raised.\n#8: Left lifts case by strap, right hand raised.\n#9: Left sets case down on belt, right raised.\n#10: Left touches yellow bag, right raised, cases resting.\n#11: Both hands pick up and open yellow bag.\n#12: Both hands hold and fold yellow bag.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands manipulate product and packaging across frames showing assembly progress.\"}",
+    "reason_code": "OK",
+    "seconds": 10.06,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r028": {
+   "factory": "factory_056",
+   "run1": {
+    "raw": "#1: Both hands picking small shiny discs over black tray.\n#2: Both hands manipulating tiny part above center tray.\n#3: Left hand at top jig, right hand touching discs on tray.\n#4: Both hands holding tiny parts together above tray.\n#5: Both hands working at top metal fixture above tray.\n#6: Left hand on fixture, right hand holding small part aside.\n#7: Left hand holding fixture, right hand holding small pin.\n#8: Left arm raised out of view, right hand holding part right.\n#9: Left hand on fixture, right hand moving over tray.\n#10: Both hands together manipulating small part centrally.\n#11: Both hands inserting/adjusting part in top fixture.\n#12: Both hands continuing fine work on top fixture.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands clearly visible doing fine assembly work throughout video.\"}",
+    "reason_code": "OK",
+    "seconds": 15.77,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Both hands over tray picking small silver discs.\n#2: Hands over tray center manipulating tiny part.\n#3: Left holds top edge, right sorts discs on tray.\n#4: Both hands lifted above tray handling small part.\n#5: Both hands at metal fixture above tray assembling.\n#6: Left on fixture, right hand holds part to side.\n#7: Left reaches to side fixture, right holds part.\n#8: Left arm raised away, right hand near block holding part.\n#9: Left on fixture, right rests on tray edge.\n#10: Both hands center over tray manipulating small part.\n#11: Both hands at top fixture inserting part.\n#12: Both hands continue assembly at top fixture.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Clear top-down view of hands assembling small metal parts throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 13.82,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: Both hands pick/sort tiny shiny discs over black tray.\n#2 00:01.2s: Both hands manipulate small part/pick over tray center.\n#3 00:02.1s: Left hand holds fixture, right hand sorts discs on tray.\n#4 00:02.9s: Both hands hold small pin/part above tray.\n#5 00:03.8s: Both hands work on metal fixture above tray.\n#6 00:04.6s: Left hand on fixture, right hand holds small pin aside.\n#7 00:05.4s: Left hand on fixture, right hand holds pin over table.\n#8 00:06.2s: Left arm raised out of view, right hand holds pin.\n#9 00:07.1s: Left hand on fixture, right hand sorts discs on tray.\n#10 00:07.9s: Both hands pinch small part together over tray.\n#11 00:08.8s: Both hands insert/adjust part in top fixture.\n#12 00:09.6s: Both hands continue working on top metal fixture.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands clearly assembling small parts with continuous manipulation.\"}",
+    "reason_code": "OK",
+    "seconds": 13.13,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r029": {
+   "factory": "factory_036",
+   "run1": {
+    "raw": "#1: Both hands holding a small figurine/toy over cardboard mat.\n#2: Left hand holds white part, right arm reaches across table.\n#3: Left hand rests on table with part, right hand holds part at edge.\n#4: Motion blur turning, right hand holds white object.\n#5: Right arm extended toward adjacent table, blurred motion.\n#6: Standing by bins, hands mostly out of view.\n#7: Standing over parts bins, right hand holds small object.\n#8: Walking past bins, hand reaches briefly toward crate.\n#9: Blurry spin while walking, hands not visible.\n#10: Walking in open floor area, hands out of view.\n#11: Blurry rapid turn, hands not visible.\n#12: Walking toward bins, right hand barely visible, no work.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Initial tabletop assembly visible, then worker stands and walks away from station.\"}",
+    "reason_code": "OK",
+    "seconds": 14.72,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 holding a toy figurine with both hands over the workbench.\n#2 left hand holding small white part, right arm reaching forward.\n#3 left hand resting on board, right hand placing small white part.\n#4 right hand holding a phone, view blurred while turning.\n#5 right hand extended with white object, view turning to side.\n#6 hands out of view while looking down at floor crates.\n#7 hands low at sides while standing near parts crates.\n#8 walking past crates, left hand briefly near a crate.\n#9 hands not visible in blurred motion over crates.\n#10 hands not visible while walking between blue bins.\n#11 hands not visible in heavily blurred spinning view.\n#12 right hand low holding white object while standing by bins.\n{\"usable\": false, \"reason_code\": \"NO_ACTIVE_WORK\", \"task_progress\": \"no_relevant_work\", \"explanation\": \"Worker leaves bench after 3s and wanders among bins with no assembly\"}",
+    "reason_code": "NO_ACTIVE_WORK",
+    "seconds": 11.22,
+    "task_progress": "no_relevant_work",
+    "usable": false
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: Both hands holding and inspecting a figurine head over workboard.\n#2 00:01.2s: Right hand reaching to line, left hand holding small white part.\n#3 00:02.1s: Left hand rests on board, right hand places white bottle part.\n#4 00:02.9s: Blurred turn, right hand holds white part over board.\n#5 00:03.8s: Right arm extended left toward coworker area, motion blurred.\n#6 00:04.6s: Standing looking down at floor bins, hands near chest holding phone.\n#7 00:05.4s: Standing by bins, hands low at sides, no clear manipulation.\n#8 00:06.2s: Right hand reaching toward blue crate of figurines.\n#9 00:07.1s: Heavily blurred spin, hands not visible.\n#10 00:07.9s: Wide floor view walking, hands not visible.\n#11 00:08.8s: Heavily blurred spin, hands indistinct.\n#12 00:09.6s: Walking toward bins, one hand partially visible at edge.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Early frames show hands assembling figurines clearly before worker stands and walks away.\"}",
+    "reason_code": "OK",
+    "seconds": 12.13,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r032": {
+   "factory": "factory_001",
+   "run1": {
+    "raw": "#1: Left holds metal part, right hammers with mallet on jig.\n#2: Left steadies hinge assembly, right taps/inserts with tool.\n#3: Left holds assembly, right reaches to pick small part.\n#4: Left holds assembly, right strikes with yellow mallet.\n#5: Left lifts part off jig, right holds mallet aside.\n#6: Both hands align small metal plates together.\n#7: Left holds long plate, right wipes/cleans with tool.\n#8: Both hands hold plate and tool, aligning/inspecting.\n#9: Both hands manipulate cylindrical tool/part together.\n#10: Left reaches into parts pile, right holds tool.\n#11: Left points, right places small metal part down.\n#12: Left holds part, right fits cylindrical tool to it.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker continuously assembles metal hinge parts using mallet and jig.\"}",
+    "reason_code": "OK",
+    "seconds": 13.27,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Left holds hinge jig, right hammers pin into it.\n#2: Left steadies assembly, right pushes pin in.\n#3: Left holds assembly, right reaches for loose part.\n#4: Left holds assembly, right strikes with yellow mallet.\n#5: Left lifts plate off jig, right holds mallet aside.\n#6: Both hands fit small plates onto hinge assembly.\n#7: Hands pause, left touches plate near finished hinge.\n#8: Both hands hold and align small metal bracket.\n#9: Both hands manipulate cylindrical pin tool together.\n#10: Left reaches into parts pile, right holds pin tool.\n#11: Left rests, right picks up small metal part.\n#12: Left holds part, right inspects with cylindrical tool.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visibly assembling hinges with tools throughout clear video.\"}",
+    "reason_code": "OK",
+    "seconds": 13.66,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Left holds part steady, right hammers pin into hinge fixture.\n#2: Left holds hinge assembly, right pushes/inserts pin.\n#3: Left holds assembly, right reaches for small metal piece.\n#4: Left holds assembly, right strikes with yellow mallet.\n#5: Left lifts metal plate off fixture, right holds mallet.\n#6: Both hands pick and fit small metal brackets together.\n#7: Both hands hold long strip and tool, positioning it.\n#8: Both hands hold metal piece and green-ended tool assembling.\n#9: Both hands manipulate cylindrical pin/tool at table edge.\n#10: Left reaches into parts pile, right holds cylindrical tool.\n#11: Left steadies table, right picks up small metal part.\n#12: Both hands fit small metal parts together.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker actively assembles metal hinge parts using mallet and pins throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 19.45,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r039": {
+   "factory": "factory_003",
+   "run1": {
+    "raw": "#1: hands blurred in rapid motion over dusty worktable.\n#2: powder-coated right hand reaching across metal counter.\n#3: right hand gripping counter edge amid motion blur.\n#4: right hand reaching toward black bucket, left on table.\n#5: left hand lifting small rectangular tray by bucket.\n#6: right hand holding green-coated square tray/mold.\n#7: both hands lowered working near yellow mold rack.\n#8: hands reaching toward yellow molded tray stack.\n#9: right hand on green tray, left hand near bucket.\n#10: right hand carrying green tray while moving.\n#11: hands not visible as view turns to floor.\n#12: hands out of frame showing shop floor and coworker.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker handles trays and molds at bench with clear hand visibility\"}",
+    "reason_code": "OK",
+    "seconds": 11.55,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Hands blurred in motion over dusty worktable.\n#2: Right hand dusted white, sweeping across table surface.\n#3: Hands blurred gripping edge of metal worktable.\n#4: Left hand reaching into bucket, right resting on table.\n#5: Left hand holding small tray, right hand on table.\n#6: Hands adjusting large green square tray.\n#7: Hands lowered working with small items near lap.\n#8: Hands reaching toward rack of small yellow parts.\n#9: Left hand near bucket, right hand on green tray.\n#10: Hands carrying green-filled tray while standing.\n#11: Seated at bench, hands working small parts in distance.\n#12: Seated at bench, hands continuing bench work in distance.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker actively handles trays and materials with visible hands despite motion blur.\"}",
+    "reason_code": "OK",
+    "seconds": 14.69,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: hands blurred moving over bright dusty worktable.\n#2 00:01.2s: white-dusted right hand reaches across table.\n#3 00:02.1s: motion blur as hands sweep around table.\n#4 00:02.9s: left hand reaches toward bucket, right steadies table.\n#5 00:03.8s: left hand holds small tray near bucket.\n#6 00:04.6s: hands position square green-filled tray.\n#7 00:05.4s: hands work low over yellow mold tray.\n#8 00:06.2s: hand reaches to pick/place items in yellow tray.\n#9 00:07.1s: left hand near bucket, right on green tray.\n#10 00:07.9s: both hands lift/carry green-filled square tray.\n#11 00:08.8s: view turns to coworker, hands out of view.\n#12 00:09.6s: wide floor view, hands not visible.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands handle tray and small parts at workstation clearly for most frames.\"}",
+    "reason_code": "OK",
+    "seconds": 15.8,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 0
+  },
+  "r042": {
+   "factory": "factory_016",
+   "run1": {
+    "raw": "#1: Right hand picking a plastic-wrapped black item from pile.\n#2: Right hand sorting packaged items on right side of belt.\n#3: Right arm reaching up to place items into cardboard box.\n#4: Right hand placing items into box under shelf.\n#5: Hand holding bundle of packaged items over central pile.\n#6: Right hand gathering packaged items on table near scale.\n#7: Right hand spreading pile of packaged items on table.\n#8: Right hand resting on pile beside scale and boxes.\n#9: Hands not visible, view panning to factory floor and box.\n#10: Hands not visible, blurred view of floor, stools, workers.\n#11: Hands not visible, viewing co-worker at strapping machine.\n#12: Hands not visible, still viewing co-worker at machine.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands sort, pack and weigh plastic-wrapped items then walk to machine.\"}",
+    "reason_code": "OK",
+    "seconds": 13.78,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Right hand picking a plastic-wrapped black item from pile.\n#2: Right hand reaching toward items on right side of belt.\n#3: Right arm reaching up to place item into upper box.\n#4: Right arm extended placing item into upper box.\n#5: Hand gathering plastic-wrapped items from left pile.\n#6: Right hand sweeping/moving items across table near scale.\n#7: Right hand spreading items in large pile by scale.\n#8: Right hand resting on pile, boxes and scale visible.\n#9: Hands not visible, blurry move toward empty cardboard box.\n#10: No worker hands visible, camera turning to factory aisle.\n#11: Worker walking away, hands not doing packing work.\n#12: Standing at sealing machine, right hand on machine.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands sort, move and box wrapped items with scale visible.\"}",
+    "reason_code": "OK",
+    "seconds": 13.62,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Right hand picks a plastic-wrapped black item from pile.\n#2: Right hand reaches toward wrapped items on conveyor.\n#3: Right hand places items into carton under shelf.\n#4: Right arm reaches up packing carton under shelf.\n#5: Hand grabs wrapped items from conveyor pile.\n#6: Right hand sweeps/moves pile near scale and box.\n#7: Right hand spreads/handles pile beside weighing scale.\n#8: Right hand rests on pile next to scale and boxes.\n#9: Hands not visible, camera turns while walking with box.\n#10: Hands not visible while walking across factory floor.\n#11: Hands not visible, observing other worker at machine.\n#12: Hands not visible, standing watching sealing machine.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands clearly sort and pack bagged items into cartons on bench.\"}",
+    "reason_code": "OK",
+    "seconds": 14.92,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r043": {
+   "factory": "factory_057",
+   "run1": {
+    "raw": "#1: Right hand holds brown part with tweezers, left holds strip steady.\n#2: Same hold as #1, hands nearly motionless on parts.\n#3: Same hold as #1, right hand with tweezers on part.\n#4: Same hold as #1, maintaining grip on parts.\n#5: Right hand places small brown piece on fixture, left on strip.\n#6: Right hand tweezes small piece on belt, left holds strip.\n#7: Right hand reaches with tweezers, left rests on strip.\n#8: Both hands position long strip under microscope.\n#9: Both hands adjust long strip under scope for inspection.\n#10: Both hands hold strip steady under scope.\n#11: Both hands align long strip on fixture, wider view.\n#12: Both hands hold strip in place under scope.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands manipulate parts under microscope with clear view, work progresses after initial hold.\"}",
+    "reason_code": "OK",
+    "seconds": 13.6,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 Right hand holds brown part with tweezers under scope, left steadies strip.\n#2 Right hand holds brown part with tweezers, left hand on long strip.\n#3 Right hand holds brown part with tweezers in same inspection pose.\n#4 Right hand holds brown part with tweezers, left fingers on strip.\n#5 Right hand places small brown piece on fixture, left on strip.\n#6 Right arm extended using tweezers on small piece on belt.\n#7 Right hand picks/moves small brown piece on conveyor belt.\n#8 Both hands position long brown strip under inspection scope.\n#9 Both hands adjust long brown strip under the scope.\n#10 Both hands hold strip steady under scope for inspection.\n#11 Both hands adjust strip under scope from wider view.\n#12 Both hands hold strip steady under scope for final check.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands inspect and reposition components under microscope clearly.\"}",
+    "reason_code": "OK",
+    "seconds": 10.98,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Right hand holds brown strip with tweezers under machine, left supports tail.\n#2: Right hand holds strip and tweezers in place, left steadies tail end.\n#3: Same hold on strip and tweezers under lens, left on tail.\n#4: Maintains same grip on strip with tweezers, left supporting.\n#5: Right hand places small brown piece on fixture, left holds long strip.\n#6: Right hand works with tweezers on small piece, left out of view.\n#7: Right hand reaches with tweezers toward part on conveyor, left holds strip.\n#8: Both hands position long brown strip on base plate.\n#9: Both hands adjust long strip under machine head.\n#10: Both hands fine-align strip under the lens.\n#11: Both hands continue aligning strip on fixture from wider view.\n#12: Both hands hold strip steady on fixture for operation.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible manipulating parts under assembly machine throughout with clear progress.\"}",
+    "reason_code": "OK",
+    "seconds": 14.45,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r046": {
+   "factory": "factory_061",
+   "run1": {
+    "raw": "#1 Left hand on base, right hand reaching to box for part.\n#2 Both hands positioning workpiece under press.\n#3 Both hands adjusting fixture under press head.\n#4 Both hands holding workpiece in press fixture.\n#5 Both hands fine-adjusting workpiece in fixture.\n#6 Camera tilts up, right hand touching machine body.\n#7 Motion blur, right arm raised by machine top.\n#8 View down again, left hand at base.\n#9 Right hand reaching up to control box.\n#10 Right hand turning knob on control box.\n#11 Right hand gripping top of control box.\n#12 Right hand holding top of control box.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands position workpiece in press then adjust machine controls visibly.\"}",
+    "reason_code": "OK",
+    "seconds": 10.84,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Left hand holds yellow fixture, right hand picks black parts from cardboard tray.\n#2: Left hand steadies fixture, right hand loads part into press mold.\n#3: Both hands position part under the press plates.\n#4: Both hands align part in the press jig.\n#5: Both hands fine-adjust part placement in the press.\n#6: Camera tilts up, right hand reaches to machine control box.\n#7: Right arm raised high to operate upper control.\n#8: Camera tilts down, left hand near press base after cycling.\n#9: Both hands raised adjusting the control box cover.\n#10: Right hand turns/adjusts knob on control box.\n#11: Right hand holds top edge of control box.\n#12: Right hand holds control box while looking along line.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker loads press, cycles it, then adjusts machine controls.\"}",
+    "reason_code": "OK",
+    "seconds": 13.73,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Left hand rests on machine, right hand reaches into parts box on right.\n#2: Both hands adjust work piece under the press head.\n#3: Both hands position item centered in press fixture.\n#4: Both hands hold and align item in press die.\n#5: Both hands maintain alignment at press sides.\n#6: Head tilts up, right hand reaches to overhead control box.\n#7: Right hand raised high operating machine, motion blurred.\n#8: Head tilts down, hands return to press base area.\n#9: Both hands raised to grasp overhead control box.\n#10: Right hand touches/adjusts top of control box.\n#11: Right hand holds side of control box steady.\n#12: Right hand continues holding side of control box.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands actively load and operate press through sequence\"}",
+    "reason_code": "OK",
+    "seconds": 12.8,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r047": {
+   "factory": "factory_046",
+   "run1": {
+    "raw": "#1: Left holds small black part, right reaches to upper table.\n#2: Left places part on table, right hand picking above.\n#3: Both hands hold metal frame and white pad to join.\n#4: Both hands press-fit pad into silver device case.\n#5: Both hands hold assembled device, adjusting fit.\n#6: Both hands rotate and manipulate device for assembly.\n#7: Both hands hold device facing forward, inspecting.\n#8: Both hands hold device showing lens, inspecting.\n#9: Both hands hold device steady, inspecting front.\n#10: Both hands turn device sideways, checking edges.\n#11: Both hands pinch device center, continuing fine work.\n#12: Left holds device alone, right hand out of frame.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker actively assembles and inspects small device throughout clip.\"}",
+    "reason_code": "OK",
+    "seconds": 9.82,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: left hand reaching out, right hand holding small black part.\n#2: left hand reaching, right hand placing small component on table.\n#3: both hands holding metal frame and white pad apart.\n#4: both hands fitting parts together into small silver device.\n#5: both hands manipulating small silver device at bottom.\n#6: both hands joining small components together in center.\n#7: both hands holding and pressing small silver device.\n#8: both hands holding and turning silver device to inspect.\n#9: both hands holding silver device facing camera.\n#10: both hands holding silver device horizontally.\n#11: both hands manipulating small device low in frame.\n#12: right hand holding small device on table surface.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker visibly assembles small electronic device throughout clear overhead view.\"}",
+    "reason_code": "OK",
+    "seconds": 8.15,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Left hand holds small part, right hand reaches across table.\n#2: Left hand holds white square part, right hand hovers above.\n#3: Both hands hold metal frame and white backing for assembly.\n#4: Both hands press-fit parts into small silver device.\n#5: Both hands manipulate silver device case together.\n#6: Both hands twist/adjust small silver component.\n#7: Both hands hold device horizontally inspecting it.\n#8: Both hands hold device showing lens, inspecting.\n#9: Both hands grip device front-facing, pressing edges.\n#10: Both hands turn device sideways for adjustment.\n#11: Both hands pinch small device low in frame.\n#12: One hand holds device on table, other out of view.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands actively assemble small device with clear view throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 9.68,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r050": {
+   "factory": "factory_022",
+   "run1": {
+    "raw": "#1: Hands gripping stack of black devices on right side of table.\n#2: Right arm reaching forward to place a black device on conveyor.\n#3: Both hands reaching for open black casing with red wires on table.\n#4: Both hands lifting and closing/manipulating the black casing.\n#5: Hands holding device while adjusting small internal component.\n#6: Left holds device, right inserts/connects green circuit board.\n#7: Left holds device, right adjusts white wire connector on board.\n#8: Both hands hold device and press/adjust internal circuit.\n#9: Hands steady device while fingers work on circuit board.\n#10: Both hands press/close top section of the device.\n#11: Hands manipulate and secure component on the device.\n#12: Both hands press down on green circuit board inside device.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible assembling electronic device throughout, clear active work.\"}",
+    "reason_code": "OK",
+    "seconds": 8.45,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Holding/moving black units on conveyor belt.\n#2: Hands mostly out of view as coworker places unit.\n#3: Placing open wired black housing on table.\n#4: Holding and aligning housing parts together.\n#5: Manipulating internal component with both hands.\n#6: Holding device while adjusting circuit board.\n#7: Working on circuit board inside housing.\n#8: Continuing fine adjustment of circuit board.\n#9: Holding device with fingers near wiring.\n#10: Pressing housing halves together.\n#11: Closing/securing device housing.\n#12: Holding finished device, final check.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands clearly assemble electronic housing with continuous visible progress.\"}",
+    "reason_code": "OK",
+    "seconds": 10.74,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Holding/carrying black units beside the conveyor.\n#2: Own hands mostly out of view, coworker places unit ahead.\n#3: Picking up open black housing with red wires.\n#4: Holding and turning the housing to position it.\n#5: Starting to fit parts into the housing.\n#6: Inserting green circuit board with both hands.\n#7: Pressing/adjusting circuit board into housing.\n#8: Securing circuit board with both hands.\n#9: Adjusting wires and board inside housing.\n#10: Manipulating board/wires to seat them.\n#11: Pressing board firmly into place.\n#12: Final adjustment of board in housing.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Clear view of hands continuously assembling electronic housing.\"}",
+    "reason_code": "OK",
+    "seconds": 8.64,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r052": {
+   "factory": "factory_009",
+   "run1": {
+    "raw": "#1 hands low at bottom edge, barely in frame near white sheet.\n#2 right hand resting low center, no clear action.\n#3 right hand resting low center over white sheet.\n#4 right hand slightly raised, still low center.\n#5 both hands visible left-center over tray area.\n#6 right hand centered low, manipulating out of clear view.\n#7 right hand centered low, similar position holding.\n#8 camera pans to white tray, hands not visible.\n#9 wide view of tray, no hands visible.\n#10 left hand blurred in motion over tray.\n#11 right hand pulling paper sack over blue crate.\n#12 no hands visible, sack fully covering crate.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands cover crate with sack, clear work progression despite static early frames.\"}",
+    "reason_code": "OK",
+    "seconds": 14.76,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 00:00.4s: Right hand hovering over white sheet at table edge.\n#2 00:01.2s: Right hand resting on white sheet, slight movement.\n#3 00:02.1s: Right hand holding edge of white sheet.\n#4 00:02.9s: Right hand pressing/grasping white sheet.\n#5 00:03.8s: Both hands manipulating paper below frame.\n#6 00:04.6s: Hands clasped together over white sheet.\n#7 00:05.4s: Hands still clasped over white sheet.\n#8 00:06.2s: Hands not visible as view shifts to tray.\n#9 00:07.1s: No hands visible, view of filled tray.\n#10 00:07.9s: Left hand blurred reaching over tray.\n#11 00:08.8s: Right hand touching large paper bag on crate.\n#12 00:09.6s: No hands visible, view of bagged crate.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands handle paper then inspect tray and cover crate with bag.\"}",
+    "reason_code": "OK",
+    "seconds": 13.06,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: Right hand resting on white sheet at table edge.\n#2 00:01.2s: Right hand hovering slightly above white sheet.\n#3 00:02.1s: Right hand resting low on table.\n#4 00:02.9s: Right hand clenched resting on table edge.\n#5 00:03.8s: Right hand gripping near left table edge.\n#6 00:04.6s: Right hand holding table edge, mostly static.\n#7 00:05.4s: Right hand resting in same position on table.\n#8 00:06.2s: Hands not visible, view shifted to tray of cups.\n#9 00:07.1s: Hands not visible, tray of small cups in view.\n#10 00:07.9s: Blurred hand moving quickly over tray/table.\n#11 00:08.8s: Right hand pulling paper sack over blue crate.\n#12 00:09.6s: Hands not visible, sack covering blue crate.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hand idles then moves tray and covers blue crate with paper sack.\"}",
+    "reason_code": "OK",
+    "seconds": 14.57,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 0
+  },
+  "r054": {
+   "factory": "factory_066",
+   "run1": {
+    "raw": "#1: Both hands close to lens, fingers interlocked fidgeting.\n#2: Hands remain centered, fingers pulling/interlocking.\n#3: Fingers continue interlocking and rubbing together.\n#4: Hands clasped, fingers manipulating each other.\n#5: Left and right fingers interlocked, no tool/part.\n#6: Hands still fidgeting in front of camera.\n#7: Right hand fingers raised, left hand touching them.\n#8: Hands shifting, fingers pressing together.\n#9: Hands clasped lower, fingers picking at each other.\n#10: Left index pressing right finger, still fidgeting.\n#11: Left index pressing on right hand fingers.\n#12: Same finger-pressing pose held, no work.\n{\"usable\": false, \"reason_code\": \"BLOCKED_VIEW\", \"task_progress\": \"no_relevant_work\", \"explanation\": \"Hands fidget in front of lens entire clip, blocking workstation, no assembly work visible.\"}",
+    "reason_code": "BLOCKED_VIEW",
+    "seconds": 11.65,
+    "task_progress": "no_relevant_work",
+    "usable": false
+   },
+   "run2": {
+    "raw": "#1 00:00.4s: hands clasped close to lens, fingers interlocked blocking view.\n#2 00:01.2s: hands still close, fingers fidgeting in center frame.\n#3 00:02.1s: hands interlocked, thumbs touching, obscuring workstation.\n#4 00:02.9s: fingers picking at each other, view remains blocked.\n#5 00:03.8s: hands clasped, fingers curling, no work visible.\n#6 00:04.6s: hands held up, fingers interlaced in front of camera.\n#7 00:05.4s: right hand fingers raised, left hand holding, still blocking.\n#8 00:06.2s: hands repositioned but still filling center, obscuring bench.\n#9 00:07.1s: fingers interlocked low in frame, workstation still hidden.\n#10 00:07.9s: hands clasped, orange-stained thumb prominent, blocking view.\n#11 00:08.8s: left index pressing right thumb, close to camera.\n#12 00:09.6s: same finger-on-thumb pose held, work area obscured.\n{\"usable\": false, \"reason_code\": \"BLOCKED_VIEW\", \"task_progress\": \"cannot_tell\", \"explanation\": \"Hands cover lens whole clip, factory work area blocked from view.\"}",
+    "reason_code": "BLOCKED_VIEW",
+    "seconds": 9.66,
+    "task_progress": "cannot_tell",
+    "usable": false
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: Both hands close to lens, fingers interlocked fidgeting.\n#2 00:01.2s: Hands still close, fingers picking at each other.\n#3 00:02.1s: Hands centered blocking view, continuing finger fiddling.\n#4 00:02.9s: Hands clasped together, fingers manipulating each other.\n#5 00:03.8s: Hands remain in foreground, interlocked with no work object.\n#6 00:04.6s: Hands held up close, fingers touching, blocking workstation.\n#7 00:05.4s: Hands slightly shifted but still fidgeting in front of camera.\n#8 00:06.2s: Hands interlocked, right finger pressed by left fingers.\n#9 00:07.1s: Hands close together, left index pressing right finger.\n#10 00:07.9s: Hands in same pose, finger pressing continues.\n#11 00:08.8s: Left index pointing/pressing right hand fingers.\n#12 00:09.6s: Same finger-pressing pose held, no work activity.\n{\"usable\": false, \"reason_code\": \"BLOCKED_VIEW\", \"task_progress\": \"no_relevant_work\", \"explanation\": \"Hands fill frame fidgeting, workstation hidden, no assembly work visible.\"}",
+    "reason_code": "BLOCKED_VIEW",
+    "seconds": 8.1,
+    "task_progress": "no_relevant_work",
+    "usable": false
+   },
+   "y": 0
+  },
+  "r057": {
+   "factory": "factory_040",
+   "run1": {
+    "raw": "#1 00:00.4s: Gloved hands hold white earphone cable at center of green bench.\n#2 00:01.2s: Hands manipulate earphone wires, twisting/assembling components together.\n#3 00:02.1s: Hands continue handling cable bundle on right side of bench.\n#4 00:02.9s: Hands adjust white cables, still actively assembling earphones.\n#5 00:03.8s: Hands clasp together working on small earphone part.\n#6 00:04.6s: Hands separate slightly, holding earphone pieces for inspection/assembly.\n#7 00:05.4s: Hands lift earphone unit, fingers positioning wires.\n#8 00:06.2s: Hands bring earphones together, continuing assembly motion.\n#9 00:07.1s: Hands hold earphone center, fine finger work on cable.\n#10 00:07.9s: Hands maintain grip on earphone, twisting/joining parts.\n#11 00:08.8s: Hands lower to bench, still grasping earphone cable.\n#12 00:09.6s: Hands place/work cable on bench, completing assembly step.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands continuously assemble white earphone cables on bench, clearly visible.\"}",
+    "reason_code": "OK",
+    "seconds": 12.43,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 00:00.4s: Both gloved hands holding and manipulating white earphone cable at center.\n#2 00:01.2s: Hands lifting and untangling earphone wires together.\n#3 00:02.1s: Hands working on cable bundle on right side of table.\n#4 00:02.9s: Hands continuing to sort/handle right-side cables.\n#5 00:03.8s: Hands crossed over each other manipulating cable.\n#6 00:04.6s: Both hands holding small white connector for assembly/inspection.\n#7 00:05.4s: Hands raised holding earphone piece, inspecting/assembling.\n#8 00:06.2s: Hands bringing cables together with motion blur.\n#9 00:07.1s: Both hands pinching small component in fine work.\n#10 00:07.9s: Hands continuing precise assembly on earphone tip.\n#11 00:08.8s: Hands handling cable at center over table.\n#12 00:09.6s: Left hand holds cable while right hand reaches to pile.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands clearly visible actively sorting assembling earphone cables throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 9.1,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: Gloved hands hold a white earphone cable on green bench.\n#2 00:01.2s: Hands manipulate small white earbud component together.\n#3 00:02.1s: Hands press/fit earphone parts over cable bundle.\n#4 00:02.9s: Hands continue assembling twisting earphone wires.\n#5 00:03.8s: Both hands join and tighten cable components.\n#6 00:04.6s: Hands separate slightly to inspect assembled piece.\n#7 00:05.4s: Hands lift earphone assembly for inspection/adjustment.\n#8 00:06.2s: Hands move quickly arranging cables, slight motion blur.\n#9 00:07.1s: Hands pinch small connector to fit earphone parts.\n#10 00:07.9s: Hands twist/push components together in center.\n#11 00:08.8s: Hands hold finished loop, continuing assembly work.\n#12 00:09.6s: Right hand places cable down while left holds.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker continuously assembles white earphone cables with gloved hands on bench.\"}",
+    "reason_code": "OK",
+    "seconds": 19.06,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r059": {
+   "factory": "factory_061",
+   "run1": {
+    "raw": "#1 00:00.4s: Hands holding black eyeglasses frame, motion blurry.\n#2 00:01.2s: Left hand holds lens/frame near machine, right hand below.\n#3 00:02.1s: Both hands holding eyeglasses frame over machine.\n#4 00:02.9s: Hands holding lens and frame separated for assembly.\n#5 00:03.8s: Both hands gripping frame, fitting parts together.\n#6 00:04.6s: Hands pressing lens into eyeglasses frame.\n#7 00:05.4s: Hands lowered to lap, manipulating frame on cloth.\n#8 00:06.2s: Both hands working small part on lap.\n#9 00:07.1s: Hands holding small dark lens/part in lap.\n#10 00:07.9s: Hands continuing to fit/handle small part.\n#11 00:08.8s: Right hand handling part on lap, left out of view.\n#12 00:09.6s: View blurred, hands not clearly visible.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker visibly assembles eyeglass frames throughout clear overhead view.\"}",
+    "reason_code": "OK",
+    "seconds": 10.88,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Hands holding black eyeglass frame, motion blurry at start.\n#2: Left hand holds frame over machine, right hand adjusting.\n#3: Both hands holding frame above machine platform.\n#4: Hands separating/holding lens and frame parts.\n#5: Hands bending/manipulating frame together.\n#6: Hands inspecting/adjusting frame over lap.\n#7: Hands lowered to lap working on small part.\n#8: Both hands handling small part on striped cloth.\n#9: Hands fitting lens into frame in lap.\n#10: Hands continuing to press-fit lens/frame.\n#11: Right hand manipulating frame, left hand resting.\n#12: View blurred to machine, hands moved out of frame.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visibly assembling eyeglass frames throughout clear sequence.\"}",
+    "reason_code": "OK",
+    "seconds": 11.69,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Both hands holding black eyeglasses frame, blurry from motion.\n#2: Left hand holds frame arm, right hand near machine base.\n#3: Both hands holding open glasses frame in front of machine.\n#4: Hands holding separated lens and frame, inspecting parts.\n#5: Both hands manipulating frame, fitting parts together.\n#6: Both hands assembling temple to frame front.\n#7: Hands lowered to lap, continuing assembly on cloth.\n#8: Hands at lap working on small glasses component.\n#9: Hands at lap holding dark lens/frame piece.\n#10: Hands at lap adjusting same glasses piece.\n#11: Right hand holding piece on lap, left out of view.\n#12: Camera shifts up to machine, hands blurred/out of frame.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visibly assemble eyeglass frames throughout sequence.\"}",
+    "reason_code": "OK",
+    "seconds": 8.18,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r069": {
+   "factory": "factory_024",
+   "run1": {
+    "raw": "#1: Both hands aligning purple plastic housing pieces over workbench.\n#2: Both hands pressing purple housing parts together.\n#3: Left holds housing while right hand blurs moving to part.\n#4: Left holds body, right inserts small white component.\n#5: Left holds body, right continues fitting small component.\n#6: Both hands joining two large purple halves end-to-end.\n#7: Both hands pressing and seating the joined halves.\n#8: Both hands gripping and squeezing assembled handle.\n#9: Both hands adjusting pressure along assembled handle.\n#10: Both hands holding and inspecting assembled handle.\n#11: Both hands holding assembled unit upright for inspection.\n#12: Both hands pressing seam of assembled handle.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Clear hands assembling purple toy parts through progressive steps.\"}",
+    "reason_code": "OK",
+    "seconds": 10.68,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Both hands grip and align light-purple plastic housing parts.\n#2: Hands continue holding and adjusting the purple housing assembly.\n#3: Left holds housing while right hand moves in motion blur.\n#4: Left holds housing, right inserts small white component into end.\n#5: Hands position small white piece into housing connector.\n#6: Both hands join two purple housing halves together.\n#7: Hands press and snap the two halves at the joint.\n#8: Hands squeeze along seam to secure assembly.\n#9: Hands rotate and press assembled handle-like part.\n#10: Hands inspect and adjust the joined purple part.\n#11: Hands hold upright assembly showing bottom end.\n#12: Both hands press along seam to finish joining.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands clearly assemble purple parts through visible joining steps.\"}",
+    "reason_code": "OK",
+    "seconds": 10.53,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Both hands holding and aligning top of light-purple plastic housing.\n#2: Both hands pressing together purple housing halves.\n#3: Left holds housing, right hand blurred inserting/wiping component.\n#4: Left holds housing, right inserts small white part into end.\n#5: Left holds housing, right continues fitting small white part.\n#6: Both hands joining two halves of purple handle together.\n#7: Both hands pressing/snapping handle halves together.\n#8: Both hands squeezing seam to close handle halves.\n#9: Both hands holding assembled handle, adjusting alignment.\n#10: Both hands holding and inspecting assembled purple handle.\n#11: Both hands holding handle upright, checking bottom end.\n#12: Both hands pressing along seam of assembled handle.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible assembling plastic handle through insertion and closing.\"}",
+    "reason_code": "OK",
+    "seconds": 10.68,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r071": {
+   "factory": "factory_069",
+   "run1": {
+    "raw": "#1 Both hands holding and adjusting white cable under table.\n#2 Both hands pulling white cable.\n#3 Both hands manipulating white cable.\n#4 Left hand lifting cable, right hand reaching in.\n#5 Left arm reaching down, hands mostly out of view.\n#6 Both hands handling clear plastic-wrapped object.\n#7 White board blocks view, hands not visible.\n#8 White board blocks view, hands not visible.\n#9 Torso close-up, hands out of frame.\n#10 Arms under table, hands obscured.\n#11 Arms under foam edge, hands not visible.\n#12 Foam fills view, hands not visible.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Early frames show hands manipulating cable, later view blocked by foam.\"}",
+    "reason_code": "OK",
+    "seconds": 13.19,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 00:00.4s - Both hands holding and adjusting white cable in lap.\n#2 00:01.2s - Both hands pulling and straightening white cable.\n#3 00:02.1s - Both hands holding white cable, continuing to manipulate.\n#4 00:02.9s - Right hand moves to lap, left hand still holds cable.\n#5 00:03.8s - Left arm extended down, hands moving away from cable.\n#6 00:04.6s - Both hands handling a clear plastic packaged object.\n#7 00:05.4s - View blocked by white sheet, hands not visible.\n#8 00:06.2s - View blocked by white sheet, hands not visible.\n#9 00:07.1s - Close torso view, both arms raised, hands out of frame.\n#10 00:07.9s - Arms lowered under table, hands obscured from view.\n#11 00:08.8s - Arms under table, hands hidden behind white sheet.\n#12 00:09.6s - White sheet dominates, hands barely visible at edge.\n{\"usable\": false, \"reason_code\": \"BLOCKED_VIEW\", \"task_progress\": \"cannot_tell\", \"explanation\": \"Hands handle cable early then white sheet blocks view hiding hands\"}",
+    "reason_code": "BLOCKED_VIEW",
+    "seconds": 12.03,
+    "task_progress": "cannot_tell",
+    "usable": false
+   },
+   "run3": {
+    "raw": "#1: Both hands holding white cable under table.\n#2: Both hands pulling straightening white cable.\n#3: Both hands holding white cable in lap.\n#4: Left hand holds cable up, right hand reaching.\n#5: Left arm extended holding cable to side.\n#6: Both hands handling clear plastic package.\n#7: View blocked by white board, hands not visible.\n#8: View blocked by white board, hands not visible.\n#9: Arms raised, hands out of frame.\n#10: Hands obscured under table/board edge.\n#11: Hands hidden under white board.\n#12: White board fills view, hands not visible.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Early frames show hands manipulating cable; later view blocked by board.\"}",
+    "reason_code": "OK",
+    "seconds": 11.54,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 0
+  },
+  "r073": {
+   "factory": "factory_061",
+   "run1": {
+    "raw": "#1: Hands near press, view shifted left toward coworker.\n#2: Left stabilizes machine, right loads black part into mold.\n#3: Left rests on table, right holds part in mold.\n#4: Left on table, right on machine side operating press.\n#5: Left on machine, right reaches into parts box.\n#6: Both hands blurred in fast motion swapping parts.\n#7: Left on machine, right retrieves part from box.\n#8: Left steadies, right places/adjusts part in mold.\n#9: Left on side, right holds part over box.\n#10: Both hands position part in press mold.\n#11: Right hand on press plate, left out of view.\n#12: Left on machine, right reaches to box for part.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker repeatedly loads parts into press with visible hands.\"}",
+    "reason_code": "OK",
+    "seconds": 9.57,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 00:00.4s: hands positioned at base of press machine, starting setup.\n#2 00:01.2s: right hand placing part under press, left hand steadying machine.\n#3 00:02.1s: right hand adjusting part in mold, left hand resting on table.\n#4 00:02.9s: both hands gripping sides of press during operation.\n#5 00:03.8s: left hand on machine, right hand reaching into parts box.\n#6 00:04.6s: both hands blurred in fast motion between machine and box.\n#7 00:05.4s: left hand on machine, right hand grabbing parts from box.\n#8 00:06.2s: right hand inserting part into press mold, left hand resting.\n#9 00:07.1s: left hand on machine, right hand moving toward parts box.\n#10 00:07.9s: both hands positioning workpiece in press mold.\n#11 00:08.8s: right hand touching/adjusting machine plate, left out of view.\n#12 00:09.6s: left hand on machine, right hand picking parts from box.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands actively operate press and handle parts in clear view\"}",
+    "reason_code": "OK",
+    "seconds": 11.92,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Right hand reaching toward the press machine base.\n#2: Left hand steadies table, right hand loads part into press jig.\n#3: Left hand on table, right hand positions part under press.\n#4: Both hands on press sides, operating/securing machine.\n#5: Left hand on machine, right hand grabs parts from box.\n#6: Both hands blurred in rapid motion, view shaking.\n#7: Left hand on machine, right hand picks part from box.\n#8: Left hand on table, right hand inserts part into jig.\n#9: Left hand on machine, right hand moves near parts box.\n#10: Both hands adjust/position part in press jig.\n#11: Left hand out of view, right hand wipes/positions press plate.\n#12: Left hand on press, right hand retrieves part from box.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands operate press placing black parts repeatedly, clear active work.\"}",
+    "reason_code": "OK",
+    "seconds": 10.02,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r075": {
+   "factory": "factory_014",
+   "run1": {
+    "raw": "#1: Both hands pressed together assembling small white part on mat.\n#2: Both hands together manipulating part at top of mat.\n#3: Both hands together continuing assembly, hammer unused on mat.\n#4: Hands overlapping pressing/rubbing white part on mat.\n#5: Left hand blurred lifting, right hand resting near mat edge.\n#6: Left hand on mat, right arm extended reaching to red bin.\n#7: Left hand on mat, right arm extended toward coworker/bin area.\n#8: Motion blur, right arm extended holding white cloth/object.\n#9: Camera turned left, right hand on white paper at bench edge.\n#10: Left arm extended flat on green conveyor table.\n#11: Left hand on table, right hand lifting white sheet/foam.\n#12: Left hand on table edge, right hand holding white sheet up.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Early assembly visible then handling materials, hands visible throughout despite motion blur.\"}",
+    "reason_code": "OK",
+    "seconds": 11.38,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Both hands pressing white part on paper, center blown out.\n#2: Both hands holding/manipulating white part, overexposed.\n#3: Both hands raised handling white part, overexposed.\n#4: Hands pressing together on white paper/part.\n#5: Left hand blurred lifting, right hand near paper.\n#6: Left gloved hand on paper, right arm reaching to side bin.\n#7: Left hand on paper, right arm extended to coworker/bins.\n#8: Heavy motion blur, head turning, hands sweeping right.\n#9: Head turned left, hands low arranging white material.\n#10: Left arm extended flat on green table, head tilted.\n#11: Left hand on table edge, right hand adjusting white sheet.\n#12: Left hand on table, right hand reaching up on white sheet.\n{\"usable\": false, \"reason_code\": \"BLOCKED_VIEW\", \"task_progress\": \"cannot_tell\", \"explanation\": \"Severe overexposure whites out work area hiding hands-object interaction\"}",
+    "reason_code": "BLOCKED_VIEW",
+    "seconds": 11.85,
+    "task_progress": "cannot_tell",
+    "usable": false
+   },
+   "run3": {
+    "raw": "#1 Both hands together pressing/manipulating small part on white mat under glare.\n#2 Both hands together continuing same central assembly action.\n#3 Both hands together still working on same spot.\n#4 Both hands pressing down on white material.\n#5 Left hand blurred lifting, right hand resting near mat.\n#6 Left hand on mat, right arm extended toward coworker/line.\n#7 Same pose holding, right hand near coworker's area.\n#8 Motion blur turning, right hand stretched across mat.\n#9 Head turned left, hands low near bottom edge.\n#10 Right hand flat on green table, view tilted down.\n#11 Left hand on table, right hand near lap/apron.\n#12 Left hand on table, right hand raised holding white object.\n{\"usable\": false, \"reason_code\": \"BLOCKED_VIEW\", \"task_progress\": \"cannot_tell\", \"explanation\": \"Severe overexposure hides workpiece and later frames show idle looking away.\"}",
+    "reason_code": "BLOCKED_VIEW",
+    "seconds": 12.59,
+    "task_progress": "cannot_tell",
+    "usable": false
+   },
+   "y": 0
+  },
+  "r079": {
+   "factory": "factory_053",
+   "run1": {
+    "raw": "#1 00:00.4s: Right hand reaches to right tray to pick black parts.\n#2 00:01.2s: Right hand lifts a small black part from tray.\n#3 00:02.1s: Hands out of view, bench of black parts shown.\n#4 00:02.9s: Hands out of view, overhead view of workstation.\n#5 00:03.8s: Blurry motion, right hand holding part near bench.\n#6 00:04.6s: Both hands hold black parts over workstation.\n#7 00:05.4s: Left holds part left, right places parts right.\n#8 00:06.2s: Both hands hold parts steady at bench.\n#9 00:07.1s: Both hands hold parts in same positions.\n#10 00:07.9s: Left holds part, right moves part toward center fixture.\n#11 00:08.8s: Left places part center, right holds parts right side.\n#12 00:09.6s: Blurry bright frame, both hands holding parts low.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands manipulate black parts throughout, placing and positioning for processing.\"}",
+    "reason_code": "OK",
+    "seconds": 13.57,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Right hand reaches to top tray to pick a black part.\n#2: Right hand lifts a small black part above tray.\n#3: Hands move out of view during transition.\n#4: No hands visible, overhead view of workstation.\n#5: Blurry motion as hands bring parts toward bench.\n#6: Both hands hold black parts over bench for inspection.\n#7: Left holds part, right hand positions part over tray.\n#8: Both hands hold parts steady on left and right.\n#9: Hands maintain same hold on left and right parts.\n#10: Right hand brings its part toward center to join.\n#11: Both hands place black parts down on bench.\n#12: Hands hold parts low in motion-blurred view.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker picks, inspects and positions small black parts throughout sequence\"}",
+    "reason_code": "OK",
+    "seconds": 12.64,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 Right hand reaches to right parts array, left hand at table edge.\n#2 Right hand picks up one black part, left hand stays left.\n#3 Both hands out of frame while moving.\n#4 Both hands out of frame, workstation in view.\n#5 Motion blur as hands bring parts toward center.\n#6 Both hands hold black parts over worktable.\n#7 Left hand holds part under machine, right holds part aside.\n#8 Both hands hold parts steady in position.\n#9 Both hands continue holding parts in place.\n#10 Right hand moves part toward center, left holds part.\n#11 Both hands set parts upright on table.\n#12 Both hands grip parts as head moves causing blur.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker picks, positions and marks black parts with hands clearly visible.\"}",
+    "reason_code": "OK",
+    "seconds": 13.99,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r084": {
+   "factory": "factory_040",
+   "run1": {
+    "raw": "#1: Hands centered together manipulating tangled white earphone cables.\n#2: Both hands raised center holding small earbud part for assembly.\n#3: Hands in center continuing to assemble small white earphone component.\n#4: Hands lowered to right side picking up earphone cable bundle.\n#5: Hands low right handling earphone wires near table edge.\n#6: Hands raised center again assembling earphone component.\n#7: Hands centered holding and fitting small earphone part.\n#8: Hands center-right manipulating earphone wire and connector.\n#9: Hands center-left adjusting and untangling earphone cable.\n#10: Hands centered assembling component with slight motion blur.\n#11: Hands low right grasping and arranging cable bundle.\n#12: Left hand moving cable quickly, right hand holding wire on right.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Gloved hands actively assemble earphones throughout clear view.\"}",
+    "reason_code": "OK",
+    "seconds": 12.08,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Both gloved hands center frame handling white earphone cables.\n#2: Hands together assembling small white earphone component.\n#3: Hands continuing to join small earphone parts together.\n#4: Hands moved lower right, picking up earphone cable.\n#5: Hands low in frame sorting/handling earphone wires.\n#6: Hands raised center assembling white component again.\n#7: Both hands holding and fitting earphone parts.\n#8: Hands manipulating earphone, right hand slightly blurred.\n#9: Hands holding white plastic part and cable.\n#10: Hands bringing earphone components together centrally.\n#11: Hands lower right assembling small earphone piece.\n#12: Hands spreading and arranging tangled white earphone cables.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker continuously assembles white earphones with both gloved hands clearly visible.\"}",
+    "reason_code": "OK",
+    "seconds": 9.86,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: Hands in center handling tangled white earphone cables.\n#2 00:01.2s: Both hands raised center assembling small earphone part.\n#3 00:02.1s: Hands center continuing fine assembly of earphone component.\n#4 00:02.9s: Hands lowered right picking/handling earphone wire.\n#5 00:03.8s: Hands low right manipulating earphone cable.\n#6 00:04.6s: Hands raised center assembling earphone parts.\n#7 00:05.4s: Hands center holding and joining earphone components.\n#8 00:06.2s: Hands center-right twisting/organizing earphone wires.\n#9 00:07.1s: Hands center handling white earphone cable and plug.\n#10 00:07.9s: Both hands center assembling earphone component.\n#11 00:08.8s: Hands right side sorting/handling earphone wires.\n#12 00:09.6s: Left hand reaching for wires, right holding cable.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Clear view of hands actively assembling earphone cables throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 12.56,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r086": {
+   "factory": "factory_079",
+   "run1": {
+    "raw": "#1: Left holds housing up, right touches another housing on table.\n#2: Left holds housing, right adjusts neighboring housing.\n#3: Both hands lift and turn a single housing.\n#4: Both hands hold housing upright on table.\n#5: Both hands press sides of upright housing.\n#6: Both hands hold vertical housing steady.\n#7: Both hands hold vertical housing centered.\n#8: Both hands grip housing in same position.\n#9: Both hands tilt housing left to inspect inside.\n#10: Both hands rotate housing to show bottom.\n#11: Both hands turn housing slightly right.\n#12: Both hands continue rotating and inspecting housing.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands clearly visible manipulating plastic housing with good lighting throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 11.51,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Left holds housing, right touches another housing on table.\n#2: Left holds housing, right adjusts second housing on table.\n#3: Both hands lift and turn a housing.\n#4: Both hands join two housings together upright.\n#5: Both hands press joined housings together.\n#6: Both hands continue pressing joined housings.\n#7: Both hands hold pressed housings steady.\n#8: Both hands hold pressed housings steady.\n#9: Both hands tilt and rotate housing to inspect.\n#10: Both hands rotate housing for inspection.\n#11: Both hands rotate housing for inspection.\n#12: Both hands rotate housing for inspection.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker joins and inspects plastic housings with clear hand visibility.\"}",
+    "reason_code": "OK",
+    "seconds": 12.5,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Left holds plastic housing up, right touches another housing on table.\n#2: Left holds housing, right hand adjusts adjacent housing.\n#3: Both hands lift and rotate housing for inspection.\n#4: Both hands hold housing upright on table.\n#5: Both hands grip sides of housing pressing together.\n#6: Both hands hold housing vertical continuing assembly.\n#7: Both hands hold housing steady in upright position.\n#8: Both hands maintain grip on upright housing.\n#9: Both hands tilt housing to inspect inside.\n#10: Both hands rotate housing showing interior bottom.\n#11: Both hands turn housing for further inspection.\n#12: Both hands hold and manipulate housing continuing work.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible continuously manipulating plastic housing assembly.\"}",
+    "reason_code": "OK",
+    "seconds": 11.6,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r090": {
+   "factory": "factory_010",
+   "run1": {
+    "raw": "#1: Left hand lifts black box with paper, right gloved hand near table.\n#2: Left holds box, right folds white paper over it.\n#3: Left holds box, both hands wrapping paper around it.\n#4: Both hands press/seal paper around box on table.\n#5: Left holds wrapped box, right places box onto conveyor.\n#6: Left extends to set box down, right hovers open over cables.\n#7: Left places box on upper line, right arm out of view.\n#8: Left holds new box/paper, right picks cable from pile.\n#9: Left holds box, right inserts cable into packaging.\n#10: Both hands hold box while seating cable inside.\n#11: Both hands fold paper around cable-filled box.\n#12: Both hands hold finished wrapped box together.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Clear hands packing boxes with cables repeatedly.\"}",
+    "reason_code": "OK",
+    "seconds": 11.28,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Left bare hand moves small box, right gloved hand over cable pile.\n#2: Both hands hold box and white paper, starting to wrap.\n#3: Both hands fold white paper around black box.\n#4: Both hands press paper-wrapped box on table.\n#5: Left hand holds box, right gloved hand places finished box aside.\n#6: Left arm extended empty, right gloved hand open in motion.\n#7: Left hand reaches for new box, right arm resting.\n#8: Left hand holds paper/box, right gloved hand picks up cable.\n#9: Left hand holds box, right hand inserts cable.\n#10: Both hands wrap box with white material.\n#11: Both hands continue wrapping/securing box.\n#12: Both hands hold completed wrapped box.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands actively packing boxes with cables throughout clearly visible.\"}",
+    "reason_code": "OK",
+    "seconds": 13.27,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: Left hand moves small black box quickly, right gloved hand rests near cables.\n#2 00:01.2s: Both hands hold white paper/box, starting to wrap black product.\n#3 00:02.1s: Left holds black box while right positions white wrapping paper on top.\n#4 00:02.9s: Both hands fold/adjust white paper around the black box.\n#5 00:03.8s: Left holds finished box, right places another box in row ahead.\n#6 00:04.6s: Left reaches forward empty, right hovers open above cable pile.\n#7 00:05.4s: Left reaches to pick new black box from conveyor line.\n#8 00:06.2s: Left holds white paper on box, right picks up black cable.\n#9 00:07.1s: Left holds paper open, right inserts cable into box.\n#10 00:07.9s: Both hands close/fold white packaging around box and cable.\n#11 00:08.8s: Left holds box steady while right tucks white paper flap.\n#12 00:09.6s: Both hands press/finish sealing white wrap around boxed product.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible packing boxes with cables throughout clear well-lit views\"}",
+    "reason_code": "OK",
+    "seconds": 11.51,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r091": {
+   "factory": "factory_003",
+   "run1": {
+    "raw": "#1 left holds mold piece while right brushes it with yellow tool.\n#2 left steadies piece as right brushes inside the mold.\n#3 left holds top while right scrubs with fast brush motion.\n#4 left arm raised holding part as right brushes vigorously.\n#5 left holds work while right continues brushing with motion blur.\n#6 left holds top while right brushes center of mold.\n#7 left holds while right brushes edge of circular mold.\n#8 left lifts small piece as right brushes the mold.\n#9 left holds fragment while right brushes near teapot mold.\n#10 left holds pieces while right taps/brushes the mold.\n#11 left holds chain-like piece while right brushes it.\n#12 left moves finished piece aside while right holds brush over bowl.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible cleaning mold with brush throughout sequence.\"}",
+    "reason_code": "OK",
+    "seconds": 10.79,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Left holds small metal part, right sweeps yellow brush toward it.\n#2: Left steadies part over bowl, right brushes its center.\n#3: Left lifts part up, right brushes with motion blur.\n#4: Left holds arm up, right scrubs part vigorously.\n#5: Left holds part over dish, right brushes in blur.\n#6: Left holds above, right brushes inside bowl area.\n#7: Left holds above, right continues brushing the workpiece.\n#8: Left holds tiny piece, right brushes toward bowl.\n#9: Left holds white part, right brushes its edge.\n#10: Left holds part, right taps/brushes it.\n#11: Left holds chain-like part, right brushes it.\n#12: Left holds small tool, right holds brush over empty bowl.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visible brushing metal parts continuously, clear active manual work.\"}",
+    "reason_code": "OK",
+    "seconds": 8.79,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 Left holds metal piece, right brings yellow brush toward it.\n#2 Left steadies work, right brushes inside with yellow tool.\n#3 Left holds top, right brushes rapidly with motion blur.\n#4 Left arm raised, right brushes briskly with blurred motion.\n#5 Left holds, right continues fast brushing motion.\n#6 Left holds side, right brushes interior of piece.\n#7 Left holds, right applies brush to center.\n#8 Left holds edge, right brushes rim area.\n#9 Left lifts small part, right brushes it.\n#10 Left holds ring part, right brushes it.\n#11 Left holds white part, right brushes detail.\n#12 Left holds near bowl, right holds brush over bowl.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visibly brushing metal parts continuously across all frames.\"}",
+    "reason_code": "OK",
+    "seconds": 12.72,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r092": {
+   "factory": "factory_020",
+   "run1": {
+    "raw": "#1 00:00.4s: hands moving black speaker fast with motion blur.\n#2 00:01.2s: left holds speaker up, right holds green brush.\n#3 00:02.1s: left holds speaker, right brushes it with green brush.\n#4 00:02.9s: left holds speaker, right lifts brush away.\n#5 00:03.8s: left holds speaker on table, right holds brush.\n#6 00:04.6s: left holds speaker up, right brushes underside.\n#7 00:05.4s: left holds speaker, right brushes fast with blur.\n#8 00:06.2s: left holds speaker, right presses brush on it.\n#9 00:07.1s: left holds speaker sideways, right brushes side.\n#10 00:07.9s: left tilts speaker, right brushes body.\n#11 00:08.8s: left holds speaker, right brushes with motion blur.\n#12 00:09.6s: speaker set down, right hand rests brush on table.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker actively brushes black speaker throughout, hands visible, clear view.\"}",
+    "reason_code": "OK",
+    "seconds": 10.36,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1: Hands blurred wiping black speaker with white cloth.\n#2: Left holds speaker up, right holds green brush above table.\n#3: Left holds speaker, right scrubs side with green brush.\n#4: Left holds speaker, right lifts green brush away.\n#5: Left rests speaker on table, right holds green brush.\n#6: Left holds speaker, right brushes bottom with green tool.\n#7: Left holds speaker, right brushes side with motion blur.\n#8: Left holds speaker, right positions green brush over it.\n#9: Left holds speaker sideways, right brushes it.\n#10: Left holds speaker sideways, right holds brush near it.\n#11: Left holds speaker sideways, right brushes with blur.\n#12: Speaker placed on stack, right hand rests brush on table.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker holds and brushes black speaker continuously throughout clip.\"}",
+    "reason_code": "OK",
+    "seconds": 7.13,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1: Hands lifting black speaker with motion blur at start.\n#2: Left holds speaker up, right holds green brush.\n#3: Left holds speaker, right brushes its side.\n#4: Left steadies speaker on table, right lifts brush.\n#5: Left holds speaker, right holds brush aside.\n#6: Left holds speaker up, right brushes underside.\n#7: Left holds speaker, right brushes with motion blur.\n#8: Left holds speaker, right scrubs with green brush.\n#9: Left holds speaker sideways, right brushes it.\n#10: Left holds speaker tilted, right brushes top.\n#11: Left holds speaker, right brushes in blurred motion.\n#12: Speaker set down, right hand rests brush on table.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker continuously cleans speaker with brush, hands visible.\"}",
+    "reason_code": "OK",
+    "seconds": 10.21,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  },
+  "r098": {
+   "factory": "factory_070",
+   "run1": {
+    "raw": "#1: Left holds black part, right wipes it with white cloth.\n#2: Left lifts black housing, right holds cloth aside.\n#3: Left reaches to table parts, right dabs table with cloth.\n#4: Left touches part on table, right grips cloth.\n#5: Left reaches off-frame, right holds cloth at table edge.\n#6: Left hand grasps black part on table.\n#7: Left arm raised empty, right holds cloth low.\n#8: Left lifts black part high, right holds cloth.\n#9: Left holds part, right wipes with cloth.\n#10: Left holds part edge, right wipes with cloth.\n#11: Left holds black housing, right wipes with cloth.\n#12: Left reaches left, right squeezes cloth.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker actively wipes black plastic parts with cloth, hands visible.\"}",
+    "reason_code": "OK",
+    "seconds": 9.54,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run2": {
+    "raw": "#1 00:00.4s: Left holds black part, right wipes it with white cloth.\n#2 00:01.2s: Left holds black housing up, right holds cloth aside.\n#3 00:02.1s: Left reaches to table parts, right wipes table with cloth.\n#4 00:02.9s: Left reaches to top parts, right holds cloth up.\n#5 00:03.8s: Left reaches out of view, right holds cloth low.\n#6 00:04.6s: Left places/adjusts black part on table, right out of view.\n#7 00:05.4s: Left arm raised out of view, right holds cloth at side.\n#8 00:06.2s: Left lifts black part for inspection, right holds cloth.\n#9 00:07.1s: Left holds black part, right wipes it with cloth.\n#10 00:07.9s: Left holds small part, right brings cloth to part.\n#11 00:08.8s: Left holds large housing, right wipes it with cloth.\n#12 00:09.6s: Left reaches to table, right holds used cloth.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Worker actively wipes and handles black plastic parts with cloth throughout.\"}",
+    "reason_code": "OK",
+    "seconds": 8.5,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "run3": {
+    "raw": "#1 00:00.4s: Left holds black part, right wipes it with white cloth.\n#2 00:01.2s: Left lifts black part, right holds cloth aside.\n#3 00:02.1s: Left moves part, right wipes table with cloth.\n#4 00:02.9s: Left adjusts part on table, right grips cloth.\n#5 00:03.8s: Left reaches off-frame, right holds cloth over edge.\n#6 00:04.6s: Both hands position a black part on table.\n#7 00:05.4s: Left reaches leftward, right holds cloth at table edge.\n#8 00:06.2s: Left lifts black part, right holds cloth up.\n#9 00:07.1s: Left steadies part, right wipes it with cloth.\n#10 00:07.9s: Left holds small piece, right wipes part with cloth.\n#11 00:08.8s: Left holds large part, right wipes it with cloth.\n#12 00:09.6s: Left holds part, right cleans with cloth.\n{\"usable\": true, \"reason_code\": \"OK\", \"task_progress\": \"advancing\", \"explanation\": \"Hands visibly wipe and handle black parts throughout with clear view.\"}",
+    "reason_code": "OK",
+    "seconds": 6.07,
+    "task_progress": "advancing",
+    "usable": true
+   },
+   "y": 1
+  }
+ },
+ "prompt_name": "quality",
+ "prompt_sha256": "a59f387edecf382336ce373bc2ef6d2068bf16ecda4db2ceabff82b3ea06e113",
+ "protocol": "3 independent runs of the frozen `quality` prompt on the same pre-registered 40 windows, reusing the EXACT cached PNG bytes for every run, so the only variation is the model; run 1 is the V02 call reused, runs 2-3 are new calls; no training, no fitting",
+ "runs": [
+  1,
+  2,
+  3
+ ],
+ "seed": 0,
+ "single_run_treatable_as_a_measurement": "NO. The model is not stable enough to treat one call as a measurement: unanimous share 0.9, Fleiss kappa 0.5195, AUROC spread 0.0714 across 3 runs. Use repeated calls with a majority vote, and only as triage.",
+ "task_progress": {
+  "categories": [
+   "advancing",
+   "cannot_tell",
+   "no_relevant_work"
+  ],
+  "fleiss_kappa": 0.41,
+  "mean_pairwise_cohen_kappa": 0.4335,
+  "pairwise_cohen_kappa": [
+   0.1228,
+   0.7906,
+   0.387
+  ],
+  "unanimous_share": 0.875
+ },
+ "task_progress_kappa_note": "task_progress Fleiss kappa 0.41 over 3 categories; the 40-window subset is NOT the full OOD-160 and is not representative of the base rate",
+ "timing": {
+  "calls_in_ledger_total": {
+   "image": 241,
+   "text": 0,
+   "total": 241
+  },
+  "total_wall_s": 326.8
+ },
+ "usable": {
+  "categories": [
+   "false",
+   "true"
+  ],
+  "fleiss_kappa": 0.5195,
+  "mean_pairwise_cohen_kappa": 0.5347,
+  "pairwise_cohen_kappa": [
+   0.2857,
+   0.7872,
+   0.5313
+  ],
+  "per_window_votes_true": [
+   3,
+   3,
+   3,
+   3,
+   1,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   2,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   0,
+   3,
+   3,
+   3,
+   2,
+   3,
+   1,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "unanimous_share": 0.9
+ },
+ "windows_complete": 40,
+ "windows_requested": 40
+}
