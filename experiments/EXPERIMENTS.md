@@ -46,6 +46,7 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 | GRID.02 | GRID | done | drop | Inter-tile temporal-proxy features on the mosaic: added value and leave-one-group-out ablation | same 150 IndEgo windows; mosaic-native group 'intertile' (12 / 480p ~10 fps IndEgo, CPU only |
 | GRID.03 | GRID | done | drop | Difference-mosaic channel (|I_t - I_{t-1}|) as a post-kill-gate small control | same 150 IndEgo windows; 'diff' group (7 features) on m3x3_t / 480p ~10 fps IndEgo, CPU only |
 | GRID.04 | GRID | done | drop | Compact frame-count/layout/density control ladder after a failed kill-gate (incl. the 4x3 / 12-frame headline) | IndEgo 150 windows, ONE human labeller, 7 clips; arms: m2x2_ / 480p ~10 fps IndEgo, CPU only |
+| GRID.06 | GRID | done | drop | Out-of-domain transfer of the mosaic head on the 160 labelled factory windows | OOD-160: 160 human-labelled Egocentric-10K windows, 138 good / 480p letterboxed 16:9 factory footage (source 1080p HEVC transcoded to 480p), CPU only |
 | LB1 | B | done | adopt | Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy | IndEgo human gold 150 windows / 7 clips (human labels, READ- / 480p/10fps IndEgo in-domain LOCO (+ OOD position test, labels only) |
 | LB2 | B | done | adopt | PoC integration: adopted every-2nd window grid + 4s early exit + EG2 2fps + 26-feature pixel logistic (descriptive verdicts) |  / CPU only (GPU unavailable in the container); cached features; deterministic (fixed seeds) |
 | LB4 | B | pending | inconclusive | Stage frozen pre-registered OOD run (one command, sha256-guarded) | labels/ood_labels2.json (100 human-labelled Egocentric-10K w /  |
@@ -588,6 +589,18 @@ Every experiment: why it was run, on what data, what came out, and the decision.
 - **Decision:** DROP. The customer's headline 12-frame 4x3 mosaic is 0.7044, significantly below the full-window pipeline: automation on a 12-frame picture is not supported by our own extractors. The full sweep was not run (kill-gate).
 - **Cost:** ~172 ms/window/arm CPU build+features; 0 GPU; 5 arms x 150 windows = ~2.5 min
 - **Results:** eval/results/exp_grid/GRID.04.json
+
+## GRID.06 — Out-of-domain transfer of the mosaic head on the 160 labelled factory windows
+- **Why:** The customer's real footage is factory footage. In-domain AUROC is not the question that decides the product; transfer is. The shipped IndEgo-trained 26-number head is near chance on factory windows, so the mosaic head must be tested on the same windows with the same folds and a factory-clustered interval.
+- **Hypothesis:** The IndEgo-trained mosaic head will NOT transfer (the frozen per-pixel head scored 0.342 and the EG2 head 0.586 out of domain), but the mosaic-native spatial features are less tied to IndEgo photometry than the shipped temporal features, so an OOD-trained mosaic recipe may reach the same 0.6-0.7 band as the pod's OOD recipes.
+- **Data / label source:** OOD-160: 160 human-labelled Egocentric-10K windows, 138 good / 22 bad, 47 factories, ONE labeller, 19 of 22 bad are NO_ACTIVE_WORK; 480p window clips. In-domain training labels: the 150 IndEgo windows.
+- **Regime:** 480p letterboxed 16:9 factory footage (source 1080p HEVC transcoded to 480p), CPU only
+- **Method:** frozen transfer (head trained on the 150 IndEgo windows only, applied unchanged) and 5-fold factory-grouped CV on the OOD set itself; factory-grouped bootstrap CIs (2000, seed 0); paired factory-clustered comparison against the frozen 26-number shipped-head scores on the same windows; reason-stratified result for NO_ACTIVE_WORK only
+- **Owner / started / finished:** dsh / 2026-10-18 06:49 / 2026-10-18 06:49
+- **Verdict:** drop — OOD-160 (n=160, n_bad=22, 47 factories, ONE labeller; 19/22 bad are NO_ACTIVE_WORK). FROZEN IndEgo-trained mosaic head: AUROC 0.3557 [0.224,0.515] factory-grouped = INVERTED; paired vs the frozen 26-number shipped head (0.5878) delta -0.2320 [-0.380,-0.077], EXCLUDES ZERO. Trained on factory footage with 5-fold factory-grouped CV the same mosaic features reach 0.6798 [0.487,0.845], paired vs 26-number +0.0921 [-0.149,+0.296] = NOT established. Window-bootstrap intervals are optimistic and are reported only next to the grouped ones. NO_ACTIVE_WORK-stratified numbers are in the JSON.
+- **Decision:** DROP the mosaic as a decision input out of domain: the IndEgo-trained mosaic head does not transfer (it inverts, like the frozen per-pixel head at 0.342 before it). The grouped-CV number 0.68 is the honest statement that factory labels are the missing ingredient, not the picture format.
+- **Cost:** 319 ms/window CPU for OOD mosaic features; 0 GPU
+- **Results:** eval/results/exp_grid/GRID.06.json
 
 ## LB1 — Independent verification of pod baselines, E1.01-E1.02 fps sweeps and E3.01-E3.05 temporal policy
 - **Why:** The adopted settings (every-2nd window, 4 s early exit, EG2 2 fps view, 26-feature logistic) drive the PoC and the submission; a second, independent re-run is the cheapest defence against a silent protocol bug.
