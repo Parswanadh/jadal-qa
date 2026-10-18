@@ -50,6 +50,17 @@ was deliberately widened by 0.01.
 Source of the verdicts: `interview/dsh_pack/ood160_heads_old26_vs_new22.json`, key `old26`
 (the original portal). `new22` (the hardened head) is **not** used anywhere in this report.
 
+**Data-location finding [MEASURED].** The bundle path the brief exports
+(`handover/jadal_pod_bundle/pod_bundle`) does **not** contain `labels/ood160_labels.json`; the
+merged 160-window manifest ships one level up in `handover/pod_bundle/labels/`. The two bundles'
+`labels/manifest_gold.json` and `caches/gpu/features.json` are byte-identical
+(sha256 `44c7217b…` and `6d27d872…`), and `ood160_heads_old26_vs_new22.json` is read from its
+absolute path, so the records in this report are unaffected by which bundle root is used.
+`TASK.00.json → bundle_used_for_ood160_labels` records the root actually used. S0 landed the same
+fix in `tools/dsh/common.py` (`dsh/infra` 7865448, merged into this branch as 4d27e7e); the result
+files were regenerated after that merge and every measured value was verified identical, with only
+the recorded `git_sha` moving.
+
 ---
 
 ## 2. TASK.00(a) — do `NO_ACTIVE_WORK` labels predict the pipeline's verdicts?

@@ -58,6 +58,9 @@ def resolve_bundle():
     It lives one level up, in handover/pod_bundle.  Both bundles carry a
     byte-identical manifest_gold.json and features.json (sha256 verified), so
     reading ood160 from the sibling is safe; record which path was used.
+    `common._ood160_manifest` (dsh/infra 7865448) now searches the same
+    candidates; this helper is kept so the script also runs against the
+    pre-fix harness, and it is what the results JSON records.
     """
     b = common.BUNDLE
     cands = [b,
