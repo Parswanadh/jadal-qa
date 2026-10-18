@@ -100,3 +100,13 @@ folds are the pod's. Runtime ~2 s CPU, 0 GPU. Nothing else in GRID/AUTO starts u
   other tools.
 * OpenCV is available in the project venv → decode-dependent experiments (per-frame features,
   mosaic pixels) are **not** blocked; run them with `/home/parshu/envs/jadal/bin/python`.
+
+## 2.7 Pre-existing test-suite red (not caused by any DSH stream)
+
+`python -m unittest discover -s tests` under `/home/parshu/envs/jadal/bin/python` gives
+**781 tests, 0 failures, 1 error, 11 skipped** on `dsh/grid-feats`. The single error is
+`tests/test_exp_motion_cue.py:14` importing `pytest`, which is not installed in the venv; that file is
+byte-identical to `origin/main`, so this is a **pre-existing red on main** that every stream hits.
+The brief's note that "the `pico_status` example test fails without a Pico" is also true but is
+skipped here rather than failing. 13 of the 781 tests are new (`tests/test_mosaic_features.py`).
+The builder's hardened branch reported 773 tests with the same single error; 768 on main + 13 new = 781.
