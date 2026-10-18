@@ -119,9 +119,14 @@ carries that context.
 
 | Head | AUROC | 95 % CI (factory-grouped) | paired vs frozen 26 |
 |---|---|---|---|
-| Frozen 26-number shipped head (scores from the harden gate run) | 0.5878 | — | — |
+| Frozen 26-number shipped head (scores from the harden gate run) | 0.5878 | [0.450, 0.728] — **includes 0.5** | — |
 | **Frozen IndEgo-trained mosaic head** | **0.3557** | [0.224, 0.515] | **−0.232 [−0.380, −0.077], excludes 0** |
 | Mosaic features, 5-fold factory-grouped CV **trained on factory windows** | 0.6798 | [0.487, 0.845] | +0.092 [−0.149, +0.296], **not established** |
+
+Read the first row carefully: the shipped 26-number head is **not established as better than chance**
+on these 160 factory windows at n_bad=22 (its factory-grouped interval contains 0.5). That is the
+honest frame for everything below it — the mosaic is worse than a baseline that is itself not
+established as working out of domain.
 
 The frozen mosaic head does not merely fail to transfer — it **inverts**, exactly as the frozen
 per-pixel head did (0.342) before it. Trained on factory footage the same features reach 0.68, in the

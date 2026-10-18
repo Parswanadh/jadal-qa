@@ -34,6 +34,10 @@
    0.515
   ],
   "ci95_type": "factory-grouped bootstrap (2000, seed 0)",
+  "ci95_vs_frozen_26": [
+   0.45,
+   0.728
+  ],
   "ci95_window_optimistic": [
    0.22,
    0.497
@@ -46,7 +50,7 @@
    "n_boot": 2000
   }
  },
- "git_sha": "c9d993388358e9c9e1cccc446c0fefce2cc7321a",
+ "git_sha": "3cd0c2509ba14a92e3e463fd3bf89c4cc60070b5",
  "grouped_cv_on_ood": {
   "C": 0.3,
   "auroc": 0.6798,

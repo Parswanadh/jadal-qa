@@ -84,7 +84,9 @@ def main():
     lo, hi, _ = C.group_boot_ci(y, p_frozen, fac, n_boot=N_BOOT, seed=SEED)
     wlo, whi, _ = C.window_boot_ci(y, p_frozen, n_boot=N_BOOT, seed=SEED)
     a_base = C.fast_auc(y, ood["p26"])
+    blo, bhi, _ = C.group_boot_ci(y, ood["p26"], fac, n_boot=N_BOOT, seed=SEED)
     d = C.paired_group_boot_diff(y, p_frozen, ood["p26"], fac, n_boot=N_BOOT, seed=SEED)
+    print(f"frozen 26-number shipped head   AUROC {a_base:.4f} [{blo:.3f},{bhi:.3f}] factory-grouped")
     print(f"FROZEN mosaic head on OOD-160   AUROC {a_frozen:.4f} [{lo:.3f},{hi:.3f}] factory-grouped")
     print(f"frozen 26-number shipped head   AUROC {a_base:.4f}  paired delta {d['delta']:+.4f} "
           f"[{d['lo']:+.3f},{d['hi']:+.3f}] excludes0={d['excludes_zero']}")
@@ -127,6 +129,7 @@ def main():
                             "ci95_type": f"factory-grouped bootstrap ({N_BOOT}, seed {SEED})",
                             "ci95_window_optimistic": [round(wlo, 3), round(whi, 3)],
                             "auroc_vs_frozen_26": round(a_base, 4),
+                            "ci95_vs_frozen_26": [round(blo, 3), round(bhi, 3)],
                             "paired_vs_26": d, "band_share": band(p_frozen)},
         "grouped_cv_on_ood": {"auroc": round(a_cv, 4), "ci95": [round(clo, 3), round(chi, 3)],
                               "paired_vs_26": dcv, "n_folds": 5, "C": 0.3,
